@@ -880,8 +880,8 @@
   "kind": "item",
   "label_kind": "label",
   "key": "items[].name",
-  "py_sha": "4c0a27cb47dff177c685ae43f05a5e4fe04e5923607a1975f3627dfd32a19a87",
-  "gas_sha": "4c0a27cb47dff177c685ae43f05a5e4fe04e5923607a1975f3627dfd32a19a87",
+  "py_sha": "87bf235c2b99d23d0fd684a4ad06ef41746d235a8790bf8486a865c1671e6a4e",
+  "gas_sha": "87bf235c2b99d23d0fd684a4ad06ef41746d235a8790bf8486a865c1671e6a4e",
   "parity": true
  },
  "carousel": {
@@ -6580,8 +6580,8 @@
   "kind": "item",
   "label_kind": "label",
   "key": "sources[].id",
-  "py_sha": "7d7c856ca3f79186aaa802b0b41625e4f2c691d5855ceb106bf1fef7cc312bbc",
-  "gas_sha": "7d7c856ca3f79186aaa802b0b41625e4f2c691d5855ceb106bf1fef7cc312bbc",
+  "py_sha": "2589712b0143fd3dbbfa9518c418f9734502f3a60b4a626876440dc8b929c215",
+  "gas_sha": "2589712b0143fd3dbbfa9518c418f9734502f3a60b4a626876440dc8b929c215",
   "parity": true
  },
  "spring_nodes": {

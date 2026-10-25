@@ -259,7 +259,7 @@ MUST.update({
     "capability_checklist": ["Tiers", "Zero Downtime", "RBAC", "Standard", "Pro", 'scope="row"'],
     "contributor_list": ["Maintainers", "Alex Rivera", "Lead", 'href="https://example.com/alex"', "42 contributions", "#112233", "Zoe"],
     "document_link": ["Technical specification", 'href="https://example.com/specs.docx"', "[DOCX]", "\U0001F4DD"],
-    "env_var_list": ["NODE_ENV", "Runtime target", "production", "required", "optional", "MAX", "16", "PLAIN"],
+    "env_var_list": ["NODE_ENV", "Runtime target", "production", "required", "optional", "MAX", "16", "PLAIN", ">Value<"],
     "faq_accordion": ["FAQ", "What is the SLA?", "<strong>99.95%</strong>", 'href="https://example.com/t"', "Old label", "old content"],
     "keyboard_shortcut": ["Ctrl", "Shift", "Open Command Palette", "(Windows)"],
     "table_of_contents": ["Guide", "Intro", 'href="#intro"', 'href="#setup-guide"', "Setup guide", "Child", "Plain"],
@@ -368,3 +368,64 @@ def test_take_away_card_aliases_and_a_malformed_gradient(core_js):
         assert "Alias quote" in html and "Alias author" in html
     for html in (_py_fresh(blocks[1]), gas[1], _py_fresh(blocks[2]), gas[2]):
         assert "linear-gradient(135deg,color-mix" in html
+
+
+def test_confidence_bar_reads_fractions_and_percentages(core_js):
+    cases = [(0.87, "87%"), (1, "100%"), (87, "87%"), (0, "0%"), (0.004, "0%")]
+    blocks = [{"type": "confidence_bar", "label": "L", "value": v} for v, _ in cases]
+    blocks.append({"type": "confidence_bar", "label": "L", "value": 0.5, "isPercent": True})
+    blocks.append({"type": "confidence_bar", "items": [{"label": "A", "value": 0.25}, {"label": "B", "value": 25}]})
+    gas = _gas_isolated(core_js, blocks)
+    for (v, want), b, g in zip(cases, blocks, gas):
+        for html in (_py_fresh(b), g):
+            assert ('aria-valuenow="%s"' % want[:-1]) in html and ">%s<" % want in html, (v, want)
+    for html in (_py_fresh(blocks[5]), gas[5]):
+        assert 'aria-valuenow="1"' in html and ">1%<" in html or 'aria-valuenow="1"' in html
+    for html in (_py_fresh(blocks[6]), gas[6]):
+        assert html.count('aria-valuenow="25"') == 2
+    for b, g in zip(blocks, gas):
+        assert _norm_uid(_py_fresh(b)) == _norm_uid(g)
+
+
+def test_env_var_list_value_column_only_when_a_row_has_a_value_and_no_invented_optional(core_js):
+    a = {"type": "env_var_list", "vars": [{"name": "FIREBASE_PROJECT", "value": "proj-1", "description": "d"}, {"name": "K", "value": "•••", "default": "dflt"}]}
+    b = {"type": "env_var_list", "variables": [{"key": "A", "default": "x", "required": True}, {"key": "B", "requirement_status": "optional"}, {"key": "C"}]}
+    gas = _gas_isolated(core_js, [a, b])
+    for blk, g in zip((a, b), gas):
+        assert _norm_uid(_py_fresh(blk)) == _norm_uid(g)
+    for html in (_py_fresh(a), gas[0]):
+        assert ">Value</th>" in html and "proj-1" in html and "dflt" in html and "optional" not in html
+    for html in (_py_fresh(b), gas[1]):
+        assert ">Value</th>" not in html and html.count("optional") == 1 and html.count(">required<") == 1
+
+
+def test_leaderboard_has_an_empty_state_and_no_invented_rows_or_units(core_js):
+    blocks = [{"type": "leaderboard_card"}, {"type": "leaderboard_card", "items": []}, {"type": "leaderboard_card", "items": [{"name": "A", "score": 5}]}]
+    gas = _gas_isolated(core_js, blocks)
+    for b, g in zip(blocks, gas):
+        assert _norm_uid(_py_fresh(b)) == _norm_uid(g)
+    for html in (_py_fresh(blocks[0]), gas[0], _py_fresh(blocks[1]), gas[1]):
+        assert "No scores yet" in html and "alice" not in html and "<ol" not in html
+    for html in (_py_fresh(blocks[2]), gas[2]):
+        assert ">5<" in html and "%" not in html.replace("width:", "").replace("%;", "")
+
+
+def test_status_marks_use_hidden_text_not_aria_label_on_spans_and_tab_nav_labels(core_js):
+    blocks = [{"type": "capability_checklist", "capability_names": ["A"], "items": [{"name": "X", "capabilities": [True]}, {"name": "Y", "capabilities": [False]}]},
+              {"type": "capability_checklist", "items": [{"name": "X", "status": "partial"}]},
+              {"type": "tab_bar", "title": "Sections", "tabs": [{"label": "One", "url": "https://example.com/1", "is_active": True}, {"label": "Two"}]},
+              {"type": "tab_bar", "tabs": ["Only"]}]
+    gas = _gas_isolated(core_js, blocks)
+    for b, g in zip(blocks, gas):
+        py = _py_fresh(b)
+        assert _norm_uid(py) == _norm_uid(g)
+        for html in (py, g):
+            assert "<span aria-label" not in html
+    for html in (_py_fresh(blocks[0]), gas[0]):
+        assert ">yes<" in html and ">no<" in html and 'aria-hidden="true">✓<' in html
+    for html in (_py_fresh(blocks[1]), gas[1]):
+        assert ">partial<" in html
+    for html in (_py_fresh(blocks[2]), gas[2]):
+        assert 'aria-label="Sections"' in html and html.count("cursor:pointer") == 1
+    for html in (_py_fresh(blocks[3]), gas[3]):
+        assert 'aria-label="Tabs"' in html and "cursor:pointer" not in html

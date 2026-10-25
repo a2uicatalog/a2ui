@@ -680,7 +680,7 @@ _RENDERERS['leaderboard_card'] = function(b) {
       rows = cohort
         .map(function(r) {
           var score = r.progress && r.progress['score:' + scoreKey];
-          return { name: (r.email || '?').split('@')[0], score: score != null ? parseInt(score) : null, unit: '%' };
+          return { name: (r.email || '?').split('@')[0], score: score != null ? parseInt(score) : null };
         })
         .filter(function(r) { return r.score !== null; })
         .sort(function(a, b) { return b.score - a.score; })
@@ -694,13 +694,7 @@ _RENDERERS['leaderboard_card'] = function(b) {
     } else if (Array.isArray(b.rows) && b.rows.length > 0) {
       rows = b.rows;
     } else {
-      rows = [
-        {name: 'alice', score: 94, unit: '%'},
-        {name: 'bob', score: 87, unit: '%'},
-        {name: 'carol', score: 81, unit: '%'},
-        {name: 'dave', score: 76, unit: '%'},
-        {name: 'eva', score: 72, unit: '%'}
-      ];
+      rows = [];
     }
   }
 
@@ -771,6 +765,7 @@ _RENDERERS['leaderboard_card'] = function(b) {
   return '<div style="font-family:system-ui,sans-serif;padding:18px;border-radius:12px;border-radius:var(--a2ui-radius,12px);'
     + 'background:#ffffff;background:var(--a2ui-surface,#ffffff);border:1px solid #e5e7eb;border:1px solid var(--a2ui-border,#e5e7eb);">'
     + '<div style="font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted,#5f6368);margin-bottom:14px;">🏆 ' + _esc(titleText) + '</div>'
-    + '<ol style="list-style:none;margin:0;padding:0;">' + itemsHtml.join('') + '</ol>'
+    + (itemsHtml.length ? '<ol style="list-style:none;margin:0;padding:0;">' + itemsHtml.join('') + '</ol>'
+      : '<p style="margin:0;font-size:0.85rem;color:var(--muted,#5f6368);">No scores yet</p>')
     + '</div>';
 };

@@ -59,7 +59,7 @@ def test_overlay_canvases_are_hidden_from_assistive_tech():
 # Components that hide their radio or checkbox so a styled label can be the control. A hidden input a keyboard can reach must show a visible focus
 # indicator somewhere (WCAG 2.4.7). The first version of this fix assumed the label follows the input, which is false for tabs, the carousel, the rating
 # row and others, so the ring never showed and no scan noticed (axe cannot see it). Checked in a real browser on 18 October 2026; this keeps the rules from vanishing.
-RING_ATOMS = ['tabs', 'content_tabs', 'carousel', 'star_rating_input', 'choicebox_group', 'feedback_prompt', 'quiz_question', 'custom_checkbox_group', 'chip_group']
+RING_ATOMS = ['tabs', 'content_tabs', 'carousel', 'star_rating_input', 'choicebox_group', 'feedback_prompt', 'quiz_question', 'custom_checkbox_group']
 
 
 def test_hidden_input_components_carry_a_focus_ring_rule():

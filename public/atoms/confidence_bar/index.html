@@ -198,7 +198,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 
   <div class="section">
     <div class="label">Fields</div>
-    <table><thead><tr><th>Field</th><th>Type</th><th>Required</th></tr></thead><tbody><tr><td>label</td><td>string. What is being measured, e.g. Positive Sentiment or Retrieval Relevance.</td><td>required</td></tr><tr><td>value</td><td>number. Confidence percentage 0-100.</td><td>required</td></tr><tr><td>items</td><td>array. List of {label, value} for multi-row display instead of single bar.</td><td>optional</td></tr><tr><td>color</td><td>string. Override bar fill colour. Auto-assigned green/amber/red by value band if omitted.</td><td>optional</td></tr></tbody></table>
+    <table><thead><tr><th>Field</th><th>Type</th><th>Required</th></tr></thead><tbody><tr><td>label</td><td>string. What is being measured, e.g. Positive Sentiment or Retrieval Relevance.</td><td>required</td></tr><tr><td>value</td><td>number. Confidence percentage 0-100; a value in (0, 1] is read as a fraction (0.87 = 87%).</td><td>required</td></tr><tr><td>items</td><td>array. List of {label, value} for multi-row display instead of single bar.</td><td>optional</td></tr><tr><td>color</td><td>string. Override bar fill colour. Auto-assigned green/amber/red by value band if omitted.</td><td>optional</td></tr></tbody></table>
   </div>
 
   <div class="section">

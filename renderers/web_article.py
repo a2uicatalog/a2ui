@@ -7835,7 +7835,7 @@ def _render_source_citation(b: dict) -> str:
 
         cards.append(
             f'<li style="display:flex;gap:10px;padding:8px 10px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);">'
-            f'<span aria-label="Source {_cv_esc(num)}" style="font-size:0.72rem;font-weight:700;color:#fff;background:#6b7280;border-radius:3px;padding:1px 5px;flex-shrink:0;align-self:flex-start;margin-top:1px;">[{_cv_esc(num)}]</span>'
+            f'<span style="font-size:0.72rem;font-weight:700;color:#fff;background:#6b7280;border-radius:3px;padding:1px 5px;flex-shrink:0;align-self:flex-start;margin-top:1px;"><span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;">Source </span>[{_cv_esc(num)}]</span>'
             f'<div style="flex:1;min-width:0;">{title_el}{excerpt_el}{meta_el}{publisher_el}{note_el}</div>'
             f'</li>'
         )
@@ -7921,9 +7921,11 @@ def _render_confidence_bar(b: dict) -> str:
 
     color_override = _safe_css(b.get('color'), '')
 
-    def _render_single(lbl: str, val_raw) -> str:
+    def _render_single(lbl: str, val_raw, is_pct=False) -> str:
         num = _num_loose(val_raw)
         val = 0.0 if num is None else num
+        if 0 < val <= 1 and not is_pct:
+            val = val * 100   # a fraction (old GAS payloads sent 0-1), as cloud-run-renderer/static/a2ui-atoms-live.v1.js does
         pct = max(0.0, min(100.0, val))
         rounded = math.floor(pct + 0.5)
 
@@ -7962,13 +7964,13 @@ def _render_confidence_bar(b: dict) -> str:
             if isinstance(item, dict):
                 i_lbl = _first_text(item.get('label'), item.get('name'))
                 i_val = item.get('value', 0)
-                bars.append(_render_single(i_lbl, i_val))
+                bars.append(_render_single(i_lbl, i_val, item.get('isPercent') is True or b.get('isPercent') is True))
             else:
-                bars.append(_render_single('', item))
+                bars.append(_render_single('', item, b.get('isPercent') is True))
         content = head_html + ''.join(bars)
     else:
         label_val = block_label if block_label else 'Confidence'
-        content = _render_single(label_val, b.get('value', 0))
+        content = _render_single(label_val, b.get('value', 0), b.get('isPercent') is True)
 
     return f'<div data-cb="node" data-key="{_ck(b.get("label"), "confidence_bar")}" style="margin:0.75rem 0;">{content}</div>'
 
@@ -14025,50 +14027,42 @@ _RENDERERS['empty_state'] = _render_empty_state
 def _render_env_var_list(b: dict) -> str:
     raw_vars = b.get('variables') if isinstance(b.get('variables'), list) else (b.get('vars') if isinstance(b.get('vars'), list) else [])
     vars_list = raw_vars[:100]
-
-    rows = []
+    dash = '<span style="color:var(--muted,#5f6368);">—</span>'
+    th = 'style="padding:8px 12px;text-align:left;font-size:0.75rem;color:var(--muted,#5f6368);text-transform:uppercase;"'
+    recs = []
     for v in vars_list:
         if isinstance(v, str):
-            name = v
-            desc = ''
-            default_val = ''
-            is_req = False
+            recs.append((v, '', '', '', ''))
         elif isinstance(v, dict):
             name = _first_text(v.get('key'), v.get('name'), v.get('key_name'), v.get('variable'))
-            desc = _text_loose(v.get('description'))
-            val = v.get('default') if v.get('default') is not None else v.get('value')
-            default_val = _text_loose(val)
-            req_field = v.get('required')
             status_field = _first_text(v.get('requirement_status'), v.get('status')).lower()
-            is_req = (req_field is True) or (status_field == 'required')
-        else:
-            continue
-
+            req = v.get('required')
+            state = 'required' if (req is True or status_field == 'required') else ('optional' if (req is False or status_field == 'optional') else '')
+            recs.append((name, _text_loose(v.get('description')), _text_loose(v.get('default')), _text_loose(v.get('value')), state))
+    has_val = any(r[3] for r in recs)
+    rows = ''
+    for name, desc, dflt, cur, state in recs:
         req_html = (
-            '<span style="color:#dc2626;font-size:0.72rem;font-weight:700;">required</span>'
-            if is_req else
-            '<span style="color:var(--muted,#5f6368);font-size:0.72rem;">optional</span>'
+            '<span style="color:#dc2626;font-size:0.72rem;font-weight:700;">required</span>' if state == 'required' else
+            '<span style="color:var(--muted,#5f6368);font-size:0.72rem;">optional</span>' if state == 'optional' else dash
         )
-        def_html = _cv_esc(default_val) if default_val else '<span style="color:var(--muted,#5f6368);">—</span>'
-
-        rows.append(
+        val_cell = (f'<td style="padding:8px 12px;font-family:monospace;font-size:0.78rem;color:var(--muted,#5f6368);border-bottom:1px solid #f3f4f6;">{_cv_esc(cur) if cur else dash}</td>') if has_val else ''
+        rows += (
             f'<tr>'
             f'<td style="padding:8px 12px;font-family:monospace;font-size:0.82rem;color:#7c3aed;white-space:nowrap;border-bottom:1px solid #f3f4f6;">{_cv_esc(name)}</td>'
             f'<td style="padding:8px 12px;font-size:0.82rem;color:#374151;border-bottom:1px solid #f3f4f6;">{_cv_esc(desc)}</td>'
-            f'<td style="padding:8px 12px;font-family:monospace;font-size:0.78rem;color:var(--muted,#5f6368);border-bottom:1px solid #f3f4f6;">{def_html}</td>'
+            f'<td style="padding:8px 12px;font-family:monospace;font-size:0.78rem;color:var(--muted,#5f6368);border-bottom:1px solid #f3f4f6;">{_cv_esc(dflt) if dflt else dash}</td>'
+            f'{val_cell}'
             f'<td style="padding:8px 12px;border-bottom:1px solid #f3f4f6;">{req_html}</td>'
             f'</tr>'
         )
-
+    val_th = f'<th scope="col" {th}>Value</th>' if has_val else ''
     return (
         f'<div style="border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;margin:1.2rem 0;overflow-x:auto;">'
         f'<table aria-label="Environment variables" style="width:100%;border-collapse:collapse;">'
         f'<thead><tr style="background:#f9fafb;">'
-        f'<th scope="col" style="padding:8px 12px;text-align:left;font-size:0.75rem;color:var(--muted,#5f6368);text-transform:uppercase;">Variable</th>'
-        f'<th scope="col" style="padding:8px 12px;text-align:left;font-size:0.75rem;color:var(--muted,#5f6368);text-transform:uppercase;">Description</th>'
-        f'<th scope="col" style="padding:8px 12px;text-align:left;font-size:0.75rem;color:var(--muted,#5f6368);text-transform:uppercase;">Default</th>'
-        f'<th scope="col" style="padding:8px 12px;text-align:left;font-size:0.75rem;color:var(--muted,#5f6368);text-transform:uppercase;">Required</th>'
-        f'</tr></thead><tbody>{"".join(rows)}</tbody></table></div>'
+        f'<th scope="col" {th}>Variable</th><th scope="col" {th}>Description</th><th scope="col" {th}>Default</th>{val_th}<th scope="col" {th}>Required</th>'
+        f'</tr></thead><tbody>{rows}</tbody></table></div>'
     )
 
 _RENDERERS['env_var_list'] = _render_env_var_list
@@ -15754,7 +15748,8 @@ def _render_tab_bar(b: dict) -> str:
         fw = '600' if is_active else '400'
         tc = accent if is_active else '#5f6368'
         bc = accent if is_active else 'transparent'
-        style = f'padding:8px 16px;font-size:0.85rem;font-weight:{fw};color:{tc};border-bottom:2px solid {bc};cursor:pointer;white-space:nowrap;text-decoration:none;'
+        cur = 'cursor:pointer;' if safe_link else ''
+        style = f'padding:8px 16px;font-size:0.85rem;font-weight:{fw};color:{tc};border-bottom:2px solid {bc};{cur}white-space:nowrap;text-decoration:none;'
 
         icon_attr = f' data-icon="{_cv_esc(icon)}"' if icon else ''
         curr_attr = ' aria-current="page"' if is_active else ''
@@ -15765,7 +15760,8 @@ def _render_tab_bar(b: dict) -> str:
         else:
             tab_items.append(f'<span style="{style}"{icon_attr}{curr_attr}>{escaped_label}</span>')
 
-    return f'<nav aria-label="Tabs" style="display:flex;border-bottom:1px solid #e5e7eb;overflow-x:auto;margin:1rem 0;">{"".join(tab_items)}</nav>'
+    nav_label = _first_text(b.get('title')) or 'Tabs'
+    return f'<nav aria-label="{_cv_esc(nav_label)}" style="display:flex;border-bottom:1px solid #e5e7eb;overflow-x:auto;margin:1rem 0;">{"".join(tab_items)}</nav>'
 
 _RENDERERS['tab_bar'] = _render_tab_bar
 
@@ -16169,11 +16165,11 @@ def _render_capability_checklist(b: dict) -> str:
             for i in range(len(cap_names)):
                 val = caps[i] if i < len(caps) else None
                 if val is True:
-                    cell_content = '<span aria-label="yes" style="color:#10b981;font-weight:700;">✓</span>'
+                    cell_content = '<span style="color:#10b981;font-weight:700;"><span aria-hidden="true">✓</span><span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;">yes</span></span>'
                 elif val is False:
-                    cell_content = '<span aria-label="no" style="color:#ef4444;font-weight:700;">✗</span>'
+                    cell_content = '<span style="color:#ef4444;font-weight:700;"><span aria-hidden="true">✗</span><span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;">no</span></span>'
                 else:
-                    cell_content = '<span aria-label="unknown" style="color:var(--muted,#9ca3af);">–</span>'
+                    cell_content = '<span style="color:var(--muted,#9ca3af);"><span aria-hidden="true">–</span><span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;">unknown</span></span>'
                 td_cells.append(f'<td style="padding:8px 12px;text-align:center;border-bottom:1px solid var(--border,#f3f4f6);">{cell_content}</td>')
 
             rows.append(
@@ -16220,7 +16216,7 @@ def _render_capability_checklist(b: dict) -> str:
             tier_html = f'<span style="font-size:0.72rem;color:var(--muted,#9ca3af);">{_cv_esc(tier_text)}</span>' if tier_text else ''
             lis.append(
                 f'<li data-cb="item" data-key="{key}" style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--border,#f3f4f6);font-size:0.875rem;">'
-                f'<span aria-label="{_cv_esc(status)}" style="width:20px;height:20px;border-radius:50%;background:{bg};color:{color};display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;flex-shrink:0;">{glyph}</span>'
+                f'<span style="width:20px;height:20px;border-radius:50%;background:{bg};color:{color};display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;flex-shrink:0;"><span aria-hidden="true">{glyph}</span><span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;">{_cv_esc(status)}</span></span>'
                 f'<span data-cb="label" data-key="{key}" style="flex:1;color:var(--text,#374151);">{_cv_esc(label)}</span>'
                 f'{tier_html}</li>'
             )
@@ -17896,8 +17892,9 @@ def _render_table_of_contents(b: dict) -> str:
 
     rows = ''.join(render_item(item) for item in headings)
 
+    toc_label = _first_text(b.get('title')) or 'Table of contents'
     return (
-        f'<nav aria-label="Table of contents" '
+        f'<nav aria-label="{_cv_esc(toc_label)}" '
         f'style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);'
         f'padding:14px 18px;margin:1.5rem 0;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);">'
         f'<div style="font-weight:700;margin-bottom:8px;font-size:0.9rem;">'
@@ -23003,13 +23000,7 @@ def _render_leaderboard_card(b: dict) -> str:
     if raw_items is not None and len(raw_items) > 0:
         rows = raw_items
     else:
-        rows = [
-            {'name': 'alice', 'score': 94, 'unit': '%'},
-            {'name': 'bob', 'score': 87, 'unit': '%'},
-            {'name': 'carol', 'score': 81, 'unit': '%'},
-            {'name': 'dave', 'score': 76, 'unit': '%'},
-            {'name': 'eva', 'score': 72, 'unit': '%'}
-        ]
+        rows = []
 
     sliced_rows = rows[:limit]
     top_score = None
@@ -23070,8 +23061,9 @@ def _render_leaderboard_card(b: dict) -> str:
         f'<div style="font-family:system-ui,sans-serif;padding:18px;border-radius:12px;border-radius:var(--a2ui-radius,12px);'
         f'background:#ffffff;background:var(--a2ui-surface,#ffffff);border:1px solid #e5e7eb;border:1px solid var(--a2ui-border,#e5e7eb);">'
         f'<div style="font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted,#5f6368);margin-bottom:14px;">🏆 {_cv_esc(title_text)}</div>'
-        f'<ol style="list-style:none;margin:0;padding:0;">{"".join(items_html)}</ol>'
-        f'</div>'
+        + (f'<ol style="list-style:none;margin:0;padding:0;">{"".join(items_html)}</ol>' if items_html else
+           '<p style="margin:0;font-size:0.85rem;color:var(--muted,#5f6368);">No scores yet</p>')
+        + '</div>'
     )
 _RENDERERS["leaderboard_card"] = _render_leaderboard_card
 

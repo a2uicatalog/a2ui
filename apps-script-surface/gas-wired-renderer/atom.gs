@@ -2346,7 +2346,8 @@ _RENDERERS['table_of_contents'] = function(b) {
     return renderItem(item, 0);
   }).join('');
 
-  return '<nav aria-label="Table of contents" ' +
+  var tocLabel = _firstText(b.title) || 'Table of contents';
+  return '<nav aria-label="' + _esc(tocLabel) + '" ' +
     'style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);' +
     'padding:14px 18px;margin:1.5rem 0;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);">' +
     '<div style="font-weight:700;margin-bottom:8px;font-size:0.9rem;">' +
@@ -3022,47 +3023,37 @@ _RENDERERS['http_request_block'] = function(b) {
 _RENDERERS['env_var_list'] = function(b) {
   var rawVars = Array.isArray(b.variables) ? b.variables : (Array.isArray(b.vars) ? b.vars : []);
   var varsList = rawVars.slice(0, 100);
-
-  var rows = varsList.map(function(v) {
-    var name = '';
-    var desc = '';
-    var defaultVal = '';
-    var isReq = false;
-
+  var dash = '<span style="color:var(--muted,#5f6368);">—</span>';
+  var th = 'style="padding:8px 12px;text-align:left;font-size:0.75rem;color:var(--muted,#5f6368);text-transform:uppercase;"';
+  var recs = [];
+  varsList.forEach(function(v) {
     if (typeof v === 'string') {
-      name = v;
-    } else if (v && typeof v === 'object' && !Array.isArray(v)) {
-      name = _firstText(v.key, v.name, v.key_name, v.variable);
-      desc = _textLoose(v.description);
-      var val = v.default !== undefined ? v.default : v.value;
-      defaultVal = _textLoose(val);
-      var reqField = v.required;
+      recs.push([v, '', '', '', '']);
+    } else if (v !== null && typeof v === 'object' && !Array.isArray(v)) {
+      var name = _firstText(v.key, v.name, v.key_name, v.variable);
       var statusField = _firstText(v.requirement_status, v.status).toLowerCase();
-      isReq = (reqField === true) || (statusField === 'required');
-    } else {
-      return '';
+      var state = (v.required === true || statusField === 'required') ? 'required' : ((v.required === false || statusField === 'optional') ? 'optional' : '');
+      recs.push([name, _textLoose(v.description), _textLoose(v.default), _textLoose(v.value), state]);
     }
-
-    var reqHtml = isReq
-      ? '<span style="color:#dc2626;font-size:0.72rem;font-weight:700;">required</span>'
-      : '<span style="color:var(--muted,#5f6368);font-size:0.72rem;">optional</span>';
-    var defHtml = defaultVal ? _esc(defaultVal) : '<span style="color:var(--muted,#5f6368);">—</span>';
-
+  });
+  var hasVal = recs.some(function(r) { return !!r[3]; });
+  var rows = recs.map(function(r) {
+    var reqHtml = r[4] === 'required' ? '<span style="color:#dc2626;font-size:0.72rem;font-weight:700;">required</span>'
+      : (r[4] === 'optional' ? '<span style="color:var(--muted,#5f6368);font-size:0.72rem;">optional</span>' : dash);
+    var valCell = hasVal ? '<td style="padding:8px 12px;font-family:monospace;font-size:0.78rem;color:var(--muted,#5f6368);border-bottom:1px solid #f3f4f6;">' + (r[3] ? _esc(r[3]) : dash) + '</td>' : '';
     return '<tr>' +
-      '<td style="padding:8px 12px;font-family:monospace;font-size:0.82rem;color:#7c3aed;white-space:nowrap;border-bottom:1px solid #f3f4f6;">' + _esc(name) + '</td>' +
-      '<td style="padding:8px 12px;font-size:0.82rem;color:#374151;border-bottom:1px solid #f3f4f6;">' + _esc(desc) + '</td>' +
-      '<td style="padding:8px 12px;font-family:monospace;font-size:0.78rem;color:var(--muted,#5f6368);border-bottom:1px solid #f3f4f6;">' + defHtml + '</td>' +
+      '<td style="padding:8px 12px;font-family:monospace;font-size:0.82rem;color:#7c3aed;white-space:nowrap;border-bottom:1px solid #f3f4f6;">' + _esc(r[0]) + '</td>' +
+      '<td style="padding:8px 12px;font-size:0.82rem;color:#374151;border-bottom:1px solid #f3f4f6;">' + _esc(r[1]) + '</td>' +
+      '<td style="padding:8px 12px;font-family:monospace;font-size:0.78rem;color:var(--muted,#5f6368);border-bottom:1px solid #f3f4f6;">' + (r[2] ? _esc(r[2]) : dash) + '</td>' +
+      valCell +
       '<td style="padding:8px 12px;border-bottom:1px solid #f3f4f6;">' + reqHtml + '</td>' +
       '</tr>';
   }).join('');
-
+  var valTh = hasVal ? '<th scope="col" ' + th + '>Value</th>' : '';
   return '<div style="border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;margin:1.2rem 0;overflow-x:auto;">' +
     '<table aria-label="Environment variables" style="width:100%;border-collapse:collapse;">' +
     '<thead><tr style="background:#f9fafb;">' +
-    '<th scope="col" style="padding:8px 12px;text-align:left;font-size:0.75rem;color:var(--muted,#5f6368);text-transform:uppercase;">Variable</th>' +
-    '<th scope="col" style="padding:8px 12px;text-align:left;font-size:0.75rem;color:var(--muted,#5f6368);text-transform:uppercase;">Description</th>' +
-    '<th scope="col" style="padding:8px 12px;text-align:left;font-size:0.75rem;color:var(--muted,#5f6368);text-transform:uppercase;">Default</th>' +
-    '<th scope="col" style="padding:8px 12px;text-align:left;font-size:0.75rem;color:var(--muted,#5f6368);text-transform:uppercase;">Required</th>' +
+    '<th scope="col" ' + th + '>Variable</th><th scope="col" ' + th + '>Description</th><th scope="col" ' + th + '>Default</th>' + valTh + '<th scope="col" ' + th + '>Required</th>' +
     '</tr></thead><tbody>' + rows + '</tbody></table></div>';
 };
 
@@ -3163,7 +3154,8 @@ _RENDERERS['tab_bar'] = function(b) {
     var fw = isActive ? '600' : '400';
     var tc = isActive ? accent : '#5f6368';
     var bc = isActive ? accent : 'transparent';
-    var style = 'padding:8px 16px;font-size:0.85rem;font-weight:' + fw + ';color:' + tc + ';border-bottom:2px solid ' + bc + ';cursor:pointer;white-space:nowrap;text-decoration:none;';
+    var cur = safeLink ? 'cursor:pointer;' : '';
+    var style = 'padding:8px 16px;font-size:0.85rem;font-weight:' + fw + ';color:' + tc + ';border-bottom:2px solid ' + bc + ';' + cur + 'white-space:nowrap;text-decoration:none;';
 
     var iconAttr = icon ? ' data-icon="' + _esc(icon) + '"' : '';
     var currAttr = isActive ? ' aria-current="page"' : '';
@@ -3176,7 +3168,8 @@ _RENDERERS['tab_bar'] = function(b) {
     }
   }
 
-  return '<nav aria-label="Tabs" style="display:flex;border-bottom:1px solid #e5e7eb;overflow-x:auto;margin:1rem 0;">' + tabItems.join('') + '</nav>';
+  var navLabel = _firstText(b.title) || 'Tabs';
+  return '<nav aria-label="' + _esc(navLabel) + '" style="display:flex;border-bottom:1px solid #e5e7eb;overflow-x:auto;margin:1rem 0;">' + tabItems.join('') + '</nav>';
 };
 
 _RENDERERS['anchor_list'] = function(b) {

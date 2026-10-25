@@ -11,7 +11,7 @@ web, google-meet-stage, email, pdf, google-apps-script-web, mcp-apps, android, s
 | Field | Type |
 |---|---|
 | label | string. What is being measured, e.g. Positive Sentiment or Retrieval Relevance. |
-| value | number. Confidence percentage 0-100. |
+| value | number. Confidence percentage 0-100; a value in (0, 1] is read as a fraction (0.87 = 87%). |
 | items | array (optional). List of {label, value} for multi-row display instead of single bar. |
 | color | string (optional). Override bar fill colour. Auto-assigned green/amber/red by value band if omitted. |
 

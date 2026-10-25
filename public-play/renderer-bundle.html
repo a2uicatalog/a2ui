@@ -2940,7 +2940,8 @@ _esc(text) + '</a>' + childHtml + '</li>';
 var rows = headings.map(function(item) {
 return renderItem(item, 0);
 }).join('');
-return '<nav aria-label="Table of contents" ' +
+var tocLabel = _firstText(b.title) || 'Table of contents';
+return '<nav aria-label="' + _esc(tocLabel) + '" ' +
 'style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);' +
 'padding:14px 18px;margin:1.5rem 0;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);">' +
 '<div style="font-weight:700;margin-bottom:8px;font-size:0.9rem;">' +
@@ -3546,42 +3547,37 @@ bodyHtml + '</div>';
 _RENDERERS['env_var_list'] = function(b) {
 var rawVars = Array.isArray(b.variables) ? b.variables : (Array.isArray(b.vars) ? b.vars : []);
 var varsList = rawVars.slice(0, 100);
-var rows = varsList.map(function(v) {
-var name = '';
-var desc = '';
-var defaultVal = '';
-var isReq = false;
+var dash = '<span style="color:var(--muted,#5f6368);">—</span>';
+var th = 'style="padding:8px 12px;text-align:left;font-size:0.75rem;color:var(--muted,#5f6368);text-transform:uppercase;"';
+var recs = [];
+varsList.forEach(function(v) {
 if (typeof v === 'string') {
-name = v;
-} else if (v && typeof v === 'object' && !Array.isArray(v)) {
-name = _firstText(v.key, v.name, v.key_name, v.variable);
-desc = _textLoose(v.description);
-var val = v.default !== undefined ? v.default : v.value;
-defaultVal = _textLoose(val);
-var reqField = v.required;
+recs.push([v, '', '', '', '']);
+} else if (v !== null && typeof v === 'object' && !Array.isArray(v)) {
+var name = _firstText(v.key, v.name, v.key_name, v.variable);
 var statusField = _firstText(v.requirement_status, v.status).toLowerCase();
-isReq = (reqField === true) || (statusField === 'required');
-} else {
-return '';
+var state = (v.required === true || statusField === 'required') ? 'required' : ((v.required === false || statusField === 'optional') ? 'optional' : '');
+recs.push([name, _textLoose(v.description), _textLoose(v.default), _textLoose(v.value), state]);
 }
-var reqHtml = isReq
-? '<span style="color:#dc2626;font-size:0.72rem;font-weight:700;">required</span>'
-: '<span style="color:var(--muted,#5f6368);font-size:0.72rem;">optional</span>';
-var defHtml = defaultVal ? _esc(defaultVal) : '<span style="color:var(--muted,#5f6368);">—</span>';
+});
+var hasVal = recs.some(function(r) { return !!r[3]; });
+var rows = recs.map(function(r) {
+var reqHtml = r[4] === 'required' ? '<span style="color:#dc2626;font-size:0.72rem;font-weight:700;">required</span>'
+: (r[4] === 'optional' ? '<span style="color:var(--muted,#5f6368);font-size:0.72rem;">optional</span>' : dash);
+var valCell = hasVal ? '<td style="padding:8px 12px;font-family:monospace;font-size:0.78rem;color:var(--muted,#5f6368);border-bottom:1px solid #f3f4f6;">' + (r[3] ? _esc(r[3]) : dash) + '</td>' : '';
 return '<tr>' +
-'<td style="padding:8px 12px;font-family:monospace;font-size:0.82rem;color:#7c3aed;white-space:nowrap;border-bottom:1px solid #f3f4f6;">' + _esc(name) + '</td>' +
-'<td style="padding:8px 12px;font-size:0.82rem;color:#374151;border-bottom:1px solid #f3f4f6;">' + _esc(desc) + '</td>' +
-'<td style="padding:8px 12px;font-family:monospace;font-size:0.78rem;color:var(--muted,#5f6368);border-bottom:1px solid #f3f4f6;">' + defHtml + '</td>' +
+'<td style="padding:8px 12px;font-family:monospace;font-size:0.82rem;color:#7c3aed;white-space:nowrap;border-bottom:1px solid #f3f4f6;">' + _esc(r[0]) + '</td>' +
+'<td style="padding:8px 12px;font-size:0.82rem;color:#374151;border-bottom:1px solid #f3f4f6;">' + _esc(r[1]) + '</td>' +
+'<td style="padding:8px 12px;font-family:monospace;font-size:0.78rem;color:var(--muted,#5f6368);border-bottom:1px solid #f3f4f6;">' + (r[2] ? _esc(r[2]) : dash) + '</td>' +
+valCell +
 '<td style="padding:8px 12px;border-bottom:1px solid #f3f4f6;">' + reqHtml + '</td>' +
 '</tr>';
 }).join('');
+var valTh = hasVal ? '<th scope="col" ' + th + '>Value</th>' : '';
 return '<div style="border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;margin:1.2rem 0;overflow-x:auto;">' +
 '<table aria-label="Environment variables" style="width:100%;border-collapse:collapse;">' +
 '<thead><tr style="background:#f9fafb;">' +
-'<th scope="col" style="padding:8px 12px;text-align:left;font-size:0.75rem;color:var(--muted,#5f6368);text-transform:uppercase;">Variable</th>' +
-'<th scope="col" style="padding:8px 12px;text-align:left;font-size:0.75rem;color:var(--muted,#5f6368);text-transform:uppercase;">Description</th>' +
-'<th scope="col" style="padding:8px 12px;text-align:left;font-size:0.75rem;color:var(--muted,#5f6368);text-transform:uppercase;">Default</th>' +
-'<th scope="col" style="padding:8px 12px;text-align:left;font-size:0.75rem;color:var(--muted,#5f6368);text-transform:uppercase;">Required</th>' +
+'<th scope="col" ' + th + '>Variable</th><th scope="col" ' + th + '>Description</th><th scope="col" ' + th + '>Default</th>' + valTh + '<th scope="col" ' + th + '>Required</th>' +
 '</tr></thead><tbody>' + rows + '</tbody></table></div>';
 };
 _RENDERERS['keyboard_shortcut'] = function(b) {
@@ -3669,7 +3665,8 @@ var safeLink = _safe_href(url, ['https', 'mailto']);
 var fw = isActive ? '600' : '400';
 var tc = isActive ? accent : '#5f6368';
 var bc = isActive ? accent : 'transparent';
-var style = 'padding:8px 16px;font-size:0.85rem;font-weight:' + fw + ';color:' + tc + ';border-bottom:2px solid ' + bc + ';cursor:pointer;white-space:nowrap;text-decoration:none;';
+var cur = safeLink ? 'cursor:pointer;' : '';
+var style = 'padding:8px 16px;font-size:0.85rem;font-weight:' + fw + ';color:' + tc + ';border-bottom:2px solid ' + bc + ';' + cur + 'white-space:nowrap;text-decoration:none;';
 var iconAttr = icon ? ' data-icon="' + _esc(icon) + '"' : '';
 var currAttr = isActive ? ' aria-current="page"' : '';
 var escapedLabel = _esc(label);
@@ -3679,7 +3676,8 @@ tabItems.push('<a href="' + _esc(safeLink) + '" style="' + style + '"' + iconAtt
 tabItems.push('<span style="' + style + '"' + iconAttr + currAttr + '>' + escapedLabel + '</span>');
 }
 }
-return '<nav aria-label="Tabs" style="display:flex;border-bottom:1px solid #e5e7eb;overflow-x:auto;margin:1rem 0;">' + tabItems.join('') + '</nav>';
+var navLabel = _firstText(b.title) || 'Tabs';
+return '<nav aria-label="' + _esc(navLabel) + '" style="display:flex;border-bottom:1px solid #e5e7eb;overflow-x:auto;margin:1rem 0;">' + tabItems.join('') + '</nav>';
 };
 _RENDERERS['anchor_list'] = function(b) {
 var items = b.items || b.links || [];
@@ -17085,7 +17083,7 @@ var publisherEl = publisher ? '<div style="font-size:0.7rem;color:var(--muted,#5
 var noteEl = note ? '<div style="font-size:0.75rem;color:#4b5563;margin-top:4px;background:#f3f4f6;padding:4px 8px;border-radius:4px;">' + _esc(note) + '</div>' : '';
 cards.push(
 '<li style="display:flex;gap:10px;padding:8px 10px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);">' +
-'<span aria-label="Source ' + _esc(num) + '" style="font-size:0.72rem;font-weight:700;color:#fff;background:#6b7280;border-radius:3px;padding:1px 5px;flex-shrink:0;align-self:flex-start;margin-top:1px;">[' + _esc(num) + ']</span>' +
+'<span style="font-size:0.72rem;font-weight:700;color:#fff;background:#6b7280;border-radius:3px;padding:1px 5px;flex-shrink:0;align-self:flex-start;margin-top:1px;"><span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;">Source </span>[' + _esc(num) + ']</span>' +
 '<div style="flex:1;min-width:0;">' + titleEl + excerptEl + metaEl + publisherEl + noteEl + '</div>' +
 '</li>'
 );
@@ -17122,9 +17120,10 @@ return '<div style="margin:1rem 0;overflow-x:auto;">'
 };
 _RENDERERS['confidence_bar'] = function(b) {
 var colorOverride = _safe_css(b.color, '');
-function renderSingle(lbl, valRaw) {
+function renderSingle(lbl, valRaw, isPct) {
 var num = _numLoose(valRaw);
 var val = num === null ? 0 : num;
+if (val > 0 && val <= 1 && !isPct) val = val * 100;
 var pct = Math.max(0, Math.min(100, val));
 var rounded = Math.floor(pct + 0.5);
 var barColor = '';
@@ -17164,15 +17163,15 @@ var item = rawItems[i];
 if (item !== null && typeof item === 'object' && !Array.isArray(item)) {
 var iLbl = _firstText(item.label, item.name);
 var iVal = item.value !== undefined ? item.value : 0;
-bars.push(renderSingle(iLbl, iVal));
+bars.push(renderSingle(iLbl, iVal, item.isPercent === true || b.isPercent === true));
 } else {
-bars.push(renderSingle('', item));
+bars.push(renderSingle('', item, b.isPercent === true));
 }
 }
 content = headHtml + bars.join('');
 } else {
 var labelVal = blockLabel ? blockLabel : 'Confidence';
-content = renderSingle(labelVal, b.value !== undefined ? b.value : 0);
+content = renderSingle(labelVal, b.value !== undefined ? b.value : 0, b.isPercent === true);
 }
 return '<div data-cb="node" data-key="' + _ckey(b.label, 'confidence_bar') + '" style="margin:0.75rem 0;">' + content + '</div>';
 };
@@ -30040,7 +30039,7 @@ var cohort = a2uiCohortRead(courseId) || [];
 rows = cohort
 .map(function(r) {
 var score = r.progress && r.progress['score:' + scoreKey];
-return { name: (r.email || '?').split('@')[0], score: score != null ? parseInt(score) : null, unit: '%' };
+return { name: (r.email || '?').split('@')[0], score: score != null ? parseInt(score) : null };
 })
 .filter(function(r) { return r.score !== null; })
 .sort(function(a, b) { return b.score - a.score; })
@@ -30053,13 +30052,7 @@ rows = b.items;
 } else if (Array.isArray(b.rows) && b.rows.length > 0) {
 rows = b.rows;
 } else {
-rows = [
-{name: 'alice', score: 94, unit: '%'},
-{name: 'bob', score: 87, unit: '%'},
-{name: 'carol', score: 81, unit: '%'},
-{name: 'dave', score: 76, unit: '%'},
-{name: 'eva', score: 72, unit: '%'}
-];
+rows = [];
 }
 }
 var slicedRows = rows.slice(0, limit);
@@ -30120,7 +30113,8 @@ itemsHtml.push(
 return '<div style="font-family:system-ui,sans-serif;padding:18px;border-radius:12px;border-radius:var(--a2ui-radius,12px);'
 + 'background:#ffffff;background:var(--a2ui-surface,#ffffff);border:1px solid #e5e7eb;border:1px solid var(--a2ui-border,#e5e7eb);">'
 + '<div style="font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted,#5f6368);margin-bottom:14px;">🏆 ' + _esc(titleText) + '</div>'
-+ '<ol style="list-style:none;margin:0;padding:0;">' + itemsHtml.join('') + '</ol>'
++ (itemsHtml.length ? '<ol style="list-style:none;margin:0;padding:0;">' + itemsHtml.join('') + '</ol>'
+: '<p style="margin:0;font-size:0.85rem;color:var(--muted,#5f6368);">No scores yet</p>')
 + '</div>';
 };
 
@@ -37816,11 +37810,11 @@ var tdCells = capNames.map(function(c, i) {
 var val = i < caps.length ? caps[i] : null;
 var cellContent = '';
 if (val === true) {
-cellContent = '<span aria-label="yes" style="color:#10b981;font-weight:700;">✓</span>';
+cellContent = '<span style="color:#10b981;font-weight:700;"><span aria-hidden="true">✓</span><span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;">yes</span></span>';
 } else if (val === false) {
-cellContent = '<span aria-label="no" style="color:#ef4444;font-weight:700;">✗</span>';
+cellContent = '<span style="color:#ef4444;font-weight:700;"><span aria-hidden="true">✗</span><span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;">no</span></span>';
 } else {
-cellContent = '<span aria-label="unknown" style="color:var(--muted,#9ca3af);">–</span>';
+cellContent = '<span style="color:var(--muted,#9ca3af);"><span aria-hidden="true">–</span><span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;">unknown</span></span>';
 }
 return '<td style="padding:8px 12px;text-align:center;border-bottom:1px solid var(--border,#f3f4f6);">' + cellContent + '</td>';
 }).join('');
@@ -37866,7 +37860,7 @@ var key = _esc(label);
 var cfg = statusMap[status] || statusMap.available;
 var tierHtml = tierText ? '<span style="font-size:0.72rem;color:var(--muted,#9ca3af);">' + _esc(tierText) + '</span>' : '';
 return '<li data-cb="item" data-key="' + key + '" style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--border,#f3f4f6);font-size:0.875rem;">' +
-'<span aria-label="' + _esc(status) + '" style="width:20px;height:20px;border-radius:50%;background:' + cfg[2] + ';color:' + cfg[1] + ';display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;flex-shrink:0;">' + cfg[0] + '</span>' +
+'<span style="width:20px;height:20px;border-radius:50%;background:' + cfg[2] + ';color:' + cfg[1] + ';display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;flex-shrink:0;"><span aria-hidden="true">' + cfg[0] + '</span><span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;">' + _esc(status) + '</span></span>' +
 '<span data-cb="label" data-key="' + key + '" style="flex:1;color:var(--text,#374151);">' + _esc(label) + '</span>' +
 tierHtml + '</li>';
 }).join('');

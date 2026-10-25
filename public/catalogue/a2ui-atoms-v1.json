@@ -10663,7 +10663,7 @@
        "description": "string. What is being measured, e.g. Positive Sentiment or Retrieval Relevance."
       },
       "value": {
-       "description": "number. Confidence percentage 0-100.",
+       "description": "number. Confidence percentage 0-100; a value in (0, 1] is read as a fraction (0.87 = 87%).",
        "type": "number"
       },
       "items": {

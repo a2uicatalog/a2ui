@@ -2080,7 +2080,7 @@ _RENDERERS['source_citation'] = function(b) {
 
     cards.push(
       '<li style="display:flex;gap:10px;padding:8px 10px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);">' +
-      '<span aria-label="Source ' + _esc(num) + '" style="font-size:0.72rem;font-weight:700;color:#fff;background:#6b7280;border-radius:3px;padding:1px 5px;flex-shrink:0;align-self:flex-start;margin-top:1px;">[' + _esc(num) + ']</span>' +
+      '<span style="font-size:0.72rem;font-weight:700;color:#fff;background:#6b7280;border-radius:3px;padding:1px 5px;flex-shrink:0;align-self:flex-start;margin-top:1px;"><span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;">Source </span>[' + _esc(num) + ']</span>' +
       '<div style="flex:1;min-width:0;">' + titleEl + excerptEl + metaEl + publisherEl + noteEl + '</div>' +
       '</li>'
     );
@@ -2121,9 +2121,10 @@ _RENDERERS['llm_comparison_table'] = function(b) {
 _RENDERERS['confidence_bar'] = function(b) {
   var colorOverride = _safe_css(b.color, '');
 
-  function renderSingle(lbl, valRaw) {
+  function renderSingle(lbl, valRaw, isPct) {
     var num = _numLoose(valRaw);
     var val = num === null ? 0 : num;
+    if (val > 0 && val <= 1 && !isPct) val = val * 100;
     var pct = Math.max(0, Math.min(100, val));
     var rounded = Math.floor(pct + 0.5);
 
@@ -2167,15 +2168,15 @@ _RENDERERS['confidence_bar'] = function(b) {
       if (item !== null && typeof item === 'object' && !Array.isArray(item)) {
         var iLbl = _firstText(item.label, item.name);
         var iVal = item.value !== undefined ? item.value : 0;
-        bars.push(renderSingle(iLbl, iVal));
+        bars.push(renderSingle(iLbl, iVal, item.isPercent === true || b.isPercent === true));
       } else {
-        bars.push(renderSingle('', item));
+        bars.push(renderSingle('', item, b.isPercent === true));
       }
     }
     content = headHtml + bars.join('');
   } else {
     var labelVal = blockLabel ? blockLabel : 'Confidence';
-    content = renderSingle(labelVal, b.value !== undefined ? b.value : 0);
+    content = renderSingle(labelVal, b.value !== undefined ? b.value : 0, b.isPercent === true);
   }
 
   return '<div data-cb="node" data-key="' + _ckey(b.label, 'confidence_bar') + '" style="margin:0.75rem 0;">' + content + '</div>';

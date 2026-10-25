@@ -336,11 +336,11 @@ _RENDERERS['capability_checklist'] = function(b) {
         var val = i < caps.length ? caps[i] : null;
         var cellContent = '';
         if (val === true) {
-          cellContent = '<span aria-label="yes" style="color:#10b981;font-weight:700;">✓</span>';
+          cellContent = '<span style="color:#10b981;font-weight:700;"><span aria-hidden="true">✓</span><span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;">yes</span></span>';
         } else if (val === false) {
-          cellContent = '<span aria-label="no" style="color:#ef4444;font-weight:700;">✗</span>';
+          cellContent = '<span style="color:#ef4444;font-weight:700;"><span aria-hidden="true">✗</span><span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;">no</span></span>';
         } else {
-          cellContent = '<span aria-label="unknown" style="color:var(--muted,#9ca3af);">–</span>';
+          cellContent = '<span style="color:var(--muted,#9ca3af);"><span aria-hidden="true">–</span><span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;">unknown</span></span>';
         }
         return '<td style="padding:8px 12px;text-align:center;border-bottom:1px solid var(--border,#f3f4f6);">' + cellContent + '</td>';
       }).join('');
@@ -390,7 +390,7 @@ _RENDERERS['capability_checklist'] = function(b) {
       var tierHtml = tierText ? '<span style="font-size:0.72rem;color:var(--muted,#9ca3af);">' + _esc(tierText) + '</span>' : '';
 
       return '<li data-cb="item" data-key="' + key + '" style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--border,#f3f4f6);font-size:0.875rem;">' +
-        '<span aria-label="' + _esc(status) + '" style="width:20px;height:20px;border-radius:50%;background:' + cfg[2] + ';color:' + cfg[1] + ';display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;flex-shrink:0;">' + cfg[0] + '</span>' +
+        '<span style="width:20px;height:20px;border-radius:50%;background:' + cfg[2] + ';color:' + cfg[1] + ';display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;flex-shrink:0;"><span aria-hidden="true">' + cfg[0] + '</span><span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;">' + _esc(status) + '</span></span>' +
         '<span data-cb="label" data-key="' + key + '" style="flex:1;color:var(--text,#374151);">' + _esc(label) + '</span>' +
         tierHtml + '</li>';
     }).join('');
