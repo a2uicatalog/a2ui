@@ -459,9 +459,6 @@
  "motion_lightning": [
   "version"
  ],
- "motion_map3d": [
-  "version"
- ],
  "motion_reveal": [
   "align",
   "color",

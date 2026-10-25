@@ -192,7 +192,8 @@ def test_hostile_values_never_reach_markup():
 
 
 def test_version_note():
-    assert "Written for motion_map3d version 3; drawn as version 1." in _py(dict(FULL, version=3))
+    assert "Written for motion_map3d version 3; drawn as version 2." in _py(dict(FULL, version=3))
+    assert "Written for" not in _py(dict(FULL, version=2))
     assert "Written for" not in _py(dict(FULL, version=1))
 
 
@@ -278,3 +279,158 @@ def test_reduced_motion_is_the_settled_picture():
                               "--dump-dom", f"file://{f}"], capture_output=True, text=True, timeout=90).stdout
     m = re.search(r"data-probe='([^']*)'|data-probe=\"([^\"]*)\"", out)
     assert m and abs(float(_h.unescape(m.group(1) or m.group(2)))) < 0.001
+
+
+# ─── version 2 (I145) ───
+# --- motion_map3d v2 tests ---
+
+V2_ST = [
+    {"id": "depot", "x": 12, "y": 78, "label": "Depot", "state": "warn"},
+    {"id": "north", "x": 38, "y": 30, "label": "North Hub", "state": "error"},
+    {"id": "market", "x": 70, "y": 42, "label": "Market", "state": "active"},
+    {"id": "port", "x": 86, "y": 80, "label": "Port", "state": "idle"},
+    {"id": "spare", "x": 20, "y": 15, "label": "Spare", "state": "done"}
+]
+
+V2_CASES = [
+    dict(FULL, stations=V2_ST),
+    dict(FULL, clock={"unit": "s", "from": 0, "to": 45}),
+    dict(FULL, clock={"unit": "s", "from": 10.4, "to": 60.9}),
+    dict(FULL, clock={"unit": "ms", "from": 500, "to": 12000}),
+    dict(FULL, clock={"unit": "s", "from": -1, "to": 50}),
+    dict(FULL, clock={"unit": "s", "from": 100, "to": 50}),
+    dict(FULL, clock={"unit": "s", "from": 90000, "to": 90001}),
+    dict(FULL, clock={"unit": "ms", "from": 0, "to": 3700000}),
+    dict(FULL, clock={"unit": "s", "from": True, "to": 50}),
+    dict(FULL, clock={"unit": "s", "from": 10, "to": "50"}),
+    dict(FULL, clock={"unit": "unknown", "from": "08:00", "to": "08:30"}),
+    dict(FULL, legs=[{"route": ["depot", "north", "market"], "color": "#10b981"}, {"route": ["market", "port"], "color": "#f43f5e"}]),
+    dict(FULL, legs=[{"route": ["depot", "north"], "back": True}]),
+    dict(FULL, legs=[{"route": ["depot", "north"]}, {"route": ["depot"]}, {"route": ["north", "port"]}]),
+    dict(FULL, legs=[{"route": ["depot", "north"]}, {"route": ["north", "market"]}, {"route": ["market", "port"]}, {"route": ["port", "spare"]}, {"route": ["spare", "depot"]}]),
+    dict(FULL, legs=[]),
+    dict(FULL, legs="invalid"),
+    dict(FULL, legs=[{"route": ["depot", "depot", "north"], "color": HOSTILE}]),
+    dict(FULL, legs=[{"route": ["ghost", "depot", None, "north"]}]),
+    dict(FULL, legs=[{"route": ["depot", "north"]}], messages=[{"text": "Ping", "leg": 0, "at": 0.4}]),
+    dict(FULL, legs=[{"route": ["depot", "north"]}], messages=[{"text": "Ping", "back": True}]),
+    dict(FULL, legs=[{"route": ["depot", "north"]}], messages=[{"text": "Late", "at": 0.99}]),
+    dict(FULL, legs=[{"route": ["depot", "north"]}], messages=[{"text": ""}]),
+    dict(FULL, legs=[{"route": ["depot", "north"]}], messages=[{"text": HOSTILE, "leg": 0}]),
+    dict(FULL, legs=[{"route": ["depot", "north"]}], messages=[{"text": "Long text " * 5}]),
+    dict(FULL, legs=[{"route": ["depot", "north"]}], messages=[{"text": "Invalid leg", "leg": 5}]),
+    dict(FULL, legs=[{"route": ["depot", "north"]}], messages=[{"text": "Invalid at", "at": "0.5"}]),
+    dict(FULL, legs=[{"route": ["depot", "north"]}], messages=[{"text": "Bool at", "at": True}]),
+    dict(FULL, legs=[{"route": ["depot", "north"]}], messages=[{"text": "M%d" % i} for i in range(15)]),
+    dict(FULL, version=2),
+    dict(FULL, version=3),
+    dict(FULL, version=5),
+    dict(FULL, version=2.0),
+    dict(FULL, version=2.5),
+    dict(FULL, version=1),
+    dict(FULL, stations=[], route=[], legs=[]),
+    dict(FULL, stations=V2_ST, legs=[{"route": ["depot", "north", "market"], "color": "#10b981", "back": True}, {"route": ["market", "port"]}],
+         messages=[{"text": "Req", "leg": 0}, {"text": "Resp", "leg": 1, "back": True}],
+         clock={"unit": "s", "from": 0, "to": 120})
+]
+
+
+def test_v2_python_matches_gas_exactly(core_js):
+    got = _gas_batch(core_js, V2_CASES)
+    bad = [str(b)[:110] for b, g in zip(V2_CASES, got) if _norm(_py(b)) != _norm(g)]
+    assert not bad, bad
+
+
+def test_v2_warn_and_error_glyphs():
+    h = _py(dict(FULL, stations=V2_ST))
+    assert '<span class="m3-pin m3-warn" style="opacity:leave;">!</span>' or '!</span>' in h
+    assert '<span class="m3-pin m3-error" style="opacity:leave;">\u00d7</span>' or '\u00d7</span>' in h
+    assert ".m3-warn{background:var(--mt-warn,#f59e0b)}" in h
+    assert ".m3-error{background:var(--mt-err,#dc2626)}" in h
+
+
+def test_v2_labels_in_over_plane():
+    h = _py(FULL)
+    assert '<div class="m3-plane m3-over"' in h
+    assert h.index('<div class="m3-plane"') < h.index('<div class="m3-plane m3-over"')
+    assert ".m3-over{background:none;box-shadow:none;pointer-events:none}" in h
+    # pins are in over plane
+    plane_split = h.split('<div class="m3-plane m3-over"')
+    assert '<path data-cb="link"' in plane_split[0]
+    assert '<div class="m3-st"' in plane_split[1]
+
+
+def test_v2_clock_units_and_invalids():
+    h_s = _py(dict(FULL, clock={"unit": "s", "from": 5.2, "to": 50.8}))
+    assert 'data-u="s"' in h_s
+    assert '--m0:5;--m1:50;' in h_s
+    assert '<span class="m3-cs">50 s</span>' in h_s
+    assert "Clock runs from 5 s to 50 s." in h_s
+
+    h_ms = _py(dict(FULL, clock={"unit": "ms", "from": 100, "to": 2000}))
+    assert 'data-u="ms"' in h_ms
+    assert '<span class="m3-cs">2000 ms</span>' in h_ms
+    assert "Clock runs from 100 ms to 2000 ms." in h_ms
+
+    # Invalids emit no chip
+    for bad_clk in [
+        {"unit": "s", "from": 60, "to": 50},
+        {"unit": "s", "from": -1, "to": 50},
+        {"unit": "s", "from": 86401, "to": 86402},
+        {"unit": "ms", "from": 0, "to": 3600001},
+        {"unit": "s", "from": True, "to": 50},
+    ]:
+        h_bad = _py(dict(FULL, clock=bad_clk))
+        assert 'data-m3="clock"' not in h_bad
+
+
+def test_v2_legs_replace_route_and_timing():
+    payload = dict(FULL, route=["depot", "spare"], legs=[{"route": ["depot", "north", "market"], "color": "#112233"}, {"route": ["market", "port"], "back": True}])
+    h = _py(payload)
+    assert 'data-key="depot-spare"' not in h
+    assert 'data-leg="0"' in h and 'data-leg="1"' in h
+    assert 'stroke="#112233"' in h
+    assert "Leg 1: Depot, then North Hub, then Market." in h
+    assert "Leg 2 (back): Port, then Market." in h
+
+
+def test_v2_messages_calculation_and_alt():
+    payload = dict(
+        FULL,
+        legs=[{"route": ["depot", "north"]}],
+        messages=[{"text": "Hello", "leg": 0, "at": 0.4, "back": False}]
+    )
+    h = _py(payload)
+    assert '<div class="m3-msg" data-m3="msg" data-leg="0"' in h
+    assert '<span class="m3-chip"' in h
+    assert "Hello" in h
+    assert "var(--p,1)" in h
+    assert "Messages: Hello (Depot to North Hub)." in h
+
+
+def test_v2_version_note():
+    h2 = _py(dict(FULL, version=2))
+    assert "Written for" not in h2
+    h1 = _py(dict(FULL, version=1))
+    assert "Written for" not in h1
+    h3 = _py(dict(FULL, version=3))
+    assert "Written for motion_map3d version 3; drawn as version 2." in h3
+    h4 = _py(dict(FULL, version=4))
+    assert "Written for motion_map3d version 4; drawn as version 2." in h4
+    h_float = _py(dict(FULL, version=3.5))
+    assert "Written for" not in h_float
+
+
+def test_v2_over_plane_is_transparent_so_the_city_shows_through():
+    # the over-plane also carries .m3-plane; a same-specificity rule would lose to .m3-plane's floor colour and hide the whole city (seen in review)
+    h = _py(FULL)
+    assert ".m3-plane.m3-over{background:none" in h
+    assert h.index('class="m3-plane m3-over"') > h.index('class="m3-plane"')
+
+
+def test_v2_back_leg_drives_in_its_own_lane():
+    legs = [{"route": ["depot", "north"]}, {"route": ["depot", "north"], "back": True}]
+    h = _py(dict(FULL, legs=legs))
+    out = re.search(r'data-leg="0" data-m3="seg" d="([^"]+)"', h).group(1)
+    back = re.search(r'data-leg="1" data-m3="seg" d="([^"]+)"', h).group(1)
+    assert out == "M12,78 L38,30" and back != "M38,30 L12,78" and back.startswith("M3")

@@ -45277,17 +45277,24 @@ def _render_motion_shatter(b: dict) -> str:
 _RENDERERS['motion_shatter'] = _render_motion_shatter
 
 
-# ─── motion_map3d (I72, owner's reference video): a tilted 3D city map; camera descends, the route draws on station by station, a clock counts ───
+# ─── motion_map3d v2 (I72, owner's reference video): a tilted 3D city map; camera descends, legs draw on station by station, messages travel, a clock counts ───
 # Twin of the motion_map3d block in atoms_motion_candidates.gs. CSS 3D only (perspective + rotateX/rotateZ on a plane, boxes made of three faces), no WebGL,
 # no map tiles, no fetch. Every moving value is a pure function of var(--p, 1): the camera takes p 0 to 0.3, the route draws p 0.3 to 0.92 segment by segment
-# (stroke-dashoffset on pathLength 1), the stations go idle > active > their own state as the route reaches and leaves them, the clock counts over the same
-# window. p = 1 (no timeline, no script, reduced motion, print) is the settled picture. The scene is aria-hidden; a visually hidden text lists route, stations
-# and clock. The city is seeded (Park-Miller LCG, never a random call), with the cells under the route and the stations left clear. Only sqrt, + - * / and floor
-# are used, so both twins make the same bytes.
+# (stroke-dashoffset on pathLength 1), the stations go idle > active > their own state as the route reaches and leaves them, messages travel along legs, and
+# the clock counts over the same window. p = 1 (no timeline, no script, reduced motion, print) is the settled picture. The scene is aria-hidden; a visually
+# hidden text lists route/legs, stations, messages and clock. Two planes keep station pins/messages above city blocks. Only sqrt, + - * / and floor are used,
+# so both twins make the same bytes.
 _MAP3D_P0, _MAP3D_P1, _MAP3D_U = 0.3, 0.92, 0.62
 _MAP3D_ID = re.compile(r'[A-Za-z][A-Za-z0-9_]{0,23}')
 _MAP3D_CLK = re.compile(r'[ ]*([0-9]{1,2}):([0-9]{2})[ ]*')
-_MAP3D_STATES = ('idle', 'active', 'done')
+_MAP3D_STATES = ('idle', 'active', 'done', 'warn', 'error')
+
+
+def _map3d_version_note(b):
+    v = _if_g(b, 'version')
+    if isinstance(v, (int, float)) and not isinstance(v, bool) and v == v and abs(v) != _HG_INF and v == math.floor(v) and v > 2:
+        return _hg_note('Written for motion_map3d version ' + _if_numstr(v) + '; drawn as version 2.')
+    return ''
 
 
 def _map3d_n(v, dflt, lo, hi):
@@ -45344,51 +45351,192 @@ def _render_motion_map3d(b: dict) -> str:
         bad += len(raw) - 24
     if bad:
         notes.append(str(bad) + (' station was' if bad == 1 else ' stations were') + ' left out (duplicate id or more than 24).')
-    # route: known ids only, no immediate repeats, at most 32
-    rraw = b.get('route') if isinstance(b.get('route'), list) else []
-    route, unk = [], 0
-    for rid in rraw[:32]:
-        if isinstance(rid, str) and rid in byid:
-            if not route or route[-1] != rid:
-                route.append(rid)
-        else:
-            unk += 1
-    if len(rraw) > 32:
-        unk += len(rraw) - 32
-    if unk:
-        notes.append(str(unk) + (' route entry was' if unk == 1 else ' route entries were') + ' not a known station and ' + ('was' if unk == 1 else 'were') + ' skipped.')
     if not sts:
         notes.append('No stations to show.')
-    # route geometry and timing
-    n = len(route) - 1 if len(route) > 1 else 0
+
+    # legs / route processing
+    raw_legs = b.get('legs') if isinstance(b.get('legs'), list) else None
+    valid_legs = []
+    dropped_legs = 0
+    legs_mode = False
+
+    def clean_route(rraw):
+        rt, u = [], 0
+        r_slice = rraw[:32] if isinstance(rraw, list) else []
+        for rid in r_slice:
+            if isinstance(rid, str) and rid in byid:
+                if not rt or rt[-1] != rid:
+                    rt.append(rid)
+            else:
+                u += 1
+        if isinstance(rraw, list) and len(rraw) > 32:
+            u += len(rraw) - 32
+        return rt, u
+
+    if raw_legs is not None:
+        for idx, leg_item in enumerate(raw_legs):
+            if idx >= 4:
+                dropped_legs += 1
+                continue
+            leg_obj = _m3_obj(leg_item)
+            l_route_raw = leg_obj.get('route') if isinstance(leg_obj.get('route'), list) else []
+            l_rt, l_unk = clean_route(l_route_raw)
+            if l_unk:
+                notes.append(str(l_unk) + (' route entry was' if l_unk == 1 else ' route entries were') + ' not a known station and ' + ('was' if l_unk == 1 else 'were') + ' skipped.')
+            is_back = leg_obj.get('back') is True
+            if is_back:
+                l_rt.reverse()
+            if len(l_rt) < 2:
+                dropped_legs += 1
+            else:
+                l_col = _ff_hex(leg_obj.get('color'), '') or acc
+                valid_legs.append({'route': l_rt, 'color': l_col, 'back': is_back})
+        if dropped_legs:
+            notes.append(str(dropped_legs) + (' leg was' if dropped_legs == 1 else ' legs were') + ' left out (fewer than two known stations).')
+
+    if valid_legs:
+        legs_mode = True
+        legs = valid_legs
+    else:
+        # fallback to top-level route
+        rraw = b.get('route') if isinstance(b.get('route'), list) else []
+        rt, unk = clean_route(rraw)
+        if unk:
+            notes.append(str(unk) + (' route entry was' if unk == 1 else ' route entries were') + ' not a known station and ' + ('was' if unk == 1 else 'were') + ' skipped.')
+        legs = [{'route': rt, 'color': acc, 'back': False}] if len(rt) >= 2 else []
+
+    # Concatenate all legs' segments in order
     segs = []
-    for i in range(n):
-        a, c = byid[route[i]], byid[route[i + 1]]
-        segs.append({'from': route[i], 'to': route[i + 1], 'ax': a['x'], 'ay': a['y'], 'bx': c['x'], 'by': c['y'],
-                     'len': math.sqrt((c['x'] - a['x']) * (c['x'] - a['x']) + (c['y'] - a['y']) * (c['y'] - a['y']))})
+    for leg_idx, leg in enumerate(legs):
+        l_rt = leg['route']
+        for i in range(len(l_rt) - 1):
+            a, c = byid[l_rt[i]], byid[l_rt[i + 1]]
+            segs.append({
+                'leg': leg_idx,
+                'from': l_rt[i],
+                'to': l_rt[i + 1],
+                'ax': a['x'],
+                'ay': a['y'],
+                'bx': c['x'],
+                'by': c['y'],
+                'len': math.sqrt((c['x'] - a['x']) * (c['x'] - a['x']) + (c['y'] - a['y']) * (c['y'] - a['y'])),
+                'color': leg['color']
+            })
+
     total = 0.0
     for s in segs:
         total += s['len']
+    n_segs = len(segs)
     W = _MAP3D_P1 - _MAP3D_P0
-    dw = min(0.04, W * 0.3 / max(1, n - 1)) if n else 0.04
-    draw = W - dw * max(0, n - 1)
+    dw = min(0.04, W * 0.3 / max(1, n_segs - 1)) if n_segs else 0.04
+    draw = W - dw * max(0, n_segs - 1)
     cum = 0.0
     seen = {}
     for i, s in enumerate(segs):
-        share = (s['len'] / total) if total > 0 else 1.0 / n
+        share = (s['len'] / total) if total > 0 else 1.0 / n_segs
         s['s'] = _MAP3D_P0 + dw * i + draw * cum
         s['w'] = draw * share
         cum += share
         k = s['from'] + '-' + s['to']
         seen[k] = seen.get(k, 0) + 1
         s['key'] = k if seen[k] == 1 else k + '-' + str(seen[k])
-    for j, rid in enumerate(route):
-        st = byid[rid]
-        r = (_MAP3D_P0 - dw) if j == 0 else segs[j - 1]['s'] + segs[j - 1]['w']
-        lv = segs[j]['s'] if j < n else r + 0.05
-        if not st['on']:
-            st['on'], st['r'] = True, r
-        st['l'] = lv
+
+    # Leg drawing start and total drawing time
+    seg_idx_by_leg = {}
+    for i, s in enumerate(segs):
+        l_idx = s['leg']
+        if l_idx not in seg_idx_by_leg:
+            seg_idx_by_leg[l_idx] = []
+        seg_idx_by_leg[l_idx].append(i)
+
+    leg_draw_info = []
+    for leg_idx, leg in enumerate(legs):
+        s_indices = seg_idx_by_leg.get(leg_idx, [])
+        if s_indices:
+            first_s = segs[s_indices[0]]
+            last_s = segs[s_indices[-1]]
+            leg_start = first_s['s']
+            leg_w = (last_s['s'] + last_s['w']) - first_s['s']
+            if leg_w < 0.05:
+                leg_w = 0.05
+        else:
+            leg_start = _MAP3D_P0
+            leg_w = 0.05
+        leg_draw_info.append({'start': leg_start, 'w': leg_w})
+
+    # Station reach/leave timing
+    for leg_idx, leg in enumerate(legs):
+        l_rt = leg['route']
+        s_indices = seg_idx_by_leg.get(leg_idx, [])
+        for j, rid in enumerate(l_rt):
+            st = byid[rid]
+            if leg_idx == 0 and j == 0:
+                r = _MAP3D_P0 - dw
+            elif j == 0:
+                r = segs[s_indices[0]]['s']
+            else:
+                prev_seg = segs[s_indices[j - 1]]
+                r = prev_seg['s'] + prev_seg['w']
+
+            if j < len(l_rt) - 1:
+                cur_seg = segs[s_indices[j]]
+                lv = cur_seg['s']
+            else:
+                lv = r + 0.05
+
+            if not st['on']:
+                st['on'], st['r'] = True, r
+            st['l'] = lv
+
+    # messages
+    msg_raw = b.get('messages') if isinstance(b.get('messages'), list) else []
+    messages = []
+    dropped_msgs = 0
+    for idx, m_item in enumerate(msg_raw):
+        if len(messages) >= 12:
+            dropped_msgs += 1
+            continue
+        m_obj = _m3_obj(m_item)
+        m_leg_val = m_obj.get('leg')
+        if m_leg_val is None:
+            m_leg = 0
+        elif isinstance(m_leg_val, (int, float)) and not isinstance(m_leg_val, bool) and math.isfinite(m_leg_val) and int(m_leg_val) == m_leg_val:
+            m_leg = int(m_leg_val)
+        else:
+            dropped_msgs += 1
+            continue
+
+        if m_leg < 0 or m_leg >= len(legs):
+            dropped_msgs += 1
+            continue
+
+        m_text = _cv_str(m_obj.get('text'), 24)
+        if not m_text:
+            dropped_msgs += 1
+            continue
+
+        at_val = m_obj.get('at')
+        if isinstance(at_val, (int, float)) and not isinstance(at_val, bool) and math.isfinite(at_val) and 0.0 <= at_val <= 1.0:
+            a = float(at_val)
+        else:
+            a = leg_draw_info[m_leg]['start']
+
+        w = leg_draw_info[m_leg]['w']
+        if a + w > 1.0:
+            a = max(0.0, 1.0 - w)
+
+        m_back = m_obj.get('back') is True
+        messages.append({
+            'leg': m_leg,
+            'text': m_text,
+            'a': a,
+            'w': w,
+            'back': m_back
+        })
+
+    if dropped_msgs:
+        notes.append(str(dropped_msgs) + (' message was' if dropped_msgs == 1 else ' messages were') + ' left out.')
+
     # the city
     blocks = []
     braw = b.get('blocks') if isinstance(b.get('blocks'), list) else []
@@ -45428,14 +45576,20 @@ def _render_motion_map3d(b: dict) -> str:
     for (x, y, w, h, ht) in blocks:
         faces += ('<div class="m3-b" style="left:' + _map3d_f(x) + '%;top:' + _map3d_f(y) + '%;width:' + _map3d_f(w) + '%;height:' + _map3d_f(h) + '%;--hh:' + _map3d_f(ht * _MAP3D_U) + 'cqw;">'
                   '<i class="m3-t"></i><i class="m3-s"></i><i class="m3-e"></i></div>')
+
     # route svg
     paths = ''
     for s in segs:
-        paths += ('<path data-cb="link" data-key="' + _cv_esc(s['key']) + '" data-m3="seg" d="M' + _map3d_f(s['ax'], 1) + ',' + _map3d_f(s['ay'], 1) + ' L' + _map3d_f(s['bx'], 1) + ',' + _map3d_f(s['by'], 1)
-                  + '" pathLength="1" fill="none" stroke="' + acc + '" stroke-width="1.4" stroke-linejoin="round" style="stroke-dasharray:1 1;stroke-dashoffset:calc(1 - clamp(0,calc((var(--p,1) - '
+        # a back leg drives in its own lane: shifted 1.2 map units to its right, so a reply never hides the request it answers
+        ox = oy = 0.0
+        if legs[s['leg']]['back'] and s['len'] > 0:
+            ox, oy = -(s['by'] - s['ay']) / s['len'] * 1.2, (s['bx'] - s['ax']) / s['len'] * 1.2
+        paths += ('<path data-cb="link" data-key="' + _cv_esc(s['key']) + '" data-leg="' + str(s['leg']) + '" data-m3="seg" d="M' + _map3d_f(s['ax'] + ox, 1) + ',' + _map3d_f(s['ay'] + oy, 1) + ' L' + _map3d_f(s['bx'] + ox, 1) + ',' + _map3d_f(s['by'] + oy, 1)
+                  + '" pathLength="1" fill="none" stroke="' + s['color'] + '" stroke-width="1.4" stroke-linejoin="round" style="stroke-dasharray:1 1;stroke-dashoffset:calc(1 - clamp(0,calc((var(--p,1) - '
                   + _map3d_f(s['s'], 3) + ')/' + _map3d_f(max(s['w'], 0.001), 3) + '),1));"></path>')
     svg = ('<svg class="m3-route" aria-hidden="true" focusable="false" viewBox="0 0 100 100" preserveAspectRatio="none">' + paths + '</svg>') if paths else ''
-    # stations
+
+    # stations (pins)
     pins = ''
     for st in sts:
         reach = leave = None
@@ -45457,25 +45611,123 @@ def _render_motion_map3d(b: dict) -> str:
                 op = leave
             else:
                 continue
-            lay += '<span class="m3-pin m3-' + name + '" style="opacity:' + op + ';"></span>'
+            glyph = '!' if name == 'warn' else ('\u00d7' if name == 'error' else '')
+            lay += '<span class="m3-pin m3-' + name + '" style="opacity:' + op + ';">' + glyph + '</span>'
         pins += ('<div class="m3-st" data-cb="node" data-key="' + _cv_esc(st['id']) + '" data-m3="station" data-state="' + st['state'] + '" style="left:' + _map3d_f(st['x'], 1) + '%;top:' + _map3d_f(st['y'], 1) + '%;">'
                  '<div class="m3-bb">' + lay + '<span class="m3-lab" data-cb="label" data-key="' + _cv_esc(st['id']) + '">' + _cv_esc(st['label']) + '</span></div></div>')
+
+    # message markup
+    msg_html = ''
+    for m in messages:
+        leg = legs[m['leg']]
+        l_rt = list(reversed(leg['route'])) if m['back'] else list(leg['route'])
+        pts = [byid[rid] for rid in l_rt]
+        # Calculate cumulative lengths
+        seg_lens = []
+        tot_l = 0.0
+        for pi in range(len(pts) - 1):
+            dx = pts[pi + 1]['x'] - pts[pi]['x']
+            dy = pts[pi + 1]['y'] - pts[pi]['y']
+            slen = math.sqrt(dx * dx + dy * dy)
+            seg_lens.append(slen)
+            tot_l += slen
+
+        cum_f = [0.0]
+        cur_l = 0.0
+        for slen in seg_lens:
+            cur_l += slen
+            cum_f.append(cur_l / tot_l if tot_l > 0 else 1.0)
+        cum_f[-1] = 1.0
+
+        q_str = 'clamp(0,calc((var(--p,1) - ' + _map3d_f(m['a'], 3) + ')/' + _map3d_f(m['w'], 3) + '),1)'
+
+        x_terms = [_map3d_f(pts[0]['x'], 1)]
+        y_terms = [_map3d_f(pts[0]['y'], 1)]
+        for pi in range(len(pts) - 1):
+            if seg_lens[pi] <= 0:
+                continue
+            c_prev = cum_f[pi]
+            c_next = cum_f[pi + 1]
+            c_span = c_next - c_prev
+            if c_span <= 0:
+                continue
+            dx = pts[pi + 1]['x'] - pts[pi]['x']
+            dy = pts[pi + 1]['y'] - pts[pi]['y']
+            term_sub = 'clamp(0,calc((' + q_str + ' - ' + _map3d_f(c_prev, 3) + ')/' + _map3d_f(c_span, 3) + '),1)'
+            if dx != 0:
+                x_terms.append(_map3d_f(dx, 1) + '*' + term_sub)
+            if dy != 0:
+                y_terms.append(_map3d_f(dy, 1) + '*' + term_sub)
+
+        left_calc = 'calc((' + ' + '.join(x_terms) + ')*1%)'
+        top_calc = 'calc((' + ' + '.join(y_terms) + ')*1%)'
+        op_calc = 'calc(clamp(0,calc((var(--p,1) - ' + _map3d_f(m['a'], 3) + ')*40),1)*(1 - clamp(0,calc((var(--p,1) - ' + _map3d_f(m['a'] + m['w'], 3) + ')*40),1)))'
+        col = leg['color']
+        msg_html += ('<div class="m3-msg" data-m3="msg" data-leg="' + str(m['leg']) + '" style="left:' + left_calc + ';top:' + top_calc + ';opacity:' + op_calc + ';"><div class="m3-bb"><span class="m3-chip" style="background:'
+                     + col + ';">' + _cv_esc(m['text']) + '</span></div></div>')
+
+    # over plane
+    over_content = pins + msg_html
+    over_plane = ('<div class="m3-plane m3-over" style="transform:rotateX(calc(var(--tilt)*var(--e)*1deg)) rotateZ(calc(var(--rz)*var(--e)*1deg)) scale(var(--zm));">'
+                  + over_content + '</div>') if over_content else ''
+
     # clock
     ck = _m3_obj(b.get('clock'))
-    c0, c1 = _map3d_clock(ck.get('from')), _map3d_clock(ck.get('to'))
+    c_unit = ck.get('unit') if isinstance(ck.get('unit'), str) else 'hhmm'
     chip = ''
-    if c0 is not None and c1 is not None:
-        if c1 < c0:
-            c1 += 1440
-        chip = ('<div class="m3-clk" data-m3="clock" aria-hidden="true" style="--m0:' + str(c0) + ';--m1:' + str(c1) + ';"><span class="m3-cs">' + _map3d_hhmm(c1) + '</span><span class="m3-cn"></span></div>')
+    clock_alt = ''
+    if c_unit in ('s', 'ms'):
+        raw_c0 = ck.get('from')
+        raw_c1 = ck.get('to')
+        c0_ok = isinstance(raw_c0, (int, float)) and not isinstance(raw_c0, bool) and math.isfinite(raw_c0) and raw_c0 >= 0
+        c1_ok = isinstance(raw_c1, (int, float)) and not isinstance(raw_c1, bool) and math.isfinite(raw_c1) and raw_c1 >= 0
+        cap = 86400 if c_unit == 's' else 3600000
+        if c0_ok and c1_ok:
+            fc0 = int(math.floor(raw_c0))
+            fc1 = int(math.floor(raw_c1))
+            if fc0 <= cap and fc1 <= cap and fc1 >= fc0:
+                chip = ('<div class="m3-clk m3-clk-u" data-m3="clock" data-u="' + c_unit + '" aria-hidden="true" style="--m0:' + str(fc0) + ';--m1:' + str(fc1) + ';"><span class="m3-cs">'
+                        + str(fc1) + ' ' + c_unit + '</span><span class="m3-cn"></span></div>')
+                clock_alt = 'Clock runs from ' + str(fc0) + ' ' + c_unit + ' to ' + str(fc1) + ' ' + c_unit + '.'
+    else:
+        c0, c1 = _map3d_clock(ck.get('from')), _map3d_clock(ck.get('to'))
+        if c0 is not None and c1 is not None:
+            if c1 < c0:
+                c1 += 1440
+            chip = ('<div class="m3-clk" data-m3="clock" aria-hidden="true" style="--m0:' + str(c0) + ';--m1:' + str(c1) + ';"><span class="m3-cs">' + _map3d_hhmm(c1) + '</span><span class="m3-cn"></span></div>')
+            clock_alt = 'Clock runs from ' + _map3d_hhmm(c0) + ' to ' + _map3d_hhmm(c1) + '.'
+
     # text alternative
     alt = []
-    if route:
-        alt.append('Route: ' + ', then '.join(byid[r]['label'] for r in route) + '.')
+    if legs:
+        if len(legs) == 1 and not legs_mode:
+            alt.append('Route: ' + ', then '.join(byid[r]['label'] for r in legs[0]['route']) + '.')
+        elif len(legs) == 1:
+            back_str = ' (back)' if legs[0]['back'] else ''
+            alt.append('Leg 1' + back_str + ': ' + ', then '.join(byid[r]['label'] for r in legs[0]['route']) + '.')
+        else:
+            leg_sentences = []
+            for idx, leg in enumerate(legs):
+                back_str = ' (back)' if leg['back'] else ''
+                leg_sentences.append('Leg ' + str(idx + 1) + back_str + ': ' + ', then '.join(byid[r]['label'] for r in leg['route']) + '.')
+            alt.append(' '.join(leg_sentences))
+
     if sts:
         alt.append('Stations: ' + '; '.join(s['label'] + ' (' + s['state'] + ')' for s in sts) + '.')
-    if chip:
-        alt.append('Clock runs from ' + _map3d_hhmm(c0) + ' to ' + _map3d_hhmm(c1) + '.')
+
+    if messages:
+        m_parts = []
+        for m in messages:
+            leg = legs[m['leg']]
+            l_rt = list(reversed(leg['route'])) if m['back'] else list(leg['route'])
+            start_lab = byid[l_rt[0]]['label']
+            end_lab = byid[l_rt[-1]]['label']
+            m_parts.append(m['text'] + ' (' + start_lab + ' to ' + end_lab + ')')
+        alt.append('Messages: ' + '; '.join(m_parts) + '.')
+
+    if clock_alt:
+        alt.append(clock_alt)
+
     altx = '<div data-m3="alt" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);">' + _cv_esc(' '.join(alt) or 'City map.') + '</div>'
     css = ('<style>@property --m3m{syntax:"<integer>";initial-value:0;inherits:false}@property --m3h{syntax:"<integer>";initial-value:0;inherits:false}@property --m3n{syntax:"<integer>";initial-value:0;inherits:false}'
            '.m3-root{position:relative;display:block;box-sizing:border-box;width:100%;max-width:100%;aspect-ratio:16/9;overflow:hidden;container-type:inline-size;isolation:isolate;border-radius:12px;'
@@ -45483,6 +45735,7 @@ def _render_motion_map3d(b: dict) -> str:
            '.m3-stage{position:absolute;inset:0;perspective:90cqw;perspective-origin:50% 50%}'
            '.m3-plane{position:absolute;left:19cqw;top:-3cqw;width:62cqw;height:62cqw;transform-style:preserve-3d;'
            'background:color-mix(in srgb,var(--text,#0f172a) 11%,var(--surface,#f8fafc));box-shadow:0 0 0 0.3cqw var(--border,#cbd5e1)}'
+           '.m3-plane.m3-over{background:none;box-shadow:none;pointer-events:none}'
            '.m3-b{position:absolute;transform-style:preserve-3d}.m3-b i{position:absolute;display:block}'
            '.m3-t{inset:0;transform:translateZ(var(--hh));background:color-mix(in srgb,var(--text,#0f172a) 4%,var(--surface,#ffffff))}'
            '.m3-s{left:0;top:100%;width:100%;height:var(--hh);transform-origin:50% 0;transform:rotateX(90deg);background:color-mix(in srgb,var(--text,#0f172a) 26%,var(--surface,#ffffff))}'
@@ -45490,24 +45743,29 @@ def _render_motion_map3d(b: dict) -> str:
            '.m3-route{position:absolute;inset:0;width:100%;height:100%;overflow:visible;transform:translateZ(0.15cqw);pointer-events:none}'
            '.m3-st{position:absolute;width:0;height:0;transform-style:preserve-3d}'
            '.m3-bb{position:absolute;left:0;top:0;transform-style:preserve-3d;transform:rotateZ(calc(var(--rz)*var(--e)*-1deg)) rotateX(calc(var(--tilt)*var(--e)*-1deg)) scale(calc(1/var(--zm))) translateY(-1.5cqw)}'
-           '.m3-pin{position:absolute;left:-1.1cqw;top:-1.1cqw;width:2.2cqw;height:2.2cqw;box-sizing:border-box;border-radius:50%;border:0.45cqw solid var(--surface,#fff)}'
+           '.m3-pin{position:absolute;left:-1.1cqw;top:-1.1cqw;width:2.2cqw;height:2.2cqw;box-sizing:border-box;border-radius:50%;border:0.45cqw solid var(--surface,#fff);'
+           'display:flex;align-items:center;justify-content:center;color:#fff;font:800 1.5cqw/1 ui-sans-serif,system-ui,sans-serif}'
            '.m3-idle{background:var(--muted,#64748b)}.m3-active{background:' + acc + ';box-shadow:0 0 0 0.5cqw color-mix(in srgb,' + acc + ' 35%,transparent)}.m3-done{background:var(--mt-ok,#22c55e)}'
+           '.m3-warn{background:var(--mt-warn,#f59e0b)}.m3-error{background:var(--mt-err,#dc2626)}'
            '.m3-lab{position:absolute;left:1.6cqw;top:-1.1cqw;white-space:nowrap;font:600 max(10px,1.7cqw)/1.2 ui-sans-serif,system-ui,sans-serif;color:var(--text,#0f172a);'
            'background:color-mix(in srgb,var(--surface,#ffffff) 88%,transparent);padding:0.15cqw 0.7cqw;border-radius:0.6cqw}'
+           '.m3-msg{position:absolute;width:0;height:0;transform-style:preserve-3d}'
+           '.m3-chip{position:absolute;left:-0.2cqw;top:-4.4cqw;white-space:nowrap;font:700 max(10px,1.5cqw)/1.2 ui-monospace,SFMono-Regular,Menlo,monospace;color:#fff;padding:0.3cqw 0.8cqw;border-radius:0.6cqw;box-shadow:0 1px 4px rgba(0,0,0,0.3)}'
            '.m3-clk{position:absolute;left:2.4cqw;top:2.4cqw;z-index:2;font:700 max(13px,2.6cqw)/1 ui-monospace,SFMono-Regular,Menlo,monospace;font-variant-numeric:tabular-nums;color:var(--text,#0f172a);'
            'background:var(--surface,#ffffff);border:1px solid var(--border,#cbd5e1);border-radius:999px;padding:0.8cqw 1.8cqw;box-shadow:0 2px 8px rgba(0,0,0,0.15)}'
            '.m3-cn{display:none}'
            '@supports (width:round(down,1px,1px)){.m3-cs{display:none}.m3-cn{display:inline;--m3m:calc(var(--m0) + (var(--m1) - var(--m0))*clamp(0,calc((var(--p,1) - 0.3)/0.62),1));'
            '--m3h:mod(round(down,calc(var(--m3m)/60),1),24);--m3n:mod(var(--m3m),60);counter-reset:m3h var(--m3h) m3n var(--m3n)}'
-           '.m3-cn::before{content:counter(m3h,decimal-leading-zero) ":" counter(m3n,decimal-leading-zero)}}'
+           '.m3-clk:not(.m3-clk-u) .m3-cn::before{content:counter(m3h,decimal-leading-zero) ":" counter(m3n,decimal-leading-zero)}'
+           '.m3-clk-u .m3-cn{counter-reset:m3t var(--m3m)}.m3-clk-u[data-u="s"] .m3-cn::before{content:counter(m3t) " s"}.m3-clk-u[data-u="ms"] .m3-cn::before{content:counter(m3t) " ms"}}'
            '@media (prefers-reduced-motion:reduce),print{.m3-root{--p:1!important}}</style>')
     root_vars = ('--tilt:' + _map3d_f(tilt, 1) + ';--rz:22;--z0:' + _map3d_f(z0, 2) + ';--z1:' + _map3d_f(z1, 2) + ';'
                  '--c:clamp(0,calc(var(--p,1)/0.3),1);--e:calc(var(--c)*var(--c)*(3 - 2*var(--c)));--zm:calc(var(--z0) + (var(--z1) - var(--z0))*var(--e));')
     plane = ('<div class="m3-plane" style="transform:rotateX(calc(var(--tilt)*var(--e)*1deg)) rotateZ(calc(var(--rz)*var(--e)*1deg)) scale(var(--zm));">'
-             + faces + svg + pins + '</div>')
+             + faces + svg + '</div>')
     note = _hg_note(' '.join(notes)) if notes else ''
-    return (css + '<div class="m3-root" data-m3="root" style="' + root_vars + '">' + altx + '<div class="m3-stage" aria-hidden="true">' + plane + '</div>' + chip + '</div>'
-            + note + _hg_version_note(b, 'motion_map3d'))
+    return (css + '<div class="m3-root" data-m3="root" style="' + root_vars + '">' + altx + '<div class="m3-stage" aria-hidden="true">' + plane + over_plane + '</div>' + chip + '</div>'
+            + note + _map3d_version_note(b))
 
 
 _RENDERERS['motion_map3d'] = _render_motion_map3d

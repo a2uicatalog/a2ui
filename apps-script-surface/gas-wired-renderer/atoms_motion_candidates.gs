@@ -1319,11 +1319,11 @@ _RENDERERS['motion_shatter'] = function(b) {
     '<div class="sh-shards" data-sh="shards" aria-hidden="true" inert style="position:absolute;inset:0;pointer-events:none;">' + shards + '</div>' + cracks + '</div>' + _hgVersionNote(b, 'motion_shatter');
 };
 
-// motion_map3d (I72): a tilted 3D city map, camera descent, route draw, station states, clock chip. Twin of _render_motion_map3d in web_article.py (read its header).
+// motion_map3d v2 (I72): a tilted 3D city map, camera descent, route/legs draw, station states, messages, clock chip. Twin of _render_motion_map3d in web_article.py (read its header).
 var _M3_P0 = 0.3, _M3_P1 = 0.92, _M3_U = 0.62;
 var _M3_ID = /^[A-Za-z][A-Za-z0-9_]{0,23}$/;
 var _M3_CLK = /^ *([0-9]{1,2}):([0-9]{2}) *$/;
-var _M3_STATES = ['idle', 'active', 'done'];
+var _M3_STATES = ['idle', 'active', 'done', 'warn', 'error'];
 
 function _m3Obj(v) {
   return (typeof v === 'object' && v !== null && !Array.isArray(v)) ? v : {};
@@ -1360,6 +1360,7 @@ function _m3Segdist(px, py, ax, ay, bx, by) {
   var ex = ax + t * dx - px, ey = ay + t * dy - py;
   return Math.sqrt(ex * ex + ey * ey);
 }
+
 
 _RENDERERS['motion_map3d'] = function(b) {
   var acc = _moInk(b, 'color', 'var(--mt-acc,#38bdf8)');
@@ -1398,59 +1399,119 @@ _RENDERERS['motion_map3d'] = function(b) {
   if (bad) {
     notes.push(String(bad) + (bad === 1 ? ' station was' : ' stations were') + ' left out (duplicate id or more than 24).');
   }
-
-  var rraw = Array.isArray(b.route) ? b.route : [];
-  var route = [], unk = 0;
-  var rrawSlice = rraw.slice(0, 32);
-  var rid;
-  for (i = 0; i < rrawSlice.length; i++) {
-    rid = rrawSlice[i];
-    if (typeof rid === 'string' && Object.prototype.hasOwnProperty.call(byid, rid)) {
-      if (!route.length || route[route.length - 1] !== rid) {
-        route.push(rid);
-      }
-    } else {
-      unk++;
-    }
-  }
-  if (rraw.length > 32) {
-    unk += rraw.length - 32;
-  }
-  if (unk) {
-    notes.push(String(unk) + (unk === 1 ? ' route entry was' : ' route entries were') + ' not a known station and ' + (unk === 1 ? 'was' : 'were') + ' skipped.');
-  }
   if (!sts.length) {
     notes.push('No stations to show.');
   }
 
-  var n = route.length > 1 ? route.length - 1 : 0;
-  var segs = [];
-  var a, c;
-  for (i = 0; i < n; i++) {
-    a = byid[route[i]];
-    c = byid[route[i + 1]];
-    segs.push({
-      'from': route[i],
-      'to': route[i + 1],
-      ax: a.x,
-      ay: a.y,
-      bx: c.x,
-      by: c.y,
-      len: Math.sqrt((c.x - a.x) * (c.x - a.x) + (c.y - a.y) * (c.y - a.y))
-    });
+  function cleanRoute(rraw) {
+    var rt = [], u = 0;
+    var rSlice = Array.isArray(rraw) ? rraw.slice(0, 32) : [];
+    var rid;
+    for (var ri = 0; ri < rSlice.length; ri++) {
+      rid = rSlice[ri];
+      if (typeof rid === 'string' && Object.prototype.hasOwnProperty.call(byid, rid)) {
+        if (!rt.length || rt[rt.length - 1] !== rid) {
+          rt.push(rid);
+        }
+      } else {
+        u++;
+      }
+    }
+    if (Array.isArray(rraw) && rraw.length > 32) {
+      u += rraw.length - 32;
+    }
+    return { route: rt, unk: u };
   }
+
+  var rawLegs = Array.isArray(b.legs) ? b.legs : null;
+  var validLegs = [];
+  var droppedLegs = 0;
+  var legsMode = false;
+  var legObj, lClean, isBack, lCol;
+
+  if (rawLegs !== null) {
+    for (i = 0; i < rawLegs.length; i++) {
+      if (i >= 4) {
+        droppedLegs++;
+        continue;
+      }
+      legObj = _m3Obj(rawLegs[i]);
+      lClean = cleanRoute(legObj.route);
+      if (lClean.unk) {
+        notes.push(String(lClean.unk) + (lClean.unk === 1 ? ' route entry was' : ' route entries were') + ' not a known station and ' + (lClean.unk === 1 ? 'was' : 'were') + ' skipped.');
+      }
+      isBack = legObj.back === true;
+      if (isBack) {
+        lClean.route.reverse();
+      }
+      if (lClean.route.length < 2) {
+        droppedLegs++;
+      } else {
+        lCol = _ffHex(legObj.color, '') || acc;
+        validLegs.push({
+          route: lClean.route,
+          color: lCol,
+          back: isBack
+        });
+      }
+    }
+    if (droppedLegs) {
+      notes.push(String(droppedLegs) + (droppedLegs === 1 ? ' leg was' : ' legs were') + ' left out (fewer than two known stations).');
+    }
+  }
+
+  var legs = [];
+  if (validLegs.length) {
+    legsMode = true;
+    legs = validLegs;
+  } else {
+    var topClean = cleanRoute(b.route);
+    if (topClean.unk) {
+      notes.push(String(topClean.unk) + (topClean.unk === 1 ? ' route entry was' : ' route entries were') + ' not a known station and ' + (topClean.unk === 1 ? 'was' : 'were') + ' skipped.');
+    }
+    if (topClean.route.length >= 2) {
+      legs.push({
+        route: topClean.route,
+        color: acc,
+        back: false
+      });
+    }
+  }
+
+  var segs = [];
+  var legIdx, lRt, a, c;
+  for (legIdx = 0; legIdx < legs.length; legIdx++) {
+    lRt = legs[legIdx].route;
+    for (i = 0; i < lRt.length - 1; i++) {
+      a = byid[lRt[i]];
+      c = byid[lRt[i + 1]];
+      segs.push({
+        leg: legIdx,
+        'from': lRt[i],
+        'to': lRt[i + 1],
+        ax: a.x,
+        ay: a.y,
+        bx: c.x,
+        by: c.y,
+        len: Math.sqrt((c.x - a.x) * (c.x - a.x) + (c.y - a.y) * (c.y - a.y)),
+        color: legs[legIdx].color
+      });
+    }
+  }
+
   var total = 0.0;
   for (i = 0; i < segs.length; i++) {
     total += segs[i].len;
   }
+  var nSegs = segs.length;
   var W = _M3_P1 - _M3_P0;
-  var dw = n ? Math.min(0.04, W * 0.3 / Math.max(1, n - 1)) : 0.04;
-  var draw = W - dw * Math.max(0, n - 1);
+  var dw = nSegs ? Math.min(0.04, W * 0.3 / Math.max(1, nSegs - 1)) : 0.04;
+  var draw = W - dw * Math.max(0, nSegs - 1);
   var cum = 0.0;
   var seen = {}, k, share;
   for (i = 0; i < segs.length; i++) {
     s = segs[i];
-    share = total > 0 ? (s.len / total) : 1.0 / n;
+    share = total > 0 ? (s.len / total) : 1.0 / nSegs;
     s.s = _M3_P0 + dw * i + draw * cum;
     s.w = draw * share;
     cum += share;
@@ -1458,17 +1519,118 @@ _RENDERERS['motion_map3d'] = function(b) {
     seen[k] = (Object.prototype.hasOwnProperty.call(seen, k) ? seen[k] : 0) + 1;
     s.key = seen[k] === 1 ? k : k + '-' + String(seen[k]);
   }
-  var j, r, lv;
-  for (j = 0; j < route.length; j++) {
-    rid = route[j];
-    st = byid[rid];
-    r = j === 0 ? (_M3_P0 - dw) : segs[j - 1].s + segs[j - 1].w;
-    lv = j < n ? segs[j].s : r + 0.05;
-    if (!st.on) {
-      st.on = true;
-      st.r = r;
+
+  var segIdxByLeg = {};
+  for (i = 0; i < segs.length; i++) {
+    var sLeg = segs[i].leg;
+    if (!Object.prototype.hasOwnProperty.call(segIdxByLeg, sLeg)) {
+      segIdxByLeg[sLeg] = [];
     }
-    st.l = lv;
+    segIdxByLeg[sLeg].push(i);
+  }
+
+  var legDrawInfo = [];
+  var sIndices, firstS, lastS, legStart, legW;
+  for (legIdx = 0; legIdx < legs.length; legIdx++) {
+    sIndices = Object.prototype.hasOwnProperty.call(segIdxByLeg, legIdx) ? segIdxByLeg[legIdx] : [];
+    if (sIndices.length) {
+      firstS = segs[sIndices[0]];
+      lastS = segs[sIndices[sIndices.length - 1]];
+      legStart = firstS.s;
+      legW = (lastS.s + lastS.w) - firstS.s;
+      if (legW < 0.05) legW = 0.05;
+    } else {
+      legStart = _M3_P0;
+      legW = 0.05;
+    }
+    legDrawInfo.push({ start: legStart, w: legW });
+  }
+
+  var j, rid, r, lv;
+  for (legIdx = 0; legIdx < legs.length; legIdx++) {
+    lRt = legs[legIdx].route;
+    sIndices = Object.prototype.hasOwnProperty.call(segIdxByLeg, legIdx) ? segIdxByLeg[legIdx] : [];
+    for (j = 0; j < lRt.length; j++) {
+      rid = lRt[j];
+      st = byid[rid];
+      if (legIdx === 0 && j === 0) {
+        r = _M3_P0 - dw;
+      } else if (j === 0) {
+        r = segs[sIndices[0]].s;
+      } else {
+        var prevSeg = segs[sIndices[j - 1]];
+        r = prevSeg.s + prevSeg.w;
+      }
+
+      if (j < lRt.length - 1) {
+        var curSeg = segs[sIndices[j]];
+        lv = curSeg.s;
+      } else {
+        lv = r + 0.05;
+      }
+
+      if (!st.on) {
+        st.on = true;
+        st.r = r;
+      }
+      st.l = lv;
+    }
+  }
+
+  var rawMsgs = Array.isArray(b.messages) ? b.messages : [];
+  var messages = [];
+  var droppedMsgs = 0;
+  var mObj, mLegVal, mLeg, mText, atVal, ma, mw, mBack;
+  for (i = 0; i < rawMsgs.length; i++) {
+    if (messages.length >= 12) {
+      droppedMsgs++;
+      continue;
+    }
+    mObj = _m3Obj(rawMsgs[i]);
+    mLegVal = mObj.leg;
+    if (mLegVal === undefined) {
+      mLeg = 0;
+    } else if (typeof mLegVal === 'number' && isFinite(mLegVal) && Math.floor(mLegVal) === mLegVal) {
+      mLeg = mLegVal;
+    } else {
+      droppedMsgs++;
+      continue;
+    }
+
+    if (mLeg < 0 || mLeg >= legs.length) {
+      droppedMsgs++;
+      continue;
+    }
+
+    mText = _cvStr(mObj.text, 24);
+    if (!mText) {
+      droppedMsgs++;
+      continue;
+    }
+
+    atVal = mObj.at;
+    if (typeof atVal === 'number' && isFinite(atVal) && atVal >= 0 && atVal <= 1) {
+      ma = atVal;
+    } else {
+      ma = legDrawInfo[mLeg].start;
+    }
+
+    mw = legDrawInfo[mLeg].w;
+    if (ma + mw > 1.0) {
+      ma = Math.max(0.0, 1.0 - mw);
+    }
+
+    mBack = mObj.back === true;
+    messages.push({
+      leg: mLeg,
+      text: mText,
+      a: ma,
+      w: mw,
+      back: mBack
+    });
+  }
+  if (droppedMsgs) {
+    notes.push(String(droppedMsgs) + (droppedMsgs === 1 ? ' message was' : ' messages were') + ' left out.');
   }
 
   var blocks = [];
@@ -1529,14 +1691,17 @@ _RENDERERS['motion_map3d'] = function(b) {
   var paths = '';
   for (i = 0; i < segs.length; i++) {
     s = segs[i];
-    paths += '<path data-cb="link" data-key="' + _esc(s.key) + '" data-m3="seg" d="M' + _m3F(s.ax, 1) + ',' + _m3F(s.ay, 1) + ' L' + _m3F(s.bx, 1) + ',' + _m3F(s.by, 1) +
-             '" pathLength="1" fill="none" stroke="' + acc + '" stroke-width="1.4" stroke-linejoin="round" style="stroke-dasharray:1 1;stroke-dashoffset:calc(1 - clamp(0,calc((var(--p,1) - ' +
+    // a back leg drives in its own lane (see the Python twin)
+    var ox = 0, oy = 0;
+    if (legs[s.leg].back && s.len > 0) { ox = -(s.by - s.ay) / s.len * 1.2; oy = (s.bx - s.ax) / s.len * 1.2; }
+    paths += '<path data-cb="link" data-key="' + _esc(s.key) + '" data-leg="' + String(s.leg) + '" data-m3="seg" d="M' + _m3F(s.ax + ox, 1) + ',' + _m3F(s.ay + oy, 1) + ' L' + _m3F(s.bx + ox, 1) + ',' + _m3F(s.by + oy, 1) +
+             '" pathLength="1" fill="none" stroke="' + s.color + '" stroke-width="1.4" stroke-linejoin="round" style="stroke-dasharray:1 1;stroke-dashoffset:calc(1 - clamp(0,calc((var(--p,1) - ' +
              _m3F(s.s, 3) + ')/' + _m3F(Math.max(s.w, 0.001), 3) + '),1));"></path>';
   }
   var svg = paths ? ('<svg class="m3-route" aria-hidden="true" focusable="false" viewBox="0 0 100 100" preserveAspectRatio="none">' + paths + '</svg>') : '';
 
   var pins = '';
-  var reach, leave, lay, name, final, op;
+  var reach, leave, lay, name, final, op, glyph;
   for (i = 0; i < sts.length; i++) {
     st = sts[i];
     reach = null;
@@ -1561,29 +1726,133 @@ _RENDERERS['motion_map3d'] = function(b) {
       } else {
         continue;
       }
-      lay += '<span class="m3-pin m3-' + name + '" style="opacity:' + op + ';"></span>';
+      glyph = name === 'warn' ? '!' : (name === 'error' ? '\u00d7' : '');
+      lay += '<span class="m3-pin m3-' + name + '" style="opacity:' + op + ';">' + glyph + '</span>';
     }
     pins += '<div class="m3-st" data-cb="node" data-key="' + _esc(st.id) + '" data-m3="station" data-state="' + st.state + '" style="left:' + _m3F(st.x, 1) + '%;top:' + _m3F(st.y, 1) + '%;">' +
             '<div class="m3-bb">' + lay + '<span class="m3-lab" data-cb="label" data-key="' + _esc(st.id) + '">' + _esc(st.label) + '</span></div></div>';
   }
 
-  var ck = _m3Obj(b.clock);
-  var c0 = _m3Clock(ck['from']), c1 = _m3Clock(ck['to']);
-  var chip = '';
-  if (c0 !== null && c1 !== null) {
-    if (c1 < c0) {
-      c1 += 1440;
+  var msgHtml = '';
+  var m, mLegObj, mPts, segLens, totL, pi, dx, dy, slen, cumF, curL, qStr, xTerms, yTerms, cPrev, cNext, cSpan, termSub, leftCalc, topCalc, opCalc;
+  for (i = 0; i < messages.length; i++) {
+    m = messages[i];
+    mLegObj = legs[m.leg];
+    mPts = [];
+    var rawPtRoute = mLegObj.route.slice();
+    if (m.back) {
+      rawPtRoute.reverse();
     }
-    chip = '<div class="m3-clk" data-m3="clock" aria-hidden="true" style="--m0:' + String(c0) + ';--m1:' + String(c1) + ';"><span class="m3-cs">' + _m3Hhmm(c1) + '</span><span class="m3-cn"></span></div>';
+    for (pi = 0; pi < rawPtRoute.length; pi++) {
+      mPts.push(byid[rawPtRoute[pi]]);
+    }
+
+    segLens = [];
+    totL = 0.0;
+    for (pi = 0; pi < mPts.length - 1; pi++) {
+      dx = mPts[pi + 1].x - mPts[pi].x;
+      dy = mPts[pi + 1].y - mPts[pi].y;
+      slen = Math.sqrt(dx * dx + dy * dy);
+      segLens.push(slen);
+      totL += slen;
+    }
+
+    cumF = [0.0];
+    curL = 0.0;
+    for (pi = 0; pi < segLens.length; pi++) {
+      curL += segLens[pi];
+      cumF.push(totL > 0 ? (curL / totL) : 1.0);
+    }
+    cumF[cumF.length - 1] = 1.0;
+
+    qStr = 'clamp(0,calc((var(--p,1) - ' + _m3F(m.a, 3) + ')/' + _m3F(m.w, 3) + '),1)';
+
+    xTerms = [_m3F(mPts[0].x, 1)];
+    yTerms = [_m3F(mPts[0].y, 1)];
+    for (pi = 0; pi < mPts.length - 1; pi++) {
+      if (segLens[pi] <= 0) continue;
+      cPrev = cumF[pi];
+      cNext = cumF[pi + 1];
+      cSpan = cNext - cPrev;
+      if (cSpan <= 0) continue;
+      dx = mPts[pi + 1].x - mPts[pi].x;
+      dy = mPts[pi + 1].y - mPts[pi].y;
+      termSub = 'clamp(0,calc((' + qStr + ' - ' + _m3F(cPrev, 3) + ')/' + _m3F(cSpan, 3) + '),1)';
+      if (dx !== 0) {
+        xTerms.push(_m3F(dx, 1) + '*' + termSub);
+      }
+      if (dy !== 0) {
+        yTerms.push(_m3F(dy, 1) + '*' + termSub);
+      }
+    }
+
+    leftCalc = 'calc((' + xTerms.join(' + ') + ')*1%)';
+    topCalc = 'calc((' + yTerms.join(' + ') + ')*1%)';
+    opCalc = 'calc(clamp(0,calc((var(--p,1) - ' + _m3F(m.a, 3) + ')*40),1)*(1 - clamp(0,calc((var(--p,1) - ' + _m3F(m.a + m.w, 3) + ')*40),1)))';
+    msgHtml += '<div class="m3-msg" data-m3="msg" data-leg="' + String(m.leg) + '" style="left:' + leftCalc + ';top:' + topCalc + ';opacity:' + opCalc + ';"><div class="m3-bb"><span class="m3-chip" style="background:' +
+               mLegObj.color + ';">' + _esc(m.text) + '</span></div></div>';
+  }
+
+  var overContent = pins + msgHtml;
+  var overPlane = overContent ? ('<div class="m3-plane m3-over" style="transform:rotateX(calc(var(--tilt)*var(--e)*1deg)) rotateZ(calc(var(--rz)*var(--e)*1deg)) scale(var(--zm));">' + overContent + '</div>') : '';
+
+  var ck = _m3Obj(b.clock);
+  var cUnit = typeof ck.unit === 'string' ? ck.unit : 'hhmm';
+  var chip = '';
+  var clockAlt = '';
+  if (cUnit === 's' || cUnit === 'ms') {
+    var rawC0 = ck['from'];
+    var rawC1 = ck['to'];
+    var c0Ok = typeof rawC0 === 'number' && isFinite(rawC0) && rawC0 >= 0;
+    var c1Ok = typeof rawC1 === 'number' && isFinite(rawC1) && rawC1 >= 0;
+    var cap = cUnit === 's' ? 86400 : 3600000;
+    if (c0Ok && c1Ok) {
+      var fc0 = Math.floor(rawC0);
+      var fc1 = Math.floor(rawC1);
+      if (fc0 <= cap && fc1 <= cap && fc1 >= fc0) {
+        chip = '<div class="m3-clk m3-clk-u" data-m3="clock" data-u="' + cUnit + '" aria-hidden="true" style="--m0:' + String(fc0) + ';--m1:' + String(fc1) + ';"><span class="m3-cs">' +
+               String(fc1) + ' ' + cUnit + '</span><span class="m3-cn"></span></div>';
+        clockAlt = 'Clock runs from ' + String(fc0) + ' ' + cUnit + ' to ' + String(fc1) + ' ' + cUnit + '.';
+      }
+    }
+  } else {
+    var c0 = _m3Clock(ck['from']), c1 = _m3Clock(ck['to']);
+    if (c0 !== null && c1 !== null) {
+      if (c1 < c0) {
+        c1 += 1440;
+      }
+      chip = '<div class="m3-clk" data-m3="clock" aria-hidden="true" style="--m0:' + String(c0) + ';--m1:' + String(c1) + ';"><span class="m3-cs">' + _m3Hhmm(c1) + '</span><span class="m3-cn"></span></div>';
+      clockAlt = 'Clock runs from ' + _m3Hhmm(c0) + ' to ' + _m3Hhmm(c1) + '.';
+    }
   }
 
   var alt = [];
-  if (route.length) {
-    var routeLabs = [];
-    for (i = 0; i < route.length; i++) {
-      routeLabs.push(byid[route[i]].label);
+  if (legs.length) {
+    if (legs.length === 1 && !legsMode) {
+      var routeLabs = [];
+      for (i = 0; i < legs[0].route.length; i++) {
+        routeLabs.push(byid[legs[0].route[i]].label);
+      }
+      alt.push('Route: ' + routeLabs.join(', then ') + '.');
+    } else if (legs.length === 1) {
+      var leg1Labs = [];
+      for (i = 0; i < legs[0].route.length; i++) {
+        leg1Labs.push(byid[legs[0].route[i]].label);
+      }
+      var b1Str = legs[0].back ? ' (back)' : '';
+      alt.push('Leg 1' + b1Str + ': ' + leg1Labs.join(', then ') + '.');
+    } else {
+      var legSentences = [];
+      for (legIdx = 0; legIdx < legs.length; legIdx++) {
+        var lLabs = [];
+        for (i = 0; i < legs[legIdx].route.length; i++) {
+          lLabs.push(byid[legs[legIdx].route[i]].label);
+        }
+        var bStr = legs[legIdx].back ? ' (back)' : '';
+        legSentences.push('Leg ' + String(legIdx + 1) + bStr + ': ' + lLabs.join(', then ') + '.');
+      }
+      alt.push(legSentences.join(' '));
     }
-    alt.push('Route: ' + routeLabs.join(', then ') + '.');
   }
   if (sts.length) {
     var stDescs = [];
@@ -1592,8 +1861,18 @@ _RENDERERS['motion_map3d'] = function(b) {
     }
     alt.push('Stations: ' + stDescs.join('; ') + '.');
   }
-  if (chip) {
-    alt.push('Clock runs from ' + _m3Hhmm(c0) + ' to ' + _m3Hhmm(c1) + '.');
+  if (messages.length) {
+    var mParts = [];
+    for (i = 0; i < messages.length; i++) {
+      m = messages[i];
+      var mLegR = legs[m.leg].route.slice();
+      if (m.back) mLegR.reverse();
+      mParts.push(m.text + ' (' + byid[mLegR[0]].label + ' to ' + byid[mLegR[mLegR.length - 1]].label + ')');
+    }
+    alt.push('Messages: ' + mParts.join('; ') + '.');
+  }
+  if (clockAlt) {
+    alt.push(clockAlt);
   }
   var altx = '<div data-m3="alt" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);">' + _esc(alt.join(' ') || 'City map.') + '</div>';
 
@@ -1603,6 +1882,7 @@ _RENDERERS['motion_map3d'] = function(b) {
             '.m3-stage{position:absolute;inset:0;perspective:90cqw;perspective-origin:50% 50%}' +
             '.m3-plane{position:absolute;left:19cqw;top:-3cqw;width:62cqw;height:62cqw;transform-style:preserve-3d;' +
             'background:color-mix(in srgb,var(--text,#0f172a) 11%,var(--surface,#f8fafc));box-shadow:0 0 0 0.3cqw var(--border,#cbd5e1)}' +
+            '.m3-plane.m3-over{background:none;box-shadow:none;pointer-events:none}' +
             '.m3-b{position:absolute;transform-style:preserve-3d}.m3-b i{position:absolute;display:block}' +
             '.m3-t{inset:0;transform:translateZ(var(--hh));background:color-mix(in srgb,var(--text,#0f172a) 4%,var(--surface,#ffffff))}' +
             '.m3-s{left:0;top:100%;width:100%;height:var(--hh);transform-origin:50% 0;transform:rotateX(90deg);background:color-mix(in srgb,var(--text,#0f172a) 26%,var(--surface,#ffffff))}' +
@@ -1610,26 +1890,36 @@ _RENDERERS['motion_map3d'] = function(b) {
             '.m3-route{position:absolute;inset:0;width:100%;height:100%;overflow:visible;transform:translateZ(0.15cqw);pointer-events:none}' +
             '.m3-st{position:absolute;width:0;height:0;transform-style:preserve-3d}' +
             '.m3-bb{position:absolute;left:0;top:0;transform-style:preserve-3d;transform:rotateZ(calc(var(--rz)*var(--e)*-1deg)) rotateX(calc(var(--tilt)*var(--e)*-1deg)) scale(calc(1/var(--zm))) translateY(-1.5cqw)}' +
-            '.m3-pin{position:absolute;left:-1.1cqw;top:-1.1cqw;width:2.2cqw;height:2.2cqw;box-sizing:border-box;border-radius:50%;border:0.45cqw solid var(--surface,#fff)}' +
+            '.m3-pin{position:absolute;left:-1.1cqw;top:-1.1cqw;width:2.2cqw;height:2.2cqw;box-sizing:border-box;border-radius:50%;border:0.45cqw solid var(--surface,#fff);' +
+            'display:flex;align-items:center;justify-content:center;color:#fff;font:800 1.5cqw/1 ui-sans-serif,system-ui,sans-serif}' +
             '.m3-idle{background:var(--muted,#64748b)}.m3-active{background:' + acc + ';box-shadow:0 0 0 0.5cqw color-mix(in srgb,' + acc + ' 35%,transparent)}.m3-done{background:var(--mt-ok,#22c55e)}' +
+            '.m3-warn{background:var(--mt-warn,#f59e0b)}.m3-error{background:var(--mt-err,#dc2626)}' +
             '.m3-lab{position:absolute;left:1.6cqw;top:-1.1cqw;white-space:nowrap;font:600 max(10px,1.7cqw)/1.2 ui-sans-serif,system-ui,sans-serif;color:var(--text,#0f172a);' +
             'background:color-mix(in srgb,var(--surface,#ffffff) 88%,transparent);padding:0.15cqw 0.7cqw;border-radius:0.6cqw}' +
+            '.m3-msg{position:absolute;width:0;height:0;transform-style:preserve-3d}' +
+            '.m3-chip{position:absolute;left:-0.2cqw;top:-4.4cqw;white-space:nowrap;font:700 max(10px,1.5cqw)/1.2 ui-monospace,SFMono-Regular,Menlo,monospace;color:#fff;padding:0.3cqw 0.8cqw;border-radius:0.6cqw;box-shadow:0 1px 4px rgba(0,0,0,0.3)}' +
             '.m3-clk{position:absolute;left:2.4cqw;top:2.4cqw;z-index:2;font:700 max(13px,2.6cqw)/1 ui-monospace,SFMono-Regular,Menlo,monospace;font-variant-numeric:tabular-nums;color:var(--text,#0f172a);' +
             'background:var(--surface,#ffffff);border:1px solid var(--border,#cbd5e1);border-radius:999px;padding:0.8cqw 1.8cqw;box-shadow:0 2px 8px rgba(0,0,0,0.15)}' +
             '.m3-cn{display:none}' +
             '@supports (width:round(down,1px,1px)){.m3-cs{display:none}.m3-cn{display:inline;--m3m:calc(var(--m0) + (var(--m1) - var(--m0))*clamp(0,calc((var(--p,1) - 0.3)/0.62),1));' +
             '--m3h:mod(round(down,calc(var(--m3m)/60),1),24);--m3n:mod(var(--m3m),60);counter-reset:m3h var(--m3h) m3n var(--m3n)}' +
-            '.m3-cn::before{content:counter(m3h,decimal-leading-zero) ":" counter(m3n,decimal-leading-zero)}}' +
+            '.m3-clk:not(.m3-clk-u) .m3-cn::before{content:counter(m3h,decimal-leading-zero) ":" counter(m3n,decimal-leading-zero)}' +
+            '.m3-clk-u .m3-cn{counter-reset:m3t var(--m3m)}.m3-clk-u[data-u="s"] .m3-cn::before{content:counter(m3t) " s"}.m3-clk-u[data-u="ms"] .m3-cn::before{content:counter(m3t) " ms"}}' +
             '@media (prefers-reduced-motion:reduce),print{.m3-root{--p:1!important}}</style>';
 
   var root_vars = '--tilt:' + _m3F(tilt, 1) + ';--rz:22;--z0:' + _m3F(z0, 2) + ';--z1:' + _m3F(z1, 2) + ';' +
                   '--c:clamp(0,calc(var(--p,1)/0.3),1);--e:calc(var(--c)*var(--c)*(3 - 2*var(--c)));--zm:calc(var(--z0) + (var(--z1) - var(--z0))*var(--e));';
 
   var plane = '<div class="m3-plane" style="transform:rotateX(calc(var(--tilt)*var(--e)*1deg)) rotateZ(calc(var(--rz)*var(--e)*1deg)) scale(var(--zm));">' +
-              faces + svg + pins + '</div>';
+              faces + svg + '</div>';
 
   var note = notes.length ? _hgNote(notes.join(' ')) : '';
 
-  return css + '<div class="m3-root" data-m3="root" style="' + root_vars + '">' + altx + '<div class="m3-stage" aria-hidden="true">' + plane + '</div>' + chip + '</div>' +
-         note + _hgVersionNote(b, 'motion_map3d');
+  return css + '<div class="m3-root" data-m3="root" style="' + root_vars + '">' + altx + '<div class="m3-stage" aria-hidden="true">' + plane + overPlane + '</div>' + chip + '</div>' +
+         note + _map3dVersionNote(b);
 };
+
+function _map3dVersionNote(b) {
+  var v = b.version;
+  return (typeof v === 'number' && isFinite(v) && Math.floor(v) === v && v > 2) ? _hgNote('Written for motion_map3d version ' + v + '; drawn as version 2.') : '';
+}
