@@ -2476,26 +2476,62 @@ _RENDERERS['conversation_snippet'] = function(b) {
 };
 
 _RENDERERS['prompt_template'] = function(b) {
-  var template = b.template || '';
-  var variables = b.variables || [];
-  var highlighted = _esc(template).replace(/\{\{([^}]+)\}\}/g, '<mark style="background:#fef9c3;color:#92400e;border-radius:3px;padding:1px 4px;">{{$1}}</mark>');
-  var varsHtml = '';
+  var template = _textLoose(b.template);
+  var accent = _safe_css(b.accent, '#7c3aed');
+  var copyable = b.copyable !== false;
+  var label = _textLoose(b.label);
+  var title = _textLoose(b.title) || 'prompt template';
+  var useCase = _textLoose(b.use_case);
+  var variables = Array.isArray(b.variables) ? b.variables : [];
+  var pid = 'pt_' + _payloadUid(b);
+  var hm = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.exec(accent);
+  var slotBg;
+  if (hm) {
+    var h = hm[1];
+    if (h.length === 3) h = h.charAt(0) + h.charAt(0) + h.charAt(1) + h.charAt(1) + h.charAt(2) + h.charAt(2);
+    slotBg = 'rgba(' + parseInt(h.substr(0, 2), 16) + ',' + parseInt(h.substr(2, 2), 16) + ',' + parseInt(h.substr(4, 2), 16) + ',0.1)';
+  } else {
+    slotBg = 'color-mix(in srgb, ' + accent + ' 10%, transparent)';
+  }
+  var highlighted = _esc(template).replace(/\{\{[^{}]+\}\}|\{[^{}]+\}/g, function(m) {
+    return '<span style="background:' + slotBg + ';color:' + accent + ';font-weight:600;border-radius:3px;padding:0 3px;">' + m + '</span>';
+  }).replace(/\n/g, '<br>');
+  var labelHtml = label ? '<div style="font-size:0.72rem;font-weight:600;color:var(--muted,#5f6368);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;">' + _esc(label) + '</div>' : '';
+  var copyBtn = copyable ? '<button type="button" onclick="navigator.clipboard.writeText(document.getElementById(\'' + pid + '-src\').innerText)" '
+    + 'style="padding:4px 10px;border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);'
+    + 'background:#ffffff;background:var(--a2ui-surface,#ffffff);font-size:0.75rem;color:#5f6368;cursor:pointer;flex-shrink:0;">Copy</button>' : '';
+  var useHtml = useCase ? '<span style="font-size:0.72rem;color:var(--muted,#5f6368);">' + _esc(useCase) + '</span>' : '';
+  var right = (useHtml && copyBtn) ? '<span style="display:flex;align-items:center;gap:10px;">' + useHtml + copyBtn + '</span>' : (useHtml + copyBtn);
+  var dbl = template.indexOf('{{') !== -1;
+  var rows = '';
+  var n = 0;
   for (var i = 0; i < variables.length; i++) {
     var v = variables[i];
-    varsHtml += '<tr style="' + (i % 2 === 0 ? '' : 'background:#f9fafb;') + '">'
-      + '<td style="padding:8px 10px;font-family:monospace;font-size:0.82rem;color:#7c3aed;white-space:nowrap;">{{' + _esc(v.name || '') + '}}</td>'
-      + '<td style="padding:8px 10px;font-size:0.82rem;color:#374151;">' + _esc(v.description || '') + '</td>'
-      + '<td style="padding:8px 10px;font-size:0.78rem;color:#6b7280;font-style:italic;">' + _esc(v.example || '') + '</td>'
-      + '</tr>';
+    if (!v || typeof v !== 'object' || Array.isArray(v)) continue;
+    var name = _textLoose(v.name), desc = _textLoose(v.description), ex = _textLoose(v.example);
+    if (!(name || desc || ex)) continue;
+    rows += '<tr' + (n % 2 === 0 ? '' : ' style="background:#f9fafb;"') + '>'
+      + '<td style="padding:8px 10px;font-family:monospace;font-size:0.82rem;color:' + accent + ';white-space:nowrap;">' + (name ? _esc((dbl ? '{{' : '{') + name + (dbl ? '}}' : '}')) : '') + '</td>'
+      + '<td style="padding:8px 10px;font-size:0.82rem;color:#374151;">' + _esc(desc) + '</td>'
+      + '<td style="padding:8px 10px;font-size:0.78rem;color:#6b7280;font-style:italic;">' + _esc(ex) + '</td></tr>';
+    n++;
   }
-  return '<div data-cb="node" data-key="' + _ckey(b.label, 'prompt_template') + '" style="border:1px solid #e5e7eb;border-radius:14px;overflow:hidden;margin:1rem 0;">'
-    + '<div style="background:#f9fafb;border-bottom:1px solid #e5e7eb;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;">'
-    + '<span style="font-weight:700;font-size:0.9rem;color:#111827;">' + _esc(b.title || 'Prompt Template') + '</span>'
-    + (b.use_case ? '<span style="font-size:0.78rem;color:#6b7280;">' + _esc(b.use_case) + '</span>' : '')
+  var varsHtml = rows ? '<div style="padding:14px 16px;border-top:1px solid #e0e0e0;"><div style="font-size:0.72rem;font-weight:700;color:var(--muted,#5f6368);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Variables</div>'
+    + '<table style="width:100%;border-collapse:collapse;font-size:0.82rem;"><thead><tr style="background:#f3f4f6;">'
+    + '<th scope="col" style="padding:7px 10px;text-align:left;font-size:0.75rem;color:#6b7280;">Variable</th>'
+    + '<th scope="col" style="padding:7px 10px;text-align:left;font-size:0.75rem;color:#6b7280;">Description</th>'
+    + '<th scope="col" style="padding:7px 10px;text-align:left;font-size:0.75rem;color:#6b7280;">Example</th></tr></thead><tbody>' + rows + '</tbody></table></div>' : '';
+  return '<div data-cb="node" data-key="' + _ckey(b.label, 'prompt_template') + '" style="margin:1rem 0;">'
+    + labelHtml
+    + '<div style="border:1px solid #e0e0e0;border-radius:8px;overflow:hidden;">'
+    + '<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 12px;background:#f9fafb;border-bottom:1px solid #e0e0e0;">'
+    + '<span style="font-size:0.72rem;color:var(--muted,#5f6368);font-family:monospace;">' + _esc(title) + '</span>'
+    + right
     + '</div>'
-    + '<pre style="margin:0;padding:16px;background:#1e1e2e;color:#cdd6f4;font-size:0.82rem;line-height:1.6;white-space:pre-wrap;overflow-x:auto;"><code>' + highlighted + '</code></pre>'
-    + (varsHtml ? '<div style="padding:14px 16px;border-top:1px solid #e5e7eb;"><div style="font-size:0.8rem;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">Variables</div><table style="width:100%;border-collapse:collapse;font-size:0.82rem;"><thead><tr style="background:#f3f4f6;"><th style="padding:7px 10px;text-align:left;font-size:0.75rem;color:#6b7280;">Variable</th><th style="padding:7px 10px;text-align:left;font-size:0.75rem;color:#6b7280;">Description</th><th style="padding:7px 10px;text-align:left;font-size:0.75rem;color:#6b7280;">Example</th></tr></thead><tbody>' + varsHtml + '</tbody></table></div>' : '')
-    + '</div>';
+    + '<pre id="' + pid + '-src" style="margin:0;padding:14px 16px;font-size:0.84rem;font-family:monospace;line-height:1.6;color:#374151;background:#fff;white-space:pre-wrap;word-break:break-word;">'
+    + highlighted + '</pre>'
+    + varsHtml
+    + '</div></div>';
 };
 
 // === Animation atoms — GAS-native implementations ===
@@ -2624,17 +2660,81 @@ _RENDERERS['card_stack'] = function(b) {
     + (text  ? '<div style="font-size:0.875rem;color:var(--muted,#5f6368);line-height:1.6;">' + _markdownToHtml(text) + '</div>' : '')
     + '</div></div>';
 };
-_RENDERERS['depth_stack'] = _RENDERERS['card_stack'];
+_RENDERERS['depth_stack'] = function(b) {
+  function usable(v) {
+    if (!Array.isArray(v)) return [];
+    return v.filter(function(c) { return (c && typeof c === 'object' && !Array.isArray(c)) || _textLoose(c); });
+  }
+  var cards = usable(b.cards);
+  if (!cards.length) cards = usable(b.items);
+  if (!cards.length) return '<p style="opacity:0.6;font-size:0.85rem;">No cards supplied.</p>';
+  var n = _numLoose(b.count);
+  var count = n === null ? Math.min(50, cards.length) : Math.max(1, Math.min(50, Math.floor(n)));
+  var items = cards.slice(0, count);
+  var stackHtml = '';
+  for (var i = 0; i < items.length; i++) {
+    var card = items[i];
+    var offset = i * 8;
+    var scale = Math.max(40, 100 - i * 4);
+    var opacity = Math.max(10, 100 - i * 15);
+    var title = '', text = '';
+    if (card && typeof card === 'object' && !Array.isArray(card)) {
+      title = _firstText(card.title);
+      text = _firstText(card.text, card.body);
+    } else {
+      text = _textLoose(card);
+    }
+    var k = _esc(title);
+    stackHtml = '<div data-cb="tile" data-key="' + k + '" style="position:absolute;top:' + offset + 'px;left:' + offset + 'px;'
+      + 'right:' + offset + 'px;padding:20px;border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#ffffff;background:var(--a2ui-surface,#ffffff);'
+      + 'border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);box-shadow:0 4px 12px rgba(0,0,0,0.08);'
+      + 'transform:scale(' + (scale / 100) + ');opacity:' + (opacity / 100) + ';'
+      + 'transform-origin:top center;">'
+      + (title ? '<div data-cb="label" data-key="' + k + '" style="font-weight:700;color:#111827;">' + _esc(title) + '</div>' : '')
+      + (text ? '<div style="font-size:0.875rem;color:var(--muted,#5f6368);">' + _esc(text) + '</div>' : '')
+      + '</div>' + stackHtml;
+  }
+  var height = 80 + items.length * 40;
+  return '<div style="position:relative;height:' + height + 'px;margin:2rem 0;">' + stackHtml + '</div>';
+};
 
 _RENDERERS['shimmer_button'] = function(b) {
-  var label = b.text || b.label || b.title || 'Action';
-  var uid = Math.random().toString(36).substr(2, 6);
+  var sid = 'sb-' + _payloadUid(b);
+  var label = _firstText(b.label, b.text, b.title) || 'Click me';
+  var href = _safe_href(b.href);
+  var size = b.size;
+  var accent = _safe_css(b.accent, '#38bdf8');
+  var bg = _safe_css(b.background, '#1e293b');
+  var speed = b.speed;
+  var description = _textLoose(b.description);
+  var DUR = {slow: '3s', normal: '1.8s', fast: '0.9s'};
+  var SIZES = {sm: ['8px 18px', '0.82rem'], md: ['12px 28px', '0.92rem'], lg: ['16px 40px', '1.05rem']};
+  var dur = (typeof speed === 'string' && DUR.hasOwnProperty(speed)) ? DUR[speed] : '1.8s';
+  var ps = (typeof size === 'string' && SIZES.hasOwnProperty(size)) ? SIZES[size] : SIZES.md;
+  var hm = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.exec(accent);
+  var hl;
+  if (hm) {
+    var h = hm[1];
+    if (h.length === 3) h = h.charAt(0) + h.charAt(0) + h.charAt(1) + h.charAt(1) + h.charAt(2) + h.charAt(2);
+    hl = 'rgba(' + parseInt(h.substr(0, 2), 16) + ',' + parseInt(h.substr(2, 2), 16) + ',' + parseInt(h.substr(4, 2), 16) + ',0.5)';
+  } else {
+    hl = 'color-mix(in srgb, ' + accent + ' 50%, transparent)';
+  }
+  var tag = href ? 'a' : 'button';
+  var hrefAttr = href ? ' href="' + _esc(href) + '" target="_top" rel="noopener"' : ' type="button"';
+  var descHtml = description ? '<div style="margin-top:6px;font-size:0.78rem;color:var(--muted,#5f6368);">' + _esc(description) + '</div>' : '';
   return '<style>'
-    + '.sb-' + uid + '{position:relative;overflow:hidden;background:#7c3aed;color:#fff;font-weight:700;font-size:0.95rem;padding:12px 28px;border:none;border-radius:10px;cursor:pointer;}'
-    + '.sb-' + uid + '::after{content:"";position:absolute;top:0;left:-100%;width:60%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.28),transparent);transform:skewX(-20deg);animation:sb-shine-' + uid + ' 2s infinite;}'
-    + '@keyframes sb-shine-' + uid + '{0%{left:-100%;}100%{left:160%;}}'
+    + '@keyframes ' + sid + '-sw{0%{background-position:-200% center}100%{background-position:200% center}}'
+    + '.' + sid + '{display:inline-block;padding:' + ps[0] + ';font-size:' + ps[1] + ';font-weight:600;'
+    + 'color:#f1f5f9;border:1px solid rgba(255,255,255,0.14);border-radius:8px;cursor:pointer;'
+    + 'background:linear-gradient(105deg,' + bg + ' 38%,' + hl + ' 50%,' + bg + ' 62%);'
+    + 'background-size:200% auto;animation:' + sid + '-sw ' + dur + ' linear infinite;'
+    + 'text-decoration:none;letter-spacing:0.01em;}'
+    + '@media (prefers-reduced-motion:reduce){.' + sid + '{animation:none;}}'
     + '</style>'
-    + '<div data-cb="node" data-key="' + _ckey(b.label, 'shimmer_button') + '" style="margin:1rem 0;text-align:center;"><button class="sb-' + uid + '">' + _esc(label) + '</button></div>';
+    + '<div data-cb="node" data-key="' + _ckey(b.label, 'shimmer_button') + '" style="margin:1rem 0;">'
+    + '<' + tag + hrefAttr + ' class="' + sid + '">' + _esc(label) + '</' + tag + '>'
+    + descHtml + '</div>';
 };
 
 _RENDERERS['glow_button'] = function(b) {
@@ -2661,17 +2761,18 @@ _RENDERERS['gradient_text'] = function(b) {
 };
 
 _RENDERERS['glitch_text'] = function(b) {
-  var text = b.text || b.title || b.label || '';
-  var size = b.size || '2rem';
-  var uid = Math.random().toString(36).substr(2, 6);
+  var text = _firstText(b.text, b.title, b.label);
+  var size = _safe_css(b.size, '2rem');
+  var uid = 'gl-' + _payloadUid(b);
   return '<style>'
-    + '.gl-' + uid + '{position:relative;font-size:' + _esc(size) + ';font-weight:800;color:#0b8092;display:inline-block;letter-spacing:0.04em;}'
-    + '.gl-' + uid + '::before{content:attr(data-t);position:absolute;top:0;left:-2px;color:#f43f5e;clip-path:polygon(0 0,100% 0,100% 38%,0 38%);animation:gl-a-' + uid + ' 3.5s infinite;}'
-    + '.gl-' + uid + '::after{content:attr(data-t);position:absolute;top:0;left:2px;color:#3b82f6;clip-path:polygon(0 62%,100% 62%,100% 100%,0 100%);animation:gl-b-' + uid + ' 3.5s infinite;}'
-    + '@keyframes gl-a-' + uid + '{0%,88%,100%{transform:none;}89%{transform:translateX(-3px);}92%{transform:translateX(3px);}95%{transform:translateX(-1px);}}'
-    + '@keyframes gl-b-' + uid + '{0%,88%,100%{transform:none;}89%{transform:translateX(3px);}92%{transform:translateX(-3px);}95%{transform:translateX(1px);}}'
+    + '.' + uid + '{position:relative;font-size:' + size + ';font-weight:800;color:#0b8092;display:inline-block;letter-spacing:0.04em;}'
+    + '.' + uid + '::before{content:attr(data-t);position:absolute;top:0;left:-2px;color:#f43f5e;clip-path:polygon(0 0,100% 0,100% 38%,0 38%);animation:' + uid + '-a 3.5s infinite;}'
+    + '.' + uid + '::after{content:attr(data-t);position:absolute;top:0;left:2px;color:#3b82f6;clip-path:polygon(0 62%,100% 62%,100% 100%,0 100%);animation:' + uid + '-b 3.5s infinite;}'
+    + '@keyframes ' + uid + '-a{0%,88%,100%{transform:none;}89%{transform:translateX(-3px);}92%{transform:translateX(3px);}95%{transform:translateX(-1px);}}'
+    + '@keyframes ' + uid + '-b{0%,88%,100%{transform:none;}89%{transform:translateX(3px);}92%{transform:translateX(-3px);}95%{transform:translateX(1px);}}'
+    + '@media (prefers-reduced-motion:reduce){.' + uid + '::before,.' + uid + '::after{animation:none;}}'
     + '</style>'
-    + '<div data-cb="node" data-key="' + _ckey(b.text, 'glitch_text') + '" style="margin:1rem 0;"><span class="gl-' + uid + '" data-t="' + _esc(text) + '">' + _esc(text) + '</span></div>';
+    + '<div data-cb="node" data-key="' + _ckey(b.text, 'glitch_text') + '" style="margin:1rem 0;"><span class="' + uid + '" data-t="' + _esc(text) + '">' + _esc(text) + '</span></div>';
 };
 
 _RENDERERS['neon_glow'] = function(b) {
@@ -2883,6 +2984,36 @@ _RENDERERS['agent_sketchpad'] = function(b) {
 // ── Inline JS atoms ──────────────────────────────────────────────────────────
 
 _RENDERERS['typewriter_text'] = function(b) {
+  var text = _firstText(b.text, b.content, b.label);
+  var size = _safe_css(b.size, '28px');
+  var weight = _safe_css(b.weight, '700');
+  var color = _safe_css(b.color, '#1a1a1a');
+  var speed = b.speed;
+  var cursor = b.cursor !== false;
+  var delay = b.delay;
+  if (!(typeof delay === 'string' && /^[0-9]{1,4}(\.[0-9]{1,3})?(s|ms)$/.test(delay))) delay = '0s';
+  var tid = 'tw-' + _payloadUid(b);
+  var chars = Math.max(1, Math.min(2000, Array.from(text).length));
+  var PER = {slow: 12, normal: 7, fast: 4};
+  var per = (typeof speed === 'string' && PER.hasOwnProperty(speed)) ? PER[speed] : 7;
+  var sn = _numLoose(speed);
+  if (sn !== null) per = sn >= 90 ? 12 : (sn <= 25 ? 4 : 7);
+  var tenths = Math.floor((chars * per + 5) / 10);
+  var dur = Math.floor(tenths / 10) + '.' + (tenths % 10) + 's';
+  var cursorCss = cursor ? '.' + tid + '::after{content:"|";animation:' + tid + '-blink 0.75s step-end infinite;color:' + color + ';margin-left:2px;}'
+    + '@keyframes ' + tid + '-blink{0%,100%{opacity:1}50%{opacity:0}}' : '';
+  return '<style>'
+    + '.' + tid + '{display:inline-block;overflow:hidden;white-space:nowrap;width:0;animation:' + tid + '-type ' + dur + ' steps(' + chars + ',end) forwards;animation-delay:' + delay + ';}'
+    + '@keyframes ' + tid + '-type{to{width:' + chars + 'ch}}'
+    + cursorCss
+    + '@media (prefers-reduced-motion:reduce){.' + tid + '{animation:none;width:auto;}.' + tid + '::after{animation:none;}}'
+    + '</style>'
+    + '<div data-cb="node" data-key="' + _ckey(b.text, 'typewriter_text') + '" style="margin:1rem 0;font-size:' + size + ';font-weight:' + weight + ';'
+    + 'color:' + color + ';line-height:1.2;font-family:monospace;">'
+    + '<span class="' + tid + '">' + _esc(text) + '</span>'
+    + '</div>';
+};
+_RENDERERS['typewriter'] = function(b) {
   var text  = b.text || b.content || b.label || '';
   var speed = parseInt(b.speed || 38, 10);
   var uid = Math.random().toString(36).substr(2, 6);
@@ -2898,7 +3029,6 @@ _RENDERERS['typewriter_text'] = function(b) {
     + '})();<\/script>'
     + '</div>';
 };
-_RENDERERS['typewriter'] = _RENDERERS['typewriter_text'];
 
 _RENDERERS['animated_counter'] = function(b) {
   var end   = parseFloat(b.value !== undefined ? b.value : (b.end !== undefined ? b.end : 0));
@@ -3584,21 +3714,37 @@ _RENDERERS['sequence_diagram'] = function(b) {
 };
 
 _RENDERERS['tooltip_glossary'] = function(b) {
-  var terms = b.terms || b.items || [];
-  var intro = b.text || b.intro || '';
+  function usable(v) {
+    if (!Array.isArray(v)) return [];
+    return v.filter(function(t) { return (t && typeof t === 'object' && !Array.isArray(t)) || _textLoose(t); });
+  }
+  var terms = usable(b.terms);
+  if (!terms.length) terms = usable(b.items);
+  var intro = _firstText(b.text, b.intro);
+  var introHtml = intro ? '<div style="color:#374151;line-height:1.7;margin-bottom:14px;">' + _markdownToHtml(intro) + '</div>' : '';
+  var rows = '';
+  for (var i = 0; i < terms.length; i++) {
+    var t = terms[i], term, definition;
+    if (t && typeof t === 'object' && !Array.isArray(t)) {
+      term = _firstText(t.term, t.word);
+      definition = _firstText(t.definition, t.def);
+    } else {
+      term = _textLoose(t);
+      definition = '';
+    }
+    if (!(term || definition)) continue;
+    rows += '<div style="display:flex;gap:14px;align-items:baseline;padding:10px 0;border-bottom:1px solid #f3f4f6;">'
+      + '<span class="tg-term" tabindex="0" style="flex-shrink:0;min-width:100px;">' + _esc(term)
+      + (definition ? '<span class="tg-tip" role="tooltip">' + _esc(definition) + '</span>' : '') + '</span>'
+      + '<span style="color:#6b7280;font-size:0.875rem;">' + _markdownToHtml(definition) + '</span>'
+      + '</div>';
+  }
   return '<style>.tg-term{position:relative;cursor:help;color:#4f46e5;font-weight:600;border-bottom:1px dashed #4f46e5;}'
     + '.tg-tip{display:none;position:absolute;bottom:120%;left:50%;transform:translateX(-50%);background:#1f2937;color:#fff;font-size:0.78rem;padding:6px 12px;border-radius:8px;white-space:nowrap;z-index:20;box-shadow:0 4px 14px rgba(0,0,0,0.22);}'
     + '.tg-tip::after{content:"";position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:#1f2937;}'
-    + '.tg-term:hover .tg-tip{display:block;}</style>'
+    + '.tg-term:hover .tg-tip,.tg-term:focus .tg-tip{display:block;}</style>'
     + '<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:20px;margin:1rem 0;">'
-    + (intro ? '<div style="color:#374151;line-height:1.7;margin-bottom:14px;">' + _markdownToHtml(intro) + '</div>' : '')
-    + terms.map(function(t) {
-        return '<div style="display:flex;gap:14px;align-items:baseline;padding:10px 0;border-bottom:1px solid #f3f4f6;">'
-          + '<span class="tg-term" style="flex-shrink:0;min-width:100px;">' + _esc(t.term || t.word || '') + '<span class="tg-tip">' + _esc(t.definition || t.def || '') + '</span></span>'
-          + '<span style="color:#6b7280;font-size:0.875rem;">' + _markdownToHtml(t.definition || t.def || '') + '</span>'
-          + '</div>';
-      }).join('')
-    + '</div>';
+    + introHtml + rows + '</div>';
 };
 
 _RENDERERS['focus_lens'] = function(b) {
@@ -4160,21 +4306,20 @@ _RENDERERS['orbit_diagram'] = function(b) {
 };
 
 _RENDERERS['noise_card'] = function(b) {
-  var title = b.title || '';
-  var text  = b.text  || b.content || '';
-  var bg    = b.bg    || '#1e1b4b';
-  var color = b.color || '#fff';
-  var uid = Math.random().toString(36).substr(2, 6);
-  return '<div data-cb="node" data-key="' + _ckey(b.title, 'noise_card') + '" style="position:relative;border-radius:16px;overflow:hidden;padding:28px;margin:1rem 0;background:' + _esc(bg) + ';">'
-    + '<svg width="0" height="0" style="position:absolute;pointer-events:none;">'
+  var title = _textLoose(b.title);
+  var text = _firstText(b.text, b.content);
+  var bg = _safe_css(b.bg, '#1e1b4b');
+  var color = _safe_css(b.color, '#fff');
+  var uid = _payloadUid(b);
+  return '<div data-cb="node" data-key="' + _ckey(b.title, 'noise_card') + '" style="position:relative;border-radius:16px;overflow:hidden;padding:28px;margin:1rem 0;background:' + bg + ';">'
+    + '<svg aria-hidden="true" width="0" height="0" style="position:absolute;pointer-events:none;">'
     + '<defs><filter id="nf-' + uid + '" x="0%" y="0%" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.7" numOctaves="4" stitchTiles="stitch" result="noise"/><feColorMatrix in="noise" type="saturate" values="0" result="grey"/><feBlend in="SourceGraphic" in2="grey" mode="overlay" result="blend"/><feComposite in="blend" in2="SourceGraphic" operator="in"/></filter></defs>'
     + '</svg>'
-    + '<div style="position:absolute;inset:0;opacity:0.055;background:#aaa;filter:url(#nf-' + uid + ');pointer-events:none;"></div>'
+    + '<div aria-hidden="true" style="position:absolute;inset:0;opacity:0.055;background:#aaa;filter:url(#nf-' + uid + ');pointer-events:none;"></div>'
     + '<div style="position:relative;z-index:1;">'
-    + (title ? '<div style="font-size:1.1rem;font-weight:700;color:' + _esc(color) + ';margin-bottom:10px;">' + _esc(title) + '</div>' : '')
-    + (text  ? '<div style="color:' + _esc(color) + 'cc;line-height:1.7;font-size:0.9rem;">' + _markdownToHtml(text) + '</div>' : '')
-    + '</div>'
-    + '</div>';
+    + (title ? '<div style="font-size:1.1rem;font-weight:700;color:' + color + ';margin-bottom:10px;">' + _esc(title) + '</div>' : '')
+    + (text ? '<div style="color:' + color + ';opacity:0.8;line-height:1.7;font-size:0.9rem;">' + _markdownToHtml(text) + '</div>' : '')
+    + '</div></div>';
 };
 
 _RENDERERS['comparison_morph'] = function(b) {

@@ -1888,9 +1888,9 @@
   "kind": "tile",
   "label_kind": "label",
   "key": "cards[].title",
-  "py_sha": "486b9b576a351631e09875826d688843b6d2aa78eab6526c6a7f76e1260e6773",
-  "gas_sha": "5bb3b7f56b1652a7e6d7d78b73729cbb29d68a8c105b63cccdd65628aa6ef11c",
-  "parity": false
+  "py_sha": "befdc4ab26ef24126ad55de1c7218a53b717756267e2843d9de4630204c44c3d",
+  "gas_sha": "befdc4ab26ef24126ad55de1c7218a53b717756267e2843d9de4630204c44c3d",
+  "parity": true
  },
  "drive_folder_contents": {
   "status": "keyed",
@@ -7636,9 +7636,9 @@
   "kind": "tile",
   "label_kind": "label",
   "key": "terms[].term",
-  "py_sha": "e1134573cf636756d68cf2c7d1eb30d81eb80a4e45b6b03db4706814b8245640",
-  "gas_sha": "224ca21aa606318dfb6f0828cf4fc429d572b50ecaf4455b93b891629dc74bf1",
-  "parity": false
+  "py_sha": "21506d55a0bd14de1b9cc6e45e2bdb2d6c72f958f1b27bd4fbfbd90ade80b354",
+  "gas_sha": "21506d55a0bd14de1b9cc6e45e2bdb2d6c72f958f1b27bd4fbfbd90ade80b354",
+  "parity": true
  },
  "toulmin_argument": {
   "status": "pending",
@@ -9778,8 +9778,8 @@
   "kind": "node",
   "label_kind": "label",
   "key": "label",
-  "py_sha": "ac5dd7b2d75e87adb56acd0cb2fbdfa8368033aeb5a779b85b9928a0ff4c3dee",
-  "gas_sha": "0e44b1690583526ad8c3c4a18a343c75514260a74950e30e218b2dd2762f6b84",
+  "py_sha": "75c6638298b44975bb0be86c46c71bba92f731e39b03dd50c69bb4d3b72dc0f0",
+  "gas_sha": "c53f3d7abb32b170340d42b6716f18c17b280cf2b997e59140568865a0f7e56f",
   "parity": false
  },
  "model_card": {
@@ -10148,8 +10148,8 @@
   "kind": "node",
   "label_kind": "label",
   "key": "text",
-  "py_sha": "1ffa8cbb7d1b36e5e4259755c240e4a1ec46b4156c77125ed93bc2a5f8805c09",
-  "gas_sha": "323e38e364f34f0474d1668cff3153ef1ca9b497b5c875ba2392e50e990fdccc",
+  "py_sha": "91000a3f59b5193083c98fe77dc9d7aa46e8cf2ec859e97ed1b07f1e7bfa21a8",
+  "gas_sha": "2c49d8325c289827440f4935470d4e96d16a9650b5270e9a513ef27962e89ae7",
   "parity": false
  },
  "particle_type": {
@@ -10296,8 +10296,8 @@
   "kind": "node",
   "label_kind": "label",
   "key": "label",
-  "py_sha": "f0ba794322b91c8d914df5ef063d747fa5009ecfaac61a708803aaafd5bc1d25",
-  "gas_sha": "f44fad904141e14fd58072b287845da0075d4b83748ff855cedcdc93fb00bb7b",
+  "py_sha": "0d389c13ef0ebae6a5f7b5f3612cb5fec8a73508f4d048d9f474e76bb3691c93",
+  "gas_sha": "1e24358cd86c5ba6b139d4b33e53a7b755f0a506edab0730cbad19a2f46dc40f",
   "parity": false
  },
  "glow_button": {
@@ -11293,8 +11293,8 @@
   "kind": "node",
   "label_kind": "label",
   "key": "text",
-  "py_sha": "e9ebd6c56e6842c8b909441c73ad0cb5aa30fafdcd371165285259a5b094b582",
-  "gas_sha": "d6634a8caa49032fc6d79ca9aa5d65c6b0c357d75c08a2ef59ad82dba448b487",
+  "py_sha": "b6f2b72649ff4cfad71ad977dfeefa0d638a6d48039e3665fd2f26ef1b4546d7",
+  "gas_sha": "21390f4c6aaa9f6ccb104d54cd625cfac31d45d2fdec1182a8b4cda1a624baee",
   "parity": false
  },
  "neon_glow": {
@@ -11513,8 +11513,8 @@
   "kind": "node",
   "label_kind": "label",
   "key": "title",
-  "py_sha": "b8c94dd81dcd76b9f22929d56a87b91a3773e58c42c77da2e5a40be45faafaf1",
-  "gas_sha": "fd6764875c22c6200f0a032680bb37937fd1e00343d55cc60beffe3172944285",
+  "py_sha": "6cee580652132800db01b14aa64f9dab4cba19e3a3d79d78d67376b90a133cbc",
+  "gas_sha": "47ddda3b724703e8f9430a3090807c52eda0f7c9c72cf6b20801ed4abb105888",
   "parity": false
  },
  "feed_status": {

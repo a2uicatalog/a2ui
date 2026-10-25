@@ -104,15 +104,15 @@ _RENDERERS['lens_eli5'] = function(b) {
 };
 
 _RENDERERS['lens_synthesis'] = function(b) {
-  var points = Array.isArray(b.points) ? b.points : [];
-  var excerpt = b.source_excerpt || '';
+  var points = Array.isArray(b.points) ? b.points.filter(function(p) { return p && typeof p === 'object' && !Array.isArray(p); }) : [];
+  var excerpt = _textLoose(b.source_excerpt);
   if (!points.length) return '<p style="opacity:0.6;font-size:0.85rem;">No synthesis points supplied.</p>';
   var html = '';
   for (var i = 0; i < points.length; i++) {
     var p = points[i];
     html += '<div style="margin-bottom:14px;">' +
-      _RENDERERS['take_away_card']({ headline: p.point || '' }) +
-      _lensEvidenceBlock(p.evidence, excerpt) +
+      _RENDERERS['take_away_card']({ headline: _textLoose(p.point) }) +
+      _lensEvidenceBlock(_textLoose(p.evidence), excerpt) +
       '</div>';
   }
   return html;

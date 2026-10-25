@@ -7072,40 +7072,35 @@ def _render_marquee_strip(b: dict) -> str:
 
 
 def _render_typewriter_text(b: dict) -> str:
-    import hashlib
-    tid     = "tw_" + hashlib.md5(b.get("text", "type").encode()).hexdigest()[:6]
-    text    = b.get("text", "")
-    size    = b.get("size", "28px")
-    weight  = b.get("weight", "700")
-    color   = b.get("color", "#1a1a1a")
-    speed   = b.get("speed", "normal")
-    cursor  = b.get("cursor", True)
-    delay   = b.get("delay", "0s")
-
-    chars = len(text)
-    durations = {"slow": f"{chars * 0.12:.1f}s", "normal": f"{chars * 0.07:.1f}s",
-                 "fast": f"{chars * 0.04:.1f}s"}
-    dur = durations.get(speed, f"{chars * 0.07:.1f}s")
-
-    cursor_css = (
-        f'.{tid}::after{{content:"|";animation:{tid}-blink 0.75s step-end infinite;'
-        f'color:{_cv_esc(color)};margin-left:2px;}}'
-        f'@keyframes {tid}-blink{{0%,100%{{opacity:1}}50%{{opacity:0}}}}'
-    ) if cursor else ""
-
-    return (
-        f'<style>'
-        f'.{tid}{{display:inline-block;overflow:hidden;white-space:nowrap;'
-        f'width:0;animation:{tid}-type {dur} steps({chars},end) forwards;'
-        f'animation-delay:{_cv_esc(delay)};}}'
-        f'@keyframes {tid}-type{{to{{width:{chars}ch}}}}'
-        f'{cursor_css}'
-        f'</style>'
-        f'<div data-cb="node" data-key="{_ck(b.get("text"), "typewriter_text")}" style="margin:1rem 0;font-size:{_cv_esc(size)};font-weight:{_cv_esc(weight)};'
-        f'color:{_cv_esc(color)};line-height:1.2;font-family:monospace;">'
-        f'<span class="{tid}">{_cv_esc(text)}</span>'
-        f'</div>'
-    )
+    text = _first_text(b.get('text'), b.get('content'), b.get('label'))
+    size = _safe_css(b.get('size'), '28px')
+    weight = _safe_css(b.get('weight'), '700')
+    color = _safe_css(b.get('color'), '#1a1a1a')
+    speed = b.get('speed')
+    cursor = b.get('cursor') is not False
+    delay = b.get('delay')
+    if not (isinstance(delay, str) and re.fullmatch(r'[0-9]{1,4}(\.[0-9]{1,3})?(s|ms)', delay)):
+        delay = '0s'
+    tid = 'tw-' + _wa_uid(b)
+    chars = max(1, min(2000, len(text)))
+    per = {'slow': 12, 'normal': 7, 'fast': 4}.get(speed, 7) if isinstance(speed, str) else 7
+    sn = _num_loose(speed)
+    if sn is not None:
+        per = 12 if sn >= 90 else (4 if sn <= 25 else 7)
+    tenths = (chars * per + 5) // 10
+    dur = str(tenths // 10) + '.' + str(tenths % 10) + 's'
+    cursor_css = ('.' + tid + '::after{content:"|";animation:' + tid + '-blink 0.75s step-end infinite;color:' + color + ';margin-left:2px;}'
+                  '@keyframes ' + tid + '-blink{0%,100%{opacity:1}50%{opacity:0}}') if cursor else ''
+    return ('<style>'
+            '.' + tid + '{display:inline-block;overflow:hidden;white-space:nowrap;width:0;animation:' + tid + '-type ' + dur + ' steps(' + str(chars) + ',end) forwards;animation-delay:' + delay + ';}'
+            '@keyframes ' + tid + '-type{to{width:' + str(chars) + 'ch}}'
+            + cursor_css +
+            '@media (prefers-reduced-motion:reduce){.' + tid + '{animation:none;width:auto;}.' + tid + '::after{animation:none;}}'
+            '</style>'
+            '<div data-cb="node" data-key="' + _ck(b.get('text'), 'typewriter_text') + '" style="margin:1rem 0;font-size:' + size + ';font-weight:' + weight + ';'
+            'color:' + color + ';line-height:1.2;font-family:monospace;">'
+            '<span class="' + tid + '">' + _cv_esc(text) + '</span>'
+            '</div>')
 
 
 def _render_animated_border_card(b: dict) -> str:
@@ -7258,44 +7253,39 @@ def _render_dot_grid_background(b: dict) -> str:
 
 
 def _render_shimmer_button(b: dict) -> str:
-    import hashlib
-    sid    = "sb_" + hashlib.md5(b.get("label", "btn").encode()).hexdigest()[:6]
-    label  = b.get("label", "Click me")
-    href   = b.get("href", "")
-    size   = b.get("size", "md")
-    accent = b.get("accent", "#38bdf8")
-    bg     = b.get("background", "#1e293b")
-    speed  = b.get("speed", "normal")
-    description = b.get("description", "")
-
-    dur = {"slow": "3s", "normal": "1.8s", "fast": "0.9s"}.get(speed, "1.8s")
-    pad, fsize = {"sm": ("8px 18px", "0.82rem"), "md": ("12px 28px", "0.92rem"),
-                  "lg": ("16px 40px", "1.05rem")}.get(size, ("12px 28px", "0.92rem"))
-
-    hl = _hex_to_rgba(accent, 0.5)
-
-    tag = "a" if href else "button"
-    href_attr = f' href="{_cv_esc(href)}"' if href else ' type="button"'
-    desc_html = (
-        f'<div style="margin-top:6px;font-size:0.78rem;color:var(--muted,#5f6368);">{_cv_esc(description)}</div>'
-    ) if description else ""
-
-    return (
-        f'<style>'
-        f'@keyframes {sid}-sw{{0%{{background-position:-200% center}}'
-        f'100%{{background-position:200% center}}}}'
-        f'.{sid}{{display:inline-block;padding:{pad};font-size:{fsize};font-weight:600;'
-        f'color:#f1f5f9;border:1px solid rgba(255,255,255,0.14);border-radius:8px;cursor:pointer;'
-        f'background:linear-gradient(105deg,{_cv_esc(bg)} 38%,{hl} 50%,{_cv_esc(bg)} 62%);'
-        f'background-size:200% auto;'
-        f'animation:{sid}-sw {dur} linear infinite;'
-        f'text-decoration:none;letter-spacing:0.01em;}}'
-        f'</style>'
-        f'<div data-cb="node" data-key="{_ck(b.get("label"), "shimmer_button")}" style="margin:1rem 0;">'
-        f'<{tag}{href_attr} class="{sid}">{_cv_esc(label)}</{tag}>'
-        f'{desc_html}'
-        f'</div>'
-    )
+    sid = 'sb-' + _wa_uid(b)
+    label = _first_text(b.get('label'), b.get('text'), b.get('title')) or 'Click me'
+    href = _safe_href(b.get('href'))
+    size = b.get('size')
+    accent = _safe_css(b.get('accent'), '#38bdf8')
+    bg = _safe_css(b.get('background'), '#1e293b')
+    speed = b.get('speed')
+    description = _text_loose(b.get('description'))
+    dur = {'slow': '3s', 'normal': '1.8s', 'fast': '0.9s'}.get(speed, '1.8s') if isinstance(speed, str) else '1.8s'
+    pad, fsize = ({'sm': ('8px 18px', '0.82rem'), 'md': ('12px 28px', '0.92rem'), 'lg': ('16px 40px', '1.05rem')}.get(size, ('12px 28px', '0.92rem'))
+                  if isinstance(size, str) else ('12px 28px', '0.92rem'))
+    hm = re.fullmatch(r'#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})', accent)
+    if hm:
+        h = hm.group(1)
+        h = ''.join(c * 2 for c in h) if len(h) == 3 else h
+        hl = 'rgba(' + str(int(h[0:2], 16)) + ',' + str(int(h[2:4], 16)) + ',' + str(int(h[4:6], 16)) + ',0.5)'
+    else:
+        hl = 'color-mix(in srgb, ' + accent + ' 50%, transparent)'
+    tag = 'a' if href else 'button'
+    href_attr = (' href="' + _cv_esc(href) + '" target="_top" rel="noopener"') if href else ' type="button"'
+    desc_html = ('<div style="margin-top:6px;font-size:0.78rem;color:var(--muted,#5f6368);">' + _cv_esc(description) + '</div>') if description else ''
+    return ('<style>'
+            '@keyframes ' + sid + '-sw{0%{background-position:-200% center}100%{background-position:200% center}}'
+            '.' + sid + '{display:inline-block;padding:' + pad + ';font-size:' + fsize + ';font-weight:600;'
+            'color:#f1f5f9;border:1px solid rgba(255,255,255,0.14);border-radius:8px;cursor:pointer;'
+            'background:linear-gradient(105deg,' + bg + ' 38%,' + hl + ' 50%,' + bg + ' 62%);'
+            'background-size:200% auto;animation:' + sid + '-sw ' + dur + ' linear infinite;'
+            'text-decoration:none;letter-spacing:0.01em;}'
+            '@media (prefers-reduced-motion:reduce){.' + sid + '{animation:none;}}'
+            '</style>'
+            '<div data-cb="node" data-key="' + _ck(b.get('label'), 'shimmer_button') + '" style="margin:1rem 0;">'
+            '<' + tag + href_attr + ' class="' + sid + '">' + _cv_esc(label) + '</' + tag + '>'
+            + desc_html + '</div>')
 
 
 def _render_card_stack(b: dict) -> str:
@@ -7413,50 +7403,65 @@ def _render_entity_list(b: dict) -> str:
 
 
 def _render_prompt_template(b: dict) -> str:
-    """LLM prompt with {variable} slots highlighted. Copy button included."""
-    import re, hashlib
-    template  = b.get("template", "")
-    accent    = b.get("accent", "#7c3aed")
-    copyable  = b.get("copyable", True)
-    label     = b.get("label", "")
-    pid       = "pt_" + hashlib.md5(template.encode()).hexdigest()[:6]
-    slot_bg   = _hex_to_rgba(accent, 0.10)
-    slot_fg   = accent
+    """LLM prompt with {slot} (or {{slot}}) placeholders highlighted. Copy button included."""
+    template = _text_loose(b.get('template'))
+    accent = _safe_css(b.get('accent'), '#7c3aed')
+    copyable = b.get('copyable') is not False
+    label = _text_loose(b.get('label'))
+    title = _text_loose(b.get('title')) or 'prompt template'
+    use_case = _text_loose(b.get('use_case'))
+    variables = b.get('variables') if isinstance(b.get('variables'), list) else []
+    pid = 'pt_' + _wa_uid(b)
+    hm = re.fullmatch(r'#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})', accent)
+    if hm:
+        h = hm.group(1)
+        h = ''.join(c * 2 for c in h) if len(h) == 3 else h
+        slot_bg = 'rgba(' + str(int(h[0:2], 16)) + ',' + str(int(h[2:4], 16)) + ',' + str(int(h[4:6], 16)) + ',0.1)'
+    else:
+        slot_bg = 'color-mix(in srgb, ' + accent + ' 10%, transparent)'
 
     def _highlight(m):
-        return (
-            f'<span style="background:{slot_bg};color:{slot_fg};font-weight:600;'
-            f'border-radius:3px;padding:0 3px;">{m.group(0)}</span>'
-        )
-    highlighted = re.sub(r"\{[^}]+\}", _highlight, template.replace("<", "&lt;").replace(">", "&gt;"))
-    highlighted = highlighted.replace("\n", "<br>")
-
-    label_html = (
-        f'<div style="font-size:0.72rem;font-weight:600;color:var(--muted,#5f6368);'
-        f'text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;">{_cv_esc(label)}</div>'
-    ) if label else ""
-
-    copy_btn = (
-        f'<button onclick="navigator.clipboard.writeText(document.getElementById(\'{pid}-src\').innerText)" '
-        f'style="padding:4px 10px;border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);background:#ffffff;background:var(--a2ui-surface,#ffffff);'
-        f'font-size:0.75rem;color:#5f6368;cursor:pointer;flex-shrink:0;">Copy</button>'
-    ) if copyable else ""
-
-    return (
-        f'<div data-cb="node" data-key="{_ck(b.get("label"), "prompt_template")}" style="margin:1rem 0;">'
-        f'{label_html}'
-        f'<div style="border:1px solid #e0e0e0;border-radius:8px;overflow:hidden;">'
-        f'<div style="display:flex;align-items:center;justify-content:space-between;'
-        f'padding:6px 12px;background:#f9fafb;border-bottom:1px solid #e0e0e0;">'
-        f'<span style="font-size:0.72rem;color:var(--muted,#5f6368);font-family:monospace;">prompt template</span>'
-        f'{copy_btn}'
-        f'</div>'
-        f'<pre id="{pid}-src" style="margin:0;padding:14px 16px;font-size:0.84rem;'
-        f'font-family:monospace;line-height:1.6;color:#374151;background:#fff;'
-        f'white-space:pre-wrap;word-break:break-word;">{highlighted}</pre>'
-        f'</div>'
-        f'</div>'
-    )
+        return ('<span style="background:' + slot_bg + ';color:' + accent + ';font-weight:600;border-radius:3px;padding:0 3px;">' + m.group(0) + '</span>')
+    highlighted = re.sub(r'\{\{[^{}]+\}\}|\{[^{}]+\}', _highlight, _cv_esc(template)).replace('\n', '<br>')
+    label_html = ('<div style="font-size:0.72rem;font-weight:600;color:var(--muted,#5f6368);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;">'
+                  + _cv_esc(label) + '</div>') if label else ''
+    copy_btn = ('<button type="button" onclick="navigator.clipboard.writeText(document.getElementById(\'' + pid + '-src\').innerText)" '
+                'style="padding:4px 10px;border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);'
+                'background:#ffffff;background:var(--a2ui-surface,#ffffff);font-size:0.75rem;color:#5f6368;cursor:pointer;flex-shrink:0;">Copy</button>') if copyable else ''
+    use_html = ('<span style="font-size:0.72rem;color:var(--muted,#5f6368);">' + _cv_esc(use_case) + '</span>') if use_case else ''
+    right = ('<span style="display:flex;align-items:center;gap:10px;">' + use_html + copy_btn + '</span>') if (use_html and copy_btn) else (use_html + copy_btn)
+    braced = '{{%s}}' if '{{' in template else '{%s}'
+    rows = ''
+    n = 0
+    for v in variables:
+        if not isinstance(v, dict):
+            continue
+        name = _text_loose(v.get('name'))
+        desc = _text_loose(v.get('description'))
+        ex = _text_loose(v.get('example'))
+        if not (name or desc or ex):
+            continue
+        rows += ('<tr' + ('' if n % 2 == 0 else ' style="background:#f9fafb;"') + '>'
+                 '<td style="padding:8px 10px;font-family:monospace;font-size:0.82rem;color:' + accent + ';white-space:nowrap;">' + (_cv_esc(braced % name) if name else '') + '</td>'
+                 '<td style="padding:8px 10px;font-size:0.82rem;color:#374151;">' + _cv_esc(desc) + '</td>'
+                 '<td style="padding:8px 10px;font-size:0.78rem;color:#6b7280;font-style:italic;">' + _cv_esc(ex) + '</td></tr>')
+        n += 1
+    vars_html = ('<div style="padding:14px 16px;border-top:1px solid #e0e0e0;"><div style="font-size:0.72rem;font-weight:700;color:var(--muted,#5f6368);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Variables</div>'
+                 '<table style="width:100%;border-collapse:collapse;font-size:0.82rem;"><thead><tr style="background:#f3f4f6;">'
+                 '<th scope="col" style="padding:7px 10px;text-align:left;font-size:0.75rem;color:#6b7280;">Variable</th>'
+                 '<th scope="col" style="padding:7px 10px;text-align:left;font-size:0.75rem;color:#6b7280;">Description</th>'
+                 '<th scope="col" style="padding:7px 10px;text-align:left;font-size:0.75rem;color:#6b7280;">Example</th></tr></thead><tbody>' + rows + '</tbody></table></div>') if rows else ''
+    return ('<div data-cb="node" data-key="' + _ck(b.get('label'), 'prompt_template') + '" style="margin:1rem 0;">'
+            + label_html
+            + '<div style="border:1px solid #e0e0e0;border-radius:8px;overflow:hidden;">'
+            '<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 12px;background:#f9fafb;border-bottom:1px solid #e0e0e0;">'
+            '<span style="font-size:0.72rem;color:var(--muted,#5f6368);font-family:monospace;">' + _cv_esc(title) + '</span>'
+            + right
+            + '</div>'
+            '<pre id="' + pid + '-src" style="margin:0;padding:14px 16px;font-size:0.84rem;font-family:monospace;line-height:1.6;color:#374151;background:#fff;white-space:pre-wrap;word-break:break-word;">'
+            + highlighted + '</pre>'
+            + vars_html
+            + '</div></div>')
 
 
 def _render_model_card(b: dict) -> str:
@@ -24775,20 +24780,22 @@ _RENDERERS["mesh_gradient"] = _render_mesh_gradient
 
 
 def _render_noise_card(b: dict) -> str:
-    title = _esc(b.get('title', ''))
-    text = _md_inline(b.get('text', ''))
-    bg = _esc(b.get('bg', '#1e1e2e'))
-    color = _esc(b.get('color', '#c4c9ff'))
-    return ('<div data-cb="node" data-key="' f'{_ck(b.get("title"), "noise_card")}' '" style="margin:1rem 0;padding:28px;border-radius:14px;background:' + bg + ';'
-            'position:relative;overflow:hidden;">'
-            '<div style="position:absolute;inset:0;opacity:0.04;'
-            'background-image:url(\'data:image/svg+xml,<svg xmlns=\\\'http://www.w3.org/2000/svg\\\' width=\\\'200\\\' height=\\\'200\\\'><filter id=\\\'n\\\'><feTurbulence type=\\\'fractalNoise\\\' baseFrequency=\\\'0.9\\\'/></filter><rect width=\\\'200\\\' height=\\\'200\\\' filter=\\\'url(%23n)\\\'/></svg>\');'
-            'pointer-events:none;"></div>'
-            + ('<div style="font-weight:700;font-size:1rem;color:' + color + ';margin-bottom:8px;'
-               'position:relative;">' + title + '</div>' if title else '')
-            + ('<p style="margin:0;font-size:0.875rem;color:rgba(255,255,255,0.6);line-height:1.7;'
-               'position:relative;">' + text + '</p>' if text else '')
-            + '</div>')
+    title = _text_loose(b.get('title'))
+    text = _first_text(b.get('text'), b.get('content'))
+    bg = _safe_css(b.get('bg'), '#1e1b4b')
+    color = _safe_css(b.get('color'), '#fff')
+    uid = _wa_uid(b)
+    return ('<div data-cb="node" data-key="' + _ck(b.get('title'), 'noise_card') + '" style="position:relative;border-radius:16px;overflow:hidden;padding:28px;margin:1rem 0;background:' + bg + ';">'
+            '<svg aria-hidden="true" width="0" height="0" style="position:absolute;pointer-events:none;">'
+            '<defs><filter id="nf-' + uid + '" x="0%" y="0%" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.7" numOctaves="4" stitchTiles="stitch" result="noise"/><feColorMatrix in="noise" type="saturate" values="0" result="grey"/><feBlend in="SourceGraphic" in2="grey" mode="overlay" result="blend"/><feComposite in="blend" in2="SourceGraphic" operator="in"/></filter></defs>'
+            '</svg>'
+            '<div aria-hidden="true" style="position:absolute;inset:0;opacity:0.055;background:#aaa;filter:url(#nf-' + uid + ');pointer-events:none;"></div>'
+            '<div style="position:relative;z-index:1;">'
+            + ('<div style="font-size:1.1rem;font-weight:700;color:' + color + ';margin-bottom:10px;">' + _cv_esc(title) + '</div>' if title else '')
+            + ('<div style="color:' + color + ';opacity:0.8;line-height:1.7;font-size:0.9rem;">' + _md_inline(text) + '</div>' if text else '')
+            + '</div></div>')
+
+
 _RENDERERS["noise_card"] = _render_noise_card
 
 
@@ -24831,25 +24838,20 @@ _RENDERERS["pattern_background"] = _render_pattern_background
 
 
 def _render_glitch_text(b: dict) -> str:
-    text = _esc(b.get('text', 'GLITCH'))
-    size = _esc(b.get('size', '3rem'))
-    import hashlib
-    uid = 'gl' + hashlib.md5(text.encode()).hexdigest()[:5]
-    kf = ('@keyframes ' + uid + '{'
-          '0%,100%{clip-path:none;transform:none;}'
-          '20%{clip-path:polygon(0 10%,100% 10%,100% 40%,0 40%);transform:translateX(-4px);}'
-          '40%{clip-path:polygon(0 55%,100% 55%,100% 75%,0 75%);transform:translateX(4px);}'
-          '60%{clip-path:polygon(0 25%,100% 25%,100% 50%,0 50%);transform:translateX(-2px);}'
-          '80%{clip-path:none;transform:none;}}')
-    return ('<style>' + kf + '</style>'
-            '<div data-cb="node" data-key="' f'{_ck(b.get("text"), "glitch_text")}' '" style="padding:20px 0;text-align:center;position:relative;">'
-            '<span style="font-size:' + size + ';font-weight:900;color:#fff;position:relative;">'
-            + text +
-            '<span style="position:absolute;left:0;top:0;font-size:' + size + ';font-weight:900;'
-            'color:#ff2d78;animation:' + uid + ' 2s infinite;opacity:0.7;">' + text + '</span>'
-            '<span style="position:absolute;left:0;top:0;font-size:' + size + ';font-weight:900;'
-            'color:#00f0ff;animation:' + uid + ' 2s 0.1s infinite;opacity:0.7;">' + text + '</span>'
-            '</span></div>')
+    text = _first_text(b.get('text'), b.get('title'), b.get('label'))
+    size = _safe_css(b.get('size'), '2rem')
+    uid = 'gl-' + _wa_uid(b)
+    return ('<style>'
+            '.' + uid + '{position:relative;font-size:' + size + ';font-weight:800;color:#0b8092;display:inline-block;letter-spacing:0.04em;}'
+            '.' + uid + '::before{content:attr(data-t);position:absolute;top:0;left:-2px;color:#f43f5e;clip-path:polygon(0 0,100% 0,100% 38%,0 38%);animation:' + uid + '-a 3.5s infinite;}'
+            '.' + uid + '::after{content:attr(data-t);position:absolute;top:0;left:2px;color:#3b82f6;clip-path:polygon(0 62%,100% 62%,100% 100%,0 100%);animation:' + uid + '-b 3.5s infinite;}'
+            '@keyframes ' + uid + '-a{0%,88%,100%{transform:none;}89%{transform:translateX(-3px);}92%{transform:translateX(3px);}95%{transform:translateX(-1px);}}'
+            '@keyframes ' + uid + '-b{0%,88%,100%{transform:none;}89%{transform:translateX(3px);}92%{transform:translateX(-3px);}95%{transform:translateX(1px);}}'
+            '@media (prefers-reduced-motion:reduce){.' + uid + '::before,.' + uid + '::after{animation:none;}}'
+            '</style>'
+            '<div data-cb="node" data-key="' + _ck(b.get('text'), 'glitch_text') + '" style="margin:1rem 0;"><span class="' + uid + '" data-t="' + _cv_esc(text) + '">' + _cv_esc(text) + '</span></div>')
+
+
 _RENDERERS["glitch_text"] = _render_glitch_text
 
 
@@ -24858,29 +24860,39 @@ _RENDERERS["glitch_text"] = _render_glitch_text
 
 
 def _render_depth_stack(b: dict) -> str:
-    cards = b.get('cards', [])
-    count = int(b.get('count', len(cards) or 3))
-    items = cards[:count] if cards else [{}] * min(count, 3)
+    def _usable(v):
+        return [c for c in v if isinstance(c, dict) or _text_loose(c)] if isinstance(v, list) else []
+    cards = _usable(b.get('cards')) or _usable(b.get('items'))
+    if not cards:
+        return '<p style="opacity:0.6;font-size:0.85rem;">No cards supplied.</p>'
+    n = _num_loose(b.get('count'))
+    count = min(50, len(cards)) if n is None else max(1, min(50, int(n // 1)))
+    items = cards[:count]
     stack_html = ''
-    for i, card in enumerate(reversed(items)):
+    for i, card in enumerate(items):
         offset = i * 8
-        scale = 1 - i * 0.04
-        opacity = 1 - i * 0.15
-        raw_title = card.get('title', '') if isinstance(card, dict) else ''
-        title = _esc(raw_title)
-        text = _esc(card.get('text', '') if isinstance(card, dict) else '')
-        k = _esc(raw_title)
+        scale = max(40, 100 - i * 4)
+        opacity = max(10, 100 - i * 15)
+        if isinstance(card, dict):
+            title = _first_text(card.get('title'))
+            text = _first_text(card.get('text'), card.get('body'))
+        else:
+            title = ''
+            text = _text_loose(card)
+        k = _cv_esc(title)
         stack_html = ('<div data-cb="tile" data-key="' + k + '" style="position:absolute;top:' + str(offset) + 'px;left:' + str(offset) + 'px;'
                       'right:' + str(offset) + 'px;padding:20px;border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#ffffff;background:var(--a2ui-surface,#ffffff);'
                       'border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);box-shadow:0 4px 12px rgba(0,0,0,0.08);'
-                      'transform:scale(' + str(scale) + ');opacity:' + str(opacity) + ';'
+                      'transform:scale(' + format(scale / 100, 'g') + ');opacity:' + format(opacity / 100, 'g') + ';'
                       'transform-origin:top center;">'
-                      + ('<div data-cb="label" data-key="' + k + '" style="font-weight:700;color:#111827;">' + title + '</div>' if title else '')
-                      + ('<div style="font-size:0.875rem;color:var(--muted,#5f6368);">' + text + '</div>' if text else '')
+                      + ('<div data-cb="label" data-key="' + k + '" style="font-weight:700;color:#111827;">' + _cv_esc(title) + '</div>' if title else '')
+                      + ('<div style="font-size:0.875rem;color:var(--muted,#5f6368);">' + _cv_esc(text) + '</div>' if text else '')
                       + '</div>') + stack_html
     height = 80 + len(items) * 40
     return ('<div style="position:relative;height:' + str(height) + 'px;margin:2rem 0;">'
             + stack_html + '</div>')
+
+
 _RENDERERS["depth_stack"] = _render_depth_stack
 # ── Batch 4d: Animation & interactive atoms ───────────────────────────────────
 
@@ -28033,24 +28045,33 @@ _RENDERERS['layer_stack'] = _render_layer_stack
 
 
 def _render_tooltip_glossary(b: dict) -> str:
-    # Schema's `terms` is an ARRAY of {term, definition} (not a dict keyed by term, as this
-    # treated it -- `{}.items()` on a list crashes outright), and the intro prose field is
-    # `text`/`intro` shown separately, not text to find-and-replace terms inside (that was
-    # a different, older concept). Ported to GAS's real design: intro paragraph, then a
-    # definition list (surface-parity debt). 2026-09-27.
-    terms = b.get('terms') or b.get('items', [])
-    intro = b.get('text') or b.get('intro', '')
-    intro_html = f'<div style="color:#374151;line-height:1.7;margin-bottom:14px;">{_md_inline(intro)}</div>' if intro else ''
-    rows = ''.join(
-        f'<div style="display:flex;gap:14px;align-items:baseline;padding:10px 0;border-bottom:1px solid #f3f4f6;">'
-        f'<span style="flex-shrink:0;min-width:100px;font-weight:600;color:#4f46e5;border-bottom:1px dashed #4f46e5;">'
-        f'{_esc(t.get("term", t.get("word", "")))}</span>'
-        f'<span style="color:var(--muted,#5f6368);font-size:0.875rem;">{_md_inline(t.get("definition", t.get("def", "")))}</span></div>'
-        for t in terms if isinstance(t, dict)
-    )
-    return (f'<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);'
-            f'border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:20px;margin:1rem 0;">'
-            f'{intro_html}{rows}</div>')
+    def _usable(v):
+        return [t for t in v if isinstance(t, dict) or _text_loose(t)] if isinstance(v, list) else []
+    terms = _usable(b.get('terms')) or _usable(b.get('items'))
+    intro = _first_text(b.get('text'), b.get('intro'))
+    intro_html = '<div style="color:#374151;line-height:1.7;margin-bottom:14px;">' + _md_inline(intro) + '</div>' if intro else ''
+    rows = ''
+    for t in terms:
+        if isinstance(t, dict):
+            term = _first_text(t.get('term'), t.get('word'))
+            definition = _first_text(t.get('definition'), t.get('def'))
+        else:
+            term, definition = _text_loose(t), ''
+        if not (term or definition):
+            continue
+        rows += ('<div style="display:flex;gap:14px;align-items:baseline;padding:10px 0;border-bottom:1px solid #f3f4f6;">'
+                 '<span class="tg-term" tabindex="0" style="flex-shrink:0;min-width:100px;">' + _cv_esc(term)
+                 + ('<span class="tg-tip" role="tooltip">' + _cv_esc(definition) + '</span>' if definition else '') + '</span>'
+                 '<span style="color:#6b7280;font-size:0.875rem;">' + _md_inline(definition) + '</span>'
+                 '</div>')
+    return ('<style>.tg-term{position:relative;cursor:help;color:#4f46e5;font-weight:600;border-bottom:1px dashed #4f46e5;}'
+            '.tg-tip{display:none;position:absolute;bottom:120%;left:50%;transform:translateX(-50%);background:#1f2937;color:#fff;font-size:0.78rem;padding:6px 12px;border-radius:8px;white-space:nowrap;z-index:20;box-shadow:0 4px 14px rgba(0,0,0,0.22);}'
+            '.tg-tip::after{content:"";position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:#1f2937;}'
+            '.tg-term:hover .tg-tip,.tg-term:focus .tg-tip{display:block;}</style>'
+            '<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:20px;margin:1rem 0;">'
+            + intro_html + rows + '</div>')
+
+
 _RENDERERS["tooltip_glossary"] = _render_tooltip_glossary
 
 
@@ -42474,13 +42495,14 @@ def _render_lens_eli5(b: dict) -> str:
 
 
 def _render_lens_synthesis(b: dict) -> str:
-    points = _gx_list(_if_g(b, 'points'))
-    excerpt = _gx_or(_if_g(b, 'source_excerpt'), '')
+    raw = b.get('points')
+    points = [p for p in raw if isinstance(p, dict)] if isinstance(raw, list) else []
+    excerpt = _text_loose(b.get('source_excerpt'))
     if not points:
         return '<p style="opacity:0.6;font-size:0.85rem;">No synthesis points supplied.</p>'
     html = ''
     for p in points:
-        html += '<div style="margin-bottom:14px;">' + _RENDERERS['take_away_card']({'headline': _gx_or(_gx_get(p, 'point'), '')}) + _lens_evidence_block(_gx_get(p, 'evidence'), excerpt) + '</div>'
+        html += '<div style="margin-bottom:14px;">' + _RENDERERS['take_away_card']({'headline': _text_loose(p.get('point'))}) + _lens_evidence_block(_text_loose(p.get('evidence')), excerpt) + '</div>'
     return html
 
 

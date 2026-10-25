@@ -134,7 +134,7 @@ def _fuzz(blocks):
 
 
 def _norm_uid(h):
-    return re.sub(r"(anhl|wg|isr-|sl-|cu-|gauge_sla_|cp-(?:wrap|hd|lbl|btn|body)-|su-(?:in-|glow-)?|sr-(?:t|b|top|bot)-|fco|fci|fcf|fcb|fch)[0-9a-f]{6,8}", r"\1UID", _norm(h))
+    return re.sub(r"(anhl|wg|isr-|sl-|cu-|gl-|pt_|nf-|sb-|tw-|ros-|gb-|sp-|rh-btn-|rh-count-|srs-|tb-cur-|tb-bl-|tb-|vs-|ck_|asp_|gauge_sla_|cp-(?:wrap|hd|lbl|btn|body)-|su-(?:in-|glow-)?|sr-(?:t|b|top|bot)-|fco|fci|fcf|fcb|fch)[0-9a-f]{6,8}", r"\1UID", _norm(h))
 
 
 @pytest.fixture(scope="module")
@@ -429,3 +429,102 @@ def test_status_marks_use_hidden_text_not_aria_label_on_spans_and_tab_nav_labels
         assert 'aria-label="Sections"' in html and html.count("cursor:pointer") == 1
     for html in (_py_fresh(blocks[3]), gas[3]):
         assert 'aria-label="Tabs"' in html and "cursor:pointer" not in html
+
+
+# ---- batch b6/1 ----
+EQUAL.extend([
+    {"type": "depth_stack", "count": 3, "cards": [{"title": "Alpha", "text": "First **card**"}, {"title": "Beta", "body": "Second"}, "Plain", {"title": "Cut"}]},
+    {"type": "glitch_text", "text": "SYSTEM FAULT", "size": "3rem"},
+    {"type": "prompt_template", "label": "Triage", "template": "Summarise {topic} for <b>{audience}</b>\nthen {{old}}", "accent": "#0f766e", "copyable": True},
+    {"type": "noise_card", "title": "Q3 plan", "text": "Ship **fast**", "bg": "#111827", "color": "#f9fafb"},
+    {"type": "shimmer_button", "label": "Start now", "href": "https://example.com/go", "size": "lg", "accent": "#38bdf8", "background": "#1e293b", "speed": "fast", "description": "No card needed"},
+    {"type": "typewriter_text", "text": "Hello, world", "size": "32px", "weight": "700", "color": "#111111", "speed": "slow", "cursor": True, "delay": "0.5s"},
+    {"type": "tooltip_glossary", "text": "An **intro** line", "terms": [{"term": "SLA", "definition": "Service **level** agreement"}, {"word": "RPO", "def": "Recovery point"}, "Bare"]},
+    {"type": "lens_synthesis", "source_excerpt": "Alpha beta gamma.", "points": [{"point": "First", "evidence": "beta"}, {"point": "Second", "evidence": "nope"}, {"point": "Third"}, None, "x"]},
+])
+MUST.update({
+    "depth_stack": ["Alpha", "First **card**", "Beta", "Second", "Plain", "data-cb=\"tile\"", "height:200px"],
+    "glitch_text": ["SYSTEM FAULT", 'data-t="SYSTEM FAULT"', "font-size:3rem", "prefers-reduced-motion"],
+    "prompt_template": ["Triage", "&lt;b&gt;", "{topic}", "{{old}}", "#0f766e", "Copy", "prompt template"],
+    "noise_card": ["Q3 plan", "<strong>fast</strong>", "#111827", "#f9fafb", "feTurbulence", "opacity:0.8"],
+    "shimmer_button": ["Start now", 'href="https://example.com/go"', 'rel="noopener"', "No card needed", "16px 40px", "0.9s", "rgba(56,189,248,0.5)", "prefers-reduced-motion"],
+    "typewriter_text": ["Hello, world", "font-size:32px", "color:#111111", "steps(12,end)", "animation-delay:0.5s", "1.4s", "prefers-reduced-motion"],
+    "tooltip_glossary": ["An <strong>intro</strong> line", "SLA", 'role="tooltip"', "Service <strong>level</strong> agreement", "RPO", "Recovery point", "Bare", 'tabindex="0"'],
+    "lens_synthesis": ["First", "Second", "Third", "UNVERIFIED", "no supporting quote"],
+})
+OLD.extend([
+    {"type": "depth_stack", "items": [{"title": "Old card", "text": "old text"}]},
+    {"type": "glitch_text", "title": "Old title"},
+    {"type": "prompt_template", "title": "Old header", "use_case": "Old use case", "template": "Hi {{name}}", "variables": [{"name": "name", "description": "Who", "example": "Ann"}]},
+    {"type": "noise_card", "content": "old content"},
+    {"type": "shimmer_button", "text": "Old text"},
+    {"type": "typewriter_text", "content": "Old content", "speed": 100},
+    {"type": "tooltip_glossary", "intro": "Old intro", "items": [{"word": "W", "def": "D"}]},
+])
+OLD_WORDS.update({
+    "depth_stack": ["Old card", "old text"], "glitch_text": ["Old title"],
+    "prompt_template": ["Old header", "Old use case", "{{name}}", "Variables", "Who", "Ann"], "noise_card": ["old content"], "shimmer_button": ["Old text"],
+    "typewriter_text": ["Old content", "1.3s"], "tooltip_glossary": ["Old intro", ">W<", ">D<"],
+})
+
+
+def test_depth_stack_puts_the_first_card_in_front_and_invents_nothing(core_js):
+    blocks = [{"type": "depth_stack", "cards": [{"title": "Front"}, {"title": "Back"}]}, {"type": "depth_stack"}, {"type": "depth_stack", "cards": [], "items": [{"title": "I"}], "count": 99},
+              {"type": "depth_stack", "cards": [{"title": "a"}, {"title": "b"}, {"title": "c"}], "count": 2}]
+    gas = _gas_isolated(core_js, blocks)
+    for b, g in zip(blocks, gas):
+        assert _norm_uid(_py_fresh(b)) == _norm_uid(g)
+    for html in (_py_fresh(blocks[0]), gas[0]):
+        assert html.index("Back") < html.index("Front") and "top:0px;left:0px" in html
+    for html in (_py_fresh(blocks[1]), gas[1]):
+        assert "No cards supplied." in html and "tile" not in html
+    for html in (_py_fresh(blocks[2]), gas[2]):
+        assert ">I<" in html
+    for html in (_py_fresh(blocks[3]), gas[3]):
+        assert ">a<" in html and ">b<" in html and ">c<" not in html
+
+
+def test_prompt_template_slots_copy_button_and_variables_only_when_given(core_js):
+    blocks = [{"type": "prompt_template", "template": "Say {x}", "copyable": False},
+              {"type": "prompt_template", "template": "Say {x}", "variables": [{"name": "x", "description": "d"}, "junk", {}]},
+              {"type": "prompt_template", "template": "Say {x}", "accent": "red", "variables": []}]
+    gas = _gas_isolated(core_js, blocks)
+    for b, g in zip(blocks, gas):
+        assert _norm_uid(_py_fresh(b)) == _norm_uid(g)
+    for html in (_py_fresh(blocks[0]), gas[0]):
+        assert ">Copy<" not in html and "Variables" not in html and "{x}" in html
+    for html in (_py_fresh(blocks[1]), gas[1]):
+        assert ">Copy<" in html and "Variables" in html and "{x}</td>" in html and html.count("<tr") == 2 and "junk" not in html
+    for html in (_py_fresh(blocks[2]), gas[2]):
+        assert "color-mix(in srgb, red 10%, transparent)" in html and "Variables" not in html
+
+
+def test_shimmer_button_drops_an_unsafe_href_and_typewriter_validates_delay_and_clamps(core_js):
+    blocks = [{"type": "shimmer_button", "label": "L", "href": "javascript:alert(1)"}, {"type": "shimmer_button"},
+              {"type": "typewriter_text", "text": "abc", "delay": "1s;x", "cursor": False, "speed": "50"}, {"type": "typewriter_text", "text": "x" * 3000, "speed": "fast"},
+              {"type": "typewriter_text"}]
+    gas = _gas_isolated(core_js, blocks)
+    for b, g in zip(blocks, gas):
+        assert _norm_uid(_py_fresh(b)) == _norm_uid(g)
+    for html in (_py_fresh(blocks[0]), gas[0]):
+        assert "<button" in html and "<a " not in html and "javascript" not in html
+    for html in (_py_fresh(blocks[1]), gas[1]):
+        assert ">Click me<" in html
+    for html in (_py_fresh(blocks[2]), gas[2]):
+        assert "animation-delay:0s" in html and "-blink 0.75s" not in html and "steps(3,end)" in html and "0.2s steps" in html
+    for html in (_py_fresh(blocks[3]), gas[3]):
+        assert "steps(2000,end)" in html and "80.0s" in html
+    for html in (_py_fresh(blocks[4]), gas[4]):
+        assert "steps(1,end)" in html
+
+
+def test_lens_synthesis_survives_junk_points_and_evidence(core_js):
+    blocks = [{"type": "lens_synthesis", "source_excerpt": "x", "points": [None, 5, {"point": {"a": 1}, "evidence": {}}]}, {"type": "lens_synthesis", "points": [None]}]
+    gas = _gas_isolated(core_js, blocks)
+    for b, g in zip(blocks, gas):
+        py = _py_fresh(b)
+        assert _norm_uid(py) == _norm_uid(g)
+        for html in (py, g):
+            assert "object Object" not in html and "Error" not in html
+    for html in (_py_fresh(blocks[1]), gas[1]):
+        assert "No synthesis points supplied." in html

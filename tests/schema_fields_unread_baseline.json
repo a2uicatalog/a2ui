@@ -199,10 +199,6 @@
  "demo_toggle_grid": [
   "accent"
  ],
- "depth_stack": [
-  "cards",
-  "count"
- ],
  "donut_stat": [
   "max_value"
  ],
@@ -616,10 +612,6 @@
  "progress_circle": [
   "size"
  ],
- "prompt_template": [
-  "accent",
-  "copyable"
- ],
  "pull_stat": [
   "color",
   "unit"
@@ -693,14 +685,6 @@
  "sentiment_summary": [
   "emotional_journey",
   "themes"
- ],
- "shimmer_button": [
-  "accent",
-  "background",
-  "description",
-  "href",
-  "size",
-  "speed"
  ],
  "skeleton": [
   "skeleton_type"
@@ -778,15 +762,6 @@
   "background",
   "color",
   "cursor",
-  "size",
-  "speed",
-  "text",
-  "weight"
- ],
- "typewriter_text": [
-  "color",
-  "cursor",
-  "delay",
   "size",
   "weight"
  ],
