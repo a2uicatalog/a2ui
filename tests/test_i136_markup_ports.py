@@ -241,3 +241,39 @@ def test_markdown_block_prefers_content_over_text(core_js):
     b = {"type": "markdown_block", "content": "new", "text": "old"}
     for html in (_py_fresh(b), _gas_isolated(core_js, [b])[0]):
         assert ">new<" in html and "old" not in html
+
+
+# ---- batch b5/1 ----
+EQUAL.extend([
+    {"type": "avatar_group", "total_count": 12, "label": "Responders", "avatars": [{"name": "Elena Rostova", "url": "https://example.com/a.png"}, {"name": "Marcus Chen"}, "Priya Patel", {"name": "Sarah", "avatar_url": "https://example.com/s.png"}]},
+    {"type": "capability_checklist", "title": "Tiers", "capability_names": ["Zero Downtime", "RBAC"], "items": [{"name": "Standard", "capabilities": [False, True]}, {"name": "Pro", "capabilities": [True]}]},
+    {"type": "contributor_list", "title": "Maintainers", "contributors": [{"name": "Alex Rivera", "role": "Lead", "avatar_url": "https://example.com/a.png", "url": "https://example.com/alex", "contributions": 42}, {"name": "Dana White", "color": "#112233"}, "Zoe"]},
+    {"type": "document_link", "document_url": "https://example.com/specs.docx", "label": "Technical specification", "icon_type": "docx"},
+    {"type": "env_var_list", "variables": [{"key": "NODE_ENV", "description": "Runtime target", "required": True, "default": "production"}, {"name": "MAX", "requirement_status": "optional", "value": 16}, "PLAIN"]},
+    {"type": "faq_accordion", "title": "FAQ", "items": [{"question": "What is the SLA?", "answer": "**99.95%** monthly, see [terms](https://example.com/t)"}, {"label": "Old label", "content": "old content"}]},
+    {"type": "keyboard_shortcut", "keys": ["Ctrl", "Shift", "P"], "action": "Open Command Palette", "platform": "Windows"},
+    {"type": "table_of_contents", "headings": [{"level": 1, "text": "Intro", "anchor": "#intro"}, {"level": 2, "title": "Setup guide", "anchor": "setup guide", "children": [{"text": "Child", "level": 3}]}, "Plain"]},
+])
+MUST.update({
+    "avatar_group": ["Elena Rostova", 'src="https://example.com/a.png"', "MC", "PP", "+8", "Responders"],
+    "capability_checklist": ["Tiers", "Zero Downtime", "RBAC", "Standard", "Pro", 'scope="row"'],
+    "contributor_list": ["Maintainers", "Alex Rivera", "Lead", 'href="https://example.com/alex"', "42 contributions", "#112233", "Zoe"],
+    "document_link": ["Technical specification", 'href="https://example.com/specs.docx"', "[DOCX]", "\U0001F4DD"],
+    "env_var_list": ["NODE_ENV", "Runtime target", "production", "required", "optional", "MAX", "16", "PLAIN"],
+    "faq_accordion": ["FAQ", "What is the SLA?", "<strong>99.95%</strong>", 'href="https://example.com/t"', "Old label", "old content"],
+    "keyboard_shortcut": ["Ctrl", "Shift", "Open Command Palette", "(Windows)"],
+    "table_of_contents": ["Table of Contents", "Intro", 'href="#intro"', 'href="#setup-guide"', "Setup guide", "Child", "Plain"],
+})
+
+
+def test_capability_checklist_list_shape_and_matrix_without_capabilities(core_js):
+    blocks = [{"type": "capability_checklist", "title": "Readiness", "items": [{"name": "Accordion", "capable": True}, {"name": "Maps", "has": False}, {"label": "Chat", "status": "partial", "tier": "beta"}, "plain"]},
+              {"type": "capability_checklist", "capability_names": ["A", "B"], "items": [{"label": "First"}, {"label": "Second"}]}]
+    gas = _gas_isolated(core_js, blocks)
+    for b, g in zip(blocks, gas):
+        py = _py_fresh(b)
+        assert _norm_uid(py) == _norm_uid(g)
+        assert "<table" not in py and "<ul" in py
+    for html in (_py_fresh(blocks[0]), gas[0]):
+        for w in ("Readiness", "Accordion", "Maps", "Chat", "beta", "plain", 'aria-label="partial"', 'aria-label="unavailable"'):
+            assert w in html

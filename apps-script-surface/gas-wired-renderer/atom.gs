@@ -151,6 +151,27 @@ function _textLoose(v) {
   return '';
 }
 
+// Twin of Python _safe_href: the payload URL (tab/newline/CR and leading control characters stripped) if its scheme, when it has one, is in
+// `schemes` (default http, https, mailto, tel); a value without a scheme (relative path, #anchor) passes; anything else is ''.
+function _safe_href(v, schemes) {
+  if (typeof v !== 'string') return '';
+  v = v.replace(/[\t\n\r]/g, '').trim().replace(/^[\u0000-\u0020]+/, '');
+  if (!v) return '';
+  var m = /^([a-zA-Z][a-zA-Z0-9+.-]*):/.exec(v);
+  if (!m) return v;
+  return (schemes || ['http', 'https', 'mailto', 'tel']).indexOf(m[1].toLowerCase()) !== -1 ? v : '';
+}
+
+// The first of several payload values that has text (_textLoose is not empty), else ''. Twin of Python _first_text; replaces `a || b`,
+// which treats an empty array as true in JavaScript and as false in Python.
+function _firstText() {
+  for (var i = 0; i < arguments.length; i++) {
+    var t = _textLoose(arguments[i]);
+    if (t) return t;
+  }
+  return '';
+}
+
 // A finite number from a payload field, twin of Python _num_loose: a real number, or a string that is a plain decimal; anything else is null.
 function _numLoose(v) {
   if (typeof v === 'number') return isFinite(v) ? v : null;
@@ -2221,18 +2242,68 @@ _RENDERERS['article_hero'] = function(b) {
 };
 
 _RENDERERS['table_of_contents'] = function(b) {
-  var items = b.items || b.headings || [];
-  var rows = items.map(function(item){
-    var text = item.text || item.title || '';
-    var level = item.level || 1;
-    var indent = level > 1 ? 'padding-left:1.2rem;' : '';
-    var prefix = level > 1 ? '└ ' : '';
-    var size = level === 1 ? '0.9rem' : '0.85rem';
-    return '<li style="margin:4px 0;' + indent + '"><a href="#" style="color:#7c3aed;text-decoration:none;font-size:' + size + ';">' + prefix + _esc(text) + '</a></li>';
+  var rawHeadings = Array.isArray(b.headings) ? b.headings : (Array.isArray(b.items) ? b.items : []);
+  var headings = rawHeadings.slice(0, 100);
+  var titleText = b.title !== undefined ? _textLoose(b.title) : 'Table of Contents';
+  if (!titleText) {
+    titleText = 'Table of Contents';
+  }
+
+  function renderItem(item, depth) {
+    if (depth > 6) {
+      return '';
+    }
+    var text = '';
+    var anchorClean = '';
+    var children = [];
+    var level = 1;
+
+    if (item && typeof item === 'object' && !Array.isArray(item)) {
+      text = _firstText(item.text, item.title, item.label, item.name);
+      var anchorRaw = _textLoose(item.anchor).replace(/^#+/, '').trim();
+      anchorClean = anchorRaw.replace(/\s+/g, '-');
+      children = Array.isArray(item.children) ? item.children : [];
+      var lvlNum = _numLoose(item.level);
+      if (lvlNum !== null) {
+        level = Math.max(1, Math.min(6, Math.floor(lvlNum)));
+      }
+    } else if (typeof item === 'string') {
+      text = item;
+    } else {
+      return '';
+    }
+
+    var effLevel = Math.max(level, depth + 1);
+    var indent = (effLevel - 1) * 1.2;
+    var paddingStyle = indent > 0 ? 'padding-left:' + indent.toFixed(1) + 'rem;' : '';
+    var fontSize = effLevel === 1 ? '0.9rem' : '0.85rem';
+    var href = anchorClean ? ('#' + _esc(anchorClean)) : '#';
+
+    var childHtml = '';
+    if (children.length > 0) {
+      var subItems = children.slice(0, 50).map(function(ch) {
+        return renderItem(ch, effLevel);
+      }).join('');
+      if (subItems) {
+        childHtml = '<ul style="list-style:none;padding:0;margin:0;">' + subItems + '</ul>';
+      }
+    }
+
+    return '<li style="margin:3px 0;' + paddingStyle + '">' +
+      '<a href="' + href + '" style="color:#7c3aed;text-decoration:none;font-size:' + fontSize + ';">' +
+      _esc(text) + '</a>' + childHtml + '</li>';
+  }
+
+  var rows = headings.map(function(item) {
+    return renderItem(item, 0);
   }).join('');
-  return '<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:16px 20px;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);margin:1.5rem 0;">' +
-    '<div style="font-weight:700;color:#374151;margin-bottom:10px;font-size:0.85rem;">Contents</div>' +
-    '<ul style="list-style:none;padding:0;margin:0;">' + rows + '</ul></div>';
+
+  return '<nav aria-label="Table of contents" ' +
+    'style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);' +
+    'padding:14px 18px;margin:1.5rem 0;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);">' +
+    '<div style="font-weight:700;margin-bottom:8px;font-size:0.9rem;">' +
+    '<span aria-hidden="true">📋</span> ' + _esc(titleText) + '</div>' +
+    '<ul style="list-style:none;padding:0;margin:0;">' + rows + '</ul></nav>';
 };
 
 _RENDERERS['reading_progress_bar'] = function(b) {
@@ -2501,16 +2572,36 @@ _RENDERERS['stepper'] = function(b) {
 };
 
 _RENDERERS['faq_accordion'] = function(b) {
-  var items = b.items || b.questions || [];
-  var html = items.map(function(item){
-    var q = item.question || item.label || '';
-    var a = item.answer || item.text || item.body || '';
-    var k = _esc(String(q));
+  var rawItems = Array.isArray(b.items) ? b.items : (Array.isArray(b.questions) ? b.questions : []);
+  var items = rawItems.slice(0, 100);
+  var titleText = _textLoose(b.title);
+
+  var titleHtml = titleText
+    ? '<div style="padding:12px 16px;font-weight:700;font-size:1rem;border-bottom:1px solid #e5e7eb;">' + _esc(titleText) + '</div>'
+    : '';
+
+  var rows = items.map(function(it) {
+    var q = '';
+    var a = '';
+    if (it && typeof it === 'object' && !Array.isArray(it)) {
+      q = _firstText(it.question, it.label);
+      a = _firstText(it.answer, it.content, it.text, it.body);
+    } else if (typeof it === 'string') {
+      q = it;
+    } else {
+      return '';
+    }
+
+    var k = _esc(q);
     return '<details data-cb="item" data-key="' + k + '" style="border-bottom:1px solid #eaeaea;border-bottom:1px solid var(--a2ui-border,#eaeaea);">' +
-      '<summary data-cb="label" data-key="' + k + '" style="padding:14px 16px;cursor:pointer;font-weight:600;font-size:0.88rem;color:#111827;list-style:none;">' + _esc(q) + '</summary>' +
-      '<div style="padding:0 16px 16px;font-size:0.85rem;color:#374151;line-height:1.6;">' + _markdownToHtml(a) + '</div></details>';
+      '<summary data-cb="label" data-key="' + k + '" style="padding:12px 16px;font-weight:600;cursor:pointer;font-size:0.88rem;color:#111827;list-style:none;">' +
+      '<span aria-hidden="true">❓</span> ' + _esc(q) + '</summary>' +
+      '<div style="padding:10px 16px 14px;font-size:0.86rem;color:#374151;background:#fafafa;line-height:1.6;">' +
+      _md_inline(a) + '</div></details>';
   }).join('');
-  return '<div style="border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;margin:1.2rem 0;">' + html + '</div>';
+
+  return '<div style="border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;margin:1.5rem 0;">' +
+    titleHtml + rows + '</div>';
 };
 
 _RENDERERS['footnote'] = function(b) {
@@ -2881,29 +2972,81 @@ _RENDERERS['http_request_block'] = function(b) {
 };
 
 _RENDERERS['env_var_list'] = function(b) {
-  var variables = b.variables || [];
-  var rows = variables.map(function(v){
-    var req = v.required ? '<span style="color:#dc2626;font-size:0.72rem;font-weight:700;">required</span>' : '<span style="color:var(--muted,#5f6368);font-size:0.72rem;">optional</span>';
-    return '<tr><td style="padding:8px 12px;font-family:monospace;font-size:0.82rem;color:#7c3aed;white-space:nowrap;border-bottom:1px solid #f3f4f6;">' + _esc(v.key||'') + '</td>' +
-      '<td style="padding:8px 12px;font-size:0.82rem;color:#374151;border-bottom:1px solid #f3f4f6;">' + _esc(v.description||'') + '</td>' +
-      '<td style="padding:8px 12px;font-family:monospace;font-size:0.78rem;color:var(--muted,#5f6368);border-bottom:1px solid #f3f4f6;">' + _esc(v.default||'—') + '</td>' +
-      '<td style="padding:8px 12px;border-bottom:1px solid #f3f4f6;">' + req + '</td></tr>';
+  var rawVars = Array.isArray(b.variables) ? b.variables : (Array.isArray(b.vars) ? b.vars : []);
+  var varsList = rawVars.slice(0, 100);
+
+  var rows = varsList.map(function(v) {
+    var name = '';
+    var desc = '';
+    var defaultVal = '';
+    var isReq = false;
+
+    if (typeof v === 'string') {
+      name = v;
+    } else if (v && typeof v === 'object' && !Array.isArray(v)) {
+      name = _firstText(v.key, v.name, v.key_name, v.variable);
+      desc = _textLoose(v.description);
+      var val = v.default !== undefined ? v.default : v.value;
+      defaultVal = _textLoose(val);
+      var reqField = v.required;
+      var statusField = _firstText(v.requirement_status, v.status).toLowerCase();
+      isReq = (reqField === true) || (statusField === 'required');
+    } else {
+      return '';
+    }
+
+    var reqHtml = isReq
+      ? '<span style="color:#dc2626;font-size:0.72rem;font-weight:700;">required</span>'
+      : '<span style="color:var(--muted,#5f6368);font-size:0.72rem;">optional</span>';
+    var defHtml = defaultVal ? _esc(defaultVal) : '<span style="color:var(--muted,#5f6368);">—</span>';
+
+    return '<tr>' +
+      '<td style="padding:8px 12px;font-family:monospace;font-size:0.82rem;color:#7c3aed;white-space:nowrap;border-bottom:1px solid #f3f4f6;">' + _esc(name) + '</td>' +
+      '<td style="padding:8px 12px;font-size:0.82rem;color:#374151;border-bottom:1px solid #f3f4f6;">' + _esc(desc) + '</td>' +
+      '<td style="padding:8px 12px;font-family:monospace;font-size:0.78rem;color:var(--muted,#5f6368);border-bottom:1px solid #f3f4f6;">' + defHtml + '</td>' +
+      '<td style="padding:8px 12px;border-bottom:1px solid #f3f4f6;">' + reqHtml + '</td>' +
+      '</tr>';
   }).join('');
-  return '<div style="border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;margin:1.2rem 0;">' +
-    '<table style="width:100%;border-collapse:collapse;"><thead><tr style="background:#f9fafb;">' +
-    '<th style="padding:8px 12px;text-align:left;font-size:0.75rem;color:var(--muted,#5f6368);text-transform:uppercase;">Variable</th>' +
-    '<th style="padding:8px 12px;text-align:left;font-size:0.75rem;color:var(--muted,#5f6368);text-transform:uppercase;">Description</th>' +
-    '<th style="padding:8px 12px;text-align:left;font-size:0.75rem;color:var(--muted,#5f6368);text-transform:uppercase;">Default</th>' +
-    '<th style="padding:8px 12px;text-align:left;font-size:0.75rem;color:var(--muted,#5f6368);text-transform:uppercase;">Required</th>' +
+
+  return '<div style="border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;margin:1.2rem 0;overflow-x:auto;">' +
+    '<table aria-label="Environment variables" style="width:100%;border-collapse:collapse;">' +
+    '<thead><tr style="background:#f9fafb;">' +
+    '<th scope="col" style="padding:8px 12px;text-align:left;font-size:0.75rem;color:var(--muted,#5f6368);text-transform:uppercase;">Variable</th>' +
+    '<th scope="col" style="padding:8px 12px;text-align:left;font-size:0.75rem;color:var(--muted,#5f6368);text-transform:uppercase;">Description</th>' +
+    '<th scope="col" style="padding:8px 12px;text-align:left;font-size:0.75rem;color:var(--muted,#5f6368);text-transform:uppercase;">Default</th>' +
+    '<th scope="col" style="padding:8px 12px;text-align:left;font-size:0.75rem;color:var(--muted,#5f6368);text-transform:uppercase;">Required</th>' +
     '</tr></thead><tbody>' + rows + '</tbody></table></div>';
 };
 
 _RENDERERS['keyboard_shortcut'] = function(b) {
-  var keys = b.keys || [];
-  var action = b.action || '';
-  var keyHtml = keys.map(function(k){ return '<kbd style="display:inline-block;padding:2px 8px;font-family:monospace;font-size:0.8rem;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-bottom:3px solid #9ca3af;border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);color:#374151;">' + _esc(k) + '</kbd>'; }).join(' + ');
-  var actionHtml = action ? '<span style="margin-left:10px;font-size:0.85rem;color:var(--muted,#5f6368);">' + _esc(action) + '</span>' : '';
-  return '<div data-cb="node" data-key="' + _ckey(b.action, 'keyboard_shortcut') + '" style="margin:0.5rem 0;display:inline-flex;align-items:center;">' + keyHtml + actionHtml + '</div>';
+  var rawKeys = Array.isArray(b.keys) ? b.keys : [];
+  var keys = [];
+  for (var i = 0; i < rawKeys.length && keys.length < 12; i++) {
+    var kStr = _textLoose(rawKeys[i]);
+    if (kStr) {
+      keys.push(kStr);
+    }
+  }
+
+  var action = _firstText(b.action, b.description, b.label);
+  var platform = _textLoose(b.platform);
+
+  var sep = '<span aria-hidden="true" style="font-size:0.8rem;color:var(--muted,#5f6368);vertical-align:middle;margin:0 3px;">+</span>';
+  var keyHtml = keys.map(function(k) {
+    return '<kbd style="display:inline-block;padding:2px 7px;background:#ffffff;background:var(--a2ui-surface,#ffffff);' +
+      'border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-bottom:2px solid #9ca3af;' +
+      'border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);font-family:monospace;font-size:0.78rem;' +
+      'font-weight:600;color:#374151;vertical-align:middle;">' + _esc(k) + '</kbd>';
+  }).join(sep);
+
+  var platHtml = platform ? '<span style="font-size:0.72rem;color:var(--muted,#5f6368);margin-left:6px;">(' + _esc(platform) + ')</span>' : '';
+  var descHtml = action ? '<span style="font-size:0.88rem;color:#374151;margin-left:10px;">' + _esc(action) + '</span>' : '';
+
+  var keysJoined = keys.join(' + ');
+  var ariaLabel = (keysJoined && action) ? (keysJoined + ': ' + action) : (keysJoined ? keysJoined : action);
+
+  return '<span role="group" aria-label="' + _esc(ariaLabel) + '" data-cb="node" data-key="' + _ckey(b.action, 'keyboard_shortcut') + '" ' +
+    'style="white-space:nowrap;">' + keyHtml + platHtml + descHtml + '</span>';
 };
 
 _RENDERERS['api_param_table'] = function(b) {
@@ -3633,13 +3776,28 @@ _RENDERERS['pdf_preview'] = function(b) {
 };
 
 _RENDERERS['document_link'] = function(b) {
-  // Schema fields are document_url / label / icon_type; url and title are older aliases.
-  // (b.type is the block discriminator, "document_link", never the file type.)
-  var url = b.document_url || b.url || '';
-  var title = b.label || b.title || 'Document';
-  var ext = /\.([a-z0-9]{2,5})(?:[?#]|$)/i.exec(url);
-  var type = (b.icon_type || (ext && ext[1]) || 'doc').toUpperCase();
-  return '<a data-cb="node" data-key="' + _ckey(b.document_url || b.url, 'document_link') + '" href="' + _safeUrl(url) + '" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);font-size:0.85rem;color:#374151;text-decoration:none;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);">📄 ' + _esc(title) + ' <span style="font-size:0.7rem;color:var(--muted,#5f6368);">[' + _esc(type) + ']</span></a>';
+  var rawUrl = _firstText(b.document_url, b.url);
+  var rawLabel = _firstText(b.label, b.title);
+  var label = rawLabel ? rawLabel : 'Document';
+  var rawIconType = _textLoose(b.icon_type);
+  var customIcon = _textLoose(b.icon);
+
+  var extMatch = /\.([a-z0-9]{2,5})(?:[?#]|$)/i.exec(rawUrl);
+  var detectedExt = extMatch ? extMatch[1].toUpperCase() : '';
+  var badgeType = rawIconType ? rawIconType.toUpperCase() : detectedExt;
+
+  var icons = { 'PDF': '📄', 'DOCX': '📝', 'DOC': '📝', 'XLSX': '📊', 'XLS': '📊', 'PPTX': '📊', 'PPT': '📊', 'ZIP': '📦' };
+  var icon = customIcon ? customIcon : (icons[badgeType] || '📄');
+
+  var badgeHtml = badgeType ? ' <span style="font-size:0.7rem;color:var(--muted,#5f6368);">[' + _esc(badgeType) + ']</span>' : '';
+  var safeUrl = rawUrl ? _safe_href(rawUrl, ['https', 'mailto']) : '';
+  var href = safeUrl ? safeUrl : '#';
+
+  return '<a data-cb="node" data-key="' + _ckey(rawUrl, 'document_link') + '" href="' + _esc(href) + '" target="_blank" rel="noopener" ' +
+    'style="display:inline-flex;align-items:center;gap:8px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);' +
+    'border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:8px 16px;text-decoration:none;color:#374151;' +
+    'font-size:0.86rem;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);margin:0.5rem 0;">' +
+    '<span aria-hidden="true">' + _esc(icon) + '</span> ' + _esc(label) + badgeHtml + '</a>';
 };
 
 _RENDERERS['code_snippet_pair'] = function(b) {

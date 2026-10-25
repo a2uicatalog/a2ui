@@ -344,9 +344,9 @@
   "kind": "item",
   "label_kind": "label",
   "key": "avatars[].name",
-  "py_sha": "478427eaf2288e615b0ef7bd2f22cbf6fc910a69900e88b1a97f01971742a398",
-  "gas_sha": "b8f5c379018c6fe91158a4a87ea333f2317ec759547a82f7b37869dcffd0e9b2",
-  "parity": false
+  "py_sha": "59f39aad522c6832c20846be2953736364320965c41068339424e4bddf4c28e4",
+  "gas_sha": "59f39aad522c6832c20846be2953736364320965c41068339424e4bddf4c28e4",
+  "parity": true
  },
  "badge_group": {
   "status": "keyed",
@@ -880,9 +880,9 @@
   "kind": "item",
   "label_kind": "label",
   "key": "items[].name",
-  "py_sha": "cd0e6c1c9e1b5fa7ef522356377249454a363e8af3514af4e2d8df65dbb9baeb",
-  "gas_sha": "8063d66c79123dedc40fc0ffc80dcfec48e8ce53cf16d1ae1a375f00e35629f7",
-  "parity": false
+  "py_sha": "4c0a27cb47dff177c685ae43f05a5e4fe04e5923607a1975f3627dfd32a19a87",
+  "gas_sha": "4c0a27cb47dff177c685ae43f05a5e4fe04e5923607a1975f3627dfd32a19a87",
+  "parity": true
  },
  "carousel": {
   "status": "keyed",
@@ -1543,9 +1543,9 @@
   "kind": "item",
   "label_kind": "label",
   "key": "contributors[].name",
-  "py_sha": "52e91cf4ee89cd2c13f85adc79c461bea703d5077bdb7c42f19367c5bd300123",
-  "gas_sha": "29e77e6a29cc228d977e0ae3aa1dc9c2888c386b964af979fcc774eb27aa8367",
-  "parity": false
+  "py_sha": "46cc921b91f15827a5aa1bb0099881f429a3de68245811f61deaf86fd4a0a1af",
+  "gas_sha": "46cc921b91f15827a5aa1bb0099881f429a3de68245811f61deaf86fd4a0a1af",
+  "parity": true
  },
  "conversion_funnel": {
   "status": "keyed",
@@ -2052,9 +2052,9 @@
   "kind": "item",
   "label_kind": "label",
   "key": "variables[].name",
-  "py_sha": "84bc56fa780441a37a7786b7468370e2a153d40f7239d0eb7746bb96f4784d42",
-  "gas_sha": "4e53b5ac85fb3fc79d5a84cffdccfb786aae131cf3e963aba12e8c2779c03f61",
-  "parity": false
+  "py_sha": "42e8c17307f61d1ff57bb8c5f21ee4ed871ba0b64142373800a9c0ade8a94140",
+  "gas_sha": "42e8c17307f61d1ff57bb8c5f21ee4ed871ba0b64142373800a9c0ade8a94140",
+  "parity": true
  },
  "faq_accordion": {
   "status": "keyed",
@@ -2082,9 +2082,9 @@
   "kind": "item",
   "label_kind": "label",
   "key": "items[].question",
-  "py_sha": "d90c1a9ec5e184d7ec6f7cef98cb997212d5132911f9b915ad2f9abaeec51361",
-  "gas_sha": "b6a1796b5d7e8e6849db429a34c9055c6293c6d685a2fb54c894eb2341ba52ff",
-  "parity": false
+  "py_sha": "a341ac274ff4f339f7a6a184ea78b408faf6b1659ac5de9434f06dd9891a223d",
+  "gas_sha": "a341ac274ff4f339f7a6a184ea78b408faf6b1659ac5de9434f06dd9891a223d",
+  "parity": true
  },
  "feature_grid": {
   "status": "keyed",
@@ -7272,9 +7272,9 @@
   "kind": "link",
   "label_kind": "label",
   "key": "headings[].id",
-  "py_sha": "362c30ce162f3c7f748891bc006866c06ad59f28a75eb39b585adfcc9c91b2b0",
-  "gas_sha": "3b0924406d5b199e61bdf8d7b64f3eb905ead1be61456dcc1ee7c16ba810000e",
-  "parity": false
+  "py_sha": "f4f89dad7a6c3df5b6f4aa97c15c82f0a4e91363a99018175655351b90478a05",
+  "gas_sha": "f4f89dad7a6c3df5b6f4aa97c15c82f0a4e91363a99018175655351b90478a05",
+  "parity": true
  },
  "tabs": {
   "status": "pending",
@@ -8893,9 +8893,9 @@
   "kind": "node",
   "label_kind": "label",
   "key": "document_url",
-  "py_sha": "617d5821b910b82d7f3259994efc77b7ffa61eb7f1eceda157b8017ff80e40f8",
-  "gas_sha": "72b6015c3c9efd64dcae09e523801d315eb07f600ad470eedb8a33e355c4c20d",
-  "parity": false
+  "py_sha": "99f74364e77568a2eef1faa5d933dff69b5f5cc02db00dfba678917baa2456fe",
+  "gas_sha": "99f74364e77568a2eef1faa5d933dff69b5f5cc02db00dfba678917baa2456fe",
+  "parity": true
  },
  "video_thumbnail": {
   "status": "keyed",
@@ -9256,9 +9256,9 @@
   "kind": "node",
   "label_kind": "label",
   "key": "action",
-  "py_sha": "e874e58874ec9a2eb1ff25bed773d0af625cc60cd05f417dc1192be768cd617d",
-  "gas_sha": "b717c67b4baed84936eb02c168b8f7a1c522930b7dc13f97e0bce12f2837415e",
-  "parity": false
+  "py_sha": "e319306edfdf3f7193d8dd1969de31ffbdb14353d4d872a2a39413cbf8ff51f9",
+  "gas_sha": "e319306edfdf3f7193d8dd1969de31ffbdb14353d4d872a2a39413cbf8ff51f9",
+  "parity": true
  },
  "version_badge": {
   "status": "keyed",

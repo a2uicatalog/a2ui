@@ -137,42 +137,141 @@ _RENDERERS['multi_select_input'] = function(b) {
 
 // ─── avatar_group ─────────────────────────────────────────────────────────────
 _RENDERERS['avatar_group'] = function(b) {
-  var avatars = (b.avatars || []).slice(0, 6);
-  var total   = b.total_count || avatars.length;
-  var label   = b.label ? '<span style="font-size:0.82rem;color:var(--muted,#6b7280);margin-left:10px;">' + _esc(b.label) + '</span>' : '';
-  var surplus = total > avatars.length ? '<div style="width:36px;height:36px;border-radius:50%;background:#e5e7eb;border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;color:var(--muted,#5f6368);margin-left:-10px;">+' + (total - avatars.length) + '</div>' : '';
+  var rawAvatars = Array.isArray(b.avatars) ? b.avatars : [];
+  var avatars = rawAvatars.slice(0, 6);
+  var totalRaw = _numLoose(b.total_count);
+  var total = totalRaw !== null ? Math.min(Math.floor(totalRaw), 99999) : rawAvatars.length;
+  var labelText = _textLoose(b.label);
+  var colors = ['#4f46e5', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#0ea5e9'];
+
   var imgs = avatars.map(function(a, i) {
-    var initials = (a.name || '?').split(' ').map(function(w){ return w[0]; }).join('').substr(0,2).toUpperCase();
-    var colors   = ['#4f46e5','#10b981','#f59e0b','#ef4444','#8b5cf6','#0ea5e9'];
-    var bg       = colors[i % colors.length];
-    if (a.url || a.avatar_url) {
-      return '<img data-cb="item" data-key="' + _esc(a.name || '') + '" src="' + _esc(a.url || a.avatar_url) + '" alt="' + _esc(a.name || '') + '" title="' + _esc(a.name || '') + '" style="width:36px;height:36px;border-radius:50%;border:2px solid #fff;object-fit:cover;margin-left:' + (i > 0 ? '-10' : '0') + 'px;">';
+    var name = '';
+    var url = '';
+    var color = '';
+    if (typeof a === 'string') {
+      name = a;
+    } else if (a && typeof a === 'object' && !Array.isArray(a)) {
+      name = _textLoose(a.name);
+      url = _firstText(a.url, a.avatar_url, a.src);
+      color = _textLoose(a.color);
+    } else {
+      return '';
     }
-    return '<div data-cb="item" data-key="' + _esc(a.name || '') + '" title="' + _esc(a.name || '') + '" style="width:36px;height:36px;border-radius:50%;background:' + bg + ';border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;color:#fff;margin-left:' + (i > 0 ? '-10' : '0') + 'px;">' + initials + '</div>';
+
+    var safeUrl = url ? _safe_href(url, ['https', 'http']) : '';
+    var marginLeft = i > 0 ? '-10px' : '0';
+
+    if (safeUrl) {
+      return '<img data-cb="item" data-key="' + _esc(name) + '" src="' + _esc(safeUrl) + '" alt="' + _esc(name) + '" title="' + _esc(name) + '" ' +
+        'style="width:36px;height:36px;border-radius:50%;border:2px solid #fff;object-fit:cover;margin-left:' + marginLeft + ';">';
+    } else {
+      var words = name ? name.split(/\s+/).filter(Boolean) : [];
+      var initials = words.length > 0 ? words.slice(0, 2).map(function(w){ return Array.from(w)[0]; }).join('').toUpperCase() : '?';
+      var bg = color ? _safe_css(color, colors[i % colors.length]) : colors[i % colors.length];
+      var ariaAttr = name ? ' role="img" aria-label="' + _esc(name) + '"' : ' role="img"';
+      return '<div data-cb="item" data-key="' + _esc(name) + '"' + ariaAttr + ' title="' + _esc(name) + '" ' +
+        'style="width:36px;height:36px;border-radius:50%;background:' + bg + ';border:2px solid #fff;' +
+        'display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;color:#fff;margin-left:' + marginLeft + ';">' +
+        _esc(initials) + '</div>';
+    }
   }).join('');
-  return '<div style="display:flex;align-items:center;margin:var(--a2ui-block-gap,1.25rem) 0;">' + imgs + surplus + label + '</div>';
+
+  var surplusCount = total - avatars.length;
+  var extraHtml = '';
+  if (surplusCount > 0) {
+    extraHtml = '<div role="img" aria-label="+' + surplusCount + ' more" ' +
+      'style="width:36px;height:36px;border-radius:50%;background:#e5e7eb;border:2px solid #fff;' +
+      'display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;color:var(--muted,#5f6368);margin-left:-10px;">' +
+      '+' + surplusCount + '</div>';
+  }
+
+  var labelHtml = labelText ? '<span style="font-size:0.82rem;color:var(--muted,#5f6368);margin-left:10px;">' + _esc(labelText) + '</span>' : '';
+  var groupLabel = labelText ? labelText : 'Avatars';
+
+  return '<div role="group" aria-label="' + _esc(groupLabel) + '" ' +
+    'style="display:flex;align-items:center;margin:var(--a2ui-block-gap,1.25rem) 0;">' +
+    imgs + extraHtml + labelHtml + '</div>';
 };
 
 // ─── contributor_list ─────────────────────────────────────────────────────────
 _RENDERERS['contributor_list'] = function(b) {
-  var title = b.title ? '<div style="font-weight:700;font-size:0.9rem;color:var(--text,#111827);margin-bottom:12px;">' + _esc(b.title) + '</div>' : '';
-  var colors = ['#4f46e5','#10b981','#f59e0b','#ef4444','#8b5cf6','#0ea5e9'];
-  var rows = (b.contributors || []).map(function(c, i) {
-    var initials = (c.name || '?').split(' ').map(function(w){ return w[0]; }).join('').substr(0,2).toUpperCase();
-    var bg = c.color || colors[i % colors.length];
-    var avatar = c.avatar_url
-      ? '<img src="' + _esc(c.avatar_url) + '" alt="" style="width:36px;height:36px;border-radius:50%;object-fit:cover;">'
-      : '<div style="width:36px;height:36px;border-radius:50%;background:' + bg + ';color:#fff;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;">' + initials + '</div>';
-    var meta = c.contributions ? '<span style="font-size:0.72rem;color:var(--muted,#9ca3af);margin-left:6px;">' + _esc(String(c.contributions)) + ' contributions</span>' : '';
-    return '<div data-cb="item" data-key="' + _esc(c.name || '') + '" style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border,#e5e7eb);">'
-      + avatar
-      + '<div style="flex:1;"><div data-cb="label" data-key="' + _esc(c.name || '') + '" style="font-weight:600;font-size:0.875rem;color:var(--text,#111827);">' + _esc(c.name || '') + meta + '</div>'
-      + (c.role ? '<div style="font-size:0.78rem;color:var(--muted,#6b7280);">' + _esc(c.role) + '</div>' : '')
-      + '</div>'
-      + (c.url ? '<a href="' + _safeUrl(c.url) + '" target="_top" style="font-size:0.75rem;color:var(--a2ui-accent,#4f46e5);">→</a>' : '')
-      + '</div>';
+  var rawContributors = Array.isArray(b.contributors) ? b.contributors : [];
+  var contributors = rawContributors.slice(0, 100);
+  var titleText = b.title !== undefined ? _textLoose(b.title) : 'Contributors';
+  if (!titleText) {
+    titleText = 'Contributors';
+  }
+
+  var items = contributors.map(function(c) {
+    var name = '';
+    var role = '';
+    var avatarUrl = '';
+    var url = '';
+    var color = '';
+    var contribs = null;
+
+    if (typeof c === 'string') {
+      name = c;
+    } else if (c && typeof c === 'object' && !Array.isArray(c)) {
+      name = _textLoose(c.name);
+      role = _textLoose(c.role);
+      avatarUrl = _firstText(c.avatar_url, c.avatar, c.image);
+      url = _firstText(c.url, c.profile_url, c.link);
+      color = _textLoose(c.color);
+      var cNum = _numLoose(c.contributions);
+      if (cNum !== null) {
+        contribs = Math.min(Math.floor(cNum), 999999999);
+      }
+    } else {
+      return '';
+    }
+
+    var safeAvatar = avatarUrl ? _safe_href(avatarUrl, ['https', 'http']) : '';
+
+    var avHtml = '';
+    if (safeAvatar) {
+      avHtml = '<img src="' + _esc(safeAvatar) + '" alt="" style="width:36px;height:36px;border-radius:50%;object-fit:cover;">';
+    } else {
+      var initial = name ? Array.from(name)[0].toUpperCase() : '?';
+      var bg = '#e8f0fe';
+      var fg = '#1a73e8';
+      if (color) {
+        bg = _safe_css(color, '#e8f0fe');
+        fg = bg !== '#e8f0fe' ? '#ffffff' : '#1a73e8';
+      }
+      avHtml = '<div style="width:36px;height:36px;border-radius:50%;background:' + bg + ';color:' + fg + ';' +
+        'display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.9rem;">' + _esc(initial) + '</div>';
+    }
+
+    var contribHtml = contribs !== null ? '<span style="font-size:0.72rem;color:var(--muted,#9ca3af);margin-left:6px;">' + contribs + ' contributions</span>' : '';
+    var roleHtml = role ? '<div style="font-size:0.76rem;color:var(--muted,#5f6368);">' + _esc(role) + '</div>' : '';
+
+    var bodyHtml = avHtml + '<div>' +
+      '<div data-cb="label" data-key="' + _esc(name) + '" style="font-weight:600;color:#111827;font-size:0.88rem;">' +
+      _esc(name) + contribHtml + '</div>' +
+      roleHtml + '</div>';
+
+    var safeUrl = url ? _safe_href(url, ['https', 'mailto']) : '';
+
+    var rowHtml = '';
+    if (safeUrl) {
+      rowHtml = '<a data-cb="item" data-key="' + _esc(name) + '" href="' + _esc(safeUrl) + '" target="_blank" rel="noopener" ' +
+        'style="display:flex;align-items:center;gap:10px;padding:8px;text-decoration:none;border-radius:8px;">' +
+        bodyHtml + '</a>';
+    } else {
+      rowHtml = '<div data-cb="item" data-key="' + _esc(name) + '" ' +
+        'style="display:flex;align-items:center;gap:10px;padding:8px;border-radius:8px;">' +
+        bodyHtml + '</div>';
+    }
+
+    return '<div role="listitem">' + rowHtml + '</div>';
   }).join('');
-  return '<div style="margin:var(--a2ui-block-gap,1.25rem) 0;">' + title + rows + '</div>';
+
+  return '<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);' +
+    'border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:10px;margin:1.5rem 0;">' +
+    '<div style="font-weight:700;padding:4px 8px;margin-bottom:6px;">' + _esc(titleText) + '</div>' +
+    '<div role="list" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:4px;">' +
+    items + '</div></div>';
 };
 
 // ─── prerequisite_checklist ───────────────────────────────────────────────────
@@ -205,22 +304,100 @@ _RENDERERS['prerequisite_checklist'] = function(b) {
 
 // ─── capability_checklist ─────────────────────────────────────────────────────
 _RENDERERS['capability_checklist'] = function(b) {
-  var title = b.title ? '<div style="font-weight:700;font-size:0.9rem;color:var(--text,#111827);margin-bottom:10px;">' + _esc(b.title) + '</div>' : '';
-  var names = b.capability_names || [];
-  var items = (b.items || names).map(function(item) {
-    var label  = typeof item === 'object' ? (item.name || item.text || item.label || '') : item;
-    var key    = _esc(String(label));
-    var status = typeof item === 'object' ? (item.status || 'available') : 'available';
-    var map    = { available: ['✓', '#10b981', '#d1fae5'], unavailable: ['✗', '#ef4444', '#fee2e2'], partial: ['◐', '#f59e0b', '#fef3c7'], planned: ['○', '#6b7280', '#f3f4f6'] };
-    var cfg    = map[status] || map.available;
-    return '<div data-cb="item" data-key="' + key + '" style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--border,#f3f4f6);font-size:0.875rem;">'
-      + '<span style="width:20px;height:20px;border-radius:50%;background:' + cfg[2] + ';color:' + cfg[1] + ';display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;flex-shrink:0;">' + cfg[0] + '</span>'
-      + '<span data-cb="label" data-key="' + key + '" style="flex:1;color:var(--text,#374151);">' + _esc(String(label)) + '</span>'
-      + (typeof item === 'object' && item.tier ? '<span style="font-size:0.72rem;color:var(--muted,#9ca3af);">' + _esc(item.tier) + '</span>' : '')
-      + '</div>';
-  }).join('');
-  return '<div style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:16px;border:1px solid var(--border,#e5e7eb);border-radius:10px;background:var(--bg,#fff);">'
-    + title + items + '</div>';
+  var rawCapNames = Array.isArray(b.capability_names) ? b.capability_names : [];
+  var capNames = rawCapNames.slice(0, 100).map(function(c) { return _textLoose(c); });
+  var rawItems = Array.isArray(b.items) ? b.items : [];
+  var items = rawItems.slice(0, 100);
+  var titleText = _textLoose(b.title);
+
+  var titleHtml = titleText ? '<div style="font-weight:700;font-size:0.9rem;color:var(--text,#111827);margin-bottom:10px;">' + _esc(titleText) + '</div>' : '';
+
+  var isMatrix = capNames.length > 0 && items.some(function(it) {
+    return it !== null && typeof it === 'object' && Array.isArray(it.capabilities);
+  });
+
+  if (isMatrix) {
+    var thCells = capNames.map(function(c) {
+      return '<th scope="col" style="padding:8px 12px;font-size:0.78rem;font-weight:600;color:var(--muted,#5f6368);border-bottom:1px solid var(--border,#e5e7eb);text-align:center;">' + _esc(c) + '</th>';
+    }).join('');
+    var thead = '<thead><tr><th scope="col" style="padding:8px 12px;font-size:0.78rem;font-weight:600;color:var(--muted,#5f6368);border-bottom:1px solid var(--border,#e5e7eb);text-align:left;">Item</th>' + thCells + '</tr></thead>';
+
+    var rows = items.map(function(it) {
+      var label = '';
+      var caps = [];
+      if (it && typeof it === 'object' && !Array.isArray(it)) {
+        label = _firstText(it.name, it.text, it.label);
+        caps = Array.isArray(it.capabilities) ? it.capabilities : [];
+      } else {
+        label = _textLoose(it);
+      }
+      var key = _esc(label);
+      var tdCells = capNames.map(function(c, i) {
+        var val = i < caps.length ? caps[i] : null;
+        var cellContent = '';
+        if (val === true) {
+          cellContent = '<span aria-label="yes" style="color:#10b981;font-weight:700;">✓</span>';
+        } else if (val === false) {
+          cellContent = '<span aria-label="no" style="color:#ef4444;font-weight:700;">✗</span>';
+        } else {
+          cellContent = '<span aria-label="unknown" style="color:var(--muted,#9ca3af);">–</span>';
+        }
+        return '<td style="padding:8px 12px;text-align:center;border-bottom:1px solid var(--border,#f3f4f6);">' + cellContent + '</td>';
+      }).join('');
+
+      return '<tr data-cb="item" data-key="' + key + '">' +
+        '<th scope="row" data-cb="label" data-key="' + key + '" style="padding:8px 12px;font-size:0.875rem;font-weight:600;color:var(--text,#111827);border-bottom:1px solid var(--border,#f3f4f6);text-align:left;">' + _esc(label) + '</th>' +
+        tdCells + '</tr>';
+    }).join('');
+
+    return '<div style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:16px;border:1px solid var(--border,#e5e7eb);border-radius:10px;background:var(--bg,#fff);overflow-x:auto;">' +
+      titleHtml + '<table style="width:100%;border-collapse:collapse;">' + thead + '<tbody>' + rows + '</tbody></table></div>';
+  } else {
+    var statusMap = {
+      available: ['✓', '#10b981', '#d1fae5'],
+      unavailable: ['✗', '#ef4444', '#fee2e2'],
+      partial: ['◐', '#f59e0b', '#fef3c7'],
+      planned: ['○', '#6b7280', '#f3f4f6']
+    };
+    var listSource = items.length > 0 ? items : capNames;
+    var lis = listSource.map(function(it) {
+      var label = '';
+      var tierText = '';
+      var status = 'available';
+      if (it && typeof it === 'object' && !Array.isArray(it)) {
+        label = _firstText(it.name, it.text, it.label);
+        tierText = _textLoose(it.tier);
+        var rawStatus = _textLoose(it.status).toLowerCase();
+        if (statusMap[rawStatus]) {
+          status = rawStatus;
+        } else {
+          var boolVal = it.has !== undefined ? it.has : (it.capable !== undefined ? it.capable : it.available);
+          if (boolVal === true) {
+            status = 'available';
+          } else if (boolVal === false) {
+            status = 'unavailable';
+          } else {
+            status = 'available';
+          }
+        }
+      } else {
+        label = _textLoose(it);
+        status = 'available';
+      }
+
+      var key = _esc(label);
+      var cfg = statusMap[status] || statusMap.available;
+      var tierHtml = tierText ? '<span style="font-size:0.72rem;color:var(--muted,#9ca3af);">' + _esc(tierText) + '</span>' : '';
+
+      return '<li data-cb="item" data-key="' + key + '" style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--border,#f3f4f6);font-size:0.875rem;">' +
+        '<span aria-label="' + _esc(status) + '" style="width:20px;height:20px;border-radius:50%;background:' + cfg[2] + ';color:' + cfg[1] + ';display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;flex-shrink:0;">' + cfg[0] + '</span>' +
+        '<span data-cb="label" data-key="' + key + '" style="flex:1;color:var(--text,#374151);">' + _esc(label) + '</span>' +
+        tierHtml + '</li>';
+    }).join('');
+
+    return '<div style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:16px;border:1px solid var(--border,#e5e7eb);border-radius:10px;background:var(--bg,#fff);">' +
+      titleHtml + '<ul style="list-style:none;padding:0;margin:0;">' + lis + '</ul></div>';
+  }
 };
 
 // ─── review_callout ───────────────────────────────────────────────────────────

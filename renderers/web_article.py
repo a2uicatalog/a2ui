@@ -12688,12 +12688,65 @@ def _render_action_required_card(b: dict) -> str:
 
 # Lightweight dispatch for remaining stubs — they all follow the same pattern
 def _render_avatar_group(b: dict) -> str:
-    avatars = b.get("avatars",[])[:6]; total = b.get("total_count",len(avatars))
-    colors = ["#4f46e5","#10b981","#f59e0b","#ef4444","#8b5cf6","#0ea5e9"]
-    imgs = "".join(f'<div data-cb="item" data-key="{_cv_esc(a.get("name", ""))}" title="{_cv_esc(a.get("name",""))}" style="width:36px;height:36px;border-radius:50%;background:{colors[i%len(colors)]};border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;color:#fff;margin-left:{"-10" if i>0 else "0"}px;">{_cv_esc("".join(w[0] for w in a.get("name","?").split()[:2]).upper())}</div>' for i,a in enumerate(avatars))
-    extra = f'<div style="width:36px;height:36px;border-radius:50%;background:#e5e7eb;border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;color:var(--muted,#5f6368);margin-left:-10px;">+{total-len(avatars)}</div>' if total>len(avatars) else ""
-    label = f'<span style="font-size:.82rem;color:var(--muted,#5f6368);margin-left:10px;">{_cv_esc(b.get("label",""))}</span>' if b.get("label") else ""
-    return f'<div style="display:flex;align-items:center;margin:var(--a2ui-block-gap,1.25rem) 0;">{imgs}{extra}{label}</div>'
+    raw_avatars = b.get('avatars') if isinstance(b.get('avatars'), list) else []
+    avatars = raw_avatars[:6]
+    total_raw = _num_loose(b.get('total_count'))
+    total = min(int(total_raw), 99999) if total_raw is not None else len(raw_avatars)
+    label_text = _text_loose(b.get('label'))
+    colors = ["#4f46e5", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6", "#0ea5e9"]
+
+    imgs = []
+    for i, a in enumerate(avatars):
+        if isinstance(a, str):
+            name = a
+            url = ''
+            color = ''
+        elif isinstance(a, dict):
+            name = _text_loose(a.get('name'))
+            url = _first_text(a.get('url'), a.get('avatar_url'), a.get('src'))
+            color = _text_loose(a.get('color'))
+        else:
+            continue
+
+        safe_url = _safe_href(url, schemes=('https', 'http')) if url else ''
+        margin_left = '-10px' if i > 0 else '0'
+
+        if safe_url:
+            imgs.append(
+                f'<img data-cb="item" data-key="{_cv_esc(name)}" src="{_cv_esc(safe_url)}" alt="{_cv_esc(name)}" title="{_cv_esc(name)}" '
+                f'style="width:36px;height:36px;border-radius:50%;border:2px solid #fff;object-fit:cover;margin-left:{margin_left};">'
+            )
+        else:
+            words = [w for w in name.split() if w]
+            initials = ''.join(w[0] for w in words[:2]).upper() if words else '?'
+            bg = _safe_css(color, colors[i % len(colors)]) if color else colors[i % len(colors)]
+            aria_attr = f' role="img" aria-label="{_cv_esc(name)}"' if name else ' role="img"'
+            imgs.append(
+                f'<div data-cb="item" data-key="{_cv_esc(name)}"{aria_attr} title="{_cv_esc(name)}" '
+                f'style="width:36px;height:36px;border-radius:50%;background:{bg};border:2px solid #fff;'
+                f'display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;color:#fff;margin-left:{margin_left};">'
+                f'{_cv_esc(initials)}</div>'
+            )
+
+    imgs_html = ''.join(imgs)
+    surplus_count = total - len(avatars)
+    extra_html = ''
+    if surplus_count > 0:
+        extra_html = (
+            f'<div role="img" aria-label="+{surplus_count} more" '
+            f'style="width:36px;height:36px;border-radius:50%;background:#e5e7eb;border:2px solid #fff;'
+            f'display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;color:var(--muted,#5f6368);margin-left:-10px;">'
+            f'+{surplus_count}</div>'
+        )
+
+    label_html = f'<span style="font-size:0.82rem;color:var(--muted,#5f6368);margin-left:10px;">{_cv_esc(label_text)}</span>' if label_text else ''
+    group_label = label_text if label_text else 'Avatars'
+
+    return (
+        f'<div role="group" aria-label="{_cv_esc(group_label)}" '
+        f'style="display:flex;align-items:center;margin:var(--a2ui-block-gap,1.25rem) 0;">'
+        f'{imgs_html}{extra_html}{label_html}</div>'
+    )
 
 def _render_tree_view(b: dict) -> str:
     def node(n, d=0):
@@ -13752,19 +13805,30 @@ _RENDERERS['divider'] = _render_divider
 
 
 def _render_document_link(b: dict) -> str:
-    # Schema fields are document_url / label / icon_type; url and title are older aliases.
-    url = b.get('document_url') or b.get('url') or '#'
-    if not _md_url_ok(url):
-        url = '#'
-    title = b.get('label') or b.get('title') or 'Document'
-    ext = (b.get('icon_type') or (url.rsplit('.', 1)[-1] if '.' in url.rsplit('/', 1)[-1] else 'DOC')).upper()
-    icons = {'PDF': '📄', 'DOCX': '📝', 'XLSX': '📊', 'PPTX': '📊', 'ZIP': '📦'}
-    icon = b.get('icon') or icons.get(ext, '📄')
-    return (f'<a data-cb="node" data-key="{_ck(b.get("document_url") or b.get("url"), "document_link")}" href="{_esc(url)}" target="_blank" rel="noopener" '
-            f'style="display:inline-flex;align-items:center;gap:8px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);'
-            f'border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:8px 16px;text-decoration:none;color:#374151;'
-            f'font-size:0.86rem;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);margin:0.5rem 0;">'
-            f'{_cv_esc(icon)} {_esc(title)}</a>')
+    raw_url = _first_text(b.get('document_url'), b.get('url'))
+    raw_label = _first_text(b.get('label'), b.get('title'))
+    label = raw_label if raw_label else 'Document'
+    raw_icon_type = _text_loose(b.get('icon_type'))
+    custom_icon = _text_loose(b.get('icon'))
+
+    ext_match = re.search(r'\.([a-z0-9]{2,5})(?:[?#]|$)', raw_url, re.IGNORECASE)
+    detected_ext = ext_match.group(1).upper() if ext_match else ''
+    badge_type = raw_icon_type.upper() if raw_icon_type else detected_ext
+
+    icons = {'PDF': '📄', 'DOCX': '📝', 'DOC': '📝', 'XLSX': '📊', 'XLS': '📊', 'PPTX': '📊', 'PPT': '📊', 'ZIP': '📦'}
+    icon = custom_icon if custom_icon else icons.get(badge_type, '📄')
+
+    badge_html = f' <span style="font-size:0.7rem;color:var(--muted,#5f6368);">[{_cv_esc(badge_type)}]</span>' if badge_type else ''
+    safe_url = _safe_href(raw_url, schemes=('https', 'mailto')) if raw_url else ''
+    href = safe_url if safe_url else '#'
+
+    return (
+        f'<a data-cb="node" data-key="{_ck(raw_url, "document_link")}" href="{_cv_esc(href)}" target="_blank" rel="noopener" '
+        f'style="display:inline-flex;align-items:center;gap:8px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);'
+        f'border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:8px 16px;text-decoration:none;color:#374151;'
+        f'font-size:0.86rem;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);margin:0.5rem 0;">'
+        f'<span aria-hidden="true">{_cv_esc(icon)}</span> {_cv_esc(label)}{badge_html}</a>'
+    )
 
 _RENDERERS['document_link'] = _render_document_link
 
@@ -13824,28 +13888,53 @@ _RENDERERS['empty_state'] = _render_empty_state
 
 
 def _render_env_var_list(b: dict) -> str:
-    vars_list = b.get('vars') or b.get('variables', [])
-    rows = ''
+    raw_vars = b.get('variables') if isinstance(b.get('variables'), list) else (b.get('vars') if isinstance(b.get('vars'), list) else [])
+    vars_list = raw_vars[:100]
+
+    rows = []
     for v in vars_list:
-        name = v.get('name', '') if isinstance(v, dict) else str(v)
-        val = v.get('value', '') if isinstance(v, dict) else ''
-        desc = v.get('description', '') if isinstance(v, dict) else ''
-        required = v.get('required', False) if isinstance(v, dict) else False
-        req_html = ('<span style="font-size:0.68rem;color:#dc2626;font-weight:700;margin-left:6px;">required</span>'
-                    if required else '')
-        rows += (f'<tr><td style="padding:8px 12px;font-family:monospace;font-size:0.82rem;color:#7c3aed;'
-                 f'border-bottom:1px solid #f3f4f6;white-space:nowrap;">{_esc(name)}{req_html}</td>'
-                 f'<td style="padding:8px 12px;font-family:monospace;font-size:0.8rem;color:#374151;'
-                 f'border-bottom:1px solid #f3f4f6;">{_esc(str(val)) if val else "<span style=color:var(--muted,#5f6368);>—</span>"}</td>'
-                 f'<td style="padding:8px 12px;font-size:0.82rem;color:var(--muted,#5f6368);'
-                 f'border-bottom:1px solid #f3f4f6;">{_esc(desc)}</td></tr>')
-    return (f'<div style="border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;margin:1.2rem 0;overflow-x:auto;">'
-            f'<table style="width:100%;border-collapse:collapse;">'
-            f'<thead><tr style="background:#f9fafb;">'
-            f'<th style="padding:8px 12px;text-align:left;font-size:0.75rem;color:var(--muted,#5f6368);text-transform:uppercase;">Variable</th>'
-            f'<th style="padding:8px 12px;text-align:left;font-size:0.75rem;color:var(--muted,#5f6368);text-transform:uppercase;">Value</th>'
-            f'<th style="padding:8px 12px;text-align:left;font-size:0.75rem;color:var(--muted,#5f6368);text-transform:uppercase;">Description</th>'
-            f'</tr></thead><tbody>{rows}</tbody></table></div>')
+        if isinstance(v, str):
+            name = v
+            desc = ''
+            default_val = ''
+            is_req = False
+        elif isinstance(v, dict):
+            name = _first_text(v.get('key'), v.get('name'), v.get('key_name'), v.get('variable'))
+            desc = _text_loose(v.get('description'))
+            val = v.get('default') if v.get('default') is not None else v.get('value')
+            default_val = _text_loose(val)
+            req_field = v.get('required')
+            status_field = _first_text(v.get('requirement_status'), v.get('status')).lower()
+            is_req = (req_field is True) or (status_field == 'required')
+        else:
+            continue
+
+        req_html = (
+            '<span style="color:#dc2626;font-size:0.72rem;font-weight:700;">required</span>'
+            if is_req else
+            '<span style="color:var(--muted,#5f6368);font-size:0.72rem;">optional</span>'
+        )
+        def_html = _cv_esc(default_val) if default_val else '<span style="color:var(--muted,#5f6368);">—</span>'
+
+        rows.append(
+            f'<tr>'
+            f'<td style="padding:8px 12px;font-family:monospace;font-size:0.82rem;color:#7c3aed;white-space:nowrap;border-bottom:1px solid #f3f4f6;">{_cv_esc(name)}</td>'
+            f'<td style="padding:8px 12px;font-size:0.82rem;color:#374151;border-bottom:1px solid #f3f4f6;">{_cv_esc(desc)}</td>'
+            f'<td style="padding:8px 12px;font-family:monospace;font-size:0.78rem;color:var(--muted,#5f6368);border-bottom:1px solid #f3f4f6;">{def_html}</td>'
+            f'<td style="padding:8px 12px;border-bottom:1px solid #f3f4f6;">{req_html}</td>'
+            f'</tr>'
+        )
+
+    return (
+        f'<div style="border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;margin:1.2rem 0;overflow-x:auto;">'
+        f'<table aria-label="Environment variables" style="width:100%;border-collapse:collapse;">'
+        f'<thead><tr style="background:#f9fafb;">'
+        f'<th scope="col" style="padding:8px 12px;text-align:left;font-size:0.75rem;color:var(--muted,#5f6368);text-transform:uppercase;">Variable</th>'
+        f'<th scope="col" style="padding:8px 12px;text-align:left;font-size:0.75rem;color:var(--muted,#5f6368);text-transform:uppercase;">Description</th>'
+        f'<th scope="col" style="padding:8px 12px;text-align:left;font-size:0.75rem;color:var(--muted,#5f6368);text-transform:uppercase;">Default</th>'
+        f'<th scope="col" style="padding:8px 12px;text-align:left;font-size:0.75rem;color:var(--muted,#5f6368);text-transform:uppercase;">Required</th>'
+        f'</tr></thead><tbody>{"".join(rows)}</tbody></table></div>'
+    )
 
 _RENDERERS['env_var_list'] = _render_env_var_list
 
@@ -13866,22 +13955,40 @@ _RENDERERS['experimental_banner'] = _render_experimental_banner
 
 
 def _render_faq_accordion(b: dict) -> str:
-    items = b.get('items') or b.get('questions', [])
-    title = b.get('title', '')
-    rows = ''
-    for item in items:
-        q = item.get('question') or item.get('label', '')
-        a = item.get('answer') or item.get('content', '')
-        k = _esc(str(q))
-        rows += (f'<details data-cb="item" data-key="{k}" style="border-bottom:1px solid #eaeaea;border-bottom:1px solid var(--a2ui-border,#eaeaea);">'
-                 f'<summary data-cb="label" data-key="{k}" style="padding:12px 16px;font-weight:600;cursor:pointer;font-size:0.88rem;'
-                 f'color:#111827;list-style:none;">❓ {_esc(q)}</summary>'
-                 f'<div style="padding:10px 16px 14px;font-size:0.86rem;color:#374151;'
-                 f'background:#fafafa;">{_md_inline(a)}</div></details>')
-    title_html = (f'<div style="padding:12px 16px;font-weight:700;font-size:1rem;'
-                  f'border-bottom:1px solid #e5e7eb;">{_esc(title)}</div>' if title else '')
-    return (f'<div style="border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;margin:1.5rem 0;">'
-            f'{title_html}{rows}</div>')
+    raw_items = b.get('items') if isinstance(b.get('items'), list) else (b.get('questions') if isinstance(b.get('questions'), list) else [])
+    items = raw_items[:100]
+    title_text = _text_loose(b.get('title'))
+
+    title_html = (
+        f'<div style="padding:12px 16px;font-weight:700;font-size:1rem;border-bottom:1px solid #e5e7eb;">'
+        f'{_cv_esc(title_text)}</div>'
+        if title_text else ''
+    )
+
+    rows = []
+    for it in items:
+        if isinstance(it, dict):
+            q = _first_text(it.get('question'), it.get('label'))
+            a = _first_text(it.get('answer'), it.get('content'), it.get('text'), it.get('body'))
+        elif isinstance(it, str):
+            q = it
+            a = ''
+        else:
+            continue
+
+        k = _cv_esc(q)
+        rows.append(
+            f'<details data-cb="item" data-key="{k}" style="border-bottom:1px solid #eaeaea;border-bottom:1px solid var(--a2ui-border,#eaeaea);">'
+            f'<summary data-cb="label" data-key="{k}" style="padding:12px 16px;font-weight:600;cursor:pointer;font-size:0.88rem;color:#111827;list-style:none;">'
+            f'<span aria-hidden="true">❓</span> {_cv_esc(q)}</summary>'
+            f'<div style="padding:10px 16px 14px;font-size:0.86rem;color:#374151;background:#fafafa;line-height:1.6;">'
+            f'{_md_inline(a)}</div></details>'
+        )
+
+    return (
+        f'<div style="border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;margin:1.5rem 0;">'
+        f'{title_html}{"".join(rows)}</div>'
+    )
 
 _RENDERERS['faq_accordion'] = _render_faq_accordion
 
@@ -14544,17 +14651,32 @@ _RENDERERS['kanban_board'] = _render_kanban_board
 
 
 def _render_keyboard_shortcut(b: dict) -> str:
-    keys = b.get('keys', [])
-    description = b.get('description') or b.get('label', '')
-    platform = b.get('platform', '')
+    raw_keys = b.get('keys') if isinstance(b.get('keys'), list) else []
+    keys = [_text_loose(k) for k in raw_keys[:12] if _text_loose(k)]
+    action = _first_text(b.get('action'), b.get('description'), b.get('label'))
+    platform = _text_loose(b.get('platform'))
+
     def key_html(k):
-        return (f'<kbd style="display:inline-block;padding:2px 7px;background:#ffffff;background:var(--a2ui-surface,#ffffff);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);'
-                f'border-bottom:2px solid #9ca3af;border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);font-family:monospace;font-size:0.78rem;'
-                f'font-weight:600;color:#374151;vertical-align:middle;">{_esc(k)}</kbd>')
-    keys_html = '<span style="font-size:0.8rem;color:var(--muted,#5f6368);vertical-align:middle;margin:0 3px;">+</span>'.join(key_html(k) for k in keys)
-    plat_html = f'<span style="font-size:0.72rem;color:var(--muted,#5f6368);margin-left:6px;">({_esc(platform)})</span>' if platform else ''
-    desc_html = f'<span style="font-size:0.88rem;color:#374151;margin-left:10px;">{_esc(description)}</span>' if description else ''
-    return f'<span data-cb="node" data-key="{_ck(b.get("action"), "keyboard_shortcut")}" style="white-space:nowrap;">{keys_html}{plat_html}{desc_html}</span>'
+        return (
+            f'<kbd style="display:inline-block;padding:2px 7px;background:#ffffff;background:var(--a2ui-surface,#ffffff);'
+            f'border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-bottom:2px solid #9ca3af;'
+            f'border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);font-family:monospace;font-size:0.78rem;'
+            f'font-weight:600;color:#374151;vertical-align:middle;">{_cv_esc(k)}</kbd>'
+        )
+
+    sep = '<span aria-hidden="true" style="font-size:0.8rem;color:var(--muted,#5f6368);vertical-align:middle;margin:0 3px;">+</span>'
+    keys_html = sep.join(key_html(k) for k in keys)
+
+    plat_html = f'<span style="font-size:0.72rem;color:var(--muted,#5f6368);margin-left:6px;">({_cv_esc(platform)})</span>' if platform else ''
+    desc_html = f'<span style="font-size:0.88rem;color:#374151;margin-left:10px;">{_cv_esc(action)}</span>' if action else ''
+
+    keys_joined = ' + '.join(keys)
+    aria_label = f'{keys_joined}: {action}' if (keys_joined and action) else (action if not keys_joined else keys_joined)
+
+    return (
+        f'<span role="group" aria-label="{_cv_esc(aria_label)}" data-cb="node" data-key="{_ck(b.get("action"), "keyboard_shortcut")}" '
+        f'style="white-space:nowrap;">{keys_html}{plat_html}{desc_html}</span>'
+    )
 
 _RENDERERS['keyboard_shortcut'] = _render_keyboard_shortcut
 
@@ -15771,21 +15893,94 @@ _RENDERERS['call_mood_board'] = _render_call_mood_board
 
 
 def _render_capability_checklist(b: dict) -> str:
-    items = b.get('items', [])
-    title = b.get('title', '')
-    rows = ''
-    for item in items:
-        name = item.get('name') or item.get('text') or item.get('label', '') if isinstance(item, dict) else str(item)
-        key = _esc(name)
-        text = item.get('text') or item.get('label', '') if isinstance(item, dict) else str(item)
-        has = item.get('has', None) if isinstance(item, dict) else None
-        icon = '✅' if has is True else '❌' if has is False else '⬜'
-        rows += (f'<li data-cb="item" data-key="{key}" style="display:flex;align-items:flex-start;gap:10px;padding:6px 0;'
-                 f'border-bottom:1px solid #f1f1f1;border-bottom:1px solid var(--a2ui-border-soft,#f1f1f1);font-size:0.88rem;">'
-                 f'<span>{icon}</span><span data-cb="label" data-key="{key}" style="color:#374151;">{_md_inline(text)}</span></li>')
-    title_html = f'<div style="font-weight:700;margin-bottom:8px;">{_esc(title)}</div>' if title else ''
-    return (f'<div style="border:1px solid #e5e7eb;border-radius:10px;padding:14px 18px;margin:1rem 0;">'
-            f'{title_html}<ul style="list-style:none;padding:0;margin:0;">{rows}</ul></div>')
+    raw_cap_names = b.get('capability_names') if isinstance(b.get('capability_names'), list) else []
+    cap_names = [_text_loose(c) for c in raw_cap_names[:100]]
+    raw_items = b.get('items') if isinstance(b.get('items'), list) else []
+    items = raw_items[:100]
+    title_text = _text_loose(b.get('title'))
+
+    title_html = f'<div style="font-weight:700;font-size:0.9rem;color:var(--text,#111827);margin-bottom:10px;">{_cv_esc(title_text)}</div>' if title_text else ''
+
+    is_matrix = bool(cap_names and any(isinstance(it, dict) and isinstance(it.get('capabilities'), list) for it in items))
+
+    if is_matrix:
+        th_cells = ''.join(f'<th scope="col" style="padding:8px 12px;font-size:0.78rem;font-weight:600;color:var(--muted,#5f6368);border-bottom:1px solid var(--border,#e5e7eb);text-align:center;">{_cv_esc(c)}</th>' for c in cap_names)
+        thead = f'<thead><tr><th scope="col" style="padding:8px 12px;font-size:0.78rem;font-weight:600;color:var(--muted,#5f6368);border-bottom:1px solid var(--border,#e5e7eb);text-align:left;">Item</th>{th_cells}</tr></thead>'
+
+        rows = []
+        for it in items:
+            if isinstance(it, dict):
+                label = _first_text(it.get('name'), it.get('text'), it.get('label'))
+                caps = it.get('capabilities') if isinstance(it.get('capabilities'), list) else []
+            else:
+                label = _text_loose(it)
+                caps = []
+
+            key = _cv_esc(label)
+            td_cells = []
+            for i in range(len(cap_names)):
+                val = caps[i] if i < len(caps) else None
+                if val is True:
+                    cell_content = '<span aria-label="yes" style="color:#10b981;font-weight:700;">✓</span>'
+                elif val is False:
+                    cell_content = '<span aria-label="no" style="color:#ef4444;font-weight:700;">✗</span>'
+                else:
+                    cell_content = '<span aria-label="unknown" style="color:var(--muted,#9ca3af);">–</span>'
+                td_cells.append(f'<td style="padding:8px 12px;text-align:center;border-bottom:1px solid var(--border,#f3f4f6);">{cell_content}</td>')
+
+            rows.append(
+                f'<tr data-cb="item" data-key="{key}">'
+                f'<th scope="row" data-cb="label" data-key="{key}" style="padding:8px 12px;font-size:0.875rem;font-weight:600;color:var(--text,#111827);border-bottom:1px solid var(--border,#f3f4f6);text-align:left;">{_cv_esc(label)}</th>'
+                f'{"".join(td_cells)}</tr>'
+            )
+
+        return (
+            f'<div style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:16px;border:1px solid var(--border,#e5e7eb);border-radius:10px;background:var(--bg,#fff);overflow-x:auto;">'
+            f'{title_html}<table style="width:100%;border-collapse:collapse;">{thead}<tbody>{"".join(rows)}</tbody></table></div>'
+        )
+    else:
+        status_map = {
+            'available': ('✓', '#10b981', '#d1fae5'),
+            'unavailable': ('✗', '#ef4444', '#fee2e2'),
+            'partial': ('◐', '#f59e0b', '#fef3c7'),
+            'planned': ('○', '#6b7280', '#f3f4f6')
+        }
+        list_source = items if items else cap_names
+        lis = []
+        for it in list_source:
+            tier_text = ''
+            if isinstance(it, dict):
+                label = _first_text(it.get('name'), it.get('text'), it.get('label'))
+                tier_text = _text_loose(it.get('tier'))
+                raw_status = _text_loose(it.get('status')).lower()
+                if raw_status in status_map:
+                    status = raw_status
+                else:
+                    bool_val = it.get('has') if it.get('has') is not None else (it.get('capable') if it.get('capable') is not None else it.get('available'))
+                    if bool_val is True:
+                        status = 'available'
+                    elif bool_val is False:
+                        status = 'unavailable'
+                    else:
+                        status = 'available'
+            else:
+                label = _text_loose(it)
+                status = 'available'
+
+            key = _cv_esc(label)
+            glyph, color, bg = status_map.get(status, status_map['available'])
+            tier_html = f'<span style="font-size:0.72rem;color:var(--muted,#9ca3af);">{_cv_esc(tier_text)}</span>' if tier_text else ''
+            lis.append(
+                f'<li data-cb="item" data-key="{key}" style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--border,#f3f4f6);font-size:0.875rem;">'
+                f'<span aria-label="{_cv_esc(status)}" style="width:20px;height:20px;border-radius:50%;background:{bg};color:{color};display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;flex-shrink:0;">{glyph}</span>'
+                f'<span data-cb="label" data-key="{key}" style="flex:1;color:var(--text,#374151);">{_cv_esc(label)}</span>'
+                f'{tier_html}</li>'
+            )
+
+        return (
+            f'<div style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:16px;border:1px solid var(--border,#e5e7eb);border-radius:10px;background:var(--bg,#fff);">'
+            f'{title_html}<ul style="list-style:none;padding:0;margin:0;">{"".join(lis)}</ul></div>'
+        )
 
 _RENDERERS['capability_checklist'] = _render_capability_checklist
 
@@ -15809,30 +16004,81 @@ _RENDERERS['combobox'] = _render_combobox
 
 
 def _render_contributor_list(b: dict) -> str:
-    contributors = b.get('contributors', [])
-    title = b.get('title', 'Contributors')
-    items = ''
+    raw_contributors = b.get('contributors') if isinstance(b.get('contributors'), list) else []
+    contributors = raw_contributors[:100]
+    title_text = _text_loose(b.get('title')) if b.get('title') is not None else 'Contributors'
+    if not title_text:
+        title_text = 'Contributors'
+
+    items = []
     for c in contributors:
-        name = c.get('name', '') if isinstance(c, dict) else str(c)
-        role = c.get('role', '') if isinstance(c, dict) else ''
-        avatar = c.get('avatar', '') if isinstance(c, dict) else ''
-        url = c.get('url', '#') if isinstance(c, dict) else '#'
-        initial = name[0].upper() if name else '?'
-        av = (f'<img src="{_esc(avatar)}" alt="{_esc(name)}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;">'
-              if avatar else
-              f'<div style="width:36px;height:36px;border-radius:50%;background:#e8f0fe;display:flex;'
-              f'align-items:center;justify-content:center;font-weight:700;font-size:0.9rem;color:#1a73e8;">{_esc(initial)}</div>')
-        items += (f'<a data-cb="item" data-key="{_esc(name)}" href="{_esc(url)}" target="_blank" rel="noopener" '
-                  f'style="display:flex;align-items:center;gap:10px;padding:8px;text-decoration:none;'
-                  f'border-radius:8px;">'
-                  f'{av}<div>'
-                  f'<div data-cb="label" data-key="{_esc(name)}" style="font-weight:600;color:#111827;font-size:0.88rem;">{_esc(name)}</div>'
-                  f'{"<div style=font-size:0.76rem;color:var(--muted,#5f6368);>"+_esc(role)+"</div>" if role else ""}'
-                  f'</div></a>')
-    return (f'<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:10px;margin:1.5rem 0;">'
-            f'<div style="font-weight:700;padding:4px 8px;margin-bottom:6px;">{_esc(title)}</div>'
-            f'<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:4px;">'
-            f'{items}</div></div>')
+        if isinstance(c, str):
+            name = c
+            role = ''
+            avatar_url = ''
+            url = ''
+            color = ''
+            contribs = None
+        elif isinstance(c, dict):
+            name = _text_loose(c.get('name'))
+            role = _text_loose(c.get('role'))
+            avatar_url = _first_text(c.get('avatar_url'), c.get('avatar'), c.get('image'))
+            url = _first_text(c.get('url'), c.get('profile_url'), c.get('link'))
+            color = _text_loose(c.get('color'))
+            contribs_num = _num_loose(c.get('contributions'))
+            contribs = min(int(contribs_num), 999999999) if contribs_num is not None else None
+        else:
+            continue
+
+        safe_avatar = _safe_href(avatar_url, schemes=('https', 'http')) if avatar_url else ''
+        if safe_avatar:
+            av_html = f'<img src="{_cv_esc(safe_avatar)}" alt="" style="width:36px;height:36px;border-radius:50%;object-fit:cover;">'
+        else:
+            initial = name[0].upper() if name else '?'
+            if color:
+                bg = _safe_css(color, '#e8f0fe')
+                fg = '#ffffff' if bg != '#e8f0fe' else '#1a73e8'
+            else:
+                bg = '#e8f0fe'
+                fg = '#1a73e8'
+            av_html = (
+                f'<div style="width:36px;height:36px;border-radius:50%;background:{bg};color:{fg};'
+                f'display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.9rem;">{_cv_esc(initial)}</div>'
+            )
+
+        contrib_html = f'<span style="font-size:0.72rem;color:var(--muted,#9ca3af);margin-left:6px;">{contribs} contributions</span>' if contribs is not None else ''
+        role_html = f'<div style="font-size:0.76rem;color:var(--muted,#5f6368);">{_cv_esc(role)}</div>' if role else ''
+
+        body_html = (
+            f'{av_html}<div>'
+            f'<div data-cb="label" data-key="{_cv_esc(name)}" style="font-weight:600;color:#111827;font-size:0.88rem;">'
+            f'{_cv_esc(name)}{contrib_html}</div>'
+            f'{role_html}</div>'
+        )
+
+        safe_url = _safe_href(url, schemes=('https', 'mailto')) if url else ''
+        if safe_url:
+            row_html = (
+                f'<a data-cb="item" data-key="{_cv_esc(name)}" href="{_cv_esc(safe_url)}" target="_blank" rel="noopener" '
+                f'style="display:flex;align-items:center;gap:10px;padding:8px;text-decoration:none;border-radius:8px;">'
+                f'{body_html}</a>'
+            )
+        else:
+            row_html = (
+                f'<div data-cb="item" data-key="{_cv_esc(name)}" '
+                f'style="display:flex;align-items:center;gap:10px;padding:8px;border-radius:8px;">'
+                f'{body_html}</div>'
+            )
+
+        items.append(f'<div role="listitem">{row_html}</div>')
+
+    return (
+        f'<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);'
+        f'border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:10px;margin:1.5rem 0;">'
+        f'<div style="font-weight:700;padding:4px 8px;margin-bottom:6px;">{_cv_esc(title_text)}</div>'
+        f'<div role="list" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:4px;">'
+        f'{"".join(items)}</div></div>'
+    )
 
 _RENDERERS['contributor_list'] = _render_contributor_list
 
@@ -17203,30 +17449,58 @@ _RENDERERS['sticky_note'] = _render_sticky_note
 
 
 def _render_table_of_contents(b: dict) -> str:
-    # Schema's field is `headings` (array of {level, text, anchor?}); this read the
-    # non-existent `items`, so a payload sent under the real field name never rendered
-    # (surface-parity debt; GAS already reads b.headings). 2026-09-27.
-    items = b.get('headings') or b.get('items', [])
-    title = b.get('title', 'Table of Contents')
+    raw_headings = b.get('headings') if isinstance(b.get('headings'), list) else (b.get('items') if isinstance(b.get('items'), list) else [])
+    headings = raw_headings[:100]
+    title_text = _text_loose(b.get('title')) if b.get('title') is not None else 'Table of Contents'
+    if not title_text:
+        title_text = 'Table of Contents'
+
     def render_item(item, depth=0):
-        text = (item.get('text') or item.get('label', '')) if isinstance(item, dict) else str(item)
-        anchor = item.get('anchor', '') if isinstance(item, dict) else ''
-        children = item.get('children', []) if isinstance(item, dict) else []
-        level = item.get('level', 1) if isinstance(item, dict) else 1
-        depth = max(depth, level - 1)
-        prefix = '&nbsp;&nbsp;&nbsp;&nbsp;' * depth
-        href = f'#{_esc(anchor)}' if anchor else '#'
-        html = (f'<li style="margin:3px 0;">'
-                f'{prefix}<a href="{href}" style="color:#7c3aed;text-decoration:none;font-size:0.86rem;">'
-                f'{_esc(text)}</a></li>')
-        for child in children:
-            html += render_item(child, depth + 1)
-        return html
-    rows = ''.join(render_item(item) for item in items)
-    return (f'<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:14px 18px;margin:1.5rem 0;'
-            f'background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);">'
-            f'<div style="font-weight:700;margin-bottom:8px;font-size:0.9rem;">📋 {_esc(title)}</div>'
-            f'<ul style="list-style:none;padding:0;margin:0;">{rows}</ul></div>')
+        if depth > 6:
+            return ''
+        if isinstance(item, dict):
+            text = _first_text(item.get('text'), item.get('title'), item.get('label'), item.get('name'))
+            anchor_raw = _text_loose(item.get('anchor')).lstrip('#').strip()
+            anchor_clean = re.sub(r'\s+', '-', anchor_raw)
+            children = item.get('children') if isinstance(item.get('children'), list) else []
+            lvl_num = _num_loose(item.get('level'))
+            level = max(1, min(6, int(lvl_num))) if lvl_num is not None else 1
+        elif isinstance(item, str):
+            text = item
+            anchor_clean = ''
+            children = []
+            level = 1
+        else:
+            return ''
+
+        eff_level = max(level, depth + 1)
+        indent = (eff_level - 1) * 1.2
+        padding_style = f'padding-left:{indent:.1f}rem;' if indent > 0 else ''
+        font_size = '0.9rem' if eff_level == 1 else '0.85rem'
+        href = f'#{_cv_esc(anchor_clean)}' if anchor_clean else '#'
+
+        child_html = ''
+        if children:
+            sub_items = ''.join(render_item(ch, eff_level) for ch in children[:50])
+            if sub_items:
+                child_html = f'<ul style="list-style:none;padding:0;margin:0;">{sub_items}</ul>'
+
+        return (
+            f'<li style="margin:3px 0;{padding_style}">'
+            f'<a href="{href}" style="color:#7c3aed;text-decoration:none;font-size:{font_size};">'
+            f'{_cv_esc(text)}</a>{child_html}</li>'
+        )
+
+    rows = ''.join(render_item(item) for item in headings)
+
+    return (
+        f'<nav aria-label="Table of contents" '
+        f'style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);'
+        f'padding:14px 18px;margin:1.5rem 0;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);">'
+        f'<div style="font-weight:700;margin-bottom:8px;font-size:0.9rem;">'
+        f'<span aria-hidden="true">📋</span> {_cv_esc(title_text)}</div>'
+        f'<ul style="list-style:none;padding:0;margin:0;">{rows}</ul></nav>'
+    )
 
 _RENDERERS['table_of_contents'] = _render_table_of_contents
 
@@ -29685,6 +29959,16 @@ def _text_loose(v):
         return str(v) if abs(v) < 10 ** 21 else ''
     if isinstance(v, float) and v == v and abs(v) < 1e21:
         return str(int(v)) if v.is_integer() else repr(v)
+    return ''
+
+
+def _first_text(*vals):
+    """The first of several payload values that has text (_text_loose is not empty), else ''. Twin: _firstText in atom.gs. Replaces `a or b`,
+    which treats an empty list as false in Python and as true in JavaScript."""
+    for v in vals:
+        t = _text_loose(v)
+        if t:
+            return t
     return ''
 
 
