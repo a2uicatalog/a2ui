@@ -1221,6 +1221,23 @@ function _moTranscript(b, blocks, cfg, dur, th) {
   return '<details class="mt-tr" style="margin-top:10px;font-size:0.85rem;color:var(--text,#334155);"><summary style="cursor:pointer;font-weight:600;">Transcript</summary>' + inner + '</details>';
 }
 
+function _moStageDark(h) {
+  // WCAG relative luminance below the black/white crossover (0.179). Twin: _mo_stage_dark in web_article.py.
+  var ch = [1, 3, 5].map(function(i) { return parseInt(h.substr(i, 2), 16) / 255; });
+  var lin = ch.map(function(c) { return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); });
+  return 0.2126 * lin[0] + 0.7152 * lin[1] + 0.0722 * lin[2] < 0.179;
+}
+
+// Embedded data atoms read the page-level --a2ui-* / --text family. On a dark stage re-point them at the repo's dark palette
+// (_CV_THEMES.dark) so a map or chart inside a film is not painted light with vanishing text. Light stages emit nothing.
+function _moStageTokens(stBg) {
+  if (!_moStageDark(stBg)) return '';
+  var d = _CV_THEMES.dark, ink = d.ink, mute = d.mute, line = d.line, soft = d.soft;
+  return '--a2ui-text:' + ink + ';--a2ui-muted:' + mute + ';--a2ui-faint:' + mute + ';--a2ui-surface:' + soft + ';--a2ui-surface-muted:' + soft
+    + ';--a2ui-border:' + line + ';--a2ui-border-soft:' + line + ';--a2ui-shadow:none;--text:' + ink + ';--text-muted:' + mute + ';--muted:' + mute
+    + ';--surface:' + soft + ';--surface2:' + soft + ';--surface-2:' + soft + ';--border:' + line + ';--bg:' + stBg + ';';
+}
+
 function _moTimeline(b) {
   var uid = Math.random().toString(36).substr(2, 6), th = _ffTheme(b), acc = _ffHex(b.accent, '#38bdf8');
   var asp = _ffPick(b.aspect, _MO_ASPECT, '16:9'), W = asp[0], H = asp[1];
@@ -1284,7 +1301,7 @@ function _moTimeline(b) {
   var styleExtra = isScroll ? '@media (prefers-reduced-motion:reduce){.mt-root .mt-run{height:auto!important}.mt-root .mt-pin{position:static!important;height:auto!important}}' : '';
   var vpSize = isScroll ? ('width:min(100%,' + _ffNum(100 * W / H, 100, 1, 1000, 2) + 'vh);margin:0 auto;aspect-ratio:') : 'width:100%;aspect-ratio:';
   var vpHtml = '<div class="mt-vp" style="position:relative;' + vpSize + W + '/' + H + ';overflow:hidden;border-radius:16px;background:' + stBg + ';border:1px solid ' + th.line + ';">'
-    + '<div class="mt-st" style="position:absolute;left:0;top:0;width:' + W + 'px;height:' + H + 'px;transform-origin:0 0;visibility:hidden;perspective:1800px;background-color:' + stBg + ';' + glow + '--mt-ink:' + th.ink + ';--mt-mute:' + th.mute + ';--mt-acc:' + acc + ';overflow:hidden;">'
+    + '<div class="mt-st" style="position:absolute;left:0;top:0;width:' + W + 'px;height:' + H + 'px;transform-origin:0 0;visibility:hidden;perspective:1800px;background-color:' + stBg + ';' + glow + '--mt-ink:' + th.ink + ';--mt-mute:' + th.mute + ';--mt-acc:' + acc + ';' + _moStageTokens(stBg) + 'overflow:hidden;">'
     + '<div class="mt-cam" style="position:absolute;left:0;top:0;width:' + W + 'px;height:' + H + 'px;transform-origin:0 0;transform-style:preserve-3d;">' + world + '</div>'
     + '<div class="mt-hud" style="position:absolute;left:0;top:0;width:' + W + 'px;height:' + H + 'px;pointer-events:none;">' + hud + '</div></div></div>';
   var body = isScroll

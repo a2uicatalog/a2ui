@@ -30811,6 +30811,26 @@ def _mo_transcript(b, blocks, cfg, dur, th):
     return ('<details class="mt-tr" style="margin-top:10px;font-size:0.85rem;color:var(--text,#334155);"><summary style="cursor:pointer;font-weight:600;">Transcript</summary>' + inner + '</details>')
 
 
+def _mo_stage_dark(h: str) -> bool:
+    # WCAG relative luminance below the black/white crossover (0.179): white text beats black text on this stage.
+    ch = [int(h[i:i + 2], 16) / 255.0 for i in (1, 3, 5)]
+    lin = [c / 12.92 if c <= 0.03928 else ((c + 0.055) / 1.055) ** 2.4 for c in ch]
+    return 0.2126 * lin[0] + 0.7152 * lin[1] + 0.0722 * lin[2] < 0.179
+
+
+def _mo_stage_tokens(st_bg: str) -> str:
+    # Embedded data atoms read the page-level --a2ui-* / --text family, which belongs to the (light) page. On a dark stage
+    # re-point them at the repo's own dark palette (_CV_THEMES['dark'], the film's dark theme) so a map or chart inside a
+    # film is not painted light with text that vanishes. Light stages emit nothing (byte-identical). Twin: _moStageTokens.
+    if not _mo_stage_dark(st_bg):
+        return ''
+    d = _CV_THEMES['dark']
+    ink, mute, line, soft = d['ink'], d['mute'], d['line'], d['soft']
+    return ('--a2ui-text:' + ink + ';--a2ui-muted:' + mute + ';--a2ui-faint:' + mute + ';--a2ui-surface:' + soft + ';--a2ui-surface-muted:' + soft
+            + ';--a2ui-border:' + line + ';--a2ui-border-soft:' + line + ';--a2ui-shadow:none;--text:' + ink + ';--text-muted:' + mute + ';--muted:' + mute
+            + ';--surface:' + soft + ';--surface2:' + soft + ';--surface-2:' + soft + ';--border:' + line + ';--bg:' + st_bg + ';')
+
+
 def _mo_timeline(b: dict) -> str:
     uid = _wa_uid(b)[:6]
     th, acc = _ff_theme(b), _ff_hex(b.get('accent'), '#38bdf8')
@@ -30905,7 +30925,7 @@ def _mo_timeline(b: dict) -> str:
     style_extra = '@media (prefers-reduced-motion:reduce){.mt-root .mt-run{height:auto!important}.mt-root .mt-pin{position:static!important;height:auto!important}}' if is_scroll else ''
     vp_size = ('width:min(100%,' + _ff_num(100.0 * W / H, 100, 1, 1000, 2) + 'vh);margin:0 auto;aspect-ratio:') if is_scroll else 'width:100%;aspect-ratio:'
     vp_html = ('<div class="mt-vp" style="position:relative;' + vp_size + str(W) + '/' + str(H) + ';overflow:hidden;border-radius:16px;background:' + st_bg + ';border:1px solid ' + th['line'] + ';">'
-               + '<div class="mt-st" style="position:absolute;left:0;top:0;width:' + str(W) + 'px;height:' + str(H) + 'px;transform-origin:0 0;visibility:hidden;perspective:1800px;background-color:' + st_bg + ';' + glow + '--mt-ink:' + th['ink'] + ';--mt-mute:' + th['mute'] + ';--mt-acc:' + acc + ';overflow:hidden;">'
+               + '<div class="mt-st" style="position:absolute;left:0;top:0;width:' + str(W) + 'px;height:' + str(H) + 'px;transform-origin:0 0;visibility:hidden;perspective:1800px;background-color:' + st_bg + ';' + glow + '--mt-ink:' + th['ink'] + ';--mt-mute:' + th['mute'] + ';--mt-acc:' + acc + ';' + _mo_stage_tokens(st_bg) + 'overflow:hidden;">'
                + '<div class="mt-cam" style="position:absolute;left:0;top:0;width:' + str(W) + 'px;height:' + str(H) + 'px;transform-origin:0 0;transform-style:preserve-3d;">' + world + '</div>'
                + '<div class="mt-hud" style="position:absolute;left:0;top:0;width:' + str(W) + 'px;height:' + str(H) + 'px;pointer-events:none;">' + hud + '</div></div></div>')
     if is_scroll:

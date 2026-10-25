@@ -15,11 +15,11 @@ ROOT = Path(__file__).resolve().parent.parent
 
 # sha256 of the uid-normalised Python output of each film, taken from origin/main 935844645 (before the scroll drive existed).
 TIME_MODE_DIGESTS = {
-    "landing/film-wide-dark.json": "b4329f2448a98f2e436f13184ebba133d7dbe2cd7cc19f5a8fcfda8b771df024",
+    "landing/film-wide-dark.json": "c52e501bff4f90a51bfc80ef38840b39304a455cf338a923a8dbe7152424171c",
     "landing/film-wide-light.json": "43708fbeb90a78a7966874294bffa52ed8f2d4a50e8958d46ea5ea344fdfa69f",
-    "landing/film-tall-dark.json": "29eeef6cdab5e151219b62eda8cf946c5ee5a4b6c1df8f1458acfd4f2f6b8cff",
+    "landing/film-tall-dark.json": "9f86fd1d0a17db6b6c85315de5c00a841c7d2aff437a3dfd1f79f4c36f1e6645",
     "landing/film-tall-light.json": "adbd486e08404532cecf2e5a6dc9b2de519416ce2e902778f94340fcabf2b16f",
-    "content/what-is-a2ui.film.json": "6ef21b7139c7fd68cb847245a75a90a7e4abab0425676e248be122390f5aee61",
+    "content/what-is-a2ui.film.json": "96d6a4e6fa26909654d91c66885d4e11f64b26d69b80c335964761863953c161",
 }
 
 
