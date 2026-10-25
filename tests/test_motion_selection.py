@@ -335,6 +335,8 @@ def test_existing_motion_payloads_are_unchanged():
         if k == "motion_timeline":
             # later, deliberate change: the shared player script grew a `collapse` branch (I71); compare outside the <script>
             a, n = (re.sub(r"<script>.*?</script>", "<script/>", x, flags=re.S) for x in (a, n))
+            # dark stages now re-point the page tokens (--a2ui-text ... --bg) at the film's dark palette (2026-10-25): style only
+            n = re.sub(r"--a2ui-text:[^\"]*?--bg:[^;\"]*;", "", n)
         # build contract v1.2 (the I75 sweep, 2026-10-24) added data-cb/data-key to motion_browser's tabs: attributes only, so compare without them
         a, n = (re.sub(r' data-cb="[^"]*"( data-key="[^"]*")?', '', x) for x in (a, n))
         if k == "motion_scatter" and ' class="mosf' in n:

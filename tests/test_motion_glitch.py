@@ -229,6 +229,8 @@ def test_existing_motion_payloads_render_byte_for_byte_as_before_the_glitch_prop
             # the timeline's shared player script grew a branch for the `collapse` transition (I71): existing films behave the
             # same and only that script's text changed, so compare everything outside the <script> exactly
             a, n = (re.sub(r"<script>.*?</script>", "<script/>", x, flags=re.S) for x in (a, n))
+            # dark stages now re-point the page tokens (--a2ui-text ... --bg) at the film's dark palette (2026-10-25): style only
+            n = re.sub(r"--a2ui-text:[^\"]*?--bg:[^;\"]*;", "", n)
         # build contract v1.2 (the I75 sweep, 2026-10-24) added data-cb/data-key to motion_browser's tabs: attributes only, so compare without them
         a, n = (re.sub(r' data-cb="[^"]*"( data-key="[^"]*")?', '', x) for x in (a, n))
         if k == "motion_scatter" and ' class="mosf' in n:
