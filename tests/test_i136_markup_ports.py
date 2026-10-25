@@ -134,7 +134,7 @@ def _fuzz(blocks):
 
 
 def _norm_uid(h):
-    return re.sub(r"(anhl|wg|isr-|sl-|cu-|gl-|pt_|nf-|sb-|tw-|ros-|gb-|sp-|rh-btn-|rh-count-|srs-|tb-cur-|tb-bl-|tb-|vs-|variant-|ck_|asp_|gauge_sla_|cp-(?:wrap|hd|lbl|btn|body)-|su-(?:in-|glow-)?|sr-(?:t|b|top|bot)-|fco|fci|fcf|fcb|fch|cbg-|choice_|pr-|tbmc_|tbmb_|tbm_|tbf_|tbct_|tok_|ti_|mqs_|mq_|nf_)[0-9a-f]{6,8}", r"\1UID", _norm(h))
+    return re.sub(r"(anhl|wg|isr-|sl-|cu-|gl-|pt_|nf-|sb-|tw-|ros-|gb-|sp-|rh-btn-|rh-count-|srs-|tb-cur-|tb-bl-|tb-|vs-|variant-|ck_|asp_|gauge_sla_|cp-(?:wrap|hd|lbl|btn|body)-|su-(?:in-|glow-)?|sr-(?:t|b|top|bot)-|fco|fci|fcf|fcb|fch|cbg-|choice_|pr-|tbmc_|tbmb_|tbm_|tbf_|tbct_|tok_|ti_|mqs_|mq_|nf_|punch-|donut-)[0-9a-f]{6,8}", r"\1UID", _norm(h))
 
 
 @pytest.fixture(scope="module")
@@ -872,3 +872,34 @@ def test_b7_1_progress_reveal_and_choicebox_script_free_of_payload(core_js):
     for html in (_py_fresh(c), _gas_isolated(core_js, [c])[0]):
         assert "<script" not in html and 'type="radio"' in html and " disabled" not in html
         assert "#1a73e8" in html
+
+
+# ---- batch b7/2 ----
+EQUAL.extend([
+    {"type": "punch_card", "title": "Commits", "subtitle": "org/core", "color": "#0f766e", "labels_days": ["Mon", "Tue"], "data": [[0, 3, 9, 1], [2, 0, 5, "7"]]},
+    {"type": "order_status_card", "order_number": "#1042", "date": "2026-10-01", "status": "partial", "customer": "Ada", "total": "$124.00", "items": [{"title": "Cable", "qty": 2, "price": "$4"}, {"name": "Old name", "price": "$9"}, "junk"]},
+    {"type": "metric_comparison_card", "label": "Latency", "value": 118, "previous": 145, "lower_is_better": True},
+    {"type": "entity_list", "title": "Services", "items": [{"name": "Auth", "subtitle": "Identity", "status": "active", "meta": "99.9%", "icon": "\U0001F510"}, {"name": "Billing", "description": "Invoices", "type": "product", "link": "https://example.com/b", "id": "svc-2"}, "junk"]},
+    {"type": "donut_stat", "value": 84, "max_value": 100, "label": "Quota", "unit": "%", "color": "#f59e0b", "size": "120px"},
+    {"type": "mini_sparkline_set", "series": [{"label": "CPU", "data": [10, 20, 15, 30], "unit": "%", "color": "#0f766e"}, {"name": "Mem", "data": [4.2, 4.3, 4.5]}, "junk"]},
+    {"type": "llm_comparison_table", "prompt": "Summarize.", "show_meta": True, "models": [{"name": "A", "output": "Fast answer", "latency_ms": 280, "cost_usd": 0.003, "tokens": 82}, {"name": "B", "output": "Slow"}]},
+])
+SAFE.append({"type": "quiz_result_summary", "score": 9, "total": 10, "quiz_id": "sre-101", "pass_mark": 80, "time_secs": 145, "next_url": "https://example.com/n", "retry_url": "javascript:alert(1)", "questions": [{"label": "Q1", "correct": True}, {"correct": False}, "x"]})
+MUST.update({
+    "punch_card": ["Commits", "org/core", "#0f766e", "Mon", "Tue", "Mon 01:00 - 3 commits", "Tue 03:00 - 7 commits", "<title>"],
+    "order_status_card": ["#1042", "2026-10-01", "Partial", "Ada", "$124.00", "Cable", "\u00d72", "Old name", "Shipped"],
+    "metric_comparison_card": ["Latency", "145", "118", "-18.6%", "#12863d"],
+    "entity_list": ["Services", "Auth", "Identity", "99.9%", "active", 'href="https://example.com/b"', 'data-key="svc-2"', "Invoices", "a2ui-entity-card{"],
+    "donut_stat": ["Quota", "84", "%", "#f59e0b", 'viewBox="0 0 120 120"', "prefers-reduced-motion"],
+    "mini_sparkline_set": ["CPU", "30 %", "Mem", "4.5", "#0f766e", "a2ui-sparkline-row{", 'aria-label="CPU: 30 %"'],
+    "llm_comparison_table": ["Summarize.", "Fast answer", "280 ms", "82 tok", "$0.0030", "Slow"],
+    "quiz_result_summary": ["Passed!", "90", "9 / 10 correct", "2m 25s", "80%", 'href="https://example.com/n"', "Question breakdown", "Q1", "Q2"],
+})
+OLD.extend([
+    {"type": "metric_comparison_card", "label": "Traffic", "baseline": {"label": "Last week", "value": 10, "unit": "k"}, "comparison": {"label": "This week", "value": 12.5, "unit": "k"}},
+    {"type": "order_status_card", "order_id": "#77", "status": "shipped", "items": [{"name": "Thing", "qty": 1, "price": "$1"}]},
+    {"type": "entity_list", "entities": [{"name": "Old entity", "description": "d", "type": "person"}]},
+    {"type": "mini_sparkline_set", "sparklines": [{"label": "Old spark", "data": [1, 2, 3]}]},
+    {"type": "donut_stat", "value": 5, "max_value": 5},
+])
+OLD_WORDS.update({"metric_comparison_card": ["Traffic", "Last week", "This week", "12.5", "+25.0%"], "order_status_card": ["#77", "Shipped", "Thing"], "entity_list": ["Old entity", "d"], "mini_sparkline_set": ["Old spark", "3"], "donut_stat": [">5<", "%"]})

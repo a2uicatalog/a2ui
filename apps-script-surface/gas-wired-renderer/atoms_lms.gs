@@ -205,70 +205,95 @@ _RENDERERS['knowledge_check'] = function(b) {
 // End-of-quiz result screen: score, time, per-question dot breakdown, pass/fail badge.
 // Writes score to progress_store. next_url and retry_url drive navigation.
 _RENDERERS['quiz_result_summary'] = function(b) {
-  var score     = parseInt(b.score || 0);
-  var total     = parseInt(b.total || 10);
-  var timeSecs  = parseInt(b.time_secs || 0);
-  var passMark  = parseInt(b.pass_mark || 70);
-  var quizId    = b.quiz_id   || 'quiz';
-  var nextUrl   = b.next_url  || '';
-  var retryUrl  = b.retry_url || '';
-  var questions = b.questions || [];
+  if (!b || typeof b !== 'object') return '';
 
-  var pct    = total > 0 ? Math.round((score / total) * 100) : 0;
+  var scoreNum = _numLoose(b.score);
+  var score = scoreNum !== null ? Math.min(Math.max(Math.floor(scoreNum + 0.5), 0), 1e9) : 0;
+
+  var totalNum = _numLoose(b.total);
+  var total = totalNum !== null ? Math.min(Math.floor(totalNum + 0.5), 1e9) : 10;
+  if (total <= 0) total = 1;
+
+  var passNum = _numLoose(b.pass_mark);
+  var passMark = passNum !== null ? Math.min(Math.max(Math.floor(passNum + 0.5), 0), 1000) : 70;
+
+  var timeNum = _numLoose(b.time_secs);
+  var timeSecs = timeNum !== null ? Math.min(Math.max(Math.floor(timeNum + 0.5), 0), 1e9) : 0;
+
+  var quizId = _firstText(b.quiz_id, 'quiz');
+  var nextUrl = _safe_href(b.next_url, ['http', 'https']);
+  var retryUrl = _safe_href(b.retry_url, ['http', 'https']);
+
+  var pct = Math.floor((score / total) * 100 + 0.5);
   var passed = pct >= passMark;
-  var col    = passed ? '#1c805c' : '#f87171';
-  var bgCol  = passed ? 'rgba(52,211,153,0.07)'  : 'rgba(248,113,113,0.07)';
-  var bdCol  = passed ? 'rgba(52,211,153,0.2)'   : 'rgba(248,113,113,0.2)';
-  var mins   = Math.floor(timeSecs / 60);
-  var secs   = timeSecs % 60;
+  var col = passed ? '#1c805c' : '#f87171';
+  var bg = passed ? 'rgba(52,211,153,0.07)' : 'rgba(248,113,113,0.07)';
+  var bdCol = passed ? 'rgba(52,211,153,0.2)' : 'rgba(248,113,113,0.2)';
+
+  var mins = Math.floor(timeSecs / 60);
+  var secs = timeSecs % 60;
   var timeStr = (mins > 0 ? mins + 'm ' : '') + secs + 's';
 
+  var questionsRaw = Array.isArray(b.questions) ? b.questions : [];
   var dots = '';
-  for (var i = 0; i < questions.length; i++) {
-    var ok = questions[i].correct;
-    dots += '<div title="' + _esc((questions[i].label || ('Q' + (i + 1)))) + '" ' +
-      'style="width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;' +
-        'font-size:0.55rem;font-weight:700;color:#fff;background:' + (ok ? '#1c805c' : '#f87171') + ';">' +
-      (ok ? '✓' : '✗') + '</div>';
+  for (var i = 0; i < questionsRaw.length && i < 200; i++) {
+    var qObj = (questionsRaw[i] && typeof questionsRaw[i] === 'object') ? questionsRaw[i] : {};
+    var ok = qObj.correct === true;
+    var lbl = _firstText(qObj.label, 'Q' + (i + 1));
+    var mark = ok ? '✓' : '✗';
+    var dotBg = ok ? '#1c805c' : '#f87171';
+    dots += '<div title="' + _esc(lbl) + '" style="width:22px;height:22px;border-radius:50%;'
+      + 'display:flex;align-items:center;justify-content:center;font-size:0.55rem;font-weight:700;'
+      + 'color:#fff;background:' + dotBg + ';">' + mark + '</div>';
   }
 
-  var btns = '';
-  if (retryUrl) btns += '<a href="' + _esc(retryUrl) + '" target="_top" style="padding:10px 22px;border-radius:9px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:var(--muted,#5f6368);font-size:0.8rem;font-weight:600;text-decoration:none;">↩ Retry</a>';
-  if (nextUrl)  btns += '<a href="' + _esc(nextUrl)  + '" target="_top" style="padding:10px 22px;border-radius:9px;background:' + col + ';color:#0f172a;font-size:0.8rem;font-weight:700;text-decoration:none;">Continue →</a>';
+  var dotsHtml = dots ? (
+    '<div style="margin-bottom:20px;">'
+    + '<div style="font-size:0.6rem;color:#475569;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;">Question breakdown</div>'
+    + '<div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;">' + dots + '</div>'
+    + '</div>'
+  ) : '';
 
-  return (
-    '<div data-cb="node" data-key="' + _ckey(b.quiz_id, 'quiz_result_summary') + '" style="font-family:\'Inter\',system-ui,sans-serif;padding:28px;border-radius:16px;background:' + bgCol + ';border:1px solid ' + bdCol + ';">' +
-    '<div style="text-align:center;margin-bottom:24px;">' +
-      '<div style="font-size:2.8rem;margin-bottom:10px;">' + (passed ? '🎉' : '📚') + '</div>' +
-      '<div style="font-size:1.5rem;font-weight:800;color:' + col + ';">' + (passed ? 'Passed!' : 'Keep Going') + '</div>' +
-      '<div style="font-size:0.72rem;color:var(--muted,#5f6368);margin-top:5px;">' +
-        (passed ? 'Well done — you cleared the pass mark.' : 'You need ' + passMark + '% to pass. Review the material and retry.') +
-      '</div>' +
-    '</div>' +
-    '<div style="display:flex;justify-content:center;align-items:center;gap:32px;margin-bottom:24px;flex-wrap:wrap;">' +
-      '<div style="text-align:center;">' +
-        '<div style="font-size:3.2rem;font-weight:900;color:' + col + ';line-height:1;">' + pct + '<span style="font-size:1.4rem;">%</span></div>' +
-        '<div style="font-size:0.62rem;color:var(--muted,#5f6368);margin-top:4px;">' + score + ' / ' + total + ' correct</div>' +
-      '</div>' +
-      '<div style="display:flex;flex-direction:column;gap:8px;">' +
-        '<div style="font-size:0.72rem;color:var(--muted,#5f6368);">⏱ Time: <strong style="color:#52739f;">' + timeStr + '</strong></div>' +
-        '<div style="font-size:0.72rem;color:var(--muted,#5f6368);">🎯 Pass mark: <strong style="color:#52739f;">' + passMark + '%</strong></div>' +
-      '</div>' +
-    '</div>' +
-    (questions.length ?
-      '<div style="margin-bottom:20px;">' +
-        '<div style="font-size:0.6rem;color:#475569;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;">Question breakdown</div>' +
-        '<div style="display:flex;flex-wrap:wrap;gap:6px;">' + dots + '</div>' +
-      '</div>' : '') +
-    (btns ? '<div style="display:flex;gap:10px;justify-content:center;">' + btns + '</div>' : '') +
-    '<script>(function(){' +
-      'var qid="' + quizId.replace(/"/g,'\\"') + '";' +
-      'var pct=' + pct + ';' +
-      'function wr(){if(window._A2UI_STORE)window._A2UI_STORE.setScore(qid,pct);}' +
-      'if(window._A2UI_STORE)wr();else document.addEventListener("a2ui:store",wr,{once:true});' +
-    '})();<\/script>' +
-    '</div>'
-  );
+  var btns = '';
+  if (retryUrl) {
+    btns += '<a href="' + _esc(retryUrl) + '" target="_top" style="padding:10px 22px;border-radius:9px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:var(--muted,#5f6368);font-size:0.8rem;font-weight:600;text-decoration:none;">↩ Retry</a>';
+  }
+  if (nextUrl) {
+    btns += '<a href="' + _esc(nextUrl) + '" target="_top" style="padding:10px 22px;border-radius:9px;background:' + col + ';color:#0f172a;font-size:0.8rem;font-weight:700;text-decoration:none;">Continue →</a>';
+  }
+  var btnsHtml = btns ? '<div style="display:flex;gap:10px;justify-content:center;">' + btns + '</div>' : '';
+
+  var verdictEmoji = passed ? '🎉' : '📚';
+  var verdictTitle = passed ? 'Passed!' : 'Keep Going';
+  var verdictDesc = passed ? 'Well done — you cleared the pass mark.' : ('You need ' + passMark + '% to pass. Review the material and retry.');
+
+  var quizIdEsc = _esc(quizId);
+
+  return '<div data-cb="node" data-key="' + quizIdEsc + '" data-quiz-id="' + quizIdEsc + '" data-pct="' + pct + '" style="font-family:\'Inter\',system-ui,sans-serif;padding:28px;border-radius:16px;background:' + bg + ';border:1px solid ' + bdCol + ';">'
+    + '<div style="text-align:center;margin-bottom:24px;">'
+    + '<div style="font-size:2.8rem;margin-bottom:10px;">' + verdictEmoji + '</div>'
+    + '<div style="font-size:1.5rem;font-weight:800;color:' + col + ';">' + verdictTitle + '</div>'
+    + '<div style="font-size:0.72rem;color:var(--muted,#5f6368);margin-top:5px;">' + verdictDesc + '</div>'
+    + '</div>'
+    + '<div style="display:flex;justify-content:center;align-items:center;gap:32px;margin-bottom:24px;flex-wrap:wrap;">'
+    + '<div style="text-align:center;">'
+    + '<div style="font-size:3.2rem;font-weight:900;color:' + col + ';line-height:1;">' + pct + '<span style="font-size:1.4rem;">%</span></div>'
+    + '<div style="font-size:0.62rem;color:var(--muted,#5f6368);margin-top:4px;">' + score + ' / ' + total + ' correct</div>'
+    + '</div>'
+    + '<div style="display:flex;flex-direction:column;gap:8px;">'
+    + '<div style="font-size:0.72rem;color:var(--muted,#5f6368);">⏱ Time: <strong style="color:#52739f;">' + timeStr + '</strong></div>'
+    + '<div style="font-size:0.72rem;color:var(--muted,#5f6368);">🎯 Pass mark: <strong style="color:#52739f;">' + passMark + '%</strong></div>'
+    + '</div>'
+    + '</div>'
+    + dotsHtml
+    + btnsHtml
+    + '<script>(function(){'
+    + 'var s=document.currentScript,root=s&&s.parentNode;if(!root)return;'
+    + 'var qid=root.getAttribute("data-quiz-id"),pct=parseInt(root.getAttribute("data-pct"),10);'
+    + 'function wr(){if(window._A2UI_STORE)window._A2UI_STORE.setScore(qid,pct);}'
+    + 'if(window._A2UI_STORE)wr();else document.addEventListener("a2ui:store",wr,{once:true});'
+    + '})();<\/script>'
+    + '</div>';
 };
 
 // ── scenario_branch ───────────────────────────────────────────────────────────

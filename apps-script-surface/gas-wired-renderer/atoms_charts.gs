@@ -504,131 +504,203 @@ function _shadeHex(hex, percent) {
 // 6. metric_comparison_card — compare two metrics
 // ─────────────────────────────────────────────────────────
 _RENDERERS['metric_comparison_card'] = function(b) {
-  var baseline   = b.baseline   || {};
-  var comparison = b.comparison || {};
-  var title      = b.title || '';
-  var higherBetter = b.higher_is_better !== false && b.higher_is_better !== 'false';
-  // Schema shape (atoms/schema.yaml): label / value / previous / lower_is_better (default true, as on web)
-  if (!b.baseline && !b.comparison && (b.value !== undefined || b.previous !== undefined)) {
-    baseline   = {label: 'Previous', value: b.previous};
-    comparison = {label: 'Current',  value: b.value};
-    title      = b.label || title;
-    higherBetter = (b.lower_is_better === false || b.lower_is_better === 'false');
+  if (!b || typeof b !== 'object') return '';
+
+  var label = _firstText(b.label, _firstText(b.title, 'Metric'));
+
+  var baselineObj = (b.baseline && typeof b.baseline === 'object') ? b.baseline : null;
+  var compObj = (b.comparison && typeof b.comparison === 'object') ? b.comparison : null;
+
+  var cLbl, bLbl, cValNum, bValNum, cUnit, bUnit, higherBetter;
+
+  if (baselineObj !== null || compObj !== null) {
+    var base = baselineObj || {};
+    var comp = compObj || {};
+    cLbl = _firstText(comp.label, 'Comparison');
+    bLbl = _firstText(base.label, 'Baseline');
+    cValNum = _numLoose(comp.value);
+    bValNum = _numLoose(base.value);
+    cUnit = _firstText(comp.unit, '');
+    bUnit = _firstText(base.unit, '');
+    higherBetter = b.higher_is_better !== false;
+  } else {
+    cLbl = 'Current';
+    bLbl = 'Previous';
+    cValNum = _numLoose(b.value);
+    bValNum = _numLoose(b.previous);
+    cUnit = '';
+    bUnit = '';
+    var lowerBetter = b.lower_is_better !== false;
+    higherBetter = !lowerBetter;
   }
 
-  var bVal  = parseFloat(baseline.value)   || 0;
-  var cVal  = parseFloat(comparison.value) || 0;
-  var delta = bVal !== 0 ? ((cVal - bVal) / Math.abs(bVal)) * 100 : 0;
+  var cVal = cValNum !== null ? cValNum : 0;
+  var bVal = bValNum !== null ? bValNum : 0;
+
+  var delta = bVal !== 0 ? ((cVal - bVal) / Math.abs(bVal) * 100) : 0;
   var better = higherBetter ? (cVal >= bVal) : (cVal <= bVal);
   var deltaColor = better ? '#12863d' : '#dc2626';
-  var arrow      = cVal >= bVal ? '↑' : '↓';
-  var deltaTxt   = (delta >= 0 ? '+' : '') + delta.toFixed(1) + '%';
+  var arrow = cVal >= bVal ? '↑' : '↓';
 
-  var html = '<div data-cb="node" data-key="' + _ckey(b.label, 'metric_comparison_card') + '" class="a2ui-metric-comparison">';
-  if (title) html += '<div class="a2ui-metric-cmp-title">' + _esc(title) + '</div>';
-  html += '<div class="a2ui-metric-cmp-body">';
+  var deltaFixed = _fixedStr(Math.abs(delta), 1);
+  var sign = delta >= 0 ? '+' : '-';
+  var deltaTxt = sign + deltaFixed + '%';
 
-  // Baseline
-  html += '<div class="a2ui-metric-cmp-col">';
-  html += '<div class="a2ui-metric-cmp-lbl">' + _esc(baseline.label || 'Baseline') + '</div>';
-  html += '<div class="a2ui-metric-cmp-val">' + _esc(String(bVal)) + (baseline.unit ? ' <span class="a2ui-metric-unit">' + _esc(baseline.unit) + '</span>' : '') + '</div>';
-  html += '</div>';
+  var bValStr = _textLoose(bVal === Math.floor(bVal) ? bVal : Math.round(bVal * 10000) / 10000);
+  var cValStr = _textLoose(cVal === Math.floor(cVal) ? cVal : Math.round(cVal * 10000) / 10000);
 
-  // Delta badge
-  html += '<div class="a2ui-metric-cmp-delta" style="color:' + deltaColor + ';border-color:' + deltaColor + ';">' + arrow + ' ' + _esc(deltaTxt) + '</div>';
+  var bUnitHtml = bUnit ? (' <span class="a2ui-metric-unit">' + _esc(bUnit) + '</span>') : '';
+  var cUnitHtml = cUnit ? (' <span class="a2ui-metric-unit">' + _esc(cUnit) + '</span>') : '';
 
-  // Comparison
-  html += '<div class="a2ui-metric-cmp-col">';
-  html += '<div class="a2ui-metric-cmp-lbl">' + _esc(comparison.label || 'Comparison') + '</div>';
-  html += '<div class="a2ui-metric-cmp-val">' + _esc(String(cVal)) + (comparison.unit ? ' <span class="a2ui-metric-unit">' + _esc(comparison.unit) + '</span>' : '') + '</div>';
-  html += '</div>';
+  var nodeKey = _esc(label);
 
-  html += '</div></div>';
-  return html;
+  return '<style>' + _METRIC_CSS + '</style><div data-cb="node" data-key="' + nodeKey + '" class="a2ui-metric-comparison">'
+    + '<div class="a2ui-metric-cmp-title">' + _esc(label) + '</div>'
+    + '<div class="a2ui-metric-cmp-body">'
+    + '<div class="a2ui-metric-cmp-col">'
+    + '<div class="a2ui-metric-cmp-lbl">' + _esc(bLbl) + '</div>'
+    + '<div class="a2ui-metric-cmp-val">' + _esc(bValStr) + bUnitHtml + '</div>'
+    + '</div>'
+    + '<div class="a2ui-metric-cmp-delta" style="color:' + deltaColor + ';border-color:' + deltaColor + ';">' + arrow + ' ' + _esc(deltaTxt) + '</div>'
+    + '<div class="a2ui-metric-cmp-col">'
+    + '<div class="a2ui-metric-cmp-lbl">' + _esc(cLbl) + '</div>'
+    + '<div class="a2ui-metric-cmp-val">' + _esc(cValStr) + cUnitHtml + '</div>'
+    + '</div>'
+    + '</div></div>';
 };
 
 // ─────────────────────────────────────────────────────────
 // 7. mini_sparkline_set — multiple tiny sparklines
 // ─────────────────────────────────────────────────────────
 _RENDERERS['mini_sparkline_set'] = function(b) {
-  var sparklines = b.sparklines || b.series || [];   // schema field is `series`
-  if (!sparklines.length) return '<div class="a2ui-chart-empty">No sparklines</div>';
+  if (!b || typeof b !== 'object') return '';
 
-  var html = '<div class="a2ui-sparkline-set">';
+  var seriesRaw = Array.isArray(b.series) ? b.series : (Array.isArray(b.sparklines) ? b.sparklines : []);
+  var series = seriesRaw.slice(0, 200);
 
-  sparklines.forEach(function(sp, si) {
-    var data  = (sp.data || []).map(function(v){ return parseFloat(v)||0; });
-    var color = sp.color || '#4f46e5';
-    var label = sp.label || '';
-    var unit  = sp.unit  || '';
-    var last  = data.length ? data[data.length-1] : 0;
-    var sk    = _esc(String(sp.name || sp.id || sp.label || sp.title || si));
+  if (!series.length) {
+    return '<style>' + _SPARK_CSS + '</style><div class="a2ui-chart-empty">No sparklines</div>';
+  }
 
-    var svgW = 80, svgH = 30;
-    var minV = Math.min.apply(null, data);
-    var maxV = Math.max.apply(null, data);
-    if (maxV === minV) { maxV += 1; }
-    var n    = data.length;
+  var rows = '';
+  var svgW = 80, svgH = 30;
 
-    var pts = data.map(function(v, i) {
-      var x = n > 1 ? (i / (n-1)) * svgW : svgW/2;
-      var y = _linScale(v, minV, maxV, svgH - 2, 2);
-      return x + ',' + y;
-    }).join(' ');
-
-    var sparkSvg = '<svg viewBox="0 0 ' + svgW + ' ' + svgH + '" width="' + svgW + '" height="' + svgH + '" style="display:inline-block;vertical-align:middle;">';
-    if (data.length > 1) {
-      sparkSvg += '<polyline points="' + pts + '" fill="none" stroke="' + _esc(color) + '" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>';
+  for (var si = 0; si < series.length; si++) {
+    var sObj = (series[si] && typeof series[si] === 'object') ? series[si] : {};
+    var dataRaw = Array.isArray(sObj.data) ? sObj.data : [];
+    var data = [];
+    for (var di = 0; di < dataRaw.length && di < 200; di++) {
+      var vNum = _numLoose(dataRaw[di]);
+      data.push(vNum !== null ? vNum : 0);
     }
-    sparkSvg += '</svg>';
 
-    html += '<div data-cb="item" data-key="' + sk + '" class="a2ui-sparkline-row">';
-    html += '<span data-cb="label" data-key="' + sk + '" class="a2ui-sparkline-label">' + _esc(label) + '</span>';
-    html += sparkSvg;
-    html += '<span class="a2ui-sparkline-val" style="color:' + _esc(color) + ';">' + _esc(String(last)) + (unit ? ' '+_esc(unit) : '') + '</span>';
-    html += '</div>';
-  });
+    var color = _safe_css(sObj.color, '#4f46e5');
+    var label = _firstText(sObj.label, '');
+    var unit = _firstText(sObj.unit, '');
 
-  html += '</div>';
-  return html;
+    var lastVal = data.length ? data[data.length - 1] : 0;
+    var lastStr = _textLoose(lastVal === Math.floor(lastVal) ? lastVal : _rhu(lastVal, 2));
+
+    var skRaw = _firstText(sObj.name, _firstText(sObj.id, _firstText(sObj.label, _firstText(sObj.title, String(si)))));
+    var sk = _esc(skRaw);
+
+    var minV = data.length ? Math.min.apply(null, data) : 0;
+    var maxV = data.length ? Math.max.apply(null, data) : 0;
+    if (maxV === minV) maxV += 1;
+
+    var n = data.length;
+    var pts = [];
+    for (var i = 0; i < n; i++) {
+      var x = n > 1 ? (i / (n - 1) * svgW) : (svgW / 2);
+      var y = (svgH - 2) - ((data[i] - minV) / (maxV - minV)) * (svgH - 4);
+      var xStr = (x === Math.floor(x)) ? _textLoose(x) : _textLoose(_rhu(x, 1));
+      var yStr = (y === Math.floor(y)) ? _textLoose(y) : _textLoose(_rhu(y, 1));
+      pts.push(xStr + ',' + yStr);
+    }
+
+    var polyline = data.length > 1 ? ('<polyline points="' + pts.join(' ') + '" fill="none" stroke="' + color + '" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>') : '';
+
+    var sparkSvg = '<svg role="img" aria-label="' + _esc((label || 'Sparkline') + ': ' + lastStr + (unit ? ' ' + unit : '')) + '" viewBox="0 0 ' + svgW + ' ' + svgH + '" width="' + svgW + '" height="' + svgH + '" style="display:inline-block;vertical-align:middle;">'
+      + polyline
+      + '</svg>';
+
+    var unitStr = unit ? (' ' + _esc(unit)) : '';
+
+    rows += '<div data-cb="item" data-key="' + sk + '" class="a2ui-sparkline-row">'
+      + '<span data-cb="label" data-key="' + sk + '" class="a2ui-sparkline-label">' + _esc(label) + '</span>'
+      + sparkSvg
+      + '<span class="a2ui-sparkline-val" style="color:' + color + ';">' + _esc(lastStr) + unitStr + '</span>'
+      + '</div>';
+  }
+
+  return '<style>' + _SPARK_CSS + '</style><div class="a2ui-sparkline-set">' + rows + '</div>';
 };
 
 // ─────────────────────────────────────────────────────────
 // 8. donut_stat — large donut with center stat
 // ─────────────────────────────────────────────────────────
 _RENDERERS['donut_stat'] = function(b) {
-  var value = Math.min(100, Math.max(0, parseFloat(b.value) || 0));
-  var label = b.label || '';
-  var color = b.color || '#22d3ee';
-  var size  = parseInt(b.size) || 160;
-  var unit  = b.unit !== undefined ? String(b.unit) : '%';
-  var uid   = Math.random().toString(36).substr(2,6);
+  if (!b || typeof b !== 'object') return '';
 
-  var r         = size / 2 - 14;
-  var cx        = size / 2;
-  var cy        = size / 2;
-  var circ      = 2 * Math.PI * r;
-  var dashOffset = circ * (1 - value / 100);
+  var valNum = _numLoose(b.value);
+  var val = valNum !== null ? valNum : 0;
 
-  var html = '';
-  html += '<style>@keyframes donut-spin-' + uid + '{from{stroke-dashoffset:' + circ.toFixed(2) + '}to{stroke-dashoffset:' + dashOffset.toFixed(2) + '}}</style>';
-  html += '<div data-cb="node" data-key="' + _ckey(b.label, 'donut_stat') + '" class="a2ui-donut-stat" style="display:inline-block;text-align:center;">';
-  html += '<svg role="img" aria-label="Donut statistic" viewBox="0 0 ' + size + ' ' + size + '" width="' + size + '" height="' + size + '">';
-  // Track
-  html += '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="#e2e8f0" stroke-width="12"/>';
-  // Arc
-  html += '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="' + _esc(color) + '" stroke-width="12" stroke-linecap="round"' +
-          ' stroke-dasharray="' + circ.toFixed(2) + '"' +
-          ' stroke-dashoffset="' + circ.toFixed(2) + '"' +
-          ' transform="rotate(-90 ' + cx + ' ' + cy + ')"' +
-          ' style="animation:donut-spin-' + uid + ' 1s ease-out forwards;"/>';
-  // Center text
-  html += '<text x="' + cx + '" y="' + (cy - 4) + '" text-anchor="middle" font-size="' + Math.round(size*0.18) + '" font-weight="bold" fill="#1e293b">' + _esc(String(Math.round(value))) + '</text>';
-  html += '<text x="' + cx + '" y="' + (cy + Math.round(size*0.14)) + '" text-anchor="middle" font-size="' + Math.round(size*0.1) + '" fill="#64748b">' + _esc(unit) + '</text>';
-  html += '</svg>';
-  if (label) html += '<div class="a2ui-donut-label" style="margin-top:4px;font-size:13px;color:var(--muted,#5f6368);">' + _esc(label) + '</div>';
-  html += '</div>';
-  return html;
+  var maxNum = _numLoose(b.max_value);
+  var maxVal = (maxNum !== null && maxNum > 0) ? maxNum : 100;
+
+  var pct = maxVal > 0 ? (val / maxVal * 100) : 0;
+  pct = Math.min(100, Math.max(0, pct));
+
+  var label = _firstText(b.label, '');
+  var unit = _firstText(b.unit, '%');
+  var color = _safe_css(b.color, '#22d3ee');
+
+  var sizeM = (typeof b.size === 'string' && b.size.length < 40) ? /^\s*([0-9]+(?:\.[0-9]+)?)\s*(?:px)?\s*$/.exec(b.size) : null;
+  var sizeNum = sizeM ? Number(sizeM[1]) : _numLoose(b.size);
+  var size = (sizeNum !== null && sizeNum > 0) ? Math.floor(sizeNum + 0.5) : 160;
+  size = Math.min(400, Math.max(40, size));
+
+  var uid = 'donut-' + _payloadUid(b);
+  var r = size / 2 - 14;
+  if (r < 1) r = 1;
+  var cx = size / 2;
+  var cy = size / 2;
+  var circ = 2 * Math.PI * r;
+  var dashOffset = circ * (1 - pct / 100);
+
+  var circStr = _fixedStr(circ, 2);
+  var dashStr = _fixedStr(dashOffset, 2);
+
+  var cxStr = (cx === Math.floor(cx)) ? _textLoose(cx) : _textLoose(_rhu(cx, 1));
+  var cyStr = (cy === Math.floor(cy)) ? _textLoose(cy) : _textLoose(_rhu(cy, 1));
+  var rStr = (r === Math.floor(r)) ? _textLoose(r) : _textLoose(_rhu(r, 1));
+
+  var f1 = Math.floor(size * 0.18 + 0.5);
+  var f2 = Math.floor(size * 0.1 + 0.5);
+  var y1 = Math.floor(cy - 4 + 0.5);
+  var y2 = Math.floor(cy + Math.floor(size * 0.14 + 0.5) + 0.5);
+
+  var vRound = Math.floor(val + 0.5);
+  var centerValStr = _textLoose(vRound);
+
+  var labelHtml = label ? ('<div class="a2ui-donut-label" style="margin-top:4px;font-size:13px;color:var(--muted,#5f6368);">' + _esc(label) + '</div>') : '';
+  var nodeKey = _esc(label);
+
+  return '<style>'
+    + '@keyframes donut-spin-' + uid + '{from{stroke-dashoffset:' + circStr + ';}to{stroke-dashoffset:' + dashStr + ';}}'
+    + '@media (prefers-reduced-motion:reduce){.a2ui-donut-arc-' + uid + '{animation:none !important;stroke-dashoffset:' + dashStr + ' !important;}}'
+    + '</style>'
+    + '<div data-cb="node" data-key="' + nodeKey + '" class="a2ui-donut-stat" style="display:inline-block;text-align:center;">'
+    + '<svg role="img" aria-label="Donut statistic" viewBox="0 0 ' + size + ' ' + size + '" width="' + size + '" height="' + size + '">'
+    + '<circle cx="' + cxStr + '" cy="' + cyStr + '" r="' + rStr + '" fill="none" stroke="#e2e8f0" stroke-width="12"/>'
+    + '<circle class="a2ui-donut-arc-' + uid + '" cx="' + cxStr + '" cy="' + cyStr + '" r="' + rStr + '" fill="none" stroke="' + color + '" stroke-width="12" stroke-linecap="round" '
+    + 'stroke-dasharray="' + circStr + '" stroke-dashoffset="' + circStr + '" transform="rotate(-90 ' + cxStr + ' ' + cyStr + ')" '
+    + 'style="animation:donut-spin-' + uid + ' 1s ease-out forwards;stroke-dashoffset:' + dashStr + ';"/>'
+    + '<text x="' + cxStr + '" y="' + y1 + '" text-anchor="middle" font-size="' + f1 + '" font-weight="bold" fill="#1e293b">' + _esc(centerValStr) + '</text>'
+    + '<text x="' + cxStr + '" y="' + y2 + '" text-anchor="middle" font-size="' + f2 + '" fill="#64748b">' + _esc(unit) + '</text>'
+    + '</svg>'
+    + labelHtml
+    + '</div>';
 };
 
 // ─────────────────────────────────────────────────────────
@@ -856,50 +928,143 @@ _RENDERERS['search_result_card'] = function(b) {
 // deliberate surface-appropriate difference, not a gap -- the CONTENT is now the same).
 // 2026-09-27.
 _RENDERERS['punch_card'] = function(b) {
-  var data = (b.data && b.data.length && Array.isArray(b.data[0])) ? b.data : [];
-  var dayLabels = b.labels_days || ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-  var color = b.color || '#00f2ff';
-  var title = b.title || '';
-  var subtitle = b.subtitle || '';
-  if (!data.length) return '<div class="a2ui-punch-card"></div>';
-
-  var numRows = data.length, numCols = data[0].length;
-  var flat = [];
-  data.forEach(function(row){ row.forEach(function(v){ flat.push(parseFloat(v) || 0); }); });
-  var maxCount = Math.max.apply(null, flat) || 1;
-
-  var cellW = 18, cellH = 18, cellG = 3;
-  var padL = 36, padT = 30, padR = 10, padB = 10;
-  var svgW = padL + numCols * (cellW + cellG) + padR;
-  var svgH = padT + numRows * (cellH + cellG) + padB;
-
-  var header = '';
-  if (title || subtitle) {
-    header = '<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;">'
-      + (title ? '<span style="font-size:0.85rem;font-weight:700;color:#1e293b;">' + _esc(title) + '</span>' : '<span></span>')
-      + (subtitle ? '<span style="font-size:0.72rem;color:var(--muted,#5f6368);font-family:monospace;">' + _esc(subtitle) + '</span>' : '')
-      + '</div>';
-  }
-
-  var svg = '<svg viewBox="0 0 ' + svgW + ' ' + svgH + '" width="100%" preserveAspectRatio="xMidYMid meet">';
-  for (var c = 0; c < numCols; c++) {
-    if (c % 6 === 0) svg += '<text x="' + (padL + c*(cellW+cellG) + cellW/2) + '" y="' + (padT-4) + '" text-anchor="middle" font-size="8" fill="#94a3b8">' + c + '</text>';
-  }
-  for (var d = 0; d < numRows; d++) {
-    svg += '<text x="' + (padL-4) + '" y="' + (padT + d*(cellH+cellG) + cellH/2 + 3) + '" text-anchor="end" font-size="9" fill="#64748b">' + _esc(dayLabels[d] || '') + '</text>';
-  }
-  for (var row = 0; row < numRows; row++) {
-    for (var col = 0; col < numCols; col++) {
-      var cnt = parseFloat(data[row][col]) || 0;
-      var opacity = cnt / maxCount;
-      var fill = cnt <= 0 ? '#f1f5f9' : color;
-      var cx = padL + col*(cellW+cellG);
-      var cy = padT + row*(cellH+cellG);
-      svg += '<rect x="' + cx + '" y="' + cy + '" width="' + cellW + '" height="' + cellH + '" rx="2" fill="' + fill + '" fill-opacity="' + (cnt <= 0 ? 1 : (0.25 + opacity * 0.75).toFixed(2)) + '"><title>' + _esc(dayLabels[row] || '') + ' ' + col + ':00 — ' + cnt + '</title></rect>';
+  if (!b || typeof b !== 'object') return '';
+  var dataRaw = Array.isArray(b.data) ? b.data : [];
+  var data = [];
+  for (var i = 0; i < dataRaw.length && i < 200; i++) {
+    if (Array.isArray(dataRaw[i])) {
+      data.push(dataRaw[i].slice(0, 200));
     }
   }
-  svg += '</svg>';
-  return '<div class="a2ui-punch-card">' + header + svg + '</div>';
+
+  if (!data.length || !data[0].length) {
+    return '<div class="a2ui-punch-card"></div>';
+  }
+
+  var labelsRaw = Array.isArray(b.labels_days) ? b.labels_days : ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  var labelsDays = [];
+  for (var li = 0; li < labelsRaw.length && li < 200; li++) {
+    labelsDays.push(_textLoose(labelsRaw[li]));
+  }
+  while (labelsDays.length < data.length) {
+    labelsDays.push('');
+  }
+
+  var color = _safe_css(b.color, '#00f2ff');
+  var title = _firstText(b.title, '');
+  var subtitle = _firstText(b.subtitle, '');
+
+  var numRows = data.length;
+  var numCols = data[0].length;
+
+  var flatData = [];
+  for (var r = 0; r < numRows; r++) {
+    for (var c = 0; c < data[r].length; c++) {
+      var num = _numLoose(data[r][c]);
+      flatData.push(num !== null ? num : 0);
+    }
+  }
+
+  var mn = flatData.length ? Math.min.apply(null, flatData) : 0;
+  var mx = flatData.length ? Math.max.apply(null, flatData) : 0;
+  var rng = (mx - mn) || 1;
+
+  var cellSize = 28;
+  var cellGap = 5;
+  var padL = 60, padR = 25, padT = 40, padB = 25;
+
+  var gridW = numCols * cellSize + (numCols - 1) * cellGap;
+  var gridH = numRows * cellSize + (numRows - 1) * cellGap;
+
+  var w = padL + gridW + padR;
+  var h = padT + gridH + padB;
+
+  var xLabels = '';
+  for (var cIdx = 0; cIdx < numCols; cIdx++) {
+    var x = padL + cIdx * (cellSize + cellGap) + cellSize / 2;
+    var xStr = (x === Math.floor(x)) ? _textLoose(x) : _textLoose(_rhu(x, 1));
+    var lbl = (cIdx < 10 ? '0' : '') + cIdx;
+    xLabels += '<text x="' + xStr + '" y="' + (padT - 12) + '" fill="rgba(255,255,255,0.4)" font-size="8" font-family="monospace" text-anchor="middle">' + lbl + '</text>';
+  }
+
+  var yLabels = '';
+  for (var rIdx = 0; rIdx < numRows && rIdx < labelsDays.length; rIdx++) {
+    var dLbl = labelsDays[rIdx];
+    var y = padT + rIdx * (cellSize + cellGap) + cellSize / 2 + 3;
+    var yStr = (y === Math.floor(y)) ? _textLoose(y) : _textLoose(_rhu(y, 1));
+    yLabels += '<text x="' + (padL - 12) + '" y="' + yStr + '" fill="rgba(255,255,255,0.65)" font-size="9" font-family="monospace" text-anchor="end">' + _esc(dLbl) + '</text>';
+  }
+
+  var uid = 'punch-' + _payloadUid(b);
+  var bubblesHtml = '';
+
+  for (var ri = 0; ri < numRows; ri++) {
+    var curDay = ri < labelsDays.length ? labelsDays[ri] : '';
+    for (var ci = 0; ci < numCols; ci++) {
+      var valRaw = ci < data[ri].length ? data[ri][ci] : 0;
+      var valNum = _numLoose(valRaw);
+      var val = valNum !== null ? valNum : 0;
+      var bx = padL + ci * (cellSize + cellGap) + cellSize / 2;
+      var by = padT + ri * (cellSize + cellGap) + cellSize / 2;
+      var bxStr = (bx === Math.floor(bx)) ? _textLoose(bx) : _textLoose(_rhu(bx, 1));
+      var byStr = (by === Math.floor(by)) ? _textLoose(by) : _textLoose(_rhu(by, 1));
+
+      if (val <= 0) {
+        bubblesHtml += '<circle cx="' + bxStr + '" cy="' + byStr + '" r="2" fill="rgba(255,255,255,0.06)" />';
+        continue;
+      }
+
+      var weight = rng > 0 ? (val - mn) / rng : 0.5;
+      var rVal = 3 + weight * 10;
+      var opacity = 0.3 + weight * 0.7;
+      var glowAttr = weight > 0.6 ? ' filter="url(#' + uid + '_glow)"' : '';
+      var rStr = _fixedStr(rVal, 1);
+      var opStr = _fixedStr(opacity, 2);
+      var cLabel = (ci < 10 ? '0' : '') + ci;
+      var vInt = Math.floor(val + 0.5);
+      var valStr = vInt.toLocaleString('en-US');
+      var titleText = curDay + ' ' + cLabel + ':00 - ' + valStr + ' commits';
+
+      bubblesHtml += '<circle cx="' + bxStr + '" cy="' + byStr + '" r="' + rStr + '" fill="' + color + '" fill-opacity="' + opStr + '"' + glowAttr + '>'
+        + '<title>' + _esc(titleText) + '</title>'
+        + '</circle>';
+    }
+  }
+
+  var headerHtml = '';
+  if (title || subtitle) {
+    var titleTag = title ? '<div style="font-size:1.1rem;font-weight:800;color:#f1f5f9;margin-bottom:2px;">' + _esc(title) + '</div>' : '';
+    var subTag = subtitle ? '<div style="font-size:0.75rem;color:rgba(255,255,255,0.62);font-family:monospace;">' + _esc(subtitle) + '</div>' : '';
+    headerHtml = '<div style="margin-bottom:16px;display:flex;justify-content:space-between;align-items:flex-end;">'
+      + '<div>' + titleTag + subTag + '</div>'
+      + '<div style="display:flex;gap:12px;font-size:0.75rem;color:rgba(255,255,255,0.62);font-family:monospace;align-items:center;">'
+      + '<span>Less</span>'
+      + '<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:' + color + ';opacity:0.3;"></span>'
+      + '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:' + color + ';opacity:0.6;"></span>'
+      + '<span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:' + color + ';opacity:1.0;"></span>'
+      + '<span>More</span>'
+      + '</div></div>';
+  }
+
+  var ariaLbl = title || _firstText(b.label, 'Chart');
+  var svgHtml = '<svg role="img" aria-label="' + _esc(ariaLbl) + '" viewBox="0 0 ' + w + ' ' + h + '" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;">'
+    + '<defs>'
+    + '<filter id="' + uid + '_glow" x="-30%" y="-30%" width="160%" height="140%">'
+    + '<feGaussianBlur stdDeviation="2" result="blur" />'
+    + '<feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>'
+    + '</filter>'
+    + '</defs>'
+    + yLabels
+    + xLabels
+    + bubblesHtml
+    + '</svg>';
+
+  return '<div class="a2ui-punch-card" style="margin:1.5rem 0;padding:24px;background:rgb(15,23,42);border:1px solid rgba(255,255,255,0.06);border-radius:12px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);">'
+    + headerHtml
+    + '<div style="width:100%;overflow-x:auto;">'
+    + '<div style="min-width:' + w + 'px;max-width:100%;height:' + h + 'px;margin:0 auto;">'
+    + svgHtml
+    + '</div></div></div>';
 };
 
 // ── sankey_flow ────────────────────────────────────────────────────────────────────────────────────────────────
@@ -1395,79 +1560,86 @@ _RENDERERS['github_activity_grid'] = function(b) {
 // 18. entity_list — structured entity/person list
 // ─────────────────────────────────────────────────────────
 _RENDERERS['entity_list'] = function(b) {
-  // Schema (atoms/schema.yaml) documents `items: [{name, subtitle, icon, status, meta}]`;
-  // this renderer's own richer shape is `entities: [{name, type, description, link,
-  // avatar_url, meta}]` (type-based colour, clickable card). Found 2026-09-26: a
-  // schema-faithful payload (items/subtitle/status) rendered an EMPTY grid here -- same
-  // class of bug as the 8-atom GAS field-alignment fix earlier that day. Both vocabularies
-  // now work: description/subtitle are aliases, status adds the pill schema payloads expect
-  // (alongside type's existing avatar colour, a different axis), icon overrides the
-  // avatar_url/initials fallback.
-  var entities = b.entities || b.items || [];
-  var title    = b.title    || '';
+  if (!b || typeof b !== 'object') return '';
+
+  var itemsRaw = Array.isArray(b.items) ? b.items : (Array.isArray(b.entities) ? b.entities : []);
+  var entities = itemsRaw.slice(0, 200);
+  var title = _firstText(b.title, '');
 
   var typeColors = {
-    person:       '#4f46e5',
+    person: '#4f46e5',
     organization: '#22d3ee',
-    location:     '#34d399',
-    product:      '#fb923c',
-    event:        '#f472b6'
+    location: '#34d399',
+    product: '#fb923c',
+    event: '#f472b6'
   };
-  // Same palette as renderers/web_article.py's STATUS_COLORS, for cross-surface parity.
   var statusColors = {
-    active:        ['#d1fae5', '#059669'],
-    inactive:      ['#f3f4f6', '#6b7280'],
-    error:         ['#fee2e2', '#dc2626'],
-    pending:       ['#fef9c3', '#ca8a04'],
+    active: ['#d1fae5', '#059669'],
+    inactive: ['#f3f4f6', '#6b7280'],
+    error: ['#fee2e2', '#dc2626'],
+    pending: ['#fef9c3', '#ca8a04'],
     'in-progress': ['#dbeafe', '#2563eb']
   };
 
-  var html = '<div class="a2ui-entity-list">';
-  if (title) html += '<div class="a2ui-entity-list-title">' + _esc(title) + '</div>';
-  html += '<div class="a2ui-entity-grid">';
+  var cards = '';
+  for (var i = 0; i < entities.length; i++) {
+    var entity = (entities[i] && typeof entities[i] === 'object') ? entities[i] : {};
+    var name = _firstText(entity.name, _firstText(entity.label, ''));
+    var rawK = _firstText(entity.id, name);
+    var k = _esc(rawK);
 
-  entities.forEach(function(entity) {
-    var typeColor = typeColors[(entity.type||'').toLowerCase()] || '#94a3b8';
-    var item = '';
-    var k = _esc(String(entity.id || entity.name || ''));
+    var itemType = _firstText(entity.type, '').toLowerCase();
+    var typeColor = typeColors.hasOwnProperty(itemType) ? typeColors[itemType] : '#94a3b8';
 
-    if (entity.link) {
-      item += '<a data-cb="item" data-key="' + k + '" class="a2ui-entity-card" href="' + _esc(entity.link) + '" target="_blank" rel="noopener" style="text-decoration:none;">';
+    var desc = _firstText(entity.description, _firstText(entity.subtitle, ''));
+    var icon = _firstText(entity.icon, '');
+    var avatarUrl = _safe_href(entity.avatar_url, ['http', 'https']);
+    var link = _safe_href(entity.link, ['http', 'https']);
+    var status = _firstText(entity.status, '');
+    var meta = _firstText(entity.meta, '');
+
+    var initial = name ? Array.from(name)[0].toUpperCase() : '?';
+
+    var avatarInner = '';
+    if (icon) {
+      avatarInner = '<div class="a2ui-entity-initials" style="background:' + typeColor + ';">' + _esc(icon) + '</div>';
+    } else if (avatarUrl) {
+      avatarInner = '<img src="' + _esc(avatarUrl) + '" width="40" height="40" style="border-radius:50%;object-fit:cover;" onerror="this.style.display=\'none\';this.nextSibling.style.display=\'flex\'"/>'
+        + '<div class="a2ui-entity-initials" style="display:none;background:' + typeColor + ';">' + _esc(initial) + '</div>';
     } else {
-      item += '<div data-cb="item" data-key="' + k + '" class="a2ui-entity-card">';
+      avatarInner = '<div class="a2ui-entity-initials" style="background:' + typeColor + ';">' + _esc(initial) + '</div>';
+    }
+    var avatarHtml = '<div class="a2ui-entity-avatar">' + avatarInner + '</div>';
+
+    var typeBadge = itemType ? ('<span class="a2ui-entity-type" style="background:' + typeColor + '20;color:' + typeColor + ';border:1px solid ' + typeColor + '40;">' + _esc(itemType) + '</span>') : '';
+
+    var statusBadge = '';
+    if (status) {
+      var stLower = status.toLowerCase();
+      var sc = statusColors.hasOwnProperty(stLower) ? statusColors[stLower] : ['#f3f4f6', '#6b7280'];
+      statusBadge = '<span class="a2ui-entity-status" style="display:inline-block;font-size:0.72rem;font-weight:600;padding:2px 8px;border-radius:100px;background:' + sc[0] + ';color:' + sc[1] + ';">' + _esc(status) + '</span>';
     }
 
-    // Avatar: icon (schema) beats avatar_url beats initials.
-    item += '<div class="a2ui-entity-avatar">';
-    if (entity.icon) {
-      item += '<div class="a2ui-entity-initials" style="background:' + typeColor + ';">' + _esc(entity.icon) + '</div>';
-    } else if (entity.avatar_url) {
-      item += '<img src="' + _esc(entity.avatar_url) + '" width="40" height="40" style="border-radius:50%;object-fit:cover;" onerror="this.style.display=\'none\';this.nextSibling.style.display=\'flex\'"/>';
-      item += '<div class="a2ui-entity-initials" style="display:none;background:' + typeColor + ';">' + _esc((entity.name||'?').charAt(0).toUpperCase()) + '</div>';
+    var descHtml = desc ? ('<div class="a2ui-entity-desc">' + _esc(desc) + '</div>') : '';
+    var metaHtml = meta ? ('<div class="a2ui-entity-meta">' + _esc(meta) + '</div>') : '';
+
+    var infoHtml = '<div class="a2ui-entity-info">'
+      + '<div data-cb="label" data-key="' + k + '" class="a2ui-entity-name">' + _esc(name) + '</div>'
+      + typeBadge
+      + statusBadge
+      + descHtml
+      + metaHtml
+      + '</div>';
+
+    if (link) {
+      cards += '<a data-cb="item" data-key="' + k + '" class="a2ui-entity-card" href="' + _esc(link) + '" target="_blank" rel="noopener" style="text-decoration:none;">' + avatarHtml + infoHtml + '</a>';
     } else {
-      item += '<div class="a2ui-entity-initials" style="background:' + typeColor + ';">' + _esc((entity.name||'?').charAt(0).toUpperCase()) + '</div>';
+      cards += '<div data-cb="item" data-key="' + k + '" class="a2ui-entity-card">' + avatarHtml + infoHtml + '</div>';
     }
-    item += '</div>';
+  }
 
-    // Info
-    item += '<div class="a2ui-entity-info">';
-    item += '<div data-cb="label" data-key="' + k + '" class="a2ui-entity-name">' + _esc(entity.name || '') + '</div>';
-    if (entity.type) item += '<span class="a2ui-entity-type" style="background:' + typeColor + '20;color:' + typeColor + ';border:1px solid ' + typeColor + '40;">' + _esc(entity.type) + '</span>';
-    if (entity.status) {
-      var sc = statusColors[entity.status] || ['#f3f4f6', '#6b7280'];
-      item += '<span class="a2ui-entity-status" style="display:inline-block;font-size:0.72rem;font-weight:600;padding:2px 8px;border-radius:100px;background:' + sc[0] + ';color:' + sc[1] + ';">' + _esc(entity.status) + '</span>';
-    }
-    var desc = entity.description || entity.subtitle;
-    if (desc) item += '<div class="a2ui-entity-desc">' + _esc(desc) + '</div>';
-    if (entity.meta) item += '<div class="a2ui-entity-meta">' + _esc(entity.meta) + '</div>';
-    item += '</div>';
-
-    item += entity.link ? '</a>' : '</div>';
-    html += item;
-  });
-
-  html += '</div></div>';
-  return html;
+  var titleHtml = title ? ('<div class="a2ui-entity-list-title">' + _esc(title) + '</div>') : '';
+  return '<style>' + _ENTITY_CSS + '</style><div class="a2ui-entity-list">' + titleHtml + '<div class="a2ui-entity-grid">' + cards + '</div></div>';
 };
 
 
@@ -1911,46 +2083,82 @@ _RENDERERS['navigation_menu'] = function(b) {
 };
 
 _RENDERERS['order_status_card'] = function(b) {
+  if (!b || typeof b !== 'object') return '';
+
+  var orderNum = _firstText(b.order_number, _firstText(b.order_id, ''));
+  var date = _firstText(b.date, '');
+  var rawStatus = _firstText(b.status, 'unfulfilled').toLowerCase();
+  var customer = _firstText(b.customer, '');
+  var total = _firstText(b.total, '');
+  var estDelivery = _firstText(b.estimated_delivery, '');
+
   var steps = ['Placed', 'Processing', 'Shipped', 'Delivered'];
-  var statusIndex = {placed:0, processing:1, shipped:2, delivered:3, cancelled:-1};
-  // Schema statuses (fulfilled | unfulfilled | partial | cancelled | refunded) map onto the stepper
+  var statusIndex = {placed: 0, processing: 1, shipped: 2, delivered: 3, cancelled: -1};
   var schemaStatus = {fulfilled: 3, unfulfilled: 0, partial: 2, refunded: -1};
-  var st = (b.status !== undefined && statusIndex[b.status] === undefined && schemaStatus[b.status] !== undefined) ? schemaStatus[b.status] : statusIndex[b.status];
-  var currentStep = st !== undefined && st >= 0 ? st : 0;
-  var cancelled = b.status === 'cancelled' || b.status === 'refunded';
+
+  var st = schemaStatus.hasOwnProperty(rawStatus) ? schemaStatus[rawStatus] : (statusIndex.hasOwnProperty(rawStatus) ? statusIndex[rawStatus] : null);
+  var currentStep = (st !== null && st >= 0) ? st : 0;
+  var cancelled = rawStatus === 'cancelled' || rawStatus === 'refunded';
+
   var stepperHtml = '<div style="display:flex;align-items:center;margin:16px 0 24px;">';
   for (var s = 0; s < steps.length; s++) {
     var done = !cancelled && s <= currentStep;
     var active = !cancelled && s === currentStep;
     var dotBg = cancelled ? '#fee2e2' : (done ? '#7c3aed' : '#e5e7eb');
     var dotColor = cancelled ? '#991b1b' : (done ? '#fff' : '#9ca3af');
+    var stepContent = (done && !active) ? '✓' : _textLoose(s + 1);
+    var nameColor = active ? '#7c3aed' : '#6b7280';
+    var nameWeight = active ? '700' : '400';
+
     stepperHtml += '<div style="display:flex;flex-direction:column;align-items:center;flex:1;">'
-      + '<div style="width:28px;height:28px;border-radius:50%;background:' + dotBg + ';color:' + dotColor + ';font-size:0.75rem;font-weight:700;display:flex;align-items:center;justify-content:center;">' + (done && !active ? '✓' : (s + 1)) + '</div>'
-      + '<div style="font-size:0.72rem;margin-top:4px;color:' + (active ? '#7c3aed' : '#6b7280') + ';font-weight:' + (active ? '700' : '400') + ';text-align:center;">' + steps[s] + '</div>'
+      + '<div style="width:28px;height:28px;border-radius:50%;background:' + dotBg + ';color:' + dotColor + ';font-size:0.75rem;font-weight:700;display:flex;align-items:center;justify-content:center;">' + stepContent + '</div>'
+      + '<div style="font-size:0.72rem;margin-top:4px;color:' + nameColor + ';font-weight:' + nameWeight + ';text-align:center;">' + steps[s] + '</div>'
       + '</div>';
     if (s < steps.length - 1) {
-      stepperHtml += '<div style="flex:1;height:2px;background:' + (!cancelled && s < currentStep ? '#7c3aed' : '#e5e7eb') + ';margin-bottom:16px;"></div>';
+      var lineBg = (!cancelled && s < currentStep) ? '#7c3aed' : '#e5e7eb';
+      stepperHtml += '<div style="flex:1;height:2px;background:' + lineBg + ';margin-bottom:16px;"></div>';
     }
   }
   stepperHtml += '</div>';
+
+  var itemsRaw = Array.isArray(b.items) ? b.items : [];
   var itemsHtml = '';
-  var items = b.items || [];
-  for (var i = 0; i < items.length; i++) {
-    var item = items[i];
-    itemsHtml += '<tr><td style="padding:8px 4px;font-size:0.875rem;color:#111827;">' + _esc(item.name || item.title || '') + '</td><td style="padding:8px 4px;font-size:0.875rem;color:var(--muted,#5f6368);text-align:center;">×' + (item.qty || 1) + '</td><td style="padding:8px 4px;font-size:0.875rem;color:#111827;text-align:right;">' + _esc(item.price || '') + '</td></tr>';
+  for (var i = 0; i < itemsRaw.length && i < 200; i++) {
+    var item = (itemsRaw[i] && typeof itemsRaw[i] === 'object') ? itemsRaw[i] : {};
+    var name = _firstText(item.title, _firstText(item.name, ''));
+    var qtyNum = _numLoose(item.qty);
+    var qty = _textLoose(qtyNum !== null ? Math.min(Math.max(Math.floor(qtyNum + 0.5), 0), 1e9) : 1);
+    var price = _firstText(item.price, '');
+    itemsHtml += '<tr><td style="padding:8px 4px;font-size:0.875rem;color:#111827;">' + _esc(name) + '</td>'
+      + '<td style="padding:8px 4px;font-size:0.875rem;color:var(--muted,#5f6368);text-align:center;">×' + _esc(qty) + '</td>'
+      + '<td style="padding:8px 4px;font-size:0.875rem;color:#111827;text-align:right;">' + _esc(price) + '</td></tr>';
   }
-  return '<div data-cb="node" data-key="' + _ckey(b.order_number, 'order_status_card') + '" style="border:1px solid #e5e7eb;border-radius:14px;padding:20px;margin:1rem 0;background:#fff;">'
+
+  var subParts = [];
+  if (customer) subParts.push(customer);
+  if (date) subParts.push(date);
+  var subMeta = subParts.length ? ('<span style="font-size:0.8rem;color:var(--muted,#5f6368);">' + _esc(subParts.join(' · ')) + '</span>') : '';
+
+  var badgeTitle = _firstText(b.status) ? (Array.from(rawStatus)[0].toUpperCase() + Array.from(rawStatus).slice(1).join('')) : '';
+  var bstyle = cancelled ? 'background:#fee2e2;color:#991b1b' : 'background:#ede9fe;color:#5b21b6';
+  var cancelledBadge = badgeTitle ? ('<span style="' + bstyle + ';font-size:0.78rem;font-weight:600;padding:3px 10px;border-radius:999px;">' + _esc(badgeTitle) + '</span>') : '';
+
+  var delivHtml = estDelivery ? ('<div style="margin-top:10px;font-size:0.82rem;color:var(--muted,#5f6368);">Estimated delivery: <strong style="color:#111827;">' + _esc(estDelivery) + '</strong></div>') : '';
+  var orderTitle = orderNum ? ('Order ' + orderNum) : 'Order';
+  var nodeKey = _esc(orderNum || 'order');
+
+  return '<div data-cb="node" data-key="' + nodeKey + '" style="border:1px solid #e5e7eb;border-radius:14px;padding:20px;margin:1rem 0;background:#fff;">'
     + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">'
-    + '<span style="font-weight:700;color:#111827;font-size:1rem;">Order ' + _esc(b.order_id || b.order_number || '') + '</span>'
-    + (b.customer || b.date ? '<span style="font-size:0.8rem;color:var(--muted,#5f6368);">' + _esc([b.customer, b.date].filter(Boolean).join(' · ')) + '</span>' : '')
-    + (cancelled ? '<span style="background:#fee2e2;color:#991b1b;font-size:0.78rem;font-weight:600;padding:3px 10px;border-radius:999px;">Cancelled</span>' : '')
+    + '<span style="font-weight:700;color:#111827;font-size:1rem;">' + _esc(orderTitle) + '</span>'
+    + subMeta
+    + cancelledBadge
     + '</div>'
     + stepperHtml
     + '<table style="width:100%;border-collapse:collapse;border-top:1px solid #f3f4f6;">' + itemsHtml + '</table>'
     + '<div style="display:flex;justify-content:space-between;padding-top:10px;border-top:1px solid #e5e7eb;margin-top:8px;font-weight:700;color:#111827;">'
-    + '<span>Total</span><span>' + _esc(b.total || '') + '</span>'
+    + '<span>Total</span><span>' + _esc(total) + '</span>'
     + '</div>'
-    + (b.estimated_delivery ? '<div style="margin-top:10px;font-size:0.82rem;color:var(--muted,#5f6368);">Estimated delivery: <strong style="color:#111827;">' + _esc(b.estimated_delivery) + '</strong></div>' : '')
+    + delivHtml
     + '</div>';
 };
 
@@ -2163,29 +2371,88 @@ _RENDERERS['source_citation'] = function(b) {
 };
 
 _RENDERERS['llm_comparison_table'] = function(b) {
-  var models = b.models || [];
-  var title = b.title || 'Model Comparison';
-  var rows = '';
-  for (var i = 0; i < models.length; i++) {
-    var m = models[i];
-    var strengths = m.strengths ? m.strengths.join(', ') : '';
-    var weaknesses = m.weaknesses ? m.weaknesses.join(', ') : '';
-    var rowBg = i % 2 === 0 ? '#fff' : '#f9fafb';
-    rows += '<tr data-cb="item" data-key="' + _esc(m.name || '') + '" style="background:' + rowBg + ';">'
-      + '<td data-cb="label" data-key="' + _esc(m.name || '') + '" style="padding:10px 12px;font-weight:600;color:#111827;font-size:0.875rem;">' + _esc(m.name || '') + '</td>'
-      + '<td style="padding:10px 12px;font-size:0.82rem;color:#374151;">' + _esc(m.params || '—') + '</td>'
-      + '<td style="padding:10px 12px;font-size:0.82rem;color:#374151;">' + _esc(m.context_window ? String(m.context_window) : '—') + '</td>'
-      + '<td style="padding:10px 12px;font-size:0.82rem;color:#374151;">' + _esc(m.price_per_1m_tokens ? String(m.price_per_1m_tokens) : '—') + '</td>'
-      + '<td style="padding:10px 12px;font-size:0.78rem;color:#166534;">' + _esc(strengths) + '</td>'
-      + '<td style="padding:10px 12px;font-size:0.78rem;color:#991b1b;">' + _esc(weaknesses) + '</td>'
-      + '</tr>';
+  if (!b || typeof b !== 'object') return '';
+
+  var prompt = _firstText(b.prompt, '');
+  var modelsRaw = Array.isArray(b.models) ? b.models : [];
+  var models = modelsRaw.slice(0, 200);
+
+  var showMeta;
+  if (b.show_meta !== undefined && b.show_meta !== null) {
+    showMeta = b.show_meta === true;
+  } else {
+    showMeta = false;
+    for (var mi = 0; mi < models.length; mi++) {
+      var cur = (models[mi] && typeof models[mi] === 'object') ? models[mi] : {};
+      if (cur.latency_ms !== undefined || cur.cost_usd !== undefined || cur.tokens !== undefined) {
+        showMeta = true;
+        break;
+      }
+    }
   }
+
+  var modelColors = ['#2d5fd0', '#c2185b', '#2e7d32', '#b45309', '#8e24aa'];
+
+  var promptHtml = prompt ? (
+    '<div style="margin-bottom:10px;padding:8px 12px;background:#f8fafc;'
+    + 'border:1px solid #e2e8f0;border-radius:6px;font-size:0.8rem;'
+    + 'color:#475569;font-family:monospace;">'
+    + '<span style="font-weight:700;color:#374151;">Prompt: </span>' + _esc(prompt) + '</div>'
+  ) : '';
+
+  var colCount = models.length > 0 ? models.length : 1;
+  var colW = Math.floor(100 / colCount) + '%';
+  var headers = '';
+  var outputs = '';
+  var metaRow = '';
+
+  for (var idx = 0; idx < models.length; idx++) {
+    var mObj = (models[idx] && typeof models[idx] === 'object') ? models[idx] : {};
+    var color = modelColors[idx % modelColors.length];
+    var name = _firstText(mObj.name, 'Model ' + (idx + 1));
+    var out = _firstText(mObj.output, '');
+
+    var latNum = _numLoose(mObj.latency_ms);
+    var costNum = _numLoose(mObj.cost_usd);
+    var toksNum = _numLoose(mObj.tokens);
+
+    headers += '<th data-cb="label" data-key="' + _esc(name) + '" style="width:' + colW + ';padding:8px 10px;text-align:left;'
+      + 'border-bottom:2px solid ' + color + ';font-size:0.8rem;font-weight:700;'
+      + 'color:' + color + ';">' + _esc(name) + '</th>';
+
+    outputs += '<td data-cb="item" data-key="' + _esc(name) + '" style="width:' + colW + ';padding:8px 10px;vertical-align:top;'
+      + 'border-right:1px solid #f3f4f6;font-size:0.8rem;color:#111827;'
+      + 'line-height:1.55;">' + _esc(out) + '</td>';
+
+    if (showMeta) {
+      var parts = [];
+      if (latNum !== null) {
+        var latStr = (latNum === Math.floor(latNum)) ? _textLoose(latNum) : _textLoose(_rhu(latNum, 1));
+        parts.push(latStr + ' ms');
+      }
+      if (toksNum !== null) {
+        var tokStr = (toksNum === Math.floor(toksNum)) ? _textLoose(toksNum) : _textLoose(_rhu(toksNum, 1));
+        parts.push(tokStr + ' tok');
+      }
+      if (costNum !== null) {
+        parts.push('$' + _fixedStr(costNum, 4));
+      }
+      metaRow += '<td style="padding:6px 10px;font-size:0.7rem;color:var(--muted,#5f6368);'
+        + 'border-right:1px solid #f3f4f6;">' + _esc(parts.join(' · ')) + '</td>';
+    }
+  }
+
+  var metaTr = (showMeta && metaRow) ? ('<tr style="background:#f9fafb;">' + metaRow + '</tr>') : '';
+
   return '<div style="margin:1rem 0;overflow-x:auto;">'
-    + (title ? '<div style="font-weight:700;font-size:1rem;color:#111827;margin-bottom:10px;">' + _esc(title) + '</div>' : '')
-    + '<table style="width:100%;border-collapse:collapse;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;font-size:0.875rem;">'
-    + '<thead><tr style="background:#f3f4f6;"><th style="padding:10px 12px;text-align:left;font-size:0.78rem;font-weight:700;color:var(--muted,#5f6368);text-transform:uppercase;letter-spacing:0.05em;">Model</th><th style="padding:10px 12px;text-align:left;font-size:0.78rem;font-weight:700;color:var(--muted,#5f6368);text-transform:uppercase;">Params</th><th style="padding:10px 12px;text-align:left;font-size:0.78rem;font-weight:700;color:var(--muted,#5f6368);text-transform:uppercase;">Context</th><th style="padding:10px 12px;text-align:left;font-size:0.78rem;font-weight:700;color:var(--muted,#5f6368);text-transform:uppercase;">$/1M tokens</th><th style="padding:10px 12px;text-align:left;font-size:0.78rem;font-weight:700;color:var(--muted,#5f6368);text-transform:uppercase;">Strengths</th><th style="padding:10px 12px;text-align:left;font-size:0.78rem;font-weight:700;color:var(--muted,#5f6368);text-transform:uppercase;">Weaknesses</th></tr></thead>'
-    + '<tbody>' + rows + '</tbody>'
-    + '</table></div>';
+    + promptHtml
+    + '<table style="width:100%;border-collapse:collapse;'
+    + 'border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;">'
+    + '<thead><tr style="background:#f9fafb;">' + headers + '</tr></thead>'
+    + '<tbody>'
+    + '<tr>' + outputs + '</tr>'
+    + metaTr
+    + '</tbody></table></div>';
 };
 
 _RENDERERS['confidence_bar'] = function(b) {

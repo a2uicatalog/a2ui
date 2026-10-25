@@ -104,13 +104,21 @@ function _esc(str) {
     .replace(/'/g, '&#39;');
 }
 
+var _METRIC_CSS = ".a2ui-metric-comparison{background: #fff;border: 1px solid #e2e8f0;border-radius: 12px;padding: 20px;display: inline-block;min-width: 260px;}.a2ui-metric-cmp-title{font-size: 13px;font-weight: 600;color: #64748b;margin-bottom: 14px;text-transform: uppercase;letter-spacing: 0.04em;}.a2ui-metric-cmp-body{display: flex;align-items: center;gap: 16px;}.a2ui-metric-cmp-col{flex: 1;text-align: center;}.a2ui-metric-cmp-lbl{font-size: 11px;color: #94a3b8;margin-bottom: 4px;}.a2ui-metric-cmp-val{font-size: 28px;font-weight: 700;color: #1e293b;line-height: 1.1;}.a2ui-metric-unit{font-size: 14px;font-weight: 400;color: #64748b;}.a2ui-metric-cmp-delta{font-size: 18px;font-weight: 700;padding: 6px 12px;border-radius: 8px;border: 1.5px solid;white-space: nowrap;}";
+var _SPARK_CSS = ".a2ui-sparkline-set{display: flex;flex-direction: column;gap: 10px;padding: 8px 0;}.a2ui-sparkline-row{display: flex;align-items: center;gap: 10px;}.a2ui-sparkline-label{font-size: 12px;color: #64748b;width: 100px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;}.a2ui-sparkline-val{font-size: 13px;font-weight: 600;min-width: 48px;}";
+var _ENTITY_CSS = ".a2ui-entity-list{width: 100%;}.a2ui-entity-list-title{font-size: 14px;font-weight: 600;color: var(--a2ui-text,#171717);margin-bottom: 12px;}.a2ui-entity-grid{display: flex;flex-direction: column;gap: 8px;}.a2ui-entity-card{display: flex;align-items: flex-start;gap: 12px;padding: 12px 14px;background: var(--a2ui-surface,#ffffff);border: 1px solid var(--a2ui-border,#eaeaea);border-radius: var(--a2ui-radius,12px);box-shadow: var(--a2ui-shadow,0 1px 2px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04));transition: box-shadow 0.15s;color: inherit;}.a2ui-entity-card:hover{box-shadow: 0 2px 10px rgba(0,0,0,0.08);border-color: #c7d2fe;}.a2ui-entity-avatar{flex-shrink: 0;}.a2ui-entity-initials{width: 40px;height: 40px;border-radius: 50%;display: flex;align-items: center;justify-content: center;font-size: 16px;font-weight: 700;color: #fff;}.a2ui-entity-info{flex: 1;display: flex;flex-direction: column;gap: 3px;}.a2ui-entity-name{font-size: 14px;font-weight: 600;color: var(--a2ui-text,#171717);}.a2ui-entity-type{font-size: 10px;font-weight: 600;padding: 1px 7px;border-radius: 999px;display: inline-block;text-transform: capitalize;letter-spacing: 0.02em;}.a2ui-entity-desc{font-size: 12px;color: var(--a2ui-muted,#666666);margin-top: 2px;line-height: 1.4;}.a2ui-entity-meta{font-size: 11px;color: var(--a2ui-faint,#757575);}";
+
 // Twin of Python _fixed_str: a finite number >= 0 with d decimals, rounded half up on the scaled value (JS toFixed and Python's format differ on ties).
 function _fixedStr(x, d) {
+  if (x < 0) return '-' + _fixedStr(-x, d);
   var n = Math.floor(Math.min(x, 1e12) * Math.pow(10, d) + 0.5);
   var s = String(n);
   while (s.length < d + 1) s = '0' + s;
   return d ? s.slice(0, -d) + '.' + s.slice(-d) : s;
 }
+
+// Twin of Python _rhu: v rounded to d decimals, ties away from zero.
+function _rhu(v, d) { return (v < 0 ? -1 : 1) * Number(_fixedStr(Math.abs(v), d)); }
 
 // A CSS value from a payload field that has no standard guarded name: kept if it passes the same check as the Python
 // twin's _safe_css (renderers/web_article.py), else the default. Numbers become their string.

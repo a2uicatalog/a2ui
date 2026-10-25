@@ -193,9 +193,6 @@
  "demo_toggle_grid": [
   "accent"
  ],
- "donut_stat": [
-  "max_value"
- ],
  "dot_grid_background": [
   "background",
   "body",
@@ -413,10 +410,6 @@
   "font",
   "interactive",
   "weight"
- ],
- "llm_comparison_table": [
-  "prompt",
-  "show_meta"
  ],
  "loading_skeleton": [
   "has_image",

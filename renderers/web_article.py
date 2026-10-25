@@ -4488,161 +4488,213 @@ def _render_data_table_sortable(b: dict) -> str:
             f'{th}</tr></thead><tbody>{body}</tbody></table></div>')
 
 def _render_metric_comparison_card(b: dict) -> str:
-    label    = b.get("label", "Metric")
-    current  = b.get("value", 0)
-    previous = b.get("previous", 0)
-    try:
-        pct = round((float(current) - float(previous)) / float(previous) * 100, 1) if previous else 0
-        # Polarity is a PROPERTY OF THE METRIC, not of the atom. This card was
-        # written for response times, where a rise is bad, and hardcoded that
-        # — so a traffic or revenue card showed its best day in alarm red.
-        # Default keeps the original behaviour; set lower_is_better:false for
-        # metrics where up is good.
-        lower_better = b.get("lower_is_better", True)
-        good = (pct <= 0) if lower_better else (pct >= 0)
-        delta_color = "#04855d" if good else "#dc2626"
-        delta_str = f"{'↓' if pct <= 0 else '↑'} {abs(pct)}%"
-    except Exception:
-        delta_str = ""
-        delta_color = "#6b7280"
-    return (f'<div data-cb="node" data-key="{_ck(b.get("label"), "metric_comparison_card")}" style="margin:1rem 0;padding:14px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);">'
-            f'<div style="font-size:0.72rem;color:var(--muted,#5f6368);margin-bottom:8px;">{_cv_esc(label)}</div>'
-            f'<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">'
-            f'<div><div style="font-size:0.65rem;color:var(--muted,#5f6368);">Now</div>'
-            f'<div style="font-size:1.4rem;font-weight:700;color:#7c3aed;">{_cv_esc(current)}</div></div>'
-            f'<div><div style="font-size:0.65rem;color:var(--muted,#5f6368);">Before</div>'
-            f'<div style="font-size:1.4rem;font-weight:700;color:var(--muted,#5f6368);">{_cv_esc(previous)}</div></div>'
-            f'</div>'
-            f'<div style="margin-top:6px;font-size:0.72rem;color:{delta_color};font-weight:600;">{delta_str}</div>'
-            f'</div>')
+    if not isinstance(b, dict):
+        return ""
+
+    label = _first_text(b.get("label"), b.get("title"), "Metric")
+
+    # Support schema fields: label, value, previous, lower_is_better (default True)
+    # Also support GAS shape fallback: baseline {label, value, unit}, comparison {label, value, unit}
+    baseline_obj = b.get("baseline") if isinstance(b.get("baseline"), dict) else None
+    comp_obj = b.get("comparison") if isinstance(b.get("comparison"), dict) else None
+
+    if baseline_obj is not None or comp_obj is not None:
+        base = baseline_obj or {}
+        comp = comp_obj or {}
+        c_lbl = _first_text(comp.get("label"), "Comparison")
+        b_lbl = _first_text(base.get("label"), "Baseline")
+        c_val_num = _num_loose(comp.get("value"))
+        b_val_num = _num_loose(base.get("value"))
+        c_unit = _first_text(comp.get("unit"), "")
+        b_unit = _first_text(base.get("unit"), "")
+        higher_better = b.get("higher_is_better") is not False
+    else:
+        c_lbl = "Current"
+        b_lbl = "Previous"
+        c_val_num = _num_loose(b.get("value"))
+        b_val_num = _num_loose(b.get("previous"))
+        c_unit = ""
+        b_unit = ""
+        lower_better = b.get("lower_is_better") is not False
+        higher_better = not lower_better
+
+    c_val = c_val_num if c_val_num is not None else 0.0
+    b_val = b_val_num if b_val_num is not None else 0.0
+
+    delta = ((c_val - b_val) / abs(b_val) * 100.0) if b_val != 0.0 else 0.0
+    better = (c_val >= b_val) if higher_better else (c_val <= b_val)
+    delta_color = "#12863d" if better else "#dc2626"
+    arrow = "↑" if c_val >= b_val else "↓"
+
+    delta_fixed = _fixed_str(abs(delta), 1)
+    sign = "+" if delta >= 0.0 else "-"
+    delta_txt = f"{sign}{delta_fixed}%"
+
+    b_val_str = _text_loose(int(b_val) if b_val == int(b_val) else _rhu(b_val, 4))
+    c_val_str = _text_loose(int(c_val) if c_val == int(c_val) else _rhu(c_val, 4))
+
+    b_unit_html = f' <span class="a2ui-metric-unit">{_cv_esc(b_unit)}</span>' if b_unit else ""
+    c_unit_html = f' <span class="a2ui-metric-unit">{_cv_esc(c_unit)}</span>' if c_unit else ""
+
+    node_key = _cv_esc(label)
+
+    return (
+        f'<style>{_METRIC_CSS}</style>'
+        f'<div data-cb="node" data-key="{node_key}" class="a2ui-metric-comparison">'
+        f'<div class="a2ui-metric-cmp-title">{_cv_esc(label)}</div>'
+        f'<div class="a2ui-metric-cmp-body">'
+        f'<div class="a2ui-metric-cmp-col">'
+        f'<div class="a2ui-metric-cmp-lbl">{_cv_esc(b_lbl)}</div>'
+        f'<div class="a2ui-metric-cmp-val">{_cv_esc(b_val_str)}{b_unit_html}</div>'
+        f'</div>'
+        f'<div class="a2ui-metric-cmp-delta" style="color:{delta_color};border-color:{delta_color};">{arrow} {_cv_esc(delta_txt)}</div>'
+        f'<div class="a2ui-metric-cmp-col">'
+        f'<div class="a2ui-metric-cmp-lbl">{_cv_esc(c_lbl)}</div>'
+        f'<div class="a2ui-metric-cmp-val">{_cv_esc(c_val_str)}{c_unit_html}</div>'
+        f'</div>'
+        f'</div></div>'
+    )
+
 
 def _render_mini_sparkline_set(b: dict) -> str:
-    series = b.get("series", [])
-    cols = min(len(series), 4) if series else 2
-    cards = []
-    
-    chart_id = f"spark_{_wa_oid(b)}"
-    
-    for si, s in enumerate(series):
-        label = s.get("label", "")
-        data  = s.get("data", [])
-        if not data: continue
-        n = len(data); mn = min(data); mx = max(data); rng = (mx - mn) or 1
-        
-        # SVG dimensions: 150x40
-        w, h = 150, 40
-        pad_x, pad_y = 5, 5
-        chart_w = w - 2 * pad_x
-        chart_h = h - 2 * pad_y
-        
-        coords = []
+    if not isinstance(b, dict):
+        return ""
+
+    series_raw = b.get("series")
+    if not isinstance(series_raw, list):
+        series_raw = b.get("sparklines")
+    series = series_raw[:200] if isinstance(series_raw, list) else []
+
+    if not series:
+        return f'<style>{_SPARK_CSS}</style><div class="a2ui-chart-empty">No sparklines</div>'
+
+    rows = []
+    svg_w, svg_h = 80, 30
+
+    for si, sp in enumerate(series):
+        s_obj = sp if isinstance(sp, dict) else {}
+        data_raw = s_obj.get("data")
+        data_list = data_raw[:200] if isinstance(data_raw, list) else []
+
+        data = []
+        for val in data_list:
+            v_num = _num_loose(val)
+            data.append(v_num if v_num is not None else 0.0)
+
+        color = _safe_css(s_obj.get("color"), "#4f46e5")
+        label = _first_text(s_obj.get("label"), "")
+        unit = _first_text(s_obj.get("unit"), "")
+
+        last_val = data[-1] if data else 0.0
+        last_str = _text_loose(int(last_val) if last_val == int(last_val) else _rhu(last_val, 2))
+
+        sk_raw = _first_text(s_obj.get("name"), s_obj.get("id"), s_obj.get("label"), s_obj.get("title"), str(si))
+        sk = _cv_esc(sk_raw)
+
+        min_v = min(data) if data else 0.0
+        max_v = max(data) if data else 0.0
+        if max_v == min_v:
+            max_v += 1.0
+
+        n = len(data)
+        pts = []
         for i, v in enumerate(data):
-            x = pad_x + (i / (n - 1) if n > 1 else 0.5) * chart_w
-            y = pad_y + (1 - (v - mn) / rng) * chart_h
-            coords.append((x, y))
-            
-        path_pts = " ".join(f"{x:.1f},{y:.1f}" for x, y in coords)
-        area_pts = f"{pad_x},{pad_y + chart_h} " + path_pts + f" {pad_x + chart_w},{pad_y + chart_h}"
-        
-        latest = data[-1]
-        
-        # Color of sparkline
-        colors = ["#a855f7", "#10b981", "#3b82f6", "#f59e0b"]
-        stroke_color = colors[si % len(colors)]
-        
-        grad_id = f"spark_grad_{chart_id}_{_cv_esc(si)}"
-        glow_id = f"spark_glow_{chart_id}_{_cv_esc(si)}"
-        
-        _sk = _cv_esc(str(s.get('name') or s.get('id') or s.get('label') or s.get('title') or si))
-        cards.append(f"""
-        <div data-cb="item" data-key="{_sk}" style="padding:16px;background:rgba(15,23,42,0.4);border:1px solid rgba(255,255,255,0.05);border-radius:10px;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:flex;flex-direction:column;justify-content:space-between;gap:8px;">
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;">
-            <span data-cb="label" data-key="{_sk}" style="font-size:0.75rem;font-weight:600;color:#94a3b8;font-family:monospace;letter-spacing:0.02em;">{_cv_esc(label)}</span>
-            <span style="font-size:1.1rem;font-weight:800;color:#22384f;font-family:monospace;">{_cv_esc(latest)}</span>
-          </div>
-          <div style="width:100%;height:40px;">
-            <svg role="img" aria-label="{_cv_esc(b.get('title') or b.get('label') or 'Chart')}" viewBox="0 0 {w} {h}" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;">
-              <defs>
-                <linearGradient id="{grad_id}" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stop-color="{stroke_color}" stop-opacity="0.25" />
-                  <stop offset="100%" stop-color="{stroke_color}" stop-opacity="0.0" />
-                </linearGradient>
-                <filter id="{glow_id}" x="-10%" y="-10%" width="120%" height="120%">
-                  <feGaussianBlur stdDeviation="1.5" result="blur" />
-                  <feMerge>
-                    <feMergeNode in="blur" />
-                    <feMergeNode in="SourceGraphic" />
-                  </feMerge>
-                </filter>
-              </defs>
-              <polygon points="{area_pts}" fill="url(#{grad_id})" />
-              <polyline points="{path_pts}" fill="none" stroke="{stroke_color}" stroke-width="2" filter="url(#{glow_id})" stroke-linecap="round" stroke-linejoin="round" />
-              <circle cx="{coords[-1][0]}" cy="{coords[-1][1]}" r="3" fill="#0f172a" stroke="{stroke_color}" stroke-width="2" />
-            </svg>
-          </div>
-        </div>
-        """)
-        
-    return f'<div style="margin:1.5rem 0;display:grid;grid-template-columns:repeat({cols},1fr);gap:12px;">{"".join(cards)}</div>'
+            x = (i / (n - 1) * svg_w) if n > 1 else (svg_w / 2.0)
+            y = (svg_h - 2.0) - ((v - min_v) / (max_v - min_v)) * (svg_h - 4.0)
+            x_str = _text_loose(int(x + 0.5) if x == int(x) else _rhu(x, 1))
+            y_str = _text_loose(int(y + 0.5) if y == int(y) else _rhu(y, 1))
+            pts.append(f"{x_str},{y_str}")
+
+        pts_str = " ".join(pts)
+        polyline = f'<polyline points="{pts_str}" fill="none" stroke="{color}" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>' if len(data) > 1 else ""
+
+        spark_svg = (
+            f'<svg role="img" aria-label="{_cv_esc((label or "Sparkline") + ": " + last_str + (" " + unit if unit else ""))}" viewBox="0 0 {svg_w} {svg_h}" width="{svg_w}" height="{svg_h}" style="display:inline-block;vertical-align:middle;">'
+            f'{polyline}'
+            f'</svg>'
+        )
+
+        unit_str = f" {_cv_esc(unit)}" if unit else ""
+
+        rows.append(
+            f'<div data-cb="item" data-key="{sk}" class="a2ui-sparkline-row">'
+            f'<span data-cb="label" data-key="{sk}" class="a2ui-sparkline-label">{_cv_esc(label)}</span>'
+            f'{spark_svg}'
+            f'<span class="a2ui-sparkline-val" style="color:{color};">{_cv_esc(last_str)}{unit_str}</span>'
+            f'</div>'
+        )
+
+    return f'<style>{_SPARK_CSS}</style><div class="a2ui-sparkline-set">{"".join(rows)}</div>'
+
 
 def _render_donut_stat(b: dict) -> str:
-    value     = b.get("value", 0)
-    max_value = b.get("max_value", 100) or 100
-    label     = b.get("label", "")
-    unit      = b.get("unit", "")
-    color     = b.get("color", "#10b981")
-    size      = b.get("size", "140px")
-    
-    percentage = (value / max_value) * 100
-    percentage = min(100, max(0, percentage))
-    
-    r = 40
-    stroke_dasharray = 251.327
-    stroke_dashoffset = stroke_dasharray - (percentage / 100) * stroke_dasharray
-    
-    donut_id = f"donut_{_wa_oid(b)}"
-    
-    svg_html = f"""
-    <svg role="img" aria-label="Donut statistic" viewBox="0 0 100 100" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <linearGradient id="{donut_id}_grad" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stop-color="{_cv_esc(color)}" />
-          <stop offset="100%" stop-color="{_cv_esc(color)}" stop-opacity="0.6" />
-        </linearGradient>
-        <filter id="{donut_id}_glow" x="-20%" y="-20%" width="140%" height="140%">
-          <feGaussianBlur stdDeviation="3" result="blur" />
-          <feMerge>
-            <feMergeNode in="blur" />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-        </filter>
-      </defs>
-      <circle cx="50" cy="50" r="{r}" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="10" />
-      <circle cx="50" cy="50" r="{r}" fill="none" stroke="url(#{donut_id}_grad)" stroke-width="10" 
-              stroke-dasharray="{stroke_dasharray}" stroke-dashoffset="{stroke_dashoffset}"
-              stroke-linecap="round" transform="rotate(-90 50 50)" filter="url(#{donut_id}_glow)" />
-      <text x="50" y="48" fill="#f1f5f9" font-size="16" font-weight="800" font-family="monospace" text-anchor="middle">{value:,.0f}{_cv_esc(unit)}</text>
-      <text x="50" y="64" fill="rgba(255,255,255,0.4)" font-size="7" font-weight="600" font-family="monospace" text-anchor="middle">{percentage:.1f}%</text>
-    </svg>
-    """
-    
-    return f"""
-    <div data-cb="node" data-key="{_ck(b.get('label'), 'donut_stat')}" style="margin:1.5rem 0;padding:20px;background:rgb(15,23,42);border:1px solid rgba(255,255,255,0.06);border-radius:12px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:flex;align-items:center;gap:24px;">
-      <div style="width:{_cv_esc(size)};height:{_cv_esc(size)};flex-shrink:0;">
-        {svg_html}
-      </div>
-      <div>
-        <div style="font-size:0.75rem;font-weight:700;color:#94a3b8;font-family:monospace;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:4px;">{_cv_esc(label)}</div>
-        <div style="font-size:1.5rem;font-weight:800;color:#f1f5f9;font-family:-apple-system,sans-serif;margin-bottom:6px;">
-          {value:,.0f}{_cv_esc(unit)} <span style="font-size:0.9rem;font-weight:400;color:rgba(255,255,255,0.62);">/ {max_value:,.0f}{_cv_esc(unit)}</span>
-        </div>
-        <div style="font-size:0.8rem;color:#10b981;font-weight:600;display:flex;align-items:center;gap:4px;">
-          <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:{_cv_esc(color)};"></span>
-          Progress Status: {percentage:.1f}% Target Met
-        </div>
-      </div>
-    </div>
-    """
+    if not isinstance(b, dict):
+        return ""
+
+    val_num = _num_loose(b.get("value"))
+    val = val_num if val_num is not None else 0.0
+
+    max_num = _num_loose(b.get("max_value"))
+    max_val = max_num if (max_num is not None and max_num > 0) else 100.0
+
+    pct = (val / max_val * 100.0) if max_val > 0 else 0.0
+    pct = min(100.0, max(0.0, pct))
+
+    label = _first_text(b.get("label"), "")
+    unit = _first_text(b.get("unit"), "%")
+    color = _safe_css(b.get("color"), "#22d3ee")
+
+    size_raw = b.get("size")
+    size_m = re.fullmatch(r'\s*([0-9]+(?:\.[0-9]+)?)\s*(?:px)?\s*', size_raw) if isinstance(size_raw, str) and len(size_raw) < 40 else None
+    size_num = float(size_m.group(1)) if size_m else _num_loose(size_raw)
+    size = int(size_num + 0.5) if (size_num is not None and size_num > 0) else 160
+    size = min(400, max(40, size))
+
+    uid = f"donut-{_wa_uid(b)}"
+    r = size / 2.0 - 14.0
+    if r < 1.0:
+        r = 1.0
+    cx = size / 2.0
+    cy = size / 2.0
+    circ = 2.0 * 3.141592653589793 * r
+    dash_offset = circ * (1.0 - pct / 100.0)
+
+    circ_str = _fixed_str(circ, 2)
+    dash_str = _fixed_str(dash_offset, 2)
+
+    cx_str = _text_loose(int(cx) if cx == int(cx) else _rhu(cx, 1))
+    cy_str = _text_loose(int(cy) if cy == int(cy) else _rhu(cy, 1))
+    r_str = _text_loose(int(r) if r == int(r) else _rhu(r, 1))
+
+    f1 = int(size * 0.18 + 0.5)
+    f2 = int(size * 0.1 + 0.5)
+    y1 = int(cy - 4 + 0.5)
+    y2 = int(cy + int(size * 0.14 + 0.5) + 0.5)
+
+    v_round = int(val + 0.5) if val >= 0 else int(val - 0.5)
+    center_val_str = _text_loose(v_round)
+
+    label_html = f'<div class="a2ui-donut-label" style="margin-top:4px;font-size:13px;color:var(--muted,#5f6368);">{_cv_esc(label)}</div>' if label else ""
+    node_key = _cv_esc(label)
+
+    return (
+        f'<style>'
+        f'@keyframes donut-spin-{uid}{{from{{stroke-dashoffset:{circ_str};}}to{{stroke-dashoffset:{dash_str};}}}}'
+        f'@media (prefers-reduced-motion:reduce){{.a2ui-donut-arc-{uid}{{animation:none !important;stroke-dashoffset:{dash_str} !important;}}}}'
+        f'</style>'
+        f'<div data-cb="node" data-key="{node_key}" class="a2ui-donut-stat" style="display:inline-block;text-align:center;">'
+        f'<svg role="img" aria-label="Donut statistic" viewBox="0 0 {size} {size}" width="{size}" height="{size}">'
+        f'<circle cx="{cx_str}" cy="{cy_str}" r="{r_str}" fill="none" stroke="#e2e8f0" stroke-width="12"/>'
+        f'<circle class="a2ui-donut-arc-{uid}" cx="{cx_str}" cy="{cy_str}" r="{r_str}" fill="none" stroke="{color}" stroke-width="12" stroke-linecap="round" '
+        f'stroke-dasharray="{circ_str}" stroke-dashoffset="{circ_str}" transform="rotate(-90 {cx_str} {cy_str})" '
+        f'style="animation:donut-spin-{uid} 1s ease-out forwards;stroke-dashoffset:{dash_str};"/>'
+        f'<text x="{cx_str}" y="{y1}" text-anchor="middle" font-size="{f1}" font-weight="bold" fill="#1e293b">{_cv_esc(center_val_str)}</text>'
+        f'<text x="{cx_str}" y="{y2}" text-anchor="middle" font-size="{f2}" fill="#64748b">{_cv_esc(unit)}</text>'
+        f'</svg>'
+        f'{label_html}'
+        f'</div>'
+    )
+
 
 def _interpolate_color(c1: str, c2: str, weight: float) -> str:
     c1 = c1.lstrip("#")
@@ -4876,122 +4928,148 @@ def _render_search_result_card(b: dict) -> str:
     )
 
 def _render_punch_card(b: dict) -> str:
-    data        = b.get("data", [])
-    # Schema's `data` is a list of lists; a malformed/degenerate payload (e.g. a bare
-    # scalar) used to crash on `data[0]` before this guard existed -- degrade to empty
-    # rather than throw, matching this session's course_progress_card fix. 2026-09-27.
-    data        = data if isinstance(data, list) and data and isinstance(data[0], list) else []
-    labels_days = b.get("labels_days", ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"])
-    color       = b.get("color", "#00f2ff")
-    title       = b.get("title", "")
-    subtitle    = b.get("subtitle", "")
+    if not isinstance(b, dict):
+        return ""
+    data_raw = b.get("data")
+    if not isinstance(data_raw, list):
+        data_raw = []
+    data = []
+    for row in data_raw:
+        if isinstance(row, list):
+            data.append(row[:200])
+        if len(data) >= 200:
+            break
 
     if not data or not data[0]:
-        return ""
-        
+        return '<div class="a2ui-punch-card"></div>'
+
+    labels_raw = b.get("labels_days")
+    if not isinstance(labels_raw, list):
+        labels_raw = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+    labels_days = [_text_loose(lbl) for lbl in labels_raw[:200]]
+    while len(labels_days) < len(data):
+        labels_days.append("")
+
+    color = _safe_css(b.get("color"), "#00f2ff")
+    title = _first_text(b.get("title"), "")
+    subtitle = _first_text(b.get("subtitle"), "")
+
     num_rows = len(data)
     num_cols = len(data[0])
-    
-    flat_data = [float(val) for row in data for val in row]
-    mn, mx = min(flat_data), max(flat_data)
-    rng = (mx - mn) or 1
-    
+
+    flat_data = []
+    for row in data:
+        for val in row:
+            num = _num_loose(val)
+            flat_data.append(num if num is not None else 0.0)
+
+    mn = min(flat_data) if flat_data else 0.0
+    mx = max(flat_data) if flat_data else 0.0
+    rng = (mx - mn) or 1.0
+
     cell_size = 28
     cell_gap = 5
-    
     pad_l, pad_r, pad_t, pad_b = 60, 25, 40, 25
-    
+
     grid_w = num_cols * cell_size + (num_cols - 1) * cell_gap
     grid_h = num_rows * cell_size + (num_rows - 1) * cell_gap
-    
+
     w = pad_l + grid_w + pad_r
     h = pad_t + grid_h + pad_b
-    
-    x_labels = ""
+
+    x_labels = []
     for c_idx in range(num_cols):
-        x = pad_l + c_idx * (cell_size + cell_gap) + cell_size / 2
+        x = pad_l + c_idx * (cell_size + cell_gap) + cell_size / 2.0
+        x_str = _text_loose(int(x + 0.5) if x == int(x) else _rhu(x, 1))
         lbl = f"{c_idx:02d}"
-        x_labels += f'<text x="{x}" y="{pad_t - 12}" fill="rgba(255,255,255,0.4)" font-size="8" font-family="monospace" text-anchor="middle">{lbl}</text>'
-        
-    y_labels = ""
-    for r_idx, lbl in enumerate(labels_days):
-        if r_idx < num_rows:
-            y = pad_t + r_idx * (cell_size + cell_gap) + cell_size / 2 + 3
-            y_labels += f'<text x="{pad_l - 12}" y="{y}" fill="rgba(255,255,255,0.65)" font-size="9" font-family="monospace" text-anchor="end">{_cv_esc(lbl)}</text>'
-            
+        x_labels.append(f'<text x="{x_str}" y="{pad_t - 12}" fill="rgba(255,255,255,0.4)" font-size="8" font-family="monospace" text-anchor="middle">{lbl}</text>')
+
+    y_labels = []
+    for r_idx in range(min(num_rows, len(labels_days))):
+        lbl = labels_days[r_idx]
+        y = pad_t + r_idx * (cell_size + cell_gap) + cell_size / 2.0 + 3.0
+        y_str = _text_loose(int(y + 0.5) if y == int(y) else _rhu(y, 1))
+        y_labels.append(f'<text x="{pad_l - 12}" y="{y_str}" fill="rgba(255,255,255,0.65)" font-size="9" font-family="monospace" text-anchor="end">{_cv_esc(lbl)}</text>')
+
+    uid = f"punch-{_wa_uid(b)}"
     bubbles_html = []
-    punch_id = f"punch_{_wa_oid(b)}"
-    
+
     for r_idx, row in enumerate(data):
-        for c_idx, val in enumerate(row):
+        day_lbl = labels_days[r_idx] if r_idx < len(labels_days) else ""
+        for c_idx in range(num_cols):
+            val_raw = row[c_idx] if c_idx < len(row) else 0.0
+            val_num = _num_loose(val_raw)
+            val = val_num if val_num is not None else 0.0
+            x = pad_l + c_idx * (cell_size + cell_gap) + cell_size / 2.0
+            y = pad_t + r_idx * (cell_size + cell_gap) + cell_size / 2.0
+            x_str = _text_loose(int(x + 0.5) if x == int(x) else _rhu(x, 1))
+            y_str = _text_loose(int(y + 0.5) if y == int(y) else _rhu(y, 1))
+
             if val <= 0:
-                x = pad_l + c_idx * (cell_size + cell_gap) + cell_size / 2
-                y = pad_t + r_idx * (cell_size + cell_gap) + cell_size / 2
-                bubbles_html.append(f'<circle cx="{x}" cy="{y}" r="2" fill="rgba(255,255,255,0.06)" />')
+                bubbles_html.append(f'<circle cx="{x_str}" cy="{y_str}" r="2" fill="rgba(255,255,255,0.06)" />')
                 continue
-                
+
             weight = (val - mn) / rng if rng > 0 else 0.5
-            r = 3 + weight * 10
-            x = pad_l + c_idx * (cell_size + cell_gap) + cell_size / 2
-            y = pad_t + r_idx * (cell_size + cell_gap) + cell_size / 2
-            
+            r = 3.0 + weight * 10.0
             opacity = 0.3 + weight * 0.7
-            
-            glow_attr = ""
-            if weight > 0.6:
-                glow_attr = f'filter="url(#{punch_id}_glow)"'
-                
-            bubbles_html.append(f"""
-            <circle cx="{x}" cy="{y}" r="{r:.1f}" fill="{_cv_esc(color)}" fill-opacity="{opacity:.2f}" {glow_attr}>
-              <title>{_cv_esc(labels_days[r_idx])} {c_idx:02d}:00 - {val:,.0f} commits</title>
-            </circle>
-            """)
-            
-    svg_html = f"""
-    <svg role="img" aria-label="{_cv_esc(b.get('title') or b.get('label') or 'Chart')}" viewBox="0 0 {w} {h}" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;">
-      <defs>
-        <filter id="{punch_id}_glow" x="-30%" y="-30%" width="160%" height="140%">
-          <feGaussianBlur stdDeviation="2" result="blur" />
-          <feMerge>
-            <feMergeNode in="blur" />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-        </filter>
-      </defs>
-      {y_labels}
-      {x_labels}
-      {"".join(bubbles_html)}
-    </svg>
-    """
-    
+            glow_attr = f' filter="url(#{uid}_glow)"' if weight > 0.6 else ""
+            r_str = _fixed_str(r, 1)
+            op_str = _fixed_str(opacity, 2)
+            c_label = f"{c_idx:02d}"
+            v_int = int(val + 0.5) if val >= 0 else int(val - 0.5)
+            val_str = f"{v_int:,}"
+
+            title_text = f"{day_lbl} {c_label}:00 - {val_str} commits"
+            bubbles_html.append(
+                f'<circle cx="{x_str}" cy="{y_str}" r="{r_str}" fill="{color}" fill-opacity="{op_str}"{glow_attr}>'
+                f'<title>{_cv_esc(title_text)}</title>'
+                f'</circle>'
+            )
+
     header_html = ""
     if title or subtitle:
-        header_html = f"""
-        <div style="margin-bottom:16px;display:flex;justify-content:space-between;align-items:flex-end;">
-          <div>
-            {f'<div style="font-size:1.1rem;font-weight:800;color:#f1f5f9;margin-bottom:2px;">{_cv_esc(title)}</div>' if title else ''}
-            {f'<div style="font-size:0.75rem;color:rgba(255,255,255,0.62);font-family:monospace;">{_cv_esc(subtitle)}</div>' if subtitle else ''}
-          </div>
-          <div style="display:flex;gap:12px;font-size:0.75rem;color:rgba(255,255,255,0.62);font-family:monospace;align-items:center;">
-            <span>Less</span>
-            <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:{_cv_esc(color)};opacity:0.3;"></span>
-            <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:{_cv_esc(color)};opacity:0.6;"></span>
-            <span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:{_cv_esc(color)};opacity:1.0;"></span>
-            <span>More</span>
-          </div>
-        </div>
-        """
-        
-    return f"""
-    <div style="margin:1.5rem 0;padding:24px;background:rgb(15,23,42);border:1px solid rgba(255,255,255,0.06);border-radius:12px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);">
-      {header_html}
-      <div style="width:100%;overflow-x:auto;">
-        <div style="min-width:{w}px;max-width:100%;height:{h}px;margin:0 auto;">
-          {svg_html}
-        </div>
-      </div>
-    </div>
-    """
+        title_tag = f'<div style="font-size:1.1rem;font-weight:800;color:#f1f5f9;margin-bottom:2px;">{_cv_esc(title)}</div>' if title else ""
+        sub_tag = f'<div style="font-size:0.75rem;color:rgba(255,255,255,0.62);font-family:monospace;">{_cv_esc(subtitle)}</div>' if subtitle else ""
+        header_html = (
+            f'<div style="margin-bottom:16px;display:flex;justify-content:space-between;align-items:flex-end;">'
+            f'<div>{title_tag}{sub_tag}</div>'
+            f'<div style="display:flex;gap:12px;font-size:0.75rem;color:rgba(255,255,255,0.62);font-family:monospace;align-items:center;">'
+            f'<span>Less</span>'
+            f'<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:{color};opacity:0.3;"></span>'
+            f'<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:{color};opacity:0.6;"></span>'
+            f'<span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:{color};opacity:1.0;"></span>'
+            f'<span>More</span>'
+            f'</div></div>'
+        )
+
+    aria_lbl = title or _first_text(b.get("label"), "Chart")
+    bubbles_joined = "".join(bubbles_html)
+    y_joined = "".join(y_labels)
+    x_joined = "".join(x_labels)
+
+    svg_html = (
+        f'<svg role="img" aria-label="{_cv_esc(aria_lbl)}" viewBox="0 0 {w} {h}" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;">'
+        f'<defs>'
+        f'<filter id="{uid}_glow" x="-30%" y="-30%" width="160%" height="140%">'
+        f'<feGaussianBlur stdDeviation="2" result="blur" />'
+        f'<feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>'
+        f'</filter>'
+        f'</defs>'
+        f'{y_joined}'
+        f'{x_joined}'
+        f'{bubbles_joined}'
+        f'</svg>'
+    )
+
+    return (
+        f'<div class="a2ui-punch-card" style="margin:1.5rem 0;padding:24px;background:rgb(15,23,42);border:1px solid rgba(255,255,255,0.06);border-radius:12px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);">'
+        f'{header_html}'
+        f'<div style="width:100%;overflow-x:auto;">'
+        f'<div style="min-width:{w}px;max-width:100%;height:{h}px;margin:0 auto;">'
+        f'{svg_html}'
+        f'</div></div></div>'
+    )
+
 
 # ── sankey_flow ───────────────────────────────────────────────────────────────────────────────────────────────
 # Layout is a hand port of d3-sankey 0.12.3 (BSD-3-Clause, Copyright 2015 Mike Bostock; see THIRD-PARTY-NOTICES.md): node value = max(in, out),
@@ -7360,58 +7438,92 @@ def _render_card_stack(b: dict) -> str:
 
 
 def _render_entity_list(b: dict) -> str:
-    """Named resource rows: avatar/icon + title + subtitle + status badge + trailing meta."""
-    STATUS_COLORS = {
-        "active":      ("#d1fae5", "#059669"),
-        "inactive":    ("#f3f4f6", "#6b7280"),
-        "error":       ("#fee2e2", "#dc2626"),
-        "pending":     ("#fef9c3", "#ca8a04"),
+    if not isinstance(b, dict):
+        return ""
+
+    items_raw = b.get("items")
+    if not isinstance(items_raw, list):
+        items_raw = b.get("entities")
+    items = items_raw[:200] if isinstance(items_raw, list) else []
+
+    title = _first_text(b.get("title"), "")
+
+    type_colors = {
+        "person": "#4f46e5",
+        "organization": "#22d3ee",
+        "location": "#34d399",
+        "product": "#fb923c",
+        "event": "#f472b6",
+    }
+    status_colors = {
+        "active": ("#d1fae5", "#059669"),
+        "inactive": ("#f3f4f6", "#6b7280"),
+        "error": ("#fee2e2", "#dc2626"),
+        "pending": ("#fef9c3", "#ca8a04"),
         "in-progress": ("#dbeafe", "#2563eb"),
     }
-    items = b.get("items", [])
-    rows = ""
+
+    cards = []
     for item in items:
-        name     = item.get("name", "")
-        raw_k    = str(item.get("id") or name)
-        k        = _cv_esc(raw_k)
-        subtitle = item.get("subtitle", "")
-        icon     = item.get("icon", "")
-        status   = item.get("status", "")
-        meta     = item.get("meta", "")
-        icon_html = (
-            f'<div style="width:36px;height:36px;border-radius:50%;background:#ede9fe;'
-            f'display:flex;align-items:center;justify-content:center;font-size:1.1rem;'
-            f'flex-shrink:0;">{_cv_esc(icon)}</div>'
-        ) if icon else (
-            f'<div style="width:36px;height:36px;border-radius:50%;background:#ede9fe;'
-            f'display:flex;align-items:center;justify-content:center;font-size:0.88rem;'
-            f'font-weight:700;color:#7c3aed;flex-shrink:0;">{_cv_esc(name[:1].upper())}</div>'
-        )
-        badge_bg, badge_fg = STATUS_COLORS.get(status, ("#f3f4f6", "#6b7280"))
-        status_html = (
-            f'<span style="font-size:0.72rem;font-weight:600;padding:2px 8px;border-radius:100px;'
-            f'background:{badge_bg};color:{badge_fg};">{_cv_esc(status)}</span>'
-        ) if status else ""
-        subtitle_html = (
-            f'<div style="font-size:0.75rem;color:var(--a2ui-muted,#666666);">{_cv_esc(subtitle)}</div>'
-        ) if subtitle else ""
-        meta_html = (
-            f'<div style="font-size:0.75rem;color:var(--a2ui-faint,#757575);white-space:nowrap;">{_cv_esc(meta)}</div>'
-        ) if meta else ""
-        rows += (
-            f'<div data-cb="item" data-key="{k}" style="display:flex;align-items:center;gap:12px;padding:10px 0;'
-            f'border-bottom:1px solid #f3f4f6;">'
-            f'{icon_html}'
-            f'<div style="flex:1;min-width:0;">'
-            f'<div data-cb="label" data-key="{k}" style="font-size:0.88rem;font-weight:600;color:var(--a2ui-text,#171717);'
-            f'white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{_cv_esc(name)}</div>'
-            f'{subtitle_html}'
-            f'</div>'
-            f'{status_html}'
+        i_obj = item if isinstance(item, dict) else {}
+        name = _first_text(i_obj.get("name"), i_obj.get("label"), "")
+        raw_k = _first_text(i_obj.get("id"), name)
+        k = _cv_esc(raw_k)
+
+        item_type = _first_text(i_obj.get("type"), "").lower()
+        type_color = type_colors.get(item_type, "#94a3b8")
+
+        desc = _first_text(i_obj.get("description"), i_obj.get("subtitle"), "")
+        icon = _first_text(i_obj.get("icon"), "")
+        avatar_url = _safe_href(i_obj.get("avatar_url"), ["http", "https"])
+        link = _safe_href(i_obj.get("link"), ["http", "https"])
+        status = _first_text(i_obj.get("status"), "")
+        meta = _first_text(i_obj.get("meta"), "")
+
+        initial = name[:1].upper() if name else "?"
+
+        if icon:
+            avatar_inner = f'<div class="a2ui-entity-initials" style="background:{type_color};">{_cv_esc(icon)}</div>'
+        elif avatar_url:
+            avatar_inner = (
+                f'<img src="{_cv_esc(avatar_url)}" width="40" height="40" style="border-radius:50%;object-fit:cover;" '
+                f'onerror="this.style.display=\'none\';this.nextSibling.style.display=\'flex\'"/>'
+                f'<div class="a2ui-entity-initials" style="display:none;background:{type_color};">{_cv_esc(initial)}</div>'
+            )
+        else:
+            avatar_inner = f'<div class="a2ui-entity-initials" style="background:{type_color};">{_cv_esc(initial)}</div>'
+
+        avatar_html = f'<div class="a2ui-entity-avatar">{avatar_inner}</div>'
+
+        type_badge = (
+            f'<span class="a2ui-entity-type" style="background:{type_color}20;color:{type_color};border:1px solid {type_color}40;">{_cv_esc(item_type)}</span>'
+        ) if item_type else ""
+
+        status_badge = ""
+        if status:
+            sc = status_colors.get(status.lower(), ("#f3f4f6", "#6b7280"))
+            status_badge = f'<span class="a2ui-entity-status" style="display:inline-block;font-size:0.72rem;font-weight:600;padding:2px 8px;border-radius:100px;background:{sc[0]};color:{sc[1]};">{_cv_esc(status)}</span>'
+
+        desc_html = f'<div class="a2ui-entity-desc">{_cv_esc(desc)}</div>' if desc else ""
+        meta_html = f'<div class="a2ui-entity-meta">{_cv_esc(meta)}</div>' if meta else ""
+
+        info_html = (
+            f'<div class="a2ui-entity-info">'
+            f'<div data-cb="label" data-key="{k}" class="a2ui-entity-name">{_cv_esc(name)}</div>'
+            f'{type_badge}'
+            f'{status_badge}'
+            f'{desc_html}'
             f'{meta_html}'
             f'</div>'
         )
-    return f'<div style="margin:1rem 0;">{rows}</div>'
+
+        if link:
+            cards.append(f'<a data-cb="item" data-key="{k}" class="a2ui-entity-card" href="{_cv_esc(link)}" target="_blank" rel="noopener" style="text-decoration:none;">{avatar_html}{info_html}</a>')
+        else:
+            cards.append(f'<div data-cb="item" data-key="{k}" class="a2ui-entity-card">{avatar_html}{info_html}</div>')
+
+    title_html = f'<div class="a2ui-entity-list-title">{_cv_esc(title)}</div>' if title else ""
+    return f'<style>{_ENTITY_CSS}</style><div class="a2ui-entity-list">{title_html}<div class="a2ui-entity-grid">{"".join(cards)}</div></div>'
 
 
 def _render_prompt_template(b: dict) -> str:
@@ -7869,14 +7981,23 @@ def _render_source_citation(b: dict) -> str:
 
 
 def _render_llm_comparison_table(b: dict) -> str:
-    """Side-by-side multi-model output comparison. Original a2ui-catalogue atom."""
-    prompt    = b.get("prompt", "")
-    models    = b.get("models", [])
-    show_meta = b.get("show_meta", None)
-    if show_meta is None:
-        show_meta = any(m.get("latency_ms") or m.get("cost_usd") or m.get("tokens") for m in models)
+    if not isinstance(b, dict):
+        return ""
 
-    MODEL_COLORS = ["#2d5fd0","#c2185b","#2e7d32","#b45309","#8e24aa"]
+    prompt = _first_text(b.get("prompt"), "")
+    models_raw = b.get("models")
+    models = models_raw[:200] if isinstance(models_raw, list) else []
+
+    show_meta = b.get("show_meta")
+    if show_meta is None:
+        show_meta = any(
+            isinstance(m, dict) and (m.get("latency_ms") is not None or m.get("cost_usd") is not None or m.get("tokens") is not None)
+            for m in models
+        )
+    else:
+        show_meta = show_meta is True
+
+    model_colors = ["#2d5fd0", "#c2185b", "#2e7d32", "#b45309", "#8e24aa"]
 
     prompt_html = (
         f'<div style="margin-bottom:10px;padding:8px 12px;background:#f8fafc;'
@@ -7886,50 +8007,56 @@ def _render_llm_comparison_table(b: dict) -> str:
     ) if prompt else ""
 
     col_w = f"{100 // max(len(models), 1)}%"
-    headers = ""
-    outputs = ""
-    meta_row = ""
+    headers = []
+    outputs = []
+    meta_row = []
 
     for idx, m in enumerate(models):
-        color = MODEL_COLORS[idx % len(MODEL_COLORS)]
-        name  = m.get("name", f"Model {idx+1}")
-        out   = m.get("output", "")
-        lat   = m.get("latency_ms")
-        cost  = m.get("cost_usd")
-        toks  = m.get("tokens")
+        m_obj = m if isinstance(m, dict) else {}
+        color = model_colors[idx % len(model_colors)]
+        name = _first_text(m_obj.get("name"), f"Model {idx+1}")
+        out = _first_text(m_obj.get("output"), "")
 
-        headers += (
+        lat_num = _num_loose(m_obj.get("latency_ms"))
+        cost_num = _num_loose(m_obj.get("cost_usd"))
+        toks_num = _num_loose(m_obj.get("tokens"))
+
+        headers.append(
             f'<th data-cb="label" data-key="{_cv_esc(name)}" style="width:{col_w};padding:8px 10px;text-align:left;'
             f'border-bottom:2px solid {color};font-size:0.8rem;font-weight:700;'
             f'color:{color};">{_cv_esc(name)}</th>'
         )
-        outputs += (
+        outputs.append(
             f'<td data-cb="item" data-key="{_cv_esc(name)}" style="width:{col_w};padding:8px 10px;vertical-align:top;'
             f'border-right:1px solid #f3f4f6;font-size:0.8rem;color:#111827;'
             f'line-height:1.55;">{_cv_esc(out)}</td>'
         )
         if show_meta:
             parts = []
-            if lat:  parts.append(f"{_cv_esc(lat)} ms")
-            if toks: parts.append(f"{_cv_esc(toks)} tok")
-            if cost: parts.append(f"${cost:.4f}")
-            meta_row += (
+            if lat_num is not None:
+                parts.append(f"{_text_loose(int(lat_num) if lat_num == int(lat_num) else _rhu(lat_num, 1))} ms")
+            if toks_num is not None:
+                parts.append(f"{_text_loose(int(toks_num) if toks_num == int(toks_num) else _rhu(toks_num, 1))} tok")
+            if cost_num is not None:
+                parts.append(f"${_fixed_str(cost_num, 4)}")
+            meta_row.append(
                 f'<td style="padding:6px 10px;font-size:0.7rem;color:var(--muted,#5f6368);'
-                f'border-right:1px solid #f3f4f6;">{" · ".join(parts)}</td>'
+                f'border-right:1px solid #f3f4f6;">{_cv_esc(" · ".join(parts))}</td>'
             )
 
-    meta_tr = (
-        f'<tr style="background:#f9fafb;">{meta_row}</tr>'
-    ) if show_meta and meta_row else ""
+    meta_tr = f'<tr style="background:#f9fafb;">{"".join(meta_row)}</tr>' if (show_meta and meta_row) else ""
+
+    headers_html = "".join(headers)
+    outputs_html = "".join(outputs)
 
     return (
         f'<div style="margin:1rem 0;overflow-x:auto;">'
         f'{prompt_html}'
         f'<table style="width:100%;border-collapse:collapse;'
         f'border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;">'
-        f'<thead><tr style="background:#f9fafb;">{headers}</tr></thead>'
+        f'<thead><tr style="background:#f9fafb;">{headers_html}</tr></thead>'
         f'<tbody>'
-        f'<tr>{outputs}</tr>'
+        f'<tr>{outputs_html}</tr>'
         f'{meta_tr}'
         f'</tbody></table></div>'
     )
@@ -9027,42 +9154,88 @@ def _render_product_thumbnail(b: dict) -> str:
 
 
 def _render_order_status_card(b: dict) -> str:
-    order_number = b.get("order_number", "#1001")
-    date         = b.get("date", "")
-    status       = b.get("status", "unfulfilled")
-    customer     = b.get("customer", "")
-    items        = b.get("items", [])
-    total        = b.get("total", "")
+    if not isinstance(b, dict):
+        return ""
 
-    STATUS = {
-        "fulfilled":   ("#d4edda", "#155724"),
-        "unfulfilled": ("#fff3cd", "#856404"),
-        "partial":     ("#cce5ff", "#004085"),
-        "cancelled":   ("#f8d7da", "#721c24"),
-        "refunded":    ("#e2e3e5", "#383d41"),
-    }
-    bg, fg = STATUS.get(status, STATUS["unfulfilled"])
+    order_num = _first_text(b.get("order_number"), b.get("order_id"), "")
+    date = _first_text(b.get("date"), "")
+    raw_status = _first_text(b.get("status"), "unfulfilled").lower()
+    customer = _first_text(b.get("customer"), "")
+    total = _first_text(b.get("total"), "")
+    est_delivery = _first_text(b.get("estimated_delivery"), "")
 
-    items_html = "".join(
-        f'<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f4f6f8;font-size:13px;">'
-        f'<span style="color:#202223;">{_cv_esc(item.get("title",""))}</span>'
-        f'<span style="color:#6d7175;">×{_cv_esc(item.get("qty",1))} &mdash; {_cv_esc(item.get("price",""))}</span>'
-        f'</div>'
-        for item in items
-    )
+    steps = ["Placed", "Processing", "Shipped", "Delivered"]
+    status_index = {"placed": 0, "processing": 1, "shipped": 2, "delivered": 3, "cancelled": -1}
+    schema_status = {"fulfilled": 3, "unfulfilled": 0, "partial": 2, "refunded": -1}
+
+    st = schema_status.get(raw_status) if raw_status in schema_status else status_index.get(raw_status)
+    current_step = st if st is not None and st >= 0 else 0
+    cancelled = raw_status in ("cancelled", "refunded")
+
+    stepper_parts = ['<div style="display:flex;align-items:center;margin:16px 0 24px;">']
+    for s_idx, step_name in enumerate(steps):
+        done = not cancelled and s_idx <= current_step
+        active = not cancelled and s_idx == current_step
+        dot_bg = "#fee2e2" if cancelled else ("#7c3aed" if done else "#e5e7eb")
+        dot_color = "#991b1b" if cancelled else ("#fff" if done else "#9ca3af")
+        step_content = "✓" if (done and not active) else _text_loose(s_idx + 1)
+        name_color = "#7c3aed" if active else "#6b7280"
+        name_weight = "700" if active else "400"
+
+        stepper_parts.append(
+            f'<div style="display:flex;flex-direction:column;align-items:center;flex:1;">'
+            f'<div style="width:28px;height:28px;border-radius:50%;background:{dot_bg};color:{dot_color};font-size:0.75rem;font-weight:700;display:flex;align-items:center;justify-content:center;">{step_content}</div>'
+            f'<div style="font-size:0.72rem;margin-top:4px;color:{name_color};font-weight:{name_weight};text-align:center;">{step_name}</div>'
+            f'</div>'
+        )
+        if s_idx < len(steps) - 1:
+            line_bg = "#7c3aed" if (not cancelled and s_idx < current_step) else "#e5e7eb"
+            stepper_parts.append(f'<div style="flex:1;height:2px;background:{line_bg};margin-bottom:16px;"></div>')
+    stepper_parts.append("</div>")
+    stepper_html = "".join(stepper_parts)
+
+    items_raw = b.get("items")
+    items = items_raw[:200] if isinstance(items_raw, list) else []
+
+    item_rows = []
+    for item in items:
+        i_obj = item if isinstance(item, dict) else {}
+        name = _first_text(i_obj.get("title"), i_obj.get("name"), "")
+        qty_num = _num_loose(i_obj.get("qty"))
+        qty = _text_loose(min(max(int(qty_num + 0.5), 0), 10 ** 9) if qty_num is not None else 1)
+        price = _first_text(i_obj.get("price"), "")
+        item_rows.append(
+            f'<tr><td style="padding:8px 4px;font-size:0.875rem;color:#111827;">{_cv_esc(name)}</td>'
+            f'<td style="padding:8px 4px;font-size:0.875rem;color:var(--muted,#5f6368);text-align:center;">×{_cv_esc(qty)}</td>'
+            f'<td style="padding:8px 4px;font-size:0.875rem;color:#111827;text-align:right;">{_cv_esc(price)}</td></tr>'
+        )
+    items_html = "".join(item_rows)
+
+    sub_parts = [p for p in (customer, date) if p]
+    sub_meta = f'<span style="font-size:0.8rem;color:var(--muted,#5f6368);">{_cv_esc(" · ".join(sub_parts))}</span>' if sub_parts else ""
+    badge_title = (raw_status[:1].upper() + raw_status[1:]) if _first_text(b.get("status")) else ""
+    bstyle = "background:#fee2e2;color:#991b1b" if cancelled else "background:#ede9fe;color:#5b21b6"
+    cancelled_badge = f'<span style="{bstyle};font-size:0.78rem;font-weight:600;padding:3px 10px;border-radius:999px;">{_cv_esc(badge_title)}</span>' if badge_title else ""
+
+    deliv_html = f'<div style="margin-top:10px;font-size:0.82rem;color:var(--muted,#5f6368);">Estimated delivery: <strong style="color:#111827;">{_cv_esc(est_delivery)}</strong></div>' if est_delivery else ""
+
+    order_title = f"Order {order_num}" if order_num else "Order"
+    node_key = _cv_esc(order_num or "order")
 
     return (
-        f'<div data-cb="node" data-key="{_ck(b.get("order_number"), "order_status_card")}" style="background:#ffffff;background:var(--a2ui-surface,#ffffff);border:1px solid #e1e3e5;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:20px;">'
-        f'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">'
-        f'<span style="font-size:16px;font-weight:700;color:#202223;">{_cv_esc(order_number)}</span>'
-        f'<div style="display:flex;align-items:center;gap:10px;">'
-        + (f'<span style="font-size:12px;color:#6d7175;">{_cv_esc(date)}</span>' if date else '')
-        + f'<span style="background:{bg};color:{fg};font-size:11px;font-weight:600;padding:2px 10px;border-radius:20px;">{_cv_esc(status.capitalize())}</span>'
-        f'</div></div>'
-        + (f'<div style="font-size:12px;color:#6d7175;margin-bottom:12px;">Customer: {_cv_esc(customer)}</div>' if customer else '')
-        + (f'<div style="margin-bottom:12px;">{items_html}</div>' if items_html else '')
-        + (f'<div style="text-align:right;font-size:15px;font-weight:700;color:#202223;">Total: {_cv_esc(total)}</div>' if total else '')
-        + '</div>'
+        f'<div data-cb="node" data-key="{node_key}" style="border:1px solid #e5e7eb;border-radius:14px;padding:20px;margin:1rem 0;background:#fff;">'
+        f'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">'
+        f'<span style="font-weight:700;color:#111827;font-size:1rem;">{_cv_esc(order_title)}</span>'
+        f'{sub_meta}'
+        f'{cancelled_badge}'
+        f'</div>'
+        f'{stepper_html}'
+        f'<table style="width:100%;border-collapse:collapse;border-top:1px solid #f3f4f6;">{items_html}</table>'
+        f'<div style="display:flex;justify-content:space-between;padding-top:10px;border-top:1px solid #e5e7eb;margin-top:8px;font-weight:700;color:#111827;">'
+        f'<span>Total</span><span>{_cv_esc(total)}</span>'
+        f'</div>'
+        f'{deliv_html}'
+        f'</div>'
     )
 
 
@@ -20849,49 +21022,104 @@ _RENDERERS["annotation_highlight"] = _render_annotation_highlight
 
 
 def _render_quiz_result_summary(b: dict) -> str:
-    score = int(b.get('score', 0))
-    total = int(b.get('total', 10)) or 1
-    pass_mark = int(b.get('pass_mark', 70))
-    pct = round(score / total * 100)
+    if not isinstance(b, dict):
+        return ""
+
+    score_num = _num_loose(b.get("score"))
+    score = min(max(int(score_num + 0.5), 0), 10 ** 9) if score_num is not None else 0
+
+    total_num = _num_loose(b.get("total"))
+    total = min(int(total_num + 0.5), 10 ** 9) if total_num is not None else 10
+    if total <= 0:
+        total = 1
+
+    pass_num = _num_loose(b.get("pass_mark"))
+    pass_mark = min(max(int(pass_num + 0.5), 0), 1000) if pass_num is not None else 70
+
+    time_num = _num_loose(b.get("time_secs"))
+    time_secs = min(max(int(time_num + 0.5), 0), 10 ** 9) if time_num is not None else 0
+
+    quiz_id = _first_text(b.get("quiz_id"), "quiz")
+    next_url = _safe_href(b.get("next_url"), ["http", "https"])
+    retry_url = _safe_href(b.get("retry_url"), ["http", "https"])
+
+    pct = int((score / total) * 100 + 0.5)
     passed = pct >= pass_mark
-    col = '#1c805c' if passed else '#f87171'
-    bg = 'rgba(52,211,153,0.07)' if passed else 'rgba(248,113,113,0.07)'
-    verdict = '✅ Passed' if passed else '❌ Not yet'
-    time_secs = int(b.get('time_secs', 0))
-    time_str = f'{time_secs // 60}m {time_secs % 60}s' if time_secs else ''
-    time_html = f'<div style="font-size:0.8rem;color:var(--muted,#5f6368);margin-top:4px;">Time: {time_str}</div>' if time_str else ''
-    next_html = (f'<a href="{_esc(b["next_url"])}" style="display:inline-block;margin-top:14px;padding:10px 22px;'
-                 f'background:#4f46e5;color:#fff;border-radius:9px;text-decoration:none;font-weight:600;font-size:0.85rem;">'
-                 f'Continue →</a>') if b.get('next_url') else ''
-    retry_html = (f'<a href="{_esc(b["retry_url"])}" style="display:inline-block;margin-top:14px;margin-right:8px;'
-                  f'padding:10px 22px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);color:#374151;border-radius:9px;'
-                  f'text-decoration:none;font-size:0.85rem;">Retry</a>') if b.get('retry_url') else ''
-    # `quiz_id` (required by schema) and `questions` (per-question breakdown) were never
-    # used at all -- GAS writes quiz_id into a progress-store script tag and renders a
-    # breakdown-dots row from `questions`; the static web renderer has no progress-store
-    # mechanism to mirror the write, but the id is still surfaced as a data attribute so it
-    # isn't silently dropped (surface-parity debt). 2026-09-27.
-    quiz_id_attr = f' data-quiz-id="{_esc(str(b.get("quiz_id", "")))}"' if b.get('quiz_id') else ''
-    questions = b.get('questions', [])
-    dots = ''.join(
-        f'<div title="{_esc(q.get("label", f"Q{i+1}"))}" style="width:22px;height:22px;border-radius:50%;'
-        f'display:flex;align-items:center;justify-content:center;font-size:0.55rem;font-weight:700;color:#fff;'
-        f'background:{"#1c805c" if q.get("correct") else "#f87171"};">{"✓" if q.get("correct") else "✗"}</div>'
-        for i, q in enumerate(questions)
-    )
-    dots_html = (f'<div style="margin-top:16px;"><div style="font-size:0.65rem;color:var(--muted,#5f6368);text-transform:uppercase;'
-                 f'letter-spacing:0.08em;margin-bottom:8px;">Question breakdown</div>'
-                 f'<div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;">{dots}</div></div>') if dots else ''
+    col = "#1c805c" if passed else "#f87171"
+    bg = "rgba(52,211,153,0.07)" if passed else "rgba(248,113,113,0.07)"
+    bd_col = "rgba(52,211,153,0.2)" if passed else "rgba(248,113,113,0.2)"
+
+    mins = time_secs // 60
+    secs = time_secs % 60
+    time_str = f"{mins}m {secs}s" if mins > 0 else f"{secs}s"
+
+    questions_raw = b.get("questions")
+    questions = questions_raw[:200] if isinstance(questions_raw, list) else []
+
+    dots_list = []
+    for i, q in enumerate(questions):
+        q_obj = q if isinstance(q, dict) else {}
+        ok = q_obj.get("correct") is True
+        lbl = _first_text(q_obj.get("label"), f"Q{i+1}")
+        mark = "✓" if ok else "✗"
+        dot_bg = "#1c805c" if ok else "#f87171"
+        dots_list.append(
+            f'<div title="{_cv_esc(lbl)}" style="width:22px;height:22px;border-radius:50%;'
+            f'display:flex;align-items:center;justify-content:center;font-size:0.55rem;font-weight:700;'
+            f'color:#fff;background:{dot_bg};">{mark}</div>'
+        )
+    dots = "".join(dots_list)
+    dots_html = (
+        f'<div style="margin-bottom:20px;">'
+        f'<div style="font-size:0.6rem;color:#475569;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;">Question breakdown</div>'
+        f'<div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;">{dots}</div>'
+        f'</div>'
+    ) if dots else ""
+
+    btns_list = []
+    if retry_url:
+        btns_list.append(
+            f'<a href="{_cv_esc(retry_url)}" target="_top" style="padding:10px 22px;border-radius:9px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:var(--muted,#5f6368);font-size:0.8rem;font-weight:600;text-decoration:none;">↩ Retry</a>'
+        )
+    if next_url:
+        btns_list.append(
+            f'<a href="{_cv_esc(next_url)}" target="_top" style="padding:10px 22px;border-radius:9px;background:{col};color:#0f172a;font-size:0.8rem;font-weight:700;text-decoration:none;">Continue →</a>'
+        )
+    btns_html = f'<div style="display:flex;gap:10px;justify-content:center;">{"".join(btns_list)}</div>' if btns_list else ""
+
+    verdict_emoji = "🎉" if passed else "📚"
+    verdict_title = "Passed!" if passed else "Keep Going"
+    verdict_desc = "Well done — you cleared the pass mark." if passed else f"You need {pass_mark}% to pass. Review the material and retry."
+
+    quiz_id_esc = _cv_esc(quiz_id)
+
     return (
-        f'<div data-cb="node" data-key="{_ck(b.get("quiz_id"), "quiz_result_summary")}"{quiz_id_attr} style="font-family:system-ui,sans-serif;padding:28px;border-radius:14px;'
-        f'background:{bg};border:1px solid {col};text-align:center;">'
-        f'<div style="font-size:3rem;font-weight:800;color:{col};">{pct}%</div>'
-        f'<div style="font-weight:700;font-size:1.1rem;margin-bottom:4px;">{verdict}</div>'
-        f'<div style="color:var(--muted,#5f6368);font-size:0.85rem;">{score} / {total} correct</div>'
-        f'{time_html}{dots_html}<div style="margin-top:12px;">{retry_html}{next_html}</div></div>'
+        f'<div data-cb="node" data-key="{quiz_id_esc}" data-quiz-id="{quiz_id_esc}" data-pct="{pct}" style="font-family:\'Inter\',system-ui,sans-serif;padding:28px;border-radius:16px;background:{bg};border:1px solid {bd_col};">'
+        f'<div style="text-align:center;margin-bottom:24px;">'
+        f'<div style="font-size:2.8rem;margin-bottom:10px;">{verdict_emoji}</div>'
+        f'<div style="font-size:1.5rem;font-weight:800;color:{col};">{verdict_title}</div>'
+        f'<div style="font-size:0.72rem;color:var(--muted,#5f6368);margin-top:5px;">{verdict_desc}</div>'
+        f'</div>'
+        f'<div style="display:flex;justify-content:center;align-items:center;gap:32px;margin-bottom:24px;flex-wrap:wrap;">'
+        f'<div style="text-align:center;">'
+        f'<div style="font-size:3.2rem;font-weight:900;color:{col};line-height:1;">{pct}<span style="font-size:1.4rem;">%</span></div>'
+        f'<div style="font-size:0.62rem;color:var(--muted,#5f6368);margin-top:4px;">{score} / {total} correct</div>'
+        f'</div>'
+        f'<div style="display:flex;flex-direction:column;gap:8px;">'
+        f'<div style="font-size:0.72rem;color:var(--muted,#5f6368);">⏱ Time: <strong style="color:#52739f;">{time_str}</strong></div>'
+        f'<div style="font-size:0.72rem;color:var(--muted,#5f6368);">🎯 Pass mark: <strong style="color:#52739f;">{pass_mark}%</strong></div>'
+        f'</div>'
+        f'</div>'
+        f'{dots_html}'
+        f'{btns_html}'
+        f'</div>'
     )
+
+
 _RENDERERS["quiz_result_summary"] = _render_quiz_result_summary
 
+
+import math
 
 def _render_skill_radar(b: dict) -> str:
     title = _esc(b.get('title', 'Skill Profile'))
@@ -25759,6 +25987,8 @@ def _render_word_cloud(b: dict) -> str:
             'background:#fff;text-align:center;line-height:1.6;">' + cloud + '</div>')
 _RENDERERS["word_cloud"] = _render_word_cloud
 
+
+import math
 
 def _render_orbit_diagram(b: dict) -> str:
     center = _esc(b.get('center', ''))
@@ -30684,11 +30914,24 @@ def _first_text(*vals):
     return ''
 
 
+# component CSS of the chart atoms that style themselves with classes (twin: AtomStyles.html and atoms_charts.gs), emitted with the markup so a page without the GAS stylesheet draws them too
+_METRIC_CSS = '.a2ui-metric-comparison{background: #fff;border: 1px solid #e2e8f0;border-radius: 12px;padding: 20px;display: inline-block;min-width: 260px;}.a2ui-metric-cmp-title{font-size: 13px;font-weight: 600;color: #64748b;margin-bottom: 14px;text-transform: uppercase;letter-spacing: 0.04em;}.a2ui-metric-cmp-body{display: flex;align-items: center;gap: 16px;}.a2ui-metric-cmp-col{flex: 1;text-align: center;}.a2ui-metric-cmp-lbl{font-size: 11px;color: #94a3b8;margin-bottom: 4px;}.a2ui-metric-cmp-val{font-size: 28px;font-weight: 700;color: #1e293b;line-height: 1.1;}.a2ui-metric-unit{font-size: 14px;font-weight: 400;color: #64748b;}.a2ui-metric-cmp-delta{font-size: 18px;font-weight: 700;padding: 6px 12px;border-radius: 8px;border: 1.5px solid;white-space: nowrap;}'
+_SPARK_CSS = '.a2ui-sparkline-set{display: flex;flex-direction: column;gap: 10px;padding: 8px 0;}.a2ui-sparkline-row{display: flex;align-items: center;gap: 10px;}.a2ui-sparkline-label{font-size: 12px;color: #64748b;width: 100px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;}.a2ui-sparkline-val{font-size: 13px;font-weight: 600;min-width: 48px;}'
+_ENTITY_CSS = '.a2ui-entity-list{width: 100%;}.a2ui-entity-list-title{font-size: 14px;font-weight: 600;color: var(--a2ui-text,#171717);margin-bottom: 12px;}.a2ui-entity-grid{display: flex;flex-direction: column;gap: 8px;}.a2ui-entity-card{display: flex;align-items: flex-start;gap: 12px;padding: 12px 14px;background: var(--a2ui-surface,#ffffff);border: 1px solid var(--a2ui-border,#eaeaea);border-radius: var(--a2ui-radius,12px);box-shadow: var(--a2ui-shadow,0 1px 2px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04));transition: box-shadow 0.15s;color: inherit;}.a2ui-entity-card:hover{box-shadow: 0 2px 10px rgba(0,0,0,0.08);border-color: #c7d2fe;}.a2ui-entity-avatar{flex-shrink: 0;}.a2ui-entity-initials{width: 40px;height: 40px;border-radius: 50%;display: flex;align-items: center;justify-content: center;font-size: 16px;font-weight: 700;color: #fff;}.a2ui-entity-info{flex: 1;display: flex;flex-direction: column;gap: 3px;}.a2ui-entity-name{font-size: 14px;font-weight: 600;color: var(--a2ui-text,#171717);}.a2ui-entity-type{font-size: 10px;font-weight: 600;padding: 1px 7px;border-radius: 999px;display: inline-block;text-transform: capitalize;letter-spacing: 0.02em;}.a2ui-entity-desc{font-size: 12px;color: var(--a2ui-muted,#666666);margin-top: 2px;line-height: 1.4;}.a2ui-entity-meta{font-size: 11px;color: var(--a2ui-faint,#757575);}'
+
+
 def _fixed_str(x, d):
-    """A finite number >= 0 with d decimals, rounded half up on the scaled value (not half to even), so both twins print the same digits. Twin: _fixedStr in atom.gs."""
+    """A finite number with d decimals (negative: minus sign, then the magnitude), rounded half up on the scaled value (not half to even), so both twins print the same digits. Twin: _fixedStr in atom.gs."""
+    if x < 0:
+        return '-' + _fixed_str(-x, d)
     n = int(min(x, 1e12) * 10 ** d + 0.5)
     s = str(n).rjust(d + 1, '0')
     return s[:-d] + '.' + s[-d:] if d else s
+
+
+def _rhu(v, d):
+    """v rounded to d decimals, ties away from zero (Python's round() rounds ties to even, JS Math.round toward +inf). Twin: _rhu in atom.gs."""
+    return (-1.0 if v < 0 else 1.0) * float(_fixed_str(abs(v), d))
 
 
 def _safe_css(v, dflt):
