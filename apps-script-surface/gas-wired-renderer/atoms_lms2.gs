@@ -546,45 +546,32 @@ _RENDERERS['study_timer'] = function(b) {
 // Grading rubric table — rows are criteria, columns are performance levels.
 // Static display atom, no state required. Good for pre-assessment orientation.
 _RENDERERS['rubric_card'] = function(b) {
-  var title    = b.title    || 'Assessment Rubric';
-  var levels   = b.levels   || ['Beginning', 'Developing', 'Proficient', 'Exemplary'];
-  var criteria = b.criteria || [];
-  var accent   = b.accent   || '#4f46e5';
-
-  var levelCols = levels.map(function(l, i) {
-    var pct = Math.round(((i + 1) / levels.length) * 100);
-    var col = i === levels.length - 1 ? '#1b7c59' : i >= levels.length - 2 ? accent : '#5f6e84';
-    return '<th style="padding:10px 12px;text-align:center;font-size:0.6rem;font-weight:700;letter-spacing:0.08em;' +
-      'text-transform:uppercase;color:' + col + ';border-bottom:1px solid rgba(255,255,255,0.07);min-width:100px;">' +
-      _esc(l) + '</th>';
+  var title = _textLoose(b.title) || 'Assessment Rubric';
+  var raw = b.levels;
+  var levels = (Array.isArray(raw) && raw.length) ? raw.slice(0, 12).map(function(l, i) { return _textLoose(l) || ('Level ' + (i + 1)); }) : ['Beginning', 'Developing', 'Proficient', 'Exemplary'];
+  var criteria = Array.isArray(b.criteria) ? b.criteria.slice(0, 100).filter(function(c) { return c && typeof c === 'object' && !Array.isArray(c); }) : [];
+  var accent = _safe_css(b.accent, '#4f46e5');
+  var n = levels.length;
+  var headers = levels.map(function(l, i) {
+    return '<th scope="col" style="padding:10px 12px;text-align:center;font-size:0.6rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:'
+      + (i === n - 1 ? '#1b7c59' : (i >= n - 2 ? accent : '#5f6e84')) + ';">' + _esc(l) + '</th>';
   }).join('');
-
   var rows = criteria.map(function(c) {
-    var desc = c.descriptors || [];
-    var cells = levels.map(function(l, i) {
-      return '<td style="padding:10px 12px;font-size:0.72rem;color:var(--muted,#5f6368);line-height:1.5;' +
-        'border-bottom:1px solid rgba(255,255,255,0.04);vertical-align:top;text-align:center;">' +
-        _esc(desc[i] || '—') + '</td>';
-    }).join('');
-    return '<tr>' +
-      '<td style="padding:10px 12px;font-size:0.75rem;font-weight:600;color:#e2e8f0;' +
-        'border-bottom:1px solid rgba(255,255,255,0.04);white-space:nowrap;vertical-align:top;">' +
-        _esc(c.criterion || '') + '</td>' +
-      cells + '</tr>';
+    var descs = Array.isArray(c.descriptors) ? c.descriptors : (Array.isArray(c.descriptions) ? c.descriptions : []);
+    var cells = '';
+    for (var i = 0; i < n; i++) {
+      cells += '<td style="padding:10px 12px;font-size:0.8rem;color:#374151;text-align:center;vertical-align:top;">'
+        + _esc((i < descs.length ? _textLoose(descs[i]) : '') || '—') + '</td>';
+    }
+    return '<tr><th scope="row" style="padding:10px 12px;font-weight:600;font-size:0.85rem;text-align:left;vertical-align:top;">'
+      + _esc(_firstText(c.criterion, c.name)) + '</th>' + cells + '</tr>';
   }).join('');
-
-  return (
-    '<div style="font-family:\'Inter\',system-ui,sans-serif;">' +
-    '<div style="font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted,#5f6368);margin-bottom:12px;">📊 ' + _esc(title) + '</div>' +
-    '<div style="overflow-x:auto;border-radius:10px;border:1px solid rgba(255,255,255,0.08);">' +
-    '<table style="width:100%;border-collapse:collapse;">' +
-    '<thead><tr>' +
-      '<th style="padding:10px 12px;text-align:left;font-size:0.6rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#475569;border-bottom:1px solid rgba(255,255,255,0.07);">Criterion</th>' +
-      levelCols +
-    '</tr></thead>' +
-    '<tbody>' + rows + '</tbody>' +
-    '</table></div></div>'
-  );
+  return '<div style="font-family:system-ui,sans-serif;overflow-x:auto;margin:1rem 0;">'
+    + '<div style="font-weight:700;margin-bottom:10px;">' + _esc(title) + '</div>'
+    + '<table style="width:100%;border-collapse:collapse;font-size:0.85rem;">'
+    + '<thead><tr><th scope="col" style="padding:10px 12px;text-align:left;font-size:0.6rem;font-weight:700;'
+    + 'letter-spacing:0.08em;text-transform:uppercase;color:var(--muted,#5f6368);">Criterion</th>' + headers + '</tr></thead>'
+    + '<tbody>' + rows + '</tbody></table></div>';
 };
 
 // ── spaced_repetition_card ────────────────────────────────────────────────────

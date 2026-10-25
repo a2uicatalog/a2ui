@@ -283,24 +283,40 @@ _RENDERERS['copy_prompt'] = function(b) {
 
 // atom_anatomy — shows a rendered output alongside its schema snippet
 _RENDERERS['atom_anatomy'] = function(b) {
-  var label  = b.label || 'atom';
-  var schema = b.schema || {};
-  var accent = b.accent || '#4f46e5';
-  var schemaStr = _jsJson(schema, null, 2);
-  var rendered  = '';
-  try { rendered = renderAtoms([schema]); } catch(e) { rendered = '<em style="color:var(--muted);">Could not render preview</em>'; }
-  var k = b.label ? _esc(String(b.label)) : 'atom_anatomy';
-  return '<div data-cb="node" data-key="' + k + '" style="border:1px solid var(--border);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1rem 0;">'
-    + '<div style="padding:8px 16px;background:var(--surface2);font-size:0.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;border-bottom:1px solid var(--border);">' + _esc(label) + '</div>'
+  var label = _textLoose(b.label) || 'atom';
+  var schema = b.schema;
+  var rawText = '';
+  if (typeof schema === 'string') {
+    rawText = schema;
+    try { schema = schema.length < 200000 ? JSON.parse(schema) : null; } catch (e) { schema = null; }
+    if (schema && typeof schema === 'object' && !Array.isArray(schema)) rawText = '';
+  }
+  schema = (schema && typeof schema === 'object' && !Array.isArray(schema)) ? schema : {};
+  var accent = _safe_css(b.accent, '#4f46e5');
+  var schemaStr = rawText ? rawText : _jsJson(schema, null, 2);
+  var rendered = '';
+  try {
+    if (schema.type === 'atom_anatomy') throw new Error('no nesting');
+    if (typeof schema.type === 'string' && schema.type) {
+      if (!_RENDERERS.hasOwnProperty(schema.type)) throw new Error('unknown atom');
+      rendered = renderAtoms([schema]);
+    }
+  } catch (e) { rendered = '<em style="color:#6c7586;">Could not render preview</em>'; }
+  var k = (typeof b.label === 'string' && b.label) ? _esc(b.label) : 'atom_anatomy';
+  return '<div data-cb="node" data-key="' + k + '" style="margin:1rem 0;border:1px solid color-mix(in srgb,' + accent + ' 20%,transparent);'
+    + 'border-radius:12px;overflow:hidden;">'
+    + '<div style="padding:8px 16px;background:color-mix(in srgb,' + accent + ' 2%,transparent);font-size:0.7rem;font-weight:700;'
+    + 'color:' + accent + ';letter-spacing:0.1em;text-transform:uppercase;'
+    + 'border-bottom:1px solid color-mix(in srgb,' + accent + ' 20%,transparent);">⬡ ' + _esc(label) + '</div>'
     + '<div style="display:flex;gap:0;">'
-    + '<div style="flex:1;padding:20px;border-right:1px solid var(--border);min-width:0;">'
-    + '<div style="font-size:0.68rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;">Rendered</div>'
-    + rendered
-    + '</div>'
+    + '<div style="flex:1;padding:20px;border-right:1px solid #e5e7eb;min-width:0;">'
+    + '<div style="font-size:0.68rem;font-weight:700;color:#6c7586;text-transform:uppercase;'
+    + 'letter-spacing:0.08em;margin-bottom:10px;">Rendered</div>' + rendered + '</div>'
     + '<div style="flex:1;padding:20px;background:#0f172a;min-width:0;">'
-    + '<div style="font-size:0.68rem;font-weight:700;color:#70839e;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;">Schema</div>'
-    + '<pre style="margin:0;font-family:monospace;font-size:0.72rem;color:#4f6e99;white-space:pre-wrap;line-height:1.6;">' + _esc(schemaStr) + '</pre>'
-    + '</div>'
+    + '<div style="font-size:0.68rem;font-weight:700;color:#70839e;text-transform:uppercase;'
+    + 'letter-spacing:0.08em;margin-bottom:10px;">Schema</div>'
+    + '<pre style="margin:0;font-family:monospace;font-size:0.72rem;color:#4f6e99;'
+    + 'white-space:pre-wrap;line-height:1.6;">' + _esc(schemaStr) + '</pre></div>'
     + '</div></div>';
 };
 

@@ -618,9 +618,6 @@
  "quiz_question": [
   "style"
  ],
- "roadmap_card": [
-  "periods"
- ],
  "scatter3d_static": [
   "camera",
   "title",
@@ -743,11 +740,6 @@
   "variant"
  ],
  "user_profile_card": [
-  "name"
- ],
- "variant_selector": [
-  "default_value",
-  "items",
   "name"
  ],
  "venn_diagram": [

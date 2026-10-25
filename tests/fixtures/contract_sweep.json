@@ -5494,9 +5494,9 @@
   "kind": "item",
   "label_kind": "label",
   "key": "items[].name",
-  "py_sha": "726019ba3f156dc6f33e6de0b2fe9753d9b6a6f40d9824e0471e2b9220b6057f",
-  "gas_sha": "b73795400b0521418693c5ed1eb11920cbcd6ba56adce16b80b89e9ac32c80b0",
-  "parity": false
+  "py_sha": "008649cc6c529085c981fa0fd1b12a584d416fcec53c5bae45752e0a087abb43",
+  "gas_sha": "008649cc6c529085c981fa0fd1b12a584d416fcec53c5bae45752e0a087abb43",
+  "parity": true
  },
  "rating_summary_bar": {
   "status": "pending",
@@ -5819,9 +5819,9 @@
   "kind": "item",
   "label_kind": "label",
   "key": "periods[].name",
-  "py_sha": "b2db44f71b530bf12fa7970bae1022f84d5c88c402818e64501936f0c3e922be",
-  "gas_sha": "ea9e0ed1992603144aed811fbb8c27ef79ce865765a0c582352a54ef877e0d3c",
-  "parity": false
+  "py_sha": "be35d77506f2f7a9a1709c6ff7073226c0beb8f4ee90fe0b50265050e0c10e53",
+  "gas_sha": "be35d77506f2f7a9a1709c6ff7073226c0beb8f4ee90fe0b50265050e0c10e53",
+  "parity": true
  },
  "rubric_card": {
   "status": "pending",
@@ -5859,9 +5859,9 @@
   "kind": "item",
   "label_kind": "label",
   "key": "criteria[].name",
-  "py_sha": "c9d20807563905b5c8dfbbe17e6c3604574b09b960a80b840052e55e9b563f26",
-  "gas_sha": "4941ff70ee4355b7ca9497a39fa3738f494050694a442f1dd5f9ab08a97518f6",
-  "parity": false
+  "py_sha": "e694e044cd531cdc9ad3fef40d0f7214d95732cef766ce091631cd937a9e8f25",
+  "gas_sha": "e694e044cd531cdc9ad3fef40d0f7214d95732cef766ce091631cd937a9e8f25",
+  "parity": true
  },
  "sankey_flow": {
   "status": "pending",
@@ -6971,8 +6971,8 @@
   "kind": "tile",
   "label_kind": "label",
   "key": "steps[].title",
-  "py_sha": "07e04a91f9cc549f7aaf762a55ed4fc537d2dc318ef8436f7a0c1c2e936cc59b",
-  "gas_sha": "525ff536d85b4cfa89ee6f1f91ba0dd49f04b8da7b5fe9db8fada08684a43299",
+  "py_sha": "92df1481681438de8b41940f404cc1f265ddb0f7823130857bded6d42e47c0cf",
+  "gas_sha": "dec1d9670f61f4b8357d41a0a1760e6bee8d1cac5e584ed85544e46480d9b1db",
   "parity": false
  },
  "stepper": {
@@ -7004,8 +7004,8 @@
   "kind": "item",
   "label_kind": "label",
   "key": "steps[].label",
-  "py_sha": "e00c266948bec3ae857f6226559144bb6392acf843eeccc2049cfaf8ca25f551",
-  "gas_sha": "5b34aa2a81fe2156d86a2c5b8a1e6bced5ec8e2dbd63af5b099d2fc78cf7ad66",
+  "py_sha": "60e185a557c73b6ab857a530587887e75104bca3de2056ddc52957259c934932",
+  "gas_sha": "3eaccbfb1b36e50be7d2b6d592046c1e2b0642c958b94f7bd36e3d3e7bdafffc",
   "parity": false
  },
  "steps": {
@@ -7468,8 +7468,8 @@
   "kind": "item",
   "label_kind": "label",
   "key": "lines[]",
-  "py_sha": "223b4edbd6255c706f88c5f8f5d3c2359ebb1a6f584b4a171f7bde9ca532a262",
-  "gas_sha": "5dc922d4aa4f0917b27ee46a4c043d5133346b2e975c744a40f9a8b62f7241e1",
+  "py_sha": "1b801499b4cc8ca7c4c866fa3a5a37048752da9ce3b0eb1327b98c46da58d39c",
+  "gas_sha": "0a2e857433e563b6c143609cb2c50a35d18c6a4e973177dc1f8644209cb74967",
   "parity": false
  },
  "ternary_plot": {
@@ -7796,8 +7796,8 @@
   "kind": "item",
   "label_kind": "label",
   "key": "items[].id",
-  "py_sha": "b2ab09105276ddc18def7d9400d47bcdd4d22ebc95735006ab7e45ed86806a7b",
-  "gas_sha": "31ae7ee7462d283ac9f823fc8834d10808801fa0bc2fe9b0e6be38eeb9a298a4",
+  "py_sha": "30108ea92af6e1fceea5ea18a8ea19cb100f054dbc9e3f7b1528436b756bc73a",
+  "gas_sha": "25dfd87c4220ae0a6e6629ee5e72e4f529f8d475f059ee8080240e1a0f128647",
   "parity": false
  },
  "verdict_checklist": {
@@ -8364,8 +8364,8 @@
   "kind": "node",
   "label_kind": "label",
   "key": "label",
-  "py_sha": "010284445013184f9965633c8ff349dcc8837bcaebaec7c91af952a18b2f144e",
-  "gas_sha": "b68a1da396c4c61b003afd17acbaeb8f6fa2673685eed15640080f0b226c7e17",
+  "py_sha": "5f001fae3c1c9c0711c172dd62277aaa2c0bc74c04e7a9ca2336f49b8c7ce304",
+  "gas_sha": "7229a63fecb64d408564663af4b8d3ec6f6b70224b9f2a50f7ea27c19834fbad",
   "parity": false
  },
  "audio_link": {

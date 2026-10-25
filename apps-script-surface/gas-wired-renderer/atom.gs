@@ -2591,35 +2591,69 @@ _RENDERERS['badge_group'] = function(b) {
   return '<div style="margin:1rem 0;">' + titleHtml + '<div style="display:flex;flex-wrap:wrap;gap:4px;">' + items + '</div></div>';
 };
 
-_RENDERERS['stepper'] = function(b) {
-  var steps = b.steps || [];
-  var activeIdx = parseInt(b.active_index || 0);
-  var color = b.color || '#38bdf8';
-  var heading = b.label || b.title || '';
-  var norm = steps.map(function(s){
-    if (typeof s === 'string') return {label:s, description:'', state:'pending'};
-    return {label:s.label||s.title||'', description:s.description||s.body||'', state:s.is_current?'active':(s.is_completed?'completed':'pending')};
-  });
-  var headingHtml = heading ? '<div style="font-size:0.85rem;font-weight:700;color:#73839a;letter-spacing:.07em;text-transform:uppercase;margin-bottom:16px;">' + _esc(heading) + '</div>' : '';
-  var items = norm.map(function(step, i){
-    var completed = step.state === 'completed' || (step.state === 'pending' && i < activeIdx);
-    var active = step.state === 'active' || i === activeIdx;
-    var lc, dc, indicator;
+_RENDERERS['stepper'] = function(atom) {
+  var uid = _payloadUid(atom);
+  var raw = atom.steps;
+  var rawSteps = Array.isArray(raw) ? raw.slice(0, 50) : [];
+  var an = _numLoose(atom.active_index);
+  var activeIdx = an === null ? 0 : Math.floor(an);
+  var color = _safe_css(atom.color, '#38bdf8');
+  var heading = _firstText(atom.label, atom.title);
+  var steps = [];
+  for (var k = 0; k < rawSteps.length; k++) {
+    var s = rawSteps[k];
+    if (s && typeof s === 'object' && !Array.isArray(s)) {
+      steps.push({ label: _firstText(s.label, s.title), description: _firstText(s.description, s.body),
+        legacy: ('is_current' in s || 'is_completed' in s), cur: s.is_current === true, done: s.is_completed === true });
+    } else if (_textLoose(s)) {
+      steps.push({ label: _textLoose(s), description: '', legacy: false, cur: false, done: false });
+    }
+  }
+  if (steps.some(function(x) { return x.legacy; })) {
+    for (var j = 0; j < steps.length; j++) {
+      if (steps[j].cur) { activeIdx = j; break; }
+    }
+  }
+  function mix(c, p) { return 'color-mix(in srgb,' + c + ' ' + p + '%,transparent)'; }
+  var sr = 'position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;';
+  var itemsHtml = '';
+  for (var i = 0; i < steps.length; i++) {
+    var step = steps[i], completed, active;
+    if (step.legacy) { completed = step.done; active = step.cur; }
+    else { completed = i < activeIdx; active = i === activeIdx; }
+    var delay = String(i * 8 / 100);
+    var indicator, lc, dc, state;
     if (completed) {
-      indicator = '<div style="width:28px;height:28px;border-radius:50%;flex-shrink:0;background:' + color + '22;border:2px solid ' + color + ';display:flex;align-items:center;justify-content:center;color:' + color + ';font-size:0.8rem;">✓</div>';
-      lc = '#cbd5e1'; dc = '#475569';
+      indicator = '<div aria-hidden="true" style="width:28px;height:28px;border-radius:50%;flex-shrink:0;background:' + mix(color, 13) + ';border:2px solid ' + color + ';display:flex;align-items:center;justify-content:center;">'
+        + '<svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="' + color + '" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">'
+        + '<style>@keyframes ck_' + uid + '_' + i + '{to{stroke-dashoffset:0;}}'
+        + '.ck_' + uid + '_' + i + '{stroke-dasharray:18;stroke-dashoffset:18;animation:ck_' + uid + '_' + i + ' 0.35s ease-out ' + delay + 's forwards;}'
+        + '@media (prefers-reduced-motion:reduce){.ck_' + uid + '_' + i + '{animation:none;stroke-dashoffset:0;}}</style>'
+        + '<path class="ck_' + uid + '_' + i + '" d="M4,10 L8,14 L16,6"/></svg></div>';
+      lc = '#cbd5e1'; dc = '#475569'; state = 'completed';
     } else if (active) {
-      indicator = '<div style="width:28px;height:28px;border-radius:50%;flex-shrink:0;border:2px solid ' + color + ';background:' + color + '22;display:flex;align-items:center;justify-content:center;"><div style="width:8px;height:8px;border-radius:50%;background:' + color + ';"></div></div>';
-      lc = '#f1f5f9'; dc = '#94a3b8';
+      indicator = '<div aria-hidden="true" style="position:relative;width:28px;height:28px;flex-shrink:0;">'
+        + '<style>@keyframes asp_' + uid + '{0%{transform:scale(0.85);opacity:0.6;}100%{transform:scale(1.9);opacity:0;}}'
+        + '.asp_' + uid + '{animation:asp_' + uid + ' 1.8s ease-out infinite;}'
+        + '@media (prefers-reduced-motion:reduce){.asp_' + uid + '{animation:none;}}</style>'
+        + '<div class="asp_' + uid + '" style="position:absolute;inset:0;border-radius:50%;border:2px solid ' + color + ';"></div>'
+        + '<div style="position:absolute;inset:0;border-radius:50%;border:2px solid ' + color + ';background:' + mix(color, 13) + ';display:flex;align-items:center;justify-content:center;">'
+        + '<div style="width:8px;height:8px;border-radius:50%;background:' + color + ';box-shadow:0 0 6px ' + color + ';"></div></div></div>';
+      lc = '#f1f5f9'; dc = '#94a3b8'; state = 'current';
     } else {
-      indicator = '<div style="width:28px;height:28px;border-radius:50%;flex-shrink:0;border:2px solid #334155;background:#1e293b;display:flex;align-items:center;justify-content:center;"><div style="width:6px;height:6px;border-radius:50%;background:#475569;"></div></div>';
-      lc = '#73839a'; dc = '#72849f';
+      indicator = '<div aria-hidden="true" style="width:28px;height:28px;border-radius:50%;flex-shrink:0;border:2px solid #334155;background:#1e293b;display:flex;align-items:center;justify-content:center;">'
+        + '<div style="width:6px;height:6px;border-radius:50%;background:#475569;"></div></div>';
+      lc = '#73839a'; dc = '#72849f'; state = 'upcoming';
     }
     var descHtml = step.description ? '<div style="font-size:0.8rem;color:' + dc + ';margin-top:2px;">' + _esc(step.description) + '</div>' : '';
-    var connector = i < norm.length - 1 ? '<div style="width:2px;height:14px;margin:3px 0 3px 13px;background:' + (completed ? color : '#1e293b') + ';border-radius:1px;"></div>' : '';
-    return '<div><div style="display:flex;align-items:flex-start;gap:12px;">' + indicator + '<div style="padding-top:4px;"><div style="font-size:0.95rem;font-weight:600;color:' + lc + ';">' + _esc(step.label) + '</div>' + descHtml + '</div></div>' + connector + '</div>';
-  }).join('');
-  return '<div style="background:#0f172a;border:1px solid #1e293b;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:20px 24px;margin:1rem 0;">' + headingHtml + items + '</div>';
+    var connector = i < steps.length - 1 ? '<div aria-hidden="true" style="width:2px;height:14px;margin:3px 0 3px 13px;background:' + (completed ? color : '#1e293b') + ';border-radius:1px;"></div>' : '';
+    itemsHtml += '<div' + (active ? ' aria-current="step"' : '') + '><div style="display:flex;align-items:flex-start;gap:12px;">' + indicator
+      + '<div style="padding-top:4px;"><div style="font-size:0.95rem;font-weight:600;color:' + lc + ';"><span style="' + sr + '">' + state + ': </span>' + _esc(step.label) + '</div>'
+      + descHtml + '</div></div>' + connector + '</div>';
+  }
+  var headingHtml = heading ? '<div style="font-size:0.85rem;font-weight:700;color:#73839a;letter-spacing:.07em;text-transform:uppercase;margin-bottom:16px;">' + _esc(heading) + '</div>' : '';
+  return '<div style="background:#0f172a;border:1px solid #1e293b;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:20px 24px;margin:1rem 0;">'
+    + headingHtml + itemsHtml + '</div>';
 };
 
 _RENDERERS['faq_accordion'] = function(b) {

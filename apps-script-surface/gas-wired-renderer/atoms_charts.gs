@@ -1904,28 +1904,53 @@ _RENDERERS['order_status_card'] = function(b) {
 };
 
 _RENDERERS['roadmap_card'] = function(b) {
-  var statusColors = {
-    'planned':     {bg:'#f3f4f6',fg:'#374151'},
-    'in-progress': {bg:'#dbeafe',fg:'#1d4ed8'},
-    'done':        {bg:'#dcfce7',fg:'#166534'},
-    'deferred':    {bg:'#fef3c7',fg:'#92400e'}
+  var STATUS = {
+    'done': ['#d1fae5', '#065f46', '✓', 'done'],
+    'in-progress': ['#dbeafe', '#1d4ed8', '→', 'in progress'],
+    'planned': ['#f3f4f6', '#4b5563', '○', 'planned'],
+    'deferred': ['#fef3c7', '#92400e', '⏸', 'deferred']
   };
-  var sc = statusColors[b.status] || statusColors['planned'];
-  var itemsHtml = '';
-  if (b.items && b.items.length) {
-    for (var i = 0; i < b.items.length; i++) {
-      itemsHtml += '<li style="font-size:0.875rem;color:#374151;padding:3px 0;">• ' + _esc(b.items[i]) + '</li>';
-    }
+  function norm(s) { return typeof s === 'string' ? s.toLowerCase().replace(/[_ ]/g, '-') : 'planned'; }
+  function isObj(o) { return o && typeof o === 'object' && !Array.isArray(o); }
+  var title = _textLoose(b.title);
+  var description = _textLoose(b.description);
+  var periods;
+  if (Array.isArray(b.periods)) {
+    periods = b.periods.slice(0, 50).filter(isObj);
+  } else if (Array.isArray(b.items) || _textLoose(b.quarter)) {
+    var legacy = Array.isArray(b.items) ? b.items : [];
+    periods = [{ label: b.quarter, items: legacy.map(function(t) { return { text: t, status: b.status }; }) }];
+  } else {
+    periods = [];
   }
-  return '<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:20px;margin:0.75rem 0;background:#ffffff;background:var(--a2ui-surface,#ffffff);">'
-    + '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">'
-    + (b.quarter ? '<span style="font-size:0.82rem;font-weight:700;color:#7c3aed;background:#f3f0ff;padding:3px 10px;border-radius:999px;">' + _esc(b.quarter) + '</span>' : '')
-    + '<span style="background:' + sc.bg + ';color:' + sc.fg + ';font-size:0.78rem;font-weight:600;padding:3px 10px;border-radius:999px;">' + _esc(b.status || '') + '</span>'
-    + '</div>'
-    + (b.title ? '<div style="font-weight:700;font-size:1.05rem;color:#111827;margin-bottom:8px;">' + _esc(b.title) + '</div>' : '')
-    + (b.description ? '<p style="font-size:0.875rem;color:#4b5563;margin:0 0 12px;line-height:1.5;">' + _esc(b.description) + '</p>' : '')
-    + (itemsHtml ? '<ul style="list-style:none;margin:0;padding:0;">' + itemsHtml + '</ul>' : '')
-    + '</div>';
+  var titleHtml = title ? '<div style="font-size:0.9rem;font-weight:700;color:#111827;margin-bottom:14px;">' + _esc(title) + '</div>' : '';
+  var descHtml = description ? '<p style="font-size:0.875rem;color:#4b5563;margin:0 0 12px;line-height:1.5;">' + _esc(description) + '</p>' : '';
+  var cols = '';
+  for (var p = 0; p < periods.length; p++) {
+    var label = _textLoose(periods[p].label);
+    var ri = periods[p].items;
+    var itemRows = '';
+    var list = Array.isArray(ri) ? ri.slice(0, 100) : [];
+    for (var i = 0; i < list.length; i++) {
+      var item = list[i], text, status;
+      if (isObj(item)) { text = _textLoose(item.text); status = norm(item.status); }
+      else { text = _textLoose(item); status = 'planned'; }
+      if (!text) continue;
+      var st = STATUS.hasOwnProperty(status) ? STATUS[status] : STATUS['planned'];
+      itemRows += '<div style="display:flex;align-items:flex-start;gap:7px;padding:5px 0;">'
+        + '<span style="font-size:0.72rem;font-weight:700;padding:1px 5px;border-radius:4px;background:' + st[0] + ';color:' + st[1] + ';flex-shrink:0;">'
+        + '<span aria-hidden="true">' + st[2] + '</span>'
+        + '<span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;">' + st[3] + ': </span></span>'
+        + '<span style="font-size:0.8rem;color:#374151;">' + _esc(text) + '</span></div>';
+    }
+    cols += '<div style="flex:1;min-width:120px;">'
+      + (label ? '<div style="font-size:0.72rem;font-weight:700;color:var(--muted,#5f6368);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">' + _esc(label) + '</div>' : '')
+      + itemRows + '</div>';
+  }
+  return '<div style="margin:1rem 0;padding:16px 18px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);'
+    + 'border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#ffffff;background:var(--a2ui-surface,#ffffff);">'
+    + titleHtml + descHtml
+    + '<div style="display:flex;gap:16px;flex-wrap:wrap;">' + cols + '</div></div>';
 };
 
 _RENDERERS['notification_stack'] = function(b) {
@@ -2247,29 +2272,45 @@ _RENDERERS['tag_block'] = function(b) {
 };
 
 _RENDERERS['variant_selector'] = function(b) {
-  var label = b.label || '';
-  var variants = b.variants || [];
-  var uid = Math.random().toString(36).substr(2, 6);
-  var variantsHtml = '';
-  for (var i = 0; i < variants.length; i++) {
-    var v = variants[i];
-    var id = 'variant-' + uid + '-' + i;
-    if (v.color) {
-      variantsHtml += '<label for="' + id + '" title="' + _esc(v.label || v.value || '') + '" style="cursor:pointer;">'
-        + '<input type="radio" name="variant-' + uid + '" id="' + id + '" value="' + _esc(v.value || '') + '" style="position:absolute;opacity:0;width:1px;height:1px;margin:0;"' + (v.disabled ? ' disabled' : '') + '>'
-        + '<span style="display:inline-block;width:28px;height:28px;border-radius:50%;background:' + _esc(v.color) + ';border:2px solid #fff;box-shadow:0 0 0 2px #d1d5db;' + (v.disabled ? 'opacity:0.4;' : '') + '"></span>'
-        + '</label>';
+  var name = _textLoose(b.name) || 'variant';
+  var label = _textLoose(b.label);
+  var raw = (Array.isArray(b.items) && b.items.length) ? b.items : b.variants;
+  var items = Array.isArray(raw) ? raw.slice(0, 100).filter(function(v) { return (v && typeof v === 'object' && !Array.isArray(v)) || _textLoose(v); }) : [];
+  var def = _textLoose(b.default_value);
+  var uid = 'vs-' + _payloadUid(b);
+  var labelHtml = label ? '<div style="font-size:0.82rem;font-weight:600;color:#374151;margin-bottom:8px;">' + _esc(label) + '</div>' : '';
+  var style = '<style>'
+    + '.' + uid + ' label{display:block;padding:10px 14px;border:1px solid #d1d5db;border-radius:8px;cursor:pointer;transition:border-color .15s,background .15s;background:#fff;}'
+    + '.' + uid + ' label:has(input:checked){border-color:#1a73e8;background:#eff6ff;}'
+    + '.' + uid + ' label:has(input:focus-visible){outline:2px solid #1a73e8;outline-offset:2px;}'
+    + '.' + uid + ' label:has(input:disabled){opacity:0.4;cursor:not-allowed;}'
+    + '.' + uid + ' label:hover{border-color:#9ca3af;}'
+    + '.' + uid + ' input{position:absolute;opacity:0;width:0;height:0;}'
+    + '</style>';
+  var cards = '';
+  var checkedDone = false;
+  for (var i = 0; i < items.length; i++) {
+    var v = items[i], val, title, desc, color, disabled;
+    if (v && typeof v === 'object' && !Array.isArray(v)) {
+      val = _textLoose(v.value);
+      title = _firstText(v.title, v.label, v.value);
+      desc = _textLoose(v.description);
+      color = _safe_css(v.color, '');
+      disabled = v.disabled === true;
     } else {
-      variantsHtml += '<label for="' + id + '" style="cursor:pointer;">'
-        + '<input type="radio" name="variant-' + uid + '" id="' + id + '" value="' + _esc(v.value || '') + '" style="position:absolute;opacity:0;width:1px;height:1px;margin:0;"' + (v.disabled ? ' disabled' : '') + '>'
-        + '<span style="display:inline-block;padding:6px 14px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:0.82rem;font-weight:500;color:#374151;' + (v.disabled ? 'opacity:0.4;' : '') + '">' + _esc(v.label || v.value || '') + '</span>'
-        + '</label>';
+      val = title = _textLoose(v);
+      desc = color = '';
+      disabled = false;
     }
+    var chk = '';
+    if (!checkedDone && def && val === def) { chk = ' checked'; checkedDone = true; }
+    var dot = color ? '<span aria-hidden="true" style="display:inline-block;width:12px;height:12px;border-radius:50%;background:' + color + ';margin-right:8px;vertical-align:middle;"></span>' : '';
+    var descHtml = desc ? '<div style="font-size:0.75rem;color:var(--muted,#5f6368);margin-top:2px;">' + _esc(desc) + '</div>' : '';
+    cards += '<label><input type="radio" name="' + _esc(name) + '" value="' + _esc(val) + '"' + chk + (disabled ? ' disabled' : '') + '>'
+      + '<div style="font-size:0.85rem;font-weight:600;color:#111827;">' + dot + _esc(title) + '</div>' + descHtml + '</label>';
   }
-  return '<div style="margin:0.75rem 0;">'
-    + (label ? '<div style="font-size:0.875rem;font-weight:600;color:#111827;margin-bottom:10px;">' + _esc(label) + '</div>' : '')
-    + '<div style="display:flex;flex-wrap:wrap;gap:8px;">' + variantsHtml + '</div>'
-    + '</div>';
+  return style + '<div style="margin:0.75rem 0;">' + labelHtml
+    + '<div class="' + uid + '" role="radiogroup" aria-label="' + _esc(label || name) + '" style="display:flex;flex-direction:column;gap:8px;">' + cards + '</div></div>';
 };
 
 _RENDERERS['shortcut_legend'] = function(b) {
@@ -3607,35 +3648,37 @@ _RENDERERS['decision_tree'] = function(b) {
 };
 
 _RENDERERS['step_reveal_sequence'] = function(b) {
-  var steps = b.steps || [];
+  var raw = b.steps;
+  var steps = Array.isArray(raw) ? raw.slice(0, 50).filter(function(s) { return (s && typeof s === 'object' && !Array.isArray(s)) || _textLoose(s); }) : [];
   if (!steps.length) return '';
-  var uid = Math.random().toString(36).substr(2, 6);
+  var uid = 'srs-' + _payloadUid(b);
   var css = '<style>';
-  steps.forEach(function(_, i) {
-    css += '#srs-' + uid + '-' + i + ':checked ~ .srs-nav-' + uid + ' .srs-lbl-' + uid + ':nth-child(' + (i+1) + '){background:#4f46e5;color:#fff;border-color:#4f46e5;}';
-    css += '#srs-' + uid + '-' + i + ':checked ~ .srs-body-' + uid + ' .srs-panel-' + uid + ':nth-child(' + (i+1) + '){display:block;}';
-  });
-  css += '.srs-panel-' + uid + '{display:none;padding:20px;animation:srs-in-' + uid + ' 0.3s ease;}';
-  css += '@keyframes srs-in-' + uid + '{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}';
+  for (var i = 0; i < steps.length; i++) {
+    css += '#' + uid + '-' + i + ':checked ~ .' + uid + '-nav .' + uid + '-lbl:nth-child(' + (i + 1) + '){background:#4f46e5;color:#fff;border-color:#4f46e5;}';
+    css += '#' + uid + '-' + i + ':checked ~ .' + uid + '-body .' + uid + '-panel:nth-child(' + (i + 1) + '){display:block;}';
+    css += '#' + uid + '-' + i + ':focus-visible ~ .' + uid + '-nav .' + uid + '-lbl:nth-child(' + (i + 1) + '){outline:2px solid #4f46e5;outline-offset:2px;}';
+  }
+  css += '.' + uid + '-panel{display:none;padding:20px;animation:' + uid + '-in 0.3s ease;}';
+  css += '@keyframes ' + uid + '-in{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}';
+  css += '@media (prefers-reduced-motion:reduce){.' + uid + '-panel{animation:none;}}';
   css += '</style>';
-  var inputs = steps.map(function(_, i) {
-    return '<input type="radio" id="srs-' + uid + '-' + i + '" name="srs-' + uid + '"' + (i===0?' checked':'') + ' style="position:absolute;opacity:0;width:1px;height:1px;margin:0;">';
-  }).join('');
-  var nav = '<div class="srs-nav-' + uid + '" style="display:flex;gap:6px;flex-wrap:wrap;padding:12px 16px;border-bottom:1px solid #e5e7eb;">'
-    + steps.map(function(s, i) {
-        return '<label for="srs-' + uid + '-' + i + '" class="srs-lbl-' + uid + '" style="cursor:pointer;padding:6px 14px;border-radius:20px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);font-size:0.8rem;font-weight:600;color:var(--muted,#5f6368);transition:all 0.15s;">' + (i+1) + (s.title ? '. ' + _esc(s.title) : '') + '</label>';
-      }).join('')
-    + '</div>';
-  var body = '<div class="srs-body-' + uid + '">'
-    + steps.map(function(s) {
-        return '<div class="srs-panel-' + uid + '">'
-          + (s.title ? '<div style="font-size:1rem;font-weight:700;color:#111827;margin-bottom:10px;">' + _esc(s.title) + '</div>' : '')
-          + (s.text || s.content ? '<div style="color:#374151;line-height:1.7;">' + _markdownToHtml(s.text || s.content || '') + '</div>' : '')
-          + '</div>';
-      }).join('')
-    + '</div>';
-  return css + '<div style="border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;margin:1rem 0;">'
-    + inputs + nav + body + '</div>';
+  var parts = steps.map(function(s) {
+    if (s && typeof s === 'object' && !Array.isArray(s)) return [_firstText(s.title), _firstText(s.text, s.content)];
+    return [_textLoose(s), ''];
+  });
+  var inputs = '', nav = '', panels = '';
+  for (var j = 0; j < parts.length; j++) {
+    inputs += '<input type="radio" id="' + uid + '-' + j + '" name="' + uid + '"' + (j === 0 ? ' checked' : '') + ' style="position:absolute;opacity:0;width:1px;height:1px;margin:0;">';
+    nav += '<label for="' + uid + '-' + j + '" class="' + uid + '-lbl" style="cursor:pointer;padding:6px 14px;border-radius:20px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);font-size:0.8rem;font-weight:600;color:var(--muted,#5f6368);transition:all 0.15s;">'
+      + (j + 1) + (parts[j][0] ? '. ' + _esc(parts[j][0]) : '') + '</label>';
+    panels += '<div class="' + uid + '-panel">'
+      + (parts[j][0] ? '<div style="font-size:1rem;font-weight:700;color:#111827;margin-bottom:10px;">' + _esc(parts[j][0]) + '</div>' : '')
+      + (parts[j][1] ? '<div style="color:#374151;line-height:1.7;">' + _markdownToHtml(parts[j][1]) + '</div>' : '')
+      + '</div>';
+  }
+  return css + '<div role="radiogroup" aria-label="Steps" style="border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;margin:1rem 0;">' + inputs
+    + '<div class="' + uid + '-nav" style="display:flex;gap:6px;flex-wrap:wrap;padding:12px 16px;border-bottom:1px solid #e5e7eb;">' + nav + '</div>'
+    + '<div class="' + uid + '-body">' + panels + '</div></div>';
 };
 
 _RENDERERS['chat_sequence'] = function(b) {
@@ -3830,27 +3873,31 @@ _RENDERERS['focus_lens'] = function(b) {
 // ── Gap atoms ────────────────────────────────────────────────────────────────
 
 _RENDERERS['terminal_boot'] = function(b) {
-  var lines = b.lines || [];
-  var title = b.title || '';
-  var speed = parseInt(b.speed || 380, 10);
-  var uid = Math.random().toString(36).substr(2, 6);
-  var linesHtml = lines.map(function(line, i) {
-    var l = String(line);
-    var isOk  = l.indexOf('✓') > -1 || l.indexOf('OK') > -1 || l.indexOf('ok') > -1;
-    var isErr = l.indexOf('✗') > -1 || l.indexOf('ERR') > -1 || l.indexOf('FAIL') > -1;
-    var col   = isOk ? '#22c55e' : isErr ? '#f87171' : '#94a3b8';
-    return '<div id="tb-' + uid + '-' + i + '" style="opacity:0;line-height:1.9;color:' + col + ';">'
-      + '<span style="color:#475569;margin-right:10px;user-select:none;">$</span>' + _esc(l) + '</div>';
-  }).join('');
+  var raw = b.lines;
+  var lines = Array.isArray(raw) ? raw.slice(0, 200).map(_textLoose).filter(function(t) { return t; }) : [];
+  var title = _textLoose(b.title);
+  var sn = _numLoose(b.speed);
+  var speed = sn === null ? 380 : Math.max(30, Math.min(10000, Math.floor(sn)));
+  var uid = _payloadUid(b);
+  var okRe = /✓|(?<![A-Za-z0-9_])[Oo][Kk](?![A-Za-z0-9_])/;
+  var errRe = /✗|(?<![A-Za-z0-9_])(?:[Ee][Rr][Rr]|[Ff][Aa][Ii][Ll])/;
+  var linesHtml = '';
+  for (var i = 0; i < lines.length; i++) {
+    var col = okRe.test(lines[i]) ? '#22c55e' : (errRe.test(lines[i]) ? '#f87171' : '#94a3b8');
+    linesHtml += '<div id="tb-' + uid + '-' + i + '" style="line-height:1.9;color:' + col + ';">'
+      + '<span aria-hidden="true" style="color:#64748b;margin-right:10px;user-select:none;">$</span>' + _esc(lines[i]) + '</div>';
+  }
   return '<div style="background:#0a0f1e;border:1px solid #1e293b;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:20px 24px;margin:1rem 0;font-family:\'Courier New\',monospace;font-size:0.84rem;">'
-    + (title ? '<div style="font-size:0.7rem;font-weight:700;color:#334155;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:14px;">' + _esc(title) + '</div>' : '')
+    + (title ? '<div style="font-size:0.7rem;font-weight:700;color:#8b9bb0;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:14px;">' + _esc(title) + '</div>' : '')
     + '<div>' + linesHtml + '</div>'
-    + '<span id="tb-cur-' + uid + '" style="display:inline-block;width:8px;height:14px;background:#22c55e;vertical-align:middle;margin-left:2px;animation:tb-bl-' + uid + ' 1s step-end infinite;"></span>'
-    + '<style>@keyframes tb-bl-' + uid + '{0%,100%{opacity:1;}50%{opacity:0;}}</style>'
+    + '<span aria-hidden="true" id="tb-cur-' + uid + '" style="display:inline-block;width:8px;height:14px;background:#22c55e;vertical-align:middle;margin-left:2px;animation:tb-bl-' + uid + ' 1s step-end infinite;"></span>'
+    + '<style>@keyframes tb-bl-' + uid + '{0%,100%{opacity:1;}50%{opacity:0;}}@media (prefers-reduced-motion:reduce){#tb-cur-' + uid + '{animation:none;}}</style>'
     + '<script>(function(){'
     + 'var els=[];for(var i=0;i<' + lines.length + ';i++){var el=document.getElementById("tb-' + uid + '-"+i);if(el)els.push(el);}'
-    + 'var cur=document.getElementById("tb-cur-' + uid + '");var i=0;'
-    + 'function next(){if(i<els.length){els[i].style.opacity="1";i++;setTimeout(next,' + speed + ');}else if(cur){cur.style.display="none";}}'
+    + 'var cur=document.getElementById("tb-cur-' + uid + '");'
+    + 'if(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches){if(cur)cur.style.display="none";return;}'
+    + 'els.forEach(function(e){e.style.opacity="0";});'
+    + 'var n=0;function next(){if(n<els.length){els[n].style.opacity="1";n++;setTimeout(next,' + speed + ');}else if(cur){cur.style.display="none";}}'
     + 'setTimeout(next,400);'
     + '})();<\/script>'
     + '</div>';

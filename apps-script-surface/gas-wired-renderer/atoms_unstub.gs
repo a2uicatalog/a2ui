@@ -418,25 +418,35 @@ _RENDERERS['review_callout'] = function(b) {
 
 // ─── rating_comparison ────────────────────────────────────────────────────────
 _RENDERERS['rating_comparison'] = function(b) {
-  var title = b.title ? '<div style="font-weight:700;font-size:0.9rem;color:var(--text,#111827);margin-bottom:10px;">' + _esc(b.title) + '</div>' : '';
-  var rows = (b.items || []).map(function(item) {
-    var label  = _esc(item.label || item.name || '');
-    var rating = parseFloat(item.rating || item.value || 0);
-    var max    = parseFloat(item.max || b.max || 5);
-    var pct    = Math.round((rating / max) * 100);
-    var accent = item.color || b.accent || 'var(--a2ui-accent,#4f46e5)';
-    var stars  = '';
-    for (var i = 1; i <= max; i++) {
-      stars += '<span style="color:' + (i <= Math.round(rating) ? '#fbbf24' : '#e5e7eb') + ';font-size:0.85rem;">★</span>';
+  var title = _textLoose(b.title);
+  var items = Array.isArray(b.items) ? b.items.slice(0, 100).filter(function(i) { return i && typeof i === 'object' && !Array.isArray(i); }) : [];
+  var defaultMax = _numLoose(b.max);
+  var sr = 'position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;';
+  var rows = '';
+  for (var k = 0; k < items.length; k++) {
+    var item = items[k];
+    var label = _firstText(item.label, item.name);
+    var rating = _numLoose(item.rating);
+    if (rating === null) rating = _numLoose(item.value);
+    if (rating === null) rating = 0;
+    var m = _numLoose(item.max);
+    if (m === null) m = defaultMax;
+    var mx = m === null ? 5 : Math.max(1, Math.min(50, Math.floor(m)));
+    rating = Math.max(0, Math.min(mx, rating));
+    var filled = Math.floor(rating + 0.5);
+    var stars = '';
+    for (var i = 1; i <= mx; i++) {
+      stars += '<span aria-hidden="true" style="color:' + (i <= filled ? '#fbbf24' : '#e5e7eb') + ';font-size:0.85rem;">★</span>';
     }
-    return '<div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--border,#f3f4f6);font-size:0.875rem;">'
-      + '<span style="min-width:120px;color:var(--text,#374151);">' + label + '</span>'
+    rows += '<div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--border,#f3f4f6);font-size:0.875rem;">'
+      + '<span style="min-width:120px;color:var(--text,#374151);">' + _esc(label) + '</span>'
       + stars
-      + '<span style="font-size:0.8rem;color:var(--muted,#6b7280);margin-left:4px;">(' + rating + ')</span>'
-      + '</div>';
-  }).join('');
+      + '<span style="font-size:0.8rem;color:var(--muted,#6b7280);margin-left:4px;">(' + _textLoose(rating)
+      + '<span style="' + sr + '"> out of ' + mx + '</span>)</span></div>';
+  }
+  var titleHtml = title ? '<div style="font-weight:700;font-size:0.9rem;color:var(--text,#111827);margin-bottom:10px;">' + _esc(title) + '</div>' : '';
   return '<div style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:16px;border:1px solid var(--border,#e5e7eb);border-radius:10px;background:var(--bg,#fff);">'
-    + title + rows + '</div>';
+    + titleHtml + rows + '</div>';
 };
 
 // ─── sentiment_summary ────────────────────────────────────────────────────────

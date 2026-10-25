@@ -1270,109 +1270,68 @@ def _render_pagination(b: dict) -> str:
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_stepper(atom: dict) -> str:
-    import hashlib
-    uid        = hashlib.md5(str(atom).encode()).hexdigest()[:6]
-    raw_steps  = atom.get("steps", [])
-    active_idx = int(atom.get("active_index", 0))
-    color      = atom.get("color", "#38bdf8")
-    heading    = atom.get("label", atom.get("title", ""))
-    # Normalise to {label, description}
+    uid = _wa_uid(atom)
+    raw = atom.get('steps')
+    raw_steps = raw[:50] if isinstance(raw, list) else []
+    an = _num_loose(atom.get('active_index'))
+    active_idx = 0 if an is None else int(math.floor(an))
+    color = _safe_css(atom.get('color'), '#38bdf8')
+    heading = _first_text(atom.get('label'), atom.get('title'))
     steps = []
     for s in raw_steps:
-        if isinstance(s, str):
-            steps.append({"label": s, "description": ""})
-        elif isinstance(s, dict):
-            # support both new (active_index) and legacy (is_current/is_completed) contracts
-            if "is_current" in s or "is_completed" in s:
-                steps.append({"label": s.get("label", ""), "description": s.get("description", ""),
-                               "_legacy": s})
-            else:
-                steps.append({"label": s.get("label", s.get("title", "")),
-                               "description": s.get("description", s.get("body", ""))})
-    # For legacy steps derive active_idx from is_current
-    if any("_legacy" in s for s in steps):
+        if isinstance(s, dict):
+            steps.append({'label': _first_text(s.get('label'), s.get('title')), 'description': _first_text(s.get('description'), s.get('body')),
+                          'legacy': ('is_current' in s or 'is_completed' in s), 'cur': s.get('is_current') is True, 'done': s.get('is_completed') is True})
+        elif _text_loose(s):
+            steps.append({'label': _text_loose(s), 'description': '', 'legacy': False, 'cur': False, 'done': False})
+    if any(s['legacy'] for s in steps):
         for i, s in enumerate(steps):
-            if s.get("_legacy", {}).get("is_current"):
+            if s['cur']:
                 active_idx = i
                 break
-    check_len = 18  # approximate path length for M4,10 L8,14 L16,6 in 20×20 viewBox
+
+    def mix(c, p):
+        return 'color-mix(in srgb,' + c + ' ' + str(p) + '%,transparent)'
+    sr = 'position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;'
     items_html = []
     for i, step in enumerate(steps):
-        # Determine state
-        legacy = step.get("_legacy", {})
-        if legacy:
-            completed = legacy.get("is_completed", False)
-            active    = legacy.get("is_current", False)
+        if step['legacy']:
+            completed, active = step['done'], step['cur']
         else:
-            completed = i < active_idx
-            active    = i == active_idx
-        # Indicator
+            completed, active = i < active_idx, i == active_idx
+        delay = format(i * 8 / 100, 'g')
         if completed:
-            indicator = (
-                f'<div style="width:28px;height:28px;border-radius:50%;flex-shrink:0;'
-                f'background:{_cv_esc(color)}22;border:2px solid {_cv_esc(color)};display:flex;'
-                f'align-items:center;justify-content:center;">'
-                f'<svg width="14" height="14" viewBox="0 0 20 20" fill="none" '
-                f'stroke="{_cv_esc(color)}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">'
-                f'<style>@keyframes ck_{uid}_{_cv_esc(i)}{{to{{stroke-dashoffset:0;}}}}'
-                f'.ck_{uid}_{_cv_esc(i)}{{stroke-dasharray:{check_len};stroke-dashoffset:{check_len};'
-                f'animation:ck_{uid}_{_cv_esc(i)} 0.35s ease-out {i*0.08:.2f}s forwards;}}</style>'
-                f'<path class="ck_{uid}_{_cv_esc(i)}" d="M4,10 L8,14 L16,6"/>'
-                f'</svg></div>'
-            )
-            lc, dc = "#cbd5e1", "#475569"
+            indicator = ('<div aria-hidden="true" style="width:28px;height:28px;border-radius:50%;flex-shrink:0;background:' + mix(color, 13) + ';border:2px solid ' + color + ';display:flex;align-items:center;justify-content:center;">'
+                         '<svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="' + color + '" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">'
+                         '<style>@keyframes ck_' + uid + '_' + str(i) + '{to{stroke-dashoffset:0;}}'
+                         '.ck_' + uid + '_' + str(i) + '{stroke-dasharray:18;stroke-dashoffset:18;animation:ck_' + uid + '_' + str(i) + ' 0.35s ease-out ' + delay + 's forwards;}'
+                         '@media (prefers-reduced-motion:reduce){.ck_' + uid + '_' + str(i) + '{animation:none;stroke-dashoffset:0;}}</style>'
+                         '<path class="ck_' + uid + '_' + str(i) + '" d="M4,10 L8,14 L16,6"/></svg></div>')
+            lc, dc, state = '#cbd5e1', '#475569', 'completed'
         elif active:
-            indicator = (
-                f'<div style="position:relative;width:28px;height:28px;flex-shrink:0;">'
-                f'<style>@keyframes asp_{uid}{{0%{{transform:scale(0.85);opacity:0.6;}}'
-                f'100%{{transform:scale(1.9);opacity:0;}}}}'
-                f'.asp_{uid}{{animation:asp_{uid} 1.8s ease-out infinite;}}</style>'
-                f'<div class="asp_{uid}" style="position:absolute;inset:0;border-radius:50%;'
-                f'border:2px solid {_cv_esc(color)};"></div>'
-                f'<div style="position:absolute;inset:0;border-radius:50%;border:2px solid {_cv_esc(color)};'
-                f'background:{_cv_esc(color)}22;display:flex;align-items:center;justify-content:center;">'
-                f'<div style="width:8px;height:8px;border-radius:50%;background:{_cv_esc(color)};'
-                f'box-shadow:0 0 6px {_cv_esc(color)};"></div></div></div>'
-            )
-            lc, dc = "#f1f5f9", "#94a3b8"
-        else:  # pending
-            indicator = (
-                f'<div style="width:28px;height:28px;border-radius:50%;flex-shrink:0;'
-                f'border:2px solid #334155;background:#1e293b;display:flex;'
-                f'align-items:center;justify-content:center;">'
-                f'<div style="width:6px;height:6px;border-radius:50%;background:#475569;"></div>'
-                f'</div>'
-            )
-            lc, dc = "#73839a", "#72849f"
-        desc_html = (
-            f'<div style="font-size:0.8rem;color:{dc};margin-top:2px;">{_cv_esc(step["description"])}</div>'
-        ) if step["description"] else ""
-        # Connector line between steps
-        connector = ""
+            indicator = ('<div aria-hidden="true" style="position:relative;width:28px;height:28px;flex-shrink:0;">'
+                         '<style>@keyframes asp_' + uid + '{0%{transform:scale(0.85);opacity:0.6;}100%{transform:scale(1.9);opacity:0;}}'
+                         '.asp_' + uid + '{animation:asp_' + uid + ' 1.8s ease-out infinite;}'
+                         '@media (prefers-reduced-motion:reduce){.asp_' + uid + '{animation:none;}}</style>'
+                         '<div class="asp_' + uid + '" style="position:absolute;inset:0;border-radius:50%;border:2px solid ' + color + ';"></div>'
+                         '<div style="position:absolute;inset:0;border-radius:50%;border:2px solid ' + color + ';background:' + mix(color, 13) + ';display:flex;align-items:center;justify-content:center;">'
+                         '<div style="width:8px;height:8px;border-radius:50%;background:' + color + ';box-shadow:0 0 6px ' + color + ';"></div></div></div>')
+            lc, dc, state = '#f1f5f9', '#94a3b8', 'current'
+        else:
+            indicator = ('<div aria-hidden="true" style="width:28px;height:28px;border-radius:50%;flex-shrink:0;border:2px solid #334155;background:#1e293b;display:flex;align-items:center;justify-content:center;">'
+                         '<div style="width:6px;height:6px;border-radius:50%;background:#475569;"></div></div>')
+            lc, dc, state = '#73839a', '#72849f', 'upcoming'
+        desc_html = ('<div style="font-size:0.8rem;color:' + dc + ';margin-top:2px;">' + _cv_esc(step['description']) + '</div>') if step['description'] else ''
+        connector = ''
         if i < len(steps) - 1:
-            lc2 = color if completed else "#1e293b"
-            connector = (
-                f'<div style="width:2px;height:14px;margin:3px 0 3px 13px;'
-                f'background:{_cv_esc(lc2)};border-radius:1px;"></div>'
-            )
-        items_html.append(
-            f'<div>'
-            f'<div style="display:flex;align-items:flex-start;gap:12px;">'
-            f'{indicator}'
-            f'<div style="padding-top:4px;">'
-            f'<div style="font-size:0.95rem;font-weight:600;color:{lc};">{_cv_esc(step["label"])}</div>'
-            f'{desc_html}</div></div>'
-            f'{connector}</div>'
-        )
-    heading_html = (
-        f'<div style="font-size:0.85rem;font-weight:700;color:#73839a;letter-spacing:.07em;'
-        f'text-transform:uppercase;margin-bottom:16px;">{_cv_esc(heading)}</div>'
-    ) if heading else ""
-    return (
-        f'<div style="background:#0f172a;border:1px solid #1e293b;border-radius:14px;'
-        f'padding:20px 24px;margin:1rem 0;">'
-        f'{heading_html}{"".join(items_html)}</div>'
-    )
+            connector = '<div aria-hidden="true" style="width:2px;height:14px;margin:3px 0 3px 13px;background:' + (color if completed else '#1e293b') + ';border-radius:1px;"></div>'
+        items_html.append('<div' + (' aria-current="step"' if active else '') + '><div style="display:flex;align-items:flex-start;gap:12px;">' + indicator
+                          + '<div style="padding-top:4px;"><div style="font-size:0.95rem;font-weight:600;color:' + lc + ';"><span style="' + sr + '">' + state + ': </span>' + _cv_esc(step['label']) + '</div>'
+                          + desc_html + '</div></div>' + connector + '</div>')
+    heading_html = ('<div style="font-size:0.85rem;font-weight:700;color:#73839a;letter-spacing:.07em;text-transform:uppercase;margin-bottom:16px;">' + _cv_esc(heading) + '</div>') if heading else ''
+    return ('<div style="background:#0f172a;border:1px solid #1e293b;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:20px 24px;margin:1rem 0;">'
+            + heading_html + ''.join(items_html) + '</div>')
+
 
 def _render_tab_bar(b: dict) -> str:
     """TODO: A horizontal navigation component displaying a set of clickable tabs, typically """
@@ -7663,50 +7622,53 @@ def _render_rating_summary_bar(b: dict) -> str:
 
 
 def _render_roadmap_card(b: dict) -> str:
-    """Quarter-based product roadmap with done / in-progress / planned status badges."""
+    """Product roadmap: periods of items with done / in-progress / planned / deferred badges (a single legacy card with quarter, status and items also renders)."""
     STATUS = {
-        "done":        ("#d1fae5", "#059669", "✓"),
-        "in-progress": ("#dbeafe", "#2563eb", "→"),
-        "planned":     ("#f3f4f6", "#9ca3af", "○"),
+        'done': ('#d1fae5', '#065f46', '✓', 'done'),
+        'in-progress': ('#dbeafe', '#1d4ed8', '→', 'in progress'),
+        'planned': ('#f3f4f6', '#4b5563', '○', 'planned'),
+        'deferred': ('#fef3c7', '#92400e', '⏸', 'deferred'),
     }
-    title   = b.get("title", "")
-    periods = b.get("periods", [])
 
-    title_html = (
-        f'<div style="font-size:0.9rem;font-weight:700;color:#111827;margin-bottom:14px;">{_cv_esc(title)}</div>'
-    ) if title else ""
-
-    cols = ""
+    def norm(s):
+        return s.lower().replace('_', '-').replace(' ', '-') if isinstance(s, str) else 'planned'
+    title = _text_loose(b.get('title'))
+    description = _text_loose(b.get('description'))
+    raw = b.get('periods')
+    if isinstance(raw, list):
+        periods = [p for p in raw[:50] if isinstance(p, dict)]
+    elif isinstance(b.get('items'), list) or _text_loose(b.get('quarter')):
+        legacy = b.get('items') if isinstance(b.get('items'), list) else []
+        periods = [{'label': b.get('quarter'), 'items': [{'text': t, 'status': b.get('status')} for t in legacy]}]
+    else:
+        periods = []
+    title_html = ('<div style="font-size:0.9rem;font-weight:700;color:#111827;margin-bottom:14px;">' + _cv_esc(title) + '</div>') if title else ''
+    desc_html = ('<p style="font-size:0.875rem;color:#4b5563;margin:0 0 12px;line-height:1.5;">' + _cv_esc(description) + '</p>') if description else ''
+    cols = ''
     for period in periods:
-        label = period.get("label", "")
-        items = period.get("items", [])
-        item_rows = ""
-        for item in items:
-            text   = item.get("text", "")
-            status = item.get("status", "planned")
-            bg, fg, icon = STATUS.get(status, STATUS["planned"])
-            item_rows += (
-                f'<div style="display:flex;align-items:flex-start;gap:7px;padding:5px 0;">'
-                f'<span style="font-size:0.72rem;font-weight:700;padding:1px 5px;'
-                f'border-radius:4px;background:{bg};color:{fg};flex-shrink:0;">{icon}</span>'
-                f'<span style="font-size:0.8rem;color:#374151;">{_cv_esc(text)}</span>'
-                f'</div>'
-            )
-        cols += (
-            f'<div style="flex:1;min-width:120px;">'
-            f'<div style="font-size:0.72rem;font-weight:700;color:var(--muted,#5f6368);'
-            f'text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">{_cv_esc(label)}</div>'
-            f'{item_rows}'
-            f'</div>'
-        )
-
-    return (
-        f'<div style="margin:1rem 0;padding:16px 18px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);'
-        f'border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#ffffff;background:var(--a2ui-surface,#ffffff);">'
-        f'{title_html}'
-        f'<div style="display:flex;gap:16px;flex-wrap:wrap;">{cols}</div>'
-        f'</div>'
-    )
+        label = _text_loose(period.get('label'))
+        ri = period.get('items')
+        item_rows = ''
+        for item in (ri[:100] if isinstance(ri, list) else []):
+            if isinstance(item, dict):
+                text, status = _text_loose(item.get('text')), norm(item.get('status'))
+            else:
+                text, status = _text_loose(item), 'planned'
+            if not text:
+                continue
+            bg, fg, icon, name = STATUS.get(status, STATUS['planned'])
+            item_rows += ('<div style="display:flex;align-items:flex-start;gap:7px;padding:5px 0;">'
+                          '<span style="font-size:0.72rem;font-weight:700;padding:1px 5px;border-radius:4px;background:' + bg + ';color:' + fg + ';flex-shrink:0;">'
+                          '<span aria-hidden="true">' + icon + '</span>'
+                          '<span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;">' + name + ': </span></span>'
+                          '<span style="font-size:0.8rem;color:#374151;">' + _cv_esc(text) + '</span></div>')
+        cols += ('<div style="flex:1;min-width:120px;">'
+                 + ('<div style="font-size:0.72rem;font-weight:700;color:var(--muted,#5f6368);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">' + _cv_esc(label) + '</div>' if label else '')
+                 + item_rows + '</div>')
+    return ('<div style="margin:1rem 0;padding:16px 18px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);'
+            'border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#ffffff;background:var(--a2ui-surface,#ffffff);">'
+            + title_html + desc_html
+            + '<div style="display:flex;gap:16px;flex-wrap:wrap;">' + cols + '</div></div>')
 
 
 def _render_notification_stack(b: dict) -> str:
@@ -8224,54 +8186,44 @@ def _render_tag_block(b: dict) -> str:
 
 def _render_variant_selector(b: dict) -> str:
     """CSS-only radio card group for variant picking. Source: OpenUI/Thesys MIT."""
-    name    = b.get("name", "variant")
-    label   = b.get("label", "")
-    items   = b.get("items", [])
-    default = b.get("default_value", "")
-    uid     = abs(_wa_shash(name + label)) % 999983
-
-    label_html = (
-        f'<div style="font-size:0.82rem;font-weight:600;color:#374151;margin-bottom:8px;">'
-        f'{_cv_esc(label)}</div>'
-    ) if label else ""
-
-    style = (
-        f'<style>'
-        f'.vs{uid} label{{display:block;padding:10px 14px;border:1px solid #d1d5db;'
-        f'border-radius:8px;cursor:pointer;transition:border-color .15s,background .15s;'
-        f'background:#fff;}}'
-        f'.vs{uid} label:has(input:checked){{border-color:#1a73e8;background:#eff6ff;}}'
-        f'.vs{uid} label:hover{{border-color:#9ca3af;}}'
-        f'.vs{uid} input{{position:absolute;opacity:0;width:0;height:0;}}'
-        f'</style>'
-    )
-
-    cards = ""
-    for item in items:
-        val   = item.get("value", "")
-        title = item.get("title", val)
-        desc  = item.get("description", "")
-        chk   = "checked" if val == default else ""
-        desc_html = (
-            f'<div style="font-size:0.75rem;color:var(--muted,#5f6368);margin-top:2px;">{_cv_esc(desc)}</div>'
-        ) if desc else ""
-        cards += (
-            f'<label>'
-            f'<input type="radio" name="{_cv_esc(name)}" value="{_cv_esc(val)}" aria-label="{_cv_esc(title or val or name or "Option")}" {chk}>'
-            f'<div style="font-size:0.85rem;font-weight:600;color:#111827;">{_cv_esc(title)}</div>'
-            f'{desc_html}'
-            f'</label>'
-        )
-
-    return (
-        f'{style}'
-        f'<div style="margin:0.75rem 0;">'
-        f'{label_html}'
-        f'<div class="vs{uid}" style="display:flex;flex-direction:column;gap:8px;">'
-        f'{cards}'
-        f'</div>'
-        f'</div>'
-    )
+    name = _text_loose(b.get('name')) or 'variant'
+    label = _text_loose(b.get('label'))
+    raw = b.get('items') if isinstance(b.get('items'), list) and b.get('items') else b.get('variants')
+    items = [v for v in raw[:100] if isinstance(v, dict) or _text_loose(v)] if isinstance(raw, list) else []
+    default = _text_loose(b.get('default_value'))
+    uid = 'vs-' + _wa_uid(b)
+    label_html = ('<div style="font-size:0.82rem;font-weight:600;color:#374151;margin-bottom:8px;">' + _cv_esc(label) + '</div>') if label else ''
+    style = ('<style>'
+             '.' + uid + ' label{display:block;padding:10px 14px;border:1px solid #d1d5db;border-radius:8px;cursor:pointer;transition:border-color .15s,background .15s;background:#fff;}'
+             '.' + uid + ' label:has(input:checked){border-color:#1a73e8;background:#eff6ff;}'
+             '.' + uid + ' label:has(input:focus-visible){outline:2px solid #1a73e8;outline-offset:2px;}'
+             '.' + uid + ' label:has(input:disabled){opacity:0.4;cursor:not-allowed;}'
+             '.' + uid + ' label:hover{border-color:#9ca3af;}'
+             '.' + uid + ' input{position:absolute;opacity:0;width:0;height:0;}'
+             '</style>')
+    cards = ''
+    checked_done = False
+    for v in items:
+        if isinstance(v, dict):
+            val = _text_loose(v.get('value'))
+            title = _first_text(v.get('title'), v.get('label'), v.get('value'))
+            desc = _text_loose(v.get('description'))
+            color = _safe_css(v.get('color'), '')
+            disabled = v.get('disabled') is True
+        else:
+            val = title = _text_loose(v)
+            desc = color = ''
+            disabled = False
+        chk = ''
+        if not checked_done and default and val == default:
+            chk = ' checked'
+            checked_done = True
+        dot = ('<span aria-hidden="true" style="display:inline-block;width:12px;height:12px;border-radius:50%;background:' + color + ';margin-right:8px;vertical-align:middle;"></span>') if color else ''
+        desc_html = ('<div style="font-size:0.75rem;color:var(--muted,#5f6368);margin-top:2px;">' + _cv_esc(desc) + '</div>') if desc else ''
+        cards += ('<label><input type="radio" name="' + _cv_esc(name) + '" value="' + _cv_esc(val) + '"' + chk + (' disabled' if disabled else '') + '>'
+                  '<div style="font-size:0.85rem;font-weight:600;color:#111827;">' + dot + _cv_esc(title) + '</div>' + desc_html + '</label>')
+    return (style + '<div style="margin:0.75rem 0;">' + label_html
+            + '<div class="' + uid + '" role="radiogroup" aria-label="' + _cv_esc(label or name) + '" style="display:flex;flex-direction:column;gap:8px;">' + cards + '</div></div>')
 
 
 def _render_markdown_block(b: dict) -> str:
@@ -16789,24 +16741,34 @@ _RENDERERS['product_thumbnail'] = _render_product_thumbnail
 
 
 def _render_rating_comparison(b: dict) -> str:
-    items = b.get('items', [])
-    title = b.get('title', '')
+    title = _text_loose(b.get('title'))
+    raw = b.get('items')
+    items = [i for i in raw[:100] if isinstance(i, dict)] if isinstance(raw, list) else []
+    default_max = _num_loose(b.get('max'))
+    sr = 'position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;'
     rows = ''
     for item in items:
-        label = item.get('label') or item.get('name', '')
-        value = float(item.get('value', 0))
-        max_v = float(item.get('max', 5))
-        pct = min(value / max_v * 100, 100) if max_v else 0
-        color = item.get('color', '#4f46e5')
-        rows += (f'<div style="margin-bottom:10px;">'
-                 f'<div style="display:flex;justify-content:space-between;font-size:0.84rem;margin-bottom:4px;">'
-                 f'<span style="font-weight:600;">{_esc(label)}</span>'
-                 f'<span style="color:var(--muted,#5f6368);">{value:.1f}/{max_v:.0f}</span></div>'
-                 f'<div style="height:8px;background:#e5e7eb;border-radius:100px;overflow:hidden;">'
-                 f'<div style="height:100%;width:{pct:.1f}%;background:{_esc(color)};border-radius:100px;"></div>'
-                 f'</div></div>')
-    title_html = f'<div style="font-weight:700;margin-bottom:10px;">{_esc(title)}</div>' if title else ''
-    return f'<div style="margin:1.5rem 0;">{title_html}{rows}</div>'
+        label = _first_text(item.get('label'), item.get('name'))
+        rating = _num_loose(item.get('rating'))
+        if rating is None:
+            rating = _num_loose(item.get('value'))
+        rating = 0 if rating is None else rating
+        m = _num_loose(item.get('max'))
+        if m is None:
+            m = default_max
+        mx = 5 if m is None else max(1, min(50, int(math.floor(m))))
+        rating = max(0, min(mx, rating))
+        filled = int(math.floor(rating + 0.5))
+        stars = ''.join('<span aria-hidden="true" style="color:' + ('#fbbf24' if i <= filled else '#e5e7eb') + ';font-size:0.85rem;">★</span>' for i in range(1, mx + 1))
+        rows += ('<div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--border,#f3f4f6);font-size:0.875rem;">'
+                 '<span style="min-width:120px;color:var(--text,#374151);">' + _cv_esc(label) + '</span>'
+                 + stars
+                 + '<span style="font-size:0.8rem;color:var(--muted,#6b7280);margin-left:4px;">(' + _text_loose(rating)
+                 + '<span style="' + sr + '"> out of ' + str(mx) + '</span>)</span></div>')
+    title_html = ('<div style="font-weight:700;font-size:0.9rem;color:var(--text,#111827);margin-bottom:10px;">' + _cv_esc(title) + '</div>') if title else ''
+    return ('<div style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:16px;border:1px solid var(--border,#e5e7eb);border-radius:10px;background:var(--bg,#fff);">'
+            + title_html + rows + '</div>')
+
 
 _RENDERERS['rating_comparison'] = _render_rating_comparison
 
@@ -20557,30 +20519,36 @@ _RENDERERS["reflection_prompt"] = _render_reflection_prompt
 
 
 def _render_rubric_card(b: dict) -> str:
-    title = _esc(b.get('title', 'Assessment Rubric'))
-    levels = b.get('levels', ['Beginning', 'Developing', 'Proficient', 'Exemplary'])
-    criteria = b.get('criteria', [])
-    accent = b.get('accent', '#4f46e5')
+    title = _text_loose(b.get('title')) or 'Assessment Rubric'
+    raw = b.get('levels')
+    levels = [_text_loose(l) or ('Level ' + str(i + 1)) for i, l in enumerate(raw[:12])] if isinstance(raw, list) and raw else ['Beginning', 'Developing', 'Proficient', 'Exemplary']
+    rc = b.get('criteria')
+    criteria = [c for c in rc[:100] if isinstance(c, dict)] if isinstance(rc, list) else []
+    accent = _safe_css(b.get('accent'), '#4f46e5')
     n = len(levels)
     headers = ''.join(
-        f'<th style="padding:10px 12px;text-align:center;font-size:0.6rem;font-weight:700;'
-        f'letter-spacing:0.08em;text-transform:uppercase;color:var(--muted,#5f6368);">{_esc(str(l))}</th>'
-        for l in levels
+        '<th scope="col" style="padding:10px 12px;text-align:center;font-size:0.6rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:'
+        + ('#1b7c59' if i == n - 1 else (accent if i >= n - 2 else '#5f6e84')) + ';">' + _cv_esc(l) + '</th>'
+        for i, l in enumerate(levels)
     )
     rows = ''
     for c in criteria:
-        descs = c.get('descriptions', [''] * n)
-        cells = ''.join(f'<td style="padding:10px 12px;font-size:0.8rem;color:#374151;">{_esc(str(d))}</td>' for d in descs)
-        rows += (f'<tr><td style="padding:10px 12px;font-weight:600;font-size:0.85rem;">'
-                 f'{_esc(c.get("name",""))}</td>{cells}</tr>')
-    return (
-        f'<div style="font-family:system-ui,sans-serif;overflow-x:auto;margin:1rem 0;">'
-        f'<div style="font-weight:700;margin-bottom:10px;">{title}</div>'
-        f'<table style="width:100%;border-collapse:collapse;font-size:0.85rem;">'
-        f'<thead><tr><th style="padding:10px 12px;text-align:left;font-size:0.6rem;font-weight:700;'
-        f'letter-spacing:0.08em;text-transform:uppercase;color:var(--muted,#5f6368);">Criterion</th>{headers}</tr></thead>'
-        f'<tbody>{rows}</tbody></table></div>'
-    )
+        descs = c.get('descriptors') if isinstance(c.get('descriptors'), list) else (c.get('descriptions') if isinstance(c.get('descriptions'), list) else [])
+        cells = ''.join(
+            '<td style="padding:10px 12px;font-size:0.8rem;color:#374151;text-align:center;vertical-align:top;">'
+            + _cv_esc((_text_loose(descs[i]) if i < len(descs) else '') or '—') + '</td>'
+            for i in range(n)
+        )
+        rows += ('<tr><th scope="row" style="padding:10px 12px;font-weight:600;font-size:0.85rem;text-align:left;vertical-align:top;">'
+                 + _cv_esc(_first_text(c.get('criterion'), c.get('name'))) + '</th>' + cells + '</tr>')
+    return ('<div style="font-family:system-ui,sans-serif;overflow-x:auto;margin:1rem 0;">'
+            '<div style="font-weight:700;margin-bottom:10px;">' + _cv_esc(title) + '</div>'
+            '<table style="width:100%;border-collapse:collapse;font-size:0.85rem;">'
+            '<thead><tr><th scope="col" style="padding:10px 12px;text-align:left;font-size:0.6rem;font-weight:700;'
+            'letter-spacing:0.08em;text-transform:uppercase;color:var(--muted,#5f6368);">Criterion</th>' + headers + '</tr></thead>'
+            '<tbody>' + rows + '</tbody></table></div>')
+
+
 _RENDERERS["rubric_card"] = _render_rubric_card
 
 
@@ -25396,25 +25364,40 @@ _RENDERERS["stagger_list"] = _render_stagger_list
 
 
 def _render_step_reveal_sequence(b: dict) -> str:
-    steps = b.get('steps', [])
-    import hashlib
-    uid = 'srs' + hashlib.md5(str(steps[:2]).encode()).hexdigest()[:5]
-    rows = ''
-    for i, step in enumerate(steps):
-        title = _esc(step.get('title', '') if isinstance(step, dict) else str(step))
-        text = _esc(step.get('text', '') if isinstance(step, dict) else '')
-        dly = f'{i * 0.15:.2f}s'
-        rows += ('<div style="opacity:0;transform:translateX(-16px);'
-                 'animation:' + uid + 'sl 0.4s ease ' + dly + ' forwards;'
-                 'display:flex;gap:12px;padding:10px 0;border-bottom:1px solid #f1f1f1;border-bottom:1px solid var(--a2ui-border-soft,#f1f1f1);">'
-                 '<div style="width:28px;height:28px;border-radius:50%;background:#4f46e5;'
-                 'color:#fff;font-size:0.78rem;font-weight:700;display:flex;align-items:center;'
-                 'justify-content:center;flex-shrink:0;">' + str(i + 1) + '</div>'
-                 '<div><div style="font-weight:600;font-size:0.875rem;color:#111827;">' + title + '</div>'
-                 + ('<div style="font-size:0.82rem;color:var(--muted,#5f6368);margin-top:2px;">' + text + '</div>' if text else '')
-                 + '</div></div>')
-    return ('<style>@keyframes ' + uid + 'sl{from{opacity:0;transform:translateX(-16px);}to{opacity:1;transform:none;}}</style>'
-            '<div style="margin:1.5rem 0;">' + rows + '</div>')
+    raw = b.get('steps')
+    steps = [s for s in raw[:50] if isinstance(s, dict) or _text_loose(s)] if isinstance(raw, list) else []
+    if not steps:
+        return ''
+    uid = 'srs-' + _wa_uid(b)
+    css = '<style>'
+    for i in range(len(steps)):
+        css += '#' + uid + '-' + str(i) + ':checked ~ .' + uid + '-nav .' + uid + '-lbl:nth-child(' + str(i + 1) + '){background:#4f46e5;color:#fff;border-color:#4f46e5;}'
+        css += '#' + uid + '-' + str(i) + ':checked ~ .' + uid + '-body .' + uid + '-panel:nth-child(' + str(i + 1) + '){display:block;}'
+        css += '#' + uid + '-' + str(i) + ':focus-visible ~ .' + uid + '-nav .' + uid + '-lbl:nth-child(' + str(i + 1) + '){outline:2px solid #4f46e5;outline-offset:2px;}'
+    css += '.' + uid + '-panel{display:none;padding:20px;animation:' + uid + '-in 0.3s ease;}'
+    css += '@keyframes ' + uid + '-in{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}'
+    css += '@media (prefers-reduced-motion:reduce){.' + uid + '-panel{animation:none;}}'
+    css += '</style>'
+    parts = []
+    for s in steps:
+        if isinstance(s, dict):
+            parts.append((_first_text(s.get('title')), _first_text(s.get('text'), s.get('content'))))
+        else:
+            parts.append((_text_loose(s), ''))
+    inputs = ''.join('<input type="radio" id="' + uid + '-' + str(i) + '" name="' + uid + '"' + (' checked' if i == 0 else '') + ' style="position:absolute;opacity:0;width:1px;height:1px;margin:0;">' for i in range(len(steps)))
+    nav = ('<div class="' + uid + '-nav" style="display:flex;gap:6px;flex-wrap:wrap;padding:12px 16px;border-bottom:1px solid #e5e7eb;">'
+           + ''.join('<label for="' + uid + '-' + str(i) + '" class="' + uid + '-lbl" style="cursor:pointer;padding:6px 14px;border-radius:20px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);font-size:0.8rem;font-weight:600;color:var(--muted,#5f6368);transition:all 0.15s;">'
+                     + str(i + 1) + (('. ' + _cv_esc(t)) if t else '') + '</label>' for i, (t, _x) in enumerate(parts))
+           + '</div>')
+    body = ('<div class="' + uid + '-body">'
+            + ''.join('<div class="' + uid + '-panel">'
+                      + ('<div style="font-size:1rem;font-weight:700;color:#111827;margin-bottom:10px;">' + _cv_esc(t) + '</div>' if t else '')
+                      + ('<div style="color:#374151;line-height:1.7;">' + _md_inline(x) + '</div>' if x else '')
+                      + '</div>' for t, x in parts)
+            + '</div>')
+    return (css + '<div role="radiogroup" aria-label="Steps" style="border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;margin:1rem 0;">' + inputs + nav + body + '</div>')
+
+
 _RENDERERS["step_reveal_sequence"] = _render_step_reveal_sequence
 
 
@@ -25559,35 +25542,35 @@ _RENDERERS["reaction_shower"] = _render_reaction_shower
 # ── Batch 4e: Complex, canvas & meta atoms ────────────────────────────────────
 
 def _render_terminal_boot(b: dict) -> str:
-    lines = b.get('lines', ['$ initializing…', '> loading…', '✓ ready'])
-    title = _esc(b.get('title', ''))
-    speed = int(b.get('speed', 60))
-    import hashlib
-    uid = 'tb' + hashlib.md5(str(lines[:2]).encode()).hexdigest()[:5]
-    lines_js = '[' + ','.join('"' + _esc(str(l)).replace('"', '\\"') + '"' for l in lines) + ']'
-    return ('<div style="margin:1rem 0;border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;background:#0d1117;">'
-            '<div style="background:#1c1c1c;padding:8px 14px;display:flex;align-items:center;gap:6px;">'
-            '<span style="width:12px;height:12px;border-radius:50%;background:#ff5f56;"></span>'
-            '<span style="width:12px;height:12px;border-radius:50%;background:#febc2e;"></span>'
-            '<span style="width:12px;height:12px;border-radius:50%;background:#27c93f;"></span>'
-            + ('<span style="font-size:0.72rem;color:#6b7280;margin-left:8px;">' + title + '</span>' if title else '')
-            + '</div>'
-            '<div id="' + uid + '" style="padding:16px 20px;font-family:ui-monospace,monospace;'
-            'font-size:0.82rem;line-height:1.8;color:#cdd6f4;min-height:80px;"></div></div>'
+    raw = b.get('lines')
+    lines = [t for t in (_text_loose(l) for l in raw[:200]) if t] if isinstance(raw, list) else []
+    title = _text_loose(b.get('title'))
+    sn = _num_loose(b.get('speed'))
+    speed = 380 if sn is None else max(30, min(10000, int(math.floor(sn))))
+    uid = _wa_uid(b)
+    ok_re = re.compile('✓|(?<![A-Za-z0-9_])[Oo][Kk](?![A-Za-z0-9_])')
+    err_re = re.compile('✗|(?<![A-Za-z0-9_])(?:[Ee][Rr][Rr]|[Ff][Aa][Ii][Ll])')
+    lines_html = ''
+    for i, l in enumerate(lines):
+        col = '#22c55e' if ok_re.search(l) else ('#f87171' if err_re.search(l) else '#94a3b8')
+        lines_html += ('<div id="tb-' + uid + '-' + str(i) + '" style="line-height:1.9;color:' + col + ';">'
+                       '<span aria-hidden="true" style="color:#64748b;margin-right:10px;user-select:none;">$</span>' + _cv_esc(l) + '</div>')
+    return ('<div style="background:#0a0f1e;border:1px solid #1e293b;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:20px 24px;margin:1rem 0;font-family:\'Courier New\',monospace;font-size:0.84rem;">'
+            + ('<div style="font-size:0.7rem;font-weight:700;color:#8b9bb0;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:14px;">' + _cv_esc(title) + '</div>' if title else '')
+            + '<div>' + lines_html + '</div>'
+            '<span aria-hidden="true" id="tb-cur-' + uid + '" style="display:inline-block;width:8px;height:14px;background:#22c55e;vertical-align:middle;margin-left:2px;animation:tb-bl-' + uid + ' 1s step-end infinite;"></span>'
+            '<style>@keyframes tb-bl-' + uid + '{0%,100%{opacity:1;}50%{opacity:0;}}@media (prefers-reduced-motion:reduce){#tb-cur-' + uid + '{animation:none;}}</style>'
             '<script>(function(){'
-            'var el=document.getElementById("' + uid + '");'
-            'var lines=' + lines_js + ';'
-            'var i=0,j=0;'
-            '(function tick(){'
-            'if(i>=lines.length)return;'
-            'if(j<=lines[i].length){'
-            'if(j===0){el.innerHTML+="<div>";}else{el.innerHTML+=lines[i][j-1]||"";}'
-            'j++;setTimeout(tick,' + str(speed) + ');'
-            '}else{'
-            'el.innerHTML+="</div>";'
-            'i++;j=0;setTimeout(tick,200);}'
-            '})();'
-            '})();</script>')
+            'var els=[];for(var i=0;i<' + str(len(lines)) + ';i++){var el=document.getElementById("tb-' + uid + '-"+i);if(el)els.push(el);}'
+            'var cur=document.getElementById("tb-cur-' + uid + '");'
+            'if(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches){if(cur)cur.style.display="none";return;}'
+            'els.forEach(function(e){e.style.opacity="0";});'
+            'var n=0;function next(){if(n<els.length){els[n].style.opacity="1";n++;setTimeout(next,' + str(speed) + ');}else if(cur){cur.style.display="none";}}'
+            'setTimeout(next,400);'
+            '})();</script>'
+            '</div>')
+
+
 _RENDERERS["terminal_boot"] = _render_terminal_boot
 
 
@@ -27007,28 +26990,38 @@ _RENDERERS["multi_surface"] = _render_multi_surface
 
 
 def _render_atom_anatomy(b: dict) -> str:
-    # Schema's `schema` field is "atom block JSON to render and display" -- a real atom
-    # instance, not a schema DEFINITION with a `.fields` dict (there is no such key on a
-    # rendered instance), so `schema_data.get('fields', {})` was always empty and nothing
-    # about the passed block ever appeared (surface-parity debt). GAS both live-renders the
-    # block and JSON-dumps it; mirrored here instead of the field-table that never worked.
-    # 2026-09-27.
-    import json as _json
-    label = _esc(b.get('label', 'atom'))
-    schema_data = b.get('schema', {})
+    label = _text_loose(b.get('label')) or 'atom'
+    schema_data = b.get('schema')
+    raw_text = ''
+    if isinstance(schema_data, str):
+        raw_text = schema_data
+        try:
+            def _no_const(c):
+                raise ValueError(c)
+            schema_data = _json.loads(schema_data, parse_constant=_no_const, parse_float=lambda x: int(float(x)) if float(x).is_integer() and abs(float(x)) < 1e21 else float(x)) if len(schema_data) < 200000 else None
+        except Exception:
+            schema_data = None
+        if isinstance(schema_data, dict):
+            raw_text = ''
     schema_data = schema_data if isinstance(schema_data, dict) else {}
-    accent = _esc(b.get('accent', '#4f46e5'))
+    accent = _safe_css(b.get('accent'), '#4f46e5')
+    rendered = ''
     try:
-        rendered = _RENDERERS.get(schema_data.get('type', ''), _render_unknown)(schema_data)
+        if schema_data.get('type') == 'atom_anatomy':
+            raise ValueError('no nesting')
+        if isinstance(schema_data.get('type'), str) and schema_data.get('type'):
+            if schema_data.get('type') not in _RENDERERS:
+                raise ValueError('unknown atom')
+            rendered = _RENDERERS[schema_data.get('type')](schema_data)
     except Exception:
         rendered = '<em style="color:#6c7586;">Could not render preview</em>'
-    schema_str = _esc(_js_json(schema_data, indent=2))
-    k = _esc(str(b['label'])) if b.get('label') else 'atom_anatomy'
-    return ('<div data-cb="node" data-key="' + k + '" style="margin:1rem 0;border:1px solid ' + accent + '33;'
+    schema_str = _cv_esc(raw_text if raw_text else _js_json(schema_data, indent=2, ensure_ascii=False))
+    k = _cv_esc(b['label']) if isinstance(b.get('label'), str) and b.get('label') else 'atom_anatomy'
+    return ('<div data-cb="node" data-key="' + k + '" style="margin:1rem 0;border:1px solid color-mix(in srgb,' + accent + ' 20%,transparent);'
             'border-radius:12px;overflow:hidden;">'
-            '<div style="padding:8px 16px;background:' + accent + '06;font-size:0.7rem;font-weight:700;'
+            '<div style="padding:8px 16px;background:color-mix(in srgb,' + accent + ' 2%,transparent);font-size:0.7rem;font-weight:700;'
             'color:' + accent + ';letter-spacing:0.1em;text-transform:uppercase;'
-            'border-bottom:1px solid ' + accent + '33;">⬡ ' + label + '</div>'
+            'border-bottom:1px solid color-mix(in srgb,' + accent + ' 20%,transparent);">⬡ ' + _cv_esc(label) + '</div>'
             '<div style="display:flex;gap:0;">'
             '<div style="flex:1;padding:20px;border-right:1px solid #e5e7eb;min-width:0;">'
             '<div style="font-size:0.68rem;font-weight:700;color:#6c7586;text-transform:uppercase;'
@@ -27039,6 +27032,8 @@ def _render_atom_anatomy(b: dict) -> str:
             '<pre style="margin:0;font-family:monospace;font-size:0.72rem;color:#4f6e99;'
             'white-space:pre-wrap;line-height:1.6;">' + schema_str + '</pre></div>'
             '</div></div>')
+
+
 _RENDERERS["atom_anatomy"] = _render_atom_anatomy
 
 

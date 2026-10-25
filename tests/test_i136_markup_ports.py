@@ -612,3 +612,116 @@ def test_raise_hand_only_posts_to_absolute_http_urls(core_js):
         assert 'var writeUrl="";' in html and 'var sheetUrl="";' in html
     for html in (_py_fresh(blocks[1]), gas[1]):
         assert 'var writeUrl="https://example.com/w?x=1";' in html and "var poll=1000;" in html and 'indexOf("?")' in html
+
+
+# ---- batch b6/3 ----
+EQUAL.extend([
+    {"type": "rubric_card", "title": "Essay rubric", "levels": ["Low", "Mid", "High"], "accent": "#0f766e", "criteria": [{"criterion": "Thesis", "descriptors": ["Vague", "Clear"]}, {"criterion": "Evidence", "descriptors": ["a", "b", "c", "d"]}]},
+    {"type": "roadmap_card", "title": "2027", "periods": [{"label": "Q1", "items": [{"text": "Ship v2", "status": "done"}, {"text": "Audit", "status": "in_progress"}, "Plain"]}, {"label": "Q2", "items": [{"text": "Launch", "status": "deferred"}, {"text": "Odd", "status": "weird"}]}]},
+    {"type": "rating_comparison", "title": "Reviews", "max": 5, "items": [{"label": "Alpha", "rating": 4.5}, {"name": "Beta", "value": 2, "max": 4}, {"label": "Gamma", "rating": 9}]},
+    {"type": "step_reveal_sequence", "steps": [{"title": "Plan", "text": "Do **it**"}, {"title": "Ship", "content": "old content"}, "Plain"]},
+    {"type": "terminal_boot", "title": "boot", "speed": 500, "lines": ["loading kernel", "mount ok", "\u2717 disk", "token created"]},
+    {"type": "variant_selector", "name": "plan", "label": "Pick a plan", "default_value": "pro", "items": [{"value": "free", "title": "Free", "description": "Hobby"}, {"value": "pro", "title": "Pro"}, {"value": "dup", "title": "Dup", "color": "#ff0000", "disabled": True}, "Plain"]},
+    {"type": "stepper", "label": "Deploy", "active_index": 1, "color": "#0f766e", "steps": ["Build", {"label": "Test", "description": "Unit and e2e"}, {"title": "Ship"}]},
+    {"type": "atom_anatomy", "label": "Badge", "accent": "#0f766e", "schema": {"type": "difficulty_badge", "level": "advanced"}},
+])
+MUST.update({
+    "rubric_card": ["Essay rubric", "Thesis", "Vague", "Clear", "\u2014", "Evidence", "Low", "High", "#1b7c59", "#0f766e", 'scope="row"', 'scope="col"'],
+    "roadmap_card": ["2027", "Q1", "Ship v2", "done: ", "in progress: ", "Plain", "planned: ", "deferred: ", "Odd", "#065f46"],
+    "rating_comparison": ["Reviews", "Alpha", "(4.5", "Beta", "(2", "out of 4", "Gamma", "(5", "#fbbf24"],
+    "step_reveal_sequence": ["Plan", "Do <strong>it</strong>", "old content", "Plain", "1. Plan", "3. Plain", 'role="radiogroup"', "prefers-reduced-motion", "focus-visible"],
+    "terminal_boot": ["boot", "loading kernel", "mount ok", "\u2717 disk", "token created", "setTimeout(next,500)", "prefers-reduced-motion"],
+    "variant_selector": ["Pick a plan", 'name="plan"', 'value="pro" checked', "Free", "Hobby", "#ff0000", " disabled", "Plain", 'role="radiogroup"'],
+    "stepper": ["Deploy", "Build", "Test", "Unit and e2e", "Ship", "completed: ", "current: ", "upcoming: ", 'aria-current="step"', "#0f766e"],
+    "atom_anatomy": ["Badge", "#0f766e", "Rendered", "Schema", "Advanced", "&quot;level&quot;: &quot;advanced&quot;"],
+})
+OLD.extend([
+    {"type": "rubric_card", "levels": ["L1", "L2"], "criteria": [{"name": "Old name", "descriptions": ["aa", "bb"]}]},
+    {"type": "roadmap_card", "quarter": "Q4", "status": "in_progress", "title": "Old", "description": "Old desc", "items": ["Item one", "Item two"]},
+    {"type": "rating_comparison", "items": [{"name": "Old", "value": 4}]},
+    {"type": "step_reveal_sequence", "steps": ["Plain step", {"title": "T", "content": "old content"}]},
+    {"type": "variant_selector", "variants": [{"label": "Red", "value": "r", "color": "#ff0000"}, {"label": "Blue", "value": "b", "disabled": True}]},
+    {"type": "stepper", "steps": [{"label": "A", "is_completed": True}, {"label": "B", "is_current": True}, {"label": "C"}]},
+])
+OLD_WORDS.update({
+    "rubric_card": ["L1", "L2", "Old name", ">aa<", ">bb<"], "roadmap_card": ["Q4", "Old", "Old desc", "Item one", "Item two", "in progress: "], "rating_comparison": ["Old", "(4"],
+    "step_reveal_sequence": ["Plain step", "old content"], "variant_selector": ["Red", 'value="r"', "#ff0000", " disabled"], "stepper": ["completed: ", "current: ", "upcoming: "],
+})
+
+
+def test_rubric_never_has_an_empty_header_and_levels_default(core_js):
+    blocks = [{"type": "rubric_card", "levels": ["", None, "Top"], "criteria": [{"criterion": "C"}]}, {"type": "rubric_card"}]
+    gas = _gas_isolated(core_js, blocks)
+    for b, g in zip(blocks, gas):
+        assert _norm_uid(_py_fresh(b)) == _norm_uid(g)
+    for html in (_py_fresh(blocks[0]), gas[0]):
+        assert "Level 1" in html and "Level 2" in html and "Top" in html and "<th" in html and ">\u2014<" in html
+        assert not re.search(r"<th[^>]*></th>", html)
+    for html in (_py_fresh(blocks[1]), gas[1]):
+        assert "Assessment Rubric" in html and "Exemplary" in html
+
+
+def test_terminal_boot_colours_only_real_ok_and_error_words(core_js):
+    b = {"type": "terminal_boot", "lines": ["token created", "boot OK", "\u2713 done", "FAILED step", "erase cache", 5, None, ""]}
+    g = _gas_isolated(core_js, [b])[0]
+    assert _norm_uid(_py_fresh(b)) == _norm_uid(g)
+    for html in (_py_fresh(b), g):
+        assert html.count("line-height:1.9;color:#22c55e") == 2 and html.count("line-height:1.9;color:#f87171") == 1 and html.count("line-height:1.9;color:#94a3b8") == 3
+        assert "Raise" not in html
+    e = {"type": "terminal_boot"}
+    ge = _gas_isolated(core_js, [e])[0]
+    assert _norm_uid(_py_fresh(e)) == _norm_uid(ge)
+    for html in (_py_fresh(e), ge):
+        assert "initializing" not in html and "var els=[];for(var i=0;i<0;" in html
+
+
+def test_step_reveal_and_variant_selector_radios(core_js):
+    blocks = [{"type": "step_reveal_sequence"}, {"type": "step_reveal_sequence", "steps": ["a", "b"]},
+              {"type": "variant_selector", "default_value": "x", "items": [{"value": "x"}, {"value": "x"}]}, {"type": "variant_selector"}]
+    gas = _gas_isolated(core_js, blocks)
+    for b, g in zip(blocks, gas):
+        assert _norm_uid(_py_fresh(b)) == _norm_uid(g)
+    for html in (_py_fresh(blocks[0]), gas[0]):
+        assert html == ""
+    for html in (_py_fresh(blocks[1]), gas[1]):
+        assert html.count('type="radio"') == 2 and html.count(" checked") == 1
+    for html in (_py_fresh(blocks[2]), gas[2]):
+        assert html.count('type="radio"') == 2 and html.count(" checked>") == 1 and 'name="variant"' in html
+
+
+def test_stepper_states_come_from_active_index_and_legacy_flags(core_js):
+    blocks = [{"type": "stepper", "active_index": 2, "steps": ["a", "b", "c", "d"]}, {"type": "stepper", "active_index": 99, "steps": ["a", "b"]}, {"type": "stepper"}]
+    gas = _gas_isolated(core_js, blocks)
+    for b, g in zip(blocks, gas):
+        assert _norm_uid(_py_fresh(b)) == _norm_uid(g)
+    for html in (_py_fresh(blocks[0]), gas[0]):
+        assert html.count("completed: ") == 2 and html.count("current: ") == 1 and html.count("upcoming: ") == 1 and html.count('aria-current="step"') == 1
+    for html in (_py_fresh(blocks[1]), gas[1]):
+        assert html.count("completed: ") == 2 and "current: " not in html
+
+
+def test_atom_anatomy_parses_json_string_schemas_and_never_nests_itself(core_js):
+    blocks = [{"type": "atom_anatomy", "schema": "{\"type\": \"difficulty_badge\", \"level\": \"beginner\"}"}, {"type": "atom_anatomy", "schema": "not json"},
+              {"type": "atom_anatomy", "schema": {"type": "atom_anatomy", "schema": {"type": "difficulty_badge"}}}, {"type": "atom_anatomy", "schema": {"type": "no_such_atom"}},
+              {"type": "atom_anatomy"}]
+    gas = _gas_isolated(core_js, blocks)
+    for b, g in zip(blocks, gas):
+        assert _norm_uid(_py_fresh(b)) == _norm_uid(g)
+    for html in (_py_fresh(blocks[0]), gas[0]):
+        assert "Beginner" in html and "&quot;level&quot;: &quot;beginner&quot;" in html
+    for html in (_py_fresh(blocks[1]), gas[1]):
+        assert "not json" in html and "Could not render preview" not in html
+    for html in (_py_fresh(blocks[2]), gas[2]):
+        assert "Could not render preview" in html and "Beginner" not in html
+    for html in (_py_fresh(blocks[3]), gas[3]):
+        assert "Could not render preview" in html
+    for html in (_py_fresh(blocks[4]), gas[4]):
+        assert ">{}</pre>" in html and "Could not render preview" not in html
+
+
+def test_roadmap_status_names_and_legacy_card(core_js):
+    b = {"type": "roadmap_card", "periods": [{"label": "Q1", "items": [{"text": "A", "status": "In Progress"}, {"text": "B", "status": ["x"]}, {"text": ""}, None]}, "junk"]}
+    g = _gas_isolated(core_js, [b])[0]
+    assert _norm_uid(_py_fresh(b)) == _norm_uid(g)
+    for html in (_py_fresh(b), g):
+        assert "in progress: " in html and "planned: " in html and html.count("planned: ") == 1
