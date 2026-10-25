@@ -14074,20 +14074,14 @@ def _render_footnote_group(b: dict) -> str:
             num = i
         else:
             text = item.get('text', '') if isinstance(item.get('text'), str) else ''
-            raw_id = item.get('id')
-            if (isinstance(raw_id, str) and raw_id) or (isinstance(raw_id, (int, float)) and not isinstance(raw_id, bool)):
-                num = raw_id
-            elif item.get('number') is not None and item.get('number') != '':
-                num = item.get('number')
-            else:
-                num = i
+            num = _text_loose(item.get('id')) or _text_loose(item.get('number')) or i
         num_str = str(num)
         rows.append(
-            f'<div data-cb="ref" data-key="{_cv_esc(num_str)}" style="display:flex;gap:8px;font-size:0.82rem;color:var(--muted,#5f6368);padding:4px 0;">'
-            f'<span data-cb="label" data-key="{_cv_esc(num_str)}" style="font-weight:700;flex-shrink:0;">[{_cv_esc(num_str)}]</span>'
-            f'<span>{_md_inline(text)}</span></div>'
+            f'<li data-cb="ref" data-key="{_cv_esc(num_str)}" style="display:flex;gap:8px;font-size:0.82rem;color:var(--muted,#5f6368);padding:4px 0;">'
+            f'<sup data-cb="label" data-key="{_cv_esc(num_str)}" style="font-weight:700;flex-shrink:0;">[{_cv_esc(num_str)}]</sup>'
+            f'<span>{_md_inline(text)}</span></li>'
         )
-    return f'<div style="border-top:2px solid #e5e7eb;padding-top:12px;margin-top:2rem;">{"".join(rows)}</div>'
+    return f'<div role="doc-endnotes" aria-label="Footnotes" style="border-top:2px solid #e5e7eb;padding-top:12px;margin-top:2rem;"><ol role="list" style="list-style:none;margin:0;padding:0;">{"".join(rows)}</ol></div>'
 
 _RENDERERS['footnote_group'] = _render_footnote_group
 
@@ -14681,13 +14675,7 @@ _RENDERERS['lozenge'] = _render_lozenge
 
 
 def _render_markdown_block(b: dict) -> str:
-    raw = b.get('text') if isinstance(b.get('text'), str) and b.get('text') else b.get('content', '')
-    if isinstance(raw, str):
-        text = raw
-    elif isinstance(raw, (int, float)) and not isinstance(raw, bool):
-        text = str(raw)
-    else:
-        text = ''
+    text = _text_loose(b.get('content')) or _text_loose(b.get('text'))
     style = 'margin:0.5rem 0;' if b.get('variant') == 'compact' else 'margin:1rem 0;'
     return f'<div data-cb="node" data-key="{_ck(None, "markdown_block")}" class="markdown-content asw-markdown-block" style="{style}">{_md_inline(text)}</div>'
 
@@ -18557,8 +18545,9 @@ def _svg_gauge_sla(b: dict) -> str:
     if not math.isfinite(max_val):
         max_val = 100.0
 
-    unit = b.get("unit", "") if isinstance(b.get("unit"), str) else ""
-    label = b.get("label", "SLA Status") if isinstance(b.get("label"), str) else "SLA Status"
+    unit = _text_loose(b.get("unit"))
+    label = _text_loose(b.get("label"))
+    title = _text_loose(b.get("title"))
 
     pct = (val / max_val) * 100 if max_val > 0 else 0
     pct = min(100.0, max(0.0, pct))
@@ -18583,7 +18572,10 @@ def _svg_gauge_sla(b: dict) -> str:
             thr = None
     healthy = val >= thr if thr is not None else pct >= 95
     warn = val >= thr * 0.9 if thr is not None else pct >= 85
-    if healthy:
+    # a status (and the needle colour) only when the payload gave a threshold; without one nothing is judged
+    if thr is None:
+        status_color, status_label = "#94a3b8", ""
+    elif healthy:
         status_color = "#10b981"
         status_label = "HEALTHY"
     elif warn:
@@ -18598,10 +18590,11 @@ def _svg_gauge_sla(b: dict) -> str:
     if "." in shown:
         shown = shown.rstrip("0").rstrip(".")
     val_display = f"{shown}{unit}"
-    full_status = f"{status_label} · {label.upper()}" if label else status_label
+    full_status = " · ".join(x for x in (status_label, label.upper()) if x)
+    aria = (title or "SLA gauge") + ": " + val_display + (", " + status_label.lower() if status_label else "") + (", " + label if label else "")
 
     return f"""
-      <svg role="img" aria-label="SLA gauge" viewBox="0 0 300 180" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <svg role="img" aria-label="{_cv_esc(aria)}" viewBox="0 0 300 190" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <linearGradient id="{gauge_id}_grad" x1="0" y1="0" x2="1" y2="0">
             <stop offset="0%" stop-color="#ef4444" />
@@ -18629,14 +18622,14 @@ def _svg_gauge_sla(b: dict) -> str:
         <line x1="150" y1="140" x2="{nx:.1f}" y2="{ny:.1f}" stroke="{status_color}" stroke-width="3" stroke-linecap="round" filter="url(#{gauge_id}_glow)" />
         <circle cx="150" cy="140" r="8" fill="#0f172a" stroke="{status_color}" stroke-width="3" />
 
-        <text x="150" y="115" text-anchor="middle" font-size="24" font-weight="900" fill="#f1f5f9" font-family="monospace">{_cv_esc(val_display)}</text>
-        <text x="150" y="132" text-anchor="middle" font-size="8" font-weight="800" fill="{status_color}" font-family="monospace" letter-spacing="0.1em">{_cv_esc(full_status)}</text>
+        <text x="150" y="168" text-anchor="middle" font-size="24" font-weight="900" fill="#f1f5f9" font-family="monospace">{_cv_esc(val_display)}</text>
+        <text x="150" y="184" text-anchor="middle" font-size="9" font-weight="800" fill="{status_color}" font-family="monospace" letter-spacing="0.1em">{_cv_esc(full_status)}</text>
       </svg>
     """
 
 
 def _render_gauge_sla(b: dict) -> str:
-    title = b.get("title", "")
+    title = _text_loose(b.get("title"))
 
     header_html = ""
     if title:
@@ -20282,7 +20275,7 @@ def _render_workspace_logo_grid(b: dict) -> str:
     uid = 'wg' + _wa_uid(b)[:6]
     raw_apps = b.get('apps')
     if not isinstance(raw_apps, list):
-        raw_apps = list(_WORKSPACE_LOGOS_2026.keys())
+        raw_apps = list(_WS_COLORS.keys())   # all 20 apps, same order as the GAS _WORKSPACE_LOGOS
     apps = [a for a in raw_apps if isinstance(a, str) and a][:60]
 
     size = _ws_int(b.get('size'), 48, 16, 256)
@@ -20302,7 +20295,7 @@ def _render_workspace_logo_grid(b: dict) -> str:
     cells = []
     for app in apps:
         key = app.lower()
-        lbl = key.capitalize() if show_labels else ''
+        lbl = key.replace('_', ' ').capitalize() if show_labels else ''
         path2026 = _WORKSPACE_LOGOS_2026.get(key)
         if path2026:
             src = path2026 if path2026.startswith("http") else f"{_WL_BASE}{path2026}"

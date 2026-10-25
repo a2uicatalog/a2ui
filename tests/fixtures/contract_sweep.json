@@ -2328,8 +2328,8 @@
   "kind": "ref",
   "label_kind": "label",
   "key": "footnotes[].id",
-  "py_sha": "0014e280ce178793211e419b432f7f657cfce5c50f5580420b95c71bfd645aa9",
-  "gas_sha": "0014e280ce178793211e419b432f7f657cfce5c50f5580420b95c71bfd645aa9",
+  "py_sha": "a8718b4f2a164e080a6e54102653297a002d072c48960972f09c8fb815688839",
+  "gas_sha": "a8718b4f2a164e080a6e54102653297a002d072c48960972f09c8fb815688839",
   "parity": true
  },
  "further_reading": {
@@ -9703,8 +9703,8 @@
   "kind": "node",
   "label_kind": "label",
   "key": "title",
-  "py_sha": "413f783c794e048385b0612f64299b639fccede089f3c98d3584aa9eb46c4fa2",
-  "gas_sha": "b980b59f6bdb077f7b113d83ee38aaa1b9fbf2e1bf0777bb1975f1e9d135d264",
+  "py_sha": "79cd10d511977553b92e747a48f3e3db9b2eed2e5b6c3201a11c63237223c9af",
+  "gas_sha": "0b06d15b21825610216926f6da4630443ea3a734c38e8bf684518f24f924b6cc",
   "parity": false
  },
  "masonry_elevation": {

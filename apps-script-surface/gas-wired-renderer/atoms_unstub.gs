@@ -509,9 +509,9 @@ _RENDERERS['gauge_sla'] = function(b) {
   if (!isFinite(val)) val = 0;
   var maxVal = (typeof rawMax === 'boolean') ? (rawMax ? 1 : 0) : (typeof rawMax === 'number' || typeof rawMax === 'string' ? Number(rawMax) : NaN);
   if (!isFinite(maxVal)) maxVal = 100;
-  var unit = (typeof b.unit === 'string') ? b.unit : '';
-  var label = (typeof b.label === 'string') ? b.label : 'SLA Status';
-  var title = (typeof b.title === 'string') ? b.title : '';
+  var unit = _textLoose(b.unit);
+  var label = _textLoose(b.label);
+  var title = _textLoose(b.title);
 
   var pct = maxVal > 0 ? (val / maxVal) * 100 : 0;
   pct = Math.min(100.0, Math.max(0.0, pct));
@@ -532,9 +532,13 @@ _RENDERERS['gauge_sla'] = function(b) {
   var thr = (typeof b.threshold === 'number' && isFinite(b.threshold) && b.threshold > 0) ? b.threshold : null;
   var healthy = thr !== null ? val >= thr : pct >= 95;
   var warn = thr !== null ? val >= thr * 0.9 : pct >= 85;
+  // a status (and the needle colour) only when the payload gave a threshold; without one nothing is judged
   var statusColor = '#ef4444';
   var statusLabel = 'BREACHED';
-  if (healthy) {
+  if (thr === null) {
+    statusColor = '#94a3b8';
+    statusLabel = '';
+  } else if (healthy) {
     statusColor = '#10b981';
     statusLabel = 'HEALTHY';
   } else if (warn) {
@@ -551,9 +555,10 @@ _RENDERERS['gauge_sla'] = function(b) {
   var shown = Math.max(-1e15, Math.min(1e15, val)).toFixed(2);
   if (shown.indexOf('.') >= 0) shown = shown.replace(/0+$/, '').replace(/\.$/, '');
   var valDisplay = shown + unit;
-  var fullStatus = (statusLabel + (label ? ' · ' + label.toUpperCase() : '')).trim();
+  var ariaText = (title || 'SLA gauge') + ': ' + valDisplay + (statusLabel ? ', ' + statusLabel.toLowerCase() : '') + (label ? ', ' + label : '');
+  var fullStatus = [statusLabel, label.toUpperCase()].filter(function(x) { return x; }).join(' · ');
 
-  var svgHtml = '\n    <div style="width:100%; height:200px; display:flex; justify-content:center; align-items:center;">\n      \n      <svg role="img" aria-label="SLA gauge" viewBox="0 0 300 180" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">\n        <defs>\n          <linearGradient id="' + gradId + '" x1="0" y1="0" x2="1" y2="0">\n            <stop offset="0%" stop-color="#ef4444" />\n            <stop offset="60%" stop-color="#f59e0b" />\n            <stop offset="100%" stop-color="#10b981" />\n          </linearGradient>\n          <filter id="' + glowId + '" x="-20%" y="-20%" width="140%" height="140%">\n            <feGaussianBlur stdDeviation="3" result="blur" />\n            <feMerge>\n              <feMergeNode in="blur" />\n              <feMergeNode in="SourceGraphic" />\n            </feMerge>\n          </filter>\n        </defs>\n\n        <path d="M 50 140 A 100 100 0 0 1 250 140" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="14" stroke-linecap="round" />\n\n        <path d="M 50 140 A 100 100 0 0 1 250 140" fill="none" stroke="url(#' + gradId + ')" stroke-width="14" stroke-linecap="round"\n              stroke-dasharray="314.159" stroke-dashoffset="' + dashOffset + '" filter="url(#' + glowId + ')" />\n\n        <line x1="50" y1="140" x2="60" y2="140" stroke="rgba(255,255,255,0.2)" stroke-width="2" />\n        <line x1="150" y1="40" x2="150" y2="50" stroke="rgba(255,255,255,0.2)" stroke-width="2" />\n        <line x1="240" y1="140" x2="250" y2="140" stroke="rgba(255,255,255,0.2)" stroke-width="2" />\n\n        <line x1="150" y1="140" x2="' + nx.toFixed(1) + '" y2="' + ny.toFixed(1) + '" stroke="' + statusColor + '" stroke-width="3" stroke-linecap="round" filter="url(#' + glowId + ')" />\n        <circle cx="150" cy="140" r="8" fill="#0f172a" stroke="' + statusColor + '" stroke-width="3" />\n\n        <text x="150" y="115" text-anchor="middle" font-size="24" font-weight="900" fill="#f1f5f9" font-family="monospace">' + _esc(valDisplay) + '</text>\n        <text x="150" y="132" text-anchor="middle" font-size="8" font-weight="800" fill="' + statusColor + '" font-family="monospace" letter-spacing="0.1em">' + _esc(fullStatus) + '</text>\n      </svg>\n    \n    </div>\n    ';
+  var svgHtml = '\n    <div style="width:100%; height:200px; display:flex; justify-content:center; align-items:center;">\n      \n      <svg role="img" aria-label="' + _esc(ariaText) + '" viewBox="0 0 300 190" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">\n        <defs>\n          <linearGradient id="' + gradId + '" x1="0" y1="0" x2="1" y2="0">\n            <stop offset="0%" stop-color="#ef4444" />\n            <stop offset="60%" stop-color="#f59e0b" />\n            <stop offset="100%" stop-color="#10b981" />\n          </linearGradient>\n          <filter id="' + glowId + '" x="-20%" y="-20%" width="140%" height="140%">\n            <feGaussianBlur stdDeviation="3" result="blur" />\n            <feMerge>\n              <feMergeNode in="blur" />\n              <feMergeNode in="SourceGraphic" />\n            </feMerge>\n          </filter>\n        </defs>\n\n        <path d="M 50 140 A 100 100 0 0 1 250 140" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="14" stroke-linecap="round" />\n\n        <path d="M 50 140 A 100 100 0 0 1 250 140" fill="none" stroke="url(#' + gradId + ')" stroke-width="14" stroke-linecap="round"\n              stroke-dasharray="314.159" stroke-dashoffset="' + dashOffset + '" filter="url(#' + glowId + ')" />\n\n        <line x1="50" y1="140" x2="60" y2="140" stroke="rgba(255,255,255,0.2)" stroke-width="2" />\n        <line x1="150" y1="40" x2="150" y2="50" stroke="rgba(255,255,255,0.2)" stroke-width="2" />\n        <line x1="240" y1="140" x2="250" y2="140" stroke="rgba(255,255,255,0.2)" stroke-width="2" />\n\n        <line x1="150" y1="140" x2="' + nx.toFixed(1) + '" y2="' + ny.toFixed(1) + '" stroke="' + statusColor + '" stroke-width="3" stroke-linecap="round" filter="url(#' + glowId + ')" />\n        <circle cx="150" cy="140" r="8" fill="#0f172a" stroke="' + statusColor + '" stroke-width="3" />\n\n        <text x="150" y="168" text-anchor="middle" font-size="24" font-weight="900" fill="#f1f5f9" font-family="monospace">' + _esc(valDisplay) + '</text>\n        <text x="150" y="184" text-anchor="middle" font-size="9" font-weight="800" fill="' + statusColor + '" font-family="monospace" letter-spacing="0.1em">' + _esc(fullStatus) + '</text>\n      </svg>\n    \n    </div>\n    ';
 
   return '\n    <div data-cb="node" data-key="' + _ckey(b.title, 'gauge_sla') + '" style="margin:1.5rem 0;padding:24px;background:rgb(15,23,42);border:1px solid rgba(255,255,255,0.06);border-radius:12px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);">' +
     headerHtml +

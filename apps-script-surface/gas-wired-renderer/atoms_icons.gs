@@ -249,7 +249,7 @@ _RENDERERS['workspace_logo_strip'] = function(b) {
 _RENDERERS['workspace_logo_grid'] = function(b) {
   if (!b || typeof b !== 'object') b = {};
   var uid = 'wg' + _payloadUid(b);
-  var rawApps = Array.isArray(b.apps) ? b.apps : Object.keys(_WORKSPACE_LOGOS);
+  var rawApps = Array.isArray(b.apps) ? b.apps : Object.keys(_WORKSPACE_LOGOS);   // all 20 apps, same order as Python _WS_COLORS
   var apps = [];
   for (var i = 0; i < rawApps.length && apps.length < 60; i++) {
     if (typeof rawApps[i] === 'string' && rawApps[i].length > 0) {
@@ -272,7 +272,7 @@ _RENDERERS['workspace_logo_grid'] = function(b) {
   var cells = apps.map(function(app) {
     var key = app.toLowerCase();
     var path = Object.prototype.hasOwnProperty.call(_WORKSPACE_LOGOS, key) ? _WORKSPACE_LOGOS[key] : '';
-    var lbl = showLabels ? _wsCapitalise(key) : '';
+    var lbl = showLabels ? _wsCapitalise(key.replace(/_/g, ' ')) : '';
     var fbBg = (Object.prototype.hasOwnProperty.call(_WORKSPACE_COLORS, key) && _WORKSPACE_COLORS[key]) || '#1b6cf2';
     var fbCh = _esc((key[0] || 'G').toUpperCase());
     var inner = path

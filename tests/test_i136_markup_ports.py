@@ -201,3 +201,43 @@ def test_flip_card_hover_trigger_reaches_both_twins(core_js):
     assert ":hover #fci" in _gas_isolated(core_js, [b])[0]
     b["trigger_on_hover"] = "yes"
     assert 'data-hover' not in _py_fresh(b) and ":hover #fci" not in _gas_isolated(core_js, [b])[0]
+
+
+def test_default_logo_grid_shows_all_twenty_apps_in_both_twins(core_js):
+    blocks = [{"type": "workspace_logo_grid"},
+              {"type": "workspace_logo_grid", "title": "All supported apps", "cols": 5, "size": 40, "greyscale": False},
+              {"type": "workspace_logo_grid", "apps": ["gemini_enterprise"]}]
+    gas = _gas_isolated(core_js, blocks)
+    for b, g in zip(blocks[:2], gas[:2]):
+        for html in (_py_fresh(b), g):
+            for label in ("Classroom", "Vault", "Groups", "Tasks", "Contacts", "Jamboard", "Admin", "Appsheet", "Currents"):
+                assert ">%s<" % label in html
+            assert html.count('font-weight:500;text-align:center;">') == 20
+    for html in (_py_fresh(blocks[2]), gas[2]):
+        assert "Gemini enterprise" in html and "Gemini_enterprise" not in html
+
+
+def test_gauge_judges_nothing_without_a_threshold_and_names_value_in_aria(core_js):
+    b = {"type": "gauge_sla", "title": "Uptime", "value": 99.4, "max_value": 100, "unit": "%", "label": "ok"}
+    for html in (_py_fresh(b), _gas_isolated(core_js, [b])[0]):
+        assert "HEALTHY" not in html and "BREACHED" not in html and "WARNING" not in html
+        assert 'aria-label="Uptime: 99.4%, ok"' in html
+    b["threshold"] = 95
+    for html in (_py_fresh(b), _gas_isolated(core_js, [b])[0]):
+        assert 'aria-label="Uptime: 99.4%, healthy, ok"' in html
+    j = {"type": "gauge_sla", "title": ["x"], "value": 1}
+    for html in (_py_fresh(j), _gas_isolated(core_js, [j])[0]):
+        assert "['x']" not in html and "object Object" not in html
+
+
+def test_footnote_group_is_an_endnotes_list_and_junk_numbers_fall_back(core_js):
+    b = {"type": "footnote_group", "footnotes": [{"id": {}, "text": "a"}, {"id": ["x"], "number": 5, "text": "b"}]}
+    for html in (_py_fresh(b), _gas_isolated(core_js, [b])[0]):
+        assert 'role="doc-endnotes"' in html and 'aria-label="Footnotes"' in html and "<ol" in html and "<sup" in html
+        assert "[1]" in html and "[5]" in html and "object Object" not in html
+
+
+def test_markdown_block_prefers_content_over_text(core_js):
+    b = {"type": "markdown_block", "content": "new", "text": "old"}
+    for html in (_py_fresh(b), _gas_isolated(core_js, [b])[0]):
+        assert ">new<" in html and "old" not in html

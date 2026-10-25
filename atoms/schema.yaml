@@ -1278,10 +1278,10 @@ blocks:
     is_up: bool (optional)
     accent: string (optional)
 - type: progress_bar
-  description: Animated CSS progress bar with glow pulse effect
+  description: Progress bar with an animated width transition, an optional percentage and an optional caption
   compact_description: labelled horizontal progress bar with percentage
   source: *id002
-  routing_text: "Horizontal bar showing how much of a task, list or goal is complete, as a filled share of the total (for example 6 of 10 done). Animated CSS fill with a soft glow."
+  routing_text: "Horizontal bar showing how much of a task, list or goal is complete, as a filled share of the total (for example 6 of 10 done). Animated fill, optional percentage and caption."
   intent_phrases:
   - "I need to show users how long their file upload is taking."
   - "Can I get something that visually indicates how much of a process is complete?"
@@ -7403,13 +7403,12 @@ blocks:
     url: https://github.com/thesysdev/openui
     license: MIT
 - type: markdown_block
-  description: Renders an arbitrary GitHub-Flavoured Markdown string as formatted
-    HTML — bold, italic, inline code, fenced code blocks, lists, tables, blockquotes,
-    and links. Useful when content is authored in or retrieved as Markdown and needs
-    faithful rendering without mapping to individual atoms. Adapted from the MarkDownRenderer
+  description: Renders a Markdown string as formatted inline HTML - bold, italic, inline
+    code and links (http, https, mailto, tel or relative). Block syntax (headings,
+    lists, tables, fenced code) is not rendered. Adapted from the MarkDownRenderer
     pattern in OpenUI OUI benchmark samples.
-  compact_description: GFM markdown string rendered to HTML inline
-  routing_text: "Renders an arbitrary GitHub-Flavoured Markdown string as formatted HTML — bold, italic, inline code, fenced code blocks, lists, tables, blockquotes, and links. Useful when content is authored in or re"
+  compact_description: inline markdown string (bold, italic, code, links) rendered to HTML
+  routing_text: "Renders a Markdown string as formatted inline HTML - bold, italic, inline code and links. Block syntax (headings, lists, tables, fenced code) is not rendered; use separate atoms for those."
   intent_phrases:
   - "I need to display user-submitted tips and tricks formatted nicely."
   - "Show me instructions with bullet points and bolding from an external source."

@@ -1482,13 +1482,7 @@ _RENDERERS['entity_list'] = function(b) {
 
 _RENDERERS['markdown_block'] = function(b) {
   if (!b || typeof b !== 'object') b = {};
-  var raw = (typeof b.text === 'string' && b.text) ? b.text : b.content;
-  var text = '';
-  if (typeof raw === 'string') {
-    text = raw;
-  } else if (typeof raw === 'number' && !isNaN(raw)) {
-    text = String(raw);
-  }
+  var text = _textLoose(b.content) || _textLoose(b.text);
   var style = b.variant === 'compact' ? 'margin:0.5rem 0;' : 'margin:1rem 0;';
   var html = _md_inline(text);
   return '<div data-cb="node" data-key="' + _ckey(undefined, 'markdown_block') + '" class="markdown-content asw-markdown-block" style="' + style + '">' + html + '</div>';

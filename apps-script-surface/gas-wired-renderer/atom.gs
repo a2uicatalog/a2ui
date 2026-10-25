@@ -2544,21 +2544,15 @@ _RENDERERS['footnote_group'] = function(b) {
       num = idx;
     } else {
       text = typeof item.text === 'string' ? item.text : '';
-      if ((typeof item.id === 'string' && item.id.length > 0) || (typeof item.id === 'number' && !isNaN(item.id))) {
-        num = item.id;
-      } else if (item.number !== undefined && item.number !== null && item.number !== '') {
-        num = item.number;
-      } else {
-        num = idx;
-      }
+      num = _textLoose(item.id) || _textLoose(item.number) || idx;
     }
     var numStr = String(num);
-    rows += '<div data-cb="ref" data-key="' + _esc(numStr) + '" style="display:flex;gap:8px;font-size:0.82rem;color:var(--muted,#5f6368);padding:4px 0;">' +
-      '<span data-cb="label" data-key="' + _esc(numStr) + '" style="font-weight:700;flex-shrink:0;">[' + _esc(numStr) + ']</span>' +
-      '<span>' + _md_inline(text) + '</span></div>';
+    rows += '<li data-cb="ref" data-key="' + _esc(numStr) + '" style="display:flex;gap:8px;font-size:0.82rem;color:var(--muted,#5f6368);padding:4px 0;">' +
+      '<sup data-cb="label" data-key="' + _esc(numStr) + '" style="font-weight:700;flex-shrink:0;">[' + _esc(numStr) + ']</sup>' +
+      '<span>' + _md_inline(text) + '</span></li>';
   }
 
-  return '<div style="border-top:2px solid #e5e7eb;padding-top:12px;margin-top:2rem;">' + rows + '</div>';
+  return '<div role="doc-endnotes" aria-label="Footnotes" style="border-top:2px solid #e5e7eb;padding-top:12px;margin-top:2rem;"><ol role="list" style="list-style:none;margin:0;padding:0;">' + rows + '</ol></div>';
 };
 
 _RENDERERS['collapsible_panel'] = function(b) {
