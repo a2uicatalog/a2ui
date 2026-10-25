@@ -1361,6 +1361,11 @@ function _m3Segdist(px, py, ax, ay, bx, by) {
   return Math.sqrt(ex * ex + ey * ey);
 }
 
+function _m3My(lat) {
+  var clat = Math.max(-85.0, Math.min(85.0, lat));
+  var rad = (Math.PI / 4.0) + (clat * Math.PI / 360.0);
+  return Math.log(Math.tan(rad));
+}
 
 var _M3_TURNS = [-28, 52, -10, 38, -34, 64];  // camera.follow angles (twin of _MAP3D_TURNS)
 // piecewise-linear calc() of column j of the camera keys over var(--p,1) (twin of _map3d_keyed)
@@ -1390,10 +1395,51 @@ _RENDERERS['motion_map3d'] = function(b) {
   var seed = _ffInt(b.seed, 7, 0, 9999);
   var notes = [];
 
+  // ground validation
+  var groundRaw = b.ground;
+  var groundObj = null;
+  var gw = null;
+  var gSvg = '';
+  var gAlt = '';
+  if (groundRaw !== undefined && groundRaw !== null) {
+    if (typeof groundRaw !== 'object' || Array.isArray(groundRaw)) {
+      notes.push('Ground left out: unknown set.');
+    } else {
+      var gSet = groundRaw.set;
+      if (gSet !== 'world-countries' && gSet !== 'europe-countries' && gSet !== 'us-states') {
+        notes.push('Ground left out: unknown set.');
+      } else {
+        var winRaw = groundRaw.window;
+        var winOk = false;
+        if (Array.isArray(winRaw) && winRaw.length === 4) {
+          var allFin = true;
+          for (var wi = 0; wi < 4; wi++) {
+            if (!(typeof winRaw[wi] === 'number' && isFinite(winRaw[wi]))) {
+              allFin = false;
+              break;
+            }
+          }
+          if (allFin) {
+            var l0 = winRaw[0], l1 = winRaw[1], a0 = winRaw[2], a1 = winRaw[3];
+            if (l0 >= -180 && l0 <= 180 && l1 >= -180 && l1 <= 180 && a0 >= -85 && a0 <= 85 && a1 >= -85 && a1 <= 85 && l0 < l1 && a0 < a1) {
+              winOk = true;
+              gw = [l0, l1, a0, a1, _m3My(a0), _m3My(a1)];
+            }
+          }
+        }
+        if (!winOk) {
+          notes.push('Ground left out: window needs [lon0, lon1, lat0, lat1].');
+        } else {
+          groundObj = groundRaw;
+        }
+      }
+    }
+  }
+
   var sts = [], byid = {}, bad = 0;
   var raw = Array.isArray(b.stations) ? b.stations : [];
   var rawSlice = raw.slice(0, 24);
-  var i, s, sid, lab, st;
+  var i, s, sid, lab, st, sx, sy, slon, slat;
   for (i = 0; i < rawSlice.length; i++) {
     s = _m3Obj(rawSlice[i]);
     sid = (typeof s.id === 'string' && _M3_ID.test(s.id)) ? s.id : 's' + String(i + 1);
@@ -1402,13 +1448,30 @@ _RENDERERS['motion_map3d'] = function(b) {
       continue;
     }
     lab = _cvStr(s.label, 24) || sid;
+    sx = null;
+    sy = null;
+    if (gw !== null) {
+      slon = s.lon;
+      slat = s.lat;
+      if (typeof slon === 'number' && isFinite(slon) && typeof slat === 'number' && isFinite(slat)) {
+        sx = (slon - gw[0]) / (gw[1] - gw[0]) * 100.0;
+        sy = (gw[5] - _m3My(slat)) / (gw[5] - gw[4]) * 100.0;
+        sx = Math.max(0.0, Math.min(100.0, sx));
+        sy = Math.max(0.0, Math.min(100.0, sy));
+      }
+    }
+    if (sx === null) {
+      sx = _m3N(s.x, 50, 0, 100);
+      sy = _m3N(s.y, 50, 0, 100);
+    }
     st = {
       id: sid,
-      x: _m3N(s.x, 50, 0, 100),
-      y: _m3N(s.y, 50, 0, 100),
+      x: sx,
+      y: sy,
       label: lab,
       state: (typeof s.state === 'string' && _M3_STATES.indexOf(s.state) !== -1) ? s.state : 'idle',
-      on: false
+      on: false,
+      dwell: (s.dwell !== undefined && s.dwell !== null) ? _m3N(s.dwell, 0.0, 0.0, 0.3) : 0.0
     };
     byid[sid] = st;
     sts.push(st);
@@ -1421,6 +1484,112 @@ _RENDERERS['motion_map3d'] = function(b) {
   }
   if (!sts.length) {
     notes.push('No stations to show.');
+  }
+
+  // ground svg generation
+  if (groundObj !== null && gw !== null) {
+    var gFill = _ffHex(groundObj.fill, '') || '#2a3342';
+    var gAcc = _ffHex(groundObj.accent, '') || '#3a4a63';
+    var hlRaw = Array.isArray(groundObj.highlight) ? groundObj.highlight : [];
+    var hlSet = {};
+    for (var hli = 0; hli < hlRaw.length && hli < 24; hli++) {
+      if (typeof hlRaw[hli] === 'string') {
+        hlSet[hlRaw[hli]] = true;
+      }
+    }
+    var regions = _chRegions(groundObj.set);
+    var gPaths = [];
+    var hlNames = [];
+    var nKeptRegions = 0;
+    var totalPts = 0;
+    var capped = false;
+    var gl0 = gw[0], gl1 = gw[1], gmy0 = gw[4], gmy1 = gw[5];
+    var gDlon = gl1 - gl0;
+    var gDmy = gmy1 - gmy0;
+
+    for (var ri = 0; ri < regions.length; ri++) {
+      if (nKeptRegions >= 400 || totalPts >= 6000) {
+        capped = true;
+        break;
+      }
+      var rId = regions[ri][0];
+      var rName = regions[ri][1];
+      var rPolys = regions[ri][2];
+      var keptRings = [];
+
+      for (var pli = 0; pli < rPolys.length; pli++) {
+        var poly = rPolys[pli];
+        for (var rgi = 0; rgi < poly.length; rgi++) {
+          if (totalPts >= 6000) {
+            capped = true;
+            break;
+          }
+          var ring = poly[rgi];
+          var pPts = [];
+          var hasInside = false;
+          for (var pti = 0; pti < ring.length; pti += 2) {
+            var px = (ring[pti] - gl0) / gDlon * 100.0;
+            var py = (gmy1 - _m3My(ring[pti + 1])) / gDmy * 100.0;
+            if (px >= -5.0 && px <= 105.0 && py >= -5.0 && py <= 105.0) {
+              hasInside = true;
+            }
+            pPts.push([px, py]);
+          }
+          if (hasInside && pPts.length) {
+            if (totalPts + pPts.length > 6000) {
+              capped = true;
+              break;
+            }
+            keptRings.push(pPts);
+            totalPts += pPts.length;
+          }
+        }
+        if (capped) break;
+      }
+
+      if (keptRings.length) {
+        nKeptRegions++;
+        var isHl = Object.prototype.hasOwnProperty.call(hlSet, rId);
+        if (isHl) {
+          hlNames.push(rName);
+        }
+        var col = isHl ? gAcc : gFill;
+        var dParts = [];
+        for (var kri = 0; kri < keptRings.length; kri++) {
+          var kRing = keptRings[kri];
+          var sub = 'M ' + _m3F(kRing[0][0], 2) + ' ' + _m3F(kRing[0][1], 2);
+          for (var ptj = 1; ptj < kRing.length; ptj++) {
+            sub += ' L ' + _m3F(kRing[ptj][0], 2) + ' ' + _m3F(kRing[ptj][1], 2);
+          }
+          sub += ' Z';
+          dParts.push(sub);
+        }
+        gPaths.push('<path d="' + dParts.join(' ') + '" fill="' + col + '" stroke="#5b6b82" stroke-width="0.12" vector-effect="none"></path>');
+      }
+    }
+
+    if (capped) {
+      notes.push('Ground geometry capped at 400 regions or 6000 points.');
+    }
+    gSvg = '<svg class="m3-ground" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none">' + gPaths.join('') + '</svg>';
+    gAlt = 'Map of ' + String(nKeptRegions) + ' regions';
+    if (hlNames.length) {
+      var escHlNames = [];
+      for (var hni = 0; hni < hlNames.length; hni++) {
+        escHlNames.push(_esc(hlNames[hni]));
+      }
+      gAlt += ', highlighting ' + escHlNames.join(', ');
+    }
+    gAlt += '.';
+  }
+
+  // arc option
+  var arcRaw = b.arc;
+  var arcVal = 0.0;
+  if (arcRaw === true) {
+    arcVal = 0.25;
+  } else if (typeof arcRaw === 'number' && isFinite(arcRaw)) {
+    arcVal = Math.max(0.0, Math.min(0.6, arcRaw));
   }
 
   function cleanRoute(rraw) {
@@ -1499,12 +1668,24 @@ _RENDERERS['motion_map3d'] = function(b) {
   }
 
   var segs = [];
-  var legIdx, lRt, a, c;
+  var legIdx, lRt, a, c, slen, midX, midY, sign, nx, ny, cx, cy;
   for (legIdx = 0; legIdx < legs.length; legIdx++) {
     lRt = legs[legIdx].route;
     for (i = 0; i < lRt.length - 1; i++) {
       a = byid[lRt[i]];
       c = byid[lRt[i + 1]];
+      slen = Math.sqrt((c.x - a.x) * (c.x - a.x) + (c.y - a.y) * (c.y - a.y));
+      cx = 0.0;
+      cy = 0.0;
+      if (arcVal > 0.0 && slen > 0) {
+        midX = 0.5 * (a.x + c.x);
+        midY = 0.5 * (a.y + c.y);
+        sign = legs[legIdx].back ? -1.0 : 1.0;
+        nx = -(c.y - a.y) / slen * sign;
+        ny = (c.x - a.x) / slen * sign;
+        cx = midX + nx * arcVal * slen;
+        cy = midY + ny * arcVal * slen;
+      }
       segs.push({
         leg: legIdx,
         'from': lRt[i],
@@ -1513,7 +1694,10 @@ _RENDERERS['motion_map3d'] = function(b) {
         ay: a.y,
         bx: c.x,
         by: c.y,
-        len: Math.sqrt((c.x - a.x) * (c.x - a.x) + (c.y - a.y) * (c.y - a.y)),
+        cx: cx,
+        cy: cy,
+        hasArc: arcVal > 0.0 && slen > 0,
+        len: slen,
         color: legs[legIdx].color
       });
     }
@@ -1526,15 +1710,35 @@ _RENDERERS['motion_map3d'] = function(b) {
   var nSegs = segs.length;
   var W = _M3_P1 - _M3_P0;
   var dw = nSegs ? Math.min(0.04, W * 0.3 / Math.max(1, nSegs - 1)) : 0.04;
-  var draw = W - dw * Math.max(0, nSegs - 1);
+  var totDrawOrig = W - dw * Math.max(0, nSegs - 1);
+
+  // dwell scheduling
+  var dwellArr = [];
+  var sumDwell = 0.0;
+  for (i = 0; i < segs.length; i++) {
+    var dv = byid[segs[i]['to']].dwell;
+    dwellArr.push(dv);
+    sumDwell += dv;
+  }
+  if (sumDwell > 0.5 * W && sumDwell > 0) {
+    var dwellScale = (0.5 * W) / sumDwell;
+    for (i = 0; i < dwellArr.length; i++) {
+      dwellArr[i] *= dwellScale;
+    }
+    sumDwell = 0.5 * W;
+  }
+  var drawAvail = totDrawOrig - sumDwell;
+
   var cum = 0.0;
+  var cumDwell = 0.0;
   var seen = {}, k, share;
   for (i = 0; i < segs.length; i++) {
     s = segs[i];
     share = total > 0 ? (s.len / total) : 1.0 / nSegs;
-    s.s = _M3_P0 + dw * i + draw * cum;
-    s.w = draw * share;
+    s.s = _M3_P0 + dw * i + drawAvail * cum + cumDwell;
+    s.w = drawAvail * share;
     cum += share;
+    cumDwell += dwellArr[i];
     k = s['from'] + '-' + s['to'];
     seen[k] = (Object.prototype.hasOwnProperty.call(seen, k) ? seen[k] : 0) + 1;
     s.key = seen[k] === 1 ? k : k + '-' + String(seen[k]);
@@ -1653,21 +1857,94 @@ _RENDERERS['motion_map3d'] = function(b) {
     notes.push(String(droppedMsgs) + (droppedMsgs === 1 ? ' message was' : ' messages were') + ' left out.');
   }
 
+  // cities & blocks
+  var citiesRaw = Array.isArray(b.cities) ? b.cities : null;
+  var citiesList = [];
+  if (citiesRaw !== null) {
+    var cBad = 0;
+    for (var ci = 0; ci < citiesRaw.length; ci++) {
+      if (citiesList.length >= 8) {
+        cBad++;
+        continue;
+      }
+      if (typeof citiesRaw[ci] === 'object' && citiesRaw[ci] !== null && !Array.isArray(citiesRaw[ci])) {
+        citiesList.push(citiesRaw[ci]);
+      } else {
+        cBad++;
+      }
+    }
+    if (cBad) {
+      notes.push(String(cBad) + (cBad === 1 ? ' city was' : ' cities were') + ' left out (at most 8).');
+    }
+  }
+
   var blocks = [];
   var braw = Array.isArray(b.blocks) ? b.blocks : [];
+  var explicitBlocks = false;
   var e;
   if (braw.length) {
+    explicitBlocks = true;
     for (i = 0; i < braw.length; i++) {
       e = braw[i];
       if (typeof e === 'object' && e !== null && !Array.isArray(e)) {
         blocks.push([_m3N(e.x, 0, 0, 100), _m3N(e.y, 0, 0, 100), _m3N(e.w, 8, 1, 100), _m3N(e.h, 8, 1, 100), _m3N(e.height, 6, 0, 40)]);
       }
     }
-    if (blocks.length > 200) {
-      notes.push('Showing the first 200 of ' + String(blocks.length) + ' blocks.');
-      blocks = blocks.slice(0, 200);
+  }
+
+  if (citiesList.length) {
+    for (var cli = 0; cli < citiesList.length; cli++) {
+      var cItem = citiesList[cli];
+      var ccx = _m3N(cItem.x, 0, 0, 100);
+      var ccy = _m3N(cItem.y, 0, 0, 100);
+      var ccw = _m3N(cItem.w, 8, 1, 100);
+      var cch = _m3N(cItem.h, 8, 1, 100);
+      var cCount = _ffInt(cItem.count, 4, 1, 24);
+      var cHeight = _m3N(cItem.height, 8, 1, 40);
+      var cSeed = (cItem.seed !== undefined && cItem.seed !== null) ? _ffInt(cItem.seed, seed + cli, 0, 9999) : (seed + cli);
+      var cRs = [(cSeed * 7919 + 104729) % 2147483646 + 1];
+
+      var cRnd = function() {
+        cRs[0] = (cRs[0] * 16807) % 2147483647;
+        return cRs[0] / 2147483647;
+      };
+
+      var cG = Math.ceil(Math.sqrt(cCount));
+      var cellW = ccw / cG;
+      var cellH = cch / cG;
+      var cbw = cellW * 0.6;
+      var cbh = cellH * 0.6;
+      var bPlaced = 0;
+
+      for (var cgy = 0; cgy < cG; cgy++) {
+        for (var cgx = 0; cgx < cG; cgx++) {
+          if (bPlaced >= cCount) break;
+          var rJitX = cRnd();
+          var rJitY = cRnd();
+          var rH = cRnd();
+          var cbx = ccx + (cgx + 0.2) * cellW + (rJitX - 0.5) * cellW * 0.3;
+          var cby = ccy + (cgy + 0.2) * cellH + (rJitY - 0.5) * cellH * 0.3;
+          var cbht = cHeight * (0.45 + 0.55 * rH);
+          var skip = false;
+          var cenX = cbx + cbw / 2.0;
+          var cenY = cby + cbh / 2.0;
+          for (var csi = 0; csi < segs.length; csi++) {
+            if (_m3Segdist(cenX, cenY, segs[csi].ax, segs[csi].ay, segs[csi].bx, segs[csi].by) < 1.2) {
+              skip = true;
+              break;
+            }
+          }
+          if (!skip) {
+            blocks.push([cbx, cby, cbw, cbh, cbht]);
+          }
+          bPlaced++;
+        }
+        if (bPlaced >= cCount) break;
+      }
     }
-  } else {
+  }
+
+  if (!explicitBlocks && !citiesList.length && groundObj === null) {
     var rs = [(seed * 7919 + 104729) % 2147483646 + 1];
     function rnd() {
       rs[0] = (rs[0] * 16807) % 2147483647;
@@ -1675,7 +1952,7 @@ _RENDERERS['motion_map3d'] = function(b) {
     }
     var N = 7;
     var csize = 100 / N;
-    var gy, gx, r1, r2, r3, r4, bw, bh, bx, by, cx, cy, dm, d, si;
+    var gy, gx, r1, r2, r3, r4, bw, bh, bx, by, cx0, cy0, dm, d, si;
     for (gy = 0; gy < N; gy++) {
       for (gx = 0; gx < N; gx++) {
         r1 = rnd(); r2 = rnd(); r3 = rnd(); r4 = rnd();
@@ -1683,21 +1960,26 @@ _RENDERERS['motion_map3d'] = function(b) {
         bh = csize - 3 - r3 * 4;
         bx = gx * csize + 1.5;
         by = gy * csize + 1.5;
-        cx = bx + bw / 2;
-        cy = by + bh / 2;
+        cx0 = bx + bw / 2;
+        cy0 = by + bh / 2;
         if (r1 < 0.12) continue;
         dm = 1000.0;
         for (si = 0; si < segs.length; si++) {
-          dm = Math.min(dm, _m3Segdist(cx, cy, segs[si].ax, segs[si].ay, segs[si].bx, segs[si].by));
+          dm = Math.min(dm, _m3Segdist(cx0, cy0, segs[si].ax, segs[si].ay, segs[si].bx, segs[si].by));
         }
         for (si = 0; si < sts.length; si++) {
-          dm = Math.min(dm, Math.sqrt((sts[si].x - cx) * (sts[si].x - cx) + (sts[si].y - cy) * (sts[si].y - cy)) - 3);
+          dm = Math.min(dm, Math.sqrt((sts[si].x - cx0) * (sts[si].x - cx0) + (sts[si].y - cy0) * (sts[si].y - cy0)) - 3);
         }
         if (dm < 7) continue;
-        d = Math.sqrt((cx - 50) * (cx - 50) + (cy - 50) * (cy - 50)) / 70.7;
+        d = Math.sqrt((cx0 - 50) * (cx0 - 50) + (cy0 - 50) * (cy0 - 50)) / 70.7;
         blocks.push([bx, by, bw, bh, (3 + (1 - d) * 14 * r4 + r4 * 4) * Math.max(0.2, Math.min(1.0, (dm - 7) / 18))]);
       }
     }
+  }
+
+  if (blocks.length > 200) {
+    notes.push('Showing the first 200 of ' + String(blocks.length) + ' blocks.');
+    blocks = blocks.slice(0, 200);
   }
 
   var faces = '';
@@ -1714,7 +1996,13 @@ _RENDERERS['motion_map3d'] = function(b) {
     // a back leg drives in its own lane (see the Python twin)
     var ox = 0, oy = 0;
     if (legs[s.leg].back && s.len > 0) { ox = -(s.by - s.ay) / s.len * 1.2; oy = (s.bx - s.ax) / s.len * 1.2; }
-    paths += '<path data-cb="link" data-key="' + _esc(s.key) + '" data-leg="' + String(s.leg) + '" data-m3="seg" d="M' + _m3F(s.ax + ox, 1) + ',' + _m3F(s.ay + oy, 1) + ' L' + _m3F(s.bx + ox, 1) + ',' + _m3F(s.by + oy, 1) +
+    var dStr = '';
+    if (s.hasArc) {
+      dStr = 'M' + _m3F(s.ax + ox, 1) + ',' + _m3F(s.ay + oy, 1) + ' Q' + _m3F(s.cx + ox, 1) + ',' + _m3F(s.cy + oy, 1) + ' ' + _m3F(s.bx + ox, 1) + ',' + _m3F(s.by + oy, 1);
+    } else {
+      dStr = 'M' + _m3F(s.ax + ox, 1) + ',' + _m3F(s.ay + oy, 1) + ' L' + _m3F(s.bx + ox, 1) + ',' + _m3F(s.by + oy, 1);
+    }
+    paths += '<path data-cb="link" data-key="' + _esc(s.key) + '" data-leg="' + String(s.leg) + '" data-m3="seg" d="' + dStr +
              '" pathLength="1" fill="none" stroke="' + s.color + '" stroke-width="1.4" stroke-linejoin="round" style="stroke-dasharray:1 1;stroke-dashoffset:calc(1 - clamp(0,calc((var(--p,1) - ' +
              _m3F(s.s, 3) + ')/' + _m3F(Math.max(s.w, 0.001), 3) + '),1));"></path>';
   }
@@ -1754,27 +2042,59 @@ _RENDERERS['motion_map3d'] = function(b) {
   }
 
   var msgHtml = '';
-  var m, mLegObj, mPts, segLens, totL, pi, dx, dy, slen, cumF, curL, qStr, xTerms, yTerms, cPrev, cNext, cSpan, termSub, leftCalc, topCalc, opCalc;
+  var m, mLegObj, mPts, segLens, totL, pi, dx, dy, slen0, cumF, curL, qStr, xTerms, yTerms, cPrev, cNext, cSpan, termSub, leftCalc, topCalc, opCalc;
   for (i = 0; i < messages.length; i++) {
     m = messages[i];
     mLegObj = legs[m.leg];
-    mPts = [];
     var rawPtRoute = mLegObj.route.slice();
     if (m.back) {
       rawPtRoute.reverse();
     }
-    for (pi = 0; pi < rawPtRoute.length; pi++) {
-      mPts.push(byid[rawPtRoute[pi]]);
+    mPts = [];
+    for (pi = 0; pi < rawPtRoute.length - 1; pi++) {
+      var sFrom = rawPtRoute[pi];
+      var sTo = rawPtRoute[pi + 1];
+      var cSeg = null;
+      var fwd = true;
+      for (var sgi = 0; sgi < segs.length; sgi++) {
+        if (segs[sgi].leg === m.leg && segs[sgi]['from'] === sFrom && segs[sgi]['to'] === sTo) {
+          cSeg = segs[sgi];
+          fwd = true;
+          break;
+        } else if (segs[sgi].leg === m.leg && segs[sgi]['from'] === sTo && segs[sgi]['to'] === sFrom) {
+          cSeg = segs[sgi];
+          fwd = false;
+          break;
+        }
+      }
+      if (cSeg && cSeg.hasArc) {
+        var segAx = fwd ? cSeg.ax : cSeg.bx;
+        var segAy = fwd ? cSeg.ay : cSeg.by;
+        var segBx = fwd ? cSeg.bx : cSeg.ax;
+        var segBy = fwd ? cSeg.by : cSeg.ay;
+        var segCx = cSeg.cx;
+        var segCy = cSeg.cy;
+        for (var step = 0; step < 6; step++) {
+          var t = step / 6.0;
+          var omt = 1.0 - t;
+          var ppx = omt * omt * segAx + 2.0 * omt * t * segCx + t * t * segBx;
+          var ppy = omt * omt * segAy + 2.0 * omt * t * segCy + t * t * segBy;
+          mPts.push({ x: ppx, y: ppy });
+        }
+      } else {
+        mPts.push(byid[sFrom]);
+      }
     }
+    mPts.push(byid[rawPtRoute[rawPtRoute.length - 1]]);
 
     segLens = [];
     totL = 0.0;
     for (pi = 0; pi < mPts.length - 1; pi++) {
       dx = mPts[pi + 1].x - mPts[pi].x;
       dy = mPts[pi + 1].y - mPts[pi].y;
-      slen = Math.sqrt(dx * dx + dy * dy);
-      segLens.push(slen);
-      totL += slen;
+      slen0 = Math.sqrt(dx * dx + dy * dy);
+      segLens.push(slen0);
+      totL += slen0;
     }
 
     cumF = [0.0];
@@ -1847,6 +2167,9 @@ _RENDERERS['motion_map3d'] = function(b) {
   }
 
   var alt = [];
+  if (gAlt) {
+    alt.push(gAlt);
+  }
   if (legs.length) {
     if (legs.length === 1 && !legsMode) {
       var routeLabs = [];
@@ -1948,7 +2271,7 @@ _RENDERERS['motion_map3d'] = function(b) {
   if (kbad) notes.push(kbad + (kbad === 1 ? ' camera key was' : ' camera keys were') + ' left out (at must be a number from 0 to 1, each later than the one before; at most 8).');
 
   var plane = '<div class="m3-plane" style="transform:rotateX(calc(var(--tilt)*var(--e)*1deg)) rotateZ(calc(var(--rz)*var(--e)*1deg)) scale(var(--zm));">' +
-              faces + svg + '</div>';
+              gSvg + faces + svg + '</div>';
   // camera.track (v2): pan so the head of the route stays near the centre (see the Python twin)
   var trk = _m3N(cam.track, (fol && !userKeys) ? 0.6 : 0, 0, 1);
   if (trk > 0 && segs.length) {
@@ -1960,9 +2283,27 @@ _RENDERERS['motion_map3d'] = function(b) {
         hx += ' + ' + _m3F(sg.ax - segs[ti - 1].bx, 1) + jq;
         hy += ' + ' + _m3F(sg.ay - segs[ti - 1].by, 1) + jq;
       }
-      q = '*clamp(0,calc((var(--p,1) - ' + _m3F(sg.s, 3) + ')/' + _m3F(Math.max(sg.w, 0.001), 3) + '),1)';
-      hx += ' + ' + _m3F(sg.bx - sg.ax, 1) + q;
-      hy += ' + ' + _m3F(sg.by - sg.ay, 1) + q;
+      if (sg.hasArc) {
+        for (var stepi = 0; stepi < 6; stepi++) {
+          var t0 = stepi / 6.0;
+          var t1 = (stepi + 1) / 6.0;
+          var omt0 = 1.0 - t0;
+          var omt1 = 1.0 - t1;
+          var p0x = omt0 * omt0 * sg.ax + 2.0 * omt0 * t0 * sg.cx + t0 * t0 * sg.bx;
+          var p0y = omt0 * omt0 * sg.ay + 2.0 * omt0 * t0 * sg.cy + t0 * t0 * sg.by;
+          var p1x = omt1 * omt1 * sg.ax + 2.0 * omt1 * t1 * sg.cx + t1 * t1 * sg.bx;
+          var p1y = omt1 * omt1 * sg.ay + 2.0 * omt1 * t1 * sg.cy + t1 * t1 * sg.by;
+          var subS = sg.s + sg.w * t0;
+          var subW = sg.w / 6.0;
+          q = '*clamp(0,calc((var(--p,1) - ' + _m3F(subS, 3) + ')/' + _m3F(Math.max(subW, 0.001), 3) + '),1)';
+          hx += ' + ' + _m3F(p1x - p0x, 1) + q;
+          hy += ' + ' + _m3F(p1y - p0y, 1) + q;
+        }
+      } else {
+        q = '*clamp(0,calc((var(--p,1) - ' + _m3F(sg.s, 3) + ')/' + _m3F(Math.max(sg.w, 0.001), 3) + '),1)';
+        hx += ' + ' + _m3F(sg.bx - sg.ax, 1) + q;
+        hy += ' + ' + _m3F(sg.by - sg.ay, 1) + q;
+      }
     }
     root_vars += '--px:calc((50 - (' + hx + '))*' + _m3F(trk, 2) + '*1%);--py:calc((50 - (' + hy + '))*' + _m3F(trk, 2) + '*1%);';
     plane = plane.replace('scale(var(--zm));">', 'scale(var(--zm)) translate(var(--px),var(--py));">');

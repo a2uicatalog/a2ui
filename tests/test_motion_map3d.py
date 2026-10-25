@@ -506,3 +506,98 @@ def test_track_pans_both_planes_after_the_head_of_the_route():
     jumps = _py(dict(FULL, legs=[{"route": ["depot", "north"]}, {"route": ["port", "spare"]}], camera={"track": 1}))
     assert re.search(r"--px:calc\(\(50 - \(([^;]+)\)\)", jumps).group(1).count("clamp(") == 3   # two segments plus the jump to the second leg
     assert "translate(" not in _py(dict(LONG, camera={"follow": 2, "track": 0})) and "translate(" not in _py(LONG)
+
+
+NEW_CASES = [
+    # 1. Ground: valid sets and windows
+    dict(FULL, ground={"set": "us-states", "window": [-125, -65, 24, 50], "highlight": ["CA", "NY"], "fill": "#112233", "accent": "#445566"}),
+    dict(FULL, ground={"set": "europe-countries", "window": [-10, 30, 35, 65], "highlight": ["FRA", "DEU"]}),
+    dict(FULL, ground={"set": "world-countries", "window": [-180, 180, -58, 84], "highlight": ["USA", "CAN", "GBR"]}),
+    # Ground invalid inputs
+    dict(FULL, ground={"set": "unknown-set", "window": [-10, 10, 10, 20]}),
+    dict(FULL, ground={"set": "us-states", "window": "invalid"}),
+    dict(FULL, ground={"set": "us-states", "window": [-10, 10, 20]}),
+    dict(FULL, ground={"set": "us-states", "window": [10, -10, 20, 30]}),
+    dict(FULL, ground={"set": "us-states", "window": [-10, 10, 40, 20]}),
+    dict(FULL, ground={"set": "us-states", "window": [-200, 10, 20, 30]}),
+    dict(FULL, ground="not-an-object"),
+    dict(FULL, ground={"set": "us-states", "window": [-120, -70, 25, 48], "fill": HOSTILE, "accent": HOSTILE, "highlight": [HOSTILE] * 30}),
+    # 2. Station lon/lat projection
+    dict(FULL, ground={"set": "us-states", "window": [-125, -65, 24, 50]},
+         stations=[{"id": "sf", "lon": -122.4, "lat": 37.7, "label": "San Francisco"},
+                   {"id": "nyc", "lon": -74.0, "lat": 40.7, "label": "New York"}],
+         route=["sf", "nyc"]),
+    dict(FULL, stations=[{"id": "sf", "lon": -122.4, "lat": 37.7, "x": 10, "y": 20, "label": "SF"}], route=["sf"]),
+    dict(FULL, ground={"set": "us-states", "window": [-125, -65, 24, 50]},
+         stations=[{"id": "sf", "lon": "x", "lat": None, "x": 15, "y": 25}], route=["sf"]),
+    # 3. Cities
+    dict(FULL, cities=[{"x": 10, "y": 10, "w": 20, "h": 20, "count": 6, "seed": 42, "height": 12},
+                       {"x": 60, "y": 50, "w": 30, "h": 30, "count": 9}]),
+    dict(FULL, cities=[{"x": i * 10, "y": 10, "w": 8, "h": 8} for i in range(12)]),
+    dict(FULL, cities=["not-an-obj", None, {}]),
+    dict(FULL, blocks=[{"x": 5, "y": 5, "w": 10, "h": 10}],
+         cities=[{"x": 50, "y": 50, "w": 20, "h": 20, "count": 4}]),
+    # 4. Arc
+    dict(FULL, arc=True),
+    dict(FULL, arc=0.3),
+    dict(FULL, arc=0.6),
+    dict(FULL, arc=0.0),
+    dict(FULL, arc=-0.5),
+    dict(FULL, arc=1.5),
+    dict(FULL, arc="invalid"),
+    dict(FULL, arc=0.25, legs=[{"route": ["depot", "market"], "back": False}, {"route": ["depot", "market"], "back": True}]),
+    dict(FULL, arc=0.2, messages=[{"leg": 0, "text": "Packet", "at": 0.4}]),
+    dict(FULL, arc=0.2, camera={"track": 0.8, "follow": 2}),
+    # 5. Dwell
+    dict(FULL, stations=[dict(ST[0], dwell=0.1), dict(ST[1], dwell=0.15), dict(ST[2], dwell=0.05), ST[3], ST[4]]),
+    dict(FULL, stations=[dict(ST[0], dwell=0.3), dict(ST[1], dwell=0.3), dict(ST[2], dwell=0.3), ST[3], ST[4]]),
+    dict(FULL, stations=[dict(ST[0], dwell=-0.1), dict(ST[1], dwell=0.5), dict(ST[2], dwell="invalid")]),
+    # Combined features
+    dict(FULL, arc=0.25, ground={"set": "europe-countries", "window": [-10, 25, 40, 60], "highlight": ["FRA"]},
+         stations=[{"id": "par", "lon": 2.35, "lat": 48.85, "dwell": 0.1, "label": "Paris"},
+                   {"id": "ber", "lon": 13.4, "lat": 52.52, "label": "Berlin"}],
+         route=["par", "ber"],
+         cities=[{"x": 20, "y": 20, "w": 15, "h": 15, "count": 5}],
+         messages=[{"leg": 0, "text": "Msg"}],
+         camera={"track": 0.5}),
+]
+
+
+def test_new_cases_python_matches_gas(core_js):
+    py_outs = [_norm(_py(b)) for b in NEW_CASES]
+    gas_outs = [_norm(s) for s in _gas_batch(core_js, NEW_CASES)]
+    diffs = []
+    for i, (p, g) in enumerate(zip(py_outs, gas_outs)):
+        if p != g:
+            diffs.append((i, p, g))
+    if diffs:
+        idx, p, g = diffs[0]
+        pytest.fail(f"Mismatch at case {idx}:\nPAYLOAD: {json.dumps(NEW_CASES[idx])}\nPY:\n{p}\nGAS:\n{g}")
+
+
+def test_new_fields_do_what_they_say():
+    """Behaviour, not only twin parity (Distribution PM review of the Gemini draft)."""
+    g = dict(FULL, ground={"set": "world-countries", "window": [-84, 18, 14, 75], "highlight": ["FRA", "USA"]})
+    h = _py(g)
+    svg = re.search(r'<svg class="m3-ground"[^>]*>(.*?)</svg>', h, re.S)
+    assert svg and 'aria-hidden="true"' in svg.group(0) and svg.group(1).count("<path") > 20
+    assert svg.group(1).count('fill="#3a4a63"') == 2, "exactly the two highlighted regions take the accent"
+    assert "France" in h and "United States" in h   # named in the text alternative
+    # with a ground and no blocks/cities, no generated city is drawn
+    assert 'class="m3-b"' not in h
+    # lon/lat place the station only when a ground is valid
+    one = lambda extra: dict(FULL, stations=[{"id": "a", "lon": -77.5, "lat": 39.0, "x": 90, "y": 90}, {"id": "b", "x": 10, "y": 10}], route=["a", "b"], **extra)
+    with_g, without_g = _py(one({"ground": g["ground"]})), _py(one({}))
+    assert with_g != without_g and "left:90%;top:90%" in without_g.replace(".00", "")
+    # cities add their blocks and replace the whole-plane city
+    c = _py(dict(FULL, cities=[{"x": 10, "y": 10, "w": 20, "h": 20, "count": 6, "seed": 3}]))
+    assert 0 < c.count('class="m3-b"') <= 6
+    # arc bends each segment into one quadratic path; no arc keeps straight lines
+    assert _py(dict(FULL, arc=0.3)).count('data-m3="seg" d="M') == 3 and " Q" in _py(dict(FULL, arc=0.3)) and " Q" not in _py(FULL)
+    # dwell delays the next segment's start
+    starts = lambda b: [float(s) for s, _ in re.findall(r'stroke-dashoffset:calc\(1 - clamp\(0,calc\(\(var\(--p,1\) - ([\d.]+)\)/([\d.]+)\),1\)\)', _py(b))]
+    plain, held = starts(FULL), starts(dict(FULL, stations=[dict(ST[0]), dict(ST[1], dwell=0.1), ST[2], ST[3], ST[4]]))
+    assert plain[0] == held[0] and held[2] > plain[2]
+    # hostile colours and ids never reach markup
+    bad = _py(dict(FULL, ground={"set": "us-states", "window": [-120, -70, 25, 48], "fill": HOSTILE, "accent": HOSTILE, "highlight": [HOSTILE]}))
+    assert "<script" not in bad and "onload" not in bad

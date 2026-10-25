@@ -45337,6 +45337,12 @@ def _map3d_segdist(px, py, ax, ay, bx, by):
     return math.sqrt(ex * ex + ey * ey)
 
 
+def _map3d_my(lat):
+    clat = max(-85.0, min(85.0, lat))
+    rad = (math.pi / 4.0) + (clat * math.pi / 360.0)
+    return math.log(math.tan(rad))
+
+
 def _render_motion_map3d(b: dict) -> str:
     acc = _mo_ink(b, 'color', 'var(--mt-acc,#38bdf8)')
     tilt = _map3d_n(b.get('tilt'), 55, 0, 75)
@@ -45356,6 +45362,39 @@ def _render_motion_map3d(b: dict) -> str:
     kbad += max(0, len(kraw) - 8)
     seed = _ff_int(b.get('seed'), 7, 0, 9999)
     notes = []
+
+    # ground validation
+    ground_raw = b.get('ground')
+    ground_obj = None
+    gw = None
+    g_svg = ''
+    g_alt = ''
+    if ground_raw is not None:
+        if not isinstance(ground_raw, dict):
+            notes.append('Ground left out: unknown set.')
+        else:
+            g_set = ground_raw.get('set')
+            if g_set not in ('world-countries', 'europe-countries', 'us-states'):
+                notes.append('Ground left out: unknown set.')
+            else:
+                win_raw = ground_raw.get('window')
+                win_ok = False
+                if isinstance(win_raw, (list, tuple)) and len(win_raw) == 4:
+                    all_fin = True
+                    for num in win_raw:
+                        if not (isinstance(num, (int, float)) and not isinstance(num, bool) and math.isfinite(num)):
+                            all_fin = False
+                            break
+                    if all_fin:
+                        l0, l1, a0, a1 = float(win_raw[0]), float(win_raw[1]), float(win_raw[2]), float(win_raw[3])
+                        if -180.0 <= l0 <= 180.0 and -180.0 <= l1 <= 180.0 and -85.0 <= a0 <= 85.0 and -85.0 <= a1 <= 85.0 and l0 < l1 and a0 < a1:
+                            win_ok = True
+                            gw = (l0, l1, a0, a1, _map3d_my(a0), _map3d_my(a1))
+                if not win_ok:
+                    notes.append('Ground left out: window needs [lon0, lon1, lat0, lat1].')
+                else:
+                    ground_obj = ground_raw
+
     # stations: unique ids, at most 24
     sts, byid, bad = [], {}, 0
     raw = b.get('stations') if isinstance(b.get('stations'), list) else []
@@ -45366,8 +45405,21 @@ def _render_motion_map3d(b: dict) -> str:
             bad += 1
             continue
         lab = _cv_str(s.get('label'), 24) or sid
-        st = {'id': sid, 'x': _map3d_n(s.get('x'), 50, 0, 100), 'y': _map3d_n(s.get('y'), 50, 0, 100), 'label': lab,
-              'state': s.get('state') if s.get('state') in _MAP3D_STATES else 'idle', 'on': False}
+        sx, sy = None, None
+        if gw is not None:
+            slon = s.get('lon')
+            slat = s.get('lat')
+            if isinstance(slon, (int, float)) and not isinstance(slon, bool) and math.isfinite(slon) and isinstance(slat, (int, float)) and not isinstance(slat, bool) and math.isfinite(slat):
+                sx = (float(slon) - gw[0]) / (gw[1] - gw[0]) * 100.0
+                sy = (gw[5] - _map3d_my(float(slat))) / (gw[5] - gw[4]) * 100.0
+                sx = max(0.0, min(100.0, sx))
+                sy = max(0.0, min(100.0, sy))
+        if sx is None:
+            sx = _map3d_n(s.get('x'), 50, 0, 100)
+            sy = _map3d_n(s.get('y'), 50, 0, 100)
+        st = {'id': sid, 'x': sx, 'y': sy, 'label': lab,
+              'state': s.get('state') if s.get('state') in _MAP3D_STATES else 'idle', 'on': False,
+              'dwell': _map3d_n(s.get('dwell'), 0.0, 0.0, 0.3) if 'dwell' in s else 0.0}
         byid[sid] = st
         sts.append(st)
     if len(raw) > 24:
@@ -45376,6 +45428,82 @@ def _render_motion_map3d(b: dict) -> str:
         notes.append(str(bad) + (' station was' if bad == 1 else ' stations were') + ' left out (duplicate id or more than 24).')
     if not sts:
         notes.append('No stations to show.')
+
+    # ground svg generation
+    if ground_obj is not None and gw is not None:
+        g_fill = _ff_hex(ground_obj.get('fill'), '') or '#2a3342'
+        g_acc = _ff_hex(ground_obj.get('accent'), '') or '#3a4a63'
+        hl_raw = ground_obj.get('highlight') if isinstance(ground_obj.get('highlight'), list) else []
+        hl_set = set()
+        for h_item in hl_raw[:24]:
+            if isinstance(h_item, str):
+                hl_set.add(h_item)
+        regions = _ch_regions(ground_obj.get('set'))
+        g_paths = []
+        hl_names = []
+        n_kept_regions = 0
+        total_pts = 0
+        capped = False
+        gl0, gl1, _, _, gmy0, gmy1 = gw
+        g_dlon = gl1 - gl0
+        g_dmy = gmy1 - gmy0
+
+        for r_id, r_name, r_polys in regions:
+            if n_kept_regions >= 400 or total_pts >= 6000:
+                capped = True
+                break
+            kept_rings = []
+            for poly in r_polys:
+                for ring in poly:
+                    if total_pts >= 6000:
+                        capped = True
+                        break
+                    p_pts = []
+                    has_inside = False
+                    for pi in range(0, len(ring), 2):
+                        px = (ring[pi] - gl0) / g_dlon * 100.0
+                        py = (gmy1 - _map3d_my(ring[pi + 1])) / g_dmy * 100.0
+                        if -5.0 <= px <= 105.0 and -5.0 <= py <= 105.0:
+                            has_inside = True
+                        p_pts.append((px, py))
+                    if has_inside and p_pts:
+                        if total_pts + len(p_pts) > 6000:
+                            capped = True
+                            break
+                        kept_rings.append(p_pts)
+                        total_pts += len(p_pts)
+                if capped:
+                    break
+            if kept_rings:
+                n_kept_regions += 1
+                is_hl = r_id in hl_set
+                if is_hl:
+                    hl_names.append(r_name)
+                col = g_acc if is_hl else g_fill
+                d_parts = []
+                for k_ring in kept_rings:
+                    sub = 'M ' + _map3d_f(k_ring[0][0], 2) + ' ' + _map3d_f(k_ring[0][1], 2)
+                    for pt in k_ring[1:]:
+                        sub += ' L ' + _map3d_f(pt[0], 2) + ' ' + _map3d_f(pt[1], 2)
+                    sub += ' Z'
+                    d_parts.append(sub)
+                g_paths.append('<path d="' + ' '.join(d_parts) + '" fill="' + col + '" stroke="#5b6b82" stroke-width="0.12" vector-effect="none"></path>')
+
+        if capped:
+            notes.append('Ground geometry capped at 400 regions or 6000 points.')
+        g_svg = '<svg class="m3-ground" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none">' + ''.join(g_paths) + '</svg>'
+        g_alt = 'Map of ' + str(n_kept_regions) + ' regions'
+        if hl_names:
+            g_alt += ', highlighting ' + ', '.join(_cv_esc(nm) for nm in hl_names)
+        g_alt += '.'
+
+    # arc option
+    arc_raw = b.get('arc')
+    arc_val = 0.0
+    if arc_raw is True:
+        arc_val = 0.25
+    elif isinstance(arc_raw, (int, float)) and not isinstance(arc_raw, bool) and math.isfinite(arc_raw):
+        arc_val = max(0.0, min(0.6, float(arc_raw)))
 
     # legs / route processing
     raw_legs = b.get('legs') if isinstance(b.get('legs'), list) else None
@@ -45434,6 +45562,16 @@ def _render_motion_map3d(b: dict) -> str:
         l_rt = leg['route']
         for i in range(len(l_rt) - 1):
             a, c = byid[l_rt[i]], byid[l_rt[i + 1]]
+            slen = math.sqrt((c['x'] - a['x']) * (c['x'] - a['x']) + (c['y'] - a['y']) * (c['y'] - a['y']))
+            cx, cy = 0.0, 0.0
+            if arc_val > 0.0 and slen > 0:
+                mid_x = 0.5 * (a['x'] + c['x'])
+                mid_y = 0.5 * (a['y'] + c['y'])
+                sign = -1.0 if leg['back'] else 1.0
+                nx = - (c['y'] - a['y']) / slen * sign
+                ny = (c['x'] - a['x']) / slen * sign
+                cx = mid_x + nx * arc_val * slen
+                cy = mid_y + ny * arc_val * slen
             segs.append({
                 'leg': leg_idx,
                 'from': l_rt[i],
@@ -45442,7 +45580,10 @@ def _render_motion_map3d(b: dict) -> str:
                 'ay': a['y'],
                 'bx': c['x'],
                 'by': c['y'],
-                'len': math.sqrt((c['x'] - a['x']) * (c['x'] - a['x']) + (c['y'] - a['y']) * (c['y'] - a['y'])),
+                'cx': cx,
+                'cy': cy,
+                'has_arc': arc_val > 0.0 and slen > 0,
+                'len': slen,
                 'color': leg['color']
             })
 
@@ -45452,14 +45593,28 @@ def _render_motion_map3d(b: dict) -> str:
     n_segs = len(segs)
     W = _MAP3D_P1 - _MAP3D_P0
     dw = min(0.04, W * 0.3 / max(1, n_segs - 1)) if n_segs else 0.04
-    draw = W - dw * max(0, n_segs - 1)
+    tot_draw_orig = W - dw * max(0, n_segs - 1)
+
+    # dwell scheduling
+    dwell_arr = []
+    for s in segs:
+        dwell_arr.append(byid[s['to']]['dwell'])
+    sum_dwell = sum(dwell_arr)
+    if sum_dwell > 0.5 * W and sum_dwell > 0:
+        dwell_scale = (0.5 * W) / sum_dwell
+        dwell_arr = [dv * dwell_scale for dv in dwell_arr]
+        sum_dwell = 0.5 * W
+    draw_avail = tot_draw_orig - sum_dwell
+
     cum = 0.0
+    cum_dwell = 0.0
     seen = {}
     for i, s in enumerate(segs):
         share = (s['len'] / total) if total > 0 else 1.0 / n_segs
-        s['s'] = _MAP3D_P0 + dw * i + draw * cum
-        s['w'] = draw * share
+        s['s'] = _MAP3D_P0 + dw * i + draw_avail * cum + cum_dwell
+        s['w'] = draw_avail * share
         cum += share
+        cum_dwell += dwell_arr[i]
         k = s['from'] + '-' + s['to']
         seen[k] = seen.get(k, 0) + 1
         s['key'] = k if seen[k] == 1 else k + '-' + str(seen[k])
@@ -45560,17 +45715,77 @@ def _render_motion_map3d(b: dict) -> str:
     if dropped_msgs:
         notes.append(str(dropped_msgs) + (' message was' if dropped_msgs == 1 else ' messages were') + ' left out.')
 
-    # the city
+    # cities & blocks
+    cities_raw = b.get('cities') if isinstance(b.get('cities'), list) else None
+    cities_list = []
+    if cities_raw is not None:
+        c_bad = 0
+        for c_idx, c_item in enumerate(cities_raw):
+            if len(cities_list) >= 8:
+                c_bad += 1
+                continue
+            if isinstance(c_item, dict):
+                cities_list.append(c_item)
+            else:
+                c_bad += 1
+        if c_bad:
+            notes.append(str(c_bad) + (' city was' if c_bad == 1 else ' cities were') + ' left out (at most 8).')
+
     blocks = []
     braw = b.get('blocks') if isinstance(b.get('blocks'), list) else []
+    explicit_blocks = False
     if braw:
+        explicit_blocks = True
         for e in braw:
             if isinstance(e, dict):
                 blocks.append((_map3d_n(e.get('x'), 0, 0, 100), _map3d_n(e.get('y'), 0, 0, 100), _map3d_n(e.get('w'), 8, 1, 100), _map3d_n(e.get('h'), 8, 1, 100), _map3d_n(e.get('height'), 6, 0, 40)))
-        if len(blocks) > 200:
-            notes.append('Showing the first 200 of ' + str(len(blocks)) + ' blocks.')
-            blocks = blocks[:200]
-    else:
+
+    if cities_list:
+        for c_idx, c_item in enumerate(cities_list):
+            cx = _map3d_n(c_item.get('x'), 0, 0, 100)
+            cy = _map3d_n(c_item.get('y'), 0, 0, 100)
+            cw = _map3d_n(c_item.get('w'), 8, 1, 100)
+            ch = _map3d_n(c_item.get('h'), 8, 1, 100)
+            c_count = _ff_int(c_item.get('count'), 4, 1, 24)
+            c_height = _map3d_n(c_item.get('height'), 8, 1, 40)
+            c_seed = _ff_int(c_item.get('seed'), seed + c_idx, 0, 9999) if 'seed' in c_item else (seed + c_idx)
+            c_rs = [(c_seed * 7919 + 104729) % 2147483646 + 1]
+
+            def c_rnd(rs=c_rs):
+                rs[0] = rs[0] * 16807 % 2147483647
+                return rs[0] / 2147483647
+
+            G = int(math.ceil(math.sqrt(c_count)))
+            cell_w = cw / G
+            cell_h = ch / G
+            bw = cell_w * 0.6
+            bh = cell_h * 0.6
+            b_placed = 0
+            for gy in range(G):
+                for gx in range(G):
+                    if b_placed >= c_count:
+                        break
+                    r_jit_x = c_rnd()
+                    r_jit_y = c_rnd()
+                    r_h = c_rnd()
+                    bx = cx + (gx + 0.2) * cell_w + (r_jit_x - 0.5) * cell_w * 0.3
+                    by = cy + (gy + 0.2) * cell_h + (r_jit_y - 0.5) * cell_h * 0.3
+                    bht = c_height * (0.45 + 0.55 * r_h)
+                    # skip if within 1.2 units of a route segment
+                    skip = False
+                    cen_x = bx + bw / 2.0
+                    cen_y = by + bh / 2.0
+                    for s in segs:
+                        if _map3d_segdist(cen_x, cen_y, s['ax'], s['ay'], s['bx'], s['by']) < 1.2:
+                            skip = True
+                            break
+                    if not skip:
+                        blocks.append((bx, by, bw, bh, bht))
+                    b_placed += 1
+                if b_placed >= c_count:
+                    break
+
+    if not explicit_blocks and not cities_list and ground_obj is None:
         rs = [(seed * 7919 + 104729) % 2147483646 + 1]
 
         def rnd():
@@ -45595,6 +45810,11 @@ def _render_motion_map3d(b: dict) -> str:
                     continue
                 d = math.sqrt((cx - 50) * (cx - 50) + (cy - 50) * (cy - 50)) / 70.7
                 blocks.append((bx, by, bw, bh, (3 + (1 - d) * 14 * r4 + r4 * 4) * max(0.2, min(1.0, (dm - 7) / 18))))
+
+    if len(blocks) > 200:
+        notes.append('Showing the first 200 of ' + str(len(blocks)) + ' blocks.')
+        blocks = blocks[:200]
+
     faces = ''
     for (x, y, w, h, ht) in blocks:
         faces += ('<div class="m3-b" style="left:' + _map3d_f(x) + '%;top:' + _map3d_f(y) + '%;width:' + _map3d_f(w) + '%;height:' + _map3d_f(h) + '%;--hh:' + _map3d_f(ht * _MAP3D_U) + 'cqw;">'
@@ -45607,7 +45827,11 @@ def _render_motion_map3d(b: dict) -> str:
         ox = oy = 0.0
         if legs[s['leg']]['back'] and s['len'] > 0:
             ox, oy = -(s['by'] - s['ay']) / s['len'] * 1.2, (s['bx'] - s['ax']) / s['len'] * 1.2
-        paths += ('<path data-cb="link" data-key="' + _cv_esc(s['key']) + '" data-leg="' + str(s['leg']) + '" data-m3="seg" d="M' + _map3d_f(s['ax'] + ox, 1) + ',' + _map3d_f(s['ay'] + oy, 1) + ' L' + _map3d_f(s['bx'] + ox, 1) + ',' + _map3d_f(s['by'] + oy, 1)
+        if s.get('has_arc'):
+            d_str = 'M' + _map3d_f(s['ax'] + ox, 1) + ',' + _map3d_f(s['ay'] + oy, 1) + ' Q' + _map3d_f(s['cx'] + ox, 1) + ',' + _map3d_f(s['cy'] + oy, 1) + ' ' + _map3d_f(s['bx'] + ox, 1) + ',' + _map3d_f(s['by'] + oy, 1)
+        else:
+            d_str = 'M' + _map3d_f(s['ax'] + ox, 1) + ',' + _map3d_f(s['ay'] + oy, 1) + ' L' + _map3d_f(s['bx'] + ox, 1) + ',' + _map3d_f(s['by'] + oy, 1)
+        paths += ('<path data-cb="link" data-key="' + _cv_esc(s['key']) + '" data-leg="' + str(s['leg']) + '" data-m3="seg" d="' + d_str
                   + '" pathLength="1" fill="none" stroke="' + s['color'] + '" stroke-width="1.4" stroke-linejoin="round" style="stroke-dasharray:1 1;stroke-dashoffset:calc(1 - clamp(0,calc((var(--p,1) - '
                   + _map3d_f(s['s'], 3) + ')/' + _map3d_f(max(s['w'], 0.001), 3) + '),1));"></path>')
     svg = ('<svg class="m3-route" aria-hidden="true" focusable="false" viewBox="0 0 100 100" preserveAspectRatio="none">' + paths + '</svg>') if paths else ''
@@ -45644,7 +45868,35 @@ def _render_motion_map3d(b: dict) -> str:
     for m in messages:
         leg = legs[m['leg']]
         l_rt = list(reversed(leg['route'])) if m['back'] else list(leg['route'])
-        pts = [byid[rid] for rid in l_rt]
+        pts = []
+        for pi in range(len(l_rt) - 1):
+            s_from = l_rt[pi]
+            s_to = l_rt[pi + 1]
+            c_seg = None
+            fwd = True
+            for sg in segs:
+                if sg['leg'] == m['leg'] and sg['from'] == s_from and sg['to'] == s_to:
+                    c_seg = sg
+                    fwd = True
+                    break
+                elif sg['leg'] == m['leg'] and sg['from'] == s_to and sg['to'] == s_from:
+                    c_seg = sg
+                    fwd = False
+                    break
+            if c_seg and c_seg.get('has_arc'):
+                ax, ay = (c_seg['ax'], c_seg['ay']) if fwd else (c_seg['bx'], c_seg['by'])
+                bx, by = (c_seg['bx'], c_seg['by']) if fwd else (c_seg['ax'], c_seg['ay'])
+                cx, cy = c_seg['cx'], c_seg['cy']
+                for step in range(6):
+                    t = step / 6.0
+                    omt = 1.0 - t
+                    px = omt * omt * ax + 2.0 * omt * t * cx + t * t * bx
+                    py = omt * omt * ay + 2.0 * omt * t * cy + t * t * by
+                    pts.append({'x': px, 'y': py})
+            else:
+                pts.append(byid[s_from])
+        pts.append(byid[l_rt[-1]])
+
         # Calculate cumulative lengths
         seg_lens = []
         tot_l = 0.0
@@ -45722,6 +45974,8 @@ def _render_motion_map3d(b: dict) -> str:
 
     # text alternative
     alt = []
+    if g_alt:
+        alt.append(g_alt)
     if legs:
         if len(legs) == 1 and not legs_mode:
             alt.append('Route: ' + ', then '.join(byid[r]['label'] for r in legs[0]['route']) + '.')
@@ -45803,7 +46057,7 @@ def _render_motion_map3d(b: dict) -> str:
     if kbad:
         notes.append(str(kbad) + (' camera key was' if kbad == 1 else ' camera keys were') + ' left out (at must be a number from 0 to 1, each later than the one before; at most 8).')
     plane = ('<div class="m3-plane" style="transform:rotateX(calc(var(--tilt)*var(--e)*1deg)) rotateZ(calc(var(--rz)*var(--e)*1deg)) scale(var(--zm));">'
-             + faces + svg + '</div>')
+             + g_svg + faces + svg + '</div>')
     # camera.track (v2): pan both planes so the head of the route (where it is drawing now) stays near the centre; track 0-1 is how firmly
     # (default 0.6 with follow, else 0). The head is a piecewise calc() of var(--p,1) over the segment windows, jumping across the gap when a new leg starts.
     trk = _map3d_n(cam.get('track'), 0.6 if (fol and not user_keys) else 0.0, 0, 1)
@@ -45814,9 +46068,25 @@ def _render_motion_map3d(b: dict) -> str:
                 jq = '*clamp(0,calc((var(--p,1) - ' + _map3d_f(sg['s'] - dw, 3) + ')/' + _map3d_f(dw, 3) + '),1)'
                 hx += ' + ' + _map3d_f(sg['ax'] - segs[i - 1]['bx'], 1) + jq
                 hy += ' + ' + _map3d_f(sg['ay'] - segs[i - 1]['by'], 1) + jq
-            q = '*clamp(0,calc((var(--p,1) - ' + _map3d_f(sg['s'], 3) + ')/' + _map3d_f(max(sg['w'], 0.001), 3) + '),1)'
-            hx += ' + ' + _map3d_f(sg['bx'] - sg['ax'], 1) + q
-            hy += ' + ' + _map3d_f(sg['by'] - sg['ay'], 1) + q
+            if sg.get('has_arc'):
+                for step in range(6):
+                    t0 = step / 6.0
+                    t1 = (step + 1) / 6.0
+                    omt0 = 1.0 - t0
+                    omt1 = 1.0 - t1
+                    p0x = omt0 * omt0 * sg['ax'] + 2.0 * omt0 * t0 * sg['cx'] + t0 * t0 * sg['bx']
+                    p0y = omt0 * omt0 * sg['ay'] + 2.0 * omt0 * t0 * sg['cy'] + t0 * t0 * sg['by']
+                    p1x = omt1 * omt1 * sg['ax'] + 2.0 * omt1 * t1 * sg['cx'] + t1 * t1 * sg['bx']
+                    p1y = omt1 * omt1 * sg['ay'] + 2.0 * omt1 * t1 * sg['cy'] + t1 * t1 * sg['by']
+                    sub_s = sg['s'] + sg['w'] * t0
+                    sub_w = sg['w'] / 6.0
+                    q = '*clamp(0,calc((var(--p,1) - ' + _map3d_f(sub_s, 3) + ')/' + _map3d_f(max(sub_w, 0.001), 3) + '),1)'
+                    hx += ' + ' + _map3d_f(p1x - p0x, 1) + q
+                    hy += ' + ' + _map3d_f(p1y - p0y, 1) + q
+            else:
+                q = '*clamp(0,calc((var(--p,1) - ' + _map3d_f(sg['s'], 3) + ')/' + _map3d_f(max(sg['w'], 0.001), 3) + '),1)'
+                hx += ' + ' + _map3d_f(sg['bx'] - sg['ax'], 1) + q
+                hy += ' + ' + _map3d_f(sg['by'] - sg['ay'], 1) + q
         root_vars += ('--px:calc((50 - (' + hx + '))*' + _map3d_f(trk, 2) + '*1%);--py:calc((50 - (' + hy + '))*' + _map3d_f(trk, 2) + '*1%);')
         plane = plane.replace('scale(var(--zm));">', 'scale(var(--zm)) translate(var(--px),var(--py));">', 1)
         over_plane = over_plane.replace('scale(var(--zm));">', 'scale(var(--zm)) translate(var(--px),var(--py));">', 1)
