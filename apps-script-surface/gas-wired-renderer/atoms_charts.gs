@@ -2582,6 +2582,7 @@ _RENDERERS['token_budget_meter'] = function(b) {
 
   var label = _firstText(b.label, 'Context window');
   var model = _textLoose(b.model);
+  var unitTxt = _textLoose(b.unit) ? ' ' + _textLoose(b.unit) : '';
   var warnAtRaw = _numLoose(b.warn_at);
   var warnAt = warnAtRaw !== null ? warnAtRaw : 70;
   var critAtRaw = _numLoose(b.critical_at);
@@ -2631,7 +2632,7 @@ _RENDERERS['token_budget_meter'] = function(b) {
       '<span style="font-size:2rem;font-weight:800;color:#ffffff;font-family:monospace;">' +
       '<span class="tbm_' + uid + '" aria-hidden="true"></span>' +
       '<span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;">' + used + ' of ' + total + '</span>' +
-      '<span style="color:#6b7280;"> / ' + fmt(total) + '</span>' +
+      '<span style="color:#6b7280;"> / ' + fmt(total) + _esc(unitTxt) + '</span>' +
       '<span style="font-size:1rem;color:#9ca3af;margin-left:8px;">(' + pctInt + '%)</span>' +
       '</span>' +
       '</div>' +
@@ -2647,7 +2648,7 @@ _RENDERERS['token_budget_meter'] = function(b) {
     '<span style="font-size:0.8rem;font-weight:600;color:#374151;">' +
     _esc(label) + modelHtml + '</span>' +
     '<span style="font-size:0.78rem;font-weight:700;color:' + color + ';">' +
-    fmt(used) + ' / ' + fmt(total) + ' (' + pctInt + '%)</span>' +
+    fmt(used) + ' / ' + fmt(total) + _esc(unitTxt) + ' (' + pctInt + '%)</span>' +
     '</div>' +
     '<div style="background:#e5e7eb;border-radius:4px;height:10px;overflow:hidden;">' +
     '<div style="width:' + _fixedStr(pctClamped, 1) + '%;height:100%;background:' + color + ';border-radius:4px;"></div>' +

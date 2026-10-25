@@ -8136,6 +8136,8 @@ def _render_token_budget_meter(b: dict) -> str:
 
     label = _first_text(b.get("label"), "Context window")
     model = _text_loose(b.get("model"))
+    unit = _text_loose(b.get("unit"))
+    unit_txt = (" " + unit) if unit else ""
     warn_at_raw = _num_loose(b.get("warn_at"))
     warn_at = warn_at_raw if warn_at_raw is not None else 70.0
     crit_at_raw = _num_loose(b.get("critical_at"))
@@ -8188,7 +8190,7 @@ def _render_token_budget_meter(b: dict) -> str:
             f'<span style="font-size:2rem;font-weight:800;color:#ffffff;font-family:monospace;">'
             f'<span class="tbm_{uid}" aria-hidden="true"></span>'
             f'<span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;">{used} of {total}</span>'
-            f'<span style="color:#6b7280;"> / {_fmt(total)}</span>'
+            f'<span style="color:#6b7280;"> / {_fmt(total)}{_cv_esc(unit_txt)}</span>'
             f'<span style="font-size:1rem;color:#9ca3af;margin-left:8px;">({pct_int}%)</span>'
             f'</span>'
             f'</div>'
@@ -8205,7 +8207,7 @@ def _render_token_budget_meter(b: dict) -> str:
         f'<span style="font-size:0.8rem;font-weight:600;color:#374151;">'
         f'{_cv_esc(label)}{model_html}</span>'
         f'<span style="font-size:0.78rem;font-weight:700;color:{color};">'
-        f'{_fmt(used)} / {_fmt(total)} ({pct_int}%)</span>'
+        f'{_fmt(used)} / {_fmt(total)}{_cv_esc(unit_txt)} ({pct_int}%)</span>'
         f'</div>'
         f'<div style="background:#e5e7eb;border-radius:4px;height:10px;overflow:hidden;">'
         f'<div style="width:{_fixed_str(pct_clamped, 1)}%;height:100%;background:{color};border-radius:4px;"></div>'
@@ -11765,6 +11767,7 @@ def _render_marquee(b: dict) -> str:
     bg = _safe_css(b.get("bg"), "var(--surface,#f9fafb)")
     rounded = b.get("rounded", True) is not False
     color_icons = b.get("color_icons") is True
+    accent = _safe_css(b.get("accent"), "var(--muted,#d1d5db)")
     border_radius = "10px" if rounded else "0"
 
     def _render_entry(item, is_dup=False):
@@ -11794,7 +11797,7 @@ def _render_marquee(b: dict) -> str:
             return f'<a{attr} href="{raw_url}" target="_top" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;">{inner}</a>'
         return f'<span{attr} style="display:inline-flex;align-items:center;gap:6px;">{inner}</span>'
 
-    sep_html = f'<span style="color:var(--muted,#d1d5db);margin:0 4px;" aria-hidden="true">{_cv_esc(separator)}</span>' if separator else ""
+    sep_html = f'<span style="color:{accent};margin:0 4px;" aria-hidden="true">{_cv_esc(separator)}</span>' if separator else ""
     items_html = "".join(
         f'<span style="padding:0 {gap}px;display:inline-flex;align-items:center;">{_render_entry(it, False)}{sep_html}</span>'
         for it in items

@@ -803,17 +803,17 @@ MUST.update({
 OLD.extend([
     {"type": "choicebox_group", "question": "Pick", "options": [{"value": "a", "label": "Option A", "desc": "Because"}]},
     {"type": "sprint_board", "columns": [{"title": "Old", "items": [{"id": "X-9", "title": "Old ticket", "priority": "low"}]}]},
-    {"type": "token_budget_meter", "used": 10, "total": 100},
+    {"type": "token_budget_meter", "used": 10, "total": 100, "unit": "tokens"},
     {"type": "typing_indicator", "label": "Claude is thinking", "color": "#6366f1", "bg": "#ede9fe"},
-    {"type": "marquee", "items": [{"label": "Old marquee"}], "accent": "#123456"},
+    {"type": "marquee", "items": [{"label": "Old marquee"}, "b"], "separator": "|", "accent": "#123456"},
     {"type": "marquee_strip", "tags": ["old-a", "old-b"], "words": ["ignored"], "speed": 30, "bg": "#101010", "color": "#eeeeee"},
     {"type": "number_flip", "value": 42, "accent": "#654321"},
     {"type": "progress_reveal", "percent": 40, "title": "Old title"},
 ])
 OLD_WORDS.update({
     "choicebox_group": ["Pick", "Option A", "Because", 'value="a"'], "sprint_board": ["Old", "X-9", "Old ticket", "#0065ff"],
-    "token_budget_meter": ["Context window", "10 / 100 (10%)"], "typing_indicator": ["Claude is thinking", "#6366f1", "#ede9fe"],
-    "marquee": ["Old marquee"], "marquee_strip": ["old-a", "old-b", "30s", "#101010", "#eeeeee"], "number_flip": ["#654321"], "progress_reveal": ["Old title", "40%", 'data-target="40"'],
+    "token_budget_meter": ["Context window", "10 / 100 tokens (10%)"], "typing_indicator": ["Claude is thinking", "#6366f1", "#ede9fe"],
+    "marquee": ["Old marquee", "color:#123456"], "marquee_strip": ["old-a", "old-b", "30s", "#101010", "#eeeeee"], "number_flip": ["#654321"], "progress_reveal": ["Old title", "40%", 'data-target="40"'],
 })
 
 

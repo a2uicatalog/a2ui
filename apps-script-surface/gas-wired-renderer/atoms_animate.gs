@@ -129,6 +129,7 @@ _RENDERERS['marquee'] = function(b) {
   var bg = _safe_css(b.bg, 'var(--surface,#f9fafb)');
   var rounded = b.rounded !== false;
   var colorIcons = b.color_icons === true;
+  var accent = _safe_css(b.accent, 'var(--muted,#d1d5db)');
   var borderRadius = rounded ? '10px' : '0';
 
   function renderEntry(item, isDup) {
@@ -164,7 +165,7 @@ _RENDERERS['marquee'] = function(b) {
     return '<span' + attr + ' style="display:inline-flex;align-items:center;gap:6px;">' + inner + '</span>';
   }
 
-  var sepHtml = separator ? '<span style="color:var(--muted,#d1d5db);margin:0 4px;" aria-hidden="true">' + _esc(separator) + '</span>' : '';
+  var sepHtml = separator ? '<span style="color:' + accent + ';margin:0 4px;" aria-hidden="true">' + _esc(separator) + '</span>' : '';
   var itemsHtml = '';
   var itemsDupHtml = '';
   for (var i = 0; i < items.length; i++) {
