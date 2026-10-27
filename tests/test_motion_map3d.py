@@ -202,7 +202,7 @@ def test_registered_everywhere():
     import yaml
     schema = yaml.safe_load((root / "atoms" / "schema.yaml").read_text())
     ent = [a for a in schema["blocks"] if isinstance(a, dict) and a.get("type") == "motion_map3d"]
-    assert len(ent) == 1 and ent[0]["stage"] == "preview"
+    assert len(ent) == 1 and ent[0]["stage"] == "stable"  # promoted 2026-10-26 (I145)
     for k in ("description", "compact_description", "routing_text", "intent_phrases", "fields", "notes", "surfaces", "source"):
         assert ent[0].get(k), k
     for f in ("seed", "blocks", "stations", "route", "clock", "tilt", "camera", "color", "version"):

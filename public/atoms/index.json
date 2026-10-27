@@ -1,6 +1,6 @@
 {
  "catalogId": "a2ui-atoms-v1",
- "atomCount": 557,
+ "atomCount": 558,
  "fullSpec": "https://a2uicatalog.ai/spec.json",
  "atoms": [
   {
@@ -2032,7 +2032,7 @@
   },
   {
    "type": "chartjs_bar",
-   "compact": "interactive Chart.js bar chart with datasets",
+   "compact": "static accessible bar chart (group, stack, relative, overlay; vertical or horizontal; log axis)",
    "surfaces": [
     "web",
     "google-apps-script-web",
@@ -2235,7 +2235,7 @@
   },
   {
    "type": "stacked_area",
-   "compact": "stacked area chart with overlapping glowing translucent gradients",
+   "compact": "stacked area chart of series layers over an ordered axis (zero baseline, optional 100% / streamgraph offsets)",
    "surfaces": [
     "web",
     "google-meet-stage",
@@ -2584,7 +2584,7 @@
   },
   {
    "type": "markdown_block",
-   "compact": "GFM markdown string rendered to HTML inline",
+   "compact": "inline markdown string (bold, italic, code, links) rendered to HTML",
    "surfaces": [
     "web",
     "google-meet-stage",
@@ -3546,7 +3546,7 @@
   },
   {
    "type": "motion_mask",
-   "compact": "reveals child atoms through a growing blob, circle, diagonal wipe, rounded rectangle or bars",
+   "compact": "reveals child atoms through a growing blob, circle, diagonal wipe, rounded rectangle, bars, diamond, halftone, conic sweep or slats",
    "surfaces": [
     "web",
     "google-meet-stage",
@@ -6160,6 +6160,16 @@
   {
    "type": "voronoi",
    "compact": "voronoi: nearest-site regions of a set of points (catchments, service areas)",
+   "surfaces": [
+    "web",
+    "google-apps-script-web",
+    "mcp-apps",
+    "android"
+   ]
+  },
+  {
+   "type": "motion_map3d",
+   "compact": "a tilted 3D city map where legs draw station to station (out and back, straight or curved), chips travel, stations end done, warn or error and a clock counts; for request traces, agent tool calls, pipelines and delivery routes",
    "surfaces": [
     "web",
     "google-apps-script-web",

@@ -2,7 +2,7 @@
  "catalogId": "a2ui-atoms-v1",
  "displayName": "A2UI Multi-Surface Renderer",
  "type": "application/vnd.a2ui.renderer+json",
- "atomCount": 557,
+ "atomCount": 558,
  "compactIndex": "https://a2uicatalog.ai/atoms/index.json",
  "runbooks": "https://a2uicatalog.ai/runbooks/index.json",
  "trainingPrompt": "https://a2uicatalog.ai/prompts/training-md-gem.md",
@@ -1535,7 +1535,7 @@
   },
   {
    "type": "progress_bar",
-   "description": "Animated CSS progress bar with glow pulse effect",
+   "description": "Progress bar with an animated width transition, an optional percentage and an optional caption",
    "compact_description": "labelled horizontal progress bar with percentage",
    "surfaces": {
     "works_on": [
@@ -1575,7 +1575,7 @@
     "url": "https://uiverse.io",
     "license": "MIT"
    },
-   "routing_text": "Horizontal bar showing how much of a task, list or goal is complete, as a filled share of the total (for example 6 of 10 done). Animated CSS fill with a soft glow.",
+   "routing_text": "Horizontal bar showing how much of a task, list or goal is complete, as a filled share of the total (for example 6 of 10 done). Animated fill, optional percentage and caption.",
    "intent_phrases": [
     "I need to show users how long their file upload is taking.",
     "Can I get something that visually indicates how much of a process is complete?",
@@ -1714,7 +1714,15 @@
     "labels_x": "list of strings (labels for the x-axis, e.g., ['Mon', 'Tue', 'Wed'])",
     "labels_y": "list of strings (labels for the y-axis, e.g., ['AM', 'PM'])",
     "color_scale": "list of strings (colors for the gradient, e.g., ['#FFFFFF', '#FF0000'] for white to red)",
-    "unit": "string (optional, unit for the data values, e.g., '°C')"
+    "unit": "string (optional, unit for the data values, e.g., '°C')",
+    "z_min": "number (optional, value drawn with the first colour of the scale; default the smallest value)",
+    "z_max": "number (optional, value drawn with the last colour; default the largest value)",
+    "z_mid": "number (optional, value drawn with the middle of the scale, for diverging data; the colour range becomes symmetric around it; ignored when z_min and z_max are both given)",
+    "scale": "string (optional, a Plotly colour scale name - Viridis, Cividis, Blues, Greens, Reds, Greys, YlGnBu, YlOrRd, RdBu, Bluered, Picnic, Rainbow, Portland, Jet, Hot, Blackbody, Earth or Electric; default Viridis, or color_scale when that is given)",
+    "show_colorbar": "boolean (optional, default true, draws the colour bar with the lowest and highest value)",
+    "show_values": "boolean (optional, default false, prints each value inside its cell)",
+    "value_format": "string (optional, how values print - an optional comma for thousands, optional .N decimals, then f, % or d; for example ',.1f' or '.0%')",
+    "version": "integer (optional, default 1; a higher number draws as version 1 with a muted note)"
    },
    "source": {
     "name": "UIverse.io community",
@@ -1806,7 +1814,8 @@
    "fields": {
     "nodes": "list of dictionaries (e.g., [{'id': 'revenue', 'label': 'Revenue', 'column': 0, 'color': '#10b981'}, ...]); `column` is an optional hint, an integer 0..n for the left-to-right column (0 = leftmost, up to 15); without it the column is the node's distance from the sources (a node with no outgoing flow goes to the last column), so a source -> middle -> target chain gets three columns and the chart is wider by 220px per column beyond two. Flows that close a cycle, or would run backwards between columns, are not drawn and are listed in a note under the chart.",
     "links": "list of dictionaries representing flows (e.g., [{'source': 'revenue', 'target': 'marketing', 'value': 25000, 'color': '#38bdf8'}, ...])",
-    "title": "string (optional, title of the chart, e.g., 'Financial Flow Allocation')"
+    "title": "string (optional, title of the chart, e.g., 'Financial Flow Allocation')",
+    "keyed": "bool (optional, default false). True adds the build contract to the drawing so motion_build and motion_transition can move its parts: each node rectangle carries data-cb \"node\" and each node name data-cb \"label\", both with data-key = the node id, and each flow carries data-cb \"link\" with data-key = \"sourceId>targetId\" (a repeated pair gets \"#2\", \"#3\"). Use ids that another atom also keys (ISO 3166-1 alpha-3 codes against choropleth_map tiles) and a motion_transition joins the two element by element. Absent or false: the markup is unchanged, byte for byte."
    },
    "source": {
     "name": "a2uicatalog",
@@ -7399,8 +7408,8 @@
   },
   {
    "type": "chartjs_bar",
-   "description": "Renders an interactive bar chart using Chart.js with configurable datasets.",
-   "compact_description": "interactive Chart.js bar chart with datasets",
+   "description": "Draws a static, accessible bar chart as HTML (no script, no chart library) from labels and datasets, in grouped, stacked, relative or overlaid bars, vertical or horizontal, negative values, a linear or log value axis, d3 number formats, optional value labels and a legend. Series differ by fill pattern as well as colour, and a hidden table holds every value.",
+   "compact_description": "static accessible bar chart (group, stack, relative, overlay; vertical or horizontal; log axis)",
    "surfaces": {
     "works_on": [
      "web",
@@ -7411,28 +7420,40 @@
     "degraded_on": [
      {
       "surface": "google-meet-stage",
-      "note": "Chart.js canvas rendering inconsistent in stage iframe."
+      "note": "Bars are positioned HTML with container queries; a stage iframe that drops them shows the hidden table only."
      },
      {
       "surface": "google-chat",
-      "note": "Canvas not supported."
+      "note": "HTML is not rendered; only the text of the hidden table is shown."
      },
      {
       "surface": "email",
-      "note": "Canvas stripped."
+      "note": "Style blocks, container queries and absolute positioning are stripped by most clients; the table is what survives."
      }
     ]
    },
    "fields": {
-    "labels": "array of strings. X-axis labels.",
-    "datasets": "array of {label, data}. Chart datasets."
+    "labels": "array of strings. Category labels (up to 40 drawn; the hidden table lists all).",
+    "datasets": "array of {label, data, color}. One series each (up to 8 drawn); data is numbers, anything else is skipped with a note; color is an optional",
+    "mode": "group (default) | stack | relative | overlay. stack adds the signed values; relative stacks positives up and negatives down separately; overlay draws every series on the baseline.",
+    "orientation": "v (default) | h.",
+    "show_values": "boolean. Value labels on the bars; they hide when the chart is too narrow to fit them (the table keeps every value).",
+    "value_format": "d3-format string for the value labels, for example ',.0f' or '.1%'. Types b c o p r x X are not supported.",
+    "y_format": "d3-format string for the axis labels (and the value labels when value_format is absent).",
+    "y_scale": "linear (default) | log. A log axis ticks at powers of ten, leaves out numbers that are not above zero (with a note) and cannot stack.",
+    "y_range": "array of two numbers, min then max. Fixes the value axis; bars past it are cut at the axis with a note.",
+    "y_ticks": "integer 2 to 12 (default 5). Target tick count.",
+    "y_reverse": "boolean. Reverse the value axis.",
+    "gap": "number 0 to 0.8 (default 0.3). Share of each category slot left empty.",
+    "legend_position": "top | bottom | right | none. Default top with more than one series, none otherwise.",
+    "version": "integer (optional, default 1). Only version 1 exists; a higher whole number is drawn as version 1 with a note."
    },
    "source": {
     "name": "a2uicatalog",
     "url": "https://github.com/a2uicatalog/a2ui",
     "license": "MIT"
    },
-   "routing_text": "Renders an interactive bar chart using Chart.js with configurable datasets. A phrase like 'how much you could save', describing one comparison figure rather than a full dataset, usually means actual_vs_estimate, metric_comparison_card, or stat_card, not this -- chartjs_bar is for a chart with several data points. If the request describes a single number or one comparison rather than a visual chart with axes and multiple data points, it is NOT this -- chartjs_bar needs an explicit request for a bar chart or graph.",
+   "routing_text": "Draws a static bar chart (no interactivity, no Chart.js) from labels and datasets. A phrase like 'how much you could save', describing one comparison figure rather than a full dataset, usually means actual_vs_estimate, metric_comparison_card, or stat_card, not this -- chartjs_bar is for a chart with several data points. If the request describes a single number or one comparison rather than a visual chart with axes and multiple data points, it is NOT this -- chartjs_bar needs an explicit request for a bar chart or graph.",
    "intent_phrases": [
     "I need to show sales figures over time with distinct categories.",
     "How can I visualize user engagement by feature in our app?",
@@ -7469,7 +7490,14 @@
    },
    "fields": {
     "labels": "array of strings. X-axis labels.",
-    "datasets": "array of {label, data}. Chart datasets."
+    "datasets": "array of {label, data}. Chart datasets.",
+    "title": "string (optional). Heading of the chart. With series it is drawn above the plot; the labels/datasets drawing in the web preview does not show it (the Apps Script renderer does).",
+    "series": "(optional, preview) array of up to 8 series {label, x, y, mode, color, dash, shape, size, symbol, fill, text}. x is numbers or ISO 8601 date strings (UTC; a missing x is the index 0, 1, 2...), y numbers. mode lines|markers|lines+markers|text or any + combination (default lines+markers up to 20 points, else lines). color a #hex or colour word, else the theme palette. dash solid|dash|dot|dashdot|longdash|longdashdot, symbol circle|square|diamond|triangle-up|cross|x (both cycle per series when unset, so series differ by more than colour). shape linear|spline|hv|vh|hvh|vhv. size a diameter number or an array per point (bubble). fill tozeroy|tonexty. text an array of point labels. Present and non-empty, this replaces the labels/datasets (or data_points) drawing; absent, nothing changes.",
+    "x_type": "(optional, with series) linear or date. Default: date when the first x is a date string, else linear.",
+    "x_label": "string (optional, with series). Axis title under the plot. scatter_trend also reads label_x.",
+    "y_label": "string (optional, with series). Axis title above the plot. scatter_trend also reads label_y.",
+    "max_points": "(optional, with series) integer 50 to 2000, default 2000. A series with more usable points is thinned to evenly spaced points (first and last kept) and a visible note says so; the hidden table lists the drawn points. This is the scattergl case: many points, a cap, never a silent drop.",
+    "version": "integer (optional, default 1). A whole number above 1 draws as version 1 with a note."
    },
    "source": {
     "name": "a2uicatalog",
@@ -8034,7 +8062,9 @@
    },
    "fields": {
     "title": "string (optional, e.g., 'Acquisition Funnel')",
-    "steps": "list of dictionaries representing funnel stages: [{'stage': 'Visits', 'value': 10000}, {'stage': 'Signups', 'value': 4500}, ...]"
+    "steps": "list of dictionaries representing funnel stages: [{'stage': 'Visits', 'value': 10000}, {'stage': 'Signups', 'value': 4500}, ...]",
+    "shape": "string (optional, \"area\"): draws centred stacked bands whose area is proportional to each stage value (Plotly funnelarea) with a numbered legend and a hidden table; anything else keeps the tapered bars. Up to 12 stages.",
+    "version": "integer (optional, default 1). A whole number above 1 draws as version 1 with a muted note (area shape only)."
    },
    "source": {
     "name": "a2uicatalog",
@@ -8073,7 +8103,11 @@
     "value": "number representing current value (e.g., 99.4)",
     "max_value": "number representing maximum gauge scale (e.g., 100)",
     "unit": "string (optional, e.g., '%')",
-    "label": "string (optional, e.g., 'SLA Met')"
+    "label": "string (optional, e.g., 'SLA Met')",
+    "min": "number (optional, default 0). Setting min or steps switches to the scale mode (Plotly indicator gauge) with bands, a threshold tick, a needle, a legend and a hidden table.",
+    "steps": "list (optional) of {from, to, color} bands on the scale (up to 8); color is a hex or var(--token), default theme colours; each band is also listed in text.",
+    "threshold": "number (optional). Draws a tick and states whether the value is at or above it (scale mode only).",
+    "version": "integer (optional, default 1). A whole number above 1 draws as version 1 with a muted note (scale mode only)."
    },
    "source": {
     "name": "a2uicatalog",
@@ -8138,8 +8172,8 @@
   },
   {
    "type": "stacked_area",
-   "description": "Renders cumulative layered area chart trends utilizing overlapping translucent gradient fills and glowing series borders.",
-   "compact_description": "stacked area chart with overlapping glowing translucent gradients",
+   "description": "A stacked area chart: one coloured layer per series, stacked on a zero baseline over an ordered x axis (time, stages, categories), so the top edge is the total and each layer's thickness is that series' value. Drawn as SVG with a zero-based value axis, a legend and a hidden data table. The optional offset turns it into a 100% share chart (expand), a centred chart (silhouette) or a streamgraph (wiggle). Before 2026-10-21 the default was a list of horizontal bars; layout 'bars' still draws that.",
+   "compact_description": "stacked area chart of series layers over an ordered axis (zero baseline, optional 100% / streamgraph offsets)",
    "surfaces": {
     "works_on": [
      "web",
@@ -8152,7 +8186,7 @@
     "incompatible_on": [
      {
       "surface": "google-chat",
-      "reason": "Requires complex SVG gradients."
+      "reason": "Needs inline SVG, which a Chat card cannot show."
      }
     ]
    },
@@ -8160,7 +8194,8 @@
     "title": "string (optional, e.g., 'SaaS Cumulative Workloads')",
     "labels": "list of strings representing X-axis ticks (e.g., ['Q1', 'Q2', 'Q3', 'Q4'])",
     "series": "list of dictionaries representing stacked layers: [{'label': 'Enterprise', 'data': [10, 25, 45, 60], 'color': '#00f2ff'}, ...]",
-    "offset": "string (optional): how the layers sit on the baseline. Absent, 'none' or anything else keeps today's stacked bars. 'expand' draws a real area chart with every point scaled to 100% (a 0-100% axis), 'silhouette' centres the layers on a middle line, 'wiggle' is a streamgraph (d3's wiggle baseline, layers ordered inside-out). silhouette and wiggle have no value axis (the baseline means nothing); the hidden table lists the raw values. Up to 12 series and 60 labels; negative or non-numeric cells draw as 0 and are counted in a note.",
+    "layout": "string (optional, default 'area'): 'area' draws the stacked area chart (SVG, zero baseline, value axis). 'bars' draws a list of horizontal stacked bars, one row per label; that was the only drawing before 2026-10-21 and 'bars' keeps it unchanged. Absent, null or any other value means 'area'. The bar list ignores offset (a note says so when one is given).",
+    "offset": "string (optional, area layout only): how the layers sit on the baseline. Absent, 'none' or anything else is the plain zero baseline. 'expand' scales every point to 100% (a 0-100% axis), 'silhouette' centres the layers on a middle line, 'wiggle' is a streamgraph (d3's wiggle baseline, layers ordered inside-out). silhouette and wiggle have no value axis (the baseline means nothing); the hidden table lists the raw values. Up to 12 series and 60 labels; negative or non-numeric cells draw as 0 and are counted in a note.",
     "version": "integer (optional, default 1). The stacked_area contract the payload was written for. Only version 1 exists; a higher whole number draws as version 1 with a note."
    },
    "source": {
@@ -8168,7 +8203,7 @@
     "url": "https://github.com/a2uicatalog/a2ui",
     "license": "MIT"
    },
-   "routing_text": "Renders cumulative layered area chart trends utilizing overlapping translucent gradient fills and glowing series borders.",
+   "routing_text": "A stacked area chart: how several series add up to a total over time or across ordered stages, with each series as a coloured layer. Use offset 'expand' for shares of the whole and 'wiggle' for a streamgraph. Not for a single line (use a line or sparkline atom), not for unordered categories (use a bar chart) and not for a table of values.",
    "intent_phrases": [
     "I need to see how different user engagement metrics add up over time.",
     "Show me the total impact of each marketing channel on our sales funnel stages.",
@@ -8220,7 +8255,13 @@
     "title": "string (optional, e.g., 'CSAT vs. Support Response Time')",
     "data_points": "list of [x, y] coordinates: [[1.2, 95], [2.5, 88], [3.1, 75]]",
     "label_x": "string (optional, e.g., 'Response Time (Hours)')",
-    "label_y": "string (optional, e.g., 'CSAT Score')"
+    "label_y": "string (optional, e.g., 'CSAT Score')",
+    "series": "(optional, preview) array of up to 8 series {label, x, y, mode, color, dash, shape, size, symbol, fill, text}. x is numbers or ISO 8601 date strings (UTC; a missing x is the index 0, 1, 2...), y numbers. mode lines|markers|lines+markers|text or any + combination (default lines+markers up to 20 points, else lines). color a #hex or colour word, else the theme palette. dash solid|dash|dot|dashdot|longdash|longdashdot, symbol circle|square|diamond|triangle-up|cross|x (both cycle per series when unset, so series differ by more than colour). shape linear|spline|hv|vh|hvh|vhv. size a diameter number or an array per point (bubble). fill tozeroy|tonexty. text an array of point labels. Present and non-empty, this replaces the labels/datasets (or data_points) drawing; absent, nothing changes.",
+    "x_type": "(optional, with series) linear or date. Default: date when the first x is a date string, else linear.",
+    "x_label": "string (optional, with series). Axis title under the plot. scatter_trend also reads label_x.",
+    "y_label": "string (optional, with series). Axis title above the plot. scatter_trend also reads label_y.",
+    "max_points": "(optional, with series) integer 50 to 2000, default 2000. A series with more usable points is thinned to evenly spaced points (first and last kept) and a visible note says so; the hidden table lists the drawn points. This is the scattergl case: many points, a cap, never a silent drop.",
+    "version": "integer (optional, default 1). A whole number above 1 draws as version 1 with a note."
    },
    "source": {
     "name": "a2uicatalog",
@@ -9412,8 +9453,8 @@
   },
   {
    "type": "markdown_block",
-   "description": "Renders an arbitrary GitHub-Flavoured Markdown string as formatted HTML — bold, italic, inline code, fenced code blocks, lists, tables, blockquotes, and links. Useful when content is authored in or retrieved as Markdown and needs faithful rendering without mapping to individual atoms. Adapted from the MarkDownRenderer pattern in OpenUI OUI benchmark samples.",
-   "compact_description": "GFM markdown string rendered to HTML inline",
+   "description": "Renders a Markdown string as formatted inline HTML - bold, italic, inline code and links (http, https, mailto, tel or relative). Block syntax (headings, lists, tables, fenced code) is not rendered. Adapted from the MarkDownRenderer pattern in OpenUI OUI benchmark samples.",
+   "compact_description": "inline markdown string (bold, italic, code, links) rendered to HTML",
    "surfaces": {
     "works_on": [
      "web",
@@ -9442,7 +9483,7 @@
     "url": "https://github.com/thesysdev/openui",
     "license": "MIT"
    },
-   "routing_text": "Renders an arbitrary GitHub-Flavoured Markdown string as formatted HTML — bold, italic, inline code, fenced code blocks, lists, tables, blockquotes, and links. Useful when content is authored in or re",
+   "routing_text": "Renders a Markdown string as formatted inline HTML - bold, italic, inline code and links. Block syntax (headings, lists, tables, fenced code) is not rendered; use separate atoms for those.",
    "intent_phrases": [
     "I need to display user-submitted tips and tricks formatted nicely.",
     "Show me instructions with bullet points and bolding from an external source.",
@@ -12296,17 +12337,20 @@
     "ease": "string | [x1,y1,x2,y2] (optional). Default ease for keys that do not name one. A token from motion_tokens (not \"hold\"). Default \"standard\".",
     "loop": "bool (optional). Default true.",
     "autoplay": "bool (optional). Plays when scrolled into view, pauses when it leaves. Default true. Off, or under prefers-reduced-motion, it shows the poster frame.",
+    "drive": "\"time\" | \"scroll\" (optional, default \"time\"). \"scroll\" turns the film into a scroll-driven piece: the stage is pinned (position:sticky) inside a tall runway and the film clock is the page's scroll progress through that runway (seeked on requestAnimationFrame from a passive scroll listener), so scrolling plays the film and scrolling back rewinds it. No autoplay and no play/pause button: the scrubber stays as a progress indicator and a keyboard control (moving it scrolls the page to that point), and the page's own keys scroll as usual. Under prefers-reduced-motion there is no runway: the poster frame is shown in the normal flow. The export buttons are not offered. Absent or any other value: unchanged.",
+    "scroll_length": "number (optional). With drive \"scroll\": the runway height in percent of the viewport height, clamped 150-1000, default 300 (the film plays over the runway minus one viewport of travel).",
     "controls": "bool (optional). Play/pause button, scrubber and clock. Default true.",
     "poster": "number (optional). Seconds; the frame shown when not autoplaying. Default 60% of duration.",
+    "transcript": "bool (optional). Default false (nothing is added). True adds, under the stage, a \"Transcript\" disclosure (a details element, works without script) holding a table of every text and value the film shows, in reading order: time on screen (from the same keyframes as the player, the cue timing of film_to_vtt), scene (the scene layer it sits in), and the text. Covers motion_text, demo_caption lines, motion_counter, motion_pill, motion_checklist, demo_kpis, demo_chart (title, labels and values), demo_progress and demo_toggle_grid, nested or not. Up to 200 rows.",
     "theme": "\"dark\" | \"light\"  (optional, default \"dark\"). Stage background and control colours.",
     "accent": "\"#rrggbb\" (optional). Glow and control accent. Default \"#38bdf8\".",
     "background": "\"#rrggbb\" (optional). Stage background override.",
     "backdrop": "\"glow\" | \"grid\" | \"flat\" (optional, default \"glow\")",
     "blocks": "array (max 24) of any atom blocks. Each may also carry id (^[a-z][a-z0-9_-]{0,31}$, makes it addressable by a track), place {x, y, w, h, z, origin} (x/y/w/h in percent of the stage; z 0-99; origin \"c\"|\"tl\"|\"t\"|\"b\"|\"l\"|\"r\" is the transform origin), and layer \"world\" (default, moves with the camera) or \"hud\" (stays on screen).",
-    "tracks": "array (max 40) of {target: id, keys: [...]} (max 48 keys each). A key is {t | beat, ease?, x?, y?, opacity?, scale?, rotate?, rx?, ry?, blur?, clip?, p?, step?, a?}. x,y are the element's top-left in percent of the stage (for an element nested in another, an offset from its natural place); opacity 0-1; scale 0-6; rotate, rx, ry in degrees (tilt -80..80); blur 0-40 px; clip 0-1 is a left-to-right wipe; p 0-1 drives a demo atom's progress (chart draw, bar growth, toggles, fills, click ripple, orb level) and recounts its numbers; step is a float that crossfades captions and selects the active nav item. ease on a key is the ease of the segment ARRIVING at that key: a token name, \"hold\" (jump at the key), or four numbers. PATH FOLLOWING: a track may also carry path (path data in stage PERCENT, 0-100 on both axes: the motion_path grammar, M L H V C S Q T A Z, 700 characters), and keys with a (0-1, how far along it): the element's top-left rides the path, like x and y, and a track with a keys ignores its x and y. orient: true also turns the element to the path's direction (rotate keys on the same track are then ignored). trail: {n 1-6, lag 0.02-0.5 s} adds n fading copies of a top-level block (it needs a numeric place.w) that follow the same path a little later, each fainter and blurrier than the one before.",
-    "scenes": "array (max 12) of {layer: id, t | beat, transition?}, optional. STITCHES scenes together: each layer (usually a motion_layer) is hidden until its start and hands over to the next scene instead of cutting. Within `overlap` seconds of the next scene's start the old one leaves while the new one arrives. transition is one of cut, dissolve, push, zoom-through, blur, rise, whip, wipe, iris, clock, slice, flip, spin, portal (with `portal: {x, y, w}`), ribbon, fade-through, shared-x, shared-y, shared-z and applies to the scene it names (the hand-over INTO it); without one the timeline's `stitch` is used. Your own tracks on the same layer are applied after these and win, so a scene can still do its own entrance.",
+    "tracks": "array (max 40) of {target: id, keys: [...]} (max 48 keys each). A key is {t | beat, ease?, x?, y?, opacity?, scale?, rotate?, rx?, ry?, blur?, clip?, p?, step?, a?}. x,y are the element's top-left in percent of the stage (for an element nested in another, an offset from its natural place); opacity 0-1; scale 0-6; rotate, rx, ry in degrees (tilt -80..80); blur 0-40 px; the filter keys hue (degrees, -360..360), saturation, brightness, contrast (multipliers 0-4, 1 = unchanged) and invert (0-1) are composed with blur into one CSS filter on the element, clamped to those ranges, and the settled frame is the value at the last key (a brightness or invert track that swings quickly is checked as a possible flash by scripts/motion_lint.py); clip 0-1 is a left-to-right wipe; p 0-1 drives a demo atom's progress (chart draw, bar growth, toggles, fills, click ripple, orb level) and recounts its numbers; step is a float that crossfades captions and selects the active nav item. ease on a key is the ease of the segment ARRIVING at that key: a token name, \"hold\" (jump at the key), or four numbers. PATH FOLLOWING: a track may also carry path (path data in stage PERCENT, 0-100 on both axes: the motion_path grammar, M L H V C S Q T A Z, 700 characters), and keys with a (0-1, how far along it): the element's top-left rides the path, like x and y, and a track with a keys ignores its x and y. orient: true also turns the element to the path's direction (rotate keys on the same track are then ignored). trail: {n 1-6, lag 0.02-0.5 s} adds n fading copies of a top-level block (it needs a numeric place.w) that follow the same path a little later, each fainter and blurrier than the one before. SPRING: a key ease (which governs the segment arriving at that key) may also be {spring: {stiffness 1-1000 (default 170), damping 0-100 (default 26), mass 0.1-10 (default 1)}} or {spring: true} for the defaults: a damped spring, computed when the page is built (semi-implicit Euler, 1 ms step, time in seconds), so the player needs no extra script. The spring replaces the segment arriving at the key that carries it (previous key value to this one), written as 24 linear steps; the key is always exact and every other segment keeps its own ease. Pick values that settle within the segment, otherwise it snaps at this key. Under-damped springs overshoot (clamped to the property range). A first key with no previous key, or any other ease object, keeps the normal ease.",
+    "scenes": "array (max 12) of {layer: id, t | beat, transition?}, optional. STITCHES scenes together: each layer (usually a motion_layer) is hidden until its start and hands over to the next scene instead of cutting. Within `overlap` seconds of the next scene's start the old one leaves while the new one arrives. transition is one of cut, dissolve, push, zoom-through, blur, rise, whip, wipe, iris, clock, slice, flip, spin, portal (with `portal: {x, y, w}`), ribbon, fade-through, shared-x, shared-y, shared-z, collapse and applies to the scene it names (the hand-over INTO it); without one the timeline's `stitch` is used. Your own tracks on the same layer are applied after these and win, so a scene can still do its own entrance.",
     "morphs": "array (max 6) of {from, to, t | beat, dur?, ease?} (optional). Match cut: a copy of the `from` child flies from its box to the `to` child's box (resizing on the way) starting at t, over dur seconds (0.1-4, default 0.8), with ease (a motion token, default quart-in-out). from hides when the flight starts and to appears when it lands, so the morph owns their opacity: do not also give them opacity tracks. Both must have a numeric place.w and sit at the top level or directly inside a motion_layer; others are dropped and reported.",
-    "stitch": "\"cut\" | \"dissolve\" | \"push\" | \"zoom-through\" | \"blur\" | \"rise\" | \"whip\" | \"wipe\" | \"iris\" | \"clock\" | \"slice\" | \"flip\" | \"spin\" | \"portal\" | \"ribbon\" | \"fade-through\" | \"shared-x\" | \"shared-y\" | \"shared-z\" (optional, default \"dissolve\"). The four Material patterns fade the old scene out in the first 30% of the overlap and the new one in after it, so the two are never both half visible: fade-through brings the new scene up from 92% size, shared-x and shared-y slide it in along the axis (8% and 6% of the stage), shared-z scales it from 80% while the old one grows to 110%; set overlap to about 0.3 for the 300 ms Material uses. whip is a fast push with heavy motion blur; wipe reveals the new scene left to right over the old one; iris opens a circle from the centre; clock sweeps round like a clock hand; slice reveals through vertical bars; flip turns the old scene edge-on and the new one in; spin rotates and scales through; portal dives into a box in the old scene (give that scene entry `portal: {x, y, w}` in stage percent, the box keeps the stage shape) and the box becomes the new scene; without a box it falls back to dissolve; ribbon sweeps a slanted band in the accent colour across the frame and reveals the new scene behind it. The hand-over used by scenes that do not name one. Pick one per film: a shared motion vector between scenes is what reads as designed.",
+    "stitch": "\"cut\" | \"dissolve\" | \"push\" | \"zoom-through\" | \"blur\" | \"rise\" | \"whip\" | \"wipe\" | \"iris\" | \"clock\" | \"slice\" | \"flip\" | \"spin\" | \"portal\" | \"ribbon\" | \"fade-through\" | \"shared-x\" | \"shared-y\" | \"shared-z\" | \"collapse\" (optional, default \"dissolve\"). The four Material patterns fade the old scene out in the first 30% of the overlap and the new one in after it, so the two are never both half visible: fade-through brings the new scene up from 92% size, shared-x and shared-y slide it in along the axis (8% and 6% of the stage), shared-z scales it from 80% while the old one grows to 110%; set overlap to about 0.3 for the 300 ms Material uses. whip is a fast push with heavy motion blur; wipe reveals the new scene left to right over the old one; iris opens a circle from the centre; clock sweeps round like a clock hand; slice reveals through vertical bars; flip turns the old scene edge-on and the new one in; spin rotates and scales through; portal dives into a box in the old scene (give that scene entry `portal: {x, y, w}` in stage percent, the box keeps the stage shape) and the box becomes the new scene; without a box it falls back to dissolve; ribbon sweeps a slanted band in the accent colour across the frame and reveals the new scene behind it. The hand-over used by scenes that do not name one. collapse squeezes the OLD scene sideways to a thin vertical band that narrows to nothing (content clipped with it, over the overlap), and the new scene appears when that is done: a closing move, best before a blank beat or a lone object. Pick one per film: a shared motion vector between scenes is what reads as designed.",
     "overlap": "number (optional). Seconds a hand-over takes, 0-3. Default 0.6. Ignored by cut.",
     "camera": "{keys: [{t | beat, ease?, x?, y?, zoom?, rx?, ry?, rz?, z?}]} (max 48 keys), optional. z (-1500 to 1500 px) dollies the camera through depth: top-level blocks with place.depth (0-1) sit further back and, with a compensating scale, look unchanged at z 0, so moving z gives real parallax. x,y are the focus point in percent of the stage (default 50,50); zoom 0.25-6 (default 1); rx, ry, rz tilt in degrees. Moves only layer:\"world\" children."
    },
@@ -12491,7 +12535,7 @@
     "font": "\"sans\" | \"serif\" | \"mono\" | \"display\" (optional, default \"sans\"). display is a heavy grotesque.",
     "weight": "\"regular\" | \"bold\" | \"black\" (optional, default \"bold\")",
     "mode": "\"lines\" | \"words\" | \"chars\" | \"block\" (optional, default \"lines\"). What reveals in turn. lines never wraps; more than 120 units falls back to block.",
-    "reveal": "\"mask\" | \"rise\" | \"drop\" | \"fade\" | \"blur\" | \"bar\" | \"flap\" | \"reel\" | \"pop\" | \"decode\" (optional, default \"rise\"). pop scales each unit up past full size and settles (an overshoot). decode shows seeded random characters that resolve into each unit (the real text is always in the page; the noise is aria-hidden). bar wipes a coloured highlight bar in behind each unit, then the text appears on it. flap is a slot-reel flip: three decoy glyphs scroll past in each unit before the real one lands (best with mode chars). reel stacks the lines on one row and the second dial (--s) moves the focus down the list: the focused line is sharp, the others dim, shrink and blur with their distance (a scrolling text reel); at --s 1 the last line is in focus.",
+    "reveal": "\"mask\" | \"rise\" | \"drop\" | \"fade\" | \"blur\" | \"bar\" | \"flap\" | \"reel\" | \"pop\" | \"decode\" | \"bloom\" (optional, default \"rise\"). bloom condenses each unit in place out of a bright, glowing blur: it starts about 60% brighter with a soft halo and a 0.4em blur at 90% size, and halo, brightness and blur fall away as it sharpens (no slide; blur only defocuses, decode swaps glyphs, bloom adds the glow). Pair with a long overlap (4-8) and mode words or lines so the glow runs through the whole line. pop scales each unit up past full size and settles (an overshoot). decode shows seeded random characters that resolve into each unit (the real text is always in the page; the noise is aria-hidden). bar wipes a coloured highlight bar in behind each unit, then the text appears on it. flap is a slot-reel flip: three decoy glyphs scroll past in each unit before the real one lands (best with mode chars). reel stacks the lines on one row and the second dial (--s) moves the focus down the list: the focused line is sharp, the others dim, shrink and blur with their distance (a scrolling text reel); at --s 1 the last line is in focus.",
     "overlap": "integer (optional). How many units are mid-reveal at once, 1-8. Higher is softer. Default 3.",
     "tracking": "number (optional). Letter spacing in em, -0.1 to 0.5. Default -0.02.",
     "line_height": "number (optional). 0.8-2. Default 1.05.",
@@ -12746,7 +12790,8 @@
     ]
    },
    "fields": {
-    "items": "array (max 12) of string or {text}; text max 8 characters (one or two reads as a glyph, longer as a small label).",
+    "items": "array (max 12) of string or {text}; text max 8 characters (one or two reads as a glyph, longer as a small label), or max 24 with shape pill.",
+    "shape": "\"pill\" (optional). Rectangular pill tiles that size to their label (text up to 24 characters, one line, no wrapping) instead of square tiles. Anything else keeps the square tile and the 8-character limit. Tile height is 55% of size, so size sets the pill height; allow room around the ring for long labels.",
     "size": "integer (optional). Tile px, 24-160. Default 64.",
     "rx": "integer (optional). Horizontal radius, percent of the placed box, 5-60. Default 40.",
     "ry": "integer (optional). Vertical radius, percent of the placed box, 5-60. Default 36.",
@@ -12923,7 +12968,8 @@
     "strokes": "array (max 24) of {d, color?, width?, fill?, fill_opacity?}. d is path data (max 700 characters of path commands, numbers and separators). color and fill are \"#rrggbb\"; width 1-24 px (default 6); fill_opacity 0-1 (default 0.2). Strokes draw in order.",
     "w": "integer (optional). ViewBox width, 50-2000. Default 400.",
     "h": "integer (optional). ViewBox height, 50-2000. Default 400.",
-    "label": "string (optional, max 60). Accessible name of the drawing. Default \"Sketch\"."
+    "label": "string (optional, max 60). Accessible name of the drawing. Default \"Sketch\".",
+    "trim": "object (optional) {start, end, offset}, like After Effects trim paths. start and end are 0-1 of each stroke's length (defaults 0 and 1) and bound the part that is drawn; offset -1 to 1 shifts the window along the stroke (a window pushed past the end wraps round to the start). The window draws on as p goes 0 to 1 (from start to end). end at or below start draws no stroke. Absent, empty or all defaults: the full stroke, unchanged."
    },
    "source": {
     "name": "a2uicatalog",
@@ -12983,8 +13029,8 @@
   },
   {
    "type": "motion_mask",
-   "description": "Reveals its child blocks through a shape that grows as p goes 0 to 1: a wobbly blob, a circle, a diagonal wipe, a rounded rectangle that opens, or venetian bars. The scene that opens out of a cloud-shaped hole, or the screenshot that wipes in. The blob and circle are 20-vertex polygons whose coordinates use CSS cos() and sin(), so they need no script and a current browser. At p = 1 the child is fully visible; standalone it renders fully revealed.",
-   "compact_description": "reveals child atoms through a growing blob, circle, diagonal wipe, rounded rectangle or bars",
+   "description": "Reveals its child blocks through a shape that grows as p goes 0 to 1: a wobbly blob, a circle, a diagonal wipe, a rounded rectangle that opens, venetian bars, a diamond, a halftone dot grid, a conic sweep, or horizontal slats. The scene that opens out of a cloud-shaped hole, or the screenshot that wipes in. The blob and circle are 20-vertex polygons whose coordinates use CSS cos() and sin(), so they need no script and a current browser. At p = 1 the child is fully visible; standalone it renders fully revealed.",
+   "compact_description": "reveals child atoms through a growing blob, circle, diagonal wipe, rounded rectangle, bars, diamond, halftone, conic sweep or slats",
    "surfaces": {
     "works_on": [
      "web",
@@ -13011,7 +13057,8 @@
     ]
    },
    "fields": {
-    "shape": "\"blob\" | \"circle\" | \"diagonal\" | \"rounded\" | \"bars\" (optional, default \"blob\")",
+    "shape": "\"blob\" | \"circle\" | \"diagonal\" | \"rounded\" | \"bars\" | \"diamond\" | \"halftone\" | \"conic\" | \"slats\" | \"path\" (optional, default \"blob\")",
+    "d": "string (optional, max 4000 characters; used only when shape is \"path\"). An SVG path of straight and curve commands (M L H V C S Q T Z, absolute or relative; no arcs A, no exponent numbers, numbers up to 1000000). Only the first subpath is used. It is flattened, resampled to 48 points and stretched to fill the box, then scales in from the centre as p goes 0 to 1 (a 48-vertex clip polygon, pure CSS); at p = 1 the child shows through the whole shape. A missing or invalid d, or one that covers less than 1% of the box (a straight line), is ignored with an HTML comment and the blob is used. Absent: unchanged.",
     "blocks": "array (max 6) of any atom blocks, revealed together. Each may carry an id a timeline track can address."
    },
    "source": {
@@ -13097,6 +13144,7 @@
    },
    "fields": {
     "kind": "\"burst\" | \"speed\" (optional, default \"burst\")",
+    "angle": "integer (optional). Kind speed only: the direction the lines run, in degrees clockwise from horizontal, -180 to 180. Default 0 (horizontal lines streaming left to right as step advances). The lines and their travel turn together inside the same 16:9 frame, clipped to it. Ignored by burst; 0 or a non-number keeps the horizontal look exactly.",
     "count": "integer (optional). Rays or lines, 4-64. Default 24.",
     "thickness": "number (optional). Share of each step that is ray, 0.1-0.9. Default 0.5.",
     "spin": "integer (optional). Degrees turned at --s = 1 (burst), -360 to 360. Default 45.",
@@ -21970,6 +22018,13 @@
     "bins": "integer (optional, 3 to 40). The number of bins to aim for. Default is the Sturges rule, ceil(log2(n)) + 1. d3 rounds the bin edges to 1, 2 or 5 times a power of ten, so the number drawn can differ a little from the number asked for.",
     "x_label": "string (optional, max 40). Names the values on the x axis.",
     "unit": "string (optional, max 12). Appended to the x label and to the edge values in the hidden table.",
+    "bin_size": "number (optional, above 0). Explicit bins of this width instead of the Sturges rule; at most 200 bins are drawn, with a note. The last bin ends at bin_end, so it can be narrower than the rest. Draws one series (no overlay or stack as in Plotly). Bins are start + k * size, include their lower edge and exclude the upper, except the last. Values outside the bins are not counted and a note says how many. Not understood values are ignored with a note.",
+    "bin_start": "number (optional). The first bin edge; default the smallest value rounded down to a multiple of the bin size.",
+    "bin_end": "number (optional, above bin_start). The last bin edge; default one bin past the largest value.",
+    "norm": "string (optional, \"percent\", \"probability\", \"density\" or \"probability density\"). Normalises count or sum. Percent and probability of the total, density per unit of width, probability density per unit of width of the total. Default counts.",
+    "cumulative": "boolean (optional, default false). Only true switches it on; draws the running total over the bins (count or sum only).",
+    "func": "string (optional, \"count\", \"sum\", \"avg\", \"min\" or \"max\", default \"count\"). What a bin shows; all but count need `weights` (without them it counts, with a note). An empty bin shows nothing for avg, min and max.",
+    "weights": "array (optional, same order as values) of numbers, one per value; a value or weight that is not a finite number skips the pair.",
     "layout": "string (optional, \"bars\" or \"ridge\", default \"bars\"). \"ridge\" draws one ridge per entry of `series` on shared bins, to compare distributions; `values` is then not read. Any other value draws bars.",
     "series": "array (optional, read only when layout is \"ridge\", 1 to 8) of {label (string, max 30, default \"Series n\"), values (array, 5 to 2000, of numbers, filtered like `values`)}. The shared bins come from d3 bin() of all the series pooled (`bins` applies); each ridge's height is its share of that series' values per bin, so series of different sizes compare. A series with fewer than 5 usable numbers is left out with a note; series beyond the first 8 are noted and not drawn.",
     "version": "integer (optional, default 1). The histogram contract the payload was written for. Only version 1 exists; a higher whole number is drawn as version 1 with a note."
@@ -22017,9 +22072,15 @@
    },
    "fields": {
     "title": "string (optional, max 80).",
-    "groups": "array (required, 1 to 12) of {label (string, max 30, default \"Group n\"), values (array, 5 to 2000, of numbers)}. Entries that are not finite numbers or whose size is above 1e12 are skipped and counted in a note; a group with fewer than 5 usable numbers, or an entry that is not a group, is left out with a note. Groups beyond the first 12 are noted and not drawn.",
+    "groups": "array (required, 1 to 12) of {label (string, max 30, default \"Group n\"), values (array, 5 to 2000, of numbers), stats? (object {q1, median, q3, lo?, hi?, min?, max?, mean?, n?}, a precomputed summary drawn instead of values; q1 <= median <= q3)}. Entries that are not finite numbers or whose size is above 1e12 are skipped and counted in a note; a group with fewer than 5 usable numbers, or an entry that is not a group, is left out with a note. Groups beyond the first 12 are noted and not drawn.",
     "x_label": "string (optional, max 40). Names the values on the axis.",
     "unit": "string (optional, max 12). Appended to the axis caption and to every value in the label and hidden table.",
+    "quartile_method": "string (optional, \"linear\", \"exclusive\" or \"inclusive\", default \"linear\" = R-7). Exclusive and inclusive take the median of the lower and upper half (an odd sample's middle value left out, or kept in both). Any option below switches to a static box plot without show_points dots; a note says so if show_points is also given.",
+    "show_mean": "boolean (optional, default false). Only true marks each group's mean with a diamond and adds a Mean column to the table. The mean only; Plotly's boxmean \"sd\" (mean plus standard deviation) is not drawn.",
+    "orientation": "string (optional, \"h\" or \"v\", default \"h\"). \"v\" draws vertical boxes on a vertical axis; in a narrow container the group names are replaced by numbers with a key underneath.",
+    "notches": "boolean (optional, default false). Only true draws the median notch, median +/- 1.57 * IQR / sqrt(n), cut at the quartiles. The notch interval is also listed in the table (Notch from, Notch to). (with a note); needs n (the values, or stats.n).",
+    "shape": "string (optional, \"box\" or \"violin\", default \"box\"). \"violin\" draws a Gaussian kernel density outline (every violin scaled to the same width) with a narrow box inside; it needs values, not stats.",
+    "bandwidth": "number (optional, above 0). The violin kernel bandwidth; default 0.9 * min(sd, IQR / 1.34) * n^-0.2. This is a Silverman-style rule, not the one Plotly uses, so a violin differs slightly from Plotly's. A bandwidth below 1e-6 of the data range is raised to that, with a note.",
     "show_points": "boolean (optional, default false). Only true switches it on. Draws every usable number of each group as a small dot along its row, at exactly its place on the axis, stacked vertically only as far as needed so no two dots touch (a deterministic dodge beeswarm, no script), behind the box, whiskers and median. Rows are taller. At most 300 dots per chart, shared across the groups in proportion to their sizes and evenly spaced through each group's sorted numbers; a note says so, and the table counts them all. A dot that cannot be placed without touching another stays on the edge of its row; a note counts these.",
     "version": "integer (optional, default 1). The box_plot contract the payload was written for. Only version 1 exists; a higher whole number is drawn as version 1 with a note."
    },
@@ -22369,6 +22430,67 @@
     "Show which of my depots is the nearest to each part of the city.",
     "Draw the service area of each store as nearest-site regions.",
     "Split this area into catchments, one per sensor, by closest distance."
+   ]
+  },
+  {
+   "type": "motion_map3d",
+   "description": "A tilted 3D city map built from CSS alone (perspective and a rotated plane: no WebGL, no map tiles, no fetch). Blocks stand on a ground plane as three-faced boxes, either a seeded generated city, explicit blocks, or generated district clusters (cities). Outlines of real-world countries or states can be drawn directly on the ground plane under the blocks and route. As p runs 0 to 1 the camera descends and tilts in (p 0 to 0.3), then one or more legs draw on from station to station (p 0.3 to 0.92, optionally bending in arcs and pausing at stations with dwell times) with each station going from idle to active as a leg reaches it and then to its own state (idle, active, done, warn or error), payload chips can travel along the legs, and an optional clock chip counts in clock time, seconds or milliseconds. Station pins and labels sit on their own layer above the city, so blocks never cover them. Made for journeys through a system as much as through a city: a request trace, an agent's tool call and its reply, a deploy pipeline, an incident. At p = 1 every leg is fully drawn, the stations are in their final states and the clock shows its end value.",
+   "compact_description": "a tilted 3D city map where legs draw station to station (out and back, straight or curved), chips travel, stations end done, warn or error and a clock counts; for request traces, agent tool calls, pipelines and delivery routes",
+   "surfaces": {
+    "works_on": [
+     "web",
+     "google-apps-script-web",
+     "mcp-apps",
+     "android"
+    ],
+    "degraded_on": [
+     {
+      "surface": "pdf",
+      "note": "Prints the finished picture; no motion"
+     }
+    ],
+    "incompatible_on": [
+     {
+      "surface": "google-chat",
+      "reason": "Inline CSS custom properties, clamp() and calc() are not supported"
+     },
+     {
+      "surface": "email",
+      "reason": "CSS custom properties, clamp() and calc() are not supported in email clients"
+     }
+    ]
+   },
+   "fields": {
+    "seed": "integer (optional). 0 to 9999, default 7. Seeds the generated city when no blocks are given: the same seed always makes the same city. Generated blocks leave the streets under the route and the stations clear, and are lower close to them, so the route is never hidden.",
+    "blocks": "array (optional, up to 200) of {x, y, w, h, height}: x, y, w, h in percent of the map (0 to 100, w and h at least 1) and height the box height (0 to 40, default 6). When given and non-empty they replace the generated city and are drawn exactly as written, so keep your own blocks off the route. More than 200 draw the first 200 with a visible note.",
+    "ground": "object (optional) {set, window, highlight, fill, accent}. Real map outlines drawn directly on the city plane under blocks and routes. set: \"world-countries\", \"europe-countries\", or \"us-states\". window: [lon0, lon1, lat0, lat1] bounding box in degrees (lon -180..180, lat -85..85 with lon0 < lon1 and lat0 < lat1). highlight: array (up to 24) of region id strings. fill and accent: \"#rrggbb\" colours (defaults #2a3342 and #3a4a63). Example: ground: {set: \"europe-countries\", window: [-10, 30, 35, 60], highlight: [\"FRA\", \"DEU\"]}. Maximum 400 regions and 6000 points; when ground is valid without blocks or cities, the full-plane generated city is omitted.",
+    "cities": "array (optional, up to 8) of {x, y, w, h, count, seed, height}. Clusters of small buildings generated inside rectangular districts (0 to 100 percent map coords). count: 1 to 24 (default 4); height: 1 to 40 (default 8); seed: optional integer (defaults to atom seed + city index). Example: cities: [{x: 20, y: 30, w: 25, h: 25, count: 9}]. Omits the full-plane random city.",
+    "arc": "number 0 to 0.6 or boolean (optional, true = 0.25). Bends route leg segments into quadratic bezier curves bulging outward to the left of travel direction (back legs bend opposite). Example: arc: 0.2 curves all legs gently.",
+    "stations": "array (optional, up to 24) of {id, x, y, lon, lat, label, state, dwell}: id letters, digits and underscore, starting with a letter, max 24 (else s1, s2 by position; a repeated id is left out with a note), x and y in percent of the map (0 to 100, default 50). When a valid ground is active, lon and lat (numbers) can be given instead of x/y and are projected via Web Mercator. dwell: 0 to 0.3, portion of the p dial the route holds at this station before resuming. label max 24 characters (default the id) and state idle, active, done, warn or error (default idle). The state is the settled one: a station on a leg is idle until a leg arrives, active while it is there, then its own state. warn draws an amber pin with \"!\" and error a red pin with \"×\", so colour is never the only cue; the text alternative names every state. A station off every leg simply shows its state. Without stations the map shows a note.",
+    "route": "array (optional, up to 32) of station ids in order. Each pair draws one straight or arched segment on the ground. An id that is not a station is skipped with a note, and an id repeated straight after itself is ignored. Ignored when legs has at least one valid leg.",
+    "clock": "object (optional) {from, to, unit}. unit \"hhmm\" (default; anything else unknown also means hhmm): from and to as HH:MM, 24-hour, a to earlier than from runs through midnight. unit \"s\" or \"ms\": from and to are whole non-negative numbers (fractions are floored; s up to 86400, ms up to 3600000) and to must not be below from; the chip reads like 480 ms or 1560 s. The chip at the top left counts over p 0.3 to 0.92. Both values must be valid or no chip is drawn.",
+    "tilt": "number (optional). Final camera tilt in degrees, 0 (straight down) to 75, default 55. The camera starts straight down and tilts in over p 0 to 0.3.",
+    "camera": "object (optional) {from, to, keys, follow, track}. from and to: zoom of the map at p 0 and at the end of the descent, 0.3 to 3, defaults 0.55 and 1. keys: array (up to 8) of {at, turn, tilt, zoom}, poses the camera passes through over the whole film instead of the default descent: at is p (0 to 1, each later than the one before), turn the rotation of the map in degrees (-180 to 180, default 22), tilt 0 to 75, zoom 0.3 to 3; a missing value keeps the previous key's; held before the first key and after the last; bad keys are left out with a note. follow: integer 1 to 6 (used only without keys): after the descent the camera turns to a new angle each time the route arrives at every follow-th station, and swings round and closes in on the last destination (a little closer at each stop). track: 0 to 1, how firmly the camera pans to keep the head of the route (where it is drawing now) at the centre, so the view rides along the journey; default 0.6 with follow, otherwise 0 (no pan). Station pins and labels keep their size and keep facing the viewer at every angle.",
+    "color": "\"#rrggbb\" (optional). Route and active-station colour. Default the stage accent.",
+    "legs": "array (optional, up to 4) of {route, color, back}: several legs drawn one after another, replacing route when at least one is valid. route is station ids as in route (a leg needs two known stations, else it is left out with a note); color \"#rrggbb\" (default the atom colour); back true reverses the leg, for a reply going back along the path, and draws it in its own lane beside the outbound leg. The drawing window is shared by all legs in proportion to their length. Segment keys run over all legs (from-to, a repeat gets -2, -3).",
+    "messages": "array (optional, up to 12) of {leg, text, at, back}: a payload chip that travels along a leg while it is drawn. leg is an index into the drawn legs (default 0); text max 24 characters; at the p (0 to 1) when it sets off (default the leg's own start); back true sends it from the leg's end to its start. A chip is visible only while it travels, so the settled frame shows none; the text alternative lists every message with its start and end station. Bad entries are left out with a note.",
+    "version": "integer (optional, default 1). 1 and 2 draw the same; a whole number above 2 draws as version 2 with a muted note."
+   },
+   "source": {
+    "name": "a2uicatalog",
+    "url": "https://github.com/a2uicatalog/a2ui",
+    "license": "MIT"
+   },
+   "routing_text": "A tilted three-dimensional city map scene: camera dropping in over blocks or real map outlines, route legs drawing from stop to stop with the stations lighting up as they arrive, payload chips travelling along the legs, stations ending done, warn or error, and a clock chip counting clock time, seconds or milliseconds. Use it for a journey through a system told spatially: a request trace through gateway, services and database with latency, an AI agent calling an MCP tool and the reply coming back, a CI/CD pipeline with a failed or warning gate, an incident timeline, a data pipeline, failover between regions, as well as a delivery or transit tracker. Not a flat schematic of lines (use motion_path, motion_arch or a flow diagram), not map tiles or a real map provider, not a WebGL scene (use motion_shader), not a chart.",
+   "intent_phrases": [
+    "A tilted 3D city map where the camera drops in and a delivery route draws from stop to stop.",
+    "Show a courier route across city blocks with stations turning active then done and a clock counting up.",
+    "Animate a transit route on a 3D map with a time chip.",
+    "Animate a request moving through the API gateway, auth service and database with a millisecond latency clock, the database hop failing.",
+    "Show an AI agent calling an MCP tool on a 3D map: the request leg goes out, the reply comes back in its own lane, payload chips travel along.",
+    "A deploy pipeline as a 3D city route from commit to production with the security scan gate flagged as a warning and a seconds clock.",
+    "Replay last night's incident as a route through the services that were hit, ending in error and done states.",
+    "Animate an international flight path curving across European countries on a 3D map."
    ]
   }
  ]
