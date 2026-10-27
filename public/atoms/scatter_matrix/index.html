@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" href="/favicon.ico" sizes="32x32">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="theme-color" content="#6366f1">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Scatter Matrix — A2UI Atomic Catalog</title>
+  <meta name="description" content="A scatter plot matrix (Plotly splom): 2 to 6 numeric dimensions on one grid, every dimension on a shared axis across its row and column, so each cell plots…">
+  <link rel="canonical" href="https://a2uicatalog.ai/atoms/scatter_matrix/">
+  <link rel="alternate" type="text/markdown" href="/atoms/scatter_matrix.md">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "A2UI Catalog", "item": "https://a2uicatalog.ai/" },
+      { "@type": "ListItem", "position": 2, "name": "ARD Catalog", "item": "https://a2uicatalog.ai/.well-known/ai-catalog.json" },
+      { "@type": "ListItem", "position": 3, "name": "Scatter Matrix", "item": "https://a2uicatalog.ai/atoms/scatter_matrix/" }
+    ]
+  }
+  </script>
+  <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "@id": "https://a2uicatalog.ai/atoms/scatter_matrix/#page", "url": "https://a2uicatalog.ai/atoms/scatter_matrix/", "headline": "Scatter Matrix: A2UI atom", "description": "A scatter plot matrix (Plotly splom): 2 to 6 numeric dimensions on one grid, every dimension on a shared axis across its row and column, so each cell plots…", "about": {"@id": "https://a2uicatalog.ai/atoms/scatter_matrix/#atom"}, "isPartOf": {"@type": "WebSite", "name": "A2UI Catalog", "url": "https://a2uicatalog.ai/"}, "inLanguage": "en", "license": "https://opensource.org/licenses/MIT"}, {"@type": "DefinedTerm", "@id": "https://a2uicatalog.ai/atoms/scatter_matrix/#atom", "name": "Scatter Matrix", "termCode": "scatter_matrix", "description": "scatter_matrix: every measure plotted against every other", "url": "https://a2uicatalog.ai/atoms/scatter_matrix/", "inDefinedTermSet": {"@type": "DefinedTermSet", "@id": "https://a2uicatalog.ai/#atoms", "name": "A2UI Atomic Catalog", "url": "https://a2uicatalog.ai/spec.json"}, "additionalProperty": [{"@type": "PropertyValue", "name": "works on", "value": "web, google-apps-script-web, mcp-apps, android"}, {"@type": "PropertyValue", "name": "fields", "value": "dimensions, show_upper, title, version"}, {"@type": "PropertyValue", "name": "A2UI version", "value": "v1.0"}, {"@type": "PropertyValue", "name": "JSON Schema", "value": "https://a2uicatalog.ai/catalogue/atoms-json-schema.json"}, {"@type": "PropertyValue", "name": "markdown", "value": "https://a2uicatalog.ai/atoms/scatter_matrix.md"}]}]}</script>
+  <script>
+(function(){var t='light';try{var s=localStorage.getItem('a2ui-theme');if(s==='dark'||s==='light')t=s}catch(e){}
+document.documentElement.setAttribute('data-theme',t)})();
+</script>
+  
+<style>/*brand-tokens:e22641fc*/
+:root{
+  color-scheme:light;
+  --bg:oklch(98% 0.006 255);--surface:oklch(100% 0 0);--surface-2:oklch(96.5% 0.008 255);--border:oklch(90% 0.01 255);
+  --border-strong:oklch(82% 0.02 255);--text:oklch(22% 0.02 255);--text-muted:oklch(46% 0.02 255);--accent:oklch(51% 0.19 277);
+  --accent-contrast:oklch(100% 0 0);--accent-soft-bg:oklch(94% 0.03 277);--accent-2:oklch(62% 0.13 202);--accent-2-text:oklch(49.5% 0.13 202);
+  --positive:oklch(58% 0.15 146);--negative:oklch(55% 0.18 25);--warn:oklch(70% 0.15 87);--code-bg:oklch(96% 0.01 255);
+  --radius:12px;--shadow:0 1px 2px oklch(0% 0 0 / .05),0 8px 24px oklch(0% 0 0 / .05);--glow:0 4px 24px oklch(58% 0.19 277 / .14);--header-glass:oklch(100% 0 0 / .72);
+  --grad:linear-gradient(120deg,oklch(58% 0.19 277),oklch(70% 0.14 202));
+  --card:var(--surface);--muted:var(--text-muted);--cyan:var(--accent-2);--green:var(--positive);
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:oklch(27% 0.025 255);--surface:oklch(33% 0.025 255);--surface-2:oklch(30% 0.02 255);--border:oklch(42% 0.02 255);
+  --border-strong:oklch(50% 0.02 255);--text:oklch(95% 0.01 255);--text-muted:oklch(72% 0.02 255);--accent:oklch(72% 0.16 277);
+  --accent-contrast:oklch(15% 0.02 255);--accent-soft-bg:oklch(33% 0.06 277);--accent-2:oklch(75% 0.12 202);--accent-2-text:oklch(75% 0.12 202);
+  --positive:oklch(72% 0.15 146);--negative:oklch(68% 0.17 25);--warn:oklch(85% 0.17 87);--code-bg:oklch(23% 0.02 255);
+  --shadow:0 1px 2px oklch(0% 0 0 / .3),0 8px 24px oklch(0% 0 0 / .28);--glow:0 4px 28px oklch(72% 0.16 277 / .22);--header-glass:oklch(33% 0.025 255 / .72);--grad:linear-gradient(120deg,oklch(72% 0.16 277),oklch(80% 0.13 202));
+}
+:root[data-theme="dark"] .stage,:root[data-theme="dark"] .preview-box{color-scheme:light;--bg:oklch(98% 0.006 255);--surface:oklch(100% 0 0);--surface-2:oklch(96.5% 0.008 255);--border:oklch(90% 0.01 255);--border-strong:oklch(82% 0.02 255);--text:oklch(22% 0.02 255);--text-muted:oklch(46% 0.02 255);--accent:oklch(51% 0.19 277);--accent-contrast:oklch(100% 0 0);--accent-soft-bg:oklch(94% 0.03 277);--accent-2:oklch(62% 0.13 202);--accent-2-text:oklch(49.5% 0.13 202);--positive:oklch(58% 0.15 146);--negative:oklch(55% 0.18 25);--warn:oklch(70% 0.15 87);--code-bg:oklch(96% 0.01 255);--radius:12px;--shadow:0 1px 2px oklch(0% 0 0 / .05),0 8px 24px oklch(0% 0 0 / .05);--glow:0 4px 24px oklch(58% 0.19 277 / .14);--header-glass:oklch(100% 0 0 / .72);--grad:linear-gradient(120deg,oklch(58% 0.19 277),oklch(70% 0.14 202));--card:var(--surface);--muted:var(--text-muted);--cyan:var(--accent-2);--green:var(--positive);}
+.stage,.preview-box{--mt-ink:#14181f}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:16px;line-height:1.6}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+label:has(input[type=radio]:focus-visible),label:has(input[type=checkbox]:focus-visible),input[type=radio]:focus-visible+label,input[type=checkbox]:focus-visible+label{outline:2px solid var(--accent);outline-offset:2px}
+.site-header{position:sticky;top:0;z-index:100;background:var(--header-glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
+.hdr-in{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:10px;padding:11px 24px}
+.wordmark{display:flex;align-items:center;gap:9px;font-size:15px;font-weight:800;letter-spacing:-.2px;color:var(--text);text-decoration:none;white-space:nowrap}
+.logo-atom{width:22px;height:22px;flex-shrink:0}
+.logo-atom .nuc{fill:var(--accent)}
+.logo-atom .o1{stroke:var(--accent);fill:none;stroke-width:1.5}
+.logo-atom .o2{stroke:oklch(70% 0.14 202);fill:none;stroke-width:1.5}
+.logo-atom .o3{stroke:var(--accent);fill:none;stroke-width:1.1;opacity:.35}
+.logo-atom .el{fill:oklch(70% 0.14 202)}
+.grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.site-nav{display:flex;gap:4px;margin-right:auto;margin-left:12px}
+.site-nav a{font-size:13px;font-weight:600;text-decoration:none;color:var(--muted);padding:5px 11px;border-radius:7px;transition:color .15s,background .15s}
+.site-nav a:hover{color:var(--text);background:var(--surface-2)}
+.site-nav a[aria-current="page"]{color:var(--accent);background:var(--accent-soft-bg)}
+.theme-btn{font:inherit;font-size:14px;line-height:1;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 9px;cursor:pointer;color:var(--text)}
+.theme-btn:hover{border-color:var(--border-strong)}
+.gh-pill{font-size:12px;font-weight:650;color:var(--text);text-decoration:none;border:1px solid var(--border);border-radius:8px;padding:6px 12px;background:var(--surface);white-space:nowrap}
+.gh-pill:hover{border-color:var(--border-strong)}
+.wrap{max-width:1100px;margin:0 auto;padding:36px 24px 96px}
+footer{margin-top:64px;padding-top:24px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+footer a{color:var(--accent-2-text);text-decoration:underline;text-underline-offset:2px}
+/* links inside running text must not rely on colour alone (WCAG 1.4.1): underline them */
+.wrap p a:not([class]),.wrap li a:not([class]),.wrap td a:not([class]),.wrap dd a:not([class]),footer p a:not([class]){text-decoration:underline;text-underline-offset:2px}
+/* Announcement pill above the hero headline. Sits in normal flow (not fixed or
+   sticky) so it never covers content, and wraps rather than truncating on
+   narrow screens — the arrow is the only thing dropped on mobile. */
+.announce{display:inline-flex;align-items:center;gap:10px;max-width:100%;
+ margin:0 auto 22px;padding:7px 8px 7px 8px;border:1px solid var(--border);
+ border-radius:999px;background:var(--surface);text-decoration:none;
+ font-size:13px;line-height:1.35;color:var(--text);
+ transition:border-color .15s,background .15s}
+.announce:hover{border-color:var(--accent);background:var(--accent-soft-bg)}
+.announce-tag{flex:none;font-size:10.5px;font-weight:800;letter-spacing:.08em;
+ text-transform:uppercase;color:#fff;background:var(--accent);
+ border-radius:999px;padding:4px 9px}
+.announce-text{text-align:left}
+.announce-text code{font-size:12px;background:var(--surface-2);
+ padding:1px 5px;border-radius:5px}
+.announce-go{flex:none;color:var(--accent);font-weight:700;padding-right:8px}
+@media(max-width:560px){.announce{font-size:12.5px;align-items:flex-start;
+ border-radius:14px;padding:9px 12px}.announce-go{display:none}}
+
+/* Mobile nav: this used to be `.site-nav{display:none}`, which left phone
+   visitors with only the wordmark, theme toggle and GitHub pill — every
+   destination unreachable, with no hamburger substituting for it (confirmed
+   live: 0/4 links visible at 390px). The nav now drops to its own full-width
+   row under the wordmark and scrolls horizontally if the labels overflow,
+   so nothing is lost and no JS menu is needed. */
+@media(max-width:700px){
+ .hdr-in{flex-wrap:wrap;padding:9px 16px;row-gap:0}
+ .site-nav{order:3;width:100%;margin:7px 0 1px;gap:2px;
+  overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+ .site-nav::-webkit-scrollbar{display:none}
+ .site-nav a{white-space:nowrap;font-size:12.5px;padding:5px 9px}
+ .wordmark{margin-right:auto}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+/* cursor_glow ships dark-tuned (screen blend ≈ invisible over a white ground);
+   in the light default, re-blend the orb — it is the only direct body child
+   carrying the atom's z-index:9000. */
+:root:not([data-theme="dark"]) body>div[style*="z-index:9000"]{mix-blend-mode:multiply!important;opacity:.22!important}
+
+.wrap{max-width:860px}
+nav.crumb{font-size:12px;color:var(--muted);margin-bottom:28px;font-family:ui-monospace,'SF Mono',Monaco,monospace}
+nav.crumb a{color:var(--accent-2-text);text-decoration:underline;text-underline-offset:2px}
+nav.crumb a:hover{text-decoration:underline}
+h1{font-size:2.2rem;font-weight:800;letter-spacing:-1px;margin-bottom:8px}
+.desc{font-size:1.1rem;color:var(--muted);margin-bottom:32px;line-height:1.7}
+.label{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:12px}
+.section{margin-bottom:40px}
+.badge{display:inline-block;font-size:11px;font-weight:600;padding:3px 10px;border-radius:100px;margin:2px}
+.bs{background:var(--accent-soft-bg);color:var(--accent)}
+.bd{background:color-mix(in oklch,var(--warn) 14%,var(--surface));border:1px solid color-mix(in oklch,var(--warn) 40%,var(--surface));color:color-mix(in oklch,var(--warn) 45%,var(--text))}
+pre{background:var(--code-bg);border:1px solid var(--border);border-radius:10px;padding:20px;overflow-x:auto;margin:12px 0 24px}
+pre code{color:var(--text);font-size:13px;font-family:ui-monospace,'SF Mono',Monaco,monospace}
+table{width:100%;border-collapse:collapse;margin:12px 0 24px;font-size:14px}
+th{text-align:left;padding:10px 14px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border)}
+td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--muted);vertical-align:top}
+td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mono',Monaco,monospace}
+.back{display:inline-block;margin-top:32px;font-size:13px;color:var(--muted);border:1px solid var(--border);border-radius:8px;padding:8px 14px;text-decoration:none;background:var(--surface)}
+.back:hover{border-color:var(--accent);color:var(--accent)}
+.try-btn{display:inline-block;margin-top:32px;margin-left:12px;font-size:13px;font-weight:700;color:var(--accent-contrast);background:var(--accent);border:none;border-radius:8px;padding:9px 18px;text-decoration:none;letter-spacing:.03em;cursor:pointer;transition:filter .15s,box-shadow .15s}
+.try-btn:hover{filter:brightness(1.08);box-shadow:var(--glow)}
+.preview-box{background:#fff;border:1px solid var(--border);border-radius:10px;padding:24px;margin-top:8px;color:#1a1a1a;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;line-height:1.6}
+.preview-box *{max-width:100%}
+.preview-box p,.preview-box li,.preview-box td,.preview-box th,.preview-box td:first-child,.preview-box code{color:inherit;font-family:inherit}
+.preview-box pre{background:#f4f4f4;border:1px solid #e0e0e0}
+.preview-box pre code{color:inherit}
+.preview-box h2,.preview-box h3{color:#111}
+.preview-box a{color:#0969da}
+.preview-box ul{color:#333}
+.deploy-box{margin-top:40px;padding:20px 24px;background:var(--accent-soft-bg);border:1px solid var(--border);border-radius:var(--radius)}
+.deploy-box .label{margin-bottom:10px}
+.deploy-box a{display:inline-block;margin-top:12px;font-size:12px;color:var(--accent);text-decoration:none;font-weight:600}
+</style>
+
+</head>
+<body>
+  <header class="site-header"><div class="hdr-in">
+    <a class="wordmark" href="/"><svg class="logo-atom" viewBox="0 0 24 24" aria-hidden="true"><ellipse class="o1" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(-32 12 12)"/><ellipse class="o2" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(32 12 12)"/><ellipse class="o3" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(90 12 12)"/><circle class="nuc" cx="12" cy="12" r="2.7"/><circle class="el" cx="3.21" cy="15.98" r="1.25"/></svg><span><span class="grad">A2UI</span> Catalog</span></a>
+    <nav class="site-nav">
+      <a href="/what-is-a2ui/">What is A2UI?</a>
+      <a href="/" aria-current="page">Atoms</a>
+      
+      <a href="/surfaces/mcp-apps">MCP Playground</a>
+      <a href="/docs">Docs</a>
+      <a href="/renderer">Apps Script Renderer</a>
+      <a href="/blog">Blog</a>
+      
+    </nav>
+    <button class="theme-btn" type="button" aria-label="Toggle light/dark theme">◐</button>
+    <a class="gh-pill" href="https://github.com/a2uicatalog/a2ui">GitHub ↗</a>
+  </div></header>
+  <div class="wrap">
+  <nav class="crumb">
+    <a href="/">A2UI Catalog</a> /
+    <a href="/.well-known/ai-catalog.json">ARD Catalog</a> /
+    atoms / scatter_matrix
+  </nav>
+
+  <h1>Scatter Matrix</h1>
+  <p class="desc">A scatter plot matrix (Plotly splom): 2 to 6 numeric dimensions on one grid, every dimension on a shared axis across its row and column, so each cell plots one dimension against another and a pattern between any two shows at a glance. Below the diagonal each cell is a small scatter plot of every complete row (the upper half too with show_upper); the diagonal names the dimension; wide pages also show each dimension's range on the outer edges. Each axis comes from d3 nice() and ticks() on the server, so there is no script. A legend lists every dimension with its range and a hidden table gives every value of every row. Static: no hover or brushing. Motion-ready: each cell fades in through --k from --p (default 1).</p>
+
+  <div class="section">
+    <div class="label">Surfaces</div>
+    <span class="badge bs">web</span><span class="badge bs">google-apps-script-web</span><span class="badge bs">mcp-apps</span><span class="badge bs">android</span>
+  </div>
+
+  
+<div class="section">
+  <div class="label">Degraded on</div>
+  <table><thead><tr><th>Surface</th><th>Note</th></tr></thead><tbody><tr><td>pdf</td><td>Prints the finished picture; no motion</td></tr></tbody></table>
+</div>
+
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of scatter_matrix"><div style="margin:var(--a2ui-block-gap,1.25rem) 0;color:var(--text,#0F172A);font-size:0.9rem;line-height:1.4;"><div style="font-weight:700;font-size:1.05rem;margin:0 0 10px;">Flower measures</div><div class="ifsm" style="container-type:inline-size;max-width:100%;overflow:hidden;"><style>.ifsm .sma{display:none}.ifsm .sml{display:none}.ifsm .smg3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:2px}@container (min-width:600px){.ifsm .sma{display:flex}.ifsm .sml{display:-webkit-box}.ifsm .smn{display:none}.ifsm .smg3{grid-template-columns:52px repeat(3,minmax(0,1fr))}}</style><div role="img" aria-label="Scatter plot matrix of 3 measures over 16 rows: Sepal length (4.4 to 7), Sepal width (2.3 to 3.9), Petal length (1.3 to 6)." class="smg3"><div class="sma" style="align-items:center;justify-content:flex-end;text-align:right;padding-right:4px;overflow-wrap:anywhere;font-size:0.75rem;line-height:1.15;color:var(--muted,#475569);">4 to 7</div><div data-cb="tile" data-key="Sepal length" class="smc smd" style="position:relative;aspect-ratio:1;box-sizing:border-box;min-width:0;border:1px solid var(--muted,#475569);background:var(--surface,#F8FAFC);display:flex;align-items:center;justify-content:center;padding:4px;text-align:center;overflow:hidden;--k:clamp(0,calc(var(--p,1)*10 - 0),1);opacity:var(--k,1);transform:translateY(calc((1 - var(--k,1))*8px));"><span class="smn" style="font-size:0.75rem;font-weight:700;">1</span><span data-cb="label" data-key="Sepal length" class="sml" style="font-size:0.75rem;font-weight:700;line-height:1.15;overflow-wrap:anywhere;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden;">Sepal length</span></div><div class="smc sme" style="position:relative;aspect-ratio:1;box-sizing:border-box;min-width:0;--k:clamp(0,calc(var(--p,1)*10 - 1),1);opacity:var(--k,1);transform:translateY(calc((1 - var(--k,1))*8px));"></div><div class="smc sme" style="position:relative;aspect-ratio:1;box-sizing:border-box;min-width:0;--k:clamp(0,calc(var(--p,1)*10 - 2),1);opacity:var(--k,1);transform:translateY(calc((1 - var(--k,1))*8px));"></div><div class="sma" style="align-items:center;justify-content:flex-end;text-align:right;padding-right:4px;overflow-wrap:anywhere;font-size:0.75rem;line-height:1.15;color:var(--muted,#475569);">2 to 4</div><div data-cb="tile" data-key="Sepal width×Sepal length" class="smc" style="position:relative;aspect-ratio:1;box-sizing:border-box;min-width:0;border:1px solid var(--border,#CBD5E1);--k:clamp(0,calc(var(--p,1)*10 - 3),1);opacity:var(--k,1);transform:translateY(calc((1 - var(--k,1))*8px));"><svg class="smx" viewBox="0 0 100 100" aria-hidden="true" focusable="false" style="position:absolute;inset:0;width:100%;height:100%;display:block;"><circle class="smp" cx="38.0" cy="27.5" r="2.2" fill="var(--accent,#0369A1)" fill-opacity="0.7"/><circle class="smp" cx="32.0" cy="50.0" r="2.2" fill="var(--accent,#0369A1)" fill-opacity="0.7"/><circle class="smp" cx="26.0" cy="41.0" r="2.2" fill="var(--accent,#0369A1)" fill-opacity="0.7"/><circle class="smp" cx="23.0" cy="45.5" r="2.2" fill="var(--accent,#0369A1)" fill-opacity="0.7"/><circle class="smp" cx="35.0" cy="23.0" r="2.2" fill="var(--accent,#0369A1)" fill-opacity="0.7"/><circle class="smp" cx="47.0" cy="9.5" r="2.2" fill="var(--accent,#0369A1)" fill-opacity="0.7"/><circle class="smp" cx="23.0" cy="32.0" r="2.2" fill="var(--accent,#0369A1)" fill-opacity="0.7"/><circle class="smp" cx="35.0" cy="32.0" r="2.2" fill="var(--accent,#0369A1)" fill-opacity="0.7"/><circle class="smp" cx="17.0" cy="54.5" r="2.2" fill="var(--accent,#0369A1)" fill-opacity="0.7"/><circle class="smp" cx="32.0" cy="45.5" r="2.2" fill="var(--accent,#0369A1)" fill-opacity="0.7"/><circle class="smp" cx="95.0" cy="41.0" r="2.2" fill="var(--accent,#0369A1)" fill-opacity="0.7"/><circle class="smp" cx="77.0" cy="41.0" r="2.2" fill="var(--accent,#0369A1)" fill-opacity="0.7"/><circle class="smp" cx="92.0" cy="45.5" r="2.2" fill="var(--accent,#0369A1)" fill-opacity="0.7"/><circle class="smp" cx="50.0" cy="81.5" r="2.2" fill="var(--accent,#0369A1)" fill-opacity="0.7"/><circle class="smp" cx="80.0" cy="59.0" r="2.2" fill="var(--accent,#0369A1)" fill-opacity="0.7"/><circle class="smp" cx="74.0" cy="36.5" r="2.2" fill="var(--accent,#0369A1)" fill-opacity="0.7"/></svg></div><div data-cb="tile" data-key="Sepal width" class="smc smd" style="position:relative;aspect-ratio:1;box-sizing:border-box;min-width:0;border:1px solid var(--muted,#475569);background:var(--surface,#F8FAFC);display:flex;align-items:center;justify-content:center;padding:4px;text-align:center;overflow:hidden;--k:clamp(0,calc(var(--p,1)*10 - 4),1);opacity:var(--k,1);transform:translateY(calc((1 - var(--k,1))*8px));"><span class="smn" style="font-size:0.75rem;font-weight:700;">2</span><span data-cb="label" data-key="Sepal width" class="sml" style="font-size:0.75rem;font-weight:700;line-height:1.15;overflow-wrap:anywhere;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden;">Sepal width</span></div><div class="smc sme" style="position:relative;aspect-ratio:1;box-sizing:border-box;min-width:0;--k:clamp(0,calc(var(--p,1)*10 - 5),1);opacity:var(--k,1);transform:translateY(calc((1 - var(--k,1))*8px));"></div><div class="sma" style="align-items:center;justify-content:flex-end;text-align:right;padding-right:4px;overflow-wrap:anywhere;font-size:0.75rem;line-height:1.15;color:var(--muted,#475569);">1 to 6</div><div data-cb="tile" data-key="Petal length×Sepal length" class="smc" style="position:relative;aspect-ratio:1;box-sizing:border-box;min-width:0;border:1px solid var(--border,#CBD5E1);--k:clamp(0,calc(var(--p,1)*10 - 6),1);opacity:var(--k,1);transform:translateY(calc((1 - var(--k,1))*8px));"><svg class="smx" viewBox="0 0 100 100" aria-hidden="true" focusable="false" style="position:absolute;inset:0;width:100%;height:100%;display:block;"><circle class="smp" cx="38.0" cy="87.8" r="2.2" fill="var(--accent,#0369A1)" fill-opacity="0.7"/><circle class="smp" cx="32.0" cy="87.8" r="2.2" fill="var(--accent,#0369A1)" fill-opacity="0.7"/><circle class="smp" cx="26.0" cy="89.6" r="2.2" fill="var(--accent,#0369A1)" fill-opacity="0.7"/><circle class="smp" cx="23.0" cy="86.0" r="2.2" fill="var(--accent,#0369A1)" fill-opacity="0.7"/><circle class="smp" cx="35.0" cy="87.8" r="2.2" fill="var(--accent,#0369A1)" fill-opacity="0.7"/><circle class="smp" cx="47.0" cy="82.4" r="2.2" fill="var(--accent,#0369A1)" fill-opacity="0.7"/><circle class="smp" cx="23.0" cy="87.8" r="2.2" fill="var(--accent,#0369A1)" fill-opacity="0.7"/><circle class="smp" cx="35.0" cy="86.0" r="2.2" fill="var(--accent,#0369A1)" fill-opacity="0.7"/><circle class="smp" cx="17.0" cy="87.8" r="2.2" fill="var(--accent,#0369A1)" fill-opacity="0.7"/><circle class="smp" cx="32.0" cy="86.0" r="2.2" fill="var(--accent,#0369A1)" fill-opacity="0.7"/><circle class="smp" cx="95.0" cy="28.4" r="2.2" fill="var(--accent,#0369A1)" fill-opacity="0.7"/><circle class="smp" cx="77.0" cy="32.0" r="2.2" fill="var(--accent,#0369A1)" fill-opacity="0.7"/><circle class="smp" cx="92.0" cy="24.8" r="2.2" fill="var(--accent,#0369A1)" fill-opacity="0.7"/><circle class="smp" cx="50.0" cy="41.0" r="2.2" fill="var(--accent,#0369A1)" fill-opacity="0.7"/><circle class="smp" cx="80.0" cy="30.2" r="2.2" fill="var(--accent,#0369A1)" fill-opacity="0.7"/><circle class="smp" cx="74.0" cy="5.0" r="2.2" fill="var(--accent,#0369A1)" fill-opacity="0.7"/></svg></div><div data-cb="tile" data-key="Petal length×Sepal width" class="smc" style="position:relative;aspect-ratio:1;box-sizing:border-box;min-width:0;border:1px solid var(--border,#CBD5E1);--k:clamp(0,calc(var(--p,1)*10 - 7),1);opacity:var(--k,1);transform:translateY(calc((1 - var(--k,1))*8px));"><svg class="smx" viewBox="0 0 100 100" aria-hidden="true" focusable="false" style="position:absolute;inset:0;width:100%;height:100%;display:block;"><circle class="smp" cx="72.5" cy="87.8" r="2.2" fill="var(--accent,#0369A1)" fill-opacity="0.7"/><circle class="smp" cx="50.0" cy="87.8" r="2.2" fill="var(--accent,#0369A1)" fill-opacity="0.7"/><circle class="smp" cx="59.0" cy="89.6" r="2.2" fill="var(--accent,#0369A1)" fill-opacity="0.7"/><circle class="smp" cx="54.5" cy="86.0" r="2.2" fill="var(--accent,#0369A1)" fill-opacity="0.7"/><circle class="smp" cx="77.0" cy="87.8" r="2.2" fill="var(--accent,#0369A1)" fill-opacity="0.7"/><circle class="smp" cx="90.5" cy="82.4" r="2.2" fill="var(--accent,#0369A1)" fill-opacity="0.7"/><circle class="smp" cx="68.0" cy="87.8" r="2.2" fill="var(--accent,#0369A1)" fill-opacity="0.7"/><circle class="smp" cx="68.0" cy="86.0" r="2.2" fill="var(--accent,#0369A1)" fill-opacity="0.7"/><circle class="smp" cx="45.5" cy="87.8" r="2.2" fill="var(--accent,#0369A1)" fill-opacity="0.7"/><circle class="smp" cx="54.5" cy="86.0" r="2.2" fill="var(--accent,#0369A1)" fill-opacity="0.7"/><circle class="smp" cx="59.0" cy="28.4" r="2.2" fill="var(--accent,#0369A1)" fill-opacity="0.7"/><circle class="smp" cx="59.0" cy="32.0" r="2.2" fill="var(--accent,#0369A1)" fill-opacity="0.7"/><circle class="smp" cx="54.5" cy="24.8" r="2.2" fill="var(--accent,#0369A1)" fill-opacity="0.7"/><circle class="smp" cx="18.5" cy="41.0" r="2.2" fill="var(--accent,#0369A1)" fill-opacity="0.7"/><circle class="smp" cx="41.0" cy="30.2" r="2.2" fill="var(--accent,#0369A1)" fill-opacity="0.7"/><circle class="smp" cx="63.5" cy="5.0" r="2.2" fill="var(--accent,#0369A1)" fill-opacity="0.7"/></svg></div><div data-cb="tile" data-key="Petal length" class="smc smd" style="position:relative;aspect-ratio:1;box-sizing:border-box;min-width:0;border:1px solid var(--muted,#475569);background:var(--surface,#F8FAFC);display:flex;align-items:center;justify-content:center;padding:4px;text-align:center;overflow:hidden;--k:clamp(0,calc(var(--p,1)*10 - 8),1);opacity:var(--k,1);transform:translateY(calc((1 - var(--k,1))*8px));"><span class="smn" style="font-size:0.75rem;font-weight:700;">3</span><span data-cb="label" data-key="Petal length" class="sml" style="font-size:0.75rem;font-weight:700;line-height:1.15;overflow-wrap:anywhere;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden;">Petal length</span></div><div class="sma"></div><div class="sma" style="justify-content:center;text-align:center;overflow-wrap:anywhere;padding-top:2px;font-size:0.75rem;line-height:1.15;color:var(--muted,#475569);">4 to 7</div><div class="sma" style="justify-content:center;text-align:center;overflow-wrap:anywhere;padding-top:2px;font-size:0.75rem;line-height:1.15;color:var(--muted,#475569);">2 to 4</div><div class="sma" style="justify-content:center;text-align:center;overflow-wrap:anywhere;padding-top:2px;font-size:0.75rem;line-height:1.15;color:var(--muted,#475569);">1 to 6</div></div><ul style="list-style:none;margin:8px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:2px 14px;font-size:0.75rem;line-height:1.3;color:var(--muted,#475569);"><li><b style="color:var(--text,#0F172A);">1</b> Sepal length (4.4 to 7)</li><li><b style="color:var(--text,#0F172A);">2</b> Sepal width (2.3 to 3.9)</li><li><b style="color:var(--text,#0F172A);">3</b> Petal length (1.3 to 6)</li></ul></div><table style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;"><thead><tr><th scope="col">Row</th><th scope="col">Sepal length</th><th scope="col">Sepal width</th><th scope="col">Petal length</th></tr></thead><tbody><tr><th scope="row">1</th><td>5.1</td><td>3.5</td><td>1.4</td></tr><tr><th scope="row">2</th><td>4.9</td><td>3</td><td>1.4</td></tr><tr><th scope="row">3</th><td>4.7</td><td>3.2</td><td>1.3</td></tr><tr><th scope="row">4</th><td>4.6</td><td>3.1</td><td>1.5</td></tr><tr><th scope="row">5</th><td>5</td><td>3.6</td><td>1.4</td></tr><tr><th scope="row">6</th><td>5.4</td><td>3.9</td><td>1.7</td></tr><tr><th scope="row">7</th><td>4.6</td><td>3.4</td><td>1.4</td></tr><tr><th scope="row">8</th><td>5</td><td>3.4</td><td>1.5</td></tr><tr><th scope="row">9</th><td>4.4</td><td>2.9</td><td>1.4</td></tr><tr><th scope="row">10</th><td>4.9</td><td>3.1</td><td>1.5</td></tr><tr><th scope="row">11</th><td>7</td><td>3.2</td><td>4.7</td></tr><tr><th scope="row">12</th><td>6.4</td><td>3.2</td><td>4.5</td></tr><tr><th scope="row">13</th><td>6.9</td><td>3.1</td><td>4.9</td></tr><tr><th scope="row">14</th><td>5.5</td><td>2.3</td><td>4</td></tr><tr><th scope="row">15</th><td>6.5</td><td>2.8</td><td>4.6</td></tr><tr><th scope="row">16</th><td>6.3</td><td>3.3</td><td>6</td></tr></tbody></table></div></div>
+</div>
+
+  
+
+  <div class="section">
+    <div class="label">Fields</div>
+    <table><thead><tr><th>Field</th><th>Type</th><th>Required</th></tr></thead><tbody><tr><td>title</td><td>string (optional, max 80).</td><td>optional</td></tr><tr><td>dimensions</td><td>array (required, 2 to 6) of {label (string, max 24, default "Dimension n"), values (array of numbers)}. Row r is the r-th value of every dimension. A row where any dimension has no finite number up to 1e12 in size is left out and counted in a note; an entry that is not a dimension with a list of values is left out with a note; dimensions beyond the first 6 are noted and not drawn. At most 200 complete rows are read; later rows are noted and not drawn. With fewer than 2 dimensions or 2 complete rows a note replaces the chart.</td><td>required</td></tr><tr><td>show_upper</td><td>boolean (optional, default false). Only true also draws the upper half (the same plots with the axes swapped).</td><td>optional</td></tr><tr><td>version</td><td>integer (optional, default 1). The scatter_matrix contract the payload was written for. Only version 1 exists; a higher whole number is drawn as version 1 with a note.</td><td>optional</td></tr></tbody></table>
+  </div>
+
+  <div class="section">
+    <div class="label">Example payload</div>
+    <pre tabindex="0"><code>{
+  "type": "scatter_matrix"
+}</code></pre>
+  </div>
+
+  <div class="section">
+    <div class="label">ARD catalog entry</div>
+    <pre tabindex="0"><code>{
+  "identifier": "urn:air:a2uicatalog.ai:atom:scatter_matrix",
+  "displayName": "Scatter Matrix",
+  "type": "application/vnd.a2ui.atom+json",
+  "url": "https://a2uicatalog.ai/atoms/scatter_matrix/",
+  "capabilities": [
+    "web",
+    "google-apps-script-web",
+    "mcp-apps",
+    "android"
+  ],
+  "description": "A scatter plot matrix (Plotly splom): 2 to 6 numeric dimensions on one grid, every dimension on a shared axis across its row and column, so each cell plots one dimension against another and a pattern between any two shows at a glance. Below the diagonal each cell is a small scatter plot of every complete row (the upper half too with show_upper); the diagonal names the dimension; wide pages also show each dimension's range on the outer edges. Each axis comes from d3 nice() and ticks() on the server, so there is no script. A legend lists every dimension with its range and a hidden table gives every value of every row. Static: no hover or brushing. Motion-ready: each cell fades in through --k from --p (default 1).",
+  "representativeQueries": [
+    "show a scatter_matrix: every measure plotted against every other",
+    "a scatter plot matrix (plotly splom): 2 to 6 numeric dimensions on one grid, every dimension on a sh",
+    "render a scatter matrix"
+  ]
+}</code></pre>
+  </div>
+
+  <a class="back" href="/.well-known/ai-catalog.json">← Full ARD catalog</a>
+  
+
+  <div class="deploy-box">
+    <div class="label">Deploy your own Google Apps Script renderer</div>
+    <p style="font-size:13px;color:var(--muted);margin:0 0 12px;">The renderer is an open-source Google Apps Script web app. Deploy your own instance in 4 commands — you own the URL, no dependency on the demo endpoint.</p>
+    <pre tabindex="0" style="margin:0;font-size:12px;"><code>git clone https://github.com/a2uicatalog/a2ui
+cd a2ui/apps-script-surface/gas-wired-renderer
+clasp push &amp;&amp; clasp deploy</code></pre>
+    <a href="/renderer">Full deploy guide →</a>
+  </div>
+
+  <footer>
+    <span>A2UI Atomic Catalog · <a href="https://github.com/a2uicatalog/a2ui">github.com/a2uicatalog/a2ui</a> · Maintained by <a href="https://www.linkedin.com/in/curtiskrygier" rel="me author">Curtis Krygier</a></span>
+    <span>Independent, unofficial catalog — not affiliated with, endorsed by, or sponsored by Google, Anthropic or OpenAI. A2UI is Google's protocol; official spec at <a href="https://a2ui.org">a2ui.org</a>. MCP is Anthropic's protocol; Claude, the Claude logo and Anthropic are trademarks of Anthropic PBC. ChatGPT and OpenAI are trademarks of OpenAI, L.L.C. All other marks belong to their respective owners.</span>
+    <span>MIT License</span>
+    <!-- Registry backlink. Smithery verifies a listing by finding a link to it
+         on the site or in the README, so this is the reciprocal half of that
+         listing, not decoration — remove it and the verification lapses. -->
+    <span><a href="https://smithery.ai/servers/a2uicatalog/a2uicatalog" rel="noopener">MCP server on Smithery</a></span>
+  </footer>
+  </div>
+  <script>
+document.addEventListener('click',function(e){
+  var b=e.target.closest('.theme-btn');if(!b)return;
+  var r=document.documentElement,t=r.getAttribute('data-theme')==='dark'?'light':'dark';
+  r.setAttribute('data-theme',t);
+  try{localStorage.setItem('a2ui-theme',t)}catch(err){}
+});
+// WebMCP (W3C draft, Chrome 157+): register any [toolname]-tagged form on
+// this page as an in-page tool. Feature-guarded (navigator.modelContext is
+// the deprecated pre-Chrome-150 alias, checked as a fallback) so this is
+// fully inert on every browser that doesn't implement the API yet -- no
+// behaviour change, no error, just an early no-op. execute() triggers the
+// SAME submit path a real click already uses (dispatches a real submit
+// event) rather than re-implementing each form's handler a second time --
+// this can only ever do what the visible form already does.
+(function(){
+  var mc = (typeof document!=='undefined' && document.modelContext) ||
+           (typeof navigator!=='undefined' && navigator.modelContext);
+  if(!mc || typeof mc.registerTool!=='function') return;
+  document.querySelectorAll('form[toolname]').forEach(function(form){
+    try{
+      mc.registerTool({
+        name: form.getAttribute('toolname'),
+        description: form.getAttribute('tooldescription') || '',
+        execute: function(){
+          form.dispatchEvent(new Event('submit',{cancelable:true,bubbles:true}));
+          return {status:'submitted'};
+        }
+      });
+    }catch(err){/* draft API shape may still be moving -- never break the page over it */}
+  });
+})();
+</script>
+<script>(function(){if(window.__a2uiCursorGlow)return;window.__a2uiCursorGlow=true;var el=document.createElement("div");el.style.cssText="position:fixed;pointer-events:none;z-index:9000;border-radius:50%;width:460px;height:460px;background:radial-gradient(circle at 38% 38%,#6366f1 0%,transparent 68%);opacity:0.12;mix-blend-mode:screen;will-change:transform;transform:translate(-50%,-50%);top:-600px;left:-600px;";document.body.appendChild(el);var tx=-600,ty=-600,mx=tx,my=ty;window.addEventListener("mousemove",function(e){mx=e.clientX;my=e.clientY;});(function loop(){tx+=(mx-tx)*0.1;ty+=(my-ty)*0.1;el.style.left=tx.toFixed(1)+"px";el.style.top=ty.toFixed(1)+"px";requestAnimationFrame(loop);})();})();</script>
+</body>
+</html>

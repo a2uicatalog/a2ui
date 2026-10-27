@@ -267,7 +267,7 @@ def test_no_script_and_text_never_below_12px():
 def test_registered_as_a_preview_charts_atom_with_an_example_and_every_field_documented(atom, fields):
     blocks = {a["type"]: a for a in yaml.safe_load((ROOT / "atoms/schema.yaml").read_text())["blocks"]}
     a = blocks[atom]
-    assert a["stage"] == "preview" and set(a["fields"]) == fields
+    assert a["stage"] == ("stable" if atom == "scatter_matrix" else "preview") and set(a["fields"]) == fields  # promoted to stable 2026-10-27 (owner: D3 set, I-d3-stable)
     assert a["surfaces"] == blocks["treemap"]["surfaces"] and a["source"] == blocks["treemap"]["source"]
     assert re.search(r"^a2ui-charts-v1:\n(?:- .*\n)*- " + atom + "$", (ROOT / "atoms/atom-packs.yaml").read_text(), re.M)
     assert '"%s":"a2ui-charts-v1"' % atom in (ROOT / "apps-script-surface/gas-wired-renderer/PackMap.gs").read_text()

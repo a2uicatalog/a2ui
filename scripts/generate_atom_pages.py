@@ -2023,13 +2023,6 @@ def generate_index(atoms):
     "@context": "https://schema.org",
     "@graph": [
       {{
-        "@type": "WebSite",
-        "@id": "https://a2uicatalog.ai/#website",
-        "name": "A2UI Atomic Catalog",
-        "alternateName": ["A2UI Catalog", "a2uicatalog"],
-        "url": "https://a2uicatalog.ai/"
-      }},
-      {{
         "@type": "SoftwareApplication",
         "@id": "https://a2uicatalog.ai/#software",
         "name": "A2UI Catalog",
@@ -2074,8 +2067,9 @@ def generate_index(atoms):
       {{
         "@type": "WebSite",
         "@id": "https://a2uicatalog.ai/#website",
-        "url": "https://a2uicatalog.ai",
+        "url": "https://a2uicatalog.ai/",
         "name": "A2UI Atomic Catalog",
+        "alternateName": ["A2UI Catalog", "a2uicatalog"],
         "publisher": {{ "@id": "https://a2uicatalog.ai/#org" }},
         "inLanguage": "en",
         "potentialAction": {{

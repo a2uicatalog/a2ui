@@ -265,7 +265,7 @@ def test_wired_data_file_matches_the_generator():
 # ── schema checklist ──
 def test_schema_entry_and_registration():
     a = {x["type"]: x for x in yaml.safe_load((ROOT / "atoms/schema.yaml").read_text())["blocks"]}["choropleth_map"]
-    assert a["stage"] == "preview" and a["description"] and a["compact_description"] and a["routing_text"] and len(a["intent_phrases"]) >= 3
+    assert a["stage"] == "stable" and a["description"] and a["compact_description"] and a["routing_text"] and len(a["intent_phrases"]) >= 3
     assert {"web", "google-apps-script-web", "mcp-apps"} <= set(a["surfaces"]["works_on"])
     f = a["fields"]
     assert set(f) >= {"version", "title", "region_set", "projection", "values", "scale", "unit", "legend_title", "steps"}

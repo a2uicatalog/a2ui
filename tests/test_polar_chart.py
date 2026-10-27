@@ -194,7 +194,7 @@ def test_hostile_text_is_escaped_in_both_twins(core_js):
 def test_registered_as_a_preview_charts_atom_with_an_example_and_every_field_documented():
     blocks = {a["type"]: a for a in yaml.safe_load((ROOT / "atoms/schema.yaml").read_text())["blocks"]}
     a = blocks["polar_chart"]
-    assert a["stage"] == "preview" and set(a["fields"]) == {"title", "series", "categories", "r_range", "r_ticks", "theta_step", "direction", "rotation", "unit", "version"}
+    assert a["stage"] == "stable" and set(a["fields"]) == {"title", "series", "categories", "r_range", "r_ticks", "theta_step", "direction", "rotation", "unit", "version"}
     assert a["surfaces"] == blocks["treemap"]["surfaces"] and a["source"] == blocks["treemap"]["source"]
     assert re.search(r"^a2ui-charts-v1:\n(?:- .*\n)*- polar_chart$", (ROOT / "atoms/atom-packs.yaml").read_text(), re.M)
     assert '"polar_chart":"a2ui-charts-v1"' in (ROOT / "apps-script-surface/gas-wired-renderer/PackMap.gs").read_text()

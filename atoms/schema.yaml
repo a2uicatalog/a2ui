@@ -20984,7 +20984,7 @@ blocks:
   notes: Steps rise in order with p.
   source: *ifg002
 - type: treemap
-  stage: preview
+  stage: stable
   description: 'Part-to-whole as nested rectangles whose areas show share of the total, laid out by the squarified treemap algorithm (d3-hierarchy
     treemapSquarify). By default up to four categories: each category is one block and its items are rectangles inside it, with the category
     name and total in a pill. With an optional per-item path (1 to 3 group names, top down) the chart nests by that path instead, up to three
@@ -21464,7 +21464,7 @@ blocks:
     about 1e-5), are moved by up to one hundred-millionth of their spread before triangulating, as d3-delaunay does, so a region edge can differ from the exact bisector by that much.'
   source: *ifg002
 - type: candlestick_chart
-  stage: preview
+  stage: stable
   description: 'Price movement as open-high-low-close bars on a date axis, drawn on the server as static HTML with no script. With the default
     style "candle" each bar is a wick from low to high and a body from open to close; with style "ohlc" it is a stem with a tick to the
     left for the open and a tick to the right for the close. Direction never rests on colour alone: a bar that closes at or above its
@@ -21506,7 +21506,7 @@ blocks:
     least 12 px.
   source: *ifg002
 - type: parallel_coords
-  stage: preview
+  stage: stable
   description: 'Rows of numbers compared across 2 to 8 measures at once: each measure is a vertical axis with its own scale, and each row is one line
     that crosses every axis at its value, so clusters, trade-offs and outliers across many measures show as bundles of lines. Optionally the lines are
     coloured by one measure (a light-to-dark ramp from the theme accent, with a legend giving the range). Axis scales come from d3 scaleLinear nice()
@@ -21539,7 +21539,7 @@ blocks:
     coloured) and axes --muted. Rows keep the given order.
   source: *ifg002
 - type: ternary_plot
-  stage: preview
+  stage: stable
   description: >-
     Shows what share each of three parts makes up of a whole, one dot per observation, on an equilateral triangle: a point's distance from
     a corner is how little of that part it has, and the corners are pure A, pure B and pure C. Values are normalised to shares that sum to
@@ -21573,7 +21573,7 @@ blocks:
     a on the left edge, b on the bottom edge and c on the right edge, and a note under the chart says so.
   source: *ifg002
 - type: quiver
-  stage: preview
+  stage: stable
   description: >-
     A field of arrows on linear axes: each arrow sits on its x, y point and points the way its u (across) and v (up) numbers say, with a
     length in proportion to the size of the vector. Use it for wind, flow, forces or any vector field. The axes come from d3 nice() and
@@ -21607,7 +21607,7 @@ blocks:
     axis grows upwards, and so does v.
   source: *ifg002
 - type: choropleth_map
-  stage: preview
+  stage: stable
   description: 'A map of regions shaded by one number each: world countries, US states or European countries. Give a region_set and a list of
     {id, value}; the server shades every region in one of 3 to 9 equal-interval classes (steps, default 5), draws a legend of the class ranges
     and hatches the regions that have no value, so a gap never reads as a low number. Colours come from the theme tokens (sequential accent
@@ -21677,7 +21677,7 @@ blocks:
     globe has globe_3d, and equirectangular distorts areas). A diverging scale whose values are all equal draws every region in the neutral colour.'
   source: *ifg002
 - type: geo_map
-  stage: preview
+  stage: stable
   description: >-
     Points and lines on a map: dots at latitude and longitude, optionally sized by a number and grouped, and great-circle lines between places,
     drawn over the same bundled outlines and projections as choropleth_map (world countries, US states or European countries; Equal Earth, Mercator
@@ -21742,7 +21742,7 @@ blocks:
     Plotly''s orthographic and equirectangular are not offered (use globe_3d for a globe).
   source: *ifg002
 - type: polar_chart
-  stage: preview
+  stage: stable
   description: 'Points and lines placed by angle and distance from a centre: each series gives a radius r and an angle theta for every point, so
     a compass or wind bearing, a cyclic pattern (hour of day, month) or a radar of scores per category reads as a circular chart. Angles are
     degrees, or categories (any text) spread evenly around the circle, which draws a radar chart. Up to 6 series are drawn as lines, markers
@@ -21850,7 +21850,7 @@ blocks:
     of a src image lists the axis ranges only, because the pixels are not known to the page.
   source: *ifg002
 - type: scatter_matrix
-  stage: preview
+  stage: stable
   description: 'A scatter plot matrix (Plotly splom): 2 to 6 numeric dimensions on one grid, every dimension on a shared axis across its row and
     column, so each cell plots one dimension against another and a pattern between any two shows at a glance. Below the diagonal each cell is a
     small scatter plot of every complete row (the upper half too with show_upper); the diagonal names the dimension; wide pages also show each

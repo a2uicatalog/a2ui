@@ -37,7 +37,7 @@
         "email",
         "pdf"
       ],
-      "description": "Open-source renderer with 558 typed atoms for generating rich UI across Google Meet stages, Chat Cards, Apps Script web apps, and web surfaces from a single JSON schema payload.",
+      "description": "Open-source renderer with 567 typed atoms for generating rich UI across Google Meet stages, Chat Cards, Apps Script web apps, and web surfaces from a single JSON schema payload.",
       "representativeQueries": [
         "render a rich UI from structured JSON data",
         "generate Google Meet stage content from a schema",
@@ -10513,6 +10513,24 @@
       ]
     },
     {
+      "identifier": "urn:air:a2uicatalog.ai:atom:treemap",
+      "displayName": "Treemap",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/treemap/",
+      "capabilities": [
+        "web",
+        "google-apps-script-web",
+        "mcp-apps",
+        "android"
+      ],
+      "description": "Part-to-whole as nested rectangles whose areas show share of the total, laid out by the squarified treemap algorithm (d3-hierarchy treemapSquarify). By default up to four categories: each category is one block and its items are rectangles inside it, with the category name and total in a pill. With an optional per-item path (1 to 3 group names, top down) the chart nests by that path instead, up to three levels of group boxes with a header showing the group name and total, so a folder tree or a cost breakdown reads like a disk-usage map. Each rectangle carries its name and value where the drawn width and height can hold them; in a narrower container or a thin cell the label is hidden (the hover title and the hidden table keep it). A hidden table gives item, category (or path), value and share. Motion-ready: every moving value reads --p (build progress 0 to 1, default 1) through a per-item --k, so a motion_timeline track on p builds it item by item and the standalone render is the finished picture; reduced motion shows the end state.",
+      "representativeQueries": [
+        "show a treemap: part-to-whole by category or nested path",
+        "part-to-whole as nested rectangles whose areas show share of the total, laid out by the squarified treemap algorithm",
+        "render a treemap"
+      ]
+    },
+    {
       "identifier": "urn:air:a2uicatalog.ai:atom:histogram",
       "displayName": "Histogram",
       "type": "application/vnd.a2ui.atom+json",
@@ -10672,6 +10690,150 @@
         "show a voronoi: nearest-site regions of a set of points (catchments, service areas)",
         "nearest-site regions of a set of points: the plot is split into one region per site, each region being every spot that",
         "render a voronoi"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:candlestick_chart",
+      "displayName": "Candlestick Chart",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/candlestick_chart/",
+      "capabilities": [
+        "web",
+        "google-apps-script-web",
+        "mcp-apps",
+        "android"
+      ],
+      "description": "Price movement as open-high-low-close bars on a date axis, drawn on the server as static HTML with no script. With the default style \"candle\" each bar is a wick from low to high and a body from open to close; with style \"ohlc\" it is a stem with a tick to the left for the open and a tick to the right for the close. Direction never rests on colour alone: a bar that closes at or above its open is hollow (candle) or a thin bar (ohlc) in the --positive colour, one that closes lower is filled (candle) or a thick bar (ohlc) in the --negative colour, a legend says so in words, and the hidden table has a Direction column. Bars sit at their real dates (weekend gaps show as gaps), the date axis ticks and labels follow d3-scale scaleUtc and d3-time-format, and the price axis follows d3 nice() and ticks(). An optional volume panel under the price panel repeats the hollow or filled cue. A hidden table gives every value. Motion-ready: each bar fades in through --k from --p (build progress 0 to 1, default 1); the standalone render is the finished picture and reduced motion shows the end state.",
+      "representativeQueries": [
+        "show a candlestick_chart: open-high-low-close price bars over time",
+        "price movement as open-high-low-close bars on a date axis, drawn on the server as static html with no script. with the",
+        "render a candlestick chart"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:parallel_coords",
+      "displayName": "Parallel Coords",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/parallel_coords/",
+      "capabilities": [
+        "web",
+        "google-apps-script-web",
+        "mcp-apps",
+        "android"
+      ],
+      "description": "Rows of numbers compared across 2 to 8 measures at once: each measure is a vertical axis with its own scale, and each row is one line that crosses every axis at its value, so clusters, trade-offs and outliers across many measures show as bundles of lines. Optionally the lines are coloured by one measure (a light-to-dark ramp from the theme accent, with a legend giving the range). Axis scales come from d3 scaleLinear nice() and ticks() and the lines from d3 line(), computed on the server, so there is no script. The picture is static: the interactive brushing of a Plotly parallel-coordinates chart (dragging on an axis to filter rows) is not available. A hidden table gives every value of every row.",
+      "representativeQueries": [
+        "show a parallel_coords: compare many numeric measures per row",
+        "rows of numbers compared across 2 to 8 measures at once: each measure is a vertical axis with its own scale, and each",
+        "render a parallel coords"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:ternary_plot",
+      "displayName": "Ternary Plot",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/ternary_plot/",
+      "capabilities": [
+        "web",
+        "google-apps-script-web",
+        "mcp-apps",
+        "android"
+      ],
+      "description": "Shows what share each of three parts makes up of a whole, one dot per observation, on an equilateral triangle: a point's distance from a corner is how little of that part it has, and the corners are pure A, pure B and pure C. Values are normalised to shares that sum to 100%, gridlines run every 20% on all three axes with their percentages printed on the edges, and an optional dashed line joins the points in the order given. The axis ticks come from d3-scale's linear ticks and the placing is plain trigonometry, computed on the server, so there is no script. A hidden table gives every point's three shares. Static, settled picture; each point fades in through --k from --p (build progress 0 to 1, default 1).",
+      "representativeQueries": [
+        "show a ternary_plot: three-part mixes as points on a triangle",
+        "shows what share each of three parts makes up of a whole, one dot per observation, on an equilateral triangle: a",
+        "render a ternary plot"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:quiver",
+      "displayName": "Quiver",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/quiver/",
+      "capabilities": [
+        "web",
+        "google-apps-script-web",
+        "mcp-apps",
+        "android"
+      ],
+      "description": "A field of arrows on linear axes: each arrow sits on its x, y point and points the way its u (across) and v (up) numbers say, with a length in proportion to the size of the vector. Use it for wind, flow, forces or any vector field. The axes come from d3 nice() and ticks() (d3-scale's linear scale), computed on the server, so there is no script. Arrows are centred on their point, drawn at a fixed size scale so the longest is a set length, and an arrow of length 0 is a dot. A hidden table gives every arrow's x, y, across, up and length. Static, settled picture; each arrow fades in through --k from --p (build progress 0 to 1, default 1).",
+      "representativeQueries": [
+        "show a quiver: arrows showing direction and size at points",
+        "a field of arrows on linear axes: each arrow sits on its x, y point and points the way its u (across) and v (up)",
+        "render a quiver"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:choropleth_map",
+      "displayName": "Choropleth Map",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/choropleth_map/",
+      "capabilities": [
+        "web",
+        "google-apps-script-web",
+        "mcp-apps",
+        "android"
+      ],
+      "description": "A map of regions shaded by one number each: world countries, US states or European countries. Give a region_set and a list of {id, value}; the server shades every region in one of 3 to 9 equal-interval classes (steps, default 5), draws a legend of the class ranges and hatches the regions that have no value, so a gap never reads as a low number. Colours come from the theme tokens (sequential accent ramp, or a diverging accent2-to-accent ramp through a neutral middle); Viridis, Turbo and other fixed colour maps are not offered. The outlines are bundled with the catalogue (Natural Earth 1:110m for countries, US Census 1:10m for states): there is no custom GeoJSON, so a region that is not in the set cannot be added. A hidden table lists each region with its code, value and class, largest first, and the regions with no value are listed in a details element. A payload that breaks the rules shows a short note instead of a map.",
+      "representativeQueries": [
+        "show a choropleth map: world, US states or Europe shaded by value in classes",
+        "a map of regions shaded by one number each: world countries, us states or european countries. give a region_set and a",
+        "render a choropleth map"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:geo_map",
+      "displayName": "Geo Map",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/geo_map/",
+      "capabilities": [
+        "web",
+        "google-apps-script-web",
+        "mcp-apps",
+        "android"
+      ],
+      "description": "Points and lines on a map: dots at latitude and longitude, optionally sized by a number and grouped, and great-circle lines between places, drawn over the same bundled outlines and projections as choropleth_map (world countries, US states or European countries; Equal Earth, Mercator or the US composite). Each group gets its own marker shape as well as its own colour, each line its own dash, so colour is never the only cue. A hidden table lists every point (including any that fall outside the frame, which are noted) and every line. A payload that breaks the rules shows a short note instead of a map.",
+      "representativeQueries": [
+        "show a geo map: points sized and grouped by value, plus great-circle lines, on bundled outlines",
+        "points and lines on a map: dots at latitude and longitude, optionally sized by a number and grouped, and great-circle",
+        "render a geo map"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:polar_chart",
+      "displayName": "Polar Chart",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/polar_chart/",
+      "capabilities": [
+        "web",
+        "google-apps-script-web",
+        "mcp-apps",
+        "android"
+      ],
+      "description": "Points and lines placed by angle and distance from a centre: each series gives a radius r and an angle theta for every point, so a compass or wind bearing, a cyclic pattern (hour of day, month) or a radar of scores per category reads as a circular chart. Angles are degrees, or categories (any text) spread evenly around the circle, which draws a radar chart. Up to 6 series are drawn as lines, markers or both, each with its own dash and marker shape so no series depends on colour alone; the optional fill \"toself\" shades the closed shape of a series. The radial axis starts at 0 (or the lowest negative value) and ends at a round number d3 nice() picks, with circular gridlines at d3 ticks(); an explicit r_range sets it, and a point outside the range is not drawn and is counted in a note. Angles are turned to positions by d3-shape lineRadial() maths and scaled by a d3-scale linear scale, on the server, so there is no script. A large series is thinned to evenly spaced points (the first and last of the points read are kept) with a visible note, the same cap that stands in for Plotly's WebGL scatterpolargl; a series is read up to 5000 points and a longer one says so in a note, so no point is dropped without being counted. The hidden table lists every point with a Status column (drawn, or outside the radial range and not drawn), and the aria label gives the radial range of the drawn points, the categories and each series' extent. Motion-ready: each series fades in through --k from --p (build progress 0 to 1, default 1); the standalone render is the finished picture and reduced motion shows the end state.",
+      "representativeQueries": [
+        "show a polar_chart: points and lines by angle and radius, or a radar",
+        "points and lines placed by angle and distance from a centre: each series gives a radius r and an angle theta for every",
+        "render a polar chart"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:scatter_matrix",
+      "displayName": "Scatter Matrix",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/scatter_matrix/",
+      "capabilities": [
+        "web",
+        "google-apps-script-web",
+        "mcp-apps",
+        "android"
+      ],
+      "description": "A scatter plot matrix (Plotly splom): 2 to 6 numeric dimensions on one grid, every dimension on a shared axis across its row and column, so each cell plots one dimension against another and a pattern between any two shows at a glance. Below the diagonal each cell is a small scatter plot of every complete row (the upper half too with show_upper); the diagonal names the dimension; wide pages also show each dimension's range on the outer edges. Each axis comes from d3 nice() and ticks() on the server, so there is no script. A legend lists every dimension with its range and a hidden table gives every value of every row. Static: no hover or brushing. Motion-ready: each cell fades in through --k from --p (default 1).",
+      "representativeQueries": [
+        "show a scatter_matrix: every measure plotted against every other",
+        "a scatter plot matrix (plotly splom): 2 to 6 numeric dimensions on one grid, every dimension on a shared axis across",
+        "render a scatter matrix"
       ]
     },
     {

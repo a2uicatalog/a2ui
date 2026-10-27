@@ -260,7 +260,7 @@ def test_registered_as_a_preview_chart_atom(atom):
     entries = [e for e in schema["blocks"] if e.get("type") == atom]
     assert len(entries) == 1
     e = entries[0]
-    assert e["stage"] == "preview" and "version" in e["fields"] and len(e["intent_phrases"]) == 3
+    assert e["stage"] == "stable" and "version" in e["fields"] and len(e["intent_phrases"]) == 3
     for k in ("description", "compact_description", "routing_text", "notes", "surfaces", "source"):
         assert e.get(k), k
     packs = yaml.safe_load((ROOT / "atoms/atom-packs.yaml").read_text())

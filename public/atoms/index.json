@@ -1,6 +1,6 @@
 {
  "catalogId": "a2ui-atoms-v1",
- "atomCount": 558,
+ "atomCount": 567,
  "fullSpec": "https://a2uicatalog.ai/spec.json",
  "atoms": [
   {
@@ -6078,6 +6078,16 @@
    ]
   },
   {
+   "type": "treemap",
+   "compact": "treemap: part-to-whole by category or nested path",
+   "surfaces": [
+    "web",
+    "google-apps-script-web",
+    "mcp-apps",
+    "android"
+   ]
+  },
+  {
    "type": "histogram",
    "compact": "histogram: counts of numbers per bin",
    "surfaces": [
@@ -6160,6 +6170,86 @@
   {
    "type": "voronoi",
    "compact": "voronoi: nearest-site regions of a set of points (catchments, service areas)",
+   "surfaces": [
+    "web",
+    "google-apps-script-web",
+    "mcp-apps",
+    "android"
+   ]
+  },
+  {
+   "type": "candlestick_chart",
+   "compact": "candlestick_chart: open-high-low-close price bars over time",
+   "surfaces": [
+    "web",
+    "google-apps-script-web",
+    "mcp-apps",
+    "android"
+   ]
+  },
+  {
+   "type": "parallel_coords",
+   "compact": "parallel_coords: compare many numeric measures per row",
+   "surfaces": [
+    "web",
+    "google-apps-script-web",
+    "mcp-apps",
+    "android"
+   ]
+  },
+  {
+   "type": "ternary_plot",
+   "compact": "ternary_plot: three-part mixes as points on a triangle",
+   "surfaces": [
+    "web",
+    "google-apps-script-web",
+    "mcp-apps",
+    "android"
+   ]
+  },
+  {
+   "type": "quiver",
+   "compact": "quiver: arrows showing direction and size at points",
+   "surfaces": [
+    "web",
+    "google-apps-script-web",
+    "mcp-apps",
+    "android"
+   ]
+  },
+  {
+   "type": "choropleth_map",
+   "compact": "choropleth map: world, US states or Europe shaded by value in classes",
+   "surfaces": [
+    "web",
+    "google-apps-script-web",
+    "mcp-apps",
+    "android"
+   ]
+  },
+  {
+   "type": "geo_map",
+   "compact": "geo map: points sized and grouped by value, plus great-circle lines, on bundled outlines",
+   "surfaces": [
+    "web",
+    "google-apps-script-web",
+    "mcp-apps",
+    "android"
+   ]
+  },
+  {
+   "type": "polar_chart",
+   "compact": "polar_chart: points and lines by angle and radius, or a radar",
+   "surfaces": [
+    "web",
+    "google-apps-script-web",
+    "mcp-apps",
+    "android"
+   ]
+  },
+  {
+   "type": "scatter_matrix",
+   "compact": "scatter_matrix: every measure plotted against every other",
    "surfaces": [
     "web",
     "google-apps-script-web",

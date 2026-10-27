@@ -284,7 +284,7 @@ def test_extremes_are_caught_by_the_number_guard():
 def test_registered_as_a_preview_atom_in_the_charts_pack():
     s = yaml.safe_load((ROOT / "atoms/schema.yaml").read_text())
     atom = [a for a in s["blocks"] if a.get("type") == "candlestick_chart"]
-    assert len(atom) == 1 and atom[0]["stage"] == "preview"
+    assert len(atom) == 1 and atom[0]["stage"] == "stable"  # promoted to stable 2026-10-27 (owner: D3 set, I-d3-stable)
     for k in ("description", "compact_description", "routing_text", "intent_phrases", "fields", "notes", "surfaces", "source"):
         assert atom[0].get(k), k
     assert len(atom[0]["intent_phrases"]) == 3 and "version" in atom[0]["fields"]

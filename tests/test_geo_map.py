@@ -257,7 +257,7 @@ def _py_ch(b):
 # ── schema checklist ──
 def test_schema_entry_and_registration():
     a = {x["type"]: x for x in yaml.safe_load((ROOT / "atoms/schema.yaml").read_text())["blocks"]}["geo_map"]
-    assert a["stage"] == "preview" and a["description"] and a["compact_description"] and a["routing_text"] and len(a["intent_phrases"]) >= 3
+    assert a["stage"] == "stable" and a["description"] and a["compact_description"] and a["routing_text"] and len(a["intent_phrases"]) >= 3
     assert {"web", "google-apps-script-web", "mcp-apps"} <= set(a["surfaces"]["works_on"])
     assert set(a["fields"]) >= {"version", "title", "region_set", "projection", "points", "lines", "unit", "legend_title"}
     assert "optional, default 1" in a["fields"]["version"]

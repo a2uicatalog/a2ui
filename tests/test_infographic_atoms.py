@@ -42,7 +42,7 @@ def test_all_twelve_are_preview_atoms_in_the_schema_and_a_pack():
     d = {a["type"]: a for a in yaml.safe_load((root / "atoms/schema.yaml").read_text())["blocks"]}
     packs = (root / "atoms/atom-packs.yaml").read_text()
     for t in ATOMS:
-        assert d[t].get("stage") == "preview", t
+        assert d[t].get("stage") == ("stable" if t == "treemap" else "preview"), t  # promoted to stable 2026-10-27 (owner: D3 set, I-d3-stable)
         assert re.search(rf"^- {t}$", packs, re.M), t
 
 

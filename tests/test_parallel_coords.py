@@ -206,7 +206,7 @@ def test_output_is_deterministic():
 def test_registered_as_a_preview_charts_atom_with_an_example_and_every_field_documented():
     blocks = {a["type"]: a for a in yaml.safe_load((ROOT / "atoms/schema.yaml").read_text())["blocks"]}
     a = blocks["parallel_coords"]
-    assert a["stage"] == "preview" and set(a["fields"]) == {"title", "dimensions", "row_labels", "color_by", "version"}
+    assert a["stage"] == "stable" and set(a["fields"]) == {"title", "dimensions", "row_labels", "color_by", "version"}
     assert a["surfaces"] == blocks["treemap"]["surfaces"] and a["source"] == blocks["treemap"]["source"]
     assert len(a["intent_phrases"]) == 3 and "NOT" in a["routing_text"].upper() or "not for" in a["routing_text"].lower()
     assert re.search(r"^a2ui-charts-v1:\n(?:- .*\n)*- parallel_coords$", (ROOT / "atoms/atom-packs.yaml").read_text(), re.M)

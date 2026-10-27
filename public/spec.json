@@ -2,7 +2,7 @@
  "catalogId": "a2ui-atoms-v1",
  "displayName": "A2UI Multi-Surface Renderer",
  "type": "application/vnd.a2ui.renderer+json",
- "atomCount": 558,
+ "atomCount": 567,
  "compactIndex": "https://a2uicatalog.ai/atoms/index.json",
  "runbooks": "https://a2uicatalog.ai/runbooks/index.json",
  "trainingPrompt": "https://a2uicatalog.ai/prompts/training-md-gem.md",
@@ -21985,6 +21985,53 @@
    ]
   },
   {
+   "type": "treemap",
+   "description": "Part-to-whole as nested rectangles whose areas show share of the total, laid out by the squarified treemap algorithm (d3-hierarchy treemapSquarify). By default up to four categories: each category is one block and its items are rectangles inside it, with the category name and total in a pill. With an optional per-item path (1 to 3 group names, top down) the chart nests by that path instead, up to three levels of group boxes with a header showing the group name and total, so a folder tree or a cost breakdown reads like a disk-usage map. Each rectangle carries its name and value where the drawn width and height can hold them; in a narrower container or a thin cell the label is hidden (the hover title and the hidden table keep it). A hidden table gives item, category (or path), value and share. Motion-ready: every moving value reads --p (build progress 0 to 1, default 1) through a per-item --k, so a motion_timeline track on p builds it item by item and the standalone render is the finished picture; reduced motion shows the end state.",
+   "compact_description": "treemap: part-to-whole by category or nested path",
+   "surfaces": {
+    "works_on": [
+     "web",
+     "google-apps-script-web",
+     "mcp-apps",
+     "android"
+    ],
+    "degraded_on": [
+     {
+      "surface": "pdf",
+      "note": "Prints the finished picture; no motion"
+     }
+    ],
+    "incompatible_on": [
+     {
+      "surface": "google-chat",
+      "reason": "Inline CSS custom properties, clamp() and calc() are not supported"
+     },
+     {
+      "surface": "email",
+      "reason": "CSS custom properties, clamp() and calc() are not supported in email clients"
+     }
+    ]
+   },
+   "fields": {
+    "title": "string (optional, max 80).",
+    "items": "array (required, 4 to 12) of {category (max 20), name (max 24), value (number above 0), path? (array of 1 to 3 strings, max 20 each, the item's ancestor groups from the top down)}. Without any path at most four categories are drawn; items with a value of 0 or less are dropped. When any item has a usable path the chart nests by path and category is ignored for items that have one; an item without a path goes into a group named by its category, or Other. The item cap is 12 unless max_items is given.",
+    "max_items": "integer (optional, 12 to 60, default 12). Lifts the item cap; items beyond it are not drawn and a note says how many. Any other value keeps 12.",
+    "version": "integer (optional, default 1). The treemap contract the payload was written for. Only version 1 exists; a higher whole number is drawn as version 1 with a note."
+   },
+   "source": {
+    "name": "a2uicatalog",
+    "url": "https://github.com/a2uicatalog/a2ui",
+    "license": "MIT"
+   },
+   "routing_text": "Rectangles sized by value, grouped into up to four categories, or nested up to three levels deep by a path per item (a folder tree, a spend breakdown). Good for a quick sense of share; exact numbers are in a table. Not for precise comparison, and not for more than 12 items.",
+   "intent_phrases": [
+    "Show where cloud spend goes by category.",
+    "I need a treemap of storage by team.",
+    "Visualise the share of each item within its group.",
+    "Show what is using my disk space, folder by folder."
+   ]
+  },
+  {
    "type": "histogram",
    "description": "The distribution of a list of numbers: bars of counts per bin on a counted y axis, with the bin edges on the x axis. The bins and the rounded axis come from d3-array bin() with the Sturges rule, computed on the server, so there is no script. A hidden table gives each bin from, to and count. Motion-ready: every moving value reads --p (build progress 0 to 1, default 1) through a per-item --k, so a motion_timeline track on p grows the bars one after another and the standalone render is the finished picture; reduced motion shows the end state.",
    "compact_description": "histogram: counts of numbers per bin",
@@ -22430,6 +22477,410 @@
     "Show which of my depots is the nearest to each part of the city.",
     "Draw the service area of each store as nearest-site regions.",
     "Split this area into catchments, one per sensor, by closest distance."
+   ]
+  },
+  {
+   "type": "candlestick_chart",
+   "description": "Price movement as open-high-low-close bars on a date axis, drawn on the server as static HTML with no script. With the default style \"candle\" each bar is a wick from low to high and a body from open to close; with style \"ohlc\" it is a stem with a tick to the left for the open and a tick to the right for the close. Direction never rests on colour alone: a bar that closes at or above its open is hollow (candle) or a thin bar (ohlc) in the --positive colour, one that closes lower is filled (candle) or a thick bar (ohlc) in the --negative colour, a legend says so in words, and the hidden table has a Direction column. Bars sit at their real dates (weekend gaps show as gaps), the date axis ticks and labels follow d3-scale scaleUtc and d3-time-format, and the price axis follows d3 nice() and ticks(). An optional volume panel under the price panel repeats the hollow or filled cue. A hidden table gives every value. Motion-ready: each bar fades in through --k from --p (build progress 0 to 1, default 1); the standalone render is the finished picture and reduced motion shows the end state.",
+   "compact_description": "candlestick_chart: open-high-low-close price bars over time",
+   "surfaces": {
+    "works_on": [
+     "web",
+     "google-apps-script-web",
+     "mcp-apps",
+     "android"
+    ],
+    "degraded_on": [
+     {
+      "surface": "pdf",
+      "note": "Prints the finished picture; no motion"
+     }
+    ],
+    "incompatible_on": [
+     {
+      "surface": "google-chat",
+      "reason": "Inline CSS custom properties, clamp() and calc() are not supported"
+     },
+     {
+      "surface": "email",
+      "reason": "CSS custom properties, clamp() and calc() are not supported in email clients"
+     }
+    ]
+   },
+   "fields": {
+    "title": "string (optional, max 80).",
+    "dates": "array (required, up to 10000 read) of ISO date strings, read as UTC: \"2024-03-05\", or with a time \"2024-03-05T09:30\", \"2024-03-05 09:30:15\" or \"2024-03-05T09:30:15.250Z\". Years 1000 to 9000. Any other string, a time zone offset or a non-string leaves that bar out with a note. The bars are drawn in date order.",
+    "open": "array (required) of numbers, one per date, each finite and up to 1e12 in size.",
+    "high": "array (required) of numbers, one per date. Must be at least the open, close and low.",
+    "low": "array (required) of numbers, one per date. Must be at most the open, close and high.",
+    "close": "array (required) of numbers, one per date.",
+    "volume": "array (optional) of numbers of 0 or more, one per date. Adds a volume panel; a bar without a usable volume has no volume bar and a note counts them.",
+    "style": "string (optional, \"candle\" or \"ohlc\", default \"candle\"). Any other value draws candles.",
+    "unit": "string (optional, max 12). Appended to the price values in the aria label and the hidden table.",
+    "y_label": "string (optional, max 40). Names the price axis above the chart.",
+    "version": "integer (optional, default 1). The candlestick_chart contract the payload was written for. Only version 1 exists; a higher whole number is drawn as version 1 with a note."
+   },
+   "source": {
+    "name": "a2uicatalog",
+    "url": "https://github.com/a2uicatalog/a2ui",
+    "license": "MIT"
+   },
+   "routing_text": "Open, high, low and close values per date, such as a share, fund, currency or commodity price, or any measure with a daily range and an opening and closing value. Give the dates and the four number lists. For one value per date use a line or area chart; for a distribution of values use a box plot; for a running total use a waterfall.",
+   "intent_phrases": [
+    "Chart this stock price history as candlesticks.",
+    "Show the daily open, high, low and close for the last month with volume.",
+    "Draw an OHLC bar chart of the currency rate for each trading day."
+   ]
+  },
+  {
+   "type": "parallel_coords",
+   "description": "Rows of numbers compared across 2 to 8 measures at once: each measure is a vertical axis with its own scale, and each row is one line that crosses every axis at its value, so clusters, trade-offs and outliers across many measures show as bundles of lines. Optionally the lines are coloured by one measure (a light-to-dark ramp from the theme accent, with a legend giving the range). Axis scales come from d3 scaleLinear nice() and ticks() and the lines from d3 line(), computed on the server, so there is no script. The picture is static: the interactive brushing of a Plotly parallel-coordinates chart (dragging on an axis to filter rows) is not available. A hidden table gives every value of every row.",
+   "compact_description": "parallel_coords: compare many numeric measures per row",
+   "surfaces": {
+    "works_on": [
+     "web",
+     "google-apps-script-web",
+     "mcp-apps",
+     "android"
+    ],
+    "degraded_on": [
+     {
+      "surface": "pdf",
+      "note": "Prints the finished picture; no motion"
+     }
+    ],
+    "incompatible_on": [
+     {
+      "surface": "google-chat",
+      "reason": "Inline CSS custom properties, clamp() and calc() are not supported"
+     },
+     {
+      "surface": "email",
+      "reason": "CSS custom properties, clamp() and calc() are not supported in email clients"
+     }
+    ]
+   },
+   "fields": {
+    "title": "string (optional, max 80).",
+    "dimensions": "array (required, 2 to 8) of {label (string, max 24, default \"Dimension n\"), values (array of numbers), min (number, optional), max (number, optional), reverse (boolean, optional)}. Row i takes values[i] of every dimension, so every dimension lists the rows in the same order. Without min and max the axis runs over the d3 nice() of the values; with both (min below max) the axis is exactly that range and a value outside it is drawn on the edge, with a note (the table keeps the real number). reverse true puts the highest value at the bottom and says so under the label. A row with a missing or non-numeric value (finite, up to 1e12 in size) in any dimension is left out with a note; rows beyond the first 200 and dimensions beyond the first 8 are noted and not drawn. Entries that are not a dimension are left out with a note.",
+    "row_labels": "array (optional) of strings (max 30). Names the rows in the hidden table; default \"Row n\".",
+    "color_by": "string or integer (optional). The label of a dimension, or its number counting from 0, to colour the lines by. A name that matches no dimension is noted and the lines stay one colour.",
+    "version": "integer (optional, default 1). The parallel_coords contract the payload was written for. Only version 1 exists; a higher whole number is drawn as version 1 with a note."
+   },
+   "source": {
+    "name": "a2uicatalog",
+    "url": "https://github.com/a2uicatalog/a2ui",
+    "license": "MIT"
+   },
+   "routing_text": "Compares rows (cars, models, patients, experiments) across several numeric measures at once as lines over parallel axes, for finding clusters, trade-offs and outliers. Not for two measures (use a scatter plot), not for one measure over time (use a line chart), not for categories with counts (use a bar chart or sankey_flow), and not for more than 200 rows or 8 measures.",
+   "intent_phrases": [
+    "Compare these models across accuracy, latency, cost and size at once.",
+    "Show how each product ranks on all the measures in a parallel coordinates plot.",
+    "Which experiments are good on every metric and which trade one off against another?"
+   ]
+  },
+  {
+   "type": "ternary_plot",
+   "description": "Shows what share each of three parts makes up of a whole, one dot per observation, on an equilateral triangle: a point's distance from a corner is how little of that part it has, and the corners are pure A, pure B and pure C. Values are normalised to shares that sum to 100%, gridlines run every 20% on all three axes with their percentages printed on the edges, and an optional dashed line joins the points in the order given. The axis ticks come from d3-scale's linear ticks and the placing is plain trigonometry, computed on the server, so there is no script. A hidden table gives every point's three shares. Static, settled picture; each point fades in through --k from --p (build progress 0 to 1, default 1).",
+   "compact_description": "ternary_plot: three-part mixes as points on a triangle",
+   "surfaces": {
+    "works_on": [
+     "web",
+     "google-apps-script-web",
+     "mcp-apps",
+     "android"
+    ],
+    "degraded_on": [
+     {
+      "surface": "pdf",
+      "note": "Prints the finished picture; no motion"
+     }
+    ],
+    "incompatible_on": [
+     {
+      "surface": "google-chat",
+      "reason": "Inline CSS custom properties, clamp() and calc() are not supported"
+     },
+     {
+      "surface": "email",
+      "reason": "CSS custom properties, clamp() and calc() are not supported in email clients"
+     }
+    ]
+   },
+   "fields": {
+    "title": "string (optional, max 80).",
+    "a_label": "string (optional, max 20, default \"A\"). Names the part at the top corner.",
+    "b_label": "string (optional, max 20, default \"B\"). Names the part at the bottom left corner.",
+    "c_label": "string (optional, max 20, default \"C\"). Names the part at the bottom right corner.",
+    "points": "array (required, 1 to 200) of {label (string or number, max 30, default \"Point n\"), a, b, c (non-negative numbers up to 1e12 in size, not all zero)}. A point whose a, b or c is missing, not a finite number, negative or too large, or that sums to 0, and an entry that is not a point, is left out and counted in a note. Points beyond the first 200 are noted and not drawn.",
+    "connect": "boolean (optional, default false). Only true switches it on. Draws a dashed line through the points in the given order.",
+    "version": "integer (optional, default 1). The ternary_plot contract the payload was written for. Only version 1 exists; a higher whole number is drawn as version 1 with a note."
+   },
+   "source": {
+    "name": "a2uicatalog",
+    "url": "https://github.com/a2uicatalog/a2ui",
+    "license": "MIT"
+   },
+   "routing_text": "Plots observations that are each a mix of exactly three parts, such as soil sand, silt and clay, a vote split between three parties or a budget split three ways. Give three non-negative numbers per point; they are turned into shares. For one share of a whole use a donut or progress bar; for two numbers per point use scatter_trend; for more than three parts use stacked bars or a treemap.",
+   "intent_phrases": [
+    "Plot these soil samples by sand, silt and clay on a ternary diagram.",
+    "Show how the vote split between three parties moved over the years.",
+    "Where does each product sit between price, quality and speed?"
+   ]
+  },
+  {
+   "type": "quiver",
+   "description": "A field of arrows on linear axes: each arrow sits on its x, y point and points the way its u (across) and v (up) numbers say, with a length in proportion to the size of the vector. Use it for wind, flow, forces or any vector field. The axes come from d3 nice() and ticks() (d3-scale's linear scale), computed on the server, so there is no script. Arrows are centred on their point, drawn at a fixed size scale so the longest is a set length, and an arrow of length 0 is a dot. A hidden table gives every arrow's x, y, across, up and length. Static, settled picture; each arrow fades in through --k from --p (build progress 0 to 1, default 1).",
+   "compact_description": "quiver: arrows showing direction and size at points",
+   "surfaces": {
+    "works_on": [
+     "web",
+     "google-apps-script-web",
+     "mcp-apps",
+     "android"
+    ],
+    "degraded_on": [
+     {
+      "surface": "pdf",
+      "note": "Prints the finished picture; no motion"
+     }
+    ],
+    "incompatible_on": [
+     {
+      "surface": "google-chat",
+      "reason": "Inline CSS custom properties, clamp() and calc() are not supported"
+     },
+     {
+      "surface": "email",
+      "reason": "CSS custom properties, clamp() and calc() are not supported in email clients"
+     }
+    ]
+   },
+   "fields": {
+    "title": "string (optional, max 80).",
+    "x_label": "string (optional, max 40, default \"x\"). Names the horizontal axis.",
+    "y_label": "string (optional, max 40, default \"y\"). Names the vertical axis.",
+    "unit": "string (optional, max 12). The unit of u, v and the length; appended to those values in the table and the label.",
+    "arrows": "array (required, 1 to 200) of {x, y, u, v (finite numbers up to 1e12 in size), label (string or number, max 30, default \"Arrow n\")}. An entry with a missing or unusable number, or that is not an arrow, is left out and counted in a note. Arrows beyond the first 200 are noted and not drawn.",
+    "arrow_scale": "number (optional, 0.1 to 1, default 1). Shrinks every arrow by this factor; the longest is 120 units of a 1000 unit wide drawing at scale 1. A value that is not a number is ignored.",
+    "version": "integer (optional, default 1). The quiver contract the payload was written for. Only version 1 exists; a higher whole number is drawn as version 1 with a note."
+   },
+   "source": {
+    "name": "a2uicatalog",
+    "url": "https://github.com/a2uicatalog/a2ui",
+    "license": "MIT"
+   },
+   "routing_text": "Draws a vector field, one arrow per point, such as wind speed and direction across a map grid, water flow or the force on each node. Give x, y and the arrow's across (u) and up (v) numbers. It is not for flows between categories (use sankey_flow), for change over time (use a line chart) or for plain points (use scatter_trend). The arrow direction ignores the axis scales (it is the picture angle of (u, v), not scaled by x or y), and arrows are centred on their point, not tail-anchored.",
+   "intent_phrases": [
+    "Draw the wind field over this grid as arrows.",
+    "Show the direction and strength of the current at each station.",
+    "Plot the force vectors on these points."
+   ]
+  },
+  {
+   "type": "choropleth_map",
+   "description": "A map of regions shaded by one number each: world countries, US states or European countries. Give a region_set and a list of {id, value}; the server shades every region in one of 3 to 9 equal-interval classes (steps, default 5), draws a legend of the class ranges and hatches the regions that have no value, so a gap never reads as a low number. Colours come from the theme tokens (sequential accent ramp, or a diverging accent2-to-accent ramp through a neutral middle); Viridis, Turbo and other fixed colour maps are not offered. The outlines are bundled with the catalogue (Natural Earth 1:110m for countries, US Census 1:10m for states): there is no custom GeoJSON, so a region that is not in the set cannot be added. A hidden table lists each region with its code, value and class, largest first, and the regions with no value are listed in a details element. A payload that breaks the rules shows a short note instead of a map.",
+   "compact_description": "choropleth map: world, US states or Europe shaded by value in classes",
+   "surfaces": {
+    "works_on": [
+     "web",
+     "google-apps-script-web",
+     "mcp-apps",
+     "android"
+    ],
+    "degraded_on": [
+     {
+      "surface": "pdf",
+      "note": "Prints the finished picture; no motion"
+     }
+    ],
+    "incompatible_on": [
+     {
+      "surface": "google-chat",
+      "reason": "Inline CSS custom properties, clamp() and calc() are not supported"
+     },
+     {
+      "surface": "email",
+      "reason": "CSS custom properties, clamp() and calc() are not supported in email clients"
+     }
+    ]
+   },
+   "fields": {
+    "version": "integer (optional, default 1). Payload contract version.",
+    "title": "string (optional, max 80). Shown above the map and used as its name.",
+    "region_set": "string (required): world-countries (176 countries, Antarctica left out), us-states (the 50 states and DC) or europe-countries (the European subset of world-countries, Russia and Turkey included, framed on the area west of 45 degrees east). Use it to choose which outlines are drawn; the set also decides which ids are valid.",
+    "projection": "string (optional): equal-earth, mercator or albers-usa. Equal Earth keeps areas comparable, so it is the default for world-countries and europe-countries; Mercator suits a close view of Europe but inflates high latitudes; albers-usa (the d3 composite that moves Alaska and Hawaii under the lower 48) is only valid with us-states and is its default. Any other combination, or any other name, shows a note. Use this to change the look, not the data.",
+    "values": "array (required, 1 to 250) of {id (string), value (number)}. id is an ISO 3166-1 alpha-3 code for the country sets (for example FRA; Kosovo is XKX) or a 2-letter USPS code for us-states (for example TX; DC is included); case is ignored. value is a finite number of at most 1e15 in size. Entries beyond the 250th are ignored, an unknown id is skipped and named in a note, a repeated id keeps its first value, and an entry without a usable id and number is counted in a note; if nothing matches a region the map is not drawn.",
+    "scale": "object (optional) {kind, scheme?}, the scale contract of chart_legend without the domain (the domain is the data). kind is sequential (default: low to high, one direction) or diverging (a neutral middle, two directions, for values that rise and fall around a centre such as change or difference). scheme is a theme-token ramp name: accent (default) or accent2 for sequential, accent_pair for diverging; any other name falls back to the default. For diverging the centre is 0 when the values cross zero, otherwise the middle of the range. Use diverging only when the centre means something.",
+    "unit": "string (optional, max 12). Appended to the legend ranges and the table values (for example % or USD), with no space before a percent sign.",
+    "legend_title": "string (optional, max 60). A heading for the legend (for example Unemployment rate, %); the map title says what the map is, the legend title says what the colours measure.",
+    "steps": "integer (optional, 3 to 9, default 5). The number of classes. Fewer classes read faster and hide detail; more show detail but neighbouring shades get hard to tell apart. A number outside 3 to 9 is moved to the nearest and named in a note.",
+    "frame": "object (optional) {lon_min, lon_max, lat_min, lat_max}, four finite numbers in degrees: frame the map on a zone (for example a trip) instead of the whole region_set. Longitude is clamped to -180..180 and latitude to -85..85, lat_min must be below lat_max after that, and a span under 1 degree is widened to 1. lon_min above lon_max is a frame across the antimeridian (160 to -150 is a Pacific trip: Fiji, Samoa, Hawaii): the map is drawn with its central meridian at the frame's centre, so outlines, points and routes run on across 180 as one piece; a frame that reaches -180 or 180 is centred the same way, so the land past the seam is drawn. lon_min equal to lon_max is not a frame. A motion_transition between two frames on either side of the seam pans and zooms each keyed region's box (a region drawn in two pieces across the seam travels as one box). A frame that contains no outline of the set is named in a note. A framed map has a sea tint (a mix of theme tokens; left out when the frame reaches past the region set's window, where the set has no land) and rounded corners. The frame is fitted into a fixed 960 x 540 canvas and centred, so two states of one film with different frames have the same box and a motion_transition between them pans and zooms: regions keep their data-key. Outlines outside the frame are drawn and cropped by the viewBox, not dropped. Not used with albers-usa (a fixed composite). A frame that cannot be used is named in a note and the whole map is drawn. Absent: unchanged.",
+    "categories": "array (optional, 1 to 6 names, text up to 40) of category names: switches the map to category mode. Each value is then a category name instead of a number ({id, value: \"visited\"}); the scale, steps and unit are not used. Each category gets a colour AND a pattern (dots, horizontal stripes, vertical stripes, cross-hatch, backslash stripes, large dots, in list order), so colour is never the only cue; regions with no category are hatched on the surface colour (forward slash) and listed in a details element. The legend lists the categories (data-key class-1 to class-n) and the hidden table lists region, code and category. An entry that names a category not in the list is skipped and counted in a note.",
+    "category_colors": "object (optional) mapping a category name to a theme token name: accent, accent2, text or muted (nothing else, so the map follows the theme in light and dark). A category without an entry, or with another name, takes the default palette by position (accent, accent2, then lighter mixes of them, text and muted) and is named in a note when the name was not a token. Only used with categories."
+   },
+   "source": {
+    "name": "a2uicatalog",
+    "url": "https://github.com/a2uicatalog/a2ui",
+    "license": "MIT"
+   },
+   "routing_text": "Shade countries (world or Europe) or US states by one number each, with a quantized legend and a text table. Not for points, routes or city-level maps, and not for a map you draw yourself from GeoJSON. For a ranked list of the same numbers use bar_chart.",
+   "intent_phrases": [
+    "Show unemployment rate by US state on a map.",
+    "Colour the countries of the world by GDP per person.",
+    "Map our customer count across Europe."
+   ]
+  },
+  {
+   "type": "geo_map",
+   "description": "Points and lines on a map: dots at latitude and longitude, optionally sized by a number and grouped, and great-circle lines between places, drawn over the same bundled outlines and projections as choropleth_map (world countries, US states or European countries; Equal Earth, Mercator or the US composite). Each group gets its own marker shape as well as its own colour, each line its own dash, so colour is never the only cue. A hidden table lists every point (including any that fall outside the frame, which are noted) and every line. A payload that breaks the rules shows a short note instead of a map.",
+   "compact_description": "geo map: points sized and grouped by value, plus great-circle lines, on bundled outlines",
+   "surfaces": {
+    "works_on": [
+     "web",
+     "google-apps-script-web",
+     "mcp-apps",
+     "android"
+    ],
+    "degraded_on": [
+     {
+      "surface": "pdf",
+      "note": "Prints the finished picture; no motion"
+     }
+    ],
+    "incompatible_on": [
+     {
+      "surface": "google-chat",
+      "reason": "Inline CSS custom properties, clamp() and calc() are not supported"
+     },
+     {
+      "surface": "email",
+      "reason": "CSS custom properties, clamp() and calc() are not supported in email clients"
+     }
+    ]
+   },
+   "fields": {
+    "version": "integer (optional, default 1). Payload contract version.",
+    "title": "string (optional, max 80). Shown above the map and used as its name.",
+    "region_set": "string (optional, default world-countries): world-countries, us-states or europe-countries. Chooses the outlines drawn behind the data and the area the map is framed on; there is no custom GeoJSON and no map tiles.",
+    "projection": "string (optional): equal-earth, mercator or albers-usa. Defaults as in choropleth_map (equal-earth, or albers-usa for us-states); albers-usa is only valid with us-states and moves Alaska and Hawaii under the lower 48. Any other value shows a note.",
+    "points": "array (optional, up to 500) of {lat, lon, id?, label?, value?, group?}. id is text (max 60), the stable key of the point for a build (data-key): without it the key is the label, then the position in the list (p0, p1, ...); a repeated key gets ~2, ~3. lat is -90 to 90 and lon -180 to 180, both finite numbers. label is text (max 40) for the tooltip and the table. value is a finite number that sets the marker size (radius grows with the square root of its place between the smallest and largest value, about 2 to 8 px on a 650 px wide map; a point without a value is the smallest). group is text (max 40); each group gets a marker shape (circle, square, diamond, triangle) and a theme colour in order of first appearance, six groups at most, later groups are shown as Other; the shape and colour pairs of all six groups differ, and points without a group get their own pair and a legend entry Ungrouped (when other points have a group). A point outside the frame (for example Tokyo on a Europe map) is not drawn and is noted. Entries past the 500th are ignored with a note.",
+    "lines": "array (optional, up to 40) of {id?, label?, path: [{lat, lon}, ...]} with 2 to 20 points per path. id is the stable key of the line (as for a point, then the label, then l0, l1, ...). Consecutive points are joined by the great-circle arc between them (d3-geo geoInterpolate, drawn with up to 64 segments each), broken where it crosses the antimeridian so it never streaks across the map. Each line has its own dash (solid, long dash, dotted) and a theme colour.",
+    "unit": "string (optional, max 12). Appended to the values in the legend, tooltips and table.",
+    "legend_title": "string (optional, max 60). A heading for the legend (what the marker size measures).",
+    "frame": "object (optional) {lon_min, lon_max, lat_min, lat_max}: frame the map on a zone (a trip) instead of the whole region_set; the same rules as the frame of choropleth_map (clamped to -180..180 and -85..85, lon_min above lon_max crosses the antimeridian, a span under 1 degree widened, a fixed 960 x 540 canvas, not used with albers-usa, a bad frame is named in a note and the whole map drawn). With a frame every outline carries data-cb \"tile\" and its region code as data-key, so a motion_transition between two frames moves the whole map as a pan and zoom; points and routes keep their keys and travel with it. Outlines outside the frame are cropped, not dropped; a point outside it is not drawn and is noted. Absent: unchanged.",
+    "regions": "array (optional, up to 250) of {id, category}: shade regions by category (visited, planned, not yet). id is an ISO 3166-1 alpha-3 code (or a USPS code for us-states), category text up to 40. Shaded regions keep their data-key (the code), so they travel in a transition and a region that changes category changes colour. Each category has a colour and a pattern (see categories), listed in the legend, and the hidden table lists region, code and category.",
+    "categories": "array (optional, 1 to 6 names) fixing the category order of regions (so the colours stay the same from one state of a film to the next); without it the categories are the names of regions in first-seen order. Only used with regions.",
+    "category_colors": "object (optional) mapping a category name to accent, accent2, text or muted (theme tokens only); the default palette by position otherwise. Only used with regions."
+   },
+   "source": {
+    "name": "a2uicatalog",
+    "url": "https://github.com/a2uicatalog/a2ui",
+    "license": "MIT"
+   },
+   "routing_text": "Place sites, cities, offices or events on a map from latitude and longitude, optionally with routes between them. Not for shading whole countries or states by a number (use choropleth_map), not for a tile map with streets (no map tiles are fetched), and not for a spinning globe (use globe_3d).",
+   "intent_phrases": [
+    "Plot our office locations on a world map.",
+    "Show shipping routes between these ports.",
+    "Mark the cities where we have customers, bigger for more customers."
+   ]
+  },
+  {
+   "type": "polar_chart",
+   "description": "Points and lines placed by angle and distance from a centre: each series gives a radius r and an angle theta for every point, so a compass or wind bearing, a cyclic pattern (hour of day, month) or a radar of scores per category reads as a circular chart. Angles are degrees, or categories (any text) spread evenly around the circle, which draws a radar chart. Up to 6 series are drawn as lines, markers or both, each with its own dash and marker shape so no series depends on colour alone; the optional fill \"toself\" shades the closed shape of a series. The radial axis starts at 0 (or the lowest negative value) and ends at a round number d3 nice() picks, with circular gridlines at d3 ticks(); an explicit r_range sets it, and a point outside the range is not drawn and is counted in a note. Angles are turned to positions by d3-shape lineRadial() maths and scaled by a d3-scale linear scale, on the server, so there is no script. A large series is thinned to evenly spaced points (the first and last of the points read are kept) with a visible note, the same cap that stands in for Plotly's WebGL scatterpolargl; a series is read up to 5000 points and a longer one says so in a note, so no point is dropped without being counted. The hidden table lists every point with a Status column (drawn, or outside the radial range and not drawn), and the aria label gives the radial range of the drawn points, the categories and each series' extent. Motion-ready: each series fades in through --k from --p (build progress 0 to 1, default 1); the standalone render is the finished picture and reduced motion shows the end state.",
+   "compact_description": "polar_chart: points and lines by angle and radius, or a radar",
+   "surfaces": {
+    "works_on": [
+     "web",
+     "google-apps-script-web",
+     "mcp-apps",
+     "android"
+    ],
+    "degraded_on": [
+     {
+      "surface": "pdf",
+      "note": "Prints the finished picture; no motion"
+     }
+    ],
+    "incompatible_on": [
+     {
+      "surface": "google-chat",
+      "reason": "Inline CSS custom properties, clamp() and calc() are not supported"
+     },
+     {
+      "surface": "email",
+      "reason": "CSS custom properties, clamp() and calc() are not supported in email clients"
+     }
+    ]
+   },
+   "fields": {
+    "title": "string (optional, max 80).",
+    "series": "array (required, 1 to 6) of {label (string, max 30, default \"Series n\"), r (array of numbers, radius of each point), theta (array of numbers in degrees, or strings for categories; same length as r), mode (optional, \"lines\", \"markers\" or \"lines+markers\"; default \"lines+markers\" up to 20 points, otherwise \"lines\"), fill (optional, \"toself\" shades the shape closed from the last point to the first)}. A point needs a finite radius and angle up to 1e12 in size; an entry without a partner or number is skipped and counted in a note; series beyond the first 6 are noted and not drawn. Each series draws at most 2000 divided by the number of series points: a longer one is thinned to evenly spaced points with a note. If any theta is a string, all angles are categories.",
+    "categories": "array (optional, up to 12 strings, max 30 each). Fixes the order of the categories around the circle; categories met in the series after these are added in order of appearance, up to 12 in all (points in later ones are noted and not drawn).",
+    "r_range": "array (optional) of two numbers [low, high], low below high. Sets the radial axis; points outside it are not drawn and are counted in a note. Absent, the axis runs from 0 (or the lowest negative radius) to a round number above the highest.",
+    "r_ticks": "integer (optional, 2 to 8, default 4). About how many circular gridlines the radial axis aims for.",
+    "theta_step": "integer (optional, 30 to 180, default 30). Degrees between the labelled angle spokes of a numeric chart.",
+    "direction": "\"clockwise\" or \"counterclockwise\" (optional). Default counterclockwise for numeric angles (as Plotly draws them) and clockwise for categories.",
+    "rotation": "number (optional, -360 to 360). Where angle 0 sits, in degrees counterclockwise from three o'clock. The default follows Plotly: 90 (due north, like a compass) when the direction is clockwise, 0 (due east) when it is counterclockwise; so an explicit \"clockwise\" starts at the top, which suits wind bearings.",
+    "unit": "string (optional, max 12). Appended to the radial values in the aria label and the hidden table.",
+    "version": "integer (optional, default 1). The polar_chart contract the payload was written for. Only version 1 exists; a higher whole number is drawn as version 1 with a note."
+   },
+   "source": {
+    "name": "a2uicatalog",
+    "url": "https://github.com/a2uicatalog/a2ui",
+    "license": "MIT"
+   },
+   "routing_text": "Values placed by an angle and a distance from a centre, such as wind direction against speed, activity by hour of day, a cyclic signal, or scores on several categories compared as a radar. Give each series r and theta (degrees or category names). For a single series of 0 to 100 skill scores use skill_radar; it is not for bars around a circle (radial bars are not offered), for values on straight x and y axes (use scatter_trend) or for part-to-whole (use a pie or sunburst).",
+   "intent_phrases": [
+    "Plot wind speed by compass direction on a polar chart.",
+    "Compare two products on six criteria as a radar chart.",
+    "Show how load varies over the 24 hours of the day around a circle."
+   ]
+  },
+  {
+   "type": "scatter_matrix",
+   "description": "A scatter plot matrix (Plotly splom): 2 to 6 numeric dimensions on one grid, every dimension on a shared axis across its row and column, so each cell plots one dimension against another and a pattern between any two shows at a glance. Below the diagonal each cell is a small scatter plot of every complete row (the upper half too with show_upper); the diagonal names the dimension; wide pages also show each dimension's range on the outer edges. Each axis comes from d3 nice() and ticks() on the server, so there is no script. A legend lists every dimension with its range and a hidden table gives every value of every row. Static: no hover or brushing. Motion-ready: each cell fades in through --k from --p (default 1).",
+   "compact_description": "scatter_matrix: every measure plotted against every other",
+   "surfaces": {
+    "works_on": [
+     "web",
+     "google-apps-script-web",
+     "mcp-apps",
+     "android"
+    ],
+    "degraded_on": [
+     {
+      "surface": "pdf",
+      "note": "Prints the finished picture; no motion"
+     }
+    ],
+    "incompatible_on": [
+     {
+      "surface": "google-chat",
+      "reason": "Inline CSS custom properties, clamp() and calc() are not supported"
+     },
+     {
+      "surface": "email",
+      "reason": "CSS custom properties, clamp() and calc() are not supported in email clients"
+     }
+    ]
+   },
+   "fields": {
+    "title": "string (optional, max 80).",
+    "dimensions": "array (required, 2 to 6) of {label (string, max 24, default \"Dimension n\"), values (array of numbers)}. Row r is the r-th value of every dimension. A row where any dimension has no finite number up to 1e12 in size is left out and counted in a note; an entry that is not a dimension with a list of values is left out with a note; dimensions beyond the first 6 are noted and not drawn. At most 200 complete rows are read; later rows are noted and not drawn. With fewer than 2 dimensions or 2 complete rows a note replaces the chart.",
+    "show_upper": "boolean (optional, default false). Only true also draws the upper half (the same plots with the axes swapped).",
+    "version": "integer (optional, default 1). The scatter_matrix contract the payload was written for. Only version 1 exists; a higher whole number is drawn as version 1 with a note."
+   },
+   "source": {
+    "name": "a2uicatalog",
+    "url": "https://github.com/a2uicatalog/a2ui",
+    "license": "MIT"
+   },
+   "routing_text": "Shows how several numeric measures relate to each other at once, such as sepal and petal sizes, or price, area and age of homes, as a grid of small scatter plots. For two measures only use a scatter or trend chart; for many rows on one measure use a histogram; for lines over categories use parallel_coords. It is not for category counts (use parallel_categories).",
+   "intent_phrases": [
+    "Plot every measure against every other as a scatter plot matrix.",
+    "Show how price, area and age relate to each other in a grid of scatter plots.",
+    "Make a splom of these four numeric columns."
    ]
   },
   {
