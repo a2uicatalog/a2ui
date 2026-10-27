@@ -18,4 +18,7 @@ not_found_handling = "none"
 # assets with no Worker in front of it. With not_found_handling = "none", a path NO asset matches falls through to the
 # Worker, which answers a Markdown 404 for Accept: text/markdown clients and the site's 404.html (status 404) for
 # everyone else (2026-10-21, is-agentic agent-friendly-404). Cost: a Worker invocation per miss and per "/", not per hit.
-run_worker_first = ["/"]
+# 2026-10-27 (SEO, owner go): the Worker now runs first for every path, so it can turn the assets runtime's 307
+# trailing-slash redirect and plain http into 301s to the canonical URL (src/worker.js canonicalOrAsset). Cost: one
+# Worker invocation per request (about 7,700 zone requests a day on 2026-10-25, Cloudflare zone analytics; free tier 100,000).
+run_worker_first = true

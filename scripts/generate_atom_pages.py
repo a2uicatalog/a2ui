@@ -993,7 +993,7 @@ def ard_entry(atom):
         "identifier": f"urn:air:{DOMAIN}:atom:{atom_type}",
         "displayName": atom_type.replace("_", " ").title(),
         "type": "application/vnd.a2ui.atom+json",
-        "url": f"https://{DOMAIN}/atoms/{atom_type}",
+        "url": f"https://{DOMAIN}/atoms/{atom_type}/",
         "capabilities": surfaces,
         "description": desc,
         "representativeQueries": queries,
@@ -1752,7 +1752,7 @@ def _atom_spotlight_html():
           <span>250-element cap</span>
           <span>Fails safe, not loud</span>
         </div>
-        <a class="spotlight-cta" href="/atoms/agent_sketchpad">See the atom &rarr;</a>
+        <a class="spotlight-cta" href="/atoms/agent_sketchpad/">See the atom &rarr;</a>
         <div class="spotlight-try">
           <label for="sketch-demo-prompt" class="spotlight-try-label">Or try it yourself &mdash; describe something to draw</label>
           <div class="spotlight-try-row">
@@ -1915,7 +1915,7 @@ def generate_index(atoms):
             badges += f'<span class="badge-more">{more_label}</span>'
         surfaces_str = " ".join(visible_surfaces)
         cards_html += (
-            f'<a class="atom-card" href="/atoms/{atom_type}" '
+            f'<a class="atom-card" href="/atoms/{atom_type}/" '
             f'data-name="{atom_type}" data-desc="{desc.lower()}" data-surfaces="{surfaces_str}">'
             f'{card_stage(atom)}'
             f'<div class="card-meta"><h3>{display}</h3><p>{desc}</p>'
@@ -3083,7 +3083,7 @@ def generate_surface_page(surface, atoms):
         items_html += f"""
 <div class="surface-atom">
   <div class="sa-header">
-    <a class="sa-name" href="/atoms/{atom_type}">{display_name}</a>
+    <a class="sa-name" href="/atoms/{atom_type}/">{display_name}</a>
     <p class="sa-desc">{desc}</p>
   </div>
   {action}
@@ -3333,7 +3333,7 @@ def render_templates_page(atoms):
         compact = atom.get("compact_description", "")
         preview_html = live_preview(atom)
         cards.append(f"""
-    <a class="template-card" href="/atoms/{atom_type}">
+    <a class="template-card" href="/atoms/{atom_type}/">
       <div class="template-card-preview">{preview_html or '<div class="template-card-noPreview">No live preview</div>'}</div>
       <div class="template-card-meta">
         <h3>{atom_type}</h3>
@@ -3518,7 +3518,7 @@ def render_try_page(atom_count):
     }} else {{
       lastBlocks = (data.blocks && data.blocks.length) ? data.blocks : null;
       parts.push('<div class="try-chips">' + data.matched.map(function(t){{
-        return '<a class="try-chip" href="/atoms/' + encodeURIComponent(t) + '" target="_blank" rel="noopener">' + esc(t) + '</a>';
+        return '<a class="try-chip" href="/atoms/' + encodeURIComponent(t) + '/" target="_blank" rel="noopener">' + esc(t) + '</a>';
       }}).join('') + '</div>');
       if (lastBlocks) {{
         parts.push('<button class="try-render-btn" id="try-render" type="button">Render it →</button>');

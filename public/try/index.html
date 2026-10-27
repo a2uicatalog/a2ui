@@ -309,7 +309,7 @@ document.addEventListener('click',function(e){
     } else {
       lastBlocks = (data.blocks && data.blocks.length) ? data.blocks : null;
       parts.push('<div class="try-chips">' + data.matched.map(function(t){
-        return '<a class="try-chip" href="/atoms/' + encodeURIComponent(t) + '" target="_blank" rel="noopener">' + esc(t) + '</a>';
+        return '<a class="try-chip" href="/atoms/' + encodeURIComponent(t) + '/" target="_blank" rel="noopener">' + esc(t) + '</a>';
       }).join('') + '</div>');
       if (lastBlocks) {
         parts.push('<button class="try-render-btn" id="try-render" type="button">Render it →</button>');

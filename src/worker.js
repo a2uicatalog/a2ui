@@ -100,13 +100,31 @@ async function withMarkdown404(request, env) {
   });
 }
 
+// One URL per page (SEO, 2026-10-27, owner go). Google filed atom pages under the slash-less URL: the assets runtime
+// answers /atoms/x with a 307 (temporary) to /atoms/x/, and a temporary redirect tells Google to keep the source, and
+// http:// was served as 200. Both now get a 301 to the canonical https URL with the trailing slash (the one in the
+// sitemap and the canonical tag). Any other redirect or response is passed through unchanged.
+function permanent(location) {
+  return new Response(null, { status: 301, headers: { Location: location, 'Cache-Control': 'public, max-age=86400' } });
+}
+
+async function canonicalOrAsset(request, env, url) {
+  const res = await withMarkdown404(request, env);
+  if (res.status !== 307 && res.status !== 308) return res;
+  const to = new URL(res.headers.get('Location') || '', url);
+  if (to.origin === url.origin && to.pathname === url.pathname + '/') return permanent(to.origin + to.pathname + url.search);
+  return res;
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
 
+    if (url.protocol === 'http:') { url.protocol = 'https:'; return permanent(url.href); }
+
     // Only ever act on the bare homepage. Anything else is passed through
-    // untouched, so this Worker can never change another page's behaviour.
-    if (url.pathname !== '/') return withMarkdown404(request, env);
+    // untouched except the canonical redirect above.
+    if (url.pathname !== '/') return canonicalOrAsset(request, env, url);
 
     // ── ?mode=agent — structured view instead of the marketing page ──────────
     if (url.searchParams.get('mode') === 'agent') {

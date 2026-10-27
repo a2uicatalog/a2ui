@@ -158,7 +158,7 @@ def main(argv=None):
             "identifier": f"urn:air:{domain}:atom:{atom_type}",
             "displayName": type_to_display(atom_type),
             "type": "application/vnd.a2ui.atom+json",
-            "url": f"{base}/atoms/{atom_type}",
+            "url": f"{base}/atoms/{atom_type}/",
             "capabilities": get_capabilities(atom),
             "description": atom.get("description", ""),
             "representativeQueries": generate_queries(atom),

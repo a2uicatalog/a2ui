@@ -68,9 +68,11 @@ test('existing asset with markdown Accept is passed through untouched', async ()
   assert.equal(res.headers.get('Content-Type'), 'text/plain');
 });
 
-test('wrangler.toml: the Worker runs only for "/" and for misses, never in front of existing files', async () => {
+// 2026-10-27 (SEO): the Worker runs first for every path so it can make the trailing-slash and http redirects permanent
+// (worker-canonical.test.mjs); existing files still pass through unchanged (the llms.txt test above).
+test('wrangler.toml: misses fall through to the Worker, and the Worker runs first for every path', async () => {
   const { readFileSync } = await import('node:fs');
   const toml = readFileSync(new URL('../wrangler.toml', import.meta.url), 'utf8');
   assert.match(toml, /^not_found_handling = "none"$/m);
-  assert.match(toml, /^run_worker_first = \["\/"\]$/m);
+  assert.match(toml, /^run_worker_first = true$/m);
 });

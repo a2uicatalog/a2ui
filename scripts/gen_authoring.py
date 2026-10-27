@@ -516,7 +516,7 @@ def _slots_html(archetype, spec_atoms):
         extra = " parent" if slot in parents else " child" if slot in children else ""
         if slot in spec_atoms:
             desc = spec_atoms[slot].replace('"', "&quot;")
-            chips.append(f'<a class="slot-chip wired{extra}" href="/atoms/{slot}" title="{desc}">{slot} ↗</a>')
+            chips.append(f'<a class="slot-chip wired{extra}" href="/atoms/{slot}/" title="{desc}">{slot} ↗</a>')
         else:
             chips.append(f'<span class="slot-chip unwired{extra}">{slot}</span>')
     return "".join(chips)
