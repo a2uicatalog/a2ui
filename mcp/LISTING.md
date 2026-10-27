@@ -3,7 +3,7 @@
 **Real rendered UI in the conversation — charts, gauges, dashboards, study apps —
 without the model writing a single line of HTML.**
 
-The agent names a component from a fixed vocabulary of 557 typed atoms. A renderer
+The agent names a component from a fixed vocabulary of 558 typed atoms. A renderer
 that already knows that component draws it. So a hallucinated atom is a *parse
 error*, not a broken screen — the failure surfaces before anything reaches the user.
 
