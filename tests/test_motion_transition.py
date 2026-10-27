@@ -280,3 +280,14 @@ def test_text_inside_a_moving_box_is_hidden_until_the_box_has_landed():
     assert mid["text"] and alpha(mid["fill"]) == pytest.approx(0, abs=0.01) and mid["scale"] != "none", mid
     assert rest["scale"] in ("none", "1", "1 1"), rest
     assert alpha(end["fill"]) == pytest.approx(1, abs=0.01), end   # Chromium spells the colour color(srgb ...): compare alpha only
+
+
+def test_a_taller_start_block_is_not_clipped():
+    """2026-10-27: the box was the END block's height (A absolutely placed under overflow:clip), so a taller start (circle_pack into an
+    icicle) lost its bottom row. A and B now share one grid cell while animating, so the box is the taller of the two."""
+    from renderers.web_article import _MTR_CSS
+    anim = _MTR_CSS.split("prefers-reduced-motion:no-preference)", 1)[1]
+    assert ".mo-tr{display:grid}" in anim and "grid-area:1/1" in anim
+    assert "position:absolute" not in anim.split(".mo-tr .mtr-b{opacity")[0]
+    # ...and at p = 1 the start block takes no room, so the page is exactly the end block (the to contract)
+    assert "max-height:calc((1 - var(--mtr-p))*100000px)" in anim

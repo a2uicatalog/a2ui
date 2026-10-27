@@ -66,7 +66,7 @@ A few atoms, live on the site — click through to a full spec + fields table fo
 </tr>
 </table>
 
-[Browse all 568 atoms →](https://a2uicatalog.ai/)
+[Browse all 569 atoms →](https://a2uicatalog.ai/)
 
 ---
 
@@ -149,7 +149,7 @@ The catalog's "Try it live" button uses a shared demo instance of the same rende
 
 ---
 
-## 568 atoms across 8 surfaces
+## 569 atoms across 8 surfaces
 
 Atoms declare which surfaces they support at the schema level. An agent picks an atom by name, supplies parameters, and the renderer handles the rest.
 
@@ -174,7 +174,7 @@ Every atom declares, at the schema level, which of the **8 surfaces** it works o
 <summary><strong>View full compatibility matrix (all atoms × 8 surfaces)</strong></summary>
 
 <!-- compat-matrix:start -->
-568 atoms · generated from `public/spec.json` by `scripts/gen_compat_matrix.py` — do not edit by hand.
+569 atoms · generated from `public/spec.json` by `scripts/gen_compat_matrix.py` — do not edit by hand.
 
 | Atom | web | gas-web | gas-panel | meet | chat | mcp-apps | claude-code | android | email | pdf | slides | pptx | Source · license |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
@@ -511,6 +511,7 @@ Every atom declares, at the schema level, which of the **8 surfaces** it works o
 | `motion_text` | ✅ | ✅ | — | ✅ | ⚠️ | ✅ | — | ✅ | — | ⚠️ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `motion_timeline` | ✅ | ✅ | — | ✅ | ⚠️ | ✅ | — | ✅ | — | ⚠️ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `motion_tokens` | ✅ | ✅ | — | ✅ | ⚠️ | ✅ | — | ✅ | — | ⚠️ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
+| `motion_transition` | ✅ | ✅ | — | — | — | ✅ | — | ✅ | — | ⚠️ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `motion_video` | ✅ | ✅ | — | ✅ | — | ✅ | — | ✅ | — | ⚠️ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `multi_doc_ai_brief` | — | ✅ | — | — | — | — | — | — | — | — | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `multi_select_input` | ✅ | ✅ | — | ✅ | — | ✅ | — | ✅ | — | ⚠️ | — | — | [shadcn/ui](https://github.com/shadcn-ui/ui) · MIT |

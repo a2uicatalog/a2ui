@@ -1,6 +1,6 @@
 {
  "catalogId": "a2ui-atoms-v1",
- "atomCount": 568,
+ "atomCount": 569,
  "fullSpec": "https://a2uicatalog.ai/spec.json",
  "atoms": [
   {
@@ -6260,6 +6260,16 @@
   {
    "type": "scatter_matrix",
    "compact": "scatter_matrix: every measure plotted against every other",
+   "surfaces": [
+    "web",
+    "google-apps-script-web",
+    "mcp-apps",
+    "android"
+   ]
+  },
+  {
+   "type": "motion_transition",
+   "compact": "a key-joined morph from one atom to another on the film's p dial",
    "surfaces": [
     "web",
     "google-apps-script-web",

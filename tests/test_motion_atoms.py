@@ -581,7 +581,8 @@ PROMOTED = {"motion_timeline", "motion_group", "motion_tokens", "motion_layer", 
             "motion_rays", "motion_hud", "motion_lower_third", "motion_shader", "motion_finish",
             "motion_envelope",  # 2026-10-05: the What-is-A2UI pillar film is built on it
             "motion_video", "motion_arch",  # 2026-10-05 (Curtis): the A2UI-on-Android and architecture films are built on them
-            "motion_map3d"}  # 2026-10-26 (Curtis: "1 2 public ok"): I145, preview atoms are not in spec.json so find_atoms never returned it
+            "motion_map3d",
+            "motion_transition"}  # 2026-10-27 (Curtis: "ok fine" to freezing patch): the D3 morph, RFC 6902 patch included  # 2026-10-26 (Curtis: "1 2 public ok"): I145, preview atoms are not in spec.json so find_atoms never returned it
 
 
 def test_every_motion_atom_is_declared_with_the_right_stage():

@@ -388,8 +388,8 @@ _RENDERERS['motion_build'] = function(b) {
 // at rest (p >= 0.85) via relative colour -webkit-text-fill-color; an element that only travels keeps its text visible. Twin: web_article.py _render_motion_transition.
 var _MTR_MATCH = {'path': 'path', 'exact': 'exact'};
 var _MTR_CSS = ".mo-tr{position:relative;overflow:clip;--mtr-p:var(--p,1)}.mo-tr .mtr-a,.mo-tr .mtr-b{--p:1}.mo-tr .mtr-a{display:none}@media (prefers-reduced-motion:"
-  + "no-preference){.mo-tr .mtr-a{display:block;position:absolute;left:0;top:0;width:100%;pointer-events:none;opacity:clamp(0,calc(1 - var(--mtr-p)*2.5),1)"
-  + "}.mo-tr .mtr-a>*,.mo-tr .mtr-a>[data-mt-id]>*{margin-top:0!important}.mo-tr .mtr-b{opacity:clamp(0,calc(var(--mtr-p)*3.4),1)}.mo-tr .mtr-b .mtr-m{--mt"
+  + "no-preference){.mo-tr{display:grid}.mo-tr .mtr-a,.mo-tr .mtr-b{grid-area:1/1;align-self:start;min-width:0}.mo-tr .mtr-a{display:block;width:100%;pointer-events:none;max-height:calc((1 - var(--mtr-p))*100000px);overflow:clip;opacity:clamp(0,calc(1 - var(--mtr-p)*2.5),1)"
+  + "}.mo-tr .mtr-b{opacity:clamp(0,calc(var(--mtr-p)*3.4),1)}.mo-tr .mtr-b .mtr-m{--mt"
   + "r-q:clamp(0,calc((var(--mtr-p) - 0.15)/0.7),1);translate:calc(var(--mtr-dx,0px)*(1 - var(--mtr-q))) calc(var(--mtr-dy,0px)*(1 - var(--mtr-q)));scale:c"
   + "alc(1 + (var(--mtr-sx,1) - 1)*(1 - var(--mtr-q))) calc(1 + (var(--mtr-sy,1) - 1)*(1 - var(--mtr-q)));transform-origin:0 0;transform-box:border-box}.mo"
   + "-tr .mtr-b .mtr-m.mtr-s,.mo-tr .mtr-b .mtr-m.mtr-s *{-webkit-text-fill-color:rgb(from currentColor r g b / clamp(0,calc((var(--mtr-p) - 0.85)/0.15),1)"

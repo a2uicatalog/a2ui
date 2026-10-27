@@ -37,7 +37,7 @@
         "email",
         "pdf"
       ],
-      "description": "Open-source renderer with 568 typed atoms for generating rich UI across Google Meet stages, Chat Cards, Apps Script web apps, and web surfaces from a single JSON schema payload.",
+      "description": "Open-source renderer with 569 typed atoms for generating rich UI across Google Meet stages, Chat Cards, Apps Script web apps, and web surfaces from a single JSON schema payload.",
       "representativeQueries": [
         "render a rich UI from structured JSON data",
         "generate Google Meet stage content from a schema",
@@ -10852,6 +10852,24 @@
         "show a scatter_matrix: every measure plotted against every other",
         "a scatter plot matrix (plotly splom): 2 to 6 numeric dimensions on one grid, every dimension on a shared axis across",
         "render a scatter matrix"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:motion_transition",
+      "displayName": "Motion Transition",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/motion_transition/",
+      "capabilities": [
+        "web",
+        "google-apps-script-web",
+        "mcp-apps",
+        "android"
+      ],
+      "description": "Morphs one atom into another on the film's progress dial p, joining their elements by data key: two views of the same data (a treemap and a sunburst, a table and an org chart) hand over element by element instead of cross-fading. Each element of the second block that shares a key with the first starts on its partner's box and travels to its own place; with path keys a total starts on the union of its parts (Cloud collects Cloud/VMs and Cloud/Storage) and a part starts on its total; elements only in one block fade. Labels only fade. With reduced motion, on static surfaces or when no timeline sets p, the page shows the second block exactly as it renders alone.",
+      "representativeQueries": [
+        "show a a key-joined morph from one atom to another on the film's p dial",
+        "morphs one atom into another on the film's progress dial p, joining their elements by data key: two views of the same",
+        "render a motion transition"
       ]
     },
     {
