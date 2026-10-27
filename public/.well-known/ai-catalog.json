@@ -37,7 +37,7 @@
         "email",
         "pdf"
       ],
-      "description": "Open-source renderer with 567 typed atoms for generating rich UI across Google Meet stages, Chat Cards, Apps Script web apps, and web surfaces from a single JSON schema payload.",
+      "description": "Open-source renderer with 568 typed atoms for generating rich UI across Google Meet stages, Chat Cards, Apps Script web apps, and web surfaces from a single JSON schema payload.",
       "representativeQueries": [
         "render a rich UI from structured JSON data",
         "generate Google Meet stage content from a schema",
@@ -10816,6 +10816,24 @@
         "show a polar_chart: points and lines by angle and radius, or a radar",
         "points and lines placed by angle and distance from a centre: each series gives a radius r and an angle theta for every",
         "render a polar chart"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:histogram2d",
+      "displayName": "Histogram2D",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/histogram2d/",
+      "capabilities": [
+        "web",
+        "google-apps-script-web",
+        "mcp-apps",
+        "android"
+      ],
+      "description": "Counts of x,y points in a grid of 2-D bins (the Plotly histogram2d trace), drawn as a heatmap: d3 bin() is run once on x and once on y, the cell count is the number of points that fall in both bins, and the grid is handed to the heatmap atom, so it has the heatmap colour bar, the cell counts printed inside the cells and a hidden data table. The highest y bin is the top row. Use nbinsx and nbinsy for the number of bins (the real count is the nearest round step, as in d3), or leave them out for the Sturges default. At most 20,000 points are used and at most 40 bins per axis, each with a note.",
+      "representativeQueries": [
+        "show a histogram2d: x,y points counted into a 2-D bin grid, drawn as a heatmap",
+        "counts of x,y points in a grid of 2-d bins (the plotly histogram2d trace), drawn as a heatmap: d3 bin() is run once on",
+        "render a histogram2d"
       ]
     },
     {

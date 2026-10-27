@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://a2uicatalog.ai/</loc><lastmod>2026-10-27T07:42:16+01:00</lastmod></url>
-  <url><loc>https://a2uicatalog.ai/about/</loc><lastmod>2026-10-27T07:52:24+01:00</lastmod></url>
-  <url><loc>https://a2uicatalog.ai/api-docs/</loc><lastmod>2026-10-27T07:52:24+01:00</lastmod></url>
+  <url><loc>https://a2uicatalog.ai/</loc><lastmod>2026-10-27T21:13:52+01:00</lastmod></url>
+  <url><loc>https://a2uicatalog.ai/about/</loc><lastmod>2026-10-27T21:13:52+01:00</lastmod></url>
+  <url><loc>https://a2uicatalog.ai/api-docs/</loc><lastmod>2026-10-27T21:13:52+01:00</lastmod></url>
   <url><loc>https://a2uicatalog.ai/atoms/abbr_tooltip/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
   <url><loc>https://a2uicatalog.ai/atoms/accordion_item/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
   <url><loc>https://a2uicatalog.ai/atoms/achievement_badge/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
@@ -56,7 +56,7 @@
   <url><loc>https://a2uicatalog.ai/atoms/calibration_plot/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
   <url><loc>https://a2uicatalog.ai/atoms/call_mood_board/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
   <url><loc>https://a2uicatalog.ai/atoms/callout/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
-  <url><loc>https://a2uicatalog.ai/atoms/candlestick_chart/</loc></url>
+  <url><loc>https://a2uicatalog.ai/atoms/candlestick_chart/</loc><lastmod>2026-10-27T21:13:52+01:00</lastmod></url>
   <url><loc>https://a2uicatalog.ai/atoms/canvas_plexus/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
   <url><loc>https://a2uicatalog.ai/atoms/capability_checklist/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
   <url><loc>https://a2uicatalog.ai/atoms/card_stack/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
@@ -74,7 +74,7 @@
   <url><loc>https://a2uicatalog.ai/atoms/chip_group/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
   <url><loc>https://a2uicatalog.ai/atoms/choicebox_group/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
   <url><loc>https://a2uicatalog.ai/atoms/chord_diagram/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
-  <url><loc>https://a2uicatalog.ai/atoms/choropleth_map/</loc></url>
+  <url><loc>https://a2uicatalog.ai/atoms/choropleth_map/</loc><lastmod>2026-10-27T21:13:52+01:00</lastmod></url>
   <url><loc>https://a2uicatalog.ai/atoms/circle_pack/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
   <url><loc>https://a2uicatalog.ai/atoms/cli_command/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
   <url><loc>https://a2uicatalog.ai/atoms/clipart/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
@@ -207,7 +207,7 @@
   <url><loc>https://a2uicatalog.ai/atoms/geo_iso_heli_hover/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
   <url><loc>https://a2uicatalog.ai/atoms/geo_iso_rocket_launch/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
   <url><loc>https://a2uicatalog.ai/atoms/geo_iso_takeoff/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
-  <url><loc>https://a2uicatalog.ai/atoms/geo_map/</loc></url>
+  <url><loc>https://a2uicatalog.ai/atoms/geo_map/</loc><lastmod>2026-10-27T21:13:52+01:00</lastmod></url>
   <url><loc>https://a2uicatalog.ai/atoms/geo_mercator_radar/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
   <url><loc>https://a2uicatalog.ai/atoms/github_activity_grid/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
   <url><loc>https://a2uicatalog.ai/atoms/github_repo_card/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
@@ -236,6 +236,7 @@
   <url><loc>https://a2uicatalog.ai/atoms/highlighted_text/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
   <url><loc>https://a2uicatalog.ai/atoms/hint_reveal/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
   <url><loc>https://a2uicatalog.ai/atoms/histogram/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
+  <url><loc>https://a2uicatalog.ai/atoms/histogram2d/</loc></url>
   <url><loc>https://a2uicatalog.ai/atoms/hover_card/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
   <url><loc>https://a2uicatalog.ai/atoms/http_request_block/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
   <url><loc>https://a2uicatalog.ai/atoms/hub/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
@@ -364,7 +365,7 @@
   <url><loc>https://a2uicatalog.ai/atoms/paragraph/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
   <url><loc>https://a2uicatalog.ai/atoms/parallax_card/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
   <url><loc>https://a2uicatalog.ai/atoms/parallax_section/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
-  <url><loc>https://a2uicatalog.ai/atoms/parallel_coords/</loc></url>
+  <url><loc>https://a2uicatalog.ai/atoms/parallel_coords/</loc><lastmod>2026-10-27T21:13:52+01:00</lastmod></url>
   <url><loc>https://a2uicatalog.ai/atoms/particle_burst/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
   <url><loc>https://a2uicatalog.ai/atoms/particle_type/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
   <url><loc>https://a2uicatalog.ai/atoms/pattern_background/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
@@ -374,7 +375,7 @@
   <url><loc>https://a2uicatalog.ai/atoms/photo_stepper/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
   <url><loc>https://a2uicatalog.ai/atoms/pipeline/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
   <url><loc>https://a2uicatalog.ai/atoms/playbook/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
-  <url><loc>https://a2uicatalog.ai/atoms/polar_chart/</loc></url>
+  <url><loc>https://a2uicatalog.ai/atoms/polar_chart/</loc><lastmod>2026-10-27T21:13:52+01:00</lastmod></url>
   <url><loc>https://a2uicatalog.ai/atoms/poll_block/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
   <url><loc>https://a2uicatalog.ai/atoms/post_metadata_bar/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
   <url><loc>https://a2uicatalog.ai/atoms/prerequisite_checklist/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
@@ -397,7 +398,7 @@
   <url><loc>https://a2uicatalog.ai/atoms/pulse_dot/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
   <url><loc>https://a2uicatalog.ai/atoms/punch_card/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
   <url><loc>https://a2uicatalog.ai/atoms/quiet_link/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
-  <url><loc>https://a2uicatalog.ai/atoms/quiver/</loc></url>
+  <url><loc>https://a2uicatalog.ai/atoms/quiver/</loc><lastmod>2026-10-27T21:13:52+01:00</lastmod></url>
   <url><loc>https://a2uicatalog.ai/atoms/quiz_question/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
   <url><loc>https://a2uicatalog.ai/atoms/quiz_result_summary/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
   <url><loc>https://a2uicatalog.ai/atoms/quiz_set/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
@@ -426,7 +427,7 @@
   <url><loc>https://a2uicatalog.ai/atoms/roadmap_card/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
   <url><loc>https://a2uicatalog.ai/atoms/rubric_card/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
   <url><loc>https://a2uicatalog.ai/atoms/sankey_flow/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
-  <url><loc>https://a2uicatalog.ai/atoms/scatter_matrix/</loc></url>
+  <url><loc>https://a2uicatalog.ai/atoms/scatter_matrix/</loc><lastmod>2026-10-27T21:13:52+01:00</lastmod></url>
   <url><loc>https://a2uicatalog.ai/atoms/scatter_trend/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
   <url><loc>https://a2uicatalog.ai/atoms/scenario_branch/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
   <url><loc>https://a2uicatalog.ai/atoms/scene_stage/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
@@ -516,7 +517,7 @@
   <url><loc>https://a2uicatalog.ai/atoms/tasks_today/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
   <url><loc>https://a2uicatalog.ai/atoms/terminal_block/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
   <url><loc>https://a2uicatalog.ai/atoms/terminal_boot/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
-  <url><loc>https://a2uicatalog.ai/atoms/ternary_plot/</loc></url>
+  <url><loc>https://a2uicatalog.ai/atoms/ternary_plot/</loc><lastmod>2026-10-27T21:13:52+01:00</lastmod></url>
   <url><loc>https://a2uicatalog.ai/atoms/testimonial_card/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
   <url><loc>https://a2uicatalog.ai/atoms/text_block/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
   <url><loc>https://a2uicatalog.ai/atoms/text_callout/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
@@ -534,7 +535,7 @@
   <url><loc>https://a2uicatalog.ai/atoms/tooltip/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
   <url><loc>https://a2uicatalog.ai/atoms/tooltip_glossary/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
   <url><loc>https://a2uicatalog.ai/atoms/tree_view/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
-  <url><loc>https://a2uicatalog.ai/atoms/treemap/</loc></url>
+  <url><loc>https://a2uicatalog.ai/atoms/treemap/</loc><lastmod>2026-10-27T21:13:52+01:00</lastmod></url>
   <url><loc>https://a2uicatalog.ai/atoms/trend_indicator/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
   <url><loc>https://a2uicatalog.ai/atoms/two_tone_card/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
   <url><loc>https://a2uicatalog.ai/atoms/type_scale/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
@@ -572,8 +573,8 @@
   <url><loc>https://a2uicatalog.ai/atoms/zoomable_image/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
   <url><loc>https://a2uicatalog.ai/auth/</loc><lastmod>2026-10-18T13:00:00+02:00</lastmod></url>
   <url><loc>https://a2uicatalog.ai/contact/</loc><lastmod>2026-10-18T13:00:00+02:00</lastmod></url>
-  <url><loc>https://a2uicatalog.ai/developers/</loc><lastmod>2026-10-27T07:52:24+01:00</lastmod></url>
-  <url><loc>https://a2uicatalog.ai/docs/</loc><lastmod>2026-10-27T07:52:24+01:00</lastmod></url>
+  <url><loc>https://a2uicatalog.ai/developers/</loc><lastmod>2026-10-27T21:13:52+01:00</lastmod></url>
+  <url><loc>https://a2uicatalog.ai/docs/</loc><lastmod>2026-10-27T21:13:52+01:00</lastmod></url>
   <url><loc>https://a2uicatalog.ai/gallery/article2-atoms/</loc><lastmod>2026-10-22T11:26:07+02:00</lastmod></url>
   <url><loc>https://a2uicatalog.ai/gallery/article3-itsm/</loc><lastmod>2026-10-22T11:26:07+02:00</lastmod></url>
   <url><loc>https://a2uicatalog.ai/go/ccar-f/</loc><lastmod>2026-08-15T18:07:17+02:00</lastmod></url>
@@ -583,20 +584,20 @@
   <url><loc>https://a2uicatalog.ai/sdks/</loc><lastmod>2026-10-18T13:00:00+02:00</lastmod></url>
   <url><loc>https://a2uicatalog.ai/surfaces/amiga/</loc><lastmod>2026-10-18T08:00:00+02:00</lastmod></url>
   <url><loc>https://a2uicatalog.ai/surfaces/android/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
-  <url><loc>https://a2uicatalog.ai/surfaces/claude-code/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
+  <url><loc>https://a2uicatalog.ai/surfaces/claude-code/</loc><lastmod>2026-10-27T21:13:52+01:00</lastmod></url>
   <url><loc>https://a2uicatalog.ai/surfaces/diagram-studio/drawio-editor/</loc><lastmod>2026-09-21T15:31:17+02:00</lastmod></url>
-  <url><loc>https://a2uicatalog.ai/surfaces/email/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
+  <url><loc>https://a2uicatalog.ai/surfaces/email/</loc><lastmod>2026-10-27T21:13:52+01:00</lastmod></url>
   <url><loc>https://a2uicatalog.ai/surfaces/google-apps-script-side-panel/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
-  <url><loc>https://a2uicatalog.ai/surfaces/google-apps-script-web/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
+  <url><loc>https://a2uicatalog.ai/surfaces/google-apps-script-web/</loc><lastmod>2026-10-27T21:13:52+01:00</lastmod></url>
   <url><loc>https://a2uicatalog.ai/surfaces/google-chat-chromium-render/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
   <url><loc>https://a2uicatalog.ai/surfaces/google-chat/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
-  <url><loc>https://a2uicatalog.ai/surfaces/google-meet-stage/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
-  <url><loc>https://a2uicatalog.ai/surfaces/mcp-apps/</loc><lastmod>2026-10-27T07:45:17+01:00</lastmod></url>
+  <url><loc>https://a2uicatalog.ai/surfaces/google-meet-stage/</loc><lastmod>2026-10-27T21:13:52+01:00</lastmod></url>
+  <url><loc>https://a2uicatalog.ai/surfaces/mcp-apps/</loc><lastmod>2026-10-27T21:13:52+01:00</lastmod></url>
   <url><loc>https://a2uicatalog.ai/surfaces/mcp-apps/export/</loc><lastmod>2026-10-24T13:30:00+02:00</lastmod></url>
-  <url><loc>https://a2uicatalog.ai/surfaces/mcp-apps/play/</loc><lastmod>2026-10-21T17:56:28+02:00</lastmod></url>
-  <url><loc>https://a2uicatalog.ai/surfaces/pdf/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
-  <url><loc>https://a2uicatalog.ai/surfaces/pptx/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
-  <url><loc>https://a2uicatalog.ai/surfaces/slides/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
+  <url><loc>https://a2uicatalog.ai/surfaces/mcp-apps/play/</loc><lastmod>2026-10-27T21:13:52+01:00</lastmod></url>
+  <url><loc>https://a2uicatalog.ai/surfaces/pdf/</loc><lastmod>2026-10-27T21:13:52+01:00</lastmod></url>
+  <url><loc>https://a2uicatalog.ai/surfaces/pptx/</loc><lastmod>2026-10-27T21:13:52+01:00</lastmod></url>
+  <url><loc>https://a2uicatalog.ai/surfaces/slides/</loc><lastmod>2026-10-27T21:13:52+01:00</lastmod></url>
   <url><loc>https://a2uicatalog.ai/surfaces/web/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>
   <url><loc>https://a2uicatalog.ai/versioning/</loc><lastmod>2026-10-18T13:00:00+02:00</lastmod></url>
   <url><loc>https://a2uicatalog.ai/webhooks/</loc><lastmod>2026-10-18T13:00:00+02:00</lastmod></url>

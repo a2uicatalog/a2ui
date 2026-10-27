@@ -140,7 +140,7 @@ def test_python_and_gas_agree_on_block_notes(core_js):
 def test_registered_as_a_preview_atom():
     sch = yaml.safe_load((ROOT / "atoms/schema.yaml").read_text())
     e = [x for x in sch["blocks"] if x.get("type") == "histogram2d"]
-    assert len(e) == 1 and e[0].get("stage") == "preview"
+    assert len(e) == 1 and e[0].get("stage") == "stable"  # promoted 2026-10-27 with scale unchanged (it is heatmap's own field: owner took that over a colorscale rename)
     for k in ("description", "compact_description", "routing_text", "fields"):
         assert e[0].get(k), k
     assert len(e[0]["intent_phrases"]) == 3

@@ -1,6 +1,6 @@
 {
  "catalogId": "a2ui-atoms-v1",
- "atomCount": 567,
+ "atomCount": 568,
  "fullSpec": "https://a2uicatalog.ai/spec.json",
  "atoms": [
   {
@@ -6240,6 +6240,16 @@
   {
    "type": "polar_chart",
    "compact": "polar_chart: points and lines by angle and radius, or a radar",
+   "surfaces": [
+    "web",
+    "google-apps-script-web",
+    "mcp-apps",
+    "android"
+   ]
+  },
+  {
+   "type": "histogram2d",
+   "compact": "histogram2d: x,y points counted into a 2-D bin grid, drawn as a heatmap",
    "surfaces": [
     "web",
     "google-apps-script-web",

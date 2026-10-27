@@ -4,7 +4,7 @@
  "catalogId": "https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json",
  "title": "A2UI Atoms Catalog",
  "description": "The A2UI multi-surface atom vocabulary as an A2UI-v1.0 catalog document. Each stable atom is a component; a host resolves createSurface.catalogId (this file's URL) to it.",
- "instructions": "Every key under `components` is a valid `component` value (567 components). Compose layouts with Column/Row containers; each component's fields are its properties. Canonical URI: https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json — full prose spec (descriptions, surfaces, attribution): https://a2uicatalog.ai/spec.json",
+ "instructions": "Every key under `components` is a valid `component` value (568 components). Compose layouts with Column/Row containers; each component's fields are its properties. Canonical URI: https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json — full prose spec (descriptions, surfaces, attribution): https://a2uicatalog.ai/spec.json",
  "components": {
   "intro": {
    "type": "object",
@@ -29243,6 +29243,85 @@
     "Plot wind speed by compass direction on a polar chart.",
     "Compare two products on six criteria as a radar chart.",
     "Show how load varies over the 24 hours of the day around a circle."
+   ]
+  },
+  "histogram2d": {
+   "type": "object",
+   "description": "Counts of x,y points in a grid of 2-D bins (the Plotly histogram2d trace), drawn as a heatmap: d3 bin() is run once on x and once on y, the cell count is the number of points that fall in both bins, and the grid is handed to the heatmap atom, so it has the heatmap colour bar, the cell counts printed inside the cells and a hidden data table. The highest y bin is the top row. Use nbinsx and nbinsy for the number of bins (the real count is the nearest round step, as in d3), or leave them out for the Sturges default. At most 20,000 points are used and at most 40 bins per axis, each with a note.",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "histogram2d"
+      },
+      "x": {
+       "description": "array (required, numbers, at least 2 usable pairs with y; up to 20,000 used).",
+       "type": "array"
+      },
+      "y": {
+       "description": "array (required, numbers, same length as x).",
+       "type": "array"
+      },
+      "nbinsx": {
+       "description": "integer (optional, 3 to 40, the bin count asked of d3 for x; default Sturges).",
+       "type": "number"
+      },
+      "nbinsy": {
+       "description": "integer (optional, 3 to 40, the bin count asked of d3 for y; default Sturges).",
+       "type": "number"
+      },
+      "title": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional, max 80)."
+      },
+      "x_label": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional, max 40, named in the note under the grid)."
+      },
+      "y_label": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional, max 40, named in the note under the grid)."
+      },
+      "scale": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional, a heatmap colour scale name such as Blues, Viridis or YlOrRd; default YlGnBu, light for few points and dark for many)."
+      },
+      "show_values": {
+       "description": "boolean (optional, default true, prints each count in its cell).",
+       "type": "boolean"
+      },
+      "show_colorbar": {
+       "description": "boolean (optional, default true).",
+       "type": "boolean"
+      },
+      "version": {
+       "description": "integer (optional, default 1; a higher number draws as version 1 with a muted note).",
+       "type": "number"
+      }
+     },
+     "required": [
+      "component",
+      "x",
+      "y"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-surfaces": [
+    "web",
+    "google-apps-script-web",
+    "mcp-apps",
+    "android"
+   ],
+   "x-routing-text": "Two numeric columns whose joint spread you want to see as counts per cell (density of points, a correlation blob). Not for a grid you already have (use heatmap), not for categories (use heatmap with labels), not for a few points (use scatter_trend), and not for sums or averages of a third value (counts only).",
+   "x-intent-phrases": [
+    "Show where the points are densest as a grid of counts.",
+    "I need a 2D histogram of height against weight.",
+    "Bin these x and y values into a heatmap of how many fall in each cell."
    ]
   },
   "scatter_matrix": {

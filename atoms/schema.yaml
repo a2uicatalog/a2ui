@@ -21792,7 +21792,7 @@ blocks:
     changed here. Each series group carries data-cb ("node") and a data-key that is the series label (a repeated label gets ~2, ~3), and fades in through --k.
   source: *ifg002
 - type: histogram2d
-  stage: preview
+  stage: stable
   description: 'Counts of x,y points in a grid of 2-D bins (the Plotly histogram2d trace), drawn as a heatmap: d3 bin() is run once on x and once on y, the cell
     count is the number of points that fall in both bins, and the grid is handed to the heatmap atom, so it has the heatmap colour bar, the cell counts
     printed inside the cells and a hidden data table. The highest y bin is the top row. Use nbinsx and nbinsy for the number of bins (the real count is the
