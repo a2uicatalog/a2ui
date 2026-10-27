@@ -37,7 +37,7 @@
         "email",
         "pdf"
       ],
-      "description": "Open-source renderer with 557 typed atoms for generating rich UI across Google Meet stages, Chat Cards, Apps Script web apps, and web surfaces from a single JSON schema payload.",
+      "description": "Open-source renderer with 558 typed atoms for generating rich UI across Google Meet stages, Chat Cards, Apps Script web apps, and web surfaces from a single JSON schema payload.",
       "representativeQueries": [
         "render a rich UI from structured JSON data",
         "generate Google Meet stage content from a schema",
@@ -10672,6 +10672,24 @@
         "show a voronoi: nearest-site regions of a set of points (catchments, service areas)",
         "nearest-site regions of a set of points: the plot is split into one region per site, each region being every spot that",
         "render a voronoi"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:motion_map3d",
+      "displayName": "Motion Map3D",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/motion_map3d/",
+      "capabilities": [
+        "web",
+        "google-apps-script-web",
+        "mcp-apps",
+        "android"
+      ],
+      "description": "A tilted 3D city map built from CSS alone (perspective and a rotated plane: no WebGL, no map tiles, no fetch). Blocks stand on a ground plane as three-faced boxes, either a seeded generated city, explicit blocks, or generated district clusters (cities). Outlines of real-world countries or states can be drawn directly on the ground plane under the blocks and route. As p runs 0 to 1 the camera descends and tilts in (p 0 to 0.3), then one or more legs draw on from station to station (p 0.3 to 0.92, optionally bending in arcs and pausing at stations with dwell times) with each station going from idle to active as a leg reaches it and then to its own state (idle, active, done, warn or error), payload chips can travel along the legs, and an optional clock chip counts in clock time, seconds or milliseconds. Station pins and labels sit on their own layer above the city, so blocks never cover them. Made for journeys through a system as much as through a city: a request trace, an agent's tool call and its reply, a deploy pipeline, an incident. At p = 1 every leg is fully drawn, the stations are in their final states and the clock shows its end value.",
+      "representativeQueries": [
+        "show a a tilted 3D city map where legs draw station to station (out and back, straight or curved), chips travel, stations end done, warn or error and a clock counts; for request traces, agent tool calls, pipelines and delivery routes",
+        "a tilted 3d city map built from css alone (perspective and a rotated plane: no webgl, no map tiles, no fetch). blocks",
+        "render a motion map3d"
       ]
     }
   ]
