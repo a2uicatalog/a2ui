@@ -66,7 +66,7 @@ A few atoms, live on the site — click through to a full spec + fields table fo
 </tr>
 </table>
 
-[Browse all 450+ atoms →](https://a2uicatalog.ai/)
+[Browse all 558 atoms →](https://a2uicatalog.ai/)
 
 ---
 
@@ -149,7 +149,7 @@ The catalog's "Try it live" button uses a shared demo instance of the same rende
 
 ---
 
-## 450+ atoms across 8 surfaces
+## 558 atoms across 8 surfaces
 
 Atoms declare which surfaces they support at the schema level. An agent picks an atom by name, supplies parameters, and the renderer handles the rest.
 
@@ -174,7 +174,7 @@ Every atom declares, at the schema level, which of the **8 surfaces** it works o
 <summary><strong>View full compatibility matrix (all atoms × 8 surfaces)</strong></summary>
 
 <!-- compat-matrix:start -->
-557 atoms · generated from `public/spec.json` by `scripts/gen_compat_matrix.py` — do not edit by hand.
+558 atoms · generated from `public/spec.json` by `scripts/gen_compat_matrix.py` — do not edit by hand.
 
 | Atom | web | gas-web | gas-panel | meet | chat | mcp-apps | claude-code | android | email | pdf | slides | pptx | Source · license |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
@@ -495,6 +495,7 @@ Every atom declares, at the schema level, which of the **8 surfaces** it works o
 | `motion_layer` | ✅ | ✅ | — | ✅ | ⚠️ | ✅ | — | ✅ | — | ⚠️ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `motion_leader` | ✅ | ✅ | — | ✅ | ⚠️ | ✅ | — | ✅ | — | ⚠️ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `motion_lower_third` | ✅ | ✅ | — | ✅ | ⚠️ | ✅ | — | ✅ | — | ⚠️ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
+| `motion_map3d` | ✅ | ✅ | — | — | — | ✅ | — | ✅ | — | ⚠️ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `motion_mark` | ✅ | ✅ | — | ✅ | ⚠️ | ✅ | — | ✅ | — | ⚠️ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `motion_mask` | ✅ | ✅ | — | ✅ | ⚠️ | ✅ | — | ✅ | — | ⚠️ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `motion_orbit` | ✅ | ✅ | — | ✅ | ⚠️ | ✅ | — | ✅ | — | ⚠️ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |

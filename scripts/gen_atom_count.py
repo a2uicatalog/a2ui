@@ -30,6 +30,8 @@ CLAIMS = [
     ("SKILL.md", r"whole (\d+)-atom vocabulary"),
     ("mcp/LISTING.md", r"vocabulary of (\d+) typed atoms"),
     ("mcp/README.md", r"`a2ui-atoms-v1` \((\d+) atoms\)"),
+    ("README.md", r"Browse all (\d+) atoms"),
+    ("README.md", r"## (\d+) atoms across"),
 ]
 
 
