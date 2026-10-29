@@ -1227,6 +1227,10 @@ def render_page(atom):
                  {"@type": "PropertyValue", "name": "JSON Schema", "value": "https://a2uicatalog.ai/catalogue/atoms-json-schema.json"},
                  {"@type": "PropertyValue", "name": "markdown", "value": f"https://a2uicatalog.ai/atoms/{atom_type}.md"},
              ]},
+            {"@type": "BreadcrumbList", "itemListElement": [
+                {"@type": "ListItem", "position": 1, "name": "A2UI Catalog", "item": "https://a2uicatalog.ai/"},
+                {"@type": "ListItem", "position": 2, "name": "Atoms", "item": "https://a2uicatalog.ai/atoms/"},
+                {"@type": "ListItem", "position": 3, "name": display_name, "item": _atom_url}]},
         ]}, ensure_ascii=False).replace("</", "<\\/")
     _gas_only = _surfaces == ["google-apps-script-web"]
     try_btn  = (
@@ -1266,8 +1270,7 @@ def render_page(atom):
   <div class="wrap">
   <nav class="crumb">
     <a href="/">A2UI Catalog</a> /
-    <a href="/.well-known/ai-catalog.json">ARD Catalog</a> /
-    atoms / {atom_type}
+    <a href="/atoms/">atoms</a> / {atom_type}
   </nav>
 
   <h1>{display_name}</h1>
@@ -2216,7 +2219,7 @@ def generate_index(atoms):
   <div class="grid" id="grid">
 {cards_html}  </div>
   <footer>
-    <span>A2UI Atomic Catalog · <a href="/docs/">API Documentation</a> · <a href="/developers/">Developers</a> · <a href="https://github.com/a2uicatalog/a2ui">GitHub</a> · Maintained by <a href="https://www.linkedin.com/in/curtiskrygier" rel="me author">Curtis Krygier</a></span>
+    <span>A2UI Atomic Catalog · <a href="/atoms/">All atoms A–Z</a> · <a href="/docs/">API Documentation</a> · <a href="/developers/">Developers</a> · <a href="https://github.com/a2uicatalog/a2ui">GitHub</a> · Maintained by <a href="https://www.linkedin.com/in/curtiskrygier" rel="me author">Curtis Krygier</a></span>
     <span>Independent, unofficial catalog — not affiliated with, endorsed by, or sponsored by Google, Anthropic or OpenAI. A2UI is Google's protocol; official spec at <a href="https://a2ui.org">a2ui.org</a>. MCP is Anthropic's protocol; Claude, the Claude logo and Anthropic are trademarks of Anthropic PBC. ChatGPT and OpenAI are trademarks of OpenAI, L.L.C. All other marks belong to their respective owners.</span>
     <span><a href="/.well-known/ard.json">ARD discovery catalog (JSON)</a></span>
     <!-- Registry backlink — the reciprocal half of the Smithery listing,
@@ -3960,6 +3963,151 @@ def render_frugal_ai_ops_page():
 </html>"""
 
 
+def _hub_groups(atoms):
+    """A-Z groups of (type, display name, one-line description), sorted by type.
+    Atoms carry no family field, so the grouping is the only one that invents
+    nothing: the first letter of the type."""
+    groups = {}
+    for atom in sorted(atoms, key=lambda a: a.get("type", "")):
+        t = atom.get("type", "")
+        if not t:
+            continue
+        line = meta_description(atom.get("compact_description") or atom.get("description", ""))
+        groups.setdefault(t[0].upper(), []).append((t, t.replace("_", " ").title(), line))
+    return groups
+
+
+def render_atoms_hub(atoms):
+    """/atoms/: one crawlable page linking every published atom page, A to Z.
+
+    Until 2026-10-29 /atoms/ was a 404 and the atom pages were reachable only
+    through the homepage grid and the sitemap; Search Console showed 25 of a
+    50-page sample as "Duplicate without user-selected canonical" and none of
+    the four target searches. The hub is the landing page for "A2UI
+    components" and the parent in every atom page's breadcrumb."""
+    groups = _hub_groups(atoms)
+    n = sum(len(v) for v in groups.values())
+    url = "https://a2uicatalog.ai/atoms/"
+    title = f"A2UI Components: all {n} atoms — A2UI Atomic Catalog"
+    desc = (f"Every A2UI component in the A2UI Atomic Catalog, A to Z: {n} typed atoms an AI agent "
+            f"can send as JSON, with a page, fields and example payload for each.")
+    surfaces = {}
+    for atom in atoms:
+        for s in (atom.get("surfaces") or {}).get("works_on") or []:
+            if s not in HIDDEN_SURFACES:
+                surfaces[s] = surfaces.get(s, 0) + 1
+    ld = json.dumps({"@context": "https://schema.org", "@graph": [
+        {"@type": "CollectionPage", "@id": url, "url": url, "name": title, "description": desc,
+         "isPartOf": {"@type": "WebSite", "name": "A2UI Catalog", "url": "https://a2uicatalog.ai/"},
+         "mainEntity": {"@type": "ItemList", "numberOfItems": n, "itemListElement": [
+             {"@type": "ListItem", "position": i + 1, "name": name, "url": f"{url}{t}/"}
+             for i, (t, name, _) in enumerate(x for v in groups.values() for x in v)]}},
+        {"@type": "BreadcrumbList", "itemListElement": [
+            {"@type": "ListItem", "position": 1, "name": "A2UI Catalog", "item": "https://a2uicatalog.ai/"},
+            {"@type": "ListItem", "position": 2, "name": "Atoms", "item": url}]},
+    ]}, ensure_ascii=False).replace("</", "<\\/")
+    jump = " ".join(f'<a href="#{k.lower()}">{k}</a>' for k in groups)
+    surface_links = " · ".join(
+        f'<a href="/surfaces/{s}/">{html.escape(SURFACE_NAMES.get(s, s))}</a> ({c})'
+        for s, c in sorted(surfaces.items(), key=lambda kv: -kv[1]))
+    sections = ""
+    for k, items in groups.items():
+        lis = "".join(
+            f'<li data-q="{html.escape((t + " " + line).lower(), quote=True)}"><a href="/atoms/{t}/">{html.escape(name)}</a>'
+            f' <code>{t}</code><span>{html.escape(line)}</span></li>'
+            for t, name, line in items)
+        sections += f'\n  <section class="hub-group" id="{k.lower()}"><h2>{k}</h2><ul>{lis}</ul></section>'
+    return f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" href="/favicon.ico" sizes="32x32">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="theme-color" content="#6366f1">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>{html.escape(title)}</title>
+  <meta name="description" content="{html.escape(desc, quote=True)}">
+  <link rel="canonical" href="{url}">
+  <link rel="alternate" type="text/markdown" href="https://a2uicatalog.ai/atoms.md">
+  <script type="application/ld+json">{ld}</script>
+  {SITE_HEAD_JS}
+  {PAGE_CSS}
+  <style>
+  .hub-jump{{display:flex;flex-wrap:wrap;gap:6px 12px;font-family:ui-monospace,'SF Mono',Monaco,monospace;font-size:14px;margin:18px 0}}
+  .hub-surfaces{{font-size:14px;color:var(--muted)}}
+  .hub-filter{{margin:18px 0 6px}}
+  .hub-filter input{{width:100%;max-width:420px;padding:9px 12px;border:1px solid var(--border);border-radius:8px;background:var(--card);color:var(--text);font-size:15px}}
+  .hub-group ul{{list-style:none;padding:0;margin:0}}
+  .hub-group li{{padding:10px 0;border-bottom:1px solid var(--border)}}
+  .hub-group li a{{font-weight:600;color:var(--text);text-decoration:none}}
+  .hub-group li a:hover{{color:var(--accent)}}
+  .hub-group li code{{font-size:12px;color:var(--muted);margin-left:6px}}
+  .hub-group li span{{display:block;font-size:14px;color:var(--muted);margin-top:2px}}
+  .hub-group[hidden],.hub-group li[hidden]{{display:none}}
+  .sr-only{{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}}
+  </style>
+</head>
+<body>
+  {site_header("atoms")}
+  <div class="wrap">
+  <nav class="crumb">
+    <a href="/">A2UI Catalog</a> / atoms
+  </nav>
+
+  <h1>All {n} A2UI components</h1>
+  <p class="desc">The A2UI Atomic Catalog, A to Z. Each atom is a typed A2UI component an AI agent sends as declarative JSON;
+  the client renders it, so no model-written HTML reaches the page. Every entry links to its fields, an example payload
+  and a live preview. Agents can search the same catalog through the <a href="/mcp-docs/">MCP server</a> (<code>find_atoms</code>).</p>
+  <p class="hub-surfaces">By surface: {surface_links}</p>
+  <div class="hub-filter"><label class="sr-only" for="hub-q">Filter atoms</label>
+    <input id="hub-q" type="search" placeholder="Filter {n} atoms…" autocomplete="off"></div>
+  <nav class="hub-jump" aria-label="Jump to letter">{jump}</nav>
+{sections}
+
+  <footer>
+    <span>A2UI Atomic Catalog · <a href="/docs/">API Documentation</a> · <a href="https://github.com/a2uicatalog/a2ui">github.com/a2uicatalog/a2ui</a> · Maintained by <a href="https://www.linkedin.com/in/curtiskrygier" rel="me author">Curtis Krygier</a></span>
+    <span>Independent, unofficial catalog — not affiliated with, endorsed by, or sponsored by Google, Anthropic or OpenAI. A2UI is Google's protocol; official spec at <a href="https://a2ui.org">a2ui.org</a>. MCP is Anthropic's protocol; Claude, the Claude logo and Anthropic are trademarks of Anthropic PBC. ChatGPT and OpenAI are trademarks of OpenAI, L.L.C. All other marks belong to their respective owners.</span>
+    <span><a href="/.well-known/ard.json">ARD discovery catalog (JSON)</a> · <a href="/atoms.md">This list as Markdown</a></span>
+  </footer>
+  </div>
+  {SITE_FOOT_JS}
+<script>
+(function(){{
+  var q = document.getElementById('hub-q');
+  if (!q) return;
+  q.addEventListener('input', function(){{
+    var v = q.value.trim().toLowerCase();
+    document.querySelectorAll('.hub-group').forEach(function(g){{
+      var shown = 0;
+      g.querySelectorAll('li').forEach(function(li){{
+        var hit = !v || li.getAttribute('data-q').indexOf(v) !== -1;
+        li.hidden = !hit; if (hit) shown++;
+      }});
+      g.hidden = shown === 0;
+    }});
+  }});
+}})();
+</script>
+</body>
+</html>"""
+
+
+def render_atoms_hub_md(atoms):
+    """Markdown twin of /atoms/ (served at /atoms.md, the site's /foo/ -> /foo.md convention)."""
+    groups = _hub_groups(atoms)
+    n = sum(len(v) for v in groups.values())
+    lines = [f"# All {n} A2UI components", "",
+             "The A2UI Atomic Catalog, A to Z. Each atom is a typed A2UI component an AI agent sends as declarative JSON.", ""]
+    for k, items in groups.items():
+        lines += [f"## {k}", ""]
+        lines += [f"- [{name}](https://a2uicatalog.ai/atoms/{t}/) `{t}`: {line}" for t, name, line in items]
+        lines.append("")
+    lines += ["Full field contract: https://a2uicatalog.ai/spec.json"]
+    return "\n".join(lines) + "\n"
+
+
+
 def main():
     with open(SCHEMA) as f:
         raw = yaml.safe_load(f)
@@ -3999,6 +4147,10 @@ def main():
 
     index_path = ROOT / "public" / "index.html"
     index_path.write_text(generate_index(unique))
+
+    (OUTPUT_DIR / "index.html").write_text(render_atoms_hub(unique))
+    (ROOT / "public" / "atoms.md").write_text(render_atoms_hub_md(unique))
+    print(f"✓ atoms hub → {OUTPUT_DIR}/index.html and public/atoms.md")
 
     try_dir = ROOT / "public" / "try"
     try_dir.mkdir(parents=True, exist_ok=True)
