@@ -15881,10 +15881,12 @@
        "type": "array"
       },
       "shape": {
-       "description": "\"heart\" | \"sphere\" | \"torus\" | \"helix\" | \"pyramid\" | \"house\" (optional, default \"heart\"). Used when neither text nor bricks is given."
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). One of \"heart\", \"sphere\", \"torus\", \"helix\", \"pyramid\", \"house\". Default \"heart\". Used when neither text nor bricks is given."
       },
       "color": {
-       "description": "\"#rrggbb\" (optional). One colour for every lettering brick; otherwise letters cycle through palette or the classic brick colours."
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). A \"#rrggbb\" colour. One colour for every lettering brick; otherwise letters cycle through palette or the classic brick colours."
       },
       "palette": {
        "description": "array of \"#rrggbb\" (optional). Colours for lettering (cycled per letter) and for integer colour indexes in bricks.",
@@ -15899,7 +15901,8 @@
        "description": "string (optional). \"none\" for floating bricks (no plate, no plate shadow), or a \"#rrggbb\" colour for the baseplate. Default the classic green plate."
       },
       "look": {
-       "description": "\"studio\" | \"instructions\" (optional, default \"studio\"). studio: a product shot (glossy ABS, softbox reflections, edges that catch light, no outlines). instructions: the building-instructions style of brick_build_3d (dark edge lines)."
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). One of \"studio\", \"instructions\". Default \"studio\". studio: a product shot (glossy ABS, softbox reflections, edges that catch light, no outlines). instructions: the building-instructions style of brick_build_3d (dark edge lines)."
       },
       "angle": {
        "description": "number (optional). Starting turn in degrees, -360 to 360. Default 24.",
@@ -15918,7 +15921,8 @@
        "type": "object"
       },
       "ratio": {
-       "description": "\"16:9\" | \"4:3\" | \"1:1\" | \"3:4\" | \"9:16\" (optional, default \"16:9\")"
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). One of \"16:9\", \"4:3\", \"1:1\", \"3:4\", \"9:16\". Default \"16:9\"."
       },
       "fill": {
        "description": "boolean (optional). Fill the placed box height instead of using ratio. Default false.",
@@ -15974,7 +15978,7 @@
       },
       "look": {
        "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
-       "description": "string (optional). \"studio\" (default, a product shot: glossy plastic, no outlines) or \"instructions\" (building-instructions style with dark edge lines)."
+       "description": "string (optional). One of \"studio\", \"instructions\". Default \"studio\" (a product shot: glossy plastic, no outlines); \"instructions\" is building-instructions style with dark edge lines."
       },
       "base": {
        "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
@@ -15982,7 +15986,7 @@
       },
       "ratio": {
        "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
-       "description": "string (optional). \"16:9\" (default), \"4:3\", \"1:1\", \"3:4\" or \"9:16\"."
+       "description": "string (optional). One of \"16:9\", \"4:3\", \"1:1\", \"3:4\", \"9:16\". Default \"16:9\"."
       },
       "fill": {
        "description": "boolean (optional). Fill the placed box height instead of using ratio. Default false.",
@@ -16044,7 +16048,7 @@
       },
       "look": {
        "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
-       "description": "string (optional). \"studio\" (default, a product shot: glossy plastic, no outlines) or \"instructions\" (building-instructions style with dark edge lines)."
+       "description": "string (optional). One of \"studio\", \"instructions\". Default \"studio\" (a product shot: glossy plastic, no outlines); \"instructions\" is building-instructions style with dark edge lines."
       },
       "base": {
        "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
@@ -16052,7 +16056,7 @@
       },
       "ratio": {
        "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
-       "description": "string (optional). \"16:9\" (default), \"4:3\", \"1:1\", \"3:4\" or \"9:16\"."
+       "description": "string (optional). One of \"16:9\", \"4:3\", \"1:1\", \"3:4\", \"9:16\". Default \"16:9\"."
       },
       "fill": {
        "description": "boolean (optional). Fill the placed box height instead of using ratio. Default false.",
@@ -19327,19 +19331,19 @@
       },
       "shape": {
        "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
-       "description": "string (optional). heart, sphere, torus, helix, pyramid or house. Default heart. Ignored when bricks is set."
+       "description": "string (optional). One of \"heart\", \"sphere\", \"torus\", \"helix\", \"pyramid\", \"house\". Default \"heart\". Ignored when bricks is set."
       },
       "bricks": {
        "description": "array (optional). Explicit model — objects {x, y, z, w, d, h, c}. x and z are stud positions, y is the layer (0 sits on the baseplate), w and d the footprint in studs, h the height in bricks (default 1), c a '#rrggbb' colour or a palette index. A brick may also be a compact array [x, y, z, w, d, c] or [x, y, z, w, d, h, c], about a third of the size. Up to 3000 bricks. A data-model binding such as {path '/bricks'} arrives resolved.",
        "type": "array"
       },
       "palette": {
-       "description": "array (optional). Up to 256 '#rrggbb' colours. A brick's c may be an integer index into it, which keeps large models small.",
+       "description": "array of \"#rrggbb\" (optional). Up to 256 colours. A brick's c may be an integer index into it, which keeps large models small.",
        "type": "array"
       },
       "mode": {
        "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
-       "description": "string (optional). animate or steps. Default animate."
+       "description": "string (optional). One of \"animate\", \"steps\". Default \"animate\"."
       },
       "step": {
        "description": "integer (optional). Initial instruction step when mode is steps. Default 1.",
@@ -19390,7 +19394,8 @@
        "type": "array"
       },
       "look": {
-       "description": "\"studio\" | \"instructions\" (optional, default \"instructions\"). instructions: the original building-instructions style (glossy plastic, dark outline on every part edge). studio: a product-shot style — no outlines, edges catch light instead (same visual treatment as the sibling motion_bricks atom, default there)."
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). One of \"studio\", \"instructions\". Default \"instructions\". instructions: the original building-instructions style (glossy plastic, dark outline on every part edge). studio: a product-shot style — no outlines, edges catch light instead (same visual treatment as the sibling motion_bricks atom, default there)."
       },
       "base": {
        "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",

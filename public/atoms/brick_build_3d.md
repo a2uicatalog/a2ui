@@ -10,10 +10,10 @@ google-apps-script-web, web, mcp-apps, android
 
 | Field | Type |
 |---|---|
-| shape | string (optional). heart, sphere, torus, helix, pyramid or house. Default heart. Ignored when bricks is set. |
+| shape | string (optional). One of "heart", "sphere", "torus", "helix", "pyramid", "house". Default "heart". Ignored when bricks is set. |
 | bricks | array (optional). Explicit model — objects {x, y, z, w, d, h, c}. x and z are stud positions, y is the layer (0 sits on the baseplate), w and d the footprint in studs, h the height in bricks (default 1), c a '#rrggbb' colour or a palette index. A brick may also be a compact array [x, y, z, w, d, c] or [x, y, z, w, d, h, c], about a third of the size. Up to 3000 bricks. A data-model binding such as {path '/bricks'} arrives resolved. |
-| palette | array (optional). Up to 256 '#rrggbb' colours. A brick's c may be an integer index into it, which keeps large models small. |
-| mode | string (optional). animate or steps. Default animate. |
+| palette | array of "#rrggbb" (optional). Up to 256 colours. A brick's c may be an integer index into it, which keeps large models small. |
+| mode | string (optional). One of "animate", "steps". Default "animate". |
 | step | integer (optional). Initial instruction step when mode is steps. Default 1. |
 | speed | number (optional). Animation speed multiplier. Default 1. |
 | orbit | boolean (optional). Slow auto-orbit; dragging always orbits. Default true. |
@@ -26,7 +26,7 @@ google-apps-script-web, web, mcp-apps, android
 | model | string (optional). Name of the entry in models to show first. Ignored when bricks is set. |
 | picker | boolean (optional). Show the model dropdown. Default true when models is given, otherwise false; set true to get a dropdown of the six built-in shapes alone. |
 | partsModel | array (optional). Real parts from the LDraw.org Parts Library (CC BY) instead of procedural boxes, as [partId, x, y, z, rotation, colour] tuples (a real LDraw part id, x y z in LDraw units (20 per stud, 24 per brick height), a 0-23 rotation index, an LDraw colour code), or objects {p, x, y, z, r, c}. Takes precedence over bricks/shape when present, same "explicit wins" rule as bricks vs. shape. Up to 3000 parts. |
-| look | "studio" | "instructions" (optional, default "instructions"). instructions: the original building-instructions style (glossy plastic, dark outline on every part edge). studio: a product-shot style — no outlines, edges catch light instead (same visual treatment as the sibling motion_bricks atom, default there). |
+| look | string (optional). One of "studio", "instructions". Default "instructions". instructions: the original building-instructions style (glossy plastic, dark outline on every part edge). studio: a product-shot style — no outlines, edges catch light instead (same visual treatment as the sibling motion_bricks atom, default there). |
 | base | string (optional). "none" for floating bricks (no plate, no plate shadow), or a "#rrggbb" colour for the baseplate. Default the classic green plate. |
 
 ## Example payload

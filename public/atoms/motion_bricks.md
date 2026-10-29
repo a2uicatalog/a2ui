@@ -12,17 +12,17 @@ web, google-meet-stage, google-apps-script-web, mcp-apps, android
 |---|---|
 | text | string (optional, max 12). Builds the word in bricks: A-Z, 0-9 and . , ! ? - : ' (others leave a gap). |
 | bricks | array (optional). Explicit toy-brick model (procedural boxes, up to 3000), same format as brick_build_3d: {x, y, z, w, d, h, c} or [x, y, z, w, d, c] / [x, y, z, w, d, h, c]. Used when text is absent. |
-| shape | "heart" | "sphere" | "torus" | "helix" | "pyramid" | "house" (optional, default "heart"). Used when neither text nor bricks is given. |
-| color | "#rrggbb" (optional). One colour for every lettering brick; otherwise letters cycle through palette or the classic brick colours. |
+| shape | string (optional). One of "heart", "sphere", "torus", "helix", "pyramid", "house". Default "heart". Used when neither text nor bricks is given. |
+| color | string (optional). A "#rrggbb" colour. One colour for every lettering brick; otherwise letters cycle through palette or the classic brick colours. |
 | palette | array of "#rrggbb" (optional). Colours for lettering (cycled per letter) and for integer colour indexes in bricks. |
 | depth | integer (optional). Lettering depth in studs, 1-4. Default 2. |
 | base | string (optional). "none" for floating bricks (no plate, no plate shadow), or a "#rrggbb" colour for the baseplate. Default the classic green plate. |
-| look | "studio" | "instructions" (optional, default "studio"). studio: a product shot (glossy ABS, softbox reflections, edges that catch light, no outlines). instructions: the building-instructions style of brick_build_3d (dark edge lines). |
+| look | string (optional). One of "studio", "instructions". Default "studio". studio: a product shot (glossy ABS, softbox reflections, edges that catch light, no outlines). instructions: the building-instructions style of brick_build_3d (dark edge lines). |
 | angle | number (optional). Starting turn in degrees, -360 to 360. Default 24. |
 | elevation | number (optional). Camera elevation in degrees, 7-75. Default 26. |
 | turns | number (optional). Full turns per unit of --s, -8 to 8. Default 1. |
 | motion | object (optional). How the bricks arrive; absent = the plain build-up. Every key is optional and clamped, unknown keys are ignored, and a value that is not a number or a known name falls back to its default. order: "index" (the brick list order) | "base-up" (layer by layer) | "diagonal" | "radial" (default "diagonal"). from: "above" | "outward" | "scatter" (where bricks start; default "above"). spinAxis: "y" | "x" | "z" (default "y"). window: 0-30, default 2.4, how widely the launch times are spread. flight: 0.1-5, default 0.62, how long one brick is in the air; together they set the pace, since p 0 to 1 covers window + flight. distance: 0-60, default 9, start distance in stud units. tilt: 0-360, default 70, random start tumble in degrees. spin: -8 to 8, default 0.5, extra turns while flying. gravity: 0-1, default 0.5, how strongly lower bricks go first (diagonal and radial orders). jitter: 0-1, default 0.15, random shuffle of the order. support: 0 or 1, default 1, a brick never launches before the brick it rests on. seed: integer 0-2147483646, default 7. overshoot 0-1 (0.12), rotOvershoot 0-0.5 (0.08), recoil 0-1 (0.45), travel 0.2-0.9 (0.58), sharpness 1.5-8 (4): the seat-and-settle curve. direction: [x, y, z], default [1, 0.55, 0.8], the sweep direction for the diagonal order. |
-| ratio | "16:9" | "4:3" | "1:1" | "3:4" | "9:16" (optional, default "16:9") |
+| ratio | string (optional). One of "16:9", "4:3", "1:1", "3:4", "9:16". Default "16:9". |
 | fill | boolean (optional). Fill the placed box height instead of using ratio. Default false. |
 | label | string (optional, max 80). Accessible name. |
 
