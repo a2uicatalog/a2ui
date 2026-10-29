@@ -300,6 +300,13 @@ MULTI_REP = {
         "Interactive tutorial for getting started",
         "Step-by-step introduction to the application",
     ],
+    "polar_chart": [
+        "Create a radar graph",
+        "Show data in a circular plot",
+        "Make a chart with angular and radial values",
+        "Visualize metrics on a polar coordinate system",
+        "Generate a spider chart to compare categories",
+    ],
 }
 
 
