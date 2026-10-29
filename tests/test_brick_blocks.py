@@ -119,3 +119,68 @@ def test_express_reply_compiles_against_the_block_catalogue_slice(tmp_path):
     rk = out["rocket"]["components"][0]
     assert rk["component"] == "block_rocket" and rk["fill"] is True and rk["ratio"] == "1:1"
     assert not out["outside"]["ok"] and "Unknown component 'badge'" in out["outside"]["error"]
+
+
+# ── the published strict JSON schema (public/catalogue/atoms-json-schema.json, scripts/gen_atom_json_schemas.py) ──────────
+# It constrains LLM output, so a wrong type here rejects valid payloads. Regression: base came out number, motion a one-value
+# string enum, bricks/partsModel items objects with string coordinates, enums kept stray text, palette integer.
+def _published_atom(name):
+    doc = json.loads((ROOT / "public/catalogue/atoms-json-schema.json").read_text())
+    found = []
+
+    def walk(x):
+        if isinstance(x, dict):
+            t = x.get("properties", {}).get("type")
+            if isinstance(t, dict) and t.get("const") == name:
+                found.append(x)
+            for v in x.values():
+                walk(v)
+        elif isinstance(x, list):
+            for v in x:
+                walk(v)
+    walk(doc)
+    assert len(found) == 1, name
+    return found[0]
+
+
+def test_generated_schema_types_for_the_brick_atoms():
+    for name in SLICE:
+        p = _published_atom(name)["properties"]
+        assert p["base"] == {"type": "string"}
+        assert p["look"] == {"type": "string", "enum": ["studio", "instructions"]}
+        for f in ("angle", "elevation", "turns"):
+            if f in p:
+                assert p[f] == {"type": "number"}
+        assert p["fill"] == {"type": "boolean"} if "fill" in p else True
+        if "motion" in p:
+            assert p["motion"] == {"type": "object"}
+        if "ratio" in p:
+            assert p["ratio"]["enum"] == ["16:9", "4:3", "1:1", "3:4", "9:16"]
+    for name in ("motion_bricks", "brick_build_3d"):
+        p = _published_atom(name)["properties"]
+        assert p["shape"]["enum"] == ["heart", "sphere", "torus", "helix", "pyramid", "house"]
+        assert p["bricks"] == {"type": "array", "items": {}}          # objects and compact tuples both
+        assert p["palette"]["type"] == "array" and p["palette"]["items"]["type"] == "string"
+    p = _published_atom("brick_build_3d")["properties"]
+    assert p["partsModel"] == {"type": "array", "items": {}} and p["mode"]["enum"] == ["animate", "steps"]
+    assert p["models"] == {"type": "array", "items": {}}
+
+
+def test_valid_example_payloads_validate_against_the_generated_schema():
+    jsonschema = pytest.importorskip("jsonschema")
+    robot, rocket = _gs_lists()["block_robot"], _gs_lists()["block_rocket"]
+    cases = [
+        {"type": "block_robot", "angle": -24, "base": "none", "fill": False, "motion": {"order": "index", "flight": 1}},
+        {"type": "block_rocket", "base": "#336699", "ratio": "1:1", "look": "instructions"},
+        {"type": "motion_bricks", "bricks": robot, "base": "none", "motion": {"from": "above"}, "angle": -24},
+        {"type": "motion_bricks", "shape": "heart", "palette": ["#ff4f8b", "#4cc3ff"], "look": "studio"},
+        {"type": "brick_build_3d", "bricks": [{"x": 0, "y": 0, "z": 0, "w": 2, "d": 2, "h": 1, "c": "#c91a09"}, rocket[0]],
+         "base": "none", "mode": "steps", "shape": "house"},
+        {"type": "brick_build_3d", "partsModel": [["3001", 0, 0, 0, 0, 4]], "palette": ["#c91a09"]},
+    ]
+    for c in cases:
+        jsonschema.validate(c, _published_atom(c["type"]))
+    for bad in ({"type": "block_robot", "fill": "no"}, {"type": "block_robot", "ratio": "2:1"},
+                {"type": "motion_bricks", "base": 5}, {"type": "block_robot", "bogus": 1}):
+        with pytest.raises(jsonschema.ValidationError):
+            jsonschema.validate(bad, _published_atom(bad["type"]))

@@ -97,10 +97,32 @@ def evaluate_ast_node(node) -> dict:
     raise ValueError(f"unsupported literal node: {type(node).__name__}")
 
 
+# Atoms whose fields all start with an explicit type word and are parsed by it (2026-10-29, the brick atoms).
+LEADING_TYPE_ATOMS = {"motion_bricks", "brick_build_3d", "block_robot", "block_rocket"}
+_LEADING_TYPE_ON = False
+
+
 def advanced_parse_field(raw_string: str):
     s = raw_string.strip()
     s_lower = s.lower()
     is_optional = "optional" in s_lower or "?" in s_lower or "default" in s_lower
+
+    # An explicit leading type word ("number (optional). ...", "object (optional). ...", "array (optional). ...") is the
+    # author's stated type: honour it before the prose heuristics below, which read a `|`, " or " or the word "floating"
+    # inside the description as an enum or a number.
+    # Opt-in per atom (LEADING_TYPE_ATOMS) so the other atoms' generated schemas stay byte-identical.
+    if _LEADING_TYPE_ON:
+        m = re.match(r"^(string|number|integer|boolean|object|array)\b", s)
+        if m:
+            t = m.group(1)
+            if t == "array":
+                inner = {"type": "string", "pattern": "^#[0-9a-fA-F]{6}$"} if re.match(r'^array of "#rrggbb"', s) else {}
+                return {"type": "array", "items": inner}, is_optional
+            if t == "string":
+                eo = re.search(r'One of ((?:"[^"]+"(?:,\s*)?)+)\.', s)
+                if eo:
+                    return {"type": "string", "enum": re.findall(r'"([^"]+)"', eo.group(1))}, is_optional
+            return {"type": t}, is_optional
 
     if s.startswith("{") or s.startswith("["):
         try:
@@ -195,7 +217,9 @@ def motion_is_public(blocks: list, full: bool) -> bool:
 
 
 def build_atom_schema(block: dict, with_enter: bool = False) -> dict:
+    global _LEADING_TYPE_ON
     atom_type = block["type"]
+    _LEADING_TYPE_ON = atom_type in LEADING_TYPE_ATOMS
     properties = {"type": {"type": "string", "const": atom_type}}
     required = ["type"]
 
