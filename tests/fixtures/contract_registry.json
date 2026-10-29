@@ -1259,6 +1259,14 @@
    "status": "exempt",
    "reason": "motion/animation primitive driven by progress dial p"
   },
+  "block_robot": {
+   "status": "exempt",
+   "reason": "motion/animation primitive driven by progress dial p"
+  },
+  "block_rocket": {
+   "status": "exempt",
+   "reason": "motion/animation primitive driven by progress dial p"
+  },
   "motion_browser": {
    "status": "exempt",
    "reason": "motion or demo atom: it moves things itself"
