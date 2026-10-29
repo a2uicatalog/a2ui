@@ -1,6 +1,6 @@
 {
  "catalogId": "a2ui-atoms-v1",
- "atomCount": 569,
+ "atomCount": 573,
  "fullSpec": "https://a2uicatalog.ai/spec.json",
  "atoms": [
   {
@@ -3644,6 +3644,39 @@
    ]
   },
   {
+   "type": "motion_bricks",
+   "compact": "toy-brick sculpture or brick lettering that builds, flies in and turns on the film clock",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps",
+    "android"
+   ]
+  },
+  {
+   "type": "block_robot",
+   "compact": "a ready-made 10-brick toy robot that builds itself and turns on the film clock",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps",
+    "android"
+   ]
+  },
+  {
+   "type": "block_rocket",
+   "compact": "a ready-made 9-brick toy rocket that builds itself and turns on the film clock",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps",
+    "android"
+   ]
+  },
+  {
    "type": "dot_grid_background",
    "compact": "CSS repeating dot or grid pattern panel background",
    "surfaces": [
@@ -4277,6 +4310,16 @@
     "google-apps-script-web",
     "web",
     "google-meet-stage",
+    "mcp-apps",
+    "android"
+   ]
+  },
+  {
+   "type": "brick_build_3d",
+   "compact": "self-assembling 3D brick model, toy bricks or real LDraw parts, with build checks, build steps and a parts list",
+   "surfaces": [
+    "google-apps-script-web",
+    "web",
     "mcp-apps",
     "android"
    ]

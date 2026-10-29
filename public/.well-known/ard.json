@@ -37,7 +37,7 @@
         "email",
         "pdf"
       ],
-      "description": "Open-source renderer with 569 typed atoms for generating rich UI across Google Meet stages, Chat Cards, Apps Script web apps, and web surfaces from a single JSON schema payload.",
+      "description": "Open-source renderer with 573 typed atoms for generating rich UI across Google Meet stages, Chat Cards, Apps Script web apps, and web surfaces from a single JSON schema payload.",
       "representativeQueries": [
         "render a rich UI from structured JSON data",
         "generate Google Meet stage content from a schema",
@@ -6177,6 +6177,63 @@
       ]
     },
     {
+      "identifier": "urn:air:a2uicatalog.ai:atom:motion_bricks",
+      "displayName": "Motion Bricks",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/motion_bricks/",
+      "capabilities": [
+        "web",
+        "google-meet-stage",
+        "google-apps-script-web",
+        "mcp-apps",
+        "android"
+      ],
+      "description": "A toy-brick sculpture on the film clock: procedural boxes with real brick proportions, studs, shadows and instruction-style edges (the brick_build_3d engine, here with boxes only; real LDraw parts are brick_build_3d's partsModel), drawn on a transparent stage so it sits inside a film. Bricks drop into place in build order as p goes 0 to 1 (p 1 = every brick settled) and the model turns with the second dial (--s, turns per unit), so a step track spins it and seeking shows exactly that frame. Give text to set a word in bricks (each character of a 5x7 dot font, every row merged into 1x1 to 1x4 bricks, depth studs deep), bricks for an explicit model, or a named shape. The optional motion object sets how the bricks arrive: the order they launch in, where they fly in from, how long each flight lasts, how much they tumble, and a small overshoot and recoil as they seat; all of it is numbers and fixed names that are clamped, and a stud-cell pass keeps a brick from launching before the brick it rests on. Standalone it shows the finished model. The engine is fixed code and the config is numbers, colours and the brick list, so nothing in the payload becomes code; without WebGL the engine draws with a 2D canvas painter instead. Known limit: each brick canvas holds two WebGL contexts and a page allows about 16, so keep to about 7 brick canvases per page. Not affiliated with or endorsed by the LEGO Group. LEGO is a trademark of the LEGO Group.",
+      "representativeQueries": [
+        "show a toy-brick sculpture or brick lettering that builds, flies in and turns on the film clock",
+        "a toy-brick sculpture on the film clock: procedural boxes with real brick proportions, studs, shadows and",
+        "render a motion bricks"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:block_robot",
+      "displayName": "Block Robot",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/block_robot/",
+      "capabilities": [
+        "web",
+        "google-meet-stage",
+        "google-apps-script-web",
+        "mcp-apps",
+        "android"
+      ],
+      "description": "A small toy-brick robot: legs, blue body, grey arms, white head, eyes and a red top brick. A finished model of 10 toy bricks in one block: the brick list is fixed, so nothing needs writing out; it is the motion_bricks canvas with that list filled in, and every motion_bricks setting that does not name bricks works here the same way. Bricks drop into place in build order as p goes 0 to 1 and the model turns with the second dial (--s). Standalone it shows the finished model. Known limit, each brick canvas holds two WebGL contexts and a page allows about 16, so keep to about 7 brick canvases per page. Not affiliated with or endorsed by the LEGO Group. LEGO is a trademark of the LEGO Group.",
+      "representativeQueries": [
+        "show a a ready-made 10-brick toy robot that builds itself and turns on the film clock",
+        "a small toy-brick robot: legs, blue body, grey arms, white head, eyes and a red top brick. a finished model of 10 toy",
+        "render a block robot"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:block_rocket",
+      "displayName": "Block Rocket",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/block_rocket/",
+      "capabilities": [
+        "web",
+        "google-meet-stage",
+        "google-apps-script-web",
+        "mcp-apps",
+        "android"
+      ],
+      "description": "A small toy-brick rocket: two grey nozzle bricks, red fins, a dark band, a white hull, a window and a red nose. A finished model of 9 toy bricks in one block: the brick list is fixed, so nothing needs writing out; it is the motion_bricks canvas with that list filled in, and every motion_bricks setting that does not name bricks works here the same way. Bricks drop into place in build order as p goes 0 to 1 and the model turns with the second dial (--s). Standalone it shows the finished model. Known limit, each brick canvas holds two WebGL contexts and a page allows about 16, so keep to about 7 brick canvases per page. Not affiliated with or endorsed by the LEGO Group. LEGO is a trademark of the LEGO Group.",
+      "representativeQueries": [
+        "show a a ready-made 9-brick toy rocket that builds itself and turns on the film clock",
+        "a small toy-brick rocket: two grey nozzle bricks, red fins, a dark band, a white hull, a window and a red nose. a",
+        "render a block rocket"
+      ]
+    },
+    {
       "identifier": "urn:air:a2uicatalog.ai:atom:dot_grid_background",
       "displayName": "Dot Grid Background",
       "type": "application/vnd.a2ui.atom+json",
@@ -7292,6 +7349,24 @@
         "show a animated particle plexus with proximity lines and mouse repulsion",
         "full-viewport animated particle network \u2014 dots connected by proximity lines that fade with distance. mouse/pointer",
         "render a canvas plexus"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:brick_build_3d",
+      "displayName": "Brick Build 3D",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/brick_build_3d/",
+      "capabilities": [
+        "google-apps-script-web",
+        "web",
+        "mcp-apps",
+        "android"
+      ],
+      "description": "Equation-driven toy-brick 3D model that assembles itself stud by stud, drawn in real brick proportions (8 mm pitch, 9.6 mm brick) with dependency-free WebGL \u2014 key-light shadows cast between parts, glossy plastic shading and an outline on every part edge, like an instruction-booklet render \u2014 and a canvas-2D fallback where WebGL is unavailable. Two kinds of model. Toy bricks (bricks or shape) are procedural boxes with studs, from a named shape (heart, sphere, torus, helix, pyramid, house) or an explicit bricks array. Real parts (partsModel) are baked geometry from the LDraw.org Parts Library, under CC BY. Every design is checked by deterministic geometry \u2014 collisions, every brick anchored through stud connections (real parts also through pins, hinges, axles and clips), connection count, centre of mass over the footprint \u2014 and the verdicts show beside the model. An instructions mode steps through the build layer by layer, and a parts list groups bricks by size and colour with an indicative cost. Known limit, each brick canvas holds two WebGL contexts and a page allows about 16, so keep to about 7 brick canvases per page. Not affiliated with or endorsed by the LEGO Group. LEGO is a trademark of the LEGO Group.",
+      "representativeQueries": [
+        "show a self-assembling 3D brick model, toy bricks or real LDraw parts, with build checks, build steps and a parts list",
+        "equation-driven toy-brick 3d model that assembles itself stud by stud, drawn in real brick proportions (8 mm pitch,",
+        "render a brick build 3d"
       ]
     },
     {

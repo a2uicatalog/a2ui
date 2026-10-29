@@ -1184,7 +1184,11 @@ a{color:inherit}
     '  vec3 q=aP;if(uKind<0.5)q=vec3('+glf(GAP)+')+aP*(iB-vec3('+glf(2*GAP)+'));',
     '  vec3 w,nrm=aN;',
     '  if(uMotion>0.5){',
-    '    if(uP<iT.x){gl_Position=vec4(2.0,2.0,2.0,1.0);return;}',    // not launched yet: clipped away, same idiom as a<0.001 below
+    // not launched yet: clipped away, same idiom as a<0.001 below. A brick launches once p is one --p step (0.0001: the film writes
+    // --p with toFixed(4)) past its delay. Before 2026-10-29 this was uP<iT.x, so a brick sitting exactly on (or 4-dp-rounded just
+    // past) its delay was drawn at its START offset: p=0 showed brick 0 hanging in the air, and a held p=k/N (a count binding, or a
+    // film track holding round(k/N,4)) showed brick k hovering for two holds in three (motion_audio port, MOTION_AUDIO_V1_1.md).
+    '    if(uP<iT.x+0.0001){gl_Position=vec4(2.0,2.0,2.0,1.0);return;}',
     '    float t=clamp((uP-iT.x)/max(iT.y,1e-6),0.0,1.0),L=length(iO);',
     '    float fp=snap(t,uOD/max(L,1e-3)),fr=snap(t,uE.w);',
     '    vec3 piv=iA+iB*0.5;mat3 Rm=rotE(iR*(1.0-fr));',

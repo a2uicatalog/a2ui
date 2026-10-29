@@ -51,6 +51,9 @@ EVAL_PATH = os.path.join(PRIVATE, "mcp-worker", "test", "compose-routing-eval.js
 # (real pre-existing debt) but silently no-opped on agent_sketchpad itself
 # ("0 to generate for") because the live site didn't know about it yet.
 KNOWN_UNCOVERED_BASELINE = frozenset({
+    # Added 2026-10-29 promoting motion_bricks and brick_build_3d from preview to stable (Curtis: "release them
+    # now") in this same commit -- remove after this push deploys and atom-multirep-onboard is rerun.
+    "block_robot", "block_rocket", "brick_build_3d", "motion_bricks",
     # Added 2026-10-21 promoting the nine D3 atoms from preview to stable (Curtis: "go stable") in this same
     # commit -- remove after this push deploys and atom-multirep-onboard is rerun to cover them.
     "arc_diagram", "box_plot", "chord_diagram", "circle_pack", "contour_plot", "histogram", "sunburst",

@@ -5083,6 +5083,30 @@
           "unit": {
             "type": "string"
           },
+          "z_min": {
+            "type": "number"
+          },
+          "z_max": {
+            "type": "number"
+          },
+          "z_mid": {
+            "type": "number"
+          },
+          "scale": {
+            "type": "string"
+          },
+          "show_colorbar": {
+            "type": "boolean"
+          },
+          "show_values": {
+            "type": "boolean"
+          },
+          "value_format": {
+            "type": "integer"
+          },
+          "version": {
+            "type": "integer"
+          },
           "enter": {
             "description": "Optional entrance motion for this block: an effect name, or {effect, ease, duration, delay, on}.",
             "oneOf": [
@@ -5389,6 +5413,9 @@
           },
           "title": {
             "type": "string"
+          },
+          "keyed": {
+            "type": "boolean"
           },
           "enter": {
             "description": "Optional entrance motion for this block: an effect name, or {effect, ease, duration, delay, on}.",
@@ -22967,14 +22994,74 @@
                 },
                 "data": {
                   "type": "string"
+                },
+                "color": {
+                  "type": "string"
                 }
               },
               "additionalProperties": false,
               "required": [
                 "label",
-                "data"
+                "data",
+                "color"
               ]
             }
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "group (default)",
+              "stack",
+              "relative",
+              "overlay. stack adds the signed values; relative stacks positives up and negatives down separately; overlay draws every series on the baseline."
+            ]
+          },
+          "orientation": {
+            "type": "string",
+            "enum": [
+              "v (default)",
+              "h."
+            ]
+          },
+          "show_values": {
+            "type": "boolean"
+          },
+          "value_format": {
+            "type": "string"
+          },
+          "y_format": {
+            "type": "string"
+          },
+          "y_scale": {
+            "type": "string",
+            "enum": [
+              "linear (default)",
+              "log. A log axis ticks at powers of ten, leaves out numbers that are not above zero (with a note) and cannot stack."
+            ]
+          },
+          "y_range": {
+            "type": "number"
+          },
+          "y_ticks": {
+            "type": "integer"
+          },
+          "y_reverse": {
+            "type": "boolean"
+          },
+          "gap": {
+            "type": "number"
+          },
+          "legend_position": {
+            "type": "string",
+            "enum": [
+              "top",
+              "bottom",
+              "right",
+              "none. Default top with more than one series, none otherwise."
+            ]
+          },
+          "version": {
+            "type": "integer"
           },
           "enter": {
             "description": "Optional entrance motion for this block: an effect name, or {effect, ease, duration, delay, on}.",
@@ -23082,7 +23169,11 @@
         "required": [
           "type",
           "labels",
-          "datasets"
+          "show_values",
+          "value_format",
+          "y_format",
+          "y_range",
+          "y_reverse"
         ],
         "additionalProperties": false
       },
@@ -23114,6 +23205,79 @@
                 "data"
               ]
             }
+          },
+          "title": {
+            "type": "string"
+          },
+          "series": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "x": {
+                  "type": "string"
+                },
+                "y": {
+                  "type": "string"
+                },
+                "mode": {
+                  "type": "string"
+                },
+                "color": {
+                  "type": "string"
+                },
+                "dash": {
+                  "type": "string"
+                },
+                "shape": {
+                  "type": "string"
+                },
+                "size": {
+                  "type": "string"
+                },
+                "symbol": {
+                  "type": "string"
+                },
+                "fill": {
+                  "type": "string"
+                },
+                "text": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "label",
+                "x",
+                "y",
+                "mode",
+                "color",
+                "dash",
+                "shape",
+                "size",
+                "symbol",
+                "fill",
+                "text"
+              ]
+            }
+          },
+          "x_type": {
+            "type": "string"
+          },
+          "x_label": {
+            "type": "string"
+          },
+          "y_label": {
+            "type": "string"
+          },
+          "max_points": {
+            "type": "integer"
+          },
+          "version": {
+            "type": "integer"
           },
           "enter": {
             "description": "Optional entrance motion for this block: an effect name, or {effect, ease, duration, delay, on}.",
@@ -25103,6 +25267,12 @@
               ]
             }
           },
+          "shape": {
+            "type": "number"
+          },
+          "version": {
+            "type": "integer"
+          },
           "enter": {
             "description": "Optional entrance motion for this block: an effect name, or {effect, ease, duration, delay, on}.",
             "oneOf": [
@@ -25233,6 +25403,42 @@
           },
           "label": {
             "type": "string"
+          },
+          "min": {
+            "type": "number"
+          },
+          "steps": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "from": {
+                  "type": "string"
+                },
+                "to": {
+                  "type": "string"
+                },
+                "color": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "from",
+                "to",
+                "color"
+              ]
+            }
+          },
+          "threshold": {
+            "type": "string",
+            "enum": [
+              "number . Draws a tick and states whether the value is at",
+              "above it ."
+            ]
+          },
+          "version": {
+            "type": "integer"
           },
           "enter": {
             "description": "Optional entrance motion for this block: an effect name, or {effect, ease, duration, delay, on}.",
@@ -25550,6 +25756,9 @@
               ]
             }
           },
+          "layout": {
+            "type": "string"
+          },
           "offset": {
             "type": "integer"
           },
@@ -25857,6 +26066,76 @@
           },
           "label_y": {
             "type": "string"
+          },
+          "series": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "x": {
+                  "type": "string"
+                },
+                "y": {
+                  "type": "string"
+                },
+                "mode": {
+                  "type": "string"
+                },
+                "color": {
+                  "type": "string"
+                },
+                "dash": {
+                  "type": "string"
+                },
+                "shape": {
+                  "type": "string"
+                },
+                "size": {
+                  "type": "string"
+                },
+                "symbol": {
+                  "type": "string"
+                },
+                "fill": {
+                  "type": "string"
+                },
+                "text": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "label",
+                "x",
+                "y",
+                "mode",
+                "color",
+                "dash",
+                "shape",
+                "size",
+                "symbol",
+                "fill",
+                "text"
+              ]
+            }
+          },
+          "x_type": {
+            "type": "string"
+          },
+          "x_label": {
+            "type": "string"
+          },
+          "y_label": {
+            "type": "string"
+          },
+          "max_points": {
+            "type": "integer"
+          },
+          "version": {
+            "type": "integer"
           },
           "enter": {
             "description": "Optional entrance motion for this block: an effect name, or {effect, ease, duration, delay, on}.",
@@ -39554,11 +39833,24 @@
           "autoplay": {
             "type": "boolean"
           },
+          "drive": {
+            "type": "string",
+            "enum": [
+              "time",
+              "scroll\" (optional, default \"time\"). \"scroll\" turns the film into a scroll-driven piece: the stage is pinned (position:sticky) inside a tall runway and the film clock is the page's scroll progress through that runway (seeked on requestAnimationFrame from a passive scroll listener), so scrolling plays the film and scrolling back rewinds it. No autoplay and no play/pause button: the scrubber stays as a progress indicator and a keyboard control (moving it scrolls the page to that point), and the page's own keys scroll as usual. Under prefers-reduced-motion there is no runway: the poster frame is shown in the normal flow. The export buttons are not offered. Absent or any other value: unchanged."
+            ]
+          },
+          "scroll_length": {
+            "type": "number"
+          },
           "controls": {
             "type": "boolean"
           },
           "poster": {
             "type": "number"
+          },
+          "transcript": {
+            "type": "boolean"
           },
           "theme": {
             "type": "string",
@@ -40349,7 +40641,8 @@
               "flap",
               "reel",
               "pop",
-              "decode\" (optional, default \"rise\"). pop scales each unit up past full size and settles (an overshoot). decode shows seeded random characters that resolve into each unit (the real text is always in the page; the noise is aria-hidden). bar wipes a coloured highlight bar in behind each unit, then the text appears on it. flap is a slot-reel flip: three decoy glyphs scroll past in each unit before the real one lands (best with mode chars). reel stacks the lines on one row and the second dial (--s) moves the focus down the list: the focused line is sharp, the others dim, shrink and blur with their distance (a scrolling text reel); at --s 1 the last line is in focus."
+              "decode",
+              "bloom\" (optional, default \"rise\"). bloom condenses each unit in place out of a bright, glowing blur: it starts about 60% brighter with a soft halo and a 0.4em blur at 90% size, and halo, brightness and blur fall away as it sharpens (no slide; blur only defocuses, decode swaps glyphs, bloom adds the glow). Pair with a long overlap (4-8) and mode words or lines so the glow runs through the whole line. pop scales each unit up past full size and settles (an overshoot). decode shows seeded random characters that resolve into each unit (the real text is always in the page; the noise is aria-hidden). bar wipes a coloured highlight bar in behind each unit, then the text appears on it. flap is a slot-reel flip: three decoy glyphs scroll past in each unit before the real one lands (best with mode chars). reel stacks the lines on one row and the second dial (--s) moves the focus down the list: the focused line is sharp, the others dim, shrink and blur with their distance (a scrolling text reel); at --s 1 the last line is in focus."
             ]
           },
           "overlap": {
@@ -41323,6 +41616,9 @@
               ]
             }
           },
+          "shape": {
+            "type": "string"
+          },
           "size": {
             "type": "integer"
           },
@@ -41957,6 +42253,29 @@
           "label": {
             "type": "string"
           },
+          "trim": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "start": {
+                  "type": "string"
+                },
+                "end": {
+                  "type": "string"
+                },
+                "offset": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "start",
+                "end",
+                "offset"
+              ]
+            }
+          },
           "enter": {
             "description": "Optional entrance motion for this block: an effect name, or {effect, ease, duration, delay, on}.",
             "oneOf": [
@@ -42249,8 +42568,16 @@
               "circle",
               "diagonal",
               "rounded",
-              "bars\" (optional, default \"blob\")"
+              "bars",
+              "diamond",
+              "halftone",
+              "conic",
+              "slats",
+              "path\" (optional, default \"blob\")"
             ]
+          },
+          "d": {
+            "type": "integer"
           },
           "blocks": {
             "type": [
@@ -42540,6 +42867,9 @@
               "burst",
               "speed\" (optional, default \"burst\")"
             ]
+          },
+          "angle": {
+            "type": "integer"
           },
           "count": {
             "type": "integer"
@@ -43664,6 +43994,531 @@
           },
           "radius": {
             "type": "integer"
+          },
+          "label": {
+            "type": "string"
+          },
+          "enter": {
+            "description": "Optional entrance motion for this block: an effect name, or {effect, ease, duration, delay, on}.",
+            "oneOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "fade",
+                  "rise",
+                  "drop",
+                  "slide-left",
+                  "slide-right",
+                  "scale",
+                  "blur",
+                  "wipe",
+                  "pop"
+                ]
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "effect": {
+                    "type": "string",
+                    "enum": [
+                      "fade",
+                      "rise",
+                      "drop",
+                      "slide-left",
+                      "slide-right",
+                      "scale",
+                      "blur",
+                      "wipe",
+                      "pop"
+                    ]
+                  },
+                  "ease": {
+                    "oneOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "linear",
+                          "ease",
+                          "ease-in",
+                          "ease-out",
+                          "ease-in-out",
+                          "overshoot",
+                          "anticipate",
+                          "standard",
+                          "emphasized",
+                          "decelerate",
+                          "accelerate",
+                          "expo-out",
+                          "quint-out",
+                          "quart-in-out",
+                          "expo-in-out"
+                        ]
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "number"
+                        },
+                        "minItems": 4,
+                        "maxItems": 4
+                      }
+                    ]
+                  },
+                  "duration": {
+                    "oneOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "instant",
+                          "quick",
+                          "base",
+                          "slow",
+                          "cinematic"
+                        ]
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 8000
+                      }
+                    ]
+                  },
+                  "delay": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  },
+                  "on": {
+                    "type": "string",
+                    "enum": [
+                      "load",
+                      "view"
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "required": [
+          "type"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "motion_bricks"
+          },
+          "text": {
+            "type": "string"
+          },
+          "bricks": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "x": {
+                  "type": "string"
+                },
+                "y": {
+                  "type": "string"
+                },
+                "z": {
+                  "type": "string"
+                },
+                "w": {
+                  "type": "string"
+                },
+                "d": {
+                  "type": "string"
+                },
+                "h": {
+                  "type": "string"
+                },
+                "c": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "x",
+                "y",
+                "z",
+                "w",
+                "d",
+                "h",
+                "c"
+              ]
+            }
+          },
+          "shape": {
+            "type": "string",
+            "enum": [
+              "heart",
+              "sphere",
+              "torus",
+              "helix",
+              "pyramid",
+              "house\" (optional, default \"heart\"). Used when neither text nor bricks is given."
+            ]
+          },
+          "color": {
+            "type": "string",
+            "enum": [
+              "\"#rrggbb\" . One colour for every lettering brick; otherwise letters cycle through palette",
+              "the classic brick colours."
+            ]
+          },
+          "palette": {
+            "type": "integer"
+          },
+          "depth": {
+            "type": "integer"
+          },
+          "base": {
+            "type": "number"
+          },
+          "look": {
+            "type": "string",
+            "enum": [
+              "studio",
+              "instructions\" (optional, default \"studio\"). studio: a product shot (glossy ABS, softbox reflections, edges that catch light, no outlines). instructions: the building-instructions style of brick_build_3d (dark edge lines)."
+            ]
+          },
+          "angle": {
+            "type": "number"
+          },
+          "elevation": {
+            "type": "number"
+          },
+          "turns": {
+            "type": "number"
+          },
+          "motion": {
+            "type": "string",
+            "enum": [
+              "object (optional). How the bricks arrive; absent = the plain build-up. Every key is optional and clamped, unknown keys are ignored, and a value that is not a number or a known name falls back to its default. order: \"index\" (the brick list order)",
+              "base-up\" (layer by layer)",
+              "diagonal",
+              "radial\" (default \"diagonal\"). from: \"above",
+              "outward",
+              "scatter\" (where bricks start; default \"above\"). spinAxis: \"y",
+              "x",
+              "z\" (default \"y\"). window: 0-30, default 2.4, how widely the launch times are spread. flight: 0.1-5, default 0.62, how long one brick is in the air; together they set the pace, since p 0 to 1 covers window + flight. distance: 0-60, default 9, start distance in stud units. tilt: 0-360, default 70, random start tumble in degrees. spin: -8 to 8, default 0.5, extra turns while flying. gravity: 0-1, default 0.5, how strongly lower bricks go first (diagonal and radial orders). jitter: 0-1, default 0.15, random shuffle of the order. support: 0 or 1, default 1, a brick never launches before the brick it rests on. seed: integer 0-2147483646, default 7. overshoot 0-1 (0.12), rotOvershoot 0-0.5 (0.08), recoil 0-1 (0.45), travel 0.2-0.9 (0.58), sharpness 1.5-8 (4): the seat-and-settle curve. direction: [x, y, z], default [1, 0.55, 0.8], the sweep direction for the diagonal order."
+            ]
+          },
+          "ratio": {
+            "type": "string",
+            "enum": [
+              "16:9",
+              "4:3",
+              "1:1",
+              "3:4",
+              "9:16\" (optional, default \"16:9\")"
+            ]
+          },
+          "fill": {
+            "type": "boolean"
+          },
+          "label": {
+            "type": "string"
+          },
+          "enter": {
+            "description": "Optional entrance motion for this block: an effect name, or {effect, ease, duration, delay, on}.",
+            "oneOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "fade",
+                  "rise",
+                  "drop",
+                  "slide-left",
+                  "slide-right",
+                  "scale",
+                  "blur",
+                  "wipe",
+                  "pop"
+                ]
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "effect": {
+                    "type": "string",
+                    "enum": [
+                      "fade",
+                      "rise",
+                      "drop",
+                      "slide-left",
+                      "slide-right",
+                      "scale",
+                      "blur",
+                      "wipe",
+                      "pop"
+                    ]
+                  },
+                  "ease": {
+                    "oneOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "linear",
+                          "ease",
+                          "ease-in",
+                          "ease-out",
+                          "ease-in-out",
+                          "overshoot",
+                          "anticipate",
+                          "standard",
+                          "emphasized",
+                          "decelerate",
+                          "accelerate",
+                          "expo-out",
+                          "quint-out",
+                          "quart-in-out",
+                          "expo-in-out"
+                        ]
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "number"
+                        },
+                        "minItems": 4,
+                        "maxItems": 4
+                      }
+                    ]
+                  },
+                  "duration": {
+                    "oneOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "instant",
+                          "quick",
+                          "base",
+                          "slow",
+                          "cinematic"
+                        ]
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 8000
+                      }
+                    ]
+                  },
+                  "delay": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  },
+                  "on": {
+                    "type": "string",
+                    "enum": [
+                      "load",
+                      "view"
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "required": [
+          "type"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "block_robot"
+          },
+          "motion": {
+            "type": [
+              "string",
+              "number",
+              "boolean",
+              "object",
+              "array"
+            ]
+          },
+          "angle": {
+            "type": "number"
+          },
+          "elevation": {
+            "type": "number"
+          },
+          "turns": {
+            "type": "number"
+          },
+          "look": {
+            "type": "string"
+          },
+          "base": {
+            "type": "number"
+          },
+          "ratio": {
+            "type": "string"
+          },
+          "fill": {
+            "type": "boolean"
+          },
+          "label": {
+            "type": "string"
+          },
+          "enter": {
+            "description": "Optional entrance motion for this block: an effect name, or {effect, ease, duration, delay, on}.",
+            "oneOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "fade",
+                  "rise",
+                  "drop",
+                  "slide-left",
+                  "slide-right",
+                  "scale",
+                  "blur",
+                  "wipe",
+                  "pop"
+                ]
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "effect": {
+                    "type": "string",
+                    "enum": [
+                      "fade",
+                      "rise",
+                      "drop",
+                      "slide-left",
+                      "slide-right",
+                      "scale",
+                      "blur",
+                      "wipe",
+                      "pop"
+                    ]
+                  },
+                  "ease": {
+                    "oneOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "linear",
+                          "ease",
+                          "ease-in",
+                          "ease-out",
+                          "ease-in-out",
+                          "overshoot",
+                          "anticipate",
+                          "standard",
+                          "emphasized",
+                          "decelerate",
+                          "accelerate",
+                          "expo-out",
+                          "quint-out",
+                          "quart-in-out",
+                          "expo-in-out"
+                        ]
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "number"
+                        },
+                        "minItems": 4,
+                        "maxItems": 4
+                      }
+                    ]
+                  },
+                  "duration": {
+                    "oneOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "instant",
+                          "quick",
+                          "base",
+                          "slow",
+                          "cinematic"
+                        ]
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 8000
+                      }
+                    ]
+                  },
+                  "delay": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  },
+                  "on": {
+                    "type": "string",
+                    "enum": [
+                      "load",
+                      "view"
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "required": [
+          "type"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "block_rocket"
+          },
+          "motion": {
+            "type": [
+              "string",
+              "number",
+              "boolean",
+              "object",
+              "array"
+            ]
+          },
+          "angle": {
+            "type": "number"
+          },
+          "elevation": {
+            "type": "number"
+          },
+          "turns": {
+            "type": "number"
+          },
+          "look": {
+            "type": "string"
+          },
+          "base": {
+            "type": "number"
+          },
+          "ratio": {
+            "type": "string"
+          },
+          "fill": {
+            "type": "boolean"
           },
           "label": {
             "type": "string"
@@ -51851,6 +52706,272 @@
           },
           "repulse_radius": {
             "type": "integer"
+          },
+          "enter": {
+            "description": "Optional entrance motion for this block: an effect name, or {effect, ease, duration, delay, on}.",
+            "oneOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "fade",
+                  "rise",
+                  "drop",
+                  "slide-left",
+                  "slide-right",
+                  "scale",
+                  "blur",
+                  "wipe",
+                  "pop"
+                ]
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "effect": {
+                    "type": "string",
+                    "enum": [
+                      "fade",
+                      "rise",
+                      "drop",
+                      "slide-left",
+                      "slide-right",
+                      "scale",
+                      "blur",
+                      "wipe",
+                      "pop"
+                    ]
+                  },
+                  "ease": {
+                    "oneOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "linear",
+                          "ease",
+                          "ease-in",
+                          "ease-out",
+                          "ease-in-out",
+                          "overshoot",
+                          "anticipate",
+                          "standard",
+                          "emphasized",
+                          "decelerate",
+                          "accelerate",
+                          "expo-out",
+                          "quint-out",
+                          "quart-in-out",
+                          "expo-in-out"
+                        ]
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "number"
+                        },
+                        "minItems": 4,
+                        "maxItems": 4
+                      }
+                    ]
+                  },
+                  "duration": {
+                    "oneOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "instant",
+                          "quick",
+                          "base",
+                          "slow",
+                          "cinematic"
+                        ]
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 8000
+                      }
+                    ]
+                  },
+                  "delay": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  },
+                  "on": {
+                    "type": "string",
+                    "enum": [
+                      "load",
+                      "view"
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "required": [
+          "type"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "brick_build_3d"
+          },
+          "shape": {
+            "type": "string"
+          },
+          "bricks": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "x": {
+                  "type": "string"
+                },
+                "y": {
+                  "type": "string"
+                },
+                "z": {
+                  "type": "string"
+                },
+                "w": {
+                  "type": "string"
+                },
+                "d": {
+                  "type": "string"
+                },
+                "h": {
+                  "type": "string"
+                },
+                "c": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "x",
+                "y",
+                "z",
+                "w",
+                "d",
+                "h",
+                "c"
+              ]
+            }
+          },
+          "palette": {
+            "type": "integer"
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "string . animate",
+              "steps. Default animate."
+            ]
+          },
+          "step": {
+            "type": "integer"
+          },
+          "speed": {
+            "type": "number"
+          },
+          "orbit": {
+            "type": "boolean"
+          },
+          "height": {
+            "type": "integer"
+          },
+          "bg": {
+            "type": "string"
+          },
+          "scrubber": {
+            "type": "boolean"
+          },
+          "checks": {
+            "type": "boolean"
+          },
+          "parts": {
+            "type": "boolean"
+          },
+          "models": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "bricks": {
+                  "type": "string"
+                },
+                "palette": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "name",
+                "bricks",
+                "palette"
+              ]
+            }
+          },
+          "model": {
+            "type": "string"
+          },
+          "picker": {
+            "type": "boolean"
+          },
+          "partsModel": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "p": {
+                  "type": "string"
+                },
+                "x": {
+                  "type": "string"
+                },
+                "y": {
+                  "type": "string"
+                },
+                "z": {
+                  "type": "string"
+                },
+                "r": {
+                  "type": "string"
+                },
+                "c": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "p",
+                "x",
+                "y",
+                "z",
+                "r",
+                "c"
+              ]
+            }
+          },
+          "look": {
+            "type": "string",
+            "enum": [
+              "nooutlines",
+              "edgescatchlightinstead(samevisualtreatmentasthesiblingmotion_bricksatom",
+              "defaultthere)"
+            ]
+          },
+          "base": {
+            "type": "number"
           },
           "enter": {
             "description": "Optional entrance motion for this block: an effect name, or {effect, ease, duration, delay, on}.",
@@ -77741,6 +78862,165 @@
         "properties": {
           "type": {
             "type": "string",
+            "const": "treemap"
+          },
+          "title": {
+            "type": "string"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "category": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string"
+                },
+                "path? (array of 1 to 3 strings": {
+                  "type": "string"
+                },
+                "max 20 each": {
+                  "type": "string"
+                },
+                "the item's ancestor groups from the top down)": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "category",
+                "name",
+                "value",
+                "path? (array of 1 to 3 strings",
+                "max 20 each",
+                "the item's ancestor groups from the top down)"
+              ]
+            }
+          },
+          "max_items": {
+            "type": "integer"
+          },
+          "version": {
+            "type": "integer"
+          },
+          "enter": {
+            "description": "Optional entrance motion for this block: an effect name, or {effect, ease, duration, delay, on}.",
+            "oneOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "fade",
+                  "rise",
+                  "drop",
+                  "slide-left",
+                  "slide-right",
+                  "scale",
+                  "blur",
+                  "wipe",
+                  "pop"
+                ]
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "effect": {
+                    "type": "string",
+                    "enum": [
+                      "fade",
+                      "rise",
+                      "drop",
+                      "slide-left",
+                      "slide-right",
+                      "scale",
+                      "blur",
+                      "wipe",
+                      "pop"
+                    ]
+                  },
+                  "ease": {
+                    "oneOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "linear",
+                          "ease",
+                          "ease-in",
+                          "ease-out",
+                          "ease-in-out",
+                          "overshoot",
+                          "anticipate",
+                          "standard",
+                          "emphasized",
+                          "decelerate",
+                          "accelerate",
+                          "expo-out",
+                          "quint-out",
+                          "quart-in-out",
+                          "expo-in-out"
+                        ]
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "number"
+                        },
+                        "minItems": 4,
+                        "maxItems": 4
+                      }
+                    ]
+                  },
+                  "duration": {
+                    "oneOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "instant",
+                          "quick",
+                          "base",
+                          "slow",
+                          "cinematic"
+                        ]
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 8000
+                      }
+                    ]
+                  },
+                  "delay": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  },
+                  "on": {
+                    "type": "string",
+                    "enum": [
+                      "load",
+                      "view"
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "required": [
+          "type"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
             "const": "histogram"
           },
           "title": {
@@ -77757,6 +79037,27 @@
           },
           "unit": {
             "type": "string"
+          },
+          "bin_size": {
+            "type": "number"
+          },
+          "bin_start": {
+            "type": "number"
+          },
+          "bin_end": {
+            "type": "number"
+          },
+          "norm": {
+            "type": "string"
+          },
+          "cumulative": {
+            "type": "boolean"
+          },
+          "func": {
+            "type": "string"
+          },
+          "weights": {
+            "type": "number"
           },
           "layout": {
             "type": "string"
@@ -77944,6 +79245,33 @@
                 },
                 "of numbers)": {
                   "type": "string"
+                },
+                "stats? (object {q1": {
+                  "type": "string"
+                },
+                "median": {
+                  "type": "string"
+                },
+                "q3": {
+                  "type": "string"
+                },
+                "lo": {
+                  "type": "string"
+                },
+                "hi": {
+                  "type": "string"
+                },
+                "min": {
+                  "type": "string"
+                },
+                "max": {
+                  "type": "string"
+                },
+                "mean": {
+                  "type": "string"
+                },
+                "n": {
+                  "type": "string"
                 }
               },
               "additionalProperties": false,
@@ -77953,7 +79281,10 @@
                 "default \"Group n\")",
                 "values (array",
                 "5 to 2000",
-                "of numbers)"
+                "of numbers)",
+                "stats? (object {q1",
+                "median",
+                "q3"
               ]
             }
           },
@@ -77962,6 +79293,24 @@
           },
           "unit": {
             "type": "string"
+          },
+          "quartile_method": {
+            "type": "integer"
+          },
+          "show_mean": {
+            "type": "boolean"
+          },
+          "orientation": {
+            "type": "number"
+          },
+          "notches": {
+            "type": "boolean"
+          },
+          "shape": {
+            "type": "string"
+          },
+          "bandwidth": {
+            "type": "number"
           },
           "show_points": {
             "type": "boolean"
@@ -79143,6 +80492,2205 @@
           },
           "unit": {
             "type": "string"
+          },
+          "version": {
+            "type": "integer"
+          },
+          "enter": {
+            "description": "Optional entrance motion for this block: an effect name, or {effect, ease, duration, delay, on}.",
+            "oneOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "fade",
+                  "rise",
+                  "drop",
+                  "slide-left",
+                  "slide-right",
+                  "scale",
+                  "blur",
+                  "wipe",
+                  "pop"
+                ]
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "effect": {
+                    "type": "string",
+                    "enum": [
+                      "fade",
+                      "rise",
+                      "drop",
+                      "slide-left",
+                      "slide-right",
+                      "scale",
+                      "blur",
+                      "wipe",
+                      "pop"
+                    ]
+                  },
+                  "ease": {
+                    "oneOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "linear",
+                          "ease",
+                          "ease-in",
+                          "ease-out",
+                          "ease-in-out",
+                          "overshoot",
+                          "anticipate",
+                          "standard",
+                          "emphasized",
+                          "decelerate",
+                          "accelerate",
+                          "expo-out",
+                          "quint-out",
+                          "quart-in-out",
+                          "expo-in-out"
+                        ]
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "number"
+                        },
+                        "minItems": 4,
+                        "maxItems": 4
+                      }
+                    ]
+                  },
+                  "duration": {
+                    "oneOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "instant",
+                          "quick",
+                          "base",
+                          "slow",
+                          "cinematic"
+                        ]
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 8000
+                      }
+                    ]
+                  },
+                  "delay": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  },
+                  "on": {
+                    "type": "string",
+                    "enum": [
+                      "load",
+                      "view"
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "required": [
+          "type"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "candlestick_chart"
+          },
+          "title": {
+            "type": "string"
+          },
+          "dates": {
+            "type": "string"
+          },
+          "open": {
+            "type": "number"
+          },
+          "high": {
+            "type": "number"
+          },
+          "low": {
+            "type": "number"
+          },
+          "close": {
+            "type": "number"
+          },
+          "volume": {
+            "type": "number"
+          },
+          "style": {
+            "type": "string"
+          },
+          "unit": {
+            "type": "string"
+          },
+          "y_label": {
+            "type": "string"
+          },
+          "version": {
+            "type": "integer"
+          },
+          "enter": {
+            "description": "Optional entrance motion for this block: an effect name, or {effect, ease, duration, delay, on}.",
+            "oneOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "fade",
+                  "rise",
+                  "drop",
+                  "slide-left",
+                  "slide-right",
+                  "scale",
+                  "blur",
+                  "wipe",
+                  "pop"
+                ]
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "effect": {
+                    "type": "string",
+                    "enum": [
+                      "fade",
+                      "rise",
+                      "drop",
+                      "slide-left",
+                      "slide-right",
+                      "scale",
+                      "blur",
+                      "wipe",
+                      "pop"
+                    ]
+                  },
+                  "ease": {
+                    "oneOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "linear",
+                          "ease",
+                          "ease-in",
+                          "ease-out",
+                          "ease-in-out",
+                          "overshoot",
+                          "anticipate",
+                          "standard",
+                          "emphasized",
+                          "decelerate",
+                          "accelerate",
+                          "expo-out",
+                          "quint-out",
+                          "quart-in-out",
+                          "expo-in-out"
+                        ]
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "number"
+                        },
+                        "minItems": 4,
+                        "maxItems": 4
+                      }
+                    ]
+                  },
+                  "duration": {
+                    "oneOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "instant",
+                          "quick",
+                          "base",
+                          "slow",
+                          "cinematic"
+                        ]
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 8000
+                      }
+                    ]
+                  },
+                  "delay": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  },
+                  "on": {
+                    "type": "string",
+                    "enum": [
+                      "load",
+                      "view"
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "required": [
+          "type",
+          "dates",
+          "open",
+          "high",
+          "low",
+          "close"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "parallel_coords"
+          },
+          "title": {
+            "type": "string"
+          },
+          "dimensions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "label (string": {
+                  "type": "string"
+                },
+                "max 24": {
+                  "type": "string"
+                },
+                "default \"Dimension n\")": {
+                  "type": "string"
+                },
+                "values": {
+                  "type": "string"
+                },
+                "min (number": {
+                  "type": "string"
+                },
+                "optional)": {
+                  "type": "string"
+                },
+                "max (number": {
+                  "type": "string"
+                },
+                "reverse (boolean": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "label (string",
+                "max 24",
+                "default \"Dimension n\")",
+                "values",
+                "min (number",
+                "max (number",
+                "reverse (boolean"
+              ]
+            }
+          },
+          "row_labels": {
+            "type": "string"
+          },
+          "color_by": {
+            "type": "integer"
+          },
+          "version": {
+            "type": "integer"
+          },
+          "enter": {
+            "description": "Optional entrance motion for this block: an effect name, or {effect, ease, duration, delay, on}.",
+            "oneOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "fade",
+                  "rise",
+                  "drop",
+                  "slide-left",
+                  "slide-right",
+                  "scale",
+                  "blur",
+                  "wipe",
+                  "pop"
+                ]
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "effect": {
+                    "type": "string",
+                    "enum": [
+                      "fade",
+                      "rise",
+                      "drop",
+                      "slide-left",
+                      "slide-right",
+                      "scale",
+                      "blur",
+                      "wipe",
+                      "pop"
+                    ]
+                  },
+                  "ease": {
+                    "oneOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "linear",
+                          "ease",
+                          "ease-in",
+                          "ease-out",
+                          "ease-in-out",
+                          "overshoot",
+                          "anticipate",
+                          "standard",
+                          "emphasized",
+                          "decelerate",
+                          "accelerate",
+                          "expo-out",
+                          "quint-out",
+                          "quart-in-out",
+                          "expo-in-out"
+                        ]
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "number"
+                        },
+                        "minItems": 4,
+                        "maxItems": 4
+                      }
+                    ]
+                  },
+                  "duration": {
+                    "oneOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "instant",
+                          "quick",
+                          "base",
+                          "slow",
+                          "cinematic"
+                        ]
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 8000
+                      }
+                    ]
+                  },
+                  "delay": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  },
+                  "on": {
+                    "type": "string",
+                    "enum": [
+                      "load",
+                      "view"
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "required": [
+          "type"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "ternary_plot"
+          },
+          "title": {
+            "type": "string"
+          },
+          "a_label": {
+            "type": "string"
+          },
+          "b_label": {
+            "type": "string"
+          },
+          "c_label": {
+            "type": "string"
+          },
+          "points": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "label (string or number": {
+                  "type": "string"
+                },
+                "max 30": {
+                  "type": "string"
+                },
+                "default \"Point n\")": {
+                  "type": "string"
+                },
+                "a": {
+                  "type": "string"
+                },
+                "b": {
+                  "type": "string"
+                },
+                "c (non-negative numbers up to 1e12 in size": {
+                  "type": "string"
+                },
+                "not all zero)": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "label (string or number",
+                "max 30",
+                "default \"Point n\")",
+                "a",
+                "b",
+                "c (non-negative numbers up to 1e12 in size",
+                "not all zero)"
+              ]
+            }
+          },
+          "connect": {
+            "type": "boolean"
+          },
+          "version": {
+            "type": "integer"
+          },
+          "enter": {
+            "description": "Optional entrance motion for this block: an effect name, or {effect, ease, duration, delay, on}.",
+            "oneOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "fade",
+                  "rise",
+                  "drop",
+                  "slide-left",
+                  "slide-right",
+                  "scale",
+                  "blur",
+                  "wipe",
+                  "pop"
+                ]
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "effect": {
+                    "type": "string",
+                    "enum": [
+                      "fade",
+                      "rise",
+                      "drop",
+                      "slide-left",
+                      "slide-right",
+                      "scale",
+                      "blur",
+                      "wipe",
+                      "pop"
+                    ]
+                  },
+                  "ease": {
+                    "oneOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "linear",
+                          "ease",
+                          "ease-in",
+                          "ease-out",
+                          "ease-in-out",
+                          "overshoot",
+                          "anticipate",
+                          "standard",
+                          "emphasized",
+                          "decelerate",
+                          "accelerate",
+                          "expo-out",
+                          "quint-out",
+                          "quart-in-out",
+                          "expo-in-out"
+                        ]
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "number"
+                        },
+                        "minItems": 4,
+                        "maxItems": 4
+                      }
+                    ]
+                  },
+                  "duration": {
+                    "oneOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "instant",
+                          "quick",
+                          "base",
+                          "slow",
+                          "cinematic"
+                        ]
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 8000
+                      }
+                    ]
+                  },
+                  "delay": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  },
+                  "on": {
+                    "type": "string",
+                    "enum": [
+                      "load",
+                      "view"
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "required": [
+          "type"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "quiver"
+          },
+          "title": {
+            "type": "string"
+          },
+          "x_label": {
+            "type": "string"
+          },
+          "y_label": {
+            "type": "string"
+          },
+          "unit": {
+            "type": "string"
+          },
+          "arrows": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "x": {
+                  "type": "string"
+                },
+                "y": {
+                  "type": "string"
+                },
+                "u": {
+                  "type": "string"
+                },
+                "v": {
+                  "type": "string"
+                },
+                "label (string or number": {
+                  "type": "string"
+                },
+                "max 30": {
+                  "type": "string"
+                },
+                "default \"Arrow n\")": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "x",
+                "y",
+                "u",
+                "v",
+                "label (string or number",
+                "max 30",
+                "default \"Arrow n\")"
+              ]
+            }
+          },
+          "arrow_scale": {
+            "type": "number"
+          },
+          "version": {
+            "type": "integer"
+          },
+          "enter": {
+            "description": "Optional entrance motion for this block: an effect name, or {effect, ease, duration, delay, on}.",
+            "oneOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "fade",
+                  "rise",
+                  "drop",
+                  "slide-left",
+                  "slide-right",
+                  "scale",
+                  "blur",
+                  "wipe",
+                  "pop"
+                ]
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "effect": {
+                    "type": "string",
+                    "enum": [
+                      "fade",
+                      "rise",
+                      "drop",
+                      "slide-left",
+                      "slide-right",
+                      "scale",
+                      "blur",
+                      "wipe",
+                      "pop"
+                    ]
+                  },
+                  "ease": {
+                    "oneOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "linear",
+                          "ease",
+                          "ease-in",
+                          "ease-out",
+                          "ease-in-out",
+                          "overshoot",
+                          "anticipate",
+                          "standard",
+                          "emphasized",
+                          "decelerate",
+                          "accelerate",
+                          "expo-out",
+                          "quint-out",
+                          "quart-in-out",
+                          "expo-in-out"
+                        ]
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "number"
+                        },
+                        "minItems": 4,
+                        "maxItems": 4
+                      }
+                    ]
+                  },
+                  "duration": {
+                    "oneOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "instant",
+                          "quick",
+                          "base",
+                          "slow",
+                          "cinematic"
+                        ]
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 8000
+                      }
+                    ]
+                  },
+                  "delay": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  },
+                  "on": {
+                    "type": "string",
+                    "enum": [
+                      "load",
+                      "view"
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "required": [
+          "type"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "choropleth_map"
+          },
+          "version": {
+            "type": "integer"
+          },
+          "title": {
+            "type": "string"
+          },
+          "region_set": {
+            "type": "string"
+          },
+          "projection": {
+            "type": "string"
+          },
+          "values": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "value"
+              ]
+            }
+          },
+          "scale": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "kind": {
+                  "type": "string"
+                },
+                "scheme": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "kind"
+              ]
+            }
+          },
+          "unit": {
+            "type": "string"
+          },
+          "legend_title": {
+            "type": "string"
+          },
+          "steps": {
+            "type": "integer"
+          },
+          "frame": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "lon_min": {
+                  "type": "string"
+                },
+                "lon_max": {
+                  "type": "string"
+                },
+                "lat_min": {
+                  "type": "string"
+                },
+                "lat_max": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "lon_min",
+                "lon_max",
+                "lat_min",
+                "lat_max"
+              ]
+            }
+          },
+          "categories": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "value"
+              ]
+            }
+          },
+          "category_colors": {
+            "type": "string"
+          },
+          "enter": {
+            "description": "Optional entrance motion for this block: an effect name, or {effect, ease, duration, delay, on}.",
+            "oneOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "fade",
+                  "rise",
+                  "drop",
+                  "slide-left",
+                  "slide-right",
+                  "scale",
+                  "blur",
+                  "wipe",
+                  "pop"
+                ]
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "effect": {
+                    "type": "string",
+                    "enum": [
+                      "fade",
+                      "rise",
+                      "drop",
+                      "slide-left",
+                      "slide-right",
+                      "scale",
+                      "blur",
+                      "wipe",
+                      "pop"
+                    ]
+                  },
+                  "ease": {
+                    "oneOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "linear",
+                          "ease",
+                          "ease-in",
+                          "ease-out",
+                          "ease-in-out",
+                          "overshoot",
+                          "anticipate",
+                          "standard",
+                          "emphasized",
+                          "decelerate",
+                          "accelerate",
+                          "expo-out",
+                          "quint-out",
+                          "quart-in-out",
+                          "expo-in-out"
+                        ]
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "number"
+                        },
+                        "minItems": 4,
+                        "maxItems": 4
+                      }
+                    ]
+                  },
+                  "duration": {
+                    "oneOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "instant",
+                          "quick",
+                          "base",
+                          "slow",
+                          "cinematic"
+                        ]
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 8000
+                      }
+                    ]
+                  },
+                  "delay": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  },
+                  "on": {
+                    "type": "string",
+                    "enum": [
+                      "load",
+                      "view"
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "required": [
+          "type",
+          "region_set",
+          "values"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "geo_map"
+          },
+          "version": {
+            "type": "integer"
+          },
+          "title": {
+            "type": "string"
+          },
+          "region_set": {
+            "type": "string"
+          },
+          "projection": {
+            "type": "string"
+          },
+          "points": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "lat": {
+                  "type": "string"
+                },
+                "lon": {
+                  "type": "string"
+                },
+                "id": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string"
+                },
+                "group": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "lat",
+                "lon"
+              ]
+            }
+          },
+          "lines": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                },
+                "path": {
+                  "type": "string"
+                },
+                "lon": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "path",
+                "lon"
+              ]
+            }
+          },
+          "unit": {
+            "type": "string"
+          },
+          "legend_title": {
+            "type": "string"
+          },
+          "frame": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "lon_min": {
+                  "type": "string"
+                },
+                "lon_max": {
+                  "type": "string"
+                },
+                "lat_min": {
+                  "type": "string"
+                },
+                "lat_max": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "lon_min",
+                "lon_max",
+                "lat_min",
+                "lat_max"
+              ]
+            }
+          },
+          "regions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "category": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "category"
+              ]
+            }
+          },
+          "categories": {
+            "type": [
+              "string",
+              "number",
+              "boolean",
+              "object",
+              "array"
+            ]
+          },
+          "category_colors": {
+            "type": "string"
+          },
+          "enter": {
+            "description": "Optional entrance motion for this block: an effect name, or {effect, ease, duration, delay, on}.",
+            "oneOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "fade",
+                  "rise",
+                  "drop",
+                  "slide-left",
+                  "slide-right",
+                  "scale",
+                  "blur",
+                  "wipe",
+                  "pop"
+                ]
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "effect": {
+                    "type": "string",
+                    "enum": [
+                      "fade",
+                      "rise",
+                      "drop",
+                      "slide-left",
+                      "slide-right",
+                      "scale",
+                      "blur",
+                      "wipe",
+                      "pop"
+                    ]
+                  },
+                  "ease": {
+                    "oneOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "linear",
+                          "ease",
+                          "ease-in",
+                          "ease-out",
+                          "ease-in-out",
+                          "overshoot",
+                          "anticipate",
+                          "standard",
+                          "emphasized",
+                          "decelerate",
+                          "accelerate",
+                          "expo-out",
+                          "quint-out",
+                          "quart-in-out",
+                          "expo-in-out"
+                        ]
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "number"
+                        },
+                        "minItems": 4,
+                        "maxItems": 4
+                      }
+                    ]
+                  },
+                  "duration": {
+                    "oneOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "instant",
+                          "quick",
+                          "base",
+                          "slow",
+                          "cinematic"
+                        ]
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 8000
+                      }
+                    ]
+                  },
+                  "delay": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  },
+                  "on": {
+                    "type": "string",
+                    "enum": [
+                      "load",
+                      "view"
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "required": [
+          "type"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "polar_chart"
+          },
+          "title": {
+            "type": "string"
+          },
+          "series": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "label (string": {
+                  "type": "string"
+                },
+                "max 30": {
+                  "type": "string"
+                },
+                "default \"Series n\")": {
+                  "type": "string"
+                },
+                "r (array of numbers": {
+                  "type": "string"
+                },
+                "radius of each point)": {
+                  "type": "string"
+                },
+                "theta (array of numbers in degrees": {
+                  "type": "string"
+                },
+                "or strings for categories; same length as r)": {
+                  "type": "string"
+                },
+                "mode (optional": {
+                  "type": "string"
+                },
+                "\"lines\"": {
+                  "type": "string"
+                },
+                "\"markers\" or \"lines+markers\"; default \"lines+markers\" up to 20 points": {
+                  "type": "string"
+                },
+                "otherwise \"lines\")": {
+                  "type": "string"
+                },
+                "fill (optional": {
+                  "type": "string"
+                },
+                "\"toself\" shades the shape closed from the last point to the first)": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "label (string",
+                "max 30",
+                "default \"Series n\")",
+                "r (array of numbers",
+                "radius of each point)",
+                "theta (array of numbers in degrees",
+                "or strings for categories; same length as r)",
+                "\"lines\"",
+                "\"markers\" or \"lines+markers\"; default \"lines+markers\" up to 20 points",
+                "otherwise \"lines\")",
+                "\"toself\" shades the shape closed from the last point to the first)"
+              ]
+            }
+          },
+          "categories": {
+            "type": "integer"
+          },
+          "r_range": {
+            "type": "integer"
+          },
+          "r_ticks": {
+            "type": "integer"
+          },
+          "theta_step": {
+            "type": "integer"
+          },
+          "direction": {
+            "type": "string",
+            "enum": [
+              "\"clockwise\"",
+              "\"counterclockwise\" . Default counterclockwise for numeric angles  and clockwise for categories."
+            ]
+          },
+          "rotation": {
+            "type": "number"
+          },
+          "unit": {
+            "type": "string"
+          },
+          "version": {
+            "type": "integer"
+          },
+          "enter": {
+            "description": "Optional entrance motion for this block: an effect name, or {effect, ease, duration, delay, on}.",
+            "oneOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "fade",
+                  "rise",
+                  "drop",
+                  "slide-left",
+                  "slide-right",
+                  "scale",
+                  "blur",
+                  "wipe",
+                  "pop"
+                ]
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "effect": {
+                    "type": "string",
+                    "enum": [
+                      "fade",
+                      "rise",
+                      "drop",
+                      "slide-left",
+                      "slide-right",
+                      "scale",
+                      "blur",
+                      "wipe",
+                      "pop"
+                    ]
+                  },
+                  "ease": {
+                    "oneOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "linear",
+                          "ease",
+                          "ease-in",
+                          "ease-out",
+                          "ease-in-out",
+                          "overshoot",
+                          "anticipate",
+                          "standard",
+                          "emphasized",
+                          "decelerate",
+                          "accelerate",
+                          "expo-out",
+                          "quint-out",
+                          "quart-in-out",
+                          "expo-in-out"
+                        ]
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "number"
+                        },
+                        "minItems": 4,
+                        "maxItems": 4
+                      }
+                    ]
+                  },
+                  "duration": {
+                    "oneOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "instant",
+                          "quick",
+                          "base",
+                          "slow",
+                          "cinematic"
+                        ]
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 8000
+                      }
+                    ]
+                  },
+                  "delay": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  },
+                  "on": {
+                    "type": "string",
+                    "enum": [
+                      "load",
+                      "view"
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "required": [
+          "type"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "histogram2d"
+          },
+          "x": {
+            "type": "number"
+          },
+          "y": {
+            "type": "number"
+          },
+          "nbinsx": {
+            "type": "integer"
+          },
+          "nbinsy": {
+            "type": "integer"
+          },
+          "title": {
+            "type": "string"
+          },
+          "x_label": {
+            "type": "string"
+          },
+          "y_label": {
+            "type": "string"
+          },
+          "scale": {
+            "type": "integer"
+          },
+          "show_values": {
+            "type": "boolean"
+          },
+          "show_colorbar": {
+            "type": "boolean"
+          },
+          "version": {
+            "type": "integer"
+          },
+          "enter": {
+            "description": "Optional entrance motion for this block: an effect name, or {effect, ease, duration, delay, on}.",
+            "oneOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "fade",
+                  "rise",
+                  "drop",
+                  "slide-left",
+                  "slide-right",
+                  "scale",
+                  "blur",
+                  "wipe",
+                  "pop"
+                ]
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "effect": {
+                    "type": "string",
+                    "enum": [
+                      "fade",
+                      "rise",
+                      "drop",
+                      "slide-left",
+                      "slide-right",
+                      "scale",
+                      "blur",
+                      "wipe",
+                      "pop"
+                    ]
+                  },
+                  "ease": {
+                    "oneOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "linear",
+                          "ease",
+                          "ease-in",
+                          "ease-out",
+                          "ease-in-out",
+                          "overshoot",
+                          "anticipate",
+                          "standard",
+                          "emphasized",
+                          "decelerate",
+                          "accelerate",
+                          "expo-out",
+                          "quint-out",
+                          "quart-in-out",
+                          "expo-in-out"
+                        ]
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "number"
+                        },
+                        "minItems": 4,
+                        "maxItems": 4
+                      }
+                    ]
+                  },
+                  "duration": {
+                    "oneOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "instant",
+                          "quick",
+                          "base",
+                          "slow",
+                          "cinematic"
+                        ]
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 8000
+                      }
+                    ]
+                  },
+                  "delay": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  },
+                  "on": {
+                    "type": "string",
+                    "enum": [
+                      "load",
+                      "view"
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "required": [
+          "type",
+          "x",
+          "y"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "scatter_matrix"
+          },
+          "title": {
+            "type": "string"
+          },
+          "dimensions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "label (string": {
+                  "type": "string"
+                },
+                "max 24": {
+                  "type": "string"
+                },
+                "default \"Dimension n\")": {
+                  "type": "string"
+                },
+                "values": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "label (string",
+                "max 24",
+                "default \"Dimension n\")",
+                "values"
+              ]
+            }
+          },
+          "show_upper": {
+            "type": "boolean"
+          },
+          "version": {
+            "type": "integer"
+          },
+          "enter": {
+            "description": "Optional entrance motion for this block: an effect name, or {effect, ease, duration, delay, on}.",
+            "oneOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "fade",
+                  "rise",
+                  "drop",
+                  "slide-left",
+                  "slide-right",
+                  "scale",
+                  "blur",
+                  "wipe",
+                  "pop"
+                ]
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "effect": {
+                    "type": "string",
+                    "enum": [
+                      "fade",
+                      "rise",
+                      "drop",
+                      "slide-left",
+                      "slide-right",
+                      "scale",
+                      "blur",
+                      "wipe",
+                      "pop"
+                    ]
+                  },
+                  "ease": {
+                    "oneOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "linear",
+                          "ease",
+                          "ease-in",
+                          "ease-out",
+                          "ease-in-out",
+                          "overshoot",
+                          "anticipate",
+                          "standard",
+                          "emphasized",
+                          "decelerate",
+                          "accelerate",
+                          "expo-out",
+                          "quint-out",
+                          "quart-in-out",
+                          "expo-in-out"
+                        ]
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "number"
+                        },
+                        "minItems": 4,
+                        "maxItems": 4
+                      }
+                    ]
+                  },
+                  "duration": {
+                    "oneOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "instant",
+                          "quick",
+                          "base",
+                          "slow",
+                          "cinematic"
+                        ]
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 8000
+                      }
+                    ]
+                  },
+                  "delay": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  },
+                  "on": {
+                    "type": "string",
+                    "enum": [
+                      "load",
+                      "view"
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "required": [
+          "type"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "motion_transition"
+          },
+          "from": {
+            "type": [
+              "string",
+              "number",
+              "boolean",
+              "object",
+              "array"
+            ]
+          },
+          "to": {
+            "type": [
+              "string",
+              "number",
+              "boolean",
+              "object",
+              "array"
+            ]
+          },
+          "patch": {
+            "type": [
+              "string",
+              "number",
+              "boolean",
+              "object",
+              "array"
+            ]
+          },
+          "match": {
+            "type": "string",
+            "enum": [
+              "path",
+              "exact\" (optional, default path). exact joins identical keys only. path also joins along category paths: a key that is the prefix of others (Cloud, of Cloud/VMs) starts on the union of their boxes, and a key under another (Cloud/VMs, under Cloud) starts on its parent's box."
+            ]
+          },
+          "key_map": {
+            "type": [
+              "string",
+              "number",
+              "boolean",
+              "object",
+              "array"
+            ]
+          },
+          "version": {
+            "type": "integer"
+          },
+          "enter": {
+            "description": "Optional entrance motion for this block: an effect name, or {effect, ease, duration, delay, on}.",
+            "oneOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "fade",
+                  "rise",
+                  "drop",
+                  "slide-left",
+                  "slide-right",
+                  "scale",
+                  "blur",
+                  "wipe",
+                  "pop"
+                ]
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "effect": {
+                    "type": "string",
+                    "enum": [
+                      "fade",
+                      "rise",
+                      "drop",
+                      "slide-left",
+                      "slide-right",
+                      "scale",
+                      "blur",
+                      "wipe",
+                      "pop"
+                    ]
+                  },
+                  "ease": {
+                    "oneOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "linear",
+                          "ease",
+                          "ease-in",
+                          "ease-out",
+                          "ease-in-out",
+                          "overshoot",
+                          "anticipate",
+                          "standard",
+                          "emphasized",
+                          "decelerate",
+                          "accelerate",
+                          "expo-out",
+                          "quint-out",
+                          "quart-in-out",
+                          "expo-in-out"
+                        ]
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "number"
+                        },
+                        "minItems": 4,
+                        "maxItems": 4
+                      }
+                    ]
+                  },
+                  "duration": {
+                    "oneOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "instant",
+                          "quick",
+                          "base",
+                          "slow",
+                          "cinematic"
+                        ]
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 8000
+                      }
+                    ]
+                  },
+                  "delay": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  },
+                  "on": {
+                    "type": "string",
+                    "enum": [
+                      "load",
+                      "view"
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "required": [
+          "type"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "motion_map3d"
+          },
+          "seed": {
+            "type": "integer"
+          },
+          "blocks": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "x": {
+                  "type": "string"
+                },
+                "y": {
+                  "type": "string"
+                },
+                "w": {
+                  "type": "string"
+                },
+                "h": {
+                  "type": "string"
+                },
+                "height": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "x",
+                "y",
+                "w",
+                "h",
+                "height"
+              ]
+            }
+          },
+          "ground": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "set": {
+                  "type": "string"
+                },
+                "window": {
+                  "type": "string"
+                },
+                "highlight": {
+                  "type": "string"
+                },
+                "fill": {
+                  "type": "string"
+                },
+                "accent": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "set",
+                "window",
+                "highlight",
+                "fill",
+                "accent"
+              ]
+            }
+          },
+          "cities": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "x": {
+                  "type": "string"
+                },
+                "y": {
+                  "type": "string"
+                },
+                "w": {
+                  "type": "string"
+                },
+                "h": {
+                  "type": "string"
+                },
+                "count": {
+                  "type": "string"
+                },
+                "seed": {
+                  "type": "string"
+                },
+                "height": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "x",
+                "y",
+                "w",
+                "h",
+                "count",
+                "seed",
+                "height"
+              ]
+            }
+          },
+          "arc": {
+            "type": "boolean"
+          },
+          "stations": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "x": {
+                  "type": "string"
+                },
+                "y": {
+                  "type": "string"
+                },
+                "lon": {
+                  "type": "string"
+                },
+                "lat": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                },
+                "state": {
+                  "type": "string"
+                },
+                "dwell": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "x",
+                "y",
+                "lon",
+                "lat",
+                "label",
+                "state",
+                "dwell"
+              ]
+            }
+          },
+          "route": {
+            "type": [
+              "string",
+              "number",
+              "boolean",
+              "object",
+              "array"
+            ]
+          },
+          "clock": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "from": {
+                  "type": "string"
+                },
+                "to": {
+                  "type": "string"
+                },
+                "unit": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "from",
+                "to",
+                "unit"
+              ]
+            }
+          },
+          "tilt": {
+            "type": "number"
+          },
+          "camera": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "from": {
+                  "type": "string"
+                },
+                "to": {
+                  "type": "string"
+                },
+                "keys": {
+                  "type": "string"
+                },
+                "follow": {
+                  "type": "string"
+                },
+                "track": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "from",
+                "to",
+                "keys",
+                "follow",
+                "track"
+              ]
+            }
+          },
+          "color": {
+            "type": [
+              "string",
+              "number",
+              "boolean",
+              "object",
+              "array"
+            ]
+          },
+          "legs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "route": {
+                  "type": "string"
+                },
+                "color": {
+                  "type": "string"
+                },
+                "back": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "route",
+                "color",
+                "back"
+              ]
+            }
+          },
+          "messages": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "leg": {
+                  "type": "string"
+                },
+                "text": {
+                  "type": "string"
+                },
+                "at": {
+                  "type": "string"
+                },
+                "back": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "leg",
+                "text",
+                "at",
+                "back"
+              ]
+            }
           },
           "version": {
             "type": "integer"

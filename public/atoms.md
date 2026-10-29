@@ -1,4 +1,4 @@
-# All 569 A2UI components
+# All 573 A2UI components
 
 The A2UI Atomic Catalog, A to Z. Each atom is a typed A2UI component an AI agent sends as declarative JSON.
 
@@ -47,6 +47,8 @@ The A2UI Atomic Catalog, A to Z. Each atom is a typed A2UI component an AI agent
 - [Benchmark Comparison](https://a2uicatalog.ai/atoms/benchmark_comparison/) `benchmark_comparison`: side-by-side performance benchmark comparison bars
 - [Bento Grid](https://a2uicatalog.ai/atoms/bento_grid/) `bento_grid`: asymmetric bento-box feature tile grid — MagicUI/shadcn pattern
 - [Big Reveal](https://a2uicatalog.ai/atoms/big_reveal/) `big_reveal`: spring-animation big number or word reveal
+- [Block Robot](https://a2uicatalog.ai/atoms/block_robot/) `block_robot`: a ready-made 10-brick toy robot that builds itself and turns on the film clock
+- [Block Rocket](https://a2uicatalog.ai/atoms/block_rocket/) `block_rocket`: a ready-made 9-brick toy rocket that builds itself and turns on the film clock
 - [Blockquote](https://a2uicatalog.ai/atoms/blockquote/) `blockquote`: styled pull-quote with attribution
 - [Blockquote With Avatar](https://a2uicatalog.ai/atoms/blockquote_with_avatar/) `blockquote_with_avatar`: testimonial quote with avatar and attribution
 - [Blur Fade In](https://a2uicatalog.ai/atoms/blur_fade_in/) `blur_fade_in`: CSS blur-to-focus fade-in container reveal
@@ -54,6 +56,7 @@ The A2UI Atomic Catalog, A to Z. Each atom is a typed A2UI component an AI agent
 - [Box Plot](https://a2uicatalog.ai/atoms/box_plot/) `box_plot`: box_plot: compare groups of numbers by median and spread
 - [Breadcrumb](https://a2uicatalog.ai/atoms/breadcrumb/) `breadcrumb`: navigation breadcrumb trail structure.
 - [Brevet Timeline](https://a2uicatalog.ai/atoms/brevet_timeline/) `brevet_timeline`: dated vertical revision timeline
+- [Brick Build 3D](https://a2uicatalog.ai/atoms/brick_build_3d/) `brick_build_3d`: self-assembling 3D brick model, toy bricks or real LDraw parts, with build checks, build steps and a parts list
 - [Bullet List](https://a2uicatalog.ai/atoms/bullet_list/) `bullet_list`: unordered list with optional bold label per item
 
 ## C
@@ -350,6 +353,7 @@ The A2UI Atomic Catalog, A to Z. Each atom is a typed A2UI component an AI agent
 - [Model Card](https://a2uicatalog.ai/atoms/model_card/) `model_card`: AI model spec card with context window, pricing, and capability badges
 - [Module Map](https://a2uicatalog.ai/atoms/module_map/) `module_map`: course curriculum grid — module cards with live locked/available/complete status from progress_store
 - [Motion Arch](https://a2uicatalog.ai/atoms/motion_arch/) `motion_arch`: architecture diagram that draws itself, with payloads moving along its edges
+- [Motion Bricks](https://a2uicatalog.ai/atoms/motion_bricks/) `motion_bricks`: toy-brick sculpture or brick lettering that builds, flies in and turns on the film clock
 - [Motion Browser](https://a2uicatalog.ai/atoms/motion_browser/) `motion_browser`: search box, filter chips and a grid of cards with live atom previews that types and rises in
 - [Motion Checklist](https://a2uicatalog.ai/atoms/motion_checklist/) `motion_checklist`: card whose items tick off in turn as progress advances
 - [Motion Code](https://a2uicatalog.ai/atoms/motion_code/) `motion_code`: code window that types itself in as progress advances

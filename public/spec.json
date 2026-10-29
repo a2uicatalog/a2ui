@@ -2,7 +2,7 @@
  "catalogId": "a2ui-atoms-v1",
  "displayName": "A2UI Multi-Surface Renderer",
  "type": "application/vnd.a2ui.renderer+json",
- "atomCount": 569,
+ "atomCount": 573,
  "compactIndex": "https://a2uicatalog.ai/atoms/index.json",
  "runbooks": "https://a2uicatalog.ai/runbooks/index.json",
  "trainingPrompt": "https://a2uicatalog.ai/prompts/training-md-gem.md",
@@ -13436,6 +13436,186 @@
    }
   },
   {
+   "type": "motion_bricks",
+   "description": "A toy-brick sculpture on the film clock: procedural boxes with real brick proportions, studs, shadows and instruction-style edges (the brick_build_3d engine, here with boxes only; real LDraw parts are brick_build_3d's partsModel), drawn on a transparent stage so it sits inside a film. Bricks drop into place in build order as p goes 0 to 1 (p 1 = every brick settled) and the model turns with the second dial (--s, turns per unit), so a step track spins it and seeking shows exactly that frame. Give text to set a word in bricks (each character of a 5x7 dot font, every row merged into 1x1 to 1x4 bricks, depth studs deep), bricks for an explicit model, or a named shape. The optional motion object sets how the bricks arrive: the order they launch in, where they fly in from, how long each flight lasts, how much they tumble, and a small overshoot and recoil as they seat; all of it is numbers and fixed names that are clamped, and a stud-cell pass keeps a brick from launching before the brick it rests on. Standalone it shows the finished model. The engine is fixed code and the config is numbers, colours and the brick list, so nothing in the payload becomes code; without WebGL the engine draws with a 2D canvas painter instead. Known limit: each brick canvas holds two WebGL contexts and a page allows about 16, so keep to about 7 brick canvases per page. Not affiliated with or endorsed by the LEGO Group. LEGO is a trademark of the LEGO Group.",
+   "compact_description": "toy-brick sculpture or brick lettering that builds, flies in and turns on the film clock",
+   "surfaces": {
+    "works_on": [
+     "web",
+     "google-meet-stage",
+     "google-apps-script-web",
+     "mcp-apps",
+     "android"
+    ],
+    "degraded_on": [
+     {
+      "surface": "pdf",
+      "note": "Prints a still of the canvas at best; no animation"
+     },
+     {
+      "surface": "mcp-apps",
+      "note": "Hosts that strip scripts show nothing in the brick stage"
+     },
+     {
+      "surface": "android",
+      "note": "Hosts that strip scripts show nothing in the brick stage"
+     }
+    ],
+    "incompatible_on": [
+     {
+      "surface": "email",
+      "reason": "Scripts and canvas are not supported in email clients"
+     },
+     {
+      "surface": "google-chat",
+      "reason": "Scripts and canvas are not supported in Chat cards"
+     }
+    ]
+   },
+   "fields": {
+    "text": "string (optional, max 12). Builds the word in bricks: A-Z, 0-9 and . , ! ? - : ' (others leave a gap).",
+    "bricks": "array (optional). Explicit toy-brick model (procedural boxes, up to 3000), same format as brick_build_3d: {x, y, z, w, d, h, c} or [x, y, z, w, d, c] / [x, y, z, w, d, h, c]. Used when text is absent.",
+    "shape": "\"heart\" | \"sphere\" | \"torus\" | \"helix\" | \"pyramid\" | \"house\" (optional, default \"heart\"). Used when neither text nor bricks is given.",
+    "color": "\"#rrggbb\" (optional). One colour for every lettering brick; otherwise letters cycle through palette or the classic brick colours.",
+    "palette": "array of \"#rrggbb\" (optional). Colours for lettering (cycled per letter) and for integer colour indexes in bricks.",
+    "depth": "integer (optional). Lettering depth in studs, 1-4. Default 2.",
+    "base": "string (optional). \"none\" for floating bricks (no plate, no plate shadow), or a \"#rrggbb\" colour for the baseplate. Default the classic green plate.",
+    "look": "\"studio\" | \"instructions\" (optional, default \"studio\"). studio: a product shot (glossy ABS, softbox reflections, edges that catch light, no outlines). instructions: the building-instructions style of brick_build_3d (dark edge lines).",
+    "angle": "number (optional). Starting turn in degrees, -360 to 360. Default 24.",
+    "elevation": "number (optional). Camera elevation in degrees, 7-75. Default 26.",
+    "turns": "number (optional). Full turns per unit of --s, -8 to 8. Default 1.",
+    "motion": "object (optional). How the bricks arrive; absent = the plain build-up. Every key is optional and clamped, unknown keys are ignored, and a value that is not a number or a known name falls back to its default. order: \"index\" (the brick list order) | \"base-up\" (layer by layer) | \"diagonal\" | \"radial\" (default \"diagonal\"). from: \"above\" | \"outward\" | \"scatter\" (where bricks start; default \"above\"). spinAxis: \"y\" | \"x\" | \"z\" (default \"y\"). window: 0-30, default 2.4, how widely the launch times are spread. flight: 0.1-5, default 0.62, how long one brick is in the air; together they set the pace, since p 0 to 1 covers window + flight. distance: 0-60, default 9, start distance in stud units. tilt: 0-360, default 70, random start tumble in degrees. spin: -8 to 8, default 0.5, extra turns while flying. gravity: 0-1, default 0.5, how strongly lower bricks go first (diagonal and radial orders). jitter: 0-1, default 0.15, random shuffle of the order. support: 0 or 1, default 1, a brick never launches before the brick it rests on. seed: integer 0-2147483646, default 7. overshoot 0-1 (0.12), rotOvershoot 0-0.5 (0.08), recoil 0-1 (0.45), travel 0.2-0.9 (0.58), sharpness 1.5-8 (4): the seat-and-settle curve. direction: [x, y, z], default [1, 0.55, 0.8], the sweep direction for the diagonal order.",
+    "ratio": "\"16:9\" | \"4:3\" | \"1:1\" | \"3:4\" | \"9:16\" (optional, default \"16:9\")",
+    "fill": "boolean (optional). Fill the placed box height instead of using ratio. Default false.",
+    "label": "string (optional, max 80). Accessible name."
+   },
+   "source": {
+    "name": "a2uicatalog",
+    "url": "https://github.com/a2uicatalog/a2ui",
+    "license": "MIT"
+   }
+  },
+  {
+   "type": "block_robot",
+   "description": "A small toy-brick robot: legs, blue body, grey arms, white head, eyes and a red top brick. A finished model of 10 toy bricks in one block: the brick list is fixed, so nothing needs writing out; it is the motion_bricks canvas with that list filled in, and every motion_bricks setting that does not name bricks works here the same way. Bricks drop into place in build order as p goes 0 to 1 and the model turns with the second dial (--s). Standalone it shows the finished model. Known limit, each brick canvas holds two WebGL contexts and a page allows about 16, so keep to about 7 brick canvases per page. Not affiliated with or endorsed by the LEGO Group. LEGO is a trademark of the LEGO Group.",
+   "compact_description": "a ready-made 10-brick toy robot that builds itself and turns on the film clock",
+   "surfaces": {
+    "works_on": [
+     "web",
+     "google-meet-stage",
+     "google-apps-script-web",
+     "mcp-apps",
+     "android"
+    ],
+    "degraded_on": [
+     {
+      "surface": "pdf",
+      "note": "Prints a still of the canvas at best; no animation"
+     },
+     {
+      "surface": "mcp-apps",
+      "note": "Hosts that strip scripts show nothing in the brick stage"
+     },
+     {
+      "surface": "android",
+      "note": "Hosts that strip scripts show nothing in the brick stage"
+     }
+    ],
+    "incompatible_on": [
+     {
+      "surface": "email",
+      "reason": "Scripts and canvas are not supported in email clients"
+     },
+     {
+      "surface": "google-chat",
+      "reason": "Scripts and canvas are not supported in Chat cards"
+     }
+    ]
+   },
+   "fields": {
+    "motion": "object (optional). How the bricks arrive, same keys and defaults as motion_bricks motion (order, from, window, flight, distance, tilt, spin, spinAxis, gravity, jitter, support, seed, overshoot, rotOvershoot, recoil, travel, sharpness, direction). Absent = the plain build-up.",
+    "angle": "number (optional). Starting turn in degrees, -360 to 360. Default 24.",
+    "elevation": "number (optional). Camera elevation in degrees, 7-75. Default 26.",
+    "turns": "number (optional). Full turns per unit of --s, -8 to 8. Default 1.",
+    "look": "string (optional). \"studio\" (default, a product shot: glossy plastic, no outlines) or \"instructions\" (building-instructions style with dark edge lines).",
+    "base": "string (optional). \"none\" for floating bricks (no plate, no plate shadow), or a \"#rrggbb\" colour for the baseplate. Default the classic green plate.",
+    "ratio": "string (optional). \"16:9\" (default), \"4:3\", \"1:1\", \"3:4\" or \"9:16\".",
+    "fill": "boolean (optional). Fill the placed box height instead of using ratio. Default false.",
+    "label": "string (optional, max 80). Accessible name. Default \"Brick robot\"."
+   },
+   "source": {
+    "name": "a2uicatalog",
+    "url": "https://github.com/a2uicatalog/a2ui",
+    "license": "MIT"
+   },
+   "routing_text": "A small toy-brick robot: legs, blue body, grey arms, white head, eyes and a red top brick. A pre-composed 10-brick toy-brick model for a motion timeline: a block you place and time, not bricks you write.",
+   "intent_phrases": [
+    "I want a little robot made of toy bricks that assembles itself in my video.",
+    "Drop a finished brick robot into the scene and make its pieces fall into place.",
+    "Can I show a brick-built mascot character building up step by step?"
+   ]
+  },
+  {
+   "type": "block_rocket",
+   "description": "A small toy-brick rocket: two grey nozzle bricks, red fins, a dark band, a white hull, a window and a red nose. A finished model of 9 toy bricks in one block: the brick list is fixed, so nothing needs writing out; it is the motion_bricks canvas with that list filled in, and every motion_bricks setting that does not name bricks works here the same way. Bricks drop into place in build order as p goes 0 to 1 and the model turns with the second dial (--s). Standalone it shows the finished model. Known limit, each brick canvas holds two WebGL contexts and a page allows about 16, so keep to about 7 brick canvases per page. Not affiliated with or endorsed by the LEGO Group. LEGO is a trademark of the LEGO Group.",
+   "compact_description": "a ready-made 9-brick toy rocket that builds itself and turns on the film clock",
+   "surfaces": {
+    "works_on": [
+     "web",
+     "google-meet-stage",
+     "google-apps-script-web",
+     "mcp-apps",
+     "android"
+    ],
+    "degraded_on": [
+     {
+      "surface": "pdf",
+      "note": "Prints a still of the canvas at best; no animation"
+     },
+     {
+      "surface": "mcp-apps",
+      "note": "Hosts that strip scripts show nothing in the brick stage"
+     },
+     {
+      "surface": "android",
+      "note": "Hosts that strip scripts show nothing in the brick stage"
+     }
+    ],
+    "incompatible_on": [
+     {
+      "surface": "email",
+      "reason": "Scripts and canvas are not supported in email clients"
+     },
+     {
+      "surface": "google-chat",
+      "reason": "Scripts and canvas are not supported in Chat cards"
+     }
+    ]
+   },
+   "fields": {
+    "motion": "object (optional). How the bricks arrive, same keys and defaults as motion_bricks motion (order, from, window, flight, distance, tilt, spin, spinAxis, gravity, jitter, support, seed, overshoot, rotOvershoot, recoil, travel, sharpness, direction). Absent = the plain build-up.",
+    "angle": "number (optional). Starting turn in degrees, -360 to 360. Default 24.",
+    "elevation": "number (optional). Camera elevation in degrees, 7-75. Default 26.",
+    "turns": "number (optional). Full turns per unit of --s, -8 to 8. Default 1.",
+    "look": "string (optional). \"studio\" (default, a product shot: glossy plastic, no outlines) or \"instructions\" (building-instructions style with dark edge lines).",
+    "base": "string (optional). \"none\" for floating bricks (no plate, no plate shadow), or a \"#rrggbb\" colour for the baseplate. Default the classic green plate.",
+    "ratio": "string (optional). \"16:9\" (default), \"4:3\", \"1:1\", \"3:4\" or \"9:16\".",
+    "fill": "boolean (optional). Fill the placed box height instead of using ratio. Default false.",
+    "label": "string (optional, max 80). Accessible name. Default \"Brick rocket\"."
+   },
+   "source": {
+    "name": "a2uicatalog",
+    "url": "https://github.com/a2uicatalog/a2ui",
+    "license": "MIT"
+   },
+   "routing_text": "A small toy-brick rocket: two grey nozzle bricks, red fins, a dark band, a white hull, a window and a red nose. A pre-composed 9-brick toy-brick model for a motion timeline: a block you place and time, not bricks you write.",
+   "intent_phrases": [
+    "I want a toy-brick rocket that builds itself in my launch animation.",
+    "Show a brick-built spaceship assembling piece by piece.",
+    "Can I drop a small rocket made of bricks into a timeline and have it build up?"
+   ]
+  },
+  {
    "type": "dot_grid_background",
    "description": "Panel with a CSS repeating dot, grid, or cross background pattern using background-image with radial-gradient or linear-gradient. No SVG, no JavaScript. Useful as a texture layer behind content in dark or light themes.",
    "compact_description": "CSS repeating dot or grid pattern panel background",
@@ -15979,6 +16159,44 @@
     "Can I get a dynamic, attention-grabbing loading animation that feels alive?",
     "I want a subtle, ambient effect for my dashboard that changes when the mouse hovers over it."
    ]
+  },
+  {
+   "type": "brick_build_3d",
+   "description": "Equation-driven toy-brick 3D model that assembles itself stud by stud, drawn in real brick proportions (8 mm pitch, 9.6 mm brick) with dependency-free WebGL — key-light shadows cast between parts, glossy plastic shading and an outline on every part edge, like an instruction-booklet render — and a canvas-2D fallback where WebGL is unavailable. Two kinds of model. Toy bricks (bricks or shape) are procedural boxes with studs, from a named shape (heart, sphere, torus, helix, pyramid, house) or an explicit bricks array. Real parts (partsModel) are baked geometry from the LDraw.org Parts Library, under CC BY. Every design is checked by deterministic geometry — collisions, every brick anchored through stud connections (real parts also through pins, hinges, axles and clips), connection count, centre of mass over the footprint — and the verdicts show beside the model. An instructions mode steps through the build layer by layer, and a parts list groups bricks by size and colour with an indicative cost. Known limit, each brick canvas holds two WebGL contexts and a page allows about 16, so keep to about 7 brick canvases per page. Not affiliated with or endorsed by the LEGO Group. LEGO is a trademark of the LEGO Group.",
+   "compact_description": "self-assembling 3D brick model, toy bricks or real LDraw parts, with build checks, build steps and a parts list",
+   "surfaces": {
+    "works_on": [
+     "google-apps-script-web",
+     "web",
+     "mcp-apps",
+     "android"
+    ]
+   },
+   "fields": {
+    "shape": "string (optional). heart, sphere, torus, helix, pyramid or house. Default heart. Ignored when bricks is set.",
+    "bricks": "array (optional). Explicit model — objects {x, y, z, w, d, h, c}. x and z are stud positions, y is the layer (0 sits on the baseplate), w and d the footprint in studs, h the height in bricks (default 1), c a '#rrggbb' colour or a palette index. A brick may also be a compact array [x, y, z, w, d, c] or [x, y, z, w, d, h, c], about a third of the size. Up to 3000 bricks. A data-model binding such as {path '/bricks'} arrives resolved.",
+    "palette": "array (optional). Up to 256 '#rrggbb' colours. A brick's c may be an integer index into it, which keeps large models small.",
+    "mode": "string (optional). animate or steps. Default animate.",
+    "step": "integer (optional). Initial instruction step when mode is steps. Default 1.",
+    "speed": "number (optional). Animation speed multiplier. Default 1.",
+    "orbit": "boolean (optional). Slow auto-orbit; dragging always orbits. Default true.",
+    "height": "integer (optional). Canvas height px, 160 to 900. Default 380.",
+    "bg": "string (optional). Canvas background colour. Transparent on the studio gradient by default.",
+    "scrubber": "boolean (optional). Show the animate/instructions toggle and step slider. Default true.",
+    "checks": "boolean (optional). Show the build-check verdicts. Default true.",
+    "parts": "boolean (optional). Show the parts list with an indicative cost. Default false.",
+    "models": "array (optional). Named models for the picker dropdown — up to 8 objects {name, bricks, palette}, each bricks array as above (up to 3000 bricks each; palette optional, else the top-level one). Entries with no usable bricks are skipped; a missing name becomes Model N. The dropdown lists the six built-in shapes followed by these.",
+    "model": "string (optional). Name of the entry in models to show first. Ignored when bricks is set.",
+    "picker": "boolean (optional). Show the model dropdown. Default true when models is given, otherwise false; set true to get a dropdown of the six built-in shapes alone.",
+    "partsModel": "array (optional). Real parts from the LDraw.org Parts Library (CC BY) instead of procedural boxes, as [partId, x, y, z, rotation, colour] tuples (a real LDraw part id, x y z in LDraw units (20 per stud, 24 per brick height), a 0-23 rotation index, an LDraw colour code), or objects {p, x, y, z, r, c}. Takes precedence over bricks/shape when present, same \"explicit wins\" rule as bricks vs. shape. Up to 3000 parts.",
+    "look": "\"studio\" | \"instructions\" (optional, default \"instructions\"). instructions: the original building-instructions style (glossy plastic, dark outline on every part edge). studio: a product-shot style — no outlines, edges catch light instead (same visual treatment as the sibling motion_bricks atom, default there).",
+    "base": "string (optional). \"none\" for floating bricks (no plate, no plate shadow), or a \"#rrggbb\" colour for the baseplate. Default the classic green plate."
+   },
+   "source": {
+    "name": "a2uicatalog",
+    "url": "https://github.com/a2uicatalog/a2ui",
+    "license": "MIT"
+   }
   },
   {
    "type": "spring_nodes",

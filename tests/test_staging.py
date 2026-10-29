@@ -124,6 +124,9 @@ def test_catalog_index_references_resolve_and_are_stable_only():
         "a2ui-effects-v1", "a2ui-embeds-v1", "a2ui-google-workspace-live-v1",
         "a2ui-learning-v1", "a2ui-marketing-v1", "a2ui-meta-v1", "a2ui-ops-v1",
         "a2ui-presentation-v1",
+        # Added 2026-10-29 by owner decision (release the brick atoms as their own extension catalogue);
+        # remove when per-pack publication lands, like the others.
+        "a2ui-bricks-v1",
     }
     for cat in idx["catalogs"]:
         fname = cat["catalogId"].rsplit("/", 1)[-1]

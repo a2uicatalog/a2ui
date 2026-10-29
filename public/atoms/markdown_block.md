@@ -1,6 +1,6 @@
 # Markdown Block
 
-Renders an arbitrary GitHub-Flavoured Markdown string as formatted HTML — bold, italic, inline code, fenced code blocks, lists, tables, blockquotes, and links. Useful when content is authored in or retrieved as Markdown and needs faithful rendering without mapping to individual atoms. Adapted from the MarkDownRenderer pattern in OpenUI OUI benchmark samples.
+Renders a Markdown string as formatted inline HTML - bold, italic, inline code and links (http, https, mailto, tel or relative). Block syntax (headings, lists, tables, fenced code) is not rendered. Adapted from the MarkDownRenderer pattern in OpenUI OUI benchmark samples.
 
 ## Surfaces
 

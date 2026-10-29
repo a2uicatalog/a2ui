@@ -2,7 +2,7 @@
   "title": "A2UI catalogue index",
   "description": "The deterministic catalog selection menu — read whenToUse to pick extension catalogs for a need; the base catalog is always resolved.",
   "baseCatalog": "https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json",
-  "catalogCount": 13,
+  "catalogCount": 14,
   "catalogs": [
     {
       "catalogId": "https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json",
@@ -263,7 +263,7 @@
         },
         {
           "type": "markdown_block",
-          "description": "GFM markdown string rendered to HTML inline"
+          "description": "inline markdown string (bold, italic, code, links) rendered to HTML"
         },
         {
           "type": "metric_row",
@@ -580,12 +580,38 @@
       ]
     },
     {
+      "catalogId": "https://a2uicatalog.ai/catalogue/a2ui-bricks-v1.json",
+      "slug": "a2ui-bricks-v1",
+      "title": "Building bricks (toy bricks and real parts)",
+      "alwaysResolved": false,
+      "whenToUse": "Use for brick-built models and builds: procedural toy-brick models in a motion timeline, ready-made brick blocks (robot, rocket), and real-parts models from the LDraw library.",
+      "atomCount": 4,
+      "atoms": [
+        {
+          "type": "block_robot",
+          "description": "a ready-made 10-brick toy robot that builds itself and turns on the film clock"
+        },
+        {
+          "type": "block_rocket",
+          "description": "a ready-made 9-brick toy rocket that builds itself and turns on the film clock"
+        },
+        {
+          "type": "brick_build_3d",
+          "description": "self-assembling 3D brick model, toy bricks or real LDraw parts, with build checks, build steps and a parts list"
+        },
+        {
+          "type": "motion_bricks",
+          "description": "toy-brick sculpture or brick lettering that builds, flies in and turns on the film clock"
+        }
+      ]
+    },
+    {
       "catalogId": "https://a2uicatalog.ai/catalogue/a2ui-charts-v1.json",
       "slug": "a2ui-charts-v1",
       "title": "Data visualisation",
       "alwaysResolved": false,
       "whenToUse": "Use when the surface needs charts — bar/line/pie, sankey, heatmap, sparklines, gauges, funnels, trend viz.",
-      "atomCount": 32,
+      "atomCount": 42,
       "atoms": [
         {
           "type": "arc_diagram",
@@ -604,8 +630,12 @@
           "description": "predicted-vs-observed probability calibration chart with confidence intervals"
         },
         {
+          "type": "candlestick_chart",
+          "description": "candlestick_chart: open-high-low-close price bars over time"
+        },
+        {
           "type": "chartjs_bar",
-          "description": "interactive Chart.js bar chart with datasets"
+          "description": "static accessible bar chart (group, stack, relative, overlay; vertical or horizontal; log axis)"
         },
         {
           "type": "chartjs_line",
@@ -618,6 +648,10 @@
         {
           "type": "chord_diagram",
           "description": "chord_diagram: flows between a few entities as ribbons on a ring"
+        },
+        {
+          "type": "choropleth_map",
+          "description": "choropleth map: world, US states or Europe shaded by value in classes"
         },
         {
           "type": "circle_pack",
@@ -644,6 +678,10 @@
           "description": "radial SLA gauge with glowing pointer and large metric value"
         },
         {
+          "type": "geo_map",
+          "description": "geo map: points sized and grouped by value, plus great-circle lines, on bundled outlines"
+        },
+        {
           "type": "github_activity_grid",
           "description": "SVG GitHub-style contribution grid and activity tracker",
           "processing": {
@@ -659,6 +697,10 @@
           "description": "histogram: counts of numbers per bin"
         },
         {
+          "type": "histogram2d",
+          "description": "histogram2d: x,y points counted into a 2-D bin grid, drawn as a heatmap"
+        },
+        {
           "type": "masonry_elevation",
           "description": "coursed block/brick wall elevation with bond-pattern stagger and render-style options"
         },
@@ -667,12 +709,28 @@
           "description": "compact grid of multiple labeled sparklines"
         },
         {
+          "type": "parallel_coords",
+          "description": "parallel_coords: compare many numeric measures per row"
+        },
+        {
+          "type": "polar_chart",
+          "description": "polar_chart: points and lines by angle and radius, or a radar"
+        },
+        {
           "type": "punch_card",
           "description": "7x24 grid of glowing activity bubbles representing hourly commits"
         },
         {
+          "type": "quiver",
+          "description": "quiver: arrows showing direction and size at points"
+        },
+        {
           "type": "sankey_flow",
           "description": "curved multi-column gradient flow diagram for financial or pipeline streams"
+        },
+        {
+          "type": "scatter_matrix",
+          "description": "scatter_matrix: every measure plotted against every other"
         },
         {
           "type": "scatter_trend",
@@ -692,11 +750,19 @@
         },
         {
           "type": "stacked_area",
-          "description": "stacked area chart with overlapping glowing translucent gradients"
+          "description": "stacked area chart of series layers over an ordered axis (zero baseline, optional 100% / streamgraph offsets)"
         },
         {
           "type": "sunburst",
           "description": "sunburst: share of a total in nested rings"
+        },
+        {
+          "type": "ternary_plot",
+          "description": "ternary_plot: three-part mixes as points on a triangle"
+        },
+        {
+          "type": "treemap",
+          "description": "treemap: part-to-whole by category or nested path"
         },
         {
           "type": "trend_indicator",
@@ -1200,7 +1266,7 @@
       "title": "Motion & decorative",
       "alwaysResolved": false,
       "whenToUse": "Use for animation and decorative flourish — reveals, gradients, cursor effects, meteors/confetti, kinetic text, agent-drawn SVG illustrations that draw themselves in stroke by stroke (agent_sketchpad, svg_path_draw), ready-made animated scenes of places and single verified clipart images from a provenance-checked kit (scene_stage, clipart: hospital helipad, data centre, wind farm and 42 more places; props by id, never SVG), full-bleed canvas hero backgrounds and living typography set from agent-supplied words. Presentation polish, not data.",
-      "atomCount": 126,
+      "atomCount": 128,
       "atoms": [
         {
           "type": "agent_sketchpad",
@@ -1469,12 +1535,16 @@
           "description": "name and role lower third that draws and slides in"
         },
         {
+          "type": "motion_map3d",
+          "description": "a tilted 3D city map where legs draw station to station (out and back, straight or curved), chips travel, stations end done, warn or error and a clock counts; for request traces, agent tool calls, pipelines and delivery routes"
+        },
+        {
           "type": "motion_mark",
           "description": "the A2UI Catalog logo mark that draws itself and sends an electron round its orbit"
         },
         {
           "type": "motion_mask",
-          "description": "reveals child atoms through a growing blob, circle, diagonal wipe, rounded rectangle or bars"
+          "description": "reveals child atoms through a growing blob, circle, diagonal wipe, rounded rectangle, bars, diamond, halftone, conic sweep or slats"
         },
         {
           "type": "motion_orbit",
@@ -1511,6 +1581,10 @@
         {
           "type": "motion_tokens",
           "description": "reference card of the named easing curves, duration tokens and entrance effects"
+        },
+        {
+          "type": "motion_transition",
+          "description": "a key-joined morph from one atom to another on the film's p dial"
         },
         {
           "type": "motion_video",

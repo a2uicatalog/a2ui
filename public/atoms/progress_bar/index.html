@@ -8,7 +8,7 @@
   <meta name="theme-color" content="#6366f1">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>Progress Bar — A2UI Atomic Catalog</title>
-  <meta name="description" content="Animated CSS progress bar with glow pulse effect">
+  <meta name="description" content="Progress bar with an animated width transition, an optional percentage and an optional caption">
   <link rel="canonical" href="https://a2uicatalog.ai/atoms/progress_bar/">
   <link rel="alternate" type="text/markdown" href="/atoms/progress_bar.md">
   <script type="application/ld+json">
@@ -22,7 +22,7 @@
     ]
   }
   </script>
-  <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "@id": "https://a2uicatalog.ai/atoms/progress_bar/#page", "url": "https://a2uicatalog.ai/atoms/progress_bar/", "headline": "Progress Bar: A2UI atom", "description": "Animated CSS progress bar with glow pulse effect", "about": {"@id": "https://a2uicatalog.ai/atoms/progress_bar/#atom"}, "isPartOf": {"@type": "WebSite", "name": "A2UI Catalog", "url": "https://a2uicatalog.ai/"}, "inLanguage": "en", "license": "https://opensource.org/licenses/MIT"}, {"@type": "DefinedTerm", "@id": "https://a2uicatalog.ai/atoms/progress_bar/#atom", "name": "Progress Bar", "termCode": "progress_bar", "description": "labelled horizontal progress bar with percentage", "url": "https://a2uicatalog.ai/atoms/progress_bar/", "inDefinedTermSet": {"@type": "DefinedTermSet", "@id": "https://a2uicatalog.ai/#atoms", "name": "A2UI Atomic Catalog", "url": "https://a2uicatalog.ai/spec.json"}, "additionalProperty": [{"@type": "PropertyValue", "name": "works on", "value": "web, google-meet-stage, google-apps-script-web, mcp-apps, claude-code, android"}, {"@type": "PropertyValue", "name": "fields", "value": "accent, caption, label, show_percent, value"}, {"@type": "PropertyValue", "name": "A2UI version", "value": "v1.0"}, {"@type": "PropertyValue", "name": "JSON Schema", "value": "https://a2uicatalog.ai/catalogue/atoms-json-schema.json"}, {"@type": "PropertyValue", "name": "markdown", "value": "https://a2uicatalog.ai/atoms/progress_bar.md"}]}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "A2UI Catalog", "item": "https://a2uicatalog.ai/"}, {"@type": "ListItem", "position": 2, "name": "Atoms", "item": "https://a2uicatalog.ai/atoms/"}, {"@type": "ListItem", "position": 3, "name": "Progress Bar", "item": "https://a2uicatalog.ai/atoms/progress_bar/"}]}]}</script>
+  <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "@id": "https://a2uicatalog.ai/atoms/progress_bar/#page", "url": "https://a2uicatalog.ai/atoms/progress_bar/", "headline": "Progress Bar: A2UI atom", "description": "Progress bar with an animated width transition, an optional percentage and an optional caption", "about": {"@id": "https://a2uicatalog.ai/atoms/progress_bar/#atom"}, "isPartOf": {"@type": "WebSite", "name": "A2UI Catalog", "url": "https://a2uicatalog.ai/"}, "inLanguage": "en", "license": "https://opensource.org/licenses/MIT"}, {"@type": "DefinedTerm", "@id": "https://a2uicatalog.ai/atoms/progress_bar/#atom", "name": "Progress Bar", "termCode": "progress_bar", "description": "labelled horizontal progress bar with percentage", "url": "https://a2uicatalog.ai/atoms/progress_bar/", "inDefinedTermSet": {"@type": "DefinedTermSet", "@id": "https://a2uicatalog.ai/#atoms", "name": "A2UI Atomic Catalog", "url": "https://a2uicatalog.ai/spec.json"}, "additionalProperty": [{"@type": "PropertyValue", "name": "works on", "value": "web, google-meet-stage, google-apps-script-web, mcp-apps, claude-code, android"}, {"@type": "PropertyValue", "name": "fields", "value": "accent, caption, label, show_percent, value"}, {"@type": "PropertyValue", "name": "A2UI version", "value": "v1.0"}, {"@type": "PropertyValue", "name": "JSON Schema", "value": "https://a2uicatalog.ai/catalogue/atoms-json-schema.json"}, {"@type": "PropertyValue", "name": "markdown", "value": "https://a2uicatalog.ai/atoms/progress_bar.md"}]}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "A2UI Catalog", "item": "https://a2uicatalog.ai/"}, {"@type": "ListItem", "position": 2, "name": "Atoms", "item": "https://a2uicatalog.ai/atoms/"}, {"@type": "ListItem", "position": 3, "name": "Progress Bar", "item": "https://a2uicatalog.ai/atoms/progress_bar/"}]}]}</script>
   <script>
 (function(){var t='light';try{var s=localStorage.getItem('a2ui-theme');if(s==='dark'||s==='light')t=s}catch(e){}
 document.documentElement.setAttribute('data-theme',t)})();
@@ -174,7 +174,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   </nav>
 
   <h1>Progress Bar</h1>
-  <p class="desc">Animated CSS progress bar with glow pulse effect</p>
+  <p class="desc">Progress bar with an animated width transition, an optional percentage and an optional caption</p>
 
   <div class="section">
     <div class="label">Surfaces</div>
@@ -190,7 +190,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box" role="group" aria-label="Live preview of progress_bar"><div style="margin:0.75rem 0;"><div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="font-size:0.82rem;color:#374151;">Progress Bar</span><span style=font-size:0.82rem;color:var(--muted,#5f6368);>75%</span></div><div style="height:8px;background:#e5e7eb;border-radius:100px;overflow:hidden;"><div style="height:100%;width:75%;background:#4f46e5;border-radius:100px;transition:width 0.4s ease;"></div></div></div></div>
+  <div class="preview-box" role="group" aria-label="Live preview of progress_bar"><div data-cb="node" data-key="Progress Bar" style="margin:0.75rem 0;"><div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="font-size:0.82rem;color:#374151;">Progress Bar</span><span style="font-size:0.82rem;font-weight:700;color:#4f46e5;">75%</span></div><div role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="75" aria-label="Progress Bar" style="height:8px;background:#e5e7eb;border-radius:100px;overflow:hidden;"><div style="height:100%;width:75%;background:#4f46e5;border-radius:100px;transition:width 0.4s ease;"></div></div></div></div>
 </div>
 
   
@@ -224,10 +224,10 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
     "claude-code",
     "android"
   ],
-  "description": "Animated CSS progress bar with glow pulse effect",
+  "description": "Progress bar with an animated width transition, an optional percentage and an optional caption",
   "representativeQueries": [
     "show a labelled horizontal progress bar with percentage",
-    "animated css progress bar with glow pulse effect",
+    "progress bar with an animated width transition, an optional percentage and an optional caption",
     "render a progress bar"
   ]
 }</code></pre>

@@ -14,7 +14,7 @@ turns structured JSON into rich pages and navigable slide decks.
 
 You have the FULL catalogue below in two tiers:
 
-1. **Compact index — all 557 atoms.** One line each:
+1. **Compact index — all 573 atoms.** One line each:
    `type — intent`. Use it to CHOOSE atoms that fit the content.
 2. **Core field contracts — 36 common atoms.** Exact field
    definitions. Prefer these atoms; you can use them immediately.
@@ -236,8 +236,20 @@ does not exist.
 #### chartjs_bar
 ```json
 {
- "labels": "array of strings. X-axis labels.",
- "datasets": "array of {label, data}. Chart datasets."
+ "labels": "array of strings. Category labels (up to 40 drawn; the hidden table lists all).",
+ "datasets": "array of {label, data, color}. One series each (up to 8 drawn); data is numbers, anything else is skipped with a note; color is an optional",
+ "mode": "group (default) | stack | relative | overlay. stack adds the signed values; relative stacks positives up and negatives down separately; overlay draws every series on the baseline.",
+ "orientation": "v (default) | h.",
+ "show_values": "boolean. Value labels on the bars; they hide when the chart is too narrow to fit them (the table keeps every value).",
+ "value_format": "d3-format string for the value labels, for example ',.0f' or '.1%'. Types b c o p r x X are not supported.",
+ "y_format": "d3-format string for the axis labels (and the value labels when value_format is absent).",
+ "y_scale": "linear (default) | log. A log axis ticks at powers of ten, leaves out numbers that are not above zero (with a note) and cannot stack.",
+ "y_range": "array of two numbers, min then max. Fixes the value axis; bars past it are cut at the axis with a note.",
+ "y_ticks": "integer 2 to 12 (default 5). Target tick count.",
+ "y_reverse": "boolean. Reverse the value axis.",
+ "gap": "number 0 to 0.8 (default 0.3). Share of each category slot left empty.",
+ "legend_position": "top | bottom | right | none. Default top with more than one series, none otherwise.",
+ "version": "integer (optional, default 1). Only version 1 exists; a higher whole number is drawn as version 1 with a note."
 }
 ```
 
@@ -245,7 +257,14 @@ does not exist.
 ```json
 {
  "labels": "array of strings. X-axis labels.",
- "datasets": "array of {label, data}. Chart datasets."
+ "datasets": "array of {label, data}. Chart datasets.",
+ "title": "string (optional). Heading of the chart. With series it is drawn above the plot; the labels/datasets drawing in the web preview does not show it (the Apps Script renderer does).",
+ "series": "(optional, preview) array of up to 8 series {label, x, y, mode, color, dash, shape, size, symbol, fill, text}. x is numbers or ISO 8601 date strings (UTC; a missing x is the index 0, 1, 2...), y numbers. mode lines|markers|lines+markers|text or any + combination (default lines+markers up to 20 points, else lines). color a #hex or colour word, else the theme palette. dash solid|dash|dot|dashdot|longdash|longdashdot, symbol circle|square|diamond|triangle-up|cross|x (both cycle per series when unset, so series differ by more than colour). shape linear|spline|hv|vh|hvh|vhv. size a diameter number or an array per point (bubble). fill tozeroy|tonexty. text an array of point labels. Present and non-empty, this replaces the labels/datasets (or data_points) drawing; absent, nothing changes.",
+ "x_type": "(optional, with series) linear or date. Default: date when the first x is a date string, else linear.",
+ "x_label": "string (optional, with series). Axis title under the plot. scatter_trend also reads label_x.",
+ "y_label": "string (optional, with series). Axis title above the plot. scatter_trend also reads label_y.",
+ "max_points": "(optional, with series) integer 50 to 2000, default 2000. A series with more usable points is thinned to evenly spaced points (first and last kept) and a visible note says so; the hidden table lists the drawn points. This is the scattergl case: many points, a cap, never a silent drop.",
+ "version": "integer (optional, default 1). A whole number above 1 draws as version 1 with a note."
 }
 ```
 
@@ -379,7 +398,7 @@ does not exist.
 }
 ```
 
-### Compact index (all 557 atoms)
+### Compact index (all 573 atoms)
 
 - `intro` — series link or transparency note at article top
 - `body` — prose paragraph block
@@ -554,7 +573,7 @@ does not exist.
 - `color_swatch_grid` — grid of named color swatches with hex values
 - `live_demo_embed` — embed interactive live demo sandbox iframe
 - `benchmark_comparison` — side-by-side performance benchmark comparison bars
-- `chartjs_bar` — interactive Chart.js bar chart with datasets
+- `chartjs_bar` — static accessible bar chart (group, stack, relative, overlay; vertical or horizontal; log axis)
 - `chartjs_line` — interactive Chart.js line chart for trend data
 - `data_table_sortable` — sortable data table with column headers
 - `metric_comparison_card` — metric card comparing current vs previous period
@@ -573,7 +592,7 @@ does not exist.
 - `conversion_funnel` — pipeline conversion funnel with step tapering and leak markers
 - `gauge_sla` — radial SLA gauge with glowing pointer and large metric value
 - `masonry_elevation` — coursed block/brick wall elevation with bond-pattern stagger and render-style options
-- `stacked_area` — stacked area chart with overlapping glowing translucent gradients
+- `stacked_area` — stacked area chart of series layers over an ordered axis (zero baseline, optional 100% / streamgraph offsets)
 - `calibration_plot` — predicted-vs-observed probability calibration chart with confidence intervals
 - `scatter_trend` — coordinate scatter plot with regression trend line
 - `call_mood_board` — visual summary board of call sentiments moods and active themes
@@ -601,7 +620,7 @@ does not exist.
 - `inline_alert` — inline icon-plus-text alert embedded in content flow
 - `tag_block` — horizontal wrap of neutral content chip labels
 - `variant_selector` — CSS radio card group for variant or option picking
-- `markdown_block` — GFM markdown string rendered to HTML inline
+- `markdown_block` — inline markdown string (bold, italic, code, links) rendered to HTML
 - `chartjs_pie` — multi-slice pie or donut SVG chart with legend
 - `text_callout` — lightweight tinted inline tip or note block no icon
 - `source_citation` — numbered RAG source card with title excerpt and URL
@@ -682,7 +701,7 @@ does not exist.
 - `motion_browser` — search box, filter chips and a grid of cards with live atom previews that types and rises in
 - `motion_sketch` — strokes that draw themselves in turn, like an agent sketching
 - `motion_leader` — callout line with a start dot, arrowhead and label that draws itself
-- `motion_mask` — reveals child atoms through a growing blob, circle, diagonal wipe, rounded rectangle or bars
+- `motion_mask` — reveals child atoms through a growing blob, circle, diagonal wipe, rounded rectangle, bars, diamond, halftone, conic sweep or slats
 - `motion_envelope` — envelope that opens to reveal (or seals in) a letter of atoms, with address and stamp
 - `motion_rays` — sunburst or speed-line background that fans in and turns
 - `motion_hud` — viewfinder HUD with corner brackets, counting timecode and progress bar
@@ -691,6 +710,9 @@ does not exist.
 - `motion_arch` — architecture diagram that draws itself, with payloads moving along its edges
 - `motion_video` — muted video whose frame follows the film clock
 - `motion_shader` — seekable WebGL liquid or aurora background with a CSS gradient fallback
+- `motion_bricks` — toy-brick sculpture or brick lettering that builds, flies in and turns on the film clock
+- `block_robot` — a ready-made 10-brick toy robot that builds itself and turns on the film clock
+- `block_rocket` — a ready-made 9-brick toy rocket that builds itself and turns on the film clock
 - `dot_grid_background` — CSS repeating dot or grid pattern panel background
 - `shimmer_button` — button with CSS background-position shimmer sweep animation
 - `card_stack` — CSS-fanned stack of 2–4 cards with rotation and opacity tiers
@@ -751,6 +773,7 @@ does not exist.
 - `text_highlight` — prose sentence with **marked** words highlighted in accent colour
 - `reveal_line` — clip-path sweep-in reveal line, auto-plays on load
 - `canvas_plexus` — animated particle plexus with proximity lines and mouse repulsion
+- `brick_build_3d` — self-assembling 3D brick model, toy bricks or real LDraw parts, with build checks, build steps and a parts list
 - `spring_nodes` — mass-spring graph, settled static layout by default; interactive true adds drag-to-pin physics
 - `isometric_mesh` — rotating 3D isometric mesh with height-colour mapping and drag-rotate
 - `geo_iso_takeoff` — isometric 3D canvas of A321neo takeoff from LFBO — animated roll, rotation, gear-up, climb; HUD with airline/runway
@@ -929,6 +952,7 @@ does not exist.
 - `tool_call_card` — structured agent tool call card with status, inputs, result, and latency
 - `scene_stage` — animated looping SVG scene of a place (53 ready presets) from verified clipart
 - `clipart` — one verified vector clipart image by id
+- `treemap` — treemap: part-to-whole by category or nested path
 - `histogram` — histogram: counts of numbers per bin
 - `box_plot` — box_plot: compare groups of numbers by median and spread
 - `waterfall` — waterfall: how changes add up to a total
@@ -938,6 +962,17 @@ does not exist.
 - `arc_diagram` — arc_diagram: links between nodes as arcs over a line
 - `contour_plot` — contour_plot: filled contour bands of a value grid or of the density of points
 - `voronoi` — voronoi: nearest-site regions of a set of points (catchments, service areas)
+- `candlestick_chart` — candlestick_chart: open-high-low-close price bars over time
+- `parallel_coords` — parallel_coords: compare many numeric measures per row
+- `ternary_plot` — ternary_plot: three-part mixes as points on a triangle
+- `quiver` — quiver: arrows showing direction and size at points
+- `choropleth_map` — choropleth map: world, US states or Europe shaded by value in classes
+- `geo_map` — geo map: points sized and grouped by value, plus great-circle lines, on bundled outlines
+- `polar_chart` — polar_chart: points and lines by angle and radius, or a radar
+- `histogram2d` — histogram2d: x,y points counted into a 2-D bin grid, drawn as a heatmap
+- `scatter_matrix` — scatter_matrix: every measure plotted against every other
+- `motion_transition` — a key-joined morph from one atom to another on the film's p dial
+- `motion_map3d` — a tilted 3D city map where legs draw station to station (out and back, straight or curved), chips travel, stations end done, warn or error and a clock counts; for request traces, agent tool calls, pipelines and delivery routes
 ## Payload envelope (renderer contract — not in the catalog)
 
 Simple page:

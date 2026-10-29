@@ -9,7 +9,7 @@
 The model names an atom. The renderer compiles the HTML, CSS, SVG, and animation.
 
 <!-- readme-badges:start -->
-[![Atoms](https://img.shields.io/badge/atoms-557-7c9cff?style=flat-square&labelColor=0a0e17)](https://a2uicatalog.ai/)
+[![Atoms](https://img.shields.io/badge/atoms-573-7c9cff?style=flat-square&labelColor=0a0e17)](https://a2uicatalog.ai/)
 [![Surfaces](https://img.shields.io/badge/surfaces-13-38bdf8?style=flat-square&labelColor=0a0e17)](https://a2uicatalog.ai/spec.json)
 [![MCP](https://img.shields.io/badge/MCP_server-a2uicatalog.ai%2Fmcp-7c9cff?style=flat-square&labelColor=0a0e17)](https://a2uicatalog.ai/mcp)
 [![ARD](https://img.shields.io/badge/ARD-ard.json-38bdf8?style=flat-square&labelColor=0a0e17)](https://a2uicatalog.ai/.well-known/ard.json)
@@ -66,7 +66,7 @@ A few atoms, live on the site — click through to a full spec + fields table fo
 </tr>
 </table>
 
-[Browse all 569 atoms →](https://a2uicatalog.ai/)
+[Browse all 573 atoms →](https://a2uicatalog.ai/)
 
 ---
 
@@ -149,7 +149,7 @@ The catalog's "Try it live" button uses a shared demo instance of the same rende
 
 ---
 
-## 569 atoms across 8 surfaces
+## 573 atoms across 8 surfaces
 
 Atoms declare which surfaces they support at the schema level. An agent picks an atom by name, supplies parameters, and the renderer handles the rest.
 
@@ -174,7 +174,7 @@ Every atom declares, at the schema level, which of the **8 surfaces** it works o
 <summary><strong>View full compatibility matrix (all atoms × 8 surfaces)</strong></summary>
 
 <!-- compat-matrix:start -->
-569 atoms · generated from `public/spec.json` by `scripts/gen_compat_matrix.py` — do not edit by hand.
+573 atoms · generated from `public/spec.json` by `scripts/gen_compat_matrix.py` — do not edit by hand.
 
 | Atom | web | gas-web | gas-panel | meet | chat | mcp-apps | claude-code | android | email | pdf | slides | pptx | Source · license |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
@@ -218,6 +218,8 @@ Every atom declares, at the schema level, which of the **8 surfaces** it works o
 | `benchmark_comparison` | ✅ | ✅ | — | ✅ | — | ✅ | — | ✅ | ⚠️ | — | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `bento_grid` | ✅ | ✅ | — | ⚠️ | — | ✅ | — | ✅ | ⚠️ | ✅ | ✅ | ✅ | [MagicUI / shadcn](https://magicui.design) · MIT |
 | `big_reveal` | ✅ | ✅ | — | — | — | ✅ | — | ✅ | — | — | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
+| `block_robot` | ✅ | ✅ | — | ✅ | — | ✅ | — | ✅ | — | ⚠️ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
+| `block_rocket` | ✅ | ✅ | — | ✅ | — | ✅ | — | ✅ | — | ⚠️ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `blockquote` | ✅ | ✅ | — | — | — | ✅ | — | ✅ | — | — | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `blockquote_with_avatar` | ✅ | ✅ | — | ✅ | ⚠️ | ✅ | — | ✅ | ⚠️ | ✅ | ✅ | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `blur_fade_in` | ✅ | ✅ | ⚠️ | ✅ | ⚠️ | ✅ | — | ✅ | — | ⚠️ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
@@ -225,6 +227,7 @@ Every atom declares, at the schema level, which of the **8 surfaces** it works o
 | `box_plot` | ✅ | ✅ | — | — | — | ✅ | — | ✅ | — | ⚠️ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `breadcrumb` | ✅ | ✅ | — | ✅ | ⚠️ | ✅ | — | ✅ | ⚠️ | ⚠️ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `brevet_timeline` | ✅ | ✅ | — | — | — | ✅ | — | ✅ | — | — | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
+| `brick_build_3d` | ✅ | ✅ | — | — | — | ✅ | — | ✅ | — | — | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `bullet_list` | ✅ | ✅ | — | ✅ | ✅ | ✅ | — | ✅ | ✅ | ✅ | ✅ | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `calendar_today` | — | ✅ | — | — | — | ✅ | — | ✅ | — | — | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `calendar_upcoming` | — | ✅ | — | — | — | ✅ | — | ✅ | — | — | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
@@ -488,6 +491,7 @@ Every atom declares, at the schema level, which of the **8 surfaces** it works o
 | `model_card` | ✅ | ✅ | — | ✅ | ✅ | ✅ | — | ✅ | ✅ | ✅ | ✅ | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `module_map` | ✅ | ✅ | — | ✅ | — | ✅ | — | ✅ | — | — | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `motion_arch` | ✅ | ✅ | — | ✅ | — | ✅ | — | ✅ | — | ⚠️ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
+| `motion_bricks` | ✅ | ✅ | — | ✅ | — | ✅ | — | ✅ | — | ⚠️ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `motion_browser` | ✅ | ✅ | — | ✅ | ⚠️ | ✅ | — | ✅ | — | ⚠️ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `motion_checklist` | ✅ | ✅ | — | ✅ | ⚠️ | ✅ | — | ✅ | — | ⚠️ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `motion_code` | ✅ | ✅ | — | ✅ | ⚠️ | ✅ | — | ✅ | — | ⚠️ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |

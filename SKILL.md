@@ -5,7 +5,7 @@ description: Renders real interactive UI — charts, gauges, steppers, dashboard
 
 # A2UI Atomic Catalog
 
-569 typed UI atoms an AI agent composes into real rendered interfaces — web, Google Meet,
+573 typed UI atoms an AI agent composes into real rendered interfaces — web, Google Meet,
 Apps Script, Google Chat and MCP Apps — instead of writing HTML by hand. The agent names a
 component from a fixed vocabulary; a renderer that already knows that component draws it.
 
@@ -24,7 +24,7 @@ documentation links.
 ## How to use it
 
 1. **`list_catalogs`** — pick the catalog slice the task actually needs. Do not load the
-   whole 569-atom vocabulary into context for a one-chart request.
+   whole 573-atom vocabulary into context for a one-chart request.
 2. **`get_catalog`** — read the real field contracts for that slice. Never guess a field
    name; a hallucinated field is a validation error, not a broken render.
 3. **Render**, by host capability:

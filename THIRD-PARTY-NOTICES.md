@@ -441,6 +441,22 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ---
 
+## LDraw.org Parts Library (LDraw.org contributors)
+
+- **Project:** LDraw Parts Library, the open catalogue of part geometry for brick CAD
+- **Website:** https://www.ldraw.org/
+- **License:** Creative Commons Attribution 4.0 (CC BY 4.0); older part files are CC BY 2.0
+- **Used as:** baked part meshes, quantised to 16 LDU, in `public/parts/` (one JSON per part plus `public/parts/index.json`,
+  which repeats this attribution), built by `scripts/ldraw/fetch_library.py` and `scripts/ldraw/bake_parts.py` from the
+  official library release. Read by the `brick_build_3d` atom's `partsModel` field.
+- **Changes:** geometry is converted to indexed triangle meshes with stud, socket, hole, pin, bar, hinge, axle and clip
+  connector data derived for the build checks; part ids and titles are unchanged.
+- **Attribution:** Part geometry from the LDraw.org Parts Library (https://www.ldraw.org), used under CC BY 4.0 / CC BY 2.0.
+  LDraw is not affiliated with the brick manufacturers it describes, and this catalogue is not affiliated with or
+  endorsed by them either.
+
+---
+
 ## Three.js (three.js authors)
 
 - **Project:** Three.js — WebGL 3D rendering engine

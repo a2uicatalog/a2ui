@@ -1,0 +1,42 @@
+# atoms/brick-blocks.yaml — the bill of materials for the brick block catalogue (a2ui-bricks-v1).
+# Engine atoms (the canvases): motion_bricks (procedural toy bricks) and brick_build_3d (real LDraw parts).
+# Block atoms: block_robot and block_rocket, thin atoms that fill the motion_bricks canvas with a fixed, hand-built brick list.
+# The renderer reads the lists from apps-script-surface/gas-wired-renderer/atoms_studio.gs (`_BLOCK_BRICKS`); they are repeated
+# here so a reviewer can read the raw bricks. tests/test_brick_blocks.py holds the three together. Each brick is
+# [x, y, z, w, d, h, colour]: x and z are stud positions, y the layer, w and d the footprint in studs, h the height in bricks.
+catalogue: a2ui-bricks-v1
+engines: [motion_bricks, brick_build_3d]
+blocks:
+- id: block_robot
+  title: Small robot
+  canvas: motion_bricks
+  bricks_count: 10
+  source: hand-built, pair-3d prototype robot.json (2026-10)
+  validator: "collisions pass; anchored fails (5 bricks side-mounted: two arms, a dark front brick, two eyes); balance pass (margin 1.43 studs)"
+  bricks:
+    - [1, 0, 0, 2, 3, 1, "#1b2a34"]
+    - [4, 0, 0, 2, 3, 1, "#1b2a34"]
+    - [1, 1, 0, 5, 3, 3, "#0055bf"]
+    - [0, 2, 1, 1, 1, 2, "#969696"]
+    - [6, 2, 1, 1, 1, 2, "#969696"]
+    - [3, 2, 3, 1, 1, 1, "#1b2a34"]
+    - [2, 4, 0, 3, 3, 2, "#f4f4f4"]
+    - [4, 5, 3, 1, 1, 1, "#1b2a34"]
+    - [2, 5, 3, 1, 1, 1, "#1b2a34"]
+    - [3, 6, 1, 1, 1, 1, "#c91a09"]
+- id: block_rocket
+  title: Small rocket
+  canvas: motion_bricks
+  bricks_count: 9
+  source: hand-built, pair-3d prototype rocket.json (2026-10)
+  validator: "collisions pass; anchored fails (3 bricks side-mounted: two fins and the window); balance warn (margin 0.47 studs)"
+  bricks:
+    - [2, 0, 1, 1, 1, 1, "#969696"]
+    - [2, 1, 1, 1, 1, 1, "#969696"]
+    - [0, 2, 1, 1, 1, 2, "#c91a09"]
+    - [1, 2, 0, 3, 3, 1, "#1b2a34"]
+    - [4, 2, 1, 1, 1, 2, "#c91a09"]
+    - [1, 3, 0, 3, 3, 4, "#f4f4f4"]
+    - [2, 5, 3, 1, 1, 1, "#1b2a34"]
+    - [1, 7, 0, 3, 3, 1, "#c91a09"]
+    - [2, 8, 1, 1, 1, 2, "#c91a09"]

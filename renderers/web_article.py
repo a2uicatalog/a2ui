@@ -35073,6 +35073,32 @@ def _render_motion_input(b: dict) -> str:
             + '</div></div>')
 
 
+# block_robot / block_rocket: twin of atoms_studio.gs's thin wrappers over motion_bricks. The brick lists are read out of the .gs
+# (strict JSON in `var _BLOCK_BRICKS = {...};`), so the list has one source and the twin cannot differ from it.
+def _block_bricks_table() -> dict:
+    src = (Path(__file__).resolve().parent.parent / "apps-script-surface" / "gas-wired-renderer" / "atoms_studio.gs").read_text(encoding="utf-8")
+    m = re.search(r"^var _BLOCK_BRICKS = (\{.*?^\});", src, re.S | re.M)
+    if not m:
+        raise RuntimeError("block atoms: _BLOCK_BRICKS not found in atoms_studio.gs")
+    import json as _json
+    return _json.loads(m.group(1))
+
+
+_BLOCK_BRICKS = _block_bricks_table()
+
+
+def _render_block(name: str):
+    def render(b: dict) -> str:
+        p = {k: v for k, v in b.items() if k not in ('text', 'shape', 'bricks', 'palette', 'color', 'depth')}
+        p['type'] = 'motion_bricks'
+        p['bricks'] = _BLOCK_BRICKS[name]
+        return _render_motion_bricks(p)
+    return render
+
+
+_RENDERERS['block_robot'] = _render_block('block_robot')
+_RENDERERS['block_rocket'] = _render_block('block_rocket')
+
 for _mo_name, _mo_fn in (('motion_pill', _render_motion_pill), ('motion_checklist', _render_motion_checklist), ('motion_stepper', _render_motion_stepper),
                          ('motion_orbit', _render_motion_orbit), ('motion_code', _render_motion_code), ('motion_mark', _render_motion_mark), ('motion_browser', _render_motion_browser), ('motion_sketch', _render_motion_sketch),
                          ('motion_leader', _render_motion_leader), ('motion_path', _render_motion_path), ('motion_mask', _render_motion_mask),

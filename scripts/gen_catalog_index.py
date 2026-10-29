@@ -88,6 +88,9 @@ CATALOG_META = {
     "a2ui-gallery-v1": ("Annotated field guides",
         "Use for pin-annotated real-capture galleries — a component/primitive anatomy "
         "reference the reader scrolls through, grouped into sections with a sticky nav."),
+    "a2ui-bricks-v1": ("Building bricks (toy bricks and real parts)",
+        "Use for brick-built models and builds: procedural toy-brick models in a motion "
+        "timeline, ready-made brick blocks (robot, rocket), and real-parts models from the LDraw library."),
     "a2ui-lens-extracted-v1": ("article_playbook — extracted lenses",
         "Use for article_playbook views that show only the source article's own words — "
         "verbatim quotes and structure. Resolve alone for a reader who wants zero model "

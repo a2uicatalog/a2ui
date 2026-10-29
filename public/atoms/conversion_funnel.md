@@ -12,6 +12,8 @@ web, google-meet-stage, google-apps-script-web, mcp-apps, android
 |---|---|
 | title | string (optional, e.g., 'Acquisition Funnel') |
 | steps | list of dictionaries representing funnel stages: [{'stage': 'Visits', 'value': 10000}, {'stage': 'Signups', 'value': 4500}, ...] |
+| shape | string (optional, "area"): draws centred stacked bands whose area is proportional to each stage value (Plotly funnelarea) with a numbered legend and a hidden table; anything else keeps the tapered bars. Up to 12 stages. |
+| version | integer (optional, default 1). A whole number above 1 draws as version 1 with a muted note (area shape only). |
 
 ## Example payload
 

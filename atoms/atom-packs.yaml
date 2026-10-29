@@ -442,7 +442,6 @@ a2ui-effects-v1:
 - motion_video
 - motion_arch
 - motion_object3d
-- motion_bricks
 - motion_input
 - motion_timeline
 - motion_group
@@ -467,7 +466,6 @@ a2ui-effects-v1:
 - badge_showcase
 - big_reveal
 - blur_fade_in
-- brick_build_3d
 - canvas_plexus
 - card_stack
 - confetti_burst
@@ -793,3 +791,9 @@ a2ui-booking-v1:
 - seat_map
 - slot_scheduler
 - option_plan_builder
+
+a2ui-bricks-v1:
+- motion_bricks
+- brick_build_3d
+- block_robot
+- block_rocket

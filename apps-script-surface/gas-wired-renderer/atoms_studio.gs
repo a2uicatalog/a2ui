@@ -297,3 +297,44 @@ _RENDERERS['motion_bricks'] = function(b) {
   return '<div id="mt-' + uid + '" style="position:relative;width:100%;' + (fill ? 'height:100%;' : 'aspect-ratio:' + ratio + ';') + '"><canvas role="img" aria-label="' + _esc(label) + '" style="position:absolute;left:0;top:0;width:100%;height:100%;display:block;"></canvas></div>'
     + '<script>(function(){var LEGO_MATERIAL_PROFILE = ' + _jsJson(LEGO_MATERIAL_PROFILE) + ';var K=(' + _brickKit.toString() + ')();var r=document.getElementById("mt-' + uid + '"),cv=r&&r.querySelector("canvas");if(cv)K.create(cv,' + cfg + ');})();<\/script>';
 };
+
+// ─── block_robot, block_rocket: pre-composed brick models (2026-10-29) ────────────────────────────────────────────────────────
+// Thin atoms over motion_bricks: each one fixes the brick list ([x, y, z, w, d, h, colour] per brick, the compact form
+// _brickSanitise reads) and passes every other prop through, so a film can drop a finished model in without writing 10 bricks.
+// The lists are strict JSON on purpose: renderers/web_article.py reads this block to build its twin, and atoms/brick-blocks.yaml
+// repeats them for review; tests/test_brick_blocks.py holds all three together.
+var _BLOCK_BRICKS = {
+  "block_robot": [
+  [1, 0, 0, 2, 3, 1, "#1b2a34"],
+  [4, 0, 0, 2, 3, 1, "#1b2a34"],
+  [1, 1, 0, 5, 3, 3, "#0055bf"],
+  [0, 2, 1, 1, 1, 2, "#969696"],
+  [6, 2, 1, 1, 1, 2, "#969696"],
+  [3, 2, 3, 1, 1, 1, "#1b2a34"],
+  [2, 4, 0, 3, 3, 2, "#f4f4f4"],
+  [4, 5, 3, 1, 1, 1, "#1b2a34"],
+  [2, 5, 3, 1, 1, 1, "#1b2a34"],
+  [3, 6, 1, 1, 1, 1, "#c91a09"]
+],
+  "block_rocket": [
+  [2, 0, 1, 1, 1, 1, "#969696"],
+  [2, 1, 1, 1, 1, 1, "#969696"],
+  [0, 2, 1, 1, 1, 2, "#c91a09"],
+  [1, 2, 0, 3, 3, 1, "#1b2a34"],
+  [4, 2, 1, 1, 1, 2, "#c91a09"],
+  [1, 3, 0, 3, 3, 4, "#f4f4f4"],
+  [2, 5, 3, 1, 1, 1, "#1b2a34"],
+  [1, 7, 0, 3, 3, 1, "#c91a09"],
+  [2, 8, 1, 1, 1, 2, "#c91a09"]
+]
+};
+function _blockBricks(name) {
+  return function(b) {
+    var p = {}, k;
+    for (k in b) if (Object.prototype.hasOwnProperty.call(b, k) && k !== 'text' && k !== 'shape' && k !== 'bricks' && k !== 'palette' && k !== 'color' && k !== 'depth') p[k] = b[k];
+    p.type = 'motion_bricks'; p.bricks = _BLOCK_BRICKS[name];
+    return _RENDERERS['motion_bricks'](p);
+  };
+}
+_RENDERERS['block_robot'] = _blockBricks('block_robot');
+_RENDERERS['block_rocket'] = _blockBricks('block_rocket');

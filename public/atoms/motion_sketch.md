@@ -14,6 +14,7 @@ web, google-meet-stage, google-apps-script-web, mcp-apps, android
 | w | integer (optional). ViewBox width, 50-2000. Default 400. |
 | h | integer (optional). ViewBox height, 50-2000. Default 400. |
 | label | string (optional, max 60). Accessible name of the drawing. Default "Sketch". |
+| trim | object (optional) {start, end, offset}, like After Effects trim paths. start and end are 0-1 of each stroke's length (defaults 0 and 1) and bound the part that is drawn; offset -1 to 1 shifts the window along the stroke (a window pushed past the end wraps round to the start). The window draws on as p goes 0 to 1 (from start to end). end at or below start draws no stroke. Absent, empty or all defaults: the full stroke, unchanged. |
 
 ## Example payload
 

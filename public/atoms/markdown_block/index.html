@@ -8,7 +8,7 @@
   <meta name="theme-color" content="#6366f1">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>Markdown Block — A2UI Atomic Catalog</title>
-  <meta name="description" content="Renders an arbitrary GitHub-Flavoured Markdown string as formatted HTML — bold, italic, inline code, fenced code blocks, lists, tables, blockquotes, and links.">
+  <meta name="description" content="Renders a Markdown string as formatted inline HTML - bold, italic, inline code and links (http, https, mailto, tel or relative).">
   <link rel="canonical" href="https://a2uicatalog.ai/atoms/markdown_block/">
   <link rel="alternate" type="text/markdown" href="/atoms/markdown_block.md">
   <script type="application/ld+json">
@@ -22,7 +22,7 @@
     ]
   }
   </script>
-  <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "@id": "https://a2uicatalog.ai/atoms/markdown_block/#page", "url": "https://a2uicatalog.ai/atoms/markdown_block/", "headline": "Markdown Block: A2UI atom", "description": "Renders an arbitrary GitHub-Flavoured Markdown string as formatted HTML — bold, italic, inline code, fenced code blocks, lists, tables, blockquotes, and links.", "about": {"@id": "https://a2uicatalog.ai/atoms/markdown_block/#atom"}, "isPartOf": {"@type": "WebSite", "name": "A2UI Catalog", "url": "https://a2uicatalog.ai/"}, "inLanguage": "en", "license": "https://opensource.org/licenses/MIT"}, {"@type": "DefinedTerm", "@id": "https://a2uicatalog.ai/atoms/markdown_block/#atom", "name": "Markdown Block", "termCode": "markdown_block", "description": "GFM markdown string rendered to HTML inline", "url": "https://a2uicatalog.ai/atoms/markdown_block/", "inDefinedTermSet": {"@type": "DefinedTermSet", "@id": "https://a2uicatalog.ai/#atoms", "name": "A2UI Atomic Catalog", "url": "https://a2uicatalog.ai/spec.json"}, "additionalProperty": [{"@type": "PropertyValue", "name": "works on", "value": "web, google-meet-stage, email, pdf, google-apps-script-web, mcp-apps, android, slides, pptx"}, {"@type": "PropertyValue", "name": "fields", "value": "content, variant"}, {"@type": "PropertyValue", "name": "A2UI version", "value": "v1.0"}, {"@type": "PropertyValue", "name": "JSON Schema", "value": "https://a2uicatalog.ai/catalogue/atoms-json-schema.json"}, {"@type": "PropertyValue", "name": "markdown", "value": "https://a2uicatalog.ai/atoms/markdown_block.md"}]}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "A2UI Catalog", "item": "https://a2uicatalog.ai/"}, {"@type": "ListItem", "position": 2, "name": "Atoms", "item": "https://a2uicatalog.ai/atoms/"}, {"@type": "ListItem", "position": 3, "name": "Markdown Block", "item": "https://a2uicatalog.ai/atoms/markdown_block/"}]}]}</script>
+  <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "@id": "https://a2uicatalog.ai/atoms/markdown_block/#page", "url": "https://a2uicatalog.ai/atoms/markdown_block/", "headline": "Markdown Block: A2UI atom", "description": "Renders a Markdown string as formatted inline HTML - bold, italic, inline code and links (http, https, mailto, tel or relative).", "about": {"@id": "https://a2uicatalog.ai/atoms/markdown_block/#atom"}, "isPartOf": {"@type": "WebSite", "name": "A2UI Catalog", "url": "https://a2uicatalog.ai/"}, "inLanguage": "en", "license": "https://opensource.org/licenses/MIT"}, {"@type": "DefinedTerm", "@id": "https://a2uicatalog.ai/atoms/markdown_block/#atom", "name": "Markdown Block", "termCode": "markdown_block", "description": "inline markdown string (bold, italic, code, links) rendered to HTML", "url": "https://a2uicatalog.ai/atoms/markdown_block/", "inDefinedTermSet": {"@type": "DefinedTermSet", "@id": "https://a2uicatalog.ai/#atoms", "name": "A2UI Atomic Catalog", "url": "https://a2uicatalog.ai/spec.json"}, "additionalProperty": [{"@type": "PropertyValue", "name": "works on", "value": "web, google-meet-stage, email, pdf, google-apps-script-web, mcp-apps, android, slides, pptx"}, {"@type": "PropertyValue", "name": "fields", "value": "content, variant"}, {"@type": "PropertyValue", "name": "A2UI version", "value": "v1.0"}, {"@type": "PropertyValue", "name": "JSON Schema", "value": "https://a2uicatalog.ai/catalogue/atoms-json-schema.json"}, {"@type": "PropertyValue", "name": "markdown", "value": "https://a2uicatalog.ai/atoms/markdown_block.md"}]}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "A2UI Catalog", "item": "https://a2uicatalog.ai/"}, {"@type": "ListItem", "position": 2, "name": "Atoms", "item": "https://a2uicatalog.ai/atoms/"}, {"@type": "ListItem", "position": 3, "name": "Markdown Block", "item": "https://a2uicatalog.ai/atoms/markdown_block/"}]}]}</script>
   <script>
 (function(){var t='light';try{var s=localStorage.getItem('a2ui-theme');if(s==='dark'||s==='light')t=s}catch(e){}
 document.documentElement.setAttribute('data-theme',t)})();
@@ -174,7 +174,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   </nav>
 
   <h1>Markdown Block</h1>
-  <p class="desc">Renders an arbitrary GitHub-Flavoured Markdown string as formatted HTML — bold, italic, inline code, fenced code blocks, lists, tables, blockquotes, and links. Useful when content is authored in or retrieved as Markdown and needs faithful rendering without mapping to individual atoms. Adapted from the MarkDownRenderer pattern in OpenUI OUI benchmark samples.</p>
+  <p class="desc">Renders a Markdown string as formatted inline HTML - bold, italic, inline code and links (http, https, mailto, tel or relative). Block syntax (headings, lists, tables, fenced code) is not rendered. Adapted from the MarkDownRenderer pattern in OpenUI OUI benchmark samples.</p>
 
   <div class="section">
     <div class="label">Surfaces</div>
@@ -190,7 +190,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box" role="group" aria-label="Live preview of markdown_block"><div class="markdown-content">A concise description of the content.</div></div>
+  <div class="preview-box" role="group" aria-label="Live preview of markdown_block"><div data-cb="node" data-key="markdown_block" class="markdown-content asw-markdown-block" style="margin:1rem 0;">A concise description of the content.</div></div>
 </div>
 
   
@@ -226,10 +226,10 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
     "slides",
     "pptx"
   ],
-  "description": "Renders an arbitrary GitHub-Flavoured Markdown string as formatted HTML \u2014 bold, italic, inline code, fenced code blocks, lists, tables, blockquotes, and links. Useful when content is authored in or retrieved as Markdown and needs faithful rendering without mapping to individual atoms. Adapted from the MarkDownRenderer pattern in OpenUI OUI benchmark samples.",
+  "description": "Renders a Markdown string as formatted inline HTML - bold, italic, inline code and links (http, https, mailto, tel or relative). Block syntax (headings, lists, tables, fenced code) is not rendered. Adapted from the MarkDownRenderer pattern in OpenUI OUI benchmark samples.",
   "representativeQueries": [
-    "show a GFM markdown string rendered to HTML inline",
-    "renders an arbitrary github-flavoured markdown string as formatted html \u2014 bold, italic, inline code,",
+    "show a inline markdown string (bold, italic, code, links) rendered to HTML",
+    "renders a markdown string as formatted inline html - bold, italic, inline code and links (http, http",
     "render a markdown block"
   ]
 }</code></pre>

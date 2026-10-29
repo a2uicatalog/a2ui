@@ -1,6 +1,6 @@
 # Progress Bar
 
-Animated CSS progress bar with glow pulse effect
+Progress bar with an animated width transition, an optional percentage and an optional caption
 
 ## Surfaces
 

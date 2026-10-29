@@ -15,6 +15,10 @@ web, google-meet-stage, google-apps-script-web, mcp-apps, android
 | max_value | number representing maximum gauge scale (e.g., 100) |
 | unit | string (optional, e.g., '%') |
 | label | string (optional, e.g., 'SLA Met') |
+| min | number (optional, default 0). Setting min or steps switches to the scale mode (Plotly indicator gauge) with bands, a threshold tick, a needle, a legend and a hidden table. |
+| steps | list (optional) of {from, to, color} bands on the scale (up to 8); color is a hex or var(--token), default theme colours; each band is also listed in text. |
+| threshold | number (optional). Draws a tick and states whether the value is at or above it (scale mode only). |
+| version | integer (optional, default 1). A whole number above 1 draws as version 1 with a muted note (scale mode only). |
 
 ## Example payload
 
