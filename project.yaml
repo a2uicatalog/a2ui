@@ -259,7 +259,7 @@ generators:
   gen_public_catalog:
     script: scripts/gen_public_catalog.py
     source: atoms/schema.yaml
-    outputs: [public/spec.json, public/atoms/index.json, public/runbooks/index.json, public/catalogue/gdm-v0.2.json]
+    outputs: [public/spec.json, public/atoms/index.json, public/runbooks/index.json, public/catalogue/gdm-v0.2.json, public/catalogue/a2ui-bricks-v1.json]
     publish: ci (deploy.yml on push -> Cloudflare)
   gen_knowledge:
     script: scripts/gen_knowledge.py

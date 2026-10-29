@@ -241,6 +241,31 @@ def gen_atoms_catalog(blocks):
     }
 
 
+# Extension catalogues published as their own catalog document (atoms/atom-packs.yaml names the members). The other
+# extension catalogIds in index.json are still unpublished (tests/test_staging.py KNOWN_UNPUBLISHED); a new pack must be
+# added here, not to that list.
+PUBLISHED_PACKS = ("a2ui-bricks-v1",)
+
+
+def gen_pack_catalog(slug, blocks):
+    """A catalog document for one extension pack: gen_atoms_catalog() restricted to the pack's stable atoms."""
+    with open(os.path.join(ROOT, "atoms", "atom-packs.yaml")) as f:
+        members = yaml.safe_load(f)[slug]
+    by_type = {b["type"]: b for b in blocks}
+    missing = [m for m in members if m not in by_type]
+    if missing:
+        print(f"  ❌ pack {slug}: atoms not stable/published: {missing}", file=sys.stderr)
+        sys.exit(1)
+    doc = gen_atoms_catalog([by_type[m] for m in members])
+    uri = f"{BASE_URL}/catalogue/{slug}.json"
+    doc["$id"] = doc["catalogId"] = uri
+    doc["title"] = f"A2UI {slug} catalog"
+    doc["description"] = (f"The {slug} extension pack as an A2UI-v1.0 catalog document ({len(members)} atoms); "
+                          f"the base atoms are in {ATOMS_CATALOG_URI}.")
+    doc["instructions"] = doc["instructions"].replace(f"Canonical URI: {ATOMS_CATALOG_URI}", f"Canonical URI: {uri}")
+    return doc
+
+
 def gen_runbooks_index(known_types):
     runbooks = []
     if not os.path.isdir(RUNBOOKS_DIR):
@@ -274,6 +299,8 @@ def main():
     write_json("spec.json", gen_spec(blocks))
     write_json("atoms/index.json", gen_compact_index(blocks))
     write_json("catalogue/a2ui-atoms-v1.json", gen_atoms_catalog(blocks))
+    for slug in PUBLISHED_PACKS:
+        write_json(f"catalogue/{slug}.json", gen_pack_catalog(slug, blocks))
     write_json("runbooks/index.json", gen_runbooks_index(known_types))
 
     # Publication decisions live in project.yaml — the manifest is the
