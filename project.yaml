@@ -88,6 +88,7 @@ policy:
     - public/_redirects
     - public/.well-known/**
     - public/atoms/**
+    - public/atoms.md   # markdown twin of the /atoms/ hub (generate_atom_pages.py render_atoms_hub_md)
     - public/surfaces/**
     - public/renderer/**
     - public/spec.json
