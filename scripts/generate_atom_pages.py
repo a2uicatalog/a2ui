@@ -1427,8 +1427,10 @@ h1{position:relative;font-size:2.6rem;font-weight:800;letter-spacing:-1.5px;marg
 .atom-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;text-decoration:none;display:flex;flex-direction:column;transition:transform .16s ease,border-color .16s,box-shadow .16s;content-visibility:auto;contain-intrinsic-size:auto 240px}
 .atom-card:hover{border-color:var(--accent);box-shadow:var(--glow);transform:translateY(-2px)}
 .stage{height:104px;overflow:hidden;flex-shrink:0;background:#fff;background-image:radial-gradient(#e9ebf3 1px,transparent 1px);background-size:14px 14px;border-bottom:1px solid var(--border)}
-.stage-inner{width:200%;transform:scale(.5);transform-origin:top left;padding:16px;pointer-events:none;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;line-height:1.6;color:#1a1a1a}
+.stage-inner{animation:stagein .25s ease both;width:200%;transform:scale(.5);transform-origin:top left;padding:16px;pointer-events:none;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;line-height:1.6;color:#1a1a1a}
 .stage-inner *{max-width:100%}
+@keyframes stagein{from{opacity:0}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){.stage-inner{animation:none}}
 .stage-empty{display:grid;place-items:center}
 .stage-empty code{font-family:ui-monospace,'SF Mono',Monaco,monospace;font-size:12px;color:var(--text-muted);background:var(--surface-2);border:1px solid var(--border);border-radius:6px;padding:4px 10px}
 .card-meta{padding:12px 15px 13px;display:flex;flex-direction:column;flex:1}
@@ -1491,6 +1493,8 @@ search.addEventListener('input', update);
     });
   }, { rootMargin: '800px 0px' });
   stages.forEach(el => io.observe(el));
+  // Fetch the thumbnail file once the page is idle, so the first scroll to the grid finds it already there.
+  (window.requestIdleCallback || (f => setTimeout(f, 1500)))(load, { timeout: 4000 });
 })();
 
 // Pre-fill from ?q= so the homepage's SearchAction (see JSON-LD) is real,
