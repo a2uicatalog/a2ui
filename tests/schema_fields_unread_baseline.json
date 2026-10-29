@@ -46,6 +46,28 @@
  "bezier_easing": [
   "theme"
  ],
+ "block_robot": [
+  "angle",
+  "base",
+  "elevation",
+  "fill",
+  "label",
+  "look",
+  "motion",
+  "ratio",
+  "turns"
+ ],
+ "block_rocket": [
+  "angle",
+  "base",
+  "elevation",
+  "fill",
+  "label",
+  "look",
+  "motion",
+  "ratio",
+  "turns"
+ ],
  "blur_fade_in": [
   "background",
   "blur",
