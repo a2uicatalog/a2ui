@@ -1477,6 +1477,22 @@ document.querySelectorAll('.filter').forEach(btn => {
 
 search.addEventListener('input', update);
 
+// Card thumbnails (decorative, aria-hidden) load from /atoms/stages.json as a card nears the viewport.
+(function () {
+  const stages = document.querySelectorAll('.stage[data-stage]');
+  if (!stages.length || !('IntersectionObserver' in window)) return;
+  let data = null;
+  const load = () => data || (data = fetch('/atoms/stages.json').then(r => r.json()).catch(() => ({})));
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      io.unobserve(e.target);
+      load().then(d => { const h = d[e.target.dataset.stage]; if (h && !e.target.firstChild) e.target.innerHTML = h; });
+    });
+  }, { rootMargin: '800px 0px' });
+  stages.forEach(el => io.observe(el));
+})();
+
 // Pre-fill from ?q= so the homepage's SearchAction (see JSON-LD) is real,
 // not just a structured-data claim: a search-engine "site search box" link
 // (?q=<term>) actually filters the grid on load, same as typing it in.
@@ -1496,6 +1512,9 @@ search.addEventListener('input', update);
 # rhythm holds. content-visibility:auto keeps offscreen cards unrendered.
 _PREVIEW_MAX_CHARS = 3500
 _preview_stats = {"rendered": 0, "no_renderer": 0, "script": 0, "oversize": 0, "error": 0}
+# Card thumbnails are decorative (aria-hidden, inert), so they ship in /atoms/stages.json and are filled in as a card nears the viewport
+# (INDEX_JS) instead of weighing down the homepage document. The card's own text, link and heading stay in the page.
+_STAGES = {}
 
 
 def card_stage(atom):
@@ -1543,7 +1562,8 @@ def card_stage(atom):
     # must not surface to assistive tech as if they were real, actionable
     # controls. Confirmed via audit, 2026-07-31: this is the source of most of
     # a scan's "unlabeled form controls" finding on the homepage.
-    return f'<div class="stage"><div class="stage-inner" aria-hidden="true" inert>{html}</div></div>'
+    _STAGES[atom_type] = f'<div class="stage-inner" aria-hidden="true" inert>{html}</div>'
+    return f'<div class="stage" data-stage="{atom_type}" aria-hidden="true"></div>'
 
 
 def _agent_sketchpad_sequence_html(strokes, view_box, caption, delay_ms=1500):
@@ -4165,6 +4185,7 @@ def main():
 
     index_path = ROOT / "public" / "index.html"
     index_path.write_text(generate_index(unique))
+    (OUTPUT_DIR / "stages.json").write_text(json.dumps(_STAGES, separators=(",", ":")))
 
     (OUTPUT_DIR / "index.html").write_text(render_atoms_hub(unique))
     (ROOT / "public" / "atoms.md").write_text(render_atoms_hub_md(unique))
