@@ -49,3 +49,20 @@ def test_homepage_carries_the_film_once():
 
 def test_homepage_size_budget():
     assert len((ROOT / "public" / "index.html").read_bytes()) < 2_600_000
+
+
+def test_film_scripts_are_inert_until_their_variant_is_on_screen_and_posters_exist():
+    """Speed (2026-10-29): the four variants ship their scripts as type=text/plain; film-hero-js starts only the visible one. Each variant has a poster."""
+    import importlib.util
+    import sys
+    sys.path.insert(0, str(ROOT / "renderers"))
+    spec = importlib.util.spec_from_file_location("gap", ROOT / "scripts" / "generate_atom_pages.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    html = mod.render_landing_film()
+    assert "<script>" not in html and html.count('<script type="text/plain" data-film-js>') >= 4
+    assert "script[data-film-js]" in mod.LANDING_FILM_JS and "film-live" in mod.LANDING_FILM_JS
+    for aspect in ("wide", "tall"):
+        for theme in ("light", "dark"):
+            assert f"/brand/film-poster-{aspect}-{theme}.webp" in mod.LANDING_FILM_CSS
+            assert (ROOT / "public" / "brand" / f"film-poster-{aspect}-{theme}.webp").stat().st_size > 2000

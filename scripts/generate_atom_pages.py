@@ -1576,7 +1576,8 @@ def _agent_sketchpad_sequence_html(strokes, view_box, caption, delay_ms=1500):
         i++;
         setTimeout(step,{delay_ms});
       }}
-      setTimeout(step,{delay_ms});
+      function go(){{setTimeout(step,{delay_ms});}}
+      if(el&&window.IntersectionObserver){{var io=new IntersectionObserver(function(a){{if(a[0].isIntersecting){{io.disconnect();go();}}}});io.observe(el);}}else{{go();}}
     }})();</script>'''
 
 
@@ -1822,9 +1823,19 @@ def _atom_spotlight_html():
 # ─── homepage film (2026-10-01): four stable-atom motion_timeline films (wide/tall x light/dark), rendered at build time ───────
 # The film JSON in landing/ is plain catalogue data (only stable atoms; tests/test_landing_film.py holds that). The page shows
 # the wide one from 760px and the tall one below, in the visitor's theme; Replay/Skip drive the film's own seek()/play().
-LANDING_FILM_CSS = r'''<style id="film-hero-css">
+LANDING_FILM_CSS = r'''<link rel="preload" as="image" href="/brand/film-poster-wide-light.webp" media="(min-width:760px)" fetchpriority="high">
+<link rel="preload" as="image" href="/brand/film-poster-tall-light.webp" media="(max-width:759px)" fetchpriority="high">
+<style id="film-hero-css">
 .film-hero{position:relative;background:var(--bg,#f6f9fd);overflow:hidden}
-.film-hero .mf{display:none;margin:0 auto;width:100%}
+.film-hero .mf{display:none;position:relative;margin:0 auto;width:100%}
+/* Poster still (frame at 2.5 s of each film, scripts/film_posters.mjs): painted first, faded out once the film is running. A CSS background,
+   so only the variant on screen is ever fetched. */
+.film-hero .mf::before{content:"";position:absolute;inset:0;z-index:4;pointer-events:none;background:var(--poster) center/cover no-repeat;transition:opacity .5s ease}
+.film-hero.film-live .mf::before{opacity:0}
+.film-hero .mf-wide.mf-light{--poster:url(/brand/film-poster-wide-light.webp)}
+.film-hero .mf-wide.mf-dark{--poster:url(/brand/film-poster-wide-dark.webp)}
+.film-hero .mf-tall.mf-light{--poster:url(/brand/film-poster-tall-light.webp)}
+.film-hero .mf-tall.mf-dark{--poster:url(/brand/film-poster-tall-dark.webp)}
 .film-hero .mf-wide{max-width:calc((100vh - 60px)*16/9)}
 .film-hero .mf-tall{max-width:calc((100vh - 60px)*9/16)}
 .film-hero .mt-root{margin:0!important}
@@ -1841,6 +1852,13 @@ LANDING_FILM_CSS = r'''<style id="film-hero-css">
 </style>'''
 
 LANDING_FILM_JS = r'''<script id="film-hero-js">(function(){var h=document.querySelector(".film-hero");if(!h)return;
+/* The four variants (wide/tall x light/dark) ship their scripts inert (type=text/plain). Only the variant on screen is started, after first
+   paint; the others start when a resize or a theme change brings them into view. */
+function arm(){var v=h.querySelectorAll(".mf");for(var i=0;i<v.length;i++){if(!v[i].offsetParent)continue;var s=v[i].querySelectorAll("script[data-film-js]");
+for(var j=0;j<s.length;j++){var n=document.createElement("script");n.text=s[j].textContent;s[j].parentNode.replaceChild(n,s[j]);}}}
+function live(){arm();requestAnimationFrame(function(){requestAnimationFrame(function(){h.classList.add("film-live");});});}
+(window.requestIdleCallback||function(f){setTimeout(f,0);})(live,{timeout:600});
+window.addEventListener("resize",arm);if(window.MutationObserver)new MutationObserver(arm).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
 function cur(){var v=h.querySelectorAll(".mf");for(var i=0;i<v.length;i++){if(v[i].offsetParent){var r=v[i].querySelector(".mt-root");return r&&window.__a2uiMotion&&window.__a2uiMotion[r.id.slice(3)];}}}
 h.addEventListener("click",function(e){var b=e.target.closest("[data-film]");if(!b)return;var k=b.getAttribute("data-film");
 if(k==="more"){var m=document.querySelector("main");if(m)m.scrollIntoView({behavior:"smooth"});return;}
@@ -1850,8 +1868,8 @@ var f=cur();if(!f)return;if(k==="skip"){f.pause();f.seek(f.dur);}else{f.seek(0);
 def render_landing_film():
     def film(aspect, theme):
         d = json.loads((ROOT / "landing" / f"film-{aspect}-{theme}.json").read_text())
-        return (f'<div class="mf mf-{aspect} mf-{theme}">'
-                + _web_renderer._RENDERERS["motion_timeline"](dict(d["blocks"][0])) + "</div>")
+        html = _web_renderer._RENDERERS["motion_timeline"](dict(d["blocks"][0])).replace("<script>", '<script type="text/plain" data-film-js>')
+        return f'<div class="mf mf-{aspect} mf-{theme}">' + html + "</div>"
     return ('<section class="film-hero" aria-label="A2UI Catalog introduction">'
             + "".join(film(a, t) for a in ("wide", "tall") for t in ("light", "dark"))
             + '<div class="film-ui"><button type="button" data-film="replay">Replay</button><button type="button" data-film="skip">Skip</button></div>'
