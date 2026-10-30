@@ -1,0 +1,94 @@
+{
+ "label": "oracle-slice-3types__elemental__gemini-3.5-flash-lite__first-run-timing-invalid__run3",
+ "task": "T2",
+ "format": "elemental",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display-elemental.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "heading",
+      "component": "heading",
+      "text": "Performance & Metrics Overview"
+     },
+     {
+      "id": "kpi-row",
+      "component": "metric_row",
+      "cols": 4,
+      "metrics": {
+       "path": "/metrics"
+      }
+     },
+     {
+      "id": "benchmark-heading",
+      "component": "heading",
+      "text": "Regional Benchmark Comparison"
+     },
+     {
+      "id": "benchmark",
+      "component": "benchmark_comparison",
+      "items": {
+       "path": "/benchmark_items"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_data_model": {
+    "surface_id": "main",
+    "path": "/",
+    "value": {
+     "metrics": [
+      {
+       "value": "$128,430",
+       "label": "Total Revenue",
+       "prefix": "$",
+       "trend": "up"
+      },
+      {
+       "value": "1,429",
+       "label": "New Subscriptions",
+       "trend": "up"
+      },
+      {
+       "value": "99.8%",
+       "label": "System Uptime",
+       "trend": "up"
+      },
+      {
+       "value": "4.2ms",
+       "label": "Avg Latency",
+       "trend": "down"
+      }
+     ],
+     "benchmark_items": [
+      {
+       "label": "Region A",
+       "value": 85
+      },
+      {
+       "label": "Region B",
+       "value": 92
+      },
+      {
+       "label": "Region C",
+       "value": 78
+      }
+     ]
+    }
+   }
+  }
+ ]
+}

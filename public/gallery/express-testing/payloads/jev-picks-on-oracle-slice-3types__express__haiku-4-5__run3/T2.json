@@ -1,0 +1,88 @@
+{
+ "label": "jev-picks-on-oracle-slice-3types__express__haiku-4-5__run3",
+ "task": "T2",
+ "format": "express",
+ "model_id": null,
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/jc-t2.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 4,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "_inline_1"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_2"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_3"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_4"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "_inline_1",
+      "component": "stat_card",
+      "value": "$12,450",
+      "label": "Revenue",
+      "delta": "+8.2%",
+      "is_up": true,
+      "accent": "#4CAF50"
+     },
+     {
+      "id": "_inline_2",
+      "component": "stat_card",
+      "value": "2,891",
+      "label": "Active Users",
+      "delta": "+12.5%",
+      "is_up": true,
+      "accent": "#2196F3"
+     },
+     {
+      "id": "_inline_3",
+      "component": "stat_card",
+      "value": "94.2%",
+      "label": "Conversion Rate",
+      "delta": "-2.1%",
+      "is_up": false,
+      "accent": "#FF9800"
+     },
+     {
+      "id": "_inline_4",
+      "component": "stat_card",
+      "value": "3.2s",
+      "label": "Avg. Load Time",
+      "delta": "+0.5s",
+      "is_up": false,
+      "accent": "#F44336"
+     }
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,34 @@
+{
+ "task": "T6",
+ "condition": "CT",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-4-5-20251001",
+ "label": "oracle-slice-3types__express__haiku-4-5__temp0__run2",
+ "agent_type": "Learning",
+ "catalogue": "C-learning.json",
+ "atoms_in_catalogue": 36,
+ "prompt_chars": 21139,
+ "slot_recall": [
+  2,
+  2
+ ],
+ "secs": 4.5,
+ "usage": {
+  "input_tokens": 5878,
+  "output_tokens": 393
+ },
+ "valid": false,
+ "error": "A2uiCompilationValidationError: Property 'front_content' of component 'flip_card' does not support dynamic data bindings (paths). - Help: Property 'front_content' on 'flip_card' must be a static literal value, not a dynamic databinding ($path).",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "flashcard deck": false,
+   "progress indicator": false
+  }
+ },
+ "reply": "<a2ui>\n$/reviewed_count = 0\n$/total_cards = 10\n\ncards_data = [\n  {front: \"Serendipity\", back: \"The occurrence of events by chance in a happy or beneficial way\"},\n  {front: \"Ephemeral\", back: \"Lasting for a very short time; transitory\"},\n  {front: \"Eloquent\", back: \"Fluent or persuasive in speaking or writing\"},\n  {front: \"Ubiquitous\", back: \"Present, appearing, or found everywhere\"},\n  {front: \"Pragmatic\", back: \"Dealing with things in a practical, realistic way based on actual circumstances\"},\n  {front: \"Melancholy\", back: \"A feeling of pensive sadness, typically with no obvious cause\"},\n  {front: \"Benevolent\", back: \"Kind, generous, and charitable in nature\"},\n  {front: \"Cacophony\", back: \"A harsh, discordant mixture of sounds\"},\n  {front: \"Diligent\", back: \"Having or showing care in one's work or duties\"},\n  {front: \"Nostalgia\", back: \"A sentimental longing for the past, typically for a period or place with happy associations\"}\n]\n\ncard_template = flip_card($front, $back, true)\n\nroot = [\n  page_header(\"Vocabulary Flashcards\", \"Review 10 essential vocabulary words\", icon=\"\ud83d\udcda\"),\n  progress_bar($/reviewed_count, \"Cards Reviewed\", accent=\"#4f46e5\", show_percent=true),\n  _template(cards_data, card_template)\n]\n</a2ui>"
+}

@@ -1,0 +1,110 @@
+{
+ "label": "rule-slice__express__haiku-5-5__run3",
+ "task": "T3",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/b-marketing-commerce.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "hero",
+      "component": "gradient_hero",
+      "title": "Ship faster with Lumen",
+      "subtitle": "The all-in-one workspace that keeps your team, tools, and releases in sync.",
+      "badge": "NEW IN 2026",
+      "accent": "#4f46e5",
+      "accent2": "#8b5cf6",
+      "align": "center",
+      "cta_label": "Start free trial",
+      "cta_url": "https://example.com/signup"
+     },
+     {
+      "id": "feat1",
+      "component": "info_card",
+      "title": "Instant setup",
+      "text": "Connect your existing tools in minutes, with no migration project required."
+     },
+     {
+      "id": "feat2",
+      "component": "info_card",
+      "title": "Real-time sync",
+      "text": "Every change reaches your whole team the moment it is saved."
+     },
+     {
+      "id": "feat3",
+      "component": "info_card",
+      "title": "Enterprise security",
+      "text": "SSO, audit logs, and granular roles are included on every plan."
+     },
+     {
+      "id": "features",
+      "component": "columns",
+      "cols": 3,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "feat1"
+        ]
+       },
+       {
+        "blocks": [
+         "feat2"
+        ]
+       },
+       {
+        "blocks": [
+         "feat3"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "testimonial",
+      "component": "blockquote_with_avatar",
+      "quote": "Lumen cut our release cycle in half. We stopped losing hours to status meetings.",
+      "author_name": "Priya Raman",
+      "author_title": "VP of Engineering, Northwind",
+      "avatar_url": "https://example.com/avatars/priya.jpg"
+     },
+     {
+      "id": "cta",
+      "component": "cta_section",
+      "heading": "Ready to ship with confidence?",
+      "body": "Start your 14-day free trial today. No credit card required.",
+      "primary_cta": {
+       "label": "Get started free",
+       "url": "https://example.com/signup"
+      },
+      "background": "#0f172a"
+     },
+     {
+      "id": "root",
+      "component": "color_section",
+      "accent": "#ffffff",
+      "style": "light",
+      "padding": "0px",
+      "grid": false,
+      "blocks": [
+       "hero",
+       "features",
+       "testimonial",
+       "cta"
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

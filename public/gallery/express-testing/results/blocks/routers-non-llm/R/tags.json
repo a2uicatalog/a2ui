@@ -1,0 +1,450 @@
+[
+ {
+  "model": "tags",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "B1",
+  "reply": "{\"catalogue\": null}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 4.900656000245363e-05,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-atoms-v1",
+    0.0
+   ],
+   [
+    "a2ui-aviation-v1",
+    0.0
+   ],
+   [
+    "a2ui-bricks-v1",
+    0.0
+   ]
+  ],
+  "threshold": 0.0
+ },
+ {
+  "model": "tags",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "B2",
+  "reply": "{\"catalogue\": \"a2ui-aviation-v1\"}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 7.333763467613607e-05,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-aviation-v1",
+    2.0057
+   ],
+   [
+    "a2ui-presentation-v1",
+    1.3305
+   ],
+   [
+    "a2ui-embeds-v1",
+    0.89
+   ]
+  ],
+  "threshold": 0.0
+ },
+ {
+  "model": "tags",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "B3",
+  "reply": "{\"catalogue\": \"a2ui-presentation-v1\"}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 9.888861502986401e-05,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-presentation-v1",
+    0.3651
+   ],
+   [
+    "a2ui-marketing-v1",
+    0.2564
+   ],
+   [
+    "a2ui-learning-v1",
+    0.2359
+   ]
+  ],
+  "threshold": 0.0
+ },
+ {
+  "model": "tags",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "B4",
+  "reply": "{\"catalogue\": \"a2ui-aviation-v1\"}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 8.726621977984905e-05,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-aviation-v1",
+    2.0057
+   ],
+   [
+    "a2ui-presentation-v1",
+    1.3305
+   ],
+   [
+    "a2ui-embeds-v1",
+    0.89
+   ]
+  ],
+  "threshold": 0.0
+ },
+ {
+  "model": "tags",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "B5",
+  "reply": "{\"catalogue\": \"a2ui-embeds-v1\"}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 7.649373495951295e-05,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-embeds-v1",
+    0.6923
+   ],
+   [
+    "a2ui-charts-v1",
+    0.554
+   ],
+   [
+    "a2ui-aviation-v1",
+    0.4826
+   ]
+  ],
+  "threshold": 0.0
+ },
+ {
+  "model": "tags",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "B6",
+  "reply": "{\"catalogue\": \"a2ui-embeds-v1\"}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 7.547491462901234e-05,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-embeds-v1",
+    0.6923
+   ],
+   [
+    "a2ui-charts-v1",
+    0.554
+   ],
+   [
+    "a2ui-aviation-v1",
+    0.4826
+   ]
+  ],
+  "threshold": 0.0
+ },
+ {
+  "model": "tags",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "B7",
+  "reply": "{\"catalogue\": \"a2ui-presentation-v1\"}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 0.00013116043526679278,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-presentation-v1",
+    0.8851
+   ],
+   [
+    "a2ui-atoms-v1",
+    0.3467
+   ],
+   [
+    "a2ui-editorial-v1",
+    0.293
+   ]
+  ],
+  "threshold": 0.0
+ },
+ {
+  "model": "tags",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "B8",
+  "reply": "{\"catalogue\": \"a2ui-charts-v1\"}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 0.00010706559987738729,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-charts-v1",
+    1.8062
+   ],
+   [
+    "a2ui-aviation-v1",
+    0.9912
+   ],
+   [
+    "a2ui-ops-v1",
+    0.5505
+   ]
+  ],
+  "threshold": 0.0
+ },
+ {
+  "model": "tags",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "X1",
+  "reply": "{\"catalogue\": \"a2ui-charts-v1\"}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 0.00013249253039248287,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-charts-v1",
+    1.6016
+   ],
+   [
+    "a2ui-aviation-v1",
+    0.8226
+   ],
+   [
+    "a2ui-presentation-v1",
+    0.4039
+   ]
+  ],
+  "threshold": 0.0
+ },
+ {
+  "model": "tags",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "X2",
+  "reply": "{\"catalogue\": \"a2ui-marketing-v1\"}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 0.0001593337400117889,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-marketing-v1",
+    0.4411
+   ],
+   [
+    "a2ui-atoms-v1",
+    0.4391
+   ],
+   [
+    "a2ui-ops-v1",
+    0.2407
+   ]
+  ],
+  "threshold": 0.0
+ },
+ {
+  "model": "tags",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "X3",
+  "reply": "{\"catalogue\": \"a2ui-learning-v1\"}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 0.00015846560010686516,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-learning-v1",
+    1.0146
+   ],
+   [
+    "a2ui-presentation-v1",
+    0.3993
+   ],
+   [
+    "a2ui-ops-v1",
+    0.1664
+   ]
+  ],
+  "threshold": 0.0
+ },
+ {
+  "model": "tags",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "X4",
+  "reply": "{\"catalogue\": \"a2ui-aviation-v1\"}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 0.00014799277996644378,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-aviation-v1",
+    1.8015
+   ],
+   [
+    "a2ui-presentation-v1",
+    1.1762
+   ],
+   [
+    "a2ui-charts-v1",
+    0.6502
+   ]
+  ],
+  "threshold": 0.0
+ },
+ {
+  "model": "tags",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "X5",
+  "reply": "{\"catalogue\": \"a2ui-charts-v1\"}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 0.00016468650486785918,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-charts-v1",
+    1.0167
+   ],
+   [
+    "a2ui-aviation-v1",
+    0.7202
+   ],
+   [
+    "a2ui-ops-v1",
+    0.6727
+   ]
+  ],
+  "threshold": 0.0
+ },
+ {
+  "model": "tags",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "X6",
+  "reply": "{\"catalogue\": \"a2ui-marketing-v1\"}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 0.00015457064961083234,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-marketing-v1",
+    0.8347
+   ],
+   [
+    "a2ui-editorial-v1",
+    0.6842
+   ],
+   [
+    "a2ui-display-v1",
+    0.374
+   ]
+  ],
+  "threshold": 0.0
+ },
+ {
+  "model": "tags",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "X7",
+  "reply": "{\"catalogue\": null}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 4.465894540771842e-05,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-atoms-v1",
+    0.0
+   ],
+   [
+    "a2ui-aviation-v1",
+    0.0
+   ],
+   [
+    "a2ui-bricks-v1",
+    0.0
+   ]
+  ],
+  "threshold": 0.0
+ },
+ {
+  "model": "tags",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "X8",
+  "reply": "{\"catalogue\": \"a2ui-marketing-v1\"}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 0.00014888587465975434,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-marketing-v1",
+    0.557
+   ],
+   [
+    "a2ui-meta-v1",
+    0.1723
+   ],
+   [
+    "a2ui-ops-v1",
+    0.1092
+   ]
+  ],
+  "threshold": 0.0
+ }
+]

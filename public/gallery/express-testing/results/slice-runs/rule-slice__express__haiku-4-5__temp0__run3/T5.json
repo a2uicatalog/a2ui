@@ -1,0 +1,43 @@
+{
+ "task": "T5",
+ "condition": "BT",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-4-5-20251001",
+ "label": "rule-slice__express__haiku-4-5__temp0__run3",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "B-marketing-commerce.json",
+ "atoms_in_catalogue": 189,
+ "prompt_chars": 80817,
+ "slot_recall": [
+  1,
+  1
+ ],
+ "secs": 3.7,
+ "usage": {
+  "input_tokens": 23063,
+  "output_tokens": 378
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "pricing_tier_group"
+ ],
+ "score": {
+  "per_approach": {
+   "tier_cards": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+   },
+   "comparison_table": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": null
+   }
+  },
+  "best_approach": "tier_cards",
+  "f1": 1.0
+ },
+ "reply": "<a2ui>\nroot = pricing_tier_group(\n  tiers=[\n    {\n      plan_name: \"Starter\",\n      price: \"29\",\n      currency: \"$\",\n      frequency: \"/month\",\n      features: [\n        \"Up to 10 projects\",\n        \"Basic analytics\",\n        \"Community support\",\n        \"1 GB storage\"\n      ],\n      call_to_action_label: \"Get Started\",\n      call_to_action_url: \"#\",\n      is_highlighted: false\n    },\n    {\n      plan_name: \"Professional\",\n      price: \"79\",\n      currency: \"$\",\n      frequency: \"/month\",\n      features: [\n        \"Unlimited projects\",\n        \"Advanced analytics\",\n        \"Priority email support\",\n        \"100 GB storage\",\n        \"Custom integrations\",\n        \"Team collaboration\"\n      ],\n      call_to_action_label: \"Start Free Trial\",\n      call_to_action_url: \"#\",\n      is_highlighted: true\n    },\n    {\n      plan_name: \"Enterprise\",\n      price: \"Custom\",\n      currency: \"\",\n      frequency: \"pricing\",\n      features: [\n        \"Everything in Professional\",\n        \"Dedicated account manager\",\n        \"24/7 phone support\",\n        \"Unlimited storage\",\n        \"Custom SLA\",\n        \"Advanced security\"\n      ],\n      call_to_action_label: \"Contact Sales\",\n      call_to_action_url: \"#\",\n      is_highlighted: false\n    }\n  ]\n)\n</a2ui>"
+}

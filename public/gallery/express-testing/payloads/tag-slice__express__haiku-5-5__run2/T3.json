@@ -1,0 +1,86 @@
+{
+ "label": "tag-slice__express__haiku-5-5__run2",
+ "task": "T3",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/g-marketing-commerce.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "hero",
+      "component": "gradient_hero",
+      "title": "Ship faster with less overhead",
+      "subtitle": "A lightweight platform that turns your ideas into production-ready apps in minutes, not weeks.",
+      "badge": "New in 2026",
+      "accent": "#4f46e5",
+      "accent2": "#8b5cf6",
+      "align": "center",
+      "cta_label": "Get started free",
+      "cta_url": "https://example.com/signup"
+     },
+     {
+      "id": "features",
+      "component": "feature_grid",
+      "heading": "Why teams choose us",
+      "description": "Everything you need to build, launch, and scale.",
+      "columns": 3,
+      "features": [
+       {
+        "icon": "bolt",
+        "title": "Blazing fast",
+        "description": "Deploy in seconds with zero-config pipelines."
+       },
+       {
+        "icon": "shield",
+        "title": "Secure by default",
+        "description": "Built-in authentication, encryption, and audit logs."
+       },
+       {
+        "icon": "trending_up",
+        "title": "Scales with you",
+        "description": "From prototype to millions of requests without re-architecting."
+       }
+      ]
+     },
+     {
+      "id": "testimonial",
+      "component": "blockquote_with_avatar",
+      "quote": "We cut our release cycle in half in the first month. The team actually enjoys shipping now.",
+      "author_name": "Maya Chen",
+      "author_title": "VP of Engineering, Northwind"
+     },
+     {
+      "id": "cta",
+      "component": "cta_button",
+      "url": "https://example.com/signup",
+      "label": "Start your free trial",
+      "color": "#4f46e5",
+      "same_tab": false
+     },
+     {
+      "id": "root",
+      "component": "color_section",
+      "style": "light",
+      "padding": "48px 24px",
+      "blocks": [
+       "hero",
+       "features",
+       "testimonial",
+       "cta"
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

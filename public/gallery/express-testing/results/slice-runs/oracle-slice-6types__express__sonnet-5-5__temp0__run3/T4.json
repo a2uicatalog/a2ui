@@ -1,0 +1,44 @@
+{
+ "task": "T4",
+ "condition": "DT_sonnet-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-sonnet-5-5",
+ "hints": false,
+ "label": "oracle-slice-6types__express__sonnet-5-5__temp0__run3",
+ "agent_type": "T4",
+ "catalogue": "D-t4.json",
+ "atoms_in_catalogue": 20,
+ "prompt_chars": 10490,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 15.1,
+ "usage": {
+  "input_tokens": 3799,
+  "output_tokens": 1918
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "heading",
+  "segmented_control",
+  "entity_list",
+  "badge_group",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.4,
+  "recall": 0.667,
+  "f1": 0.5,
+  "slot_hits": {
+   "list": true,
+   "status indicator": false,
+   "filter control": true
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"status-list\")\npageTitle = heading(\"Project Items\")\nfilter = segmented_control([{label: \"All\", value: \"all\"}, {label: \"Done\", value: \"done\"}, {label: \"In progress\", value: \"in_progress\"}, {label: \"Blocked\", value: \"blocked\"}, {label: \"Queued\", value: \"queued\"}], \"all\", \"status_filter\")\nitemList = entity_list([\n  {name: \"Provision staging database\", subtitle: \"Replica synced and verified\", icon: \"\ud83d\uddc4\ufe0f\", status: \"Done\"},\n  {name: \"Migrate auth service\", subtitle: \"Cutover scheduled for Friday\", icon: \"\ud83d\udd10\", status: \"In progress\"},\n  {name: \"Update TLS certificates\", subtitle: \"All edge nodes renewed for 12 months\", icon: \"\ud83d\udcdc\", status: \"Done\"},\n  {name: \"Rotate API keys\", subtitle: \"Waiting on vendor approval\", icon: \"\ud83d\udd11\", status: \"Blocked\"},\n  {name: \"Enable audit logging\", subtitle: \"Pipeline deployed to 3 of 5 regions\", icon: \"\ud83d\udcdd\", status: \"In progress\"},\n  {name: \"Load test checkout\", subtitle: \"Test plan drafted, awaiting environment\", icon: \"\ud83d\udcc8\", status: \"Queued\"},\n  {name: \"Retire legacy cron jobs\", subtitle: \"Blocked by dependency on billing export\", icon: \"\u23f1\ufe0f\", status: \"Blocked\"},\n  {name: \"Document runbooks\", subtitle: \"Starts after migration completes\", icon: \"\ud83d\udcda\", status: \"Queued\"}\n])\nsummary = badge_group(\"Summary\", [{text: \"2 Done\", color: \"green\"}, {text: \"2 In progress\", color: \"blue\", pulse: true}, {text: \"2 Blocked\", color: \"red\"}, {text: \"2 Queued\", color: \"grey\"}])\nroot = columns(2, \"1.5rem\", \"top\", [{blocks: [pageTitle, filter, itemList]}, {blocks: [summary]}])\n</a2ui>"
+}

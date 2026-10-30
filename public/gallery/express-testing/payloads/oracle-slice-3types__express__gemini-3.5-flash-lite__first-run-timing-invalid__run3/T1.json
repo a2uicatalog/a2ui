@@ -1,0 +1,135 @@
+{
+ "label": "oracle-slice-3types__express__gemini-3.5-flash-lite__first-run-timing-invalid__run3",
+ "task": "T1",
+ "format": "express",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "water-cycle-lesson",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "water-cycle-lesson",
+    "components": [
+     {
+      "id": "header",
+      "component": "page_header",
+      "title": "The Water Cycle",
+      "subtitle": "Understand how Earth recycles its water through evaporation, condensation, and precipitation.",
+      "icon": "\ud83d\udca7",
+      "tag": "Lesson 1",
+      "accent": "#0284c7"
+     },
+     {
+      "id": "intro",
+      "component": "callout",
+      "kind": "info",
+      "title": "Overview",
+      "text": "Water is constantly moving around our planet in a continuous journey known as the hydrologic cycle. Let's break down the three primary phases."
+     },
+     {
+      "id": "step1",
+      "component": "concept_rung",
+      "badge": "1",
+      "kind": "depth",
+      "title": "Evaporation and Transpiration",
+      "body": "The sun heats up water in oceans, rivers, and lakes, causing it to change from a liquid into water vapor (gas) and rise into the atmosphere. Plants also release moisture from their leaves in a process called transpiration."
+     },
+     {
+      "id": "step2",
+      "component": "concept_rung",
+      "badge": "2",
+      "kind": "depth",
+      "title": "Condensation",
+      "body": "As water vapor rises high into the cooler air, it cools down and turns back into tiny liquid water droplets or ice crystals. These droplets gather around microscopic particles in the air to form clouds and fog."
+     },
+     {
+      "id": "step3",
+      "component": "concept_rung",
+      "badge": "3",
+      "kind": "depth",
+      "title": "Precipitation and Collection",
+      "body": "When the water droplets in clouds become too heavy to stay suspended in the air, they fall back to Earth as rain, snow, sleet, or hail. This precipitation collects in rivers, lakes, and oceans, ready to start the cycle all over again."
+     },
+     {
+      "id": "example",
+      "component": "concept_rung",
+      "badge": "EX",
+      "kind": "example",
+      "title": "Worked Example: A Puddle on a Sunny Day",
+      "body": "Have you ever noticed a puddle disappear a few hours after it stops raining? That is the water cycle in miniature!\n\n1. Heat from the sun supplies energy.\n2. Liquid water molecules absorb the heat and evaporate into the air.\n3. The puddle dries up entirely, and the water enters the invisible vapor phase.",
+      "code": "# Conceptual Water Balance\ntotal_water = evaporation + transpiration\nclouds = condensation(total_water)\nprecipitation = clouds.drop() if clouds.weight > threshold else None\n",
+      "code_caption": "Simplified physical simulation of phase change",
+      "takeaway": "Phase changes are driven by thermal energy transfer from the sun."
+     },
+     {
+      "id": "quiz",
+      "component": "quiz_set",
+      "title": "Water Cycle Self-Check",
+      "pass_score": 66,
+      "accent": "#0284c7",
+      "questions": [
+       {
+        "question": "What process turns liquid water into water vapor using heat from the sun?",
+        "options": [
+         "Condensation",
+         "Evaporation",
+         "Precipitation",
+         "Infiltration"
+        ],
+        "correct": 1,
+        "explanation": "Evaporation is the process where liquid water absorbs thermal energy and converts into gas."
+       },
+       {
+        "question": "How do clouds form in the atmosphere?",
+        "options": [
+         "Water vapor cools and condenses into tiny droplets",
+         "Ice melts directly on floating dust",
+         "Rain falls upward from mountain peaks",
+         "Oceans splash moisture into outer space"
+        ],
+        "correct": 0,
+        "explanation": "Condensation happens when warm water vapor rises, cools down, and forms liquid droplets around particles."
+       },
+       {
+        "question": "Which of the following is an example of precipitation?",
+        "options": [
+         "Sunlight",
+         "Wind",
+         "Rain",
+         "Evaporation"
+        ],
+        "correct": 2,
+        "explanation": "Rain, snow, sleet, and hail are all forms of precipitation that fall from heavy clouds."
+       }
+      ]
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "2rem",
+      "items": [
+       {
+        "blocks": [
+         "header",
+         "intro",
+         "step1",
+         "step2",
+         "step3",
+         "example",
+         "quiz"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

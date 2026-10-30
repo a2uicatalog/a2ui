@@ -1,0 +1,109 @@
+{
+ "label": "tag-slice__express__haiku-4-5__run3",
+ "task": "T6",
+ "format": "express",
+ "model_id": null,
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/g-learning.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "items": [
+       {
+        "blocks": [
+         "_inline_1",
+         "_inline_2",
+         "_inline_3"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_4"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "_inline_1",
+      "component": "heading",
+      "text": "Vocabulary Flashcards"
+     },
+     {
+      "id": "_inline_2",
+      "component": "progress_bar",
+      "value": 0,
+      "label": "Cards Reviewed",
+      "accent": "#4f46e5",
+      "show_percent": true
+     },
+     {
+      "id": "_inline_3",
+      "component": "spacer",
+      "height": "24px"
+     },
+     {
+      "id": "_inline_4",
+      "component": "flashcard_deck",
+      "cards": [
+       {
+        "front": "Serendipity",
+        "back": "The occurrence of events by chance in a happy or beneficial way"
+       },
+       {
+        "front": "Ephemeral",
+        "back": "Lasting for a very short time; transitory"
+       },
+       {
+        "front": "Eloquent",
+        "back": "Fluent or persuasive in speaking or writing"
+       },
+       {
+        "front": "Ubiquitous",
+        "back": "Present, appearing, or found everywhere"
+       },
+       {
+        "front": "Pragmatic",
+        "back": "Dealing with things in a realistic, sensible way based on practical considerations"
+       },
+       {
+        "front": "Ameliorate",
+        "back": "To make something better or improve a condition"
+       },
+       {
+        "front": "Taciturn",
+        "back": "Reserved or uncommunicative in speech; quiet"
+       },
+       {
+        "front": "Paradox",
+        "back": "A statement or situation that seems contradictory but may reveal a deeper truth"
+       },
+       {
+        "front": "Meticulous",
+        "back": "Showing great attention to detail; very careful and precise"
+       },
+       {
+        "front": "Perspicacious",
+        "back": "Having keen insight, discernment, or understanding; perceptive"
+       }
+      ],
+      "accent": "#4f46e5",
+      "label_front": "WORD",
+      "label_back": "DEFINITION"
+     }
+    ]
+   }
+  }
+ ]
+}

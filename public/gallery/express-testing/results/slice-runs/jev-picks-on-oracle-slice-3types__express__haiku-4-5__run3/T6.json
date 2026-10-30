@@ -1,0 +1,31 @@
+{
+ "task": "T6",
+ "condition": "JC",
+ "label": "jev-picks-on-oracle-slice-3types__express__haiku-4-5__run3",
+ "agent_type": "jev-narrowed",
+ "catalogue": "JC-T6.json",
+ "atoms_in_catalogue": 10,
+ "prompt_chars": 7860,
+ "slot_recall": [
+  2,
+  2
+ ],
+ "secs": 5.1,
+ "usage": {
+  "input_tokens": 2197,
+  "output_tokens": 455
+ },
+ "valid": false,
+ "error": "A2uiCompilationValidationError: Property 'front_content' of component 'flip_card' does not support dynamic data bindings (paths). - Help: Property 'front_content' on 'flip_card' must be a static literal value, not a dynamic databinding ($path).",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "flashcard deck": false,
+   "progress indicator": false
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"flashcard-surface\")\n\n// Initialize progress tracking\n$/reviewedCount = 0\n$/totalCards = 10\n\nroot = columns(1, \"2rem\", \"top\", [\n  {blocks: [\n    heading(\"Vocabulary Practice\"),\n    progress_bar(\n      value=0,\n      label=\"Cards Reviewed\",\n      accent=\"#4f46e5\",\n      show_percent=true,\n      caption=\"0 of 10 cards reviewed\"\n    )\n  ]},\n  {blocks: [\n    _template($/cards, cardTemplate)\n  ]}\n])\n\ncardTemplate = flip_card(\n  front_content=$front,\n  back_content=$back,\n  trigger_on_hover=true\n)\n\n// Card data\n$/cards = [\n  {front: \"Serendipity\", back: \"The occurrence of events by chance in a happy or beneficial way\"},\n  {front: \"Ephemeral\", back: \"Lasting for a very short time; transitory\"},\n  {front: \"Eloquent\", back: \"Fluent or persuasive in speaking or writing\"},\n  {front: \"Ubiquitous\", back: \"Present, appearing, or found everywhere\"},\n  {front: \"Pragmatic\", back: \"Dealing with things in a practical, realistic way based on actual circumstances\"},\n  {front: \"Mellifluous\", back: \"Sweet or musical; pleasant to hear\"},\n  {front: \"Obfuscate\", back: \"To deliberately make something unclear or obscure\"},\n  {front: \"Indefatigable\", back: \"Persisting tirelessly; never showing signs of tiredness\"},\n  {front: \"Perspicacious\", back: \"Having keen insight and understanding; perceptive\"},\n  {front: \"Sanguine\", back: \"Optimistic or positive, especially in an unlikely situation\"}\n]\n</a2ui>"
+}

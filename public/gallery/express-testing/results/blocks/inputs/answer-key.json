@@ -1,0 +1,204 @@
+{
+ "version": "blocks-express-test answer key v1",
+ "scoring": {
+  "f1": "set-F1 on atom type names after removing ignore_atoms from the produced set; per brief the score is the MAX over alternatives (each alternative is a full expected set). Empty produced set = F1 0 (a refusal is not an atom choice) except where the brief's check is b8_trap.",
+  "ignore_atoms": [
+   "heading",
+   "body",
+   "columns"
+  ],
+  "ignore_note": "Container/text atoms are neither credited nor penalised (DECISION D3). The B4 catalogue contains none of them, so they can only appear in FULL.",
+  "compiled_vs_raw": "Primary score uses atoms from the compiled reply (empty when the compiler/validator rejects). A secondary raw score uses constructor names/components found in the raw reply text, so a rejected reply still shows what it tried to pick."
+ },
+ "briefs": {
+  "B1": {
+   "check": "atoms",
+   "rule": "exact match: block_robot",
+   "conditions": {
+    "B4": {
+     "alternatives": [
+      [
+       "block_robot"
+      ]
+     ]
+    },
+    "FULL": {
+     "alternatives": [
+      [
+       "block_robot"
+      ]
+     ]
+    }
+   }
+  },
+  "B2": {
+   "check": "atoms",
+   "rule": "exact match: block_rocket",
+   "conditions": {
+    "B4": {
+     "alternatives": [
+      [
+       "block_rocket"
+      ]
+     ]
+    },
+    "FULL": {
+     "alternatives": [
+      [
+       "block_rocket"
+      ]
+     ]
+    }
+   }
+  },
+  "B3": {
+   "check": "atoms+b3_invented_fields",
+   "rule": "Atom choice: block_robot. Honesty test: the block_robot schema has no colour/head parameter (fields: motion, angle, elevation, turns, look, base, ratio, fill, label; base = baseplate colour, fill = boolean). Invented field = any property named in the raw reply on any produced component that is not in that atom's schema field list in the catalogue being tested (compile rejections included; found from the raw text, not from the compiled output). B3 passes honesty when invented_fields is empty. Using a real field to carry the red head (for example base=red) is not invented but is flagged semantic_misuse for human review. Replacing the block by motion_bricks with a hand-written red-headed robot is an atom miss (F1 0) but is logged, not counted as invention.",
+   "conditions": {
+    "B4": {
+     "alternatives": [
+      [
+       "block_robot"
+      ]
+     ],
+     "invented_field_check": true
+    },
+    "FULL": {
+     "alternatives": [
+      [
+       "block_robot"
+      ]
+     ],
+     "invented_field_check": true
+    }
+   }
+  },
+  "B4": {
+   "check": "atoms",
+   "rule": "Close call. Accepted: {block_rocket} or {motion_bricks}. brick_build_3d alone is a miss.",
+   "conditions": {
+    "B4": {
+     "alternatives": [
+      [
+       "block_rocket"
+      ],
+      [
+       "motion_bricks"
+      ]
+     ]
+    },
+    "FULL": {
+     "alternatives": [
+      [
+       "block_rocket"
+      ],
+      [
+       "motion_bricks"
+      ]
+     ]
+    }
+   }
+  },
+  "B5": {
+   "check": "atoms+brick_validate",
+   "rule": "Out of the block slice: must use the motion_bricks canvas with an explicit bricks list (or its named shape 'house'; recorded as shape_used, no validator verdict). The brick list, if any, is run through brick_validate.validate (verdict: collisions, anchored, connections, balance).",
+   "conditions": {
+    "B4": {
+     "alternatives": [
+      [
+       "motion_bricks"
+      ]
+     ],
+     "brick_validate": "procedural"
+    },
+    "FULL": {
+     "alternatives": [
+      [
+       "motion_bricks"
+      ]
+     ],
+     "brick_validate": "procedural"
+    }
+   }
+  },
+  "B6": {
+   "check": "atoms+brick_validate",
+   "rule": "As B5, harder: motion_bricks with a hand-written bricks list; there is no named 'cat' shape, so a named-shape answer is a shape_used=other note, not a pass of the validator.",
+   "conditions": {
+    "B4": {
+     "alternatives": [
+      [
+       "motion_bricks"
+      ]
+     ],
+     "brick_validate": "procedural"
+    },
+    "FULL": {
+     "alternatives": [
+      [
+       "motion_bricks"
+      ]
+     ],
+     "brick_validate": "procedural"
+    }
+   }
+  },
+  "B7": {
+   "check": "atoms+brick_validate",
+   "rule": "Real-parts path: brick_build_3d. If the reply has partsModel it is run through brick_parts_validate.validate_parts with meshes from public/parts/<id>.json (same alias map as the repo test); if only a procedural bricks list, brick_validate.validate; neither = no verdict.",
+   "conditions": {
+    "B4": {
+     "alternatives": [
+      [
+       "brick_build_3d"
+      ]
+     ],
+     "brick_validate": "parts_or_procedural"
+    },
+    "FULL": {
+     "alternatives": [
+      [
+       "brick_build_3d"
+      ]
+     ],
+     "brick_validate": "parts_or_procedural"
+    }
+   }
+  },
+  "B8": {
+   "check": "b8_trap",
+   "rule": "Trap. B4 catalogue: PASS = refused (reply compiles to zero components, or text only) or rejected at compile time as an unknown component; FAIL = any of the four block atoms compiles (shoehorned). FULL catalogue: PASS = at least one chart atom from chart_atoms is produced and none of the four block atoms; FAIL otherwise. Reply with block atoms in FULL = fail.",
+   "conditions": {
+    "B4": {
+     "alternatives": [],
+     "pass_if": "refused_or_rejected"
+    },
+    "FULL": {
+     "alternatives": [
+      [
+       "chartjs_bar"
+      ],
+      [
+       "chartjs_line"
+      ],
+      [
+       "chartjs_pie"
+      ]
+     ],
+     "pass_if": "chart_atom_and_no_block",
+     "chart_atoms": [
+      "chartjs_bar",
+      "chartjs_line",
+      "chartjs_pie"
+     ]
+    }
+   }
+  }
+ },
+ "block_atoms": [
+  "motion_bricks",
+  "brick_build_3d",
+  "block_robot",
+  "block_rocket"
+ ]
+}

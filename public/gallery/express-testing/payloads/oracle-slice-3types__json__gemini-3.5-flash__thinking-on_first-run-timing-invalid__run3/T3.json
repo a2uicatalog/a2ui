@@ -1,0 +1,81 @@
+{
+ "label": "oracle-slice-3types__json__gemini-3.5-flash__thinking-on_first-run-timing-invalid__run3",
+ "task": "T3",
+ "format": "json",
+ "model_id": "gemini-3.5-flash",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "product-landing-page",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "product-landing-page",
+    "components": [
+     {
+      "id": "root",
+      "component": "gradient_hero",
+      "title": "Empower Your Workflow",
+      "subtitle": "The all-in-one platform designed to streamline your team's productivity, automate busywork, and scale your operations effortlessly.",
+      "badge": "INTRODUCING WORKFLOW OS",
+      "cta_label": "Get Started Free",
+      "cta_url": "https://example.com/signup"
+     },
+     {
+      "id": "features-section",
+      "component": "feature_grid",
+      "heading": "Everything you need to succeed",
+      "description": "Powerful, modern features built directly into your daily workspace so you can focus on building great things.",
+      "columns": 3,
+      "features": [
+       {
+        "icon": "\u26a1",
+        "title": "Lightning Fast",
+        "description": "Experience zero latency with our globally distributed real-time sync technology.",
+        "badge": "New"
+       },
+       {
+        "icon": "\ud83d\udd12",
+        "title": "Bank-Grade Security",
+        "description": "Your data is protected with end-to-end encryption, regular auditing, and SOC2 compliance."
+       },
+       {
+        "icon": "\ud83e\udd16",
+        "title": "AI-Powered Automation",
+        "description": "Let AI handle your repetitive tasks, follow-ups, and data entries automatically."
+       }
+      ]
+     },
+     {
+      "id": "customer-testimonial",
+      "component": "testimonial_card",
+      "text": "Workflow OS completely transformed how our design agency operates. We successfully consolidated four separate tools and saved over 15 hours a week per creator on project management alone!",
+      "author_name": "Sarah Jenkins",
+      "author_title": "Creative Director, PixelCraft Agency",
+      "author_avatar_url": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&h=150&q=80",
+      "rating": 5
+     },
+     {
+      "id": "cta-footer",
+      "component": "cta_section",
+      "heading": "Ready to revolutionize your work?",
+      "body": "Join over 10,000+ teams who are already building the future of their businesses with Workflow OS. Start your 14-day free trial today.",
+      "primary_cta": {
+       "label": "Start Your Free Trial",
+       "url": "https://example.com/register"
+      },
+      "secondary_cta": {
+       "label": "Book a Demo",
+       "url": "https://example.com/demo"
+      },
+      "background": "#0f172a"
+     }
+    ]
+   }
+  }
+ ]
+}

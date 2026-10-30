@@ -1,0 +1,74 @@
+{
+ "label": "oracle-slice-3types__json__haiku-5-5__run1",
+ "task": "T5",
+ "format": "json",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "subscription_tiers",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "subscription_tiers",
+    "components": [
+     {
+      "id": "root",
+      "component": "pricing_tier_group",
+      "tiers": [
+       {
+        "name": "Starter",
+        "price": "$9",
+        "period": "per month",
+        "recommended": false,
+        "features": [
+         "Up to 5 projects",
+         "10 GB storage",
+         "Email support",
+         "Basic analytics"
+        ],
+        "cta_label": "Start with Starter",
+        "cta_url": "https://example.com/subscribe/starter"
+       },
+       {
+        "name": "Pro",
+        "price": "$29",
+        "period": "per month",
+        "recommended": true,
+        "badge": "Recommended",
+        "features": [
+         "Unlimited projects",
+         "100 GB storage",
+         "Priority email and chat support",
+         "Advanced analytics",
+         "Team collaboration for up to 10 members"
+        ],
+        "cta_label": "Choose Pro",
+        "cta_url": "https://example.com/subscribe/pro"
+       },
+       {
+        "name": "Enterprise",
+        "price": "$99",
+        "period": "per month",
+        "recommended": false,
+        "features": [
+         "Everything in Pro",
+         "Unlimited storage",
+         "Dedicated account manager",
+         "SSO and advanced security",
+         "Custom integrations and SLA"
+        ],
+        "cta_label": "Contact sales",
+        "cta_url": "https://example.com/contact-sales"
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

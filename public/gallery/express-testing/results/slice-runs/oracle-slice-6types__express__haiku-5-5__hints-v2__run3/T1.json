@@ -1,0 +1,48 @@
+{
+ "task": "T1",
+ "condition": "D_haiku-5-5H2",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": true,
+ "label": "oracle-slice-6types__express__haiku-5-5__hints-v2__run3",
+ "agent_type": "T1",
+ "catalogue": "D-t1.json",
+ "atoms_in_catalogue": 28,
+ "prompt_chars": 17769,
+ "slot_recall": [
+  5,
+  5
+ ],
+ "secs": 10.5,
+ "usage": {
+  "input_tokens": 6606,
+  "output_tokens": 2315
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "page_header",
+  "concept_rung",
+  "concept_rung",
+  "concept_rung",
+  "concept_rung",
+  "quiz_set",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.857,
+  "recall": 0.6,
+  "f1": 0.706,
+  "slot_hits": {
+   "title": true,
+   "concept sections (x3)": false,
+   "worked example": true,
+   "3-question quiz": true,
+   "quiz result": false
+  }
+ },
+ "reply": "<a2ui>\nintro = page_header(\"The Water Cycle\", \"How water moves between the oceans, atmosphere and land\", \"\ud83d\udca7\", \"Earth Science\", \"#0284c7\")\n\nevaporation = concept_rung(\"1\", \"depth\", \"DEPTH 1\", \"Evaporation\", \"Heat from the sun warms liquid water at the surface of oceans, lakes and rivers. The water turns into water vapour and rises into the air.\", null, null, \"Sun energy drives evaporation.\")\n\ncondensation = concept_rung(\"2\", \"depth\", \"DEPTH 2\", \"Condensation\", \"As water vapour rises, it cools. The vapour condenses around tiny dust and salt particles, forming droplets that gather into clouds.\", null, null, \"Cooling turns vapour into clouds.\")\n\nprecipitation = concept_rung(\"3\", \"depth\", \"DEPTH 3\", \"Precipitation and collection\", \"When droplets in a cloud grow heavy enough, they fall as rain, snow or hail. Water then runs off into rivers or soaks into the ground, and the cycle begins again.\", null, null, \"Precipitation returns water to the land and seas.\")\n\nexample = concept_rung(\"EX\", \"example\", \"WORKED EXAMPLE\", \"Following one raindrop\", \"A water molecule evaporates from a lake on a warm afternoon. It rises, cools high in the atmosphere, and joins a cloud as part of a droplet. The droplet merges with others and falls as rain on a hillside. It soaks into the soil, seeps into a stream, and flows back to the lake.\", null, null, \"One molecule can complete the whole cycle many times.\")\n\nquiz = quiz_set(\"Self-check\", [{question: \"What process turns liquid water into water vapour?\", options: [\"Condensation\", \"Precipitation\", \"Evaporation\", \"Collection\"], correct: 2, explanation: \"Evaporation happens when heat from the sun turns liquid water into vapour.\"}, {question: \"Why does water vapour form clouds?\", options: [\"It heats up and sinks\", \"It cools and condenses around particles\", \"It freezes into ice at ground level\", \"It is pushed out by wind\"], correct: 1, explanation: \"Cooling vapour condenses around dust and salt particles to form droplets.\"}, {question: \"Which stage returns water to the land and seas?\", options: [\"Evaporation\", \"Condensation\", \"Transpiration\", \"Precipitation\"], correct: 3, explanation: \"Precipitation falls as rain, snow or hail, and collection moves it back to bodies of water.\"}], 70, \"#0284c7\")\n\nroot = columns(2, \"1.5rem\", \"top\", [{blocks: [intro, evaporation, condensation]}, {blocks: [precipitation, example, quiz]}])\n</a2ui>"
+}

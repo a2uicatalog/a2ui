@@ -1,0 +1,40 @@
+{
+ "task": "T5",
+ "condition": "C",
+ "label": "oracle-slice-3types__express__haiku-4-5__run2",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "C-marketing-commerce.json",
+ "atoms_in_catalogue": 23,
+ "prompt_chars": 12467,
+ "slot_recall": [
+  1,
+  1
+ ],
+ "secs": 3.4,
+ "usage": {
+  "input_tokens": 3509,
+  "output_tokens": 352
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "pricing_tier_group"
+ ],
+ "score": {
+  "per_approach": {
+   "tier_cards": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+   },
+   "comparison_table": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": null
+   }
+  },
+  "best_approach": "tier_cards",
+  "f1": 1.0
+ },
+ "reply": "<a2ui>\nroot = pricing_tier_group([\n  {\n    name: \"Starter\",\n    price: \"$29\",\n    description: \"Perfect for individuals\",\n    features: [\n      \"Up to 10 projects\",\n      \"Basic analytics\",\n      \"Community support\",\n      \"1 GB storage\"\n    ],\n    cta_label: \"Get Started\",\n    cta_url: \"https://example.com/starter\"\n  },\n  {\n    name: \"Professional\",\n    price: \"$79\",\n    description: \"Ideal for growing teams\",\n    features: [\n      \"Unlimited projects\",\n      \"Advanced analytics\",\n      \"Priority email support\",\n      \"100 GB storage\",\n      \"Custom integrations\",\n      \"Team collaboration\"\n    ],\n    cta_label: \"Get Started\",\n    cta_url: \"https://example.com/professional\",\n    recommended: true\n  },\n  {\n    name: \"Enterprise\",\n    price: \"Custom\",\n    description: \"For large organizations\",\n    features: [\n      \"Unlimited everything\",\n      \"Real-time analytics\",\n      \"24/7 phone & email support\",\n      \"Unlimited storage\",\n      \"Custom integrations\",\n      \"Dedicated account manager\",\n      \"SLA guarantee\"\n    ],\n    cta_label: \"Contact Sales\",\n    cta_url: \"https://example.com/enterprise\"\n  }\n])\n</a2ui>"
+}

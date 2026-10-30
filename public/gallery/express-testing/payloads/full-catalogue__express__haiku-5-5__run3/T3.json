@@ -1,0 +1,105 @@
+{
+ "label": "full-catalogue__express__haiku-5-5__run3",
+ "task": "T3",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/a-full.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "hero",
+      "component": "gradient_hero",
+      "title": "Ship landing pages in minutes, not weeks",
+      "subtitle": "Compose rich, responsive pages from a tested component catalog. No layout wrangling required.",
+      "badge": "New in 2.0",
+      "accent": "#4f46e5",
+      "accent2": "#8b5cf6",
+      "align": "center",
+      "cta_label": "Start free trial",
+      "cta_url": "#signup"
+     },
+     {
+      "id": "feat1",
+      "component": "info_card",
+      "title": "Drop-in components",
+      "text": "Choose from heroes, grids, testimonials, and CTAs that already look good together."
+     },
+     {
+      "id": "feat2",
+      "component": "info_card",
+      "title": "Live data bindings",
+      "text": "Connect any field to your data model and keep copy and numbers in sync automatically."
+     },
+     {
+      "id": "feat3",
+      "component": "info_card",
+      "title": "Ready for every screen",
+      "text": "Every layout adapts from phone to desktop without a single media query."
+     },
+     {
+      "id": "features",
+      "component": "columns",
+      "cols": 3,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "feat1"
+        ]
+       },
+       {
+        "blocks": [
+         "feat2"
+        ]
+       },
+       {
+        "blocks": [
+         "feat3"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "quote",
+      "component": "blockquote_with_avatar",
+      "quote": "We launched our new pricing page in an afternoon. Conversions went up the first week.",
+      "author_name": "Maya Chen",
+      "author_title": "Head of Growth, Northwind"
+     },
+     {
+      "id": "cta",
+      "component": "cta_button",
+      "url": "#signup",
+      "label": "Start your free trial",
+      "color": "#4f46e5",
+      "same_tab": true
+     },
+     {
+      "id": "root",
+      "component": "color_section",
+      "accent": "#4f46e5",
+      "style": "light",
+      "padding": "48px 24px",
+      "blocks": [
+       "hero",
+       "features",
+       "quote",
+       "cta"
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

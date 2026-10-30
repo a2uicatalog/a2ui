@@ -1,0 +1,99 @@
+{
+ "label": "oracle-slice-3types__json__gemini-3.5-flash-lite__first-run-timing-invalid__run1",
+ "task": "T6",
+ "format": "json",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "vocab-flashcards",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning.json",
+    "theme": {
+     "primaryColor": "#4f46e5"
+    },
+    "send_data_model": false
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "vocab-flashcards",
+    "components": [
+     {
+      "id": "root",
+      "component": "page_header",
+      "title": "Vocabulary Builder",
+      "subtitle": "Review your daily terms using the flashcard deck below.",
+      "icon": "\ud83d\udcda",
+      "tag": "Practice",
+      "accent": "#4f46e5"
+     },
+     {
+      "id": "deck-intro",
+      "component": "body",
+      "text": "Click or hover on each card to flip it and test your knowledge. Complete all 10 cards to reinforce your memory retention!"
+     },
+     {
+      "id": "progress-display",
+      "component": "progress_bar",
+      "value": 100,
+      "label": "Cards Reviewed",
+      "caption": "Deck size: 10 vocabulary terms",
+      "accent": "#4f46e5",
+      "show_percent": "true"
+     },
+     {
+      "id": "vocab-deck",
+      "component": "flashcard_deck",
+      "accent": "#4f46e5",
+      "label_front": "TERM",
+      "label_back": "DEFINITION",
+      "cards": [
+       {
+        "front": "Ephemeral",
+        "back": "Lasting for a very short time."
+       },
+       {
+        "front": "Serendipity",
+        "back": "The occurrence of events by chance in a happy or beneficial way."
+       },
+       {
+        "front": "Ubiquitous",
+        "back": "Present, appearing, or found everywhere."
+       },
+       {
+        "front": "Pragmatic",
+        "back": "Dealing with things sensibly and realistically in a way that is based on practical rather than theoretical considerations."
+       },
+       {
+        "front": "Mellifluous",
+        "back": "(Of a sound) sweet or musical; pleasant to hear."
+       },
+       {
+        "front": "Cacophony",
+        "back": "A harsh, discordant mixture of sounds."
+       },
+       {
+        "front": "Ineffable",
+        "back": "Too great or extreme to be expressed or described in words."
+       },
+       {
+        "front": "Petrichor",
+        "back": "A pleasant smell that frequently accompanies the first rain after a long period of warm, dry weather."
+       },
+       {
+        "front": "Sycophant",
+        "back": "A person who acts obsequiously toward someone important in order to gain advantage."
+       },
+       {
+        "front": "Labyrinthine",
+        "back": "(Of a network) like a labyrinth; irregular and twisting."
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

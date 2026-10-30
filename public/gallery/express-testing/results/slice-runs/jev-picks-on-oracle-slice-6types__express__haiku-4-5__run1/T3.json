@@ -1,0 +1,33 @@
+{
+ "task": "T3",
+ "condition": "JD",
+ "label": "jev-picks-on-oracle-slice-6types__express__haiku-4-5__run1",
+ "agent_type": "jev-narrowed",
+ "catalogue": "JD-T3.json",
+ "atoms_in_catalogue": 14,
+ "prompt_chars": 9482,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 5.0,
+ "usage": {
+  "input_tokens": 2687,
+  "output_tokens": 566
+ },
+ "valid": false,
+ "error": "A2uiCompilationParseError: Failed to parse expression: Syntax error at line 20:10: mismatched input '=' expecting ':' (line 20) - Line 20, Col 10 - Help: Please correct the syntax error in your Express DSL.",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "hero": false,
+   "feature columns (x3)": false,
+   "testimonial": false,
+   "CTA": false
+  }
+ },
+ "reply": "<a2ui>\nroot = columns(2, items=[\n  {blocks: [\n    gradient_hero(\n      title=\"Transform Your Workflow\",\n      subtitle=\"Streamline your process with our powerful platform designed for modern teams\",\n      badge=\"New Release\",\n      cta_label=\"Get Started\",\n      cta_url=\"https://example.com/signup\"\n    )\n  ]},\n  {blocks: []}\n])\n\nfeature_section = feature_grid(\n  heading=\"Why Choose Us\",\n  description=\"Discover the features that make us different\",\n  columns=3,\n  features=[\n    {\n      icon=\"\u26a1\",\n      title=\"Lightning Fast\",\n      description=\"Process data at incredible speeds with our optimized infrastructure\"\n    },\n    {\n      icon=\"\ud83d\udd12\",\n      title=\"Enterprise Security\",\n      description=\"Bank-level encryption and compliance with industry standards\"\n    },\n    {\n      icon=\"\ud83c\udfaf\",\n      title=\"Intuitive Design\",\n      description=\"User-friendly interface that requires minimal training\"\n    }\n  ]\n)\n\ntestimonial_section = testimonial_card(\n  text=\"This platform has completely transformed how our team collaborates. We've seen a 40% increase in productivity since switching.\",\n  author_name=\"Sarah Chen\",\n  author_title=\"Product Manager at TechCorp\",\n  author_avatar_url=\"https://api.example.com/avatars/sarah.jpg\",\n  rating=5\n)\n\ncta_final = cta_section(\n  heading=\"Ready to Get Started?\",\n  body=\"Join thousands of teams already using our platform to achieve their goals.\",\n  primary_cta={label: \"Start Free Trial\", url: \"https://example.com/trial\"},\n  secondary_cta={label: \"Learn More\", url: \"https://example.com/features\"}\n)\n\nroot = columns(1, items=[\n  {blocks: [\n    gradient_hero(\n      title=\"Transform Your Workflow\",\n      subtitle=\"Streamline your process with our powerful platform designed for modern teams\",\n      badge=\"New Release\",\n      cta_label=\"Get Started\",\n      cta_url=\"https://example.com/signup\"\n    )\n  ]},\n  {blocks: [feature_section]},\n  {blocks: [testimonial_section]},\n  {blocks: [cta_final]}\n])\n</a2ui>"
+}

@@ -1,0 +1,50 @@
+{
+ "task": "T1",
+ "label": "haiku-live3-r3",
+ "secs": 15.2,
+ "usage": {
+  "input_tokens": 85004,
+  "output_tokens": 1603
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "hub",
+  "article_hero",
+  "heading",
+  "body",
+  "highlight_box",
+  "bullet_list",
+  "heading",
+  "body",
+  "highlight_box",
+  "bullet_list",
+  "heading",
+  "body",
+  "highlight_box",
+  "bullet_list",
+  "heading",
+  "body",
+  "numbered_list",
+  "heading",
+  "body",
+  "quiz_question",
+  "spacer",
+  "quiz_question",
+  "spacer",
+  "quiz_question"
+ ],
+ "score": {
+  "precision": 0.542,
+  "recall": 0.6,
+  "f1": 0.569,
+  "slot_hits": {
+   "title": true,
+   "concept sections (x3)": true,
+   "worked example": true,
+   "3-question quiz": false,
+   "quiz result": false
+  }
+ },
+ "reply": "<a2ui>\nroot = hub(\n  subjects=[\n    {\n      id: \"water-cycle\",\n      label: \"Water Cycle\",\n      color: \"#0ea5e9\",\n      slides: [\n        {\n          id: \"intro\",\n          label: \"Introduction\",\n          blocks: [\n            article_hero(\n              title=\"The Water Cycle\",\n              subtitle=\"Understanding Earth's Most Essential Process\",\n              image_url=\"https://images.unsplash.com/photo-1505142468610-359e7d316be0?w=1200&h=600&fit=crop\"\n            )\n          ]\n        },\n        {\n          id: \"evaporation\",\n          label: \"Evaporation\",\n          blocks: [\n            heading(text=\"Evaporation\"),\n            body(text=\"Evaporation is the process where water from oceans, lakes, rivers, and soil is heated by the sun and transforms into water vapor. This invisible vapor rises into the atmosphere. Solar energy is the driving force behind evaporation, making it strongest in tropical regions and during summer months.\"),\n            highlight_box(\n              title=\"Key Point\",\n              text=\"The sun's heat turns liquid water into gas without boiling.\",\n              icon=\"\u2600\ufe0f\",\n              accent=\"#0ea5e9\"\n            ),\n            bullet_list(\n              items=[\n                {label: \"Source\", text: \"Water from surface water bodies and soil\"},\n                {label: \"Energy\", text: \"Solar radiation provides the necessary heat\"},\n                {label: \"Result\", text: \"Water vapor enters the atmosphere\"}\n              ]\n            )\n          ]\n        },\n        {\n          id: \"condensation\",\n          label: \"Condensation\",\n          blocks: [\n            heading(text=\"Condensation\"),\n            body(text=\"As water vapor rises in the atmosphere, it encounters cooler temperatures at higher altitudes. When the vapor cools, it transforms back into liquid water droplets. These droplets cluster together to form clouds, which is why we see clouds on humid days after evaporation.\"),\n            highlight_box(\n              title=\"Key Point\",\n              text=\"Water vapor cools and turns into tiny water droplets that form clouds.\",\n              icon=\"\u2601\ufe0f\",\n              accent=\"#0ea5e9\"\n            ),\n            bullet_list(\n              items=[\n                {label: \"Temperature\", text: \"Cooling at higher altitudes triggers condensation\"},\n                {label: \"Nucleation\", text: \"Droplets form around dust particles in the air\"},\n                {label: \"Clouds\", text: \"Billions of droplets cluster to create visible clouds\"}\n              ]\n            )\n          ]\n        },\n        {\n          id: \"precipitation\",\n          label: \"Precipitation\",\n          blocks: [\n            heading(text=\"Precipitation\"),\n            body(text=\"When cloud droplets become too heavy, they fall back to Earth as precipitation. This can occur as rain, snow, sleet, or hail, depending on atmospheric temperature. Precipitation returns water to the surface, completing the upper portion of the water cycle and replenishing freshwater sources.\"),\n            highlight_box(\n              title=\"Key Point\",\n              text=\"Water falls back to Earth as rain, snow, or other forms.\",\n              icon=\"\ud83c\udf27\ufe0f\",\n              accent=\"#0ea5e9\"\n            ),\n            bullet_list(\n              items=[\n                {label: \"Forms\", text: \"Rain, snow, sleet, hail, and fog drip\"},\n                {label: \"Distribution\", text: \"Precipitation occurs globally, though unevenly\"},\n                {label: \"Collection\", text: \"Water gathers in oceans, lakes, rivers, and groundwater\"}\n              ]\n            )\n          ]\n        },\n        {\n          id: \"example\",\n          label: \"Worked Example\",\n          blocks: [\n            heading(text=\"A Drop's Journey: The Complete Cycle\"),\n            body(text=\"Let's trace the complete journey of a single water molecule through the entire water cycle.\"),\n            numbered_list(\n              items=[\n                {number: 1, title: \"Evaporation\", text: \"A water molecule in the Pacific Ocean is heated by the sun on a warm day. It transforms into vapor and rises into the atmosphere.\"},\n                {number: 2, title: \"Transport\", text: \"Wind currents carry the water vapor eastward across the ocean for several days.\"},\n                {number: 3, title: \"Condensation\", text: \"The vapor encounters cool air over the Rocky Mountains. It condenses into a liquid droplet that joins billions of others to form a cumulus cloud.\"},\n                {number: 4, title: \"Precipitation\", text: \"The cloud becomes saturated with droplets. Heavy rain falls on the mountainside, and our water molecule lands in a mountain stream.\"},\n                {number: 5, title: \"Collection & Flow\", text: \"The molecule flows downstream through rivers toward the ocean. Some may be absorbed by plant roots or seep into groundwater, but eventually it returns to the sea.\"},\n                {number: 6, title: \"Cycle Repeats\", text: \"The cycle begins again as solar energy once more evaporates the water molecule, continuing Earth's essential water cycle.\"}\n              ]\n            )\n          ]\n        },\n        {\n          id: \"quiz\",\n          label: \"Self-Check\",\n          blocks: [\n            heading(text=\"Water Cycle Knowledge Check\"),\n            body(text=\"Test your understanding of the water cycle with these three questions.\"),\n            quiz_question(\n              question=\"What provides the energy for evaporation?\",\n              options=[\"Wind currents\", \"Solar radiation from the sun\", \"Gravity\", \"Ocean waves\"],\n              correct=1,\n              explanation=\"Solar radiation (sunlight) heats water bodies and soil, providing the energy needed for water to evaporate and turn into vapor.\"\n            ),\n            spacer(height=\"24px\"),\n            quiz_question(\n              question=\"What causes water vapor to condense into clouds?\",\n              options=[\"Increased solar heating\", \"Cooling at higher altitudes\", \"Atmospheric pressure increases\", \"Ocean currents\"],\n              correct=1,\n              explanation=\"As water vapor rises to higher altitudes where temperatures are cooler, it condenses back into liquid water droplets that form clouds.\"\n            ),\n            spacer(height=\"24px\"),\n            quiz_question(\n              question=\"Which of the following is NOT a form of precipitation?\",\n              options=[\"Rain\", \"Snow\", \"Hail\", \"Evaporation\"],\n              correct=3,\n              explanation=\"Evaporation is not precipitation. Evaporation is the process where water transforms from liquid to gas, while precipitation is when water falls from clouds as rain, snow, sleet, or hail.\"\n            )\n          ]\n        }\n      ]\n    }\n  ]\n)\n</a2ui>"
+}

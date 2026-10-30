@@ -1,0 +1,87 @@
+{
+ "label": "oracle-slice-3types__elemental__gemini-3.5-flash-lite__first-run-timing-invalid__run3",
+ "task": "T3",
+ "format": "elemental",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce-elemental.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "gradient_hero",
+      "title": "Build the future of digital commerce",
+      "subtitle": "Our elemental platform provides all the components you need to scale your marketing and sales effortlessly.",
+      "cta_label": "Get Started",
+      "cta_url": "#",
+      "Badge": "New Release",
+      "align": "center"
+     },
+     {
+      "id": "features",
+      "component": "feature_grid",
+      "Heading": "Everything you need to succeed",
+      "description": "Powerful features designed to convert visitors into loyal customers.",
+      "Columns": 3,
+      "features": [
+       {
+        "icon": "\u26a1",
+        "title": "Lightning Fast",
+        "description": "Optimized performance ensures your customers never wait for a page load."
+       },
+       {
+        "icon": "\ud83d\udee1\ufe0f",
+        "title": "Enterprise Security",
+        "description": "Bank-grade encryption and compliance built right into the core architecture."
+       },
+       {
+        "icon": "\ud83d\udcc8",
+        "title": "Advanced Analytics",
+        "description": "Real-time insights and conversions tracking to measure your exact ROI."
+       }
+      ]
+     },
+     {
+      "id": "testimonial",
+      "component": "testimonial_card",
+      "text": "This platform completely transformed how we launch campaigns. Our conversion rates doubled in the first month.",
+      "author_name": "Sarah Jenkins",
+      "author_title": "Head of Growth, Acme Corp",
+      "rating": 5
+     },
+     {
+      "id": "cta",
+      "component": "cta_section",
+      "Heading": "Ready to accelerate your growth?",
+      "Body": "Join thousands of businesses already scaling with our platform today.",
+      "background": "#1e1b4b"
+     }
+    ]
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_data_model": {
+    "surface_id": "main",
+    "path": "/",
+    "value": {
+     "hero_title": "Build the future of digital commerce",
+     "hero_sub": "Our elemental platform provides all the components you need to scale your marketing and sales effortlessly.",
+     "feat_title": "Everything you need to succeed",
+     "feat_desc": "Powerful features designed to convert visitors into loyal customers.",
+     "cta_heading": "Ready to accelerate your growth?",
+     "cta_body": "Join thousands of businesses already scaling with our platform today."
+    }
+   }
+  }
+ ]
+}

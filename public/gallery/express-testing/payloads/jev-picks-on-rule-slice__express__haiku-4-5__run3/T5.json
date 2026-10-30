@@ -1,0 +1,85 @@
+{
+ "label": "jev-picks-on-rule-slice__express__haiku-4-5__run3",
+ "task": "T5",
+ "format": "express",
+ "model_id": null,
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/jb-t5.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "pricing_tier_group",
+      "tiers": [
+       "root_tiers_0",
+       "root_tiers_1",
+       "root_tiers_2"
+      ]
+     },
+     {
+      "id": "root_tiers_0",
+      "component": "pricing_tier_card",
+      "plan_name": "Starter",
+      "price": "29",
+      "currency": "$",
+      "frequency": "per month",
+      "features": [
+       "Up to 10 projects",
+       "Basic analytics",
+       "Community support",
+       "1 GB storage"
+      ],
+      "call_to_action_label": "Get Started",
+      "call_to_action_url": "https://example.com/starter",
+      "is_highlighted": false
+     },
+     {
+      "id": "root_tiers_1",
+      "component": "pricing_tier_card",
+      "plan_name": "Professional",
+      "price": "79",
+      "currency": "$",
+      "frequency": "per month",
+      "features": [
+       "Unlimited projects",
+       "Advanced analytics",
+       "Priority email support",
+       "100 GB storage",
+       "Custom integrations"
+      ],
+      "call_to_action_label": "Start Free Trial",
+      "call_to_action_url": "https://example.com/professional",
+      "is_highlighted": true
+     },
+     {
+      "id": "root_tiers_2",
+      "component": "pricing_tier_card",
+      "plan_name": "Enterprise",
+      "price": "299",
+      "currency": "$",
+      "frequency": "per month",
+      "features": [
+       "Unlimited everything",
+       "Dedicated account manager",
+       "24/7 phone support",
+       "Unlimited storage",
+       "Custom contracts"
+      ],
+      "call_to_action_label": "Contact Sales",
+      "call_to_action_url": "https://example.com/enterprise",
+      "is_highlighted": false
+     }
+    ]
+   }
+  }
+ ]
+}

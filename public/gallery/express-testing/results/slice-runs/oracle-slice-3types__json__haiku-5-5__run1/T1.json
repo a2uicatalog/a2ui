@@ -1,0 +1,40 @@
+{
+ "task": "T1",
+ "condition": "CN_haiku-5-5",
+ "temperature_applied": false,
+ "format": "json",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "oracle-slice-3types__json__haiku-5-5__run1",
+ "agent_type": "Learning",
+ "catalogue": "C-learning.json",
+ "atoms_in_catalogue": 36,
+ "prompt_chars": 37811,
+ "slot_recall": [
+  5,
+  5
+ ],
+ "secs": 12.0,
+ "usage": {
+  "input_tokens": 14392,
+  "output_tokens": 2632
+ },
+ "valid": false,
+ "error": "A2uiIntegrityError: Component 'b-condensation' is not reachable from 'root'",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "title": false,
+   "concept sections (x3)": false,
+   "worked example": false,
+   "3-question quiz": false,
+   "quiz result": false
+  }
+ },
+ "reply": "I've built the lesson as a single surface: a page header, three concept sections, a worked example, and a three-question self-check. The catalog has no generic container component, so the components are a flat list. The `root` header comes first and the rest follow in reading order.\n\n<a2ui-json>\n[\n  {\n    \"version\": \"v0.9\",\n    \"createSurface\": {\n      \"surfaceId\": \"water-cycle-lesson\",\n      \"catalogId\": \"https://a2uicatalog.ai/catalog/c-learning.json\"\n    }\n  },\n  {\n    \"version\": \"v0.9\",\n    \"updateComponents\": {\n      \"surfaceId\": \"water-cycle-lesson\",\n      \"components\": [\n        {\n          \"id\": \"root\",\n          \"component\": \"page_header\",\n          \"title\": \"The Water Cycle\",\n          \"subtitle\": \"How water moves between the sky, the land, and the sea\",\n          \"icon\": \"\ud83d\udca7\",\n          \"tag\": \"Lesson\"\n        },\n        {\n          \"id\": \"h-evaporation\",\n          \"component\": \"heading\",\n          \"text\": \"1. Evaporation\"\n        },\n        {\n          \"id\": \"b-evaporation\",\n          \"component\": \"body\",\n          \"text\": \"The sun heats water in oceans, lakes, and rivers. As the water warms, its molecules gain enough energy to escape into the air as water vapour. Plants also release water into the air through transpiration, which adds to the total.\"\n        },\n        {\n          \"id\": \"h-condensation\",\n          \"component\": \"heading\",\n          \"text\": \"2. Condensation\"\n        },\n        {\n          \"id\": \"b-condensation\",\n          \"component\": \"body\",\n          \"text\": \"As water vapour rises, it cools. Cooler air holds less moisture, so the vapour changes back into tiny liquid droplets. These droplets gather around particles in the air such as dust and salt, and they form clouds.\"\n        },\n        {\n          \"id\": \"h-precipitation\",\n          \"component\": \"heading\",\n          \"text\": \"3. Precipitation\"\n        },\n        {\n          \"id\": \"b-precipitation\",\n          \"component\": \"body\",\n          \"text\": \"When droplets in a cloud grow heavy enough, they fall to the ground as rain, snow, sleet, or hail. Some of this water soaks into the soil, some runs off into streams and rivers, and some collects in lakes and oceans, where the cycle begins again.\"\n        },\n        {\n          \"id\": \"c-tip\",\n          \"component\": \"callout\",\n          \"kind\": \"tip\",\n          \"title\": \"Remember\",\n          \"text\": \"The water cycle has no true starting point. Water is constantly moving between stages, so the total amount of water on Earth stays roughly the same.\"\n        },\n        {\n          \"id\": \"h-example\",\n          \"component\": \"heading\",\n          \"text\": \"Worked Example: Where Does a Puddle Go?\"\n        },\n        {\n          \"id\": \"ex-puddle\",\n          \"component\": \"concept_rung\",\n          \"kind\": \"example\",\n          \"badge\": \"EX\",\n          \"title\": \"Following a puddle after a rainstorm\",\n          \"body\": \"A puddle forms on a pavement after rain. Sunlight warms the water, so some of it **evaporates** into the air as vapour (stage 1). The vapour rises, cools, and **condenses** into tiny droplets that may form clouds (stage 2). Those droplets may later return to the ground as **precipitation** (stage 3).\",\n          \"takeaway\": \"The puddle does not vanish. Its water moves into the air and returns later as rain.\"\n        },\n        {\n          \"id\": \"h-check\",\n          \"component\": \"heading\",\n          \"text\": \"Self-Check Quiz\"\n        },\n        {\n          \"id\": \"q1\",\n          \"component\": \"knowledge_check\",\n          \"question\": \"What process turns liquid water into water vapour?\",\n          \"options\": [\"Condensation\", \"Precipitation\", \"Evaporation\", \"Infiltration\"],\n          \"correct\": 2,\n          \"explanation\": \"Evaporation happens when heat energy lets water molecules escape into the air as vapour.\"\n        },\n        {\n          \"id\": \"q2\",\n          \"component\": \"knowledge_check\",\n          \"question\": \"Why does water vapour form clouds as it rises?\",\n          \"options\": [\n            \"It heats up and becomes denser\",\n            \"It cools and condenses into droplets\",\n            \"It freezes into ice crystals only\",\n            \"It is pushed down by wind\"\n          ],\n          \"correct\": 1,\n          \"explanation\": \"As vapour rises into cooler air, it condenses onto particles and forms droplets that make up clouds.\"\n        },\n        {\n          \"id\": \"q3\",\n          \"component\": \"knowledge_check\",\n          \"question\": \"Which of these is an example of precipitation?\",\n          \"options\": [\"Snow falling from a cloud\", \"Water rising from a lake\", \"Dew forming on grass before dawn\", \"Sweat evaporating from skin\"],\n          \"correct\": 0,\n          \"explanation\": \"Precipitation is any water that falls from clouds, including rain, snow, sleet, and hail.\"\n        }\n      ]\n    }\n  }\n]\n</a2ui-json>"
+}

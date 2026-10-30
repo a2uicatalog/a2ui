@@ -1,0 +1,43 @@
+{
+ "task": "T6",
+ "condition": "CT_sonnet-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-sonnet-5-5",
+ "hints": false,
+ "label": "oracle-slice-3types__express__sonnet-5-5__temp0__run2",
+ "agent_type": "Learning",
+ "catalogue": "C-learning.json",
+ "atoms_in_catalogue": 36,
+ "prompt_chars": 21139,
+ "slot_recall": [
+  2,
+  2
+ ],
+ "secs": 5.1,
+ "usage": {
+  "input_tokens": 7488,
+  "output_tokens": 600
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "page_header",
+  "progress_bar",
+  "flashcard_deck",
+  "text_callout",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.4,
+  "recall": 1.0,
+  "f1": 0.571,
+  "slot_hits": {
+   "flashcard deck": true,
+   "progress indicator": true
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"vocabulary-flashcards\")\nheader = page_header(\"Vocabulary Flashcards\", \"Flip each card to reveal the definition, then rate how well you knew it.\", \"\ud83d\udcda\", \"10 words\", \"#4f46e5\", \"light\")\nprogress = progress_bar(0, \"Cards reviewed\", \"#4f46e5\", true, \"0 of 10 reviewed. Flip and rate each card to track your progress.\")\ndeck = flashcard_deck([\n  {front: \"Ephemeral\", back: \"Lasting for a very short time; fleeting.\"},\n  {front: \"Ubiquitous\", back: \"Present, appearing, or found everywhere.\"},\n  {front: \"Pragmatic\", back: \"Dealing with things sensibly and realistically, based on practical rather than theoretical considerations.\"},\n  {front: \"Benevolent\", back: \"Well-meaning and kindly; showing goodwill toward others.\"},\n  {front: \"Meticulous\", back: \"Showing great attention to detail; very careful and precise.\"},\n  {front: \"Eloquent\", back: \"Fluent and persuasive in speaking or writing.\"},\n  {front: \"Resilient\", back: \"Able to recover quickly from difficulties; tough.\"},\n  {front: \"Candid\", back: \"Truthful and straightforward; frank.\"},\n  {front: \"Ambiguous\", back: \"Open to more than one interpretation; unclear.\"},\n  {front: \"Tenacious\", back: \"Holding firmly to a purpose or position; persistent.\"}\n], \"#4f46e5\", \"WORD\", \"DEFINITION\")\ntip = text_callout(\"info\", \"Tip\", \"Try to recall the definition aloud before flipping each card.\")\nroot = columns(1, \"1.5rem\", \"top\", [{blocks: [header, progress, deck, tip]}])\n</a2ui>"
+}

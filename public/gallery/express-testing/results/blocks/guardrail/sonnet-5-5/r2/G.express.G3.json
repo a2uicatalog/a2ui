@@ -1,0 +1,36 @@
+{
+ "model": "sonnet-5-5",
+ "cond": "G",
+ "format": "express",
+ "brief": "G3",
+ "repeat": 2,
+ "seq": 11,
+ "model_id": "claude-sonnet-5-5",
+ "utc": "2026-10-29T20:46:13Z",
+ "prompt_chars": 9749,
+ "prompt_sha256": "(removed for publication)",
+ "temperature_requested": null,
+ "temperature_sent": false,
+ "max_tokens": 32768,
+ "request_secs": 10.48,
+ "input_tokens": 3610,
+ "output_tokens": 1233,
+ "stop_reason": "end_turn",
+ "usage": {
+  "input_tokens": 3610,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "cache_creation": {
+   "ephemeral_5m_input_tokens": 0,
+   "ephemeral_1h_input_tokens": 0
+  },
+  "output_tokens": 1233,
+  "output_tokens_details": {
+   "thinking_tokens": 886
+  },
+  "service_tier": "standard",
+  "inference_geo": "global",
+  "speed": "standard"
+ },
+ "reply": "<a2ui>\nsurface(\"quarterly-sales-bricks\")\nroot = motion_bricks(null, [\n  {x: 0, y: 0, z: 0, w: 15, d: 3, h: 1, c: 4},\n  {x: 0, y: 1, z: 0, w: 3, d: 3, h: 4, c: 0},\n  {x: 4, y: 1, z: 0, w: 3, d: 3, h: 6, c: 1},\n  {x: 8, y: 1, z: 0, w: 3, d: 3, h: 5, c: 2},\n  {x: 12, y: 1, z: 0, w: 3, d: 3, h: 8, c: 3}\n], null, null, [\"#d01012\", \"#0a6cc2\", \"#f2c40d\", \"#1f9d4a\", \"#9aa0a6\"], null, null, \"studio\", 20, 28, 0.25, {order: \"base-up\"}, \"4:3\", false, \"Toy-brick bar chart of quarterly sales, Q1 to Q4\")\n</a2ui>"
+}

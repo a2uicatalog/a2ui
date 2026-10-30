@@ -1,0 +1,44 @@
+{
+ "task": "T4",
+ "condition": "C_gemini-3.5-flash-l",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash-lite",
+ "hints": false,
+ "label": "oracle-slice-3types__express__gemini-3.5-flash-lite__request-only-timing__run1",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 16421,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 2.2,
+ "usage": {
+  "input_tokens": 4601,
+  "output_tokens": 560
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns",
+  "heading",
+  "body",
+  "segmented_control",
+  "entity_list"
+ ],
+ "score": {
+  "precision": 0.4,
+  "recall": 0.667,
+  "f1": 0.5,
+  "slot_hits": {
+   "list": true,
+   "status indicator": false,
+   "filter control": true
+  }
+ },
+ "reply": "<a2ui>\nroot = columns(\n  cols=1,\n  gap=\"1.5rem\",\n  items=[\n    {\n      blocks: [\n        heading(\"System Tasks Overview\"),\n        body(\"Filter and review current system items and their live operational status.\"),\n        segmented_control(\n          name=\"status_filter\",\n          selected_value=\"all\",\n          options=[\n            {label: \"All Items\", value: \"all\"},\n            {label: \"Active\", value: \"active\"},\n            {label: \"Pending\", value: \"pending\"},\n            {label: \"Completed\", value: \"completed\"}\n          ]\n        ),\n        entity_list(\n          items=[\n            {\n              name: \"Database Cluster Alpha Sync\",\n              subtitle: \"Replicating primary shard nodes across availability zones.\",\n              status: \"Active\",\n              meta: \"Updated 2m ago\"\n            },\n            {\n              name: \"Payment Gateway SSL Renewal\",\n              subtitle: \"Certificate expiration in 14 days. Auto-renew queued.\",\n              status: \"Pending\",\n              meta: \"Due in 3 days\"\n            },\n            {\n              name: \"User Analytics Pipeline Migration\",\n              subtitle: \"Successfully migrated historical telemetry to data lake.\",\n              status: \"Completed\",\n              meta: \"Finished today\"\n            },\n            {\n              name: \"Cache Layer Memory Optimization\",\n              subtitle: \"Eviction policies adjusted for high-traffic endpoints.\",\n              status: \"Active\",\n              meta: \"Running continuously\"\n            },\n            {\n              name: \"API Rate Limiter Refactor\",\n              subtitle: \"Token bucket algorithm tuning under review.\",\n              status: \"Pending\",\n              meta: \"Review pending\"\n            },\n            {\n              name: \"CDN Edge Node Provisioning\",\n              subtitle: \"Deployed 12 new points of presence in APAC region.\",\n              status: \"Completed\",\n              meta: \"Finished yesterday\"\n            },\n            {\n              name: \"Security Vulnerability Scan\",\n              subtitle: \"Weekly dependency audit and container vulnerability check.\",\n              status: \"Active\",\n              meta: \"In progress (45%)\"\n            },\n            {\n              name: \"Backup Snapshot Verification\",\n              subtitle: \"Integrity check passed for weekly cold storage archives.\",\n              status: \"Completed\",\n              meta: \"Verified 5h ago\"\n            }\n          ]\n        )\n      ]\n    }\n  ]\n)\n</a2ui>"
+}

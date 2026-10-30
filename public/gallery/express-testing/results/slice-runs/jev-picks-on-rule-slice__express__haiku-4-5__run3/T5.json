@@ -1,0 +1,43 @@
+{
+ "task": "T5",
+ "condition": "JB",
+ "label": "jev-picks-on-rule-slice__express__haiku-4-5__run3",
+ "agent_type": "jev-narrowed",
+ "catalogue": "JB-T5.json",
+ "atoms_in_catalogue": 11,
+ "prompt_chars": 7206,
+ "slot_recall": [
+  1,
+  1
+ ],
+ "secs": 2.7,
+ "usage": {
+  "input_tokens": 2012,
+  "output_tokens": 261
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "pricing_tier_group",
+  "pricing_tier_card",
+  "pricing_tier_card",
+  "pricing_tier_card"
+ ],
+ "score": {
+  "per_approach": {
+   "tier_cards": {
+    "precision": 0.25,
+    "recall": 1.0,
+    "f1": 0.4
+   },
+   "comparison_table": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": null
+   }
+  },
+  "best_approach": "tier_cards",
+  "f1": 0.4
+ },
+ "reply": "<a2ui>\nroot = pricing_tier_group([\n  pricing_tier_card(\n    \"Starter\",\n    \"29\",\n    \"$\",\n    \"per month\",\n    [\"Up to 10 projects\", \"Basic analytics\", \"Community support\", \"1 GB storage\"],\n    \"Get Started\",\n    \"https://example.com/starter\",\n    false\n  ),\n  pricing_tier_card(\n    \"Professional\",\n    \"79\",\n    \"$\",\n    \"per month\",\n    [\"Unlimited projects\", \"Advanced analytics\", \"Priority email support\", \"100 GB storage\", \"Custom integrations\"],\n    \"Start Free Trial\",\n    \"https://example.com/professional\",\n    true\n  ),\n  pricing_tier_card(\n    \"Enterprise\",\n    \"299\",\n    \"$\",\n    \"per month\",\n    [\"Unlimited everything\", \"Dedicated account manager\", \"24/7 phone support\", \"Unlimited storage\", \"Custom contracts\"],\n    \"Contact Sales\",\n    \"https://example.com/enterprise\",\n    false\n  )\n])\n</a2ui>"
+}

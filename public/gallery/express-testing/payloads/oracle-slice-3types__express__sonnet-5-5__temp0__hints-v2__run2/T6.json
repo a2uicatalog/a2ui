@@ -1,0 +1,110 @@
+{
+ "label": "oracle-slice-3types__express__sonnet-5-5__temp0__hints-v2__run2",
+ "task": "T6",
+ "format": "express",
+ "model_id": "claude-sonnet-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "vocab-flashcards",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "vocab-flashcards",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "2rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         {
+          "type": "page_header",
+          "title": "Vocabulary Flashcards",
+          "subtitle": "Click a card to flip it and reveal the definition. Work through all ten words.",
+          "icon": "\ud83d\udcda",
+          "tag": "10 cards",
+          "accent": "#4f46e5"
+         },
+         {
+          "type": "progress_bar",
+          "value": 0,
+          "label": "Cards reviewed",
+          "accent": "#4f46e5",
+          "show_percent": true,
+          "caption": "0 of 10 reviewed"
+         },
+         {
+          "type": "text_callout",
+          "variant": "info",
+          "title": "Tip",
+          "description": "Say the word aloud and try to recall its meaning before flipping the card."
+         }
+        ]
+       },
+       {
+        "blocks": [
+         {
+          "type": "flashcard_deck",
+          "accent": "#4f46e5",
+          "label_front": "WORD",
+          "label_back": "DEFINITION",
+          "cards": [
+           {
+            "front": "Ephemeral",
+            "back": "Lasting for a very short time."
+           },
+           {
+            "front": "Ubiquitous",
+            "back": "Present, appearing, or found everywhere."
+           },
+           {
+            "front": "Pragmatic",
+            "back": "Dealing with things sensibly and realistically."
+           },
+           {
+            "front": "Eloquent",
+            "back": "Fluent and persuasive in speaking or writing."
+           },
+           {
+            "front": "Meticulous",
+            "back": "Showing great attention to detail; very careful."
+           },
+           {
+            "front": "Resilient",
+            "back": "Able to recover quickly from difficulties."
+           },
+           {
+            "front": "Ambiguous",
+            "back": "Open to more than one interpretation; unclear."
+           },
+           {
+            "front": "Benevolent",
+            "back": "Well-meaning and kindly."
+           },
+           {
+            "front": "Candid",
+            "back": "Truthful and straightforward; frank."
+           },
+           {
+            "front": "Diligent",
+            "back": "Having or showing care and effort in one's work."
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

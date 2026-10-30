@@ -1,0 +1,51 @@
+{
+ "task": "T1",
+ "condition": "D_haiku-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "oracle-slice-6types__express__haiku-5-5__run1",
+ "agent_type": "T1",
+ "catalogue": "D-t1.json",
+ "atoms_in_catalogue": 28,
+ "prompt_chars": 17769,
+ "slot_recall": [
+  5,
+  5
+ ],
+ "secs": 12.9,
+ "usage": {
+  "input_tokens": 6287,
+  "output_tokens": 2555
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "page_header",
+  "heading",
+  "body",
+  "heading",
+  "body",
+  "heading",
+  "body",
+  "concept_rung",
+  "quiz_set",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.9,
+  "recall": 0.8,
+  "f1": 0.847,
+  "slot_hits": {
+   "title": true,
+   "concept sections (x3)": true,
+   "worked example": true,
+   "3-question quiz": true,
+   "quiz result": false
+  }
+ },
+ "reply": "<a2ui>\nheader = page_header(title=\"The Water Cycle\", subtitle=\"How water moves between the ocean, the air, and the land\", icon=\"\ud83d\udca7\", tag=\"Lesson\", accent=\"#0ea5e9\")\n\ns1h = heading(text=\"1. Evaporation: the Sun Lifts Water Up\")\ns1b = body(text=\"The Sun heats water in oceans, lakes, and rivers. As the water warms, molecules gain enough energy to escape as water vapour. Plants also release water vapour through their leaves, a process called transpiration.\")\n\ns2h = heading(text=\"2. Condensation and Precipitation: Water Falls Back\")\ns2b = body(text=\"As water vapour rises, it cools and changes back into tiny liquid droplets, forming clouds. When the droplets grow heavy enough, they fall as rain, snow, sleet, or hail.\")\n\ns3h = heading(text=\"3. Collection: Water Returns to the Ground\")\ns3b = body(text=\"Precipitation collects in oceans, lakes, and rivers, or soaks into the ground as infiltration. Groundwater can flow slowly underground and eventually seep back into surface water, completing the cycle.\")\n\nexample = concept_rung(kind=\"example\", badge=\"EX\", label=\"WORKED EXAMPLE\", title=\"Tracing one raindrop\", body=\"A drop evaporates from a lake on a sunny morning. It rises, cools high in the atmosphere, and joins a cloud. Later it falls as rain on a hillside, soaks into the soil, and eventually reaches a stream that flows back to the lake.\", code=\"Lake -> evaporation -> cloud -> condensation -> rain -> infiltration -> stream -> lake\", code_caption=\"One full loop of the water cycle\", takeaway=\"Water is constantly moving, but the total amount on Earth stays about the same.\")\n\nquiz = quiz_set(title=\"Self-Check\", pass_score=67, accent=\"#0ea5e9\", questions=[{question: \"What process turns liquid water into water vapour?\", options: [\"Condensation\", \"Precipitation\", \"Evaporation\", \"Infiltration\"], correct: 2, explanation: \"Evaporation happens when the Sun's energy turns liquid water into vapour.\"}, {question: \"What is the name for water vapour cooling and forming droplets in clouds?\", options: [\"Transpiration\", \"Condensation\", \"Runoff\", \"Sublimation\"], correct: 1, explanation: \"Condensation occurs when vapour cools and changes back into liquid droplets.\"}, {question: \"Which of these is an example of precipitation?\", options: [\"Rain falling from a cloud\", \"Water rising from a lake\", \"Water soaking into soil\", \"Plants releasing vapour\"], correct: 0, explanation: \"Precipitation is any water that falls from clouds, such as rain, snow, sleet, or hail.\"}])\n\nroot = columns(cols=2, gap=\"2rem\", align=\"top\", items=[{blocks: [header, s1h, s1b, s2h, s2b]}, {blocks: [s3h, s3b, example, quiz]}])\n</a2ui>"
+}

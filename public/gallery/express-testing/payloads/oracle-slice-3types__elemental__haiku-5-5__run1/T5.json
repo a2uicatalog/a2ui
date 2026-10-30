@@ -1,0 +1,72 @@
+{
+ "label": "oracle-slice-3types__elemental__haiku-5-5__run1",
+ "task": "T5",
+ "format": "elemental",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "root",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce-elemental.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "root",
+    "components": [
+     {
+      "id": "pricing-tiers",
+      "component": "pricing_tier_group",
+      "tiers": [
+       {
+        "name": "Starter",
+        "price": "$9",
+        "period": "per month",
+        "description": "For individuals getting started.",
+        "recommended": false,
+        "features": [
+         "Up to 3 projects",
+         "5 GB of storage",
+         "Community support",
+         "Basic analytics"
+        ]
+       },
+       {
+        "name": "Pro",
+        "price": "$29",
+        "period": "per month",
+        "description": "For growing teams that need more.",
+        "recommended": true,
+        "features": [
+         "Unlimited projects",
+         "100 GB of storage",
+         "Priority email support",
+         "Advanced analytics",
+         "Team collaboration tools",
+         "Custom integrations"
+        ]
+       },
+       {
+        "name": "Enterprise",
+        "price": "$99",
+        "period": "per month",
+        "description": "For organizations with advanced needs.",
+        "recommended": false,
+        "features": [
+         "Everything in Pro",
+         "Unlimited storage",
+         "24/7 phone and chat support",
+         "Single sign-on (SSO)",
+         "Dedicated account manager",
+         "Custom SLA"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

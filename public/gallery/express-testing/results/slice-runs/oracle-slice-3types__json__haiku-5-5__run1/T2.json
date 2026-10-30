@@ -1,0 +1,40 @@
+{
+ "task": "T2",
+ "condition": "CN_haiku-5-5",
+ "temperature_applied": false,
+ "format": "json",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "oracle-slice-3types__json__haiku-5-5__run1",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 31546,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 10.5,
+ "usage": {
+  "input_tokens": 12376,
+  "output_tokens": 2430
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns"
+ ],
+ "score": {
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "KPI tile (x4)": false,
+   "trend (required only if metric_row was chosen; stat_card's own delta already satisfies it)": false,
+   "comparison chart": false
+  }
+ },
+ "reply": "I've composed a metrics overview with a 2\u00d72 grid of KPI tiles and a current-versus-previous comparison chart. The tiles use `metric_row`, which provides value, label, and up/down trend for each metric.\n\n<a2ui-json>\n[\n  {\n    \"version\": \"v0.9.1\",\n    \"createSurface\": {\n      \"surfaceId\": \"metrics-overview\",\n      \"catalogId\": \"https://a2uicatalog.ai/catalog/c-data-display.json\"\n    }\n  },\n  {\n    \"version\": \"v0.9.1\",\n    \"updateComponents\": {\n      \"surfaceId\": \"metrics-overview\",\n      \"components\": [\n        {\n          \"id\": \"root\",\n          \"component\": \"columns\",\n          \"cols\": 2,\n          \"gap\": \"1.5rem\",\n          \"align\": \"top\",\n          \"items\": [\n            {\n              \"blocks\": [\n                {\n                  \"id\": \"overview-heading\",\n                  \"component\": \"heading\",\n                  \"text\": \"Metrics overview\"\n                },\n                {\n                  \"id\": \"kpi-tiles\",\n                  \"component\": \"metric_row\",\n                  \"cols\": 2,\n                  \"metrics\": [\n                    {\n                      \"value\": \"482K\",\n                      \"prefix\": \"$\",\n                      \"label\": \"Revenue\",\n                      \"sub\": \"vs. last month\",\n                      \"accent\": \"#22c55e\",\n                      \"trend\": \"up\"\n                    },\n                    {\n                      \"value\": \"12,840\",\n                      \"label\": \"Active users\",\n                      \"sub\": \"vs. last month\",\n                      \"accent\": \"#22c55e\",\n                      \"trend\": \"up\"\n                    },\n                    {\n                      \"value\": \"2.3\",\n                      \"suffix\": \"%\",\n                      \"label\": \"Churn rate\",\n                      \"sub\": \"vs. last month\",\n                      \"accent\": \"#ef4444\",\n                      \"trend\": \"down\"\n                    },\n                    {\n                      \"value\": \"184\",\n                      \"suffix\": \" ms\",\n                      \"label\": \"Avg. response time\",\n                      \"sub\": \"vs. last month\",\n                      \"accent\": \"#ef4444\",\n                      \"trend\": \"down\"\n                    }\n                  ]\n                }\n              ]\n            },\n            {\n              \"blocks\": [\n                {\n                  \"id\": \"comparison-chart\",\n                  \"component\": \"chartjs_bar\",\n                  \"labels\": [\"Jan\", \"Feb\", \"Mar\", \"Apr\", \"May\", \"Jun\"],\n                  \"datasets\": [\n                    {\n                      \"label\": \"Current period\",\n                      \"data\": [320, 345, 410, 388, 436, 482]\n                    },\n                    {\n                      \"label\": \"Previous period\",\n                      \"data\": [290, 310, 335, 360, 372, 395]\n                    }\n                  ]\n                }\n              ]\n            }\n          ]\n        }\n      ]\n    }\n  }\n]\n</a2ui-json>"
+}

@@ -1,0 +1,130 @@
+{
+ "label": "oracle-slice-6types__json__haiku-5-5__run2",
+ "task": "T1",
+ "format": "json",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9",
+   "create_surface": {
+    "surface_id": "water-cycle-lesson",
+    "catalog_id": "https://a2uicatalog.ai/catalog/d-t1.json"
+   }
+  },
+  {
+   "version": "v0.9",
+   "update_components": {
+    "surface_id": "water-cycle-lesson",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "2rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         {
+          "id": "lesson_title",
+          "component": "page_header",
+          "title": "The Water Cycle",
+          "subtitle": "How water moves between the oceans, atmosphere, and land",
+          "icon": "\ud83d\udca7",
+          "tag": "Earth Science",
+          "accent": "#0284c7"
+         },
+         {
+          "id": "section_evaporation_heading",
+          "component": "heading",
+          "text": "1. Evaporation"
+         },
+         {
+          "id": "section_evaporation_body",
+          "component": "body",
+          "text": "The sun heats water in oceans, lakes, and rivers. As the water warms, molecules gain enough energy to escape as water vapor into the air. Plants also release water vapor through their leaves in a process called transpiration."
+         },
+         {
+          "id": "section_condensation_heading",
+          "component": "heading",
+          "text": "2. Condensation"
+         },
+         {
+          "id": "section_condensation_body",
+          "component": "body",
+          "text": "As water vapor rises, it cools. The cooler temperatures cause the vapor to change back into tiny liquid droplets, which gather around particles of dust and salt. These clusters of droplets form clouds."
+         },
+         {
+          "id": "section_precipitation_heading",
+          "component": "heading",
+          "text": "3. Precipitation"
+         },
+         {
+          "id": "section_precipitation_body",
+          "component": "body",
+          "text": "When droplets in a cloud combine and grow heavy enough, they fall to the ground as rain, snow, sleet, or hail. Some of this water soaks into the soil, some flows over land as runoff into rivers, and some returns to the oceans, where the cycle begins again."
+         }
+        ]
+       },
+       {
+        "blocks": [
+         {
+          "id": "worked_example",
+          "component": "concept_rung",
+          "kind": "example",
+          "badge": "EX",
+          "title": "Worked example: following one raindrop",
+          "body": "A puddle on a sunny road is warmed by the sun, and some of its water evaporates into the air. That vapor rises, cools high in the sky, and condenses onto dust particles to form a cloud. When the droplets merge and grow heavy, they fall as rain, and the water runs into a stream that flows back to the ocean.\n\nStages in order: evaporation, condensation, precipitation, runoff, collection.",
+          "takeaway": "Every drop of water is part of a continuous loop with no beginning or end."
+         },
+         {
+          "id": "self_check_quiz",
+          "component": "quiz_set",
+          "title": "Self-check: 3 questions",
+          "pass_score": 67,
+          "accent": "#0284c7",
+          "questions": [
+           {
+            "question": "What process turns liquid water into water vapor?",
+            "options": [
+             "Condensation",
+             "Precipitation",
+             "Evaporation",
+             "Runoff"
+            ],
+            "correct": 2,
+            "explanation": "Evaporation occurs when heat energy lets water molecules escape into the air as vapor."
+           },
+           {
+            "question": "What happens during condensation?",
+            "options": [
+             "Water vapor cools and changes back into liquid droplets",
+             "Water falls from clouds as rain or snow",
+             "Water soaks into the soil",
+             "Ice melts into a river"
+            ],
+            "correct": 0,
+            "explanation": "Cooling water vapor forms droplets that gather around dust and salt particles to make clouds."
+           },
+           {
+            "question": "Which of these is an example of precipitation?",
+            "options": [
+             "Fog forming over a lake",
+             "Steam rising from a kettle",
+             "Snow falling from a cloud",
+             "Water vapor released by leaves"
+            ],
+            "correct": 2,
+            "explanation": "Precipitation is any water that falls from clouds to the ground, including snow, rain, sleet, and hail."
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

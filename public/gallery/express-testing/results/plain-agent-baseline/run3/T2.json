@@ -1,0 +1,23 @@
+{
+ "task": "T2",
+ "label": "haiku-live3-r3",
+ "secs": 2.6,
+ "usage": {
+  "input_tokens": 85005,
+  "output_tokens": 198
+ },
+ "valid": false,
+ "error": "A2uiCompilationParseError: Failed to parse expression: Syntax error at line 11:32: mismatched input ':' expecting {',', ')'} (line 11) - Line 11, Col 32 - Help: Please correct the syntax error in your Express DSL.",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "KPI tile (x4)": false,
+   "trend (required only if metric_row was chosen; stat_card's own delta already satisfies it)": false,
+   "comparison chart": false
+  }
+ },
+ "reply": "<a2ui>\nroot = columns(cols=2, items=[\n  {blocks: [\n    metric_row(cols=4, metrics=[\n      {value: \"2,847\", label: \"Total Revenue\", trend: \"up\", suffix: \"$k\"},\n      {value: \"1,205\", label: \"Active Users\", trend: \"up\"},\n      {value: \"94.2\", label: \"Uptime\", suffix: \"%\", trend: \"up\"},\n      {value: \"3.2\", label: \"Avg Response\", suffix: \"s\", trend: \"down\"}\n    ])\n  ]},\n  {blocks: [\n    metric_comparison_card(label: \"Revenue vs Last Month\", value: 2847, previous: 2620, lower_is_better: false)\n  ]}\n])\n</a2ui>"
+}

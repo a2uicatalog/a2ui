@@ -1,0 +1,138 @@
+{
+ "label": "oracle-slice-3types__json__haiku-5-5__run3",
+ "task": "T1",
+ "format": "json",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "water-cycle-lesson",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "water-cycle-lesson",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "2rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         {
+          "id": "lesson-header",
+          "component": "page_header",
+          "title": "The Water Cycle",
+          "subtitle": "How water moves between the oceans, the atmosphere, and the land",
+          "icon": "\ud83d\udca7",
+          "tag": "Earth Science",
+          "accent": "#0ea5e9"
+         },
+         {
+          "id": "concept1-heading",
+          "component": "heading",
+          "text": "1. Evaporation"
+         },
+         {
+          "id": "concept1-body",
+          "component": "body",
+          "text": "The sun heats water in oceans, lakes, and rivers, turning it into water vapour that rises into the air. Plants also release water vapour through their leaves in a process called transpiration."
+         },
+         {
+          "id": "concept2-heading",
+          "component": "heading",
+          "text": "2. Condensation"
+         },
+         {
+          "id": "concept2-body",
+          "component": "body",
+          "text": "As water vapour rises, it cools. The cooler temperature causes the vapour to change back into tiny liquid droplets, which gather around particles of dust and salt to form clouds."
+         },
+         {
+          "id": "concept3-heading",
+          "component": "heading",
+          "text": "3. Precipitation and Collection"
+         },
+         {
+          "id": "concept3-body",
+          "component": "body",
+          "text": "When droplets in a cloud grow heavy enough, they fall as rain, snow, sleet, or hail. This water collects in rivers, lakes, and groundwater, and eventually flows back to the oceans, where the cycle begins again."
+         },
+         {
+          "id": "tip-callout",
+          "component": "callout",
+          "kind": "tip",
+          "title": "Remember",
+          "text": "Evaporation and transpiration move water up, condensation forms clouds, and precipitation brings water back down."
+         }
+        ]
+       },
+       {
+        "blocks": [
+         {
+          "id": "worked-example",
+          "component": "concept_rung",
+          "kind": "example",
+          "label": "WORKED EXAMPLE",
+          "title": "A puddle after a rainstorm",
+          "body": "A rainstorm leaves a puddle on the pavement. On a sunny morning, the sun warms the puddle and some water evaporates into the air. Later, the vapour cools high in the atmosphere and condenses into a cloud. If that cloud produces rain, the water returns to the ground, completing the cycle.",
+          "code_caption": "Stages in order: precipitation \u2192 evaporation \u2192 condensation \u2192 precipitation",
+          "takeaway": "Water changes state at each stage but is never destroyed."
+         },
+         {
+          "id": "self-check",
+          "component": "quiz_set",
+          "title": "Self-Check",
+          "pass_score": 70,
+          "accent": "#0ea5e9",
+          "questions": [
+           {
+            "question": "What process turns liquid water into water vapour?",
+            "options": [
+             "Condensation",
+             "Precipitation",
+             "Evaporation",
+             "Collection"
+            ],
+            "correct": 2,
+            "explanation": "Evaporation occurs when the sun heats liquid water and it becomes vapour."
+           },
+           {
+            "question": "What is the name for the process where water vapour turns into droplets that form clouds?",
+            "options": [
+             "Transpiration",
+             "Condensation",
+             "Infiltration",
+             "Sublimation"
+            ],
+            "correct": 1,
+            "explanation": "Condensation happens as vapour cools and changes back into liquid droplets."
+           },
+           {
+            "question": "Which of the following is an example of precipitation?",
+            "options": [
+             "Rain falling from a cloud",
+             "Water rising from a lake",
+             "Vapour leaving a leaf",
+             "Water soaking into soil"
+            ],
+            "correct": 0,
+            "explanation": "Precipitation is any water, in liquid or solid form, that falls from clouds to the ground."
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,38 @@
+{
+ "model": "jev-latest",
+ "cond": "R",
+ "format": "express",
+ "brief": "X6",
+ "repeat": 1,
+ "seq": 14,
+ "utc": "2026-10-29T21:13:54Z",
+ "reply": "{\"catalogue\": \"a2ui-marketing-v1\"}",
+ "jev_choice": "a2ui-marketing-v1",
+ "confidence": 0.99,
+ "probabilities": {
+  "a2ui-atoms-v1": 0.01,
+  "a2ui-aviation-v1": 0.0,
+  "a2ui-bricks-v1": 0.0,
+  "a2ui-charts-v1": 0.0,
+  "a2ui-display-v1": 0.0,
+  "a2ui-editorial-v1": 0.0,
+  "a2ui-effects-v1": 0.0,
+  "a2ui-embeds-v1": 0.0,
+  "a2ui-google-workspace-live-v1": 0.0,
+  "a2ui-learning-v1": 0.0,
+  "a2ui-marketing-v1": 0.99,
+  "a2ui-meta-v1": 0.0,
+  "a2ui-ops-v1": 0.0,
+  "a2ui-presentation-v1": 0.0,
+  "none": 0.0
+ },
+ "request_secs": 0.17,
+ "input_tokens": 1462,
+ "output_tokens": 218,
+ "usage": {
+  "input_tokens": 1462,
+  "output_tokens": 218
+ },
+ "stop_reason": "choice",
+ "model_id": "jev-1.14.0"
+}

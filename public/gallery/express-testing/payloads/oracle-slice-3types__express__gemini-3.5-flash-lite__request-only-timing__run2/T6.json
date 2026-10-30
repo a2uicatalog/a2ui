@@ -1,0 +1,106 @@
+{
+ "label": "oracle-slice-3types__express__gemini-3.5-flash-lite__request-only-timing__run2",
+ "task": "T6",
+ "format": "express",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "vocab-flashcards",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "vocab-flashcards",
+    "components": [
+     {
+      "id": "header",
+      "component": "page_header",
+      "title": "Vocabulary Flashcards",
+      "subtitle": "Review key terms and flip cards to test your retention.",
+      "icon": "\ud83d\udcda",
+      "tag": "Practice",
+      "accent": "#4f46e5",
+      "theme": "light"
+     },
+     {
+      "id": "xp",
+      "component": "xp_bar",
+      "level_label": "Review Session \u2014 10 Terms",
+      "xp_current": 3,
+      "xp_next": 10,
+      "accent": "#4f46e5",
+      "show_flash": true
+     },
+     {
+      "id": "deck",
+      "component": "flashcard_deck",
+      "cards": [
+       {
+        "front": "Ephemeral",
+        "back": "Lasting for a very short time."
+       },
+       {
+        "front": "Ubiquitous",
+        "back": "Present, appearing, or found everywhere."
+       },
+       {
+        "front": "Pragmatic",
+        "back": "Dealing with things sensibly and realistically."
+       },
+       {
+        "front": "Benevolent",
+        "back": "Well meaning and kindly."
+       },
+       {
+        "front": "Cacophony",
+        "back": "A harsh, discordant mixture of sounds."
+       },
+       {
+        "front": "Mollify",
+        "back": "Appease the anger or anxiety of someone."
+       },
+       {
+        "front": "Nefarious",
+        "back": "Wicked or criminal (typically of an action or activity)."
+       },
+       {
+        "front": "Paradigm",
+        "back": "A typical example or pattern of something; a model."
+       },
+       {
+        "front": "Resilient",
+        "back": "Able to withstand or recover quickly from difficult conditions."
+       },
+       {
+        "front": "Zealot",
+        "back": "A person who is fanatical and uncompromising in pursuit of their ideals."
+       }
+      ],
+      "accent": "#4f46e5",
+      "label_front": "TERM",
+      "label_back": "DEFINITION"
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "1.5rem",
+      "items": [
+       {
+        "blocks": [
+         "header",
+         "xp",
+         "deck"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

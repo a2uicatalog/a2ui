@@ -1,0 +1,42 @@
+{
+ "task": "T1",
+ "condition": "CT_sonnet-5-5H2",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-sonnet-5-5",
+ "hints": true,
+ "label": "oracle-slice-3types__express__sonnet-5-5__temp0__hints-v2__run1",
+ "agent_type": "Learning",
+ "catalogue": "C-learning.json",
+ "atoms_in_catalogue": 36,
+ "prompt_chars": 21139,
+ "slot_recall": [
+  5,
+  5
+ ],
+ "secs": 24.1,
+ "usage": {
+  "input_tokens": 7808,
+  "output_tokens": 2226
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns"
+ ],
+ "score": {
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "title": false,
+   "concept sections (x3)": false,
+   "worked example": false,
+   "3-question quiz": false,
+   "quiz result": false
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"water-cycle-lesson\")\nroot = columns(2, \"2rem\", \"top\", [\n  {blocks: [\n    {type: \"page_header\", title: \"The Water Cycle\", subtitle: \"How water moves between the oceans, the air and the land\", icon: \"\ud83d\udca7\", tag: \"Earth Science\", accent: \"#0ea5e9\"},\n    {type: \"body\", text: \"Water is never used up. It keeps moving around the planet, changing between liquid, vapour and ice. This lesson covers the three main stages and then works through a short example.\"},\n    {type: \"heading\", text: \"Three Core Concepts\"},\n    {type: \"concept_rung\", badge: \"1\", kind: \"depth\", title: \"Evaporation\", body: \"The sun heats water in oceans, lakes and rivers. Some of the liquid turns into invisible water vapour and rises into the air.\\n\\nPlants add to this through transpiration, which releases water vapour from their leaves.\", takeaway: \"Heat from the sun turns liquid water into vapour.\"},\n    {type: \"concept_rung\", badge: \"2\", kind: \"depth\", title: \"Condensation\", body: \"As water vapour rises it meets cooler air and loses heat. The vapour turns back into tiny liquid droplets around dust particles.\\n\\nMillions of these droplets together form clouds.\", takeaway: \"Cooling turns vapour into droplets, which form clouds.\"},\n    {type: \"concept_rung\", badge: \"3\", kind: \"depth\", title: \"Precipitation and Collection\", body: \"When cloud droplets merge and grow heavy enough, they fall as rain, snow, sleet or hail.\\n\\nThe water then runs off into rivers, soaks into the ground or collects in oceans and lakes. From there the cycle starts again.\", takeaway: \"Gravity brings water back down, and the cycle repeats.\"}\n  ]},\n  {blocks: [\n    {type: \"heading\", text: \"Worked Example\"},\n    {type: \"concept_rung\", badge: \"EX\", kind: \"example\", title: \"How much water does a lake lose in a day?\", body: \"A lake covers 2 square kilometres. On a warm day, evaporation removes 5 mm of water from its surface. How much water is that?\\n\\nConvert everything to metres first, then multiply area by depth.\", code: \"area   = 2 km\u00b2 = 2,000,000 m\u00b2\\ndepth  = 5 mm  = 0.005 m\\nvolume = 2,000,000 \u00d7 0.005\\n       = 10,000 m\u00b3\\n       = 10,000,000 litres\", code_caption: \"1 m\u00b3 equals 1,000 litres.\", takeaway: \"A single lake can send about 10 million litres into the air in one day.\"},\n    {type: \"heading\", text: \"Self-Check Quiz\"},\n    {type: \"quiz_set\", title: \"Water Cycle Check\", pass_score: 67, accent: \"#0ea5e9\", questions: [\n      {question: \"Which process turns liquid water into water vapour?\", options: [\"Condensation\", \"Evaporation\", \"Precipitation\", \"Collection\"], correct: 1, explanation: \"Evaporation happens when the sun's heat gives water molecules enough energy to escape into the air as vapour.\"},\n      {question: \"What causes clouds to form?\", options: [\"Water vapour cooling and condensing into droplets\", \"Rain evaporating from the ground\", \"Snow melting on mountains\", \"Plants absorbing water\"], correct: 0, explanation: \"Rising vapour cools and condenses into tiny droplets, and many droplets together make a cloud.\"},\n      {question: \"Which of these is a form of precipitation?\", options: [\"Fog on the ground\", \"Water vapour\", \"Hail\", \"Dew on grass\"], correct: 2, explanation: \"Precipitation is water falling from clouds, as rain, snow, sleet or hail.\"}\n    ]}\n  ]}\n])\n</a2ui>"
+}

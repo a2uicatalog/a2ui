@@ -1,0 +1,128 @@
+{
+ "label": "oracle-slice-6types__express__haiku-5-5__hints-v2__run3",
+ "task": "T4",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/d-t4.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "filter",
+      "component": "segmented_control",
+      "options": [
+       {
+        "label": "All",
+        "value": "all"
+       },
+       {
+        "label": "Active",
+        "value": "active"
+       },
+       {
+        "label": "Pending",
+        "value": "pending"
+       },
+       {
+        "label": "Blocked",
+        "value": "blocked"
+       },
+       {
+        "label": "Done",
+        "value": "done"
+       }
+      ],
+      "selected_value": "all",
+      "name": "status_filter"
+     },
+     {
+      "id": "title",
+      "component": "heading",
+      "text": "Work items"
+     },
+     {
+      "id": "intro",
+      "component": "body",
+      "text": "Filter the list by status."
+     },
+     {
+      "id": "list",
+      "component": "entity_list",
+      "items": [
+       {
+        "name": "Login service migration",
+        "subtitle": "Move auth endpoints to the new gateway.",
+        "status": "Active"
+       },
+       {
+        "name": "Invoice export",
+        "subtitle": "Add CSV export to billing reports.",
+        "status": "Pending"
+       },
+       {
+        "name": "Search indexing",
+        "subtitle": "Reindex the product catalogue nightly.",
+        "status": "Done"
+       },
+       {
+        "name": "Mobile push alerts",
+        "subtitle": "Waiting on APNs certificate renewal.",
+        "status": "Blocked"
+       },
+       {
+        "name": "Onboarding email",
+        "subtitle": "Rewrite the welcome sequence copy.",
+        "status": "Active"
+       },
+       {
+        "name": "Data retention policy",
+        "subtitle": "Draft retention periods for logs.",
+        "status": "Pending"
+       },
+       {
+        "name": "Dashboard caching",
+        "subtitle": "Cache aggregate queries for five minutes.",
+        "status": "Done"
+       },
+       {
+        "name": "Payment retries",
+        "subtitle": "Needs the vendor webhook signing secret.",
+        "status": "Blocked"
+       }
+      ]
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "title",
+         "intro",
+         "filter"
+        ]
+       },
+       {
+        "blocks": [
+         "list"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

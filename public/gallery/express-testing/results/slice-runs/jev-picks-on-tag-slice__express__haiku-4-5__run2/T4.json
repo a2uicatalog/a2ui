@@ -1,0 +1,34 @@
+{
+ "task": "T4",
+ "condition": "JG",
+ "label": "jev-picks-on-tag-slice__express__haiku-4-5__run2",
+ "agent_type": "jev-narrowed",
+ "catalogue": "JG-T4.json",
+ "atoms_in_catalogue": 11,
+ "prompt_chars": 7364,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 5.8,
+ "usage": {
+  "input_tokens": 2075,
+  "output_tokens": 638
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "chip_group"
+ ],
+ "score": {
+  "precision": 1.0,
+  "recall": 0.333,
+  "f1": 0.5,
+  "slot_hits": {
+   "list": false,
+   "status indicator": false,
+   "filter control": true
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"list-surface-1\")\n\n// Initialize filter state\n$/filterStatus = \"all\"\n\n// Sample data\n$/items = [\n  {title: \"Project Alpha\", status: \"active\", detail: \"Launched Q1 2024\"},\n  {title: \"Project Beta\", status: \"pending\", detail: \"Awaiting stakeholder approval\"},\n  {title: \"Project Gamma\", status: \"completed\", detail: \"Delivered ahead of schedule\"},\n  {title: \"Project Delta\", status: \"active\", detail: \"On track for Q2 release\"},\n  {title: \"Project Epsilon\", status: \"active\", detail: \"Currently in development phase\"},\n  {title: \"Project Zeta\", status: \"pending\", detail: \"Scheduled to begin next month\"},\n  {title: \"Project Eta\", status: \"completed\", detail: \"Archived and documented\"},\n  {title: \"Project Theta\", status: \"paused\", detail: \"Waiting for budget allocation\"}\n]\n\n// Filter chips\nfilterChips = chip_group(\n  \"Filter by Status\",\n  \"wrap\",\n  true,\n  [\n    {label: \"All\", active: true, color: \"#38bdf8\"},\n    {label: \"Active\", color: \"#10b981\"},\n    {label: \"Pending\", color: \"#f59e0b\"},\n    {label: \"Completed\", color: \"#6366f1\"},\n    {label: \"Paused\", color: \"#ef4444\"}\n  ]\n)\n\n// Define status badge colors\nstatusColors = {\n  \"active\": \"green\",\n  \"pending\": \"yellow\",\n  \"completed\": \"blue\",\n  \"paused\": \"red\"\n}\n\n// Root layout\nroot = [\n  heading(\"Items\"),\n  filterChips,\n  entity_list([\n    {name: \"Project Alpha\", status: \"active\", meta: \"Launched Q1 2024\"},\n    {name: \"Project Beta\", status: \"pending\", meta: \"Awaiting stakeholder approval\"},\n    {name: \"Project Gamma\", status: \"completed\", meta: \"Delivered ahead of schedule\"},\n    {name: \"Project Delta\", status: \"active\", meta: \"On track for Q2 release\"},\n    {name: \"Project Epsilon\", status: \"active\", meta: \"Currently in development phase\"},\n    {name: \"Project Zeta\", status: \"pending\", meta: \"Scheduled to begin next month\"},\n    {name: \"Project Eta\", status: \"completed\", meta: \"Archived and documented\"},\n    {name: \"Project Theta\", status: \"paused\", meta: \"Waiting for budget allocation\"}\n  ])\n]\n</a2ui>"
+}

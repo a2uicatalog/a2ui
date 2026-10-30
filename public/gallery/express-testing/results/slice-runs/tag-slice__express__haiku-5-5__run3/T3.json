@@ -1,0 +1,45 @@
+{
+ "task": "T3",
+ "condition": "G_haiku-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "tag-slice__express__haiku-5-5__run3",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "G-marketing-commerce.json",
+ "atoms_in_catalogue": 263,
+ "prompt_chars": 119490,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 6.5,
+ "usage": {
+  "input_tokens": 43135,
+  "output_tokens": 1225
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "gradient_hero",
+  "feature_grid",
+  "blockquote_with_avatar",
+  "cta_button",
+  "color_section"
+ ],
+ "score": {
+  "precision": 0.8,
+  "recall": 1.0,
+  "f1": 0.889,
+  "slot_hits": {
+   "hero": true,
+   "feature columns (x3)": true,
+   "testimonial": true,
+   "CTA": true
+  }
+ },
+ "reply": "<a2ui>\nhero = gradient_hero(title=\"Ship faster with less busywork\", subtitle=\"Everything your team needs to plan, build, and launch in one place, without the status-meeting overhead.\", badge=\"New: Version 2.0\", cta_label=\"Start free trial\", cta_url=\"https://example.com/signup\", align=\"center\")\n\nfeature_list = feature_grid(heading=\"Why teams choose us\", description=\"Three core capabilities that cut the time from idea to launch.\", columns=3, features=[{icon: \"bolt\", title: \"Lightning-fast workflows\", description: \"Automate repetitive tasks and keep work moving without manual handoffs.\", color: \"#4f46e5\"}, {icon: \"groups\", title: \"Built for collaboration\", description: \"Share context, assign owners, and see progress live across every project.\", color: \"#4f46e5\"}, {icon: \"shield\", title: \"Secure by default\", description: \"Role-based access, audit logs, and encryption keep your data protected.\", color: \"#4f46e5\"}])\n\ntestimonial = blockquote_with_avatar(quote=\"We cut our launch cycle in half. The team finally spends its time building instead of chasing updates.\", author_name=\"Maya Chen\", author_title=\"VP of Product, Northwind\")\n\ncta = cta_button(url=\"https://example.com/signup\", label=\"Get started free\", color=\"#4f46e5\", same_tab=true)\n\nroot = color_section(style=\"light\", padding=\"48px 24px\", blocks=[hero, feature_list, testimonial, cta])\n</a2ui>"
+}

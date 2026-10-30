@@ -1,0 +1,110 @@
+{
+ "label": "oracle-slice-3types__json__haiku-4-5__temp0__run3",
+ "task": "T4",
+ "format": "json",
+ "model_id": "claude-haiku-4-5-20251001",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "filterable-list",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "filterable-list",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "items": [
+       {
+        "blocks": [
+         {
+          "id": "title",
+          "component": "heading",
+          "text": "Task List"
+         },
+         {
+          "id": "filter-control",
+          "component": "segmented_control",
+          "name": "status-filter",
+          "options": "[{\"label\": \"All\", \"value\": \"all\"}, {\"label\": \"Active\", \"value\": \"active\"}, {\"label\": \"Completed\", \"value\": \"completed\"}, {\"label\": \"Pending\", \"value\": \"pending\"}]",
+          "selected_value": "all"
+         },
+         {
+          "id": "items-list",
+          "component": "entity_list",
+          "items": {
+           "path": "/items"
+          }
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_data_model": {
+    "surface_id": "filterable-list",
+    "path": "/items",
+    "value": [
+     {
+      "name": "Design system update",
+      "subtitle": "Implement new color palette",
+      "status": "active",
+      "icon": "\ud83c\udfa8"
+     },
+     {
+      "name": "API documentation",
+      "subtitle": "Complete endpoint reference",
+      "status": "active",
+      "icon": "\ud83d\udcda"
+     },
+     {
+      "name": "Database migration",
+      "subtitle": "Upgrade to PostgreSQL 15",
+      "status": "completed",
+      "icon": "\ud83d\udcbe"
+     },
+     {
+      "name": "Security audit",
+      "subtitle": "Third-party penetration testing",
+      "status": "pending",
+      "icon": "\ud83d\udd12"
+     },
+     {
+      "name": "Performance optimization",
+      "subtitle": "Reduce load time by 40%",
+      "status": "active",
+      "icon": "\u26a1"
+     },
+     {
+      "name": "User testing sessions",
+      "subtitle": "Conduct 5 moderated interviews",
+      "status": "completed",
+      "icon": "\ud83d\udc65"
+     },
+     {
+      "name": "Mobile app release",
+      "subtitle": "iOS and Android v2.0",
+      "status": "pending",
+      "icon": "\ud83d\udcf1"
+     },
+     {
+      "name": "Analytics dashboard",
+      "subtitle": "Real-time metrics visualization",
+      "status": "active",
+      "icon": "\ud83d\udcca"
+     }
+    ]
+   }
+  }
+ ]
+}

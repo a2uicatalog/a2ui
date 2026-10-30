@@ -1,0 +1,17 @@
+{
+ "task": "T4",
+ "condition": "D",
+ "original_label": "oracle-slice-6types__express__haiku-4-5__run1",
+ "original_error": "A2uiCompilationParseError: Failed to parse expression: Syntax error at line 40:20: extraneous input '=' expecting {<EOF>, '[', '{', '_', 'null', RAW_TRIPLE_STRING, TRIPLE_STRING, RAW_STRING, STANDARD_STRING, PATH, CHECK, NUMBER, BOOLEAN, IDENTIFIER} (line 40) - Line 40, Col 20 - Help: Please correct the syntax error in your E",
+ "repaired_valid": false,
+ "produced": [],
+ "f1_after": 0,
+ "prompt_chars": 7145,
+ "attempts": 1,
+ "usage": {
+  "input_tokens": 2009,
+  "output_tokens": 515
+ },
+ "reply": "<a2ui>\n// Initialize filter state\n$/filter_status = \"all\"\n\n// Sample data for the list\n$/items = [\n  {id: 1, title: \"Review Q4 Budget\", status: \"pending\", detail: \"Awaiting finance team approval\"},\n  {id: 2, title: \"Update Client Portal\", status: \"in_progress\", detail: \"Currently being deployed to staging\"},\n  {id: 3, title: \"Security Audit\", status: \"completed\", detail: \"All vulnerabilities resolved\"},\n  {id: 4, title: \"Team Training Session\", status: \"pending\", detail: \"Scheduled for next Friday\"},\n  {id: 5, title: \"Database Migration\", status: \"in_progress\", detail: \"Phase 2 underway, 60% complete\"},\n  {id: 6, title: \"API Documentation\", status: \"completed\", detail: \"Available on internal wiki\"},\n  {id: 7, title: \"Infrastructure Upgrade\", status: \"pending\", detail: \"Waiting for vendor confirmation\"},\n  {id: 8, title: \"Performance Optimization\", status: \"completed\", detail: \"Page load time reduced by 40%\"}\n]\n\nroot = body([\n  heading(\"Items\"),\n  segmented_control(\n    options=[\n      {label: \"All\", value: \"all\"},\n      {label: \"Pending\", value: \"pending\"},\n      {label: \"In Progress\", value: \"in_progress\"},\n      {label: \"Completed\", value: \"completed\"}\n    ],\n    selected_value=$/filter_status,\n    name=\"status_filter\"\n  ),\n  entity_list(\n    items=_template($/items, itemTemplate)\n  )\n])\n\nitemTemplate = {\n  name: $title,\n  subtitle: $detail,\n  status: statusBadge($status),\n  meta: $status\n}\n\nstatusBadge(status) {\n  status == \"pending\" ? lozenge($status, \"moved\") :\n  status == \"in_progress\" ? lozenge($status, \"inprogress\") :\n  lozenge($status, \"success\")\n}\n</a2ui>",
+ "final_error": "A2uiCompilationParseError: Failed to parse expression: Syntax error at line 41:9: mismatched input '=' expecting ':' (line 41) - Line 41, Col 9 - Help: Please correct the syntax error in your Express DSL."
+}

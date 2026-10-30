@@ -1,0 +1,152 @@
+{
+ "label": "full-catalogue__express__haiku-5-5__run1",
+ "task": "T1",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/a-full.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "title",
+      "component": "heading",
+      "text": "The Water Cycle"
+     },
+     {
+      "id": "intro",
+      "component": "body",
+      "text": "Water is always on the move. The sun drives it up from the surface, air carries it across the sky, and gravity brings it back down. This lesson follows that loop through three stages."
+     },
+     {
+      "id": "concept1_heading",
+      "component": "subheading",
+      "text": "1. Evaporation"
+     },
+     {
+      "id": "concept1",
+      "component": "body",
+      "text": "Liquid water at the surface absorbs energy from sunlight and turns into water vapour, an invisible gas. Oceans, lakes and rivers supply most of it. Plants add more through transpiration, releasing water vapour from their leaves."
+     },
+     {
+      "id": "concept2_heading",
+      "component": "subheading",
+      "text": "2. Condensation"
+     },
+     {
+      "id": "concept2",
+      "component": "body",
+      "text": "As warm, moist air rises it cools. Cooler air holds less vapour, so the vapour changes back into tiny liquid droplets around dust particles. These droplets gather into clouds."
+     },
+     {
+      "id": "concept3_heading",
+      "component": "subheading",
+      "text": "3. Precipitation"
+     },
+     {
+      "id": "concept3",
+      "component": "body",
+      "text": "When droplets in a cloud merge into drops heavy enough to fall, precipitation occurs as rain, snow, sleet or hail. Water that lands on land runs off into rivers, seeps into the ground, or is stored as ice, and eventually returns to the sea to repeat the cycle."
+     },
+     {
+      "id": "example_heading",
+      "component": "subheading",
+      "text": "Worked example"
+     },
+     {
+      "id": "example",
+      "component": "callout",
+      "kind": "info",
+      "title": "A puddle after the rain",
+      "text": "A 2 litre puddle sits on the pavement at noon. Sunlight warms it and some water evaporates into the air. By 4 p.m. only 0.5 litres remain, so 1.5 litres have evaporated. That vapour will later condense into clouds and may fall again somewhere else."
+     },
+     {
+      "id": "quiz_heading",
+      "component": "subheading",
+      "text": "Self-check"
+     },
+     {
+      "id": "quiz",
+      "component": "quiz_set",
+      "title": "Water cycle check",
+      "pass_score": 67,
+      "accent": "#0e7bb8",
+      "questions": [
+       {
+        "question": "What process turns liquid water into water vapour?",
+        "options": [
+         "Condensation",
+         "Precipitation",
+         "Evaporation",
+         "Infiltration"
+        ],
+        "correct": 2,
+        "explanation": "Evaporation is driven by heat energy from the sun, which turns liquid water into vapour."
+       },
+       {
+        "question": "Why do clouds form?",
+        "options": [
+         "Warm air sinks and heats up",
+         "Rising air cools and vapour condenses into droplets",
+         "Rain falls up into the sky",
+         "Ice melts in the atmosphere"
+        ],
+        "correct": 1,
+        "explanation": "As moist air rises it cools, and the vapour condenses around dust particles to form droplets."
+       },
+       {
+        "question": "In the puddle example, where did the 1.5 litres of water go?",
+        "options": [
+         "Into the ground only",
+         "Into the air as water vapour",
+         "Into a drain",
+         "It turned into ice"
+        ],
+        "correct": 1,
+        "explanation": "The water evaporated into the air as vapour, which can later condense and fall as precipitation."
+       }
+      ]
+     },
+     {
+      "id": "root",
+      "component": "color_section",
+      "style": "light",
+      "padding": "24px",
+      "blocks": [
+       "title",
+       "intro",
+       "concept1_heading",
+       "concept1",
+       "concept2_heading",
+       "concept2",
+       "concept3_heading",
+       "concept3",
+       "root_blocks_8",
+       "example_heading",
+       "example",
+       "root_blocks_11",
+       "quiz_heading",
+       "quiz"
+      ]
+     },
+     {
+      "id": "root_blocks_8",
+      "component": "divider"
+     },
+     {
+      "id": "root_blocks_11",
+      "component": "divider"
+     }
+    ]
+   }
+  }
+ ]
+}

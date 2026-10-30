@@ -1,0 +1,45 @@
+{
+ "task": "T3",
+ "condition": "C_gemini-3.5-flash",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash",
+ "hints": false,
+ "label": "oracle-slice-3types__express__gemini-3.5-flash__thinking-on_request-only-timing__run3",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "C-marketing-commerce.json",
+ "atoms_in_catalogue": 23,
+ "prompt_chars": 12467,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 29.4,
+ "usage": {
+  "input_tokens": 3412,
+  "output_tokens": 8056
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "gradient_hero",
+  "cta_button",
+  "feature_grid",
+  "testimonial_card",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.8,
+  "recall": 1.0,
+  "f1": 0.889,
+  "slot_hits": {
+   "hero": true,
+   "feature columns (x3)": true,
+   "testimonial": true,
+   "CTA": true
+  }
+ },
+ "reply": "<a2ui>\nfeatures_list = [\n    {icon: \"\u26a1\", title: \"Ultra Fast\", description: \"Zero latency updates and real-time syncing across devices.\"},\n    {icon: \"\ud83d\udee1\ufe0f\", title: \"Secure\", description: \"Bank-grade encryption keeps your sensitive data fully protected.\"},\n    {icon: \"\ud83d\udc65\", title: \"Collaborative\", description: \"Work together seamlessly with built-in multiplayer tools.\"}\n]\n\nhero = gradient_hero(\n    \"Empower Your Workflow\",\n    \"The intelligent workspace that brings your team, tools, and data together in one lightning-fast platform.\",\n    \"Now in Public Beta\",\n    \"#4f46e5\",\n    \"#8b5cf6\",\n    \"linear-gradient(135deg,#4f46e5,#8b5cf6)\",\n    \"left\",\n    \"Learn More\",\n    \"https://example.com/features\"\n)\n\ncta = cta_button(\n    \"https://example.com/signup\",\n    \"Get Started Free\",\n    \"#4f46e5\",\n    false\n)\n\nfeatures = feature_grid(\n    \"Core Platform Capabilities\",\n    \"Everything you need to deliver high-quality work, faster.\",\n    3,\n    features_list\n)\n\ntestimonial = testimonial_card(\n    \"This has completely transformed how our team collaborates. It has easily saved us over 10 hours a week in unnecessary sync meetings.\",\n    \"Sarah Jenkins\",\n    \"VP of Product, CloudTech\",\n    \"https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150\",\n    5\n)\n\nroot = columns(\n    2,\n    \"3rem\",\n    \"center\",\n    [\n        {blocks: [hero, cta]},\n        {blocks: [features, testimonial]}\n    ]\n)\n</a2ui>"
+}

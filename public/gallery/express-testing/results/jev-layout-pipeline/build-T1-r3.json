@@ -1,0 +1,29 @@
+{
+ "task": "T1",
+ "repeat": 3,
+ "writer_model": "gemini-3.5-flash-lite",
+ "decisions": "jev",
+ "jev_ms": 206,
+ "jev_usage": {
+  "input_tokens": 599,
+  "output_tokens": 101
+ },
+ "jev_answers": {
+  "layout": "lesson",
+  "count": "4",
+  "cta": "no"
+ },
+ "layout": "lesson",
+ "count": 4,
+ "cta": false,
+ "writer_secs": 1.14,
+ "writer_tokens": {
+  "in": 164,
+  "out": 219
+ },
+ "build_ms": 0.12,
+ "valid": true,
+ "error": null,
+ "compile_ms": 14.76,
+ "express": "<a2ui>\nhdr = page_header(title=\"The Water Cycle\", subtitle=\"Journey of Earth's Most Precious Resource\")\nh1 = heading(text=\"Evaporation and Transpiration\")\nb1 = body(text=\"Heat from the sun turns liquid water from oceans and lakes into water vapor. Plants also release water vapor into the air through tiny pores in their leaves called transpiration.\")\nh2 = heading(text=\"Condensation\")\nb2 = body(text=\"As water vapor rises high into the atmosphere, it cools down and turns back into tiny liquid water droplets. These droplets cluster together to form clouds and fog.\")\nh3 = heading(text=\"Precipitation and Collection\")\nb3 = body(text=\"When the water droplets in clouds become too heavy to stay afloat, they fall back to Earth as rain, snow, or hail. This water collects in oceans, rivers, and groundwater systems, ready to start the cycle again.\")\nh4 = heading(text=\"Worked Example\")\nb4 = body(text=\"Consider a puddle on a sunny sidewalk: solar heat evaporates the liquid into vapor, it condenses into a cloud overhead, falls as rain miles away, and collects in a reservoir.\")\nroot = columns(cols=1, gap=\"1.5rem\", align=\"top\", items=[{blocks: [hdr, h1, b1, h2, b2, h3, b3, h4, b4]}])\n</a2ui>"
+}

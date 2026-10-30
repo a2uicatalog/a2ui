@@ -1,0 +1,51 @@
+{
+ "task": "T1",
+ "condition": "C_haiku-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "oracle-slice-3types__express__haiku-5-5__run2",
+ "agent_type": "Learning",
+ "catalogue": "C-learning.json",
+ "atoms_in_catalogue": 36,
+ "prompt_chars": 21139,
+ "slot_recall": [
+  5,
+  5
+ ],
+ "secs": 11.6,
+ "usage": {
+  "input_tokens": 7489,
+  "output_tokens": 2504
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "page_header",
+  "heading",
+  "body",
+  "heading",
+  "body",
+  "heading",
+  "body",
+  "concept_rung",
+  "quiz_set",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.9,
+  "recall": 0.8,
+  "f1": 0.847,
+  "slot_hits": {
+   "title": true,
+   "concept sections (x3)": true,
+   "worked example": true,
+   "3-question quiz": true,
+   "quiz result": false
+  }
+ },
+ "reply": "<a2ui>\nheader = page_header(title=\"The Water Cycle\", subtitle=\"How water moves between the oceans, the air, the land, and living things\", icon=\"\ud83d\udca7\", tag=\"Earth Science\", accent=\"#0ea5e9\")\n\nconcept1_heading = heading(text=\"1. Evaporation\")\nconcept1_body = body(text=\"The sun heats water in oceans, lakes, and rivers. The heat turns liquid water into water vapour, a gas that rises into the air.\")\n\nconcept2_heading = heading(text=\"2. Condensation\")\nconcept2_body = body(text=\"As water vapour rises, it cools and condenses onto tiny particles of dust and salt. These droplets gather together to form clouds.\")\n\nconcept3_heading = heading(text=\"3. Precipitation and Collection\")\nconcept3_body = body(text=\"When droplets in a cloud grow heavy enough, they fall as rain, snow, sleet, or hail. The water then runs off into rivers or soaks into the ground, eventually returning to the oceans.\")\n\nworked_example = concept_rung(badge=\"EX\", kind=\"example\", label=\"WORKED EXAMPLE\", title=\"Tracing one raindrop\", body=\"A puddle on a sunny road evaporates. The vapour rises, cools high in the sky, and condenses onto a dust particle to form a cloud droplet.\\n\\nThe droplet joins others until it is heavy enough to fall as rain. It lands on a hillside, soaks in, and eventually seeps into a stream that flows to the sea.\", takeaway=\"One drop of water can pass through every stage of the cycle.\")\n\nquiz = quiz_set(title=\"Self-Check Quiz\", pass_score=70, accent=\"#0ea5e9\", questions=[{question: \"What is the main energy source that drives evaporation?\", options: [\"Wind\", \"Heat from the sun\", \"Gravity\", \"Pressure in the soil\"], correct: 1, explanation: \"The sun's heat turns liquid water into vapour.\"}, {question: \"Which process forms clouds from water vapour?\", options: [\"Evaporation\", \"Condensation\", \"Infiltration\", \"Runoff\"], correct: 1, explanation: \"Condensation happens when vapour cools and gathers into droplets.\"}, {question: \"What is the name for water that soaks into the ground?\", options: [\"Runoff\", \"Transpiration\", \"Infiltration\", \"Precipitation\"], correct: 2, explanation: \"Infiltration is when water seeps into soil and rock.\"}])\n\nroot = columns(cols=2, gap=\"2rem\", align=\"top\", items=[{blocks: [header, concept1_heading, concept1_body, concept2_heading, concept2_body, concept3_heading, concept3_body]}, {blocks: [worked_example, quiz]}])\n</a2ui>"
+}

@@ -1,0 +1,122 @@
+{
+ "label": "oracle-slice-3types__express__haiku-5-5__hints-v2__run3",
+ "task": "T4",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "filter",
+      "component": "segmented_control",
+      "options": [
+       {
+        "label": "All",
+        "value": "all"
+       },
+       {
+        "label": "Open",
+        "value": "open"
+       },
+       {
+        "label": "In progress",
+        "value": "in_progress"
+       },
+       {
+        "label": "Blocked",
+        "value": "blocked"
+       },
+       {
+        "label": "Done",
+        "value": "done"
+       }
+      ],
+      "selected_value": "all",
+      "name": "status_filter"
+     },
+     {
+      "id": "items",
+      "component": "entity_list",
+      "items": [
+       {
+        "name": "Renew TLS certificates",
+        "subtitle": "Expires in 12 days on the public API gateway",
+        "status": "Open"
+       },
+       {
+        "name": "Migrate billing database",
+        "subtitle": "Schema changes are staged and awaiting review",
+        "status": "In progress"
+       },
+       {
+        "name": "Update payment provider SDK",
+        "subtitle": "Blocked on a breaking change in the webhook signature",
+        "status": "Blocked"
+       },
+       {
+        "name": "Rotate service account keys",
+        "subtitle": "Keys rotated for the analytics pipeline",
+        "status": "Done"
+       },
+       {
+        "name": "Add rate limiting to search",
+        "subtitle": "Design approved, implementation not started",
+        "status": "Open"
+       },
+       {
+        "name": "Refactor notification worker",
+        "subtitle": "Half of the queue consumers now use the new client",
+        "status": "In progress"
+       },
+       {
+        "name": "Fix timezone bug in reports",
+        "subtitle": "Waiting on vendor confirmation of the DST rule",
+        "status": "Blocked"
+       },
+       {
+        "name": "Archive 2023 audit logs",
+        "subtitle": "Moved to cold storage and verified",
+        "status": "Done"
+       }
+      ]
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "_inline_1",
+         "filter"
+        ]
+       },
+       {
+        "blocks": [
+         "items"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "_inline_1",
+      "component": "heading",
+      "text": "Work items"
+     }
+    ]
+   }
+  }
+ ]
+}

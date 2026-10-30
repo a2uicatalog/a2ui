@@ -1,0 +1,40 @@
+{
+ "task": "T4",
+ "condition": "CN_gemini-3.5-flash",
+ "temperature_applied": false,
+ "format": "json",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash",
+ "hints": false,
+ "label": "oracle-slice-3types__json__gemini-3.5-flash__thinking-on_first-run-timing-invalid__run1",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 31546,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 50.7,
+ "usage": {
+  "input_tokens": 7912,
+  "output_tokens": 7529
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns"
+ ],
+ "score": {
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "list": false,
+   "status indicator": false,
+   "filter control": false
+  }
+ },
+ "reply": "Here is the dynamic, filterable dashboard interface to display and filter your eight project deliverables. \n\nThis design uses a two-column layout (`columns` as the root component):\n* **Left Column:** A control sidebar containing a `segmented_control` to filter by status (\"All\", \"Active\", \"Pending\", \"Completed\") along with summary `stat_card` KPIs.\n* **Right Column:** The core `entity_list` displaying all eight deliverables, complete with their titles, statuses, details, custom icons, and metadata tags.\n\n### 1. Create the UI Surface\n\nFirst, we establish the surface container.\n\n<a2ui-json>\n{\n  \"version\": \"v0.9.1\",\n  \"createSurface\": {\n    \"surfaceId\": \"deliverables-tracker-surface\",\n    \"catalogId\": \"https://a2uicatalog.ai/catalog/c-data-display.json\"\n  }\n}\n</a2ui-json>\n\n### 2. Populate the Components\n\nNext, we define the component layout tree. The root `columns` component appears first, establishing a hierarchical, top-down structure.\n\n<a2ui-json>\n{\n  \"version\": \"v0.9.1\",\n  \"updateComponents\": {\n    \"surfaceId\": \"deliverables-tracker-surface\",\n    \"components\": [\n      {\n        \"id\": \"root\",\n        \"component\": \"columns\",\n        \"cols\": 2,\n        \"gap\": \"2rem\",\n        \"items\": [\n          {\n            \"blocks\": [\n              {\n                \"id\": \"filter-title\",\n                \"component\": \"heading\",\n                \"text\": \"Filter Deliverables\"\n              },\n              {\n                \"id\": \"status-filter-control\",\n                \"component\": \"segmented_control\",\n                \"name\": \"status_filter\",\n                \"options\": \"[{\\\"label\\\": \\\"All\\\", \\\"value\\\": \\\"all\\\"}, {\\\"label\\\": \\\"Active\\\", \\\"value\\\": \\\"active\\\"}, {\\\"label\\\": \\\"Pending\\\", \\\"value\\\": \\\"pending\\\"}, {\\\"label\\\": \\\"Completed\\\", \\\"value\\\": \\\"completed\\\"}]\",\n                \"selected_value\": \"all\"\n              },\n              {\n                \"id\": \"stat-total\",\n                \"component\": \"stat_card\",\n                \"value\": \"8\",\n                \"label\": \"Total Tracked Items\",\n                \"accent\": \"#3B82F6\"\n              },\n              {\n                \"id\": \"stat-active\",\n                \"component\": \"stat_card\",\n                \"value\": \"3\",\n                \"label\": \"Active Status\",\n                \"accent\": \"#10B981\"\n              }\n            ]\n          },\n          {\n            \"blocks\": [\n              {\n                \"id\": \"list-title\",\n                \"component\": \"heading\",\n                \"text\": \"Project Deliverables\"\n              },\n              {\n                \"id\": \"deliverables-list\",\n                \"component\": \"entity_list\",\n                \"items\": [\n                  {\n                    \"name\": \"Homepage Redesign\",\n                    \"subtitle\": \"Implement the new hero section and navigation menu\",\n                    \"status\": \"Active\",\n                    \"icon\": \"\ud83c\udfa8\",\n                    \"meta\": \"Priority: High\"\n                  },\n                  {\n                    \"name\": \"Database Migration\",\n                    \"subtitle\": \"Upgrade PostgreSQL cluster to version 15\",\n                    \"status\": \"Completed\",\n                    \"icon\": \"\ud83d\uddc4\ufe0f\",\n                    \"meta\": \"Completed Oct 10\"\n                  },\n                  {\n                    \"name\": \"OAuth2 Integration\",\n                    \"subtitle\": \"Add Google and GitHub sign-in options\",\n                    \"status\": \"Pending\",\n                    \"icon\": \"\ud83d\udd11\",\n                    \"meta\": \"Priority: Medium\"\n                  },\n                  {\n                    \"name\": \"API Rate Limiting\",\n                    \"subtitle\": \"Apply Redis-backed rate limiting to public endpoints\",\n                    \"status\": \"Active\",\n                    \"icon\": \"\u26a1\",\n                    \"meta\": \"Priority: High\"\n                  },\n                  {\n                    \"name\": \"Billing System Audit\",\n                    \"subtitle\": \"Reconcile Stripe transactions for Q3\",\n                    \"status\": \"Completed\",\n                    \"icon\": \"\ud83d\udcca\",\n                    \"meta\": \"Completed Oct 15\"\n                  },\n                  {\n                    \"name\": \"Mobile Push Notifications\",\n                    \"subtitle\": \"Configure APNS and FCM credentials\",\n                    \"status\": \"Pending\",\n                    \"icon\": \"\ud83d\udcf1\",\n                    \"meta\": \"Priority: Low\"\n                  },\n                  {\n                    \"name\": \"User Analytics Dashboard\",\n                    \"subtitle\": \"Set up Mixpanel tracking for key user journeys\",\n                    \"status\": \"Active\",\n                    \"icon\": \"\ud83d\udcc8\",\n                    \"meta\": \"Priority: Medium\"\n                  },\n                  {\n                    \"name\": \"GDPR Compliance Review\",\n                    \"subtitle\": \"Update privacy policy and cookie banners\",\n                    \"status\": \"Pending\",\n                    \"icon\": \"\u2696\ufe0f\",\n                    \"meta\": \"Priority: High\"\n                  }\n                ]\n              }\n            ]\n          }\n        ]\n      }\n    ]\n  }\n}\n</a2ui-json>"
+}

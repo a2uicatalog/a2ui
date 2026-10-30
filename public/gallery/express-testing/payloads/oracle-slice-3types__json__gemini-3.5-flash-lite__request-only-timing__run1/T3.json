@@ -1,0 +1,80 @@
+{
+ "label": "oracle-slice-3types__json__gemini-3.5-flash-lite__request-only-timing__run1",
+ "task": "T3",
+ "format": "json",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "product-landing-page",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "product-landing-page",
+    "components": [
+     {
+      "component": "gradient_hero",
+      "id": "root",
+      "badge": "New Release",
+      "title": "Build Better Products, Faster",
+      "subtitle": "Streamline your workflow, collaborate in real-time, and scale your business effortlessly with our next-generation platform.",
+      "cta_label": "Get Started",
+      "cta_url": "#signup",
+      "align": "center"
+     },
+     {
+      "component": "feature_grid",
+      "id": "features-grid",
+      "heading": "Everything you need to succeed",
+      "description": "Powerful features designed to help your team achieve more every single day.",
+      "columns": 3,
+      "features": [
+       {
+        "icon": "\u26a1",
+        "title": "Lightning Fast",
+        "description": "Optimized performance ensures your projects load instantly and run smoothly."
+       },
+       {
+        "icon": "\ud83d\udd12",
+        "title": "Enterprise Security",
+        "description": "State-of-the-art encryption keeps your critical data safe and compliant."
+       },
+       {
+        "icon": "\ud83d\udcc8",
+        "title": "Advanced Analytics",
+        "description": "Gain deep insights into your growth with real-time reporting dashboards."
+       }
+      ]
+     },
+     {
+      "component": "testimonial_card",
+      "id": "testimonial",
+      "text": "This platform has completely transformed how our engineering and product teams collaborate. We've cut our release cycles in half!",
+      "author_name": "Sarah Jenkins",
+      "author_title": "VP of Product at TechFlow",
+      "author_avatar_url": "https://images.unsplash.com/photo-1494790108377-be9c29b29330",
+      "rating": 5
+     },
+     {
+      "component": "cta_section",
+      "id": "cta-banner",
+      "heading": "Ready to accelerate your workflow?",
+      "body": "Join thousands of satisfied teams already building the future with us today.",
+      "primary_cta": {
+       "label": "Start Free Trial",
+       "url": "#signup"
+      },
+      "secondary_cta": {
+       "label": "Contact Sales",
+       "url": "#contact"
+      }
+     }
+    ]
+   }
+  }
+ ]
+}

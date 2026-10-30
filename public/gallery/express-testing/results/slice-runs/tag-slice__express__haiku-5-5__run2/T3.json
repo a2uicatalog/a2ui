@@ -1,0 +1,45 @@
+{
+ "task": "T3",
+ "condition": "G_haiku-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "tag-slice__express__haiku-5-5__run2",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "G-marketing-commerce.json",
+ "atoms_in_catalogue": 263,
+ "prompt_chars": 119490,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 7.4,
+ "usage": {
+  "input_tokens": 43135,
+  "output_tokens": 1350
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "gradient_hero",
+  "feature_grid",
+  "blockquote_with_avatar",
+  "cta_button",
+  "color_section"
+ ],
+ "score": {
+  "precision": 0.8,
+  "recall": 1.0,
+  "f1": 0.889,
+  "slot_hits": {
+   "hero": true,
+   "feature columns (x3)": true,
+   "testimonial": true,
+   "CTA": true
+  }
+ },
+ "reply": "<a2ui>\nhero = gradient_hero(title=\"Ship faster with less overhead\", subtitle=\"A lightweight platform that turns your ideas into production-ready apps in minutes, not weeks.\", badge=\"New in 2026\", accent=\"#4f46e5\", accent2=\"#8b5cf6\", align=\"center\", cta_label=\"Get started free\", cta_url=\"https://example.com/signup\")\n\nfeatures = feature_grid(heading=\"Why teams choose us\", description=\"Everything you need to build, launch, and scale.\", columns=3, features=[{icon: \"bolt\", title: \"Blazing fast\", description: \"Deploy in seconds with zero-config pipelines.\"}, {icon: \"shield\", title: \"Secure by default\", description: \"Built-in authentication, encryption, and audit logs.\"}, {icon: \"trending_up\", title: \"Scales with you\", description: \"From prototype to millions of requests without re-architecting.\"}])\n\ntestimonial = blockquote_with_avatar(quote=\"We cut our release cycle in half in the first month. The team actually enjoys shipping now.\", author_name=\"Maya Chen\", author_title=\"VP of Engineering, Northwind\")\n\ncta = cta_button(url=\"https://example.com/signup\", label=\"Start your free trial\", color=\"#4f46e5\", same_tab=false)\n\nroot = color_section(style=\"light\", padding=\"48px 24px\", blocks=[hero, features, testimonial, cta])\n</a2ui>"
+}

@@ -1,0 +1,83 @@
+{
+ "label": "oracle-slice-3types__json__opus-5-5__run2",
+ "task": "T5",
+ "format": "json",
+ "model_id": "claude-opus-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "pricing",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "pricing",
+    "components": [
+     {
+      "id": "root",
+      "component": "pricing_tier_group",
+      "accessibility": {
+       "label": "Subscription plans",
+       "description": "Compare the Starter, Pro and Business plans. Pro is the recommended plan."
+      },
+      "tiers": [
+       {
+        "name": "Starter",
+        "price": "$9",
+        "period": "/month",
+        "description": "For individuals getting started.",
+        "features": [
+         "1 user",
+         "5 projects",
+         "10 GB storage",
+         "Email support"
+        ],
+        "cta_label": "Choose Starter",
+        "cta_url": "#starter",
+        "recommended": false
+       },
+       {
+        "name": "Pro",
+        "price": "$29",
+        "period": "/month",
+        "description": "For growing teams that need more power.",
+        "badge": "Recommended",
+        "features": [
+         "Up to 10 users",
+         "Unlimited projects",
+         "100 GB storage",
+         "Priority support",
+         "Advanced analytics"
+        ],
+        "cta_label": "Choose Pro",
+        "cta_url": "#pro",
+        "recommended": true,
+        "highlighted": true
+       },
+       {
+        "name": "Business",
+        "price": "$79",
+        "period": "/month",
+        "description": "For organizations with advanced needs.",
+        "features": [
+         "Unlimited users",
+         "Unlimited projects",
+         "1 TB storage",
+         "24/7 dedicated support",
+         "SSO & audit logs",
+         "Custom integrations"
+        ],
+        "cta_label": "Choose Business",
+        "cta_url": "#business",
+        "recommended": false
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

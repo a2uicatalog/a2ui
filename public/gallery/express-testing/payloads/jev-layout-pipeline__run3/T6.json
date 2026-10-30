@@ -1,0 +1,90 @@
+{
+ "label": "jev-layout-pipeline__run3",
+ "task": "T6",
+ "format": "express",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "hdr",
+      "component": "page_header",
+      "title": "Spanish Vocabulary Builder",
+      "subtitle": "Reviewed: 3 of 10 flashcards"
+     },
+     {
+      "id": "h1",
+      "component": "heading",
+      "text": "Card 4: El desarrollo"
+     },
+     {
+      "id": "b1",
+      "component": "body",
+      "text": "Tap the card to flip and reveal the English translation, meaning development or growth."
+     },
+     {
+      "id": "h2",
+      "component": "heading",
+      "text": "Progress Tracker"
+     },
+     {
+      "id": "b2",
+      "component": "body",
+      "text": "You have successfully reviewed 3 out of 10 cards in this session. Keep going to finish the deck!"
+     },
+     {
+      "id": "h3",
+      "component": "heading",
+      "text": "Quick Actions"
+     },
+     {
+      "id": "b3",
+      "component": "body",
+      "text": "Tap 'Mark as Known' to remove this word from the active queue, or 'Review Again' to practice later."
+     },
+     {
+      "id": "h4",
+      "component": "heading",
+      "text": "Session Stats"
+     },
+     {
+      "id": "b4",
+      "component": "body",
+      "text": "Your current streak is 3 cards correct. Take your time to memorize each term thoroughly."
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "hdr",
+         "h1",
+         "b1",
+         "h2",
+         "b2",
+         "h3",
+         "b3",
+         "h4",
+         "b4"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

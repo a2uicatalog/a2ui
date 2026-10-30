@@ -1,0 +1,155 @@
+{
+ "label": "oracle-slice-3types__elemental__gemini-3.5-flash-lite__first-run-timing-invalid__run2",
+ "task": "T1",
+ "format": "elemental",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning-elemental.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "page_header",
+      "title": "The Water Cycle",
+      "subtitle": "Discover how Earth continuously recycles its water supply through evaporation, condensation, and precipitation.",
+      "icon": "\ud83d\udca7",
+      "tag": "Earth Science",
+      "accent": "#0284c7"
+     },
+     {
+      "id": "read-progress",
+      "component": "reading_progress_bar",
+      "color": "#0284c7"
+     },
+     {
+      "id": "sec-title-1",
+      "component": "heading",
+      "text": "1. Evaporation"
+     },
+     {
+      "id": "rung-1",
+      "component": "concept_rung",
+      "badge": "1",
+      "kind": "depth",
+      "title": "The Journey Begins with Heat",
+      "Body": "The sun provides energy that heats up water in oceans, lakes, and rivers. This causes liquid water to transform into an invisible gas called water vapor, which rises high up into the atmosphere.",
+      "takeaway": "Solar energy drives the entire water cycle by lifting moisture into the air."
+     },
+     {
+      "id": "sec-title-2",
+      "component": "heading",
+      "text": "2. Condensation"
+     },
+     {
+      "id": "rung-2",
+      "component": "concept_rung",
+      "badge": "2",
+      "kind": "depth",
+      "title": "Clouds Take Shape",
+      "Body": "As water vapor rises, the air gets colder. The cold air causes the water vapor to cool down and turn back into tiny liquid water droplets or ice crystals, gathering around microscopic particles to form clouds.",
+      "takeaway": "Cooling temperatures aloft turn gas back into visible liquid droplets."
+     },
+     {
+      "id": "sec-title-3",
+      "component": "heading",
+      "text": "3. Precipitation & Collection"
+     },
+     {
+      "id": "rung-3",
+      "component": "concept_rung",
+      "badge": "3",
+      "kind": "depth",
+      "title": "Water Returns to Earth",
+      "Body": "When the water droplets inside clouds become too heavy to stay suspended in the air, gravity pulls them down as precipitation\u2014rain, snow, sleet, or hail. Once on the ground, the water collects in rivers, lakes, and oceans, ready to start the cycle all over again.",
+      "takeaway": "Gravity completes the loop, returning fresh water to the surface."
+     },
+     {
+      "id": "sec-title-example",
+      "component": "heading",
+      "text": "Worked Example"
+     },
+     {
+      "id": "rung-example",
+      "component": "concept_rung",
+      "badge": "EX",
+      "kind": "example",
+      "label": "REAL-WORLD PHENOMENON",
+      "title": "Puddles Disappearing After a Rainstorm",
+      "Body": "Have you ever noticed a puddle disappear on a sunny afternoon? The water hasn't vanished magically; thermal energy from the sun transferred into the shallow puddle, speeding up molecular motion until liquid water broke free into the air as water vapor.",
+      "code": "Puddle Water (Liquid) + Solar Energy -> Water Vapor (Gas) -> Atmosphere",
+      "code_caption": "Simplified energy transfer model for surface evaporation",
+      "takeaway": "Every dry puddle is a tiny, local demonstration of the global water cycle in action."
+     },
+     {
+      "id": "sec-title-quiz",
+      "component": "heading",
+      "text": "Self-Check Quiz"
+     },
+     {
+      "id": "water-cycle-quiz",
+      "component": "quiz_set",
+      "title": "Test Your Water Cycle Knowledge",
+      "pass_score": 70,
+      "accent": "#0284c7",
+      "questions": {
+       "path": "/quiz_data"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_data_model": {
+    "surface_id": "main",
+    "path": "/",
+    "value": {
+     "quiz_data": [
+      {
+       "question": "What process turns liquid water into water vapor?",
+       "options": [
+        "Condensation",
+        "Evaporation",
+        "Precipitation",
+        "Collection"
+       ],
+       "correct": 1,
+       "explanation": "Evaporation is the process where heat from the sun turns liquid water into gas (water vapor)."
+      },
+      {
+       "question": "When water vapor cools down and forms clouds, what is it called?",
+       "options": [
+        "Condensation",
+        "Evaporation",
+        "Transpiration",
+        "Runoff"
+       ],
+       "correct": 0,
+       "explanation": "Condensation occurs when water vapor cools and changes back into liquid water droplets, forming clouds."
+      },
+      {
+       "question": "Which of these is a form of precipitation?",
+       "options": [
+        "Sunshine",
+        "Wind",
+        "Rain",
+        "Evaporation"
+       ],
+       "correct": 2,
+       "explanation": "Rain, snow, sleet, and hail are all forms of precipitation that fall from clouds back to Earth."
+      }
+     ]
+    }
+   }
+  }
+ ]
+}

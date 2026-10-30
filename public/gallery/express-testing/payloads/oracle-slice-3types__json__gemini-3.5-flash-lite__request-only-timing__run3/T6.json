@@ -1,0 +1,101 @@
+{
+ "label": "oracle-slice-3types__json__gemini-3.5-flash-lite__request-only-timing__run3",
+ "task": "T6",
+ "format": "json",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "vocab-flashcards",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning.json",
+    "theme": {
+     "primaryColor": "#4f46e5"
+    },
+    "send_data_model": false
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "vocab-flashcards",
+    "components": [
+     {
+      "id": "root",
+      "component": "page_header",
+      "title": "Vocabulary Builder",
+      "subtitle": "Review your daily terms with interactive flashcards and track your progress.",
+      "icon": "\ud83d\udcda",
+      "tag": "Daily Practice",
+      "accent": "#4f46e5"
+     },
+     {
+      "id": "xp-progress",
+      "component": "xp_bar",
+      "level_label": "Session Progress \u2014 10 Words",
+      "xp_current": 10,
+      "xp_next": 10,
+      "accent": "#4f46e5",
+      "show_flash": true
+     },
+     {
+      "id": "deck-intro",
+      "component": "text_callout",
+      "variant": "info",
+      "title": "Instructions",
+      "description": "Click or hover over any card in the deck below to reveal its definition and test your retention."
+     },
+     {
+      "id": "vocabulary-deck",
+      "component": "flashcard_deck",
+      "accent": "#4f46e5",
+      "label_front": "TERM",
+      "label_back": "DEFINITION",
+      "cards": [
+       {
+        "front": "Ephemeral",
+        "back": "Lasting for a very short time."
+       },
+       {
+        "front": "Serendipity",
+        "back": "The occurrence of events by chance in a happy or beneficial way."
+       },
+       {
+        "front": "Pragmatic",
+        "back": "Dealing with things sensibly and realistically in a way that is based on practical rather than theoretical considerations."
+       },
+       {
+        "front": "Mellifluous",
+        "back": "(Of a voice or words) sweet or musical; pleasant to hear."
+       },
+       {
+        "front": "Ineffable",
+        "back": "Too great or extreme to be expressed or described in words."
+       },
+       {
+        "front": "Petrichor",
+        "back": "A pleasant smell that frequently accompanies the first rain after a long period of warm, dry weather."
+       },
+       {
+        "front": "Luminous",
+        "back": "Full of or shedding light; bright or shining, especially in the dark."
+       },
+       {
+        "front": "Resilience",
+        "back": "The capacity to recover quickly from difficulties; toughness."
+       },
+       {
+        "front": "Halcyon",
+        "back": "Denoting a period of time in the past that was idyllically happy and peaceful."
+       },
+       {
+        "front": "Solitude",
+        "back": "The state or situation of being alone."
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

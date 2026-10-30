@@ -1,0 +1,36 @@
+{
+ "model": "sonnet-5-5",
+ "cond": "P",
+ "format": "express",
+ "brief": "B7",
+ "repeat": 2,
+ "seq": 15,
+ "model_id": "claude-sonnet-5-5",
+ "utc": "2026-10-29T20:07:54Z",
+ "prompt_chars": 9753,
+ "prompt_sha256": "(removed for publication)",
+ "temperature_requested": null,
+ "temperature_sent": false,
+ "max_tokens": 32768,
+ "request_secs": 2.19,
+ "input_tokens": 3607,
+ "output_tokens": 162,
+ "stop_reason": "end_turn",
+ "usage": {
+  "input_tokens": 3607,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "cache_creation": {
+   "ephemeral_5m_input_tokens": 0,
+   "ephemeral_1h_input_tokens": 0
+  },
+  "output_tokens": 162,
+  "output_tokens_details": {
+   "thinking_tokens": 111
+  },
+  "service_tier": "standard",
+  "inference_geo": "global",
+  "speed": "standard"
+ },
+ "reply": "<a2ui></a2ui>\n\nI can't build a model from real LDraw parts, because I can only make procedural toy-brick models with the catalog's components."
+}

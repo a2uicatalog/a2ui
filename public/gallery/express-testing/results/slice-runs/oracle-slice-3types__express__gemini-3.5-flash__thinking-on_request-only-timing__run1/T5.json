@@ -1,0 +1,46 @@
+{
+ "task": "T5",
+ "condition": "C_gemini-3.5-flash",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash",
+ "hints": false,
+ "label": "oracle-slice-3types__express__gemini-3.5-flash__thinking-on_request-only-timing__run1",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "C-marketing-commerce.json",
+ "atoms_in_catalogue": 23,
+ "prompt_chars": 12467,
+ "slot_recall": [
+  1,
+  1
+ ],
+ "secs": 13.8,
+ "usage": {
+  "input_tokens": 3402,
+  "output_tokens": 3769
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "pricing_tier_group"
+ ],
+ "score": {
+  "per_approach": {
+   "tier_cards": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+   },
+   "comparison_table": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": null
+   }
+  },
+  "best_approach": "tier_cards",
+  "f1": 1.0
+ },
+ "reply": "<a2ui>\nroot = pricing_tier_group([\n    {\n        name: \"Starter\",\n        price: \"$12\",\n        interval: \"month\",\n        description: \"Perfect for hobbyists, freelancers, and individual developers.\",\n        features: [\n            \"Up to 3 Active Projects\",\n            \"Community Support via Forums\",\n            \"Basic Analytics Dashboard\",\n            \"5GB Encrypted Cloud Storage\"\n        ],\n        recommended: false,\n        cta_text: \"Start Starter Trial\",\n        cta_url: \"https://example.com/signup?plan=starter\"\n    },\n    {\n        name: \"Pro\",\n        price: \"$39\",\n        interval: \"month\",\n        description: \"The ideal plan for growing teams, creators, and power users.\",\n        features: [\n            \"Unlimited Active Projects\",\n            \"24/7 Priority Email Support\",\n            \"Advanced Real-time Analytics\",\n            \"100GB Encrypted Cloud Storage\",\n            \"Team Collaboration & Shared Workspace\",\n            \"Custom Integration Access\"\n        ],\n        recommended: true,\n        cta_text: \"Start Pro Trial\",\n        cta_url: \"https://example.com/signup?plan=pro\"\n    },\n    {\n        name: \"Enterprise\",\n        price: \"$149\",\n        interval: \"month\",\n        description: \"Tailored scale, performance, security, and support for organizations.\",\n        features: [\n            \"Unlimited Projects & Team Members\",\n            \"Dedicated Account Manager\",\n            \"Custom Service Level Agreements (SLA)\",\n            \"Single Sign-On (SSO) & Advanced MFA\",\n            \"Dedicated Compute & Multi-region Hosting\",\n            \"Unlimited Cloud Storage\"\n        ],\n        recommended: false,\n        cta_text: \"Contact Sales\",\n        cta_url: \"https://example.com/sales\"\n    }\n])\n</a2ui>"
+}

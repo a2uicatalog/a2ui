@@ -1,0 +1,38 @@
+{
+ "task": "T4",
+ "condition": "DTN",
+ "format": "json",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-4-5-20251001",
+ "label": "oracle-slice-6types__json__haiku-4-5__temp0__run2",
+ "agent_type": "T4",
+ "catalogue": "D-t4.json",
+ "atoms_in_catalogue": 20,
+ "prompt_chars": 21258,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 8.6,
+ "usage": {
+  "input_tokens": 6024,
+  "output_tokens": 977
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns"
+ ],
+ "score": {
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "list": false,
+   "status indicator": false,
+   "filter control": false
+  }
+ },
+ "reply": "I'll create a filterable list UI with eight items, each showing a title, status, and detail line.\n\n<a2ui-json>\n{\n  \"version\": \"v0.9.1\",\n  \"createSurface\": {\n    \"surfaceId\": \"filterable-list\",\n    \"catalogId\": \"https://a2uicatalog.ai/catalog/d-t4.json\"\n  }\n}\n</a2ui-json>\n\n<a2ui-json>\n{\n  \"version\": \"v0.9.1\",\n  \"updateComponents\": {\n    \"surfaceId\": \"filterable-list\",\n    \"components\": [\n      {\n        \"id\": \"root\",\n        \"component\": \"columns\",\n        \"cols\": 1,\n        \"items\": [\n          {\n            \"blocks\": [\n              {\n                \"id\": \"title\",\n                \"component\": \"heading\",\n                \"text\": \"Items\"\n              },\n              {\n                \"id\": \"filter-control\",\n                \"component\": \"segmented_control\",\n                \"name\": \"status-filter\",\n                \"options\": \"[{\\\"label\\\": \\\"All\\\", \\\"value\\\": \\\"all\\\"}, {\\\"label\\\": \\\"Active\\\", \\\"value\\\": \\\"active\\\"}, {\\\"label\\\": \\\"Pending\\\", \\\"value\\\": \\\"pending\\\"}, {\\\"label\\\": \\\"Completed\\\", \\\"value\\\": \\\"completed\\\"}]\",\n                \"selected_value\": \"all\"\n              },\n              {\n                \"id\": \"items-list\",\n                \"component\": \"entity_list\",\n                \"items\": {\n                  \"path\": \"/items\"\n                }\n              }\n            ]\n          }\n        ]\n      }\n    ]\n  }\n}\n</a2ui-json>\n\n<a2ui-json>\n{\n  \"version\": \"v0.9.1\",\n  \"updateDataModel\": {\n    \"surfaceId\": \"filterable-list\",\n    \"path\": \"/items\",\n    \"value\": [\n      {\n        \"name\": \"Project Alpha\",\n        \"subtitle\": \"Q4 Planning\",\n        \"status\": \"active\",\n        \"meta\": \"Due: Dec 15\"\n      },\n      {\n        \"name\": \"Client Presentation\",\n        \"subtitle\": \"Design Review\",\n        \"status\": \"pending\",\n        \"meta\": \"Due: Dec 8\"\n      },\n      {\n        \"name\": \"Database Migration\",\n        \"subtitle\": \"Infrastructure\",\n        \"status\": \"completed\",\n        \"meta\": \"Completed: Dec 1\"\n      },\n      {\n        \"name\": \"API Documentation\",\n        \"subtitle\": \"Technical Docs\",\n        \"status\": \"active\",\n        \"meta\": \"Due: Dec 20\"\n      },\n      {\n        \"name\": \"Security Audit\",\n        \"subtitle\": \"Compliance\",\n        \"status\": \"pending\",\n        \"meta\": \"Due: Dec 10\"\n      },\n      {\n        \"name\": \"Team Onboarding\",\n        \"subtitle\": \"HR Process\",\n        \"status\": \"completed\",\n        \"meta\": \"Completed: Nov 28\"\n      },\n      {\n        \"name\": \"Performance Optimization\",\n        \"subtitle\": \"Backend\",\n        \"status\": \"active\",\n        \"meta\": \"Due: Dec 25\"\n      },\n      {\n        \"name\": \"User Testing\",\n        \"subtitle\": \"UX Research\",\n        \"status\": \"pending\",\n        \"meta\": \"Due: Dec 12\"\n      }\n    ]\n  }\n}\n</a2ui-json>\n\nThis creates a filterable list interface with:\n- **Title heading** at the top\n- **Segmented control** for filtering by status (All, Active, Pending, Completed)\n- **Entity list** displaying all eight items with:\n  - Title (name)\n  - Subtitle (category/type)\n  - Status indicator\n  - One-line detail (meta information like due dates)\n\nThe data model contains eight sample items with different statuses that can be filtered using the segmented control."
+}

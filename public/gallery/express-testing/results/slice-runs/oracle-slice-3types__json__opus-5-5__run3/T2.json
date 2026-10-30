@@ -1,0 +1,40 @@
+{
+ "task": "T2",
+ "condition": "CN_opus-5-5",
+ "temperature_applied": false,
+ "format": "json",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-opus-5-5",
+ "hints": false,
+ "label": "oracle-slice-3types__json__opus-5-5__run3",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 31546,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 14.5,
+ "usage": {
+  "input_tokens": 12376,
+  "output_tokens": 1593
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns"
+ ],
+ "score": {
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "KPI tile (x4)": false,
+   "trend (required only if metric_row was chosen; stat_card's own delta already satisfies it)": false,
+   "comparison chart": false
+  }
+ },
+ "reply": "<a2ui-json>\n[\n  {\n    \"version\": \"v0.9.1\",\n    \"createSurface\": {\n      \"surfaceId\": \"metrics-overview\",\n      \"catalogId\": \"https://a2uicatalog.ai/catalog/c-data-display.json\"\n    }\n  },\n  {\n    \"version\": \"v0.9.1\",\n    \"updateComponents\": {\n      \"surfaceId\": \"metrics-overview\",\n      \"components\": [\n        {\n          \"id\": \"root\",\n          \"component\": \"columns\",\n          \"cols\": 1,\n          \"gap\": \"1.5rem\",\n          \"align\": \"stretch\",\n          \"items\": [\n            {\n              \"blocks\": [\n                {\n                  \"type\": \"heading\",\n                  \"component\": \"heading\",\n                  \"text\": \"Metrics Overview \u2014 Q3\"\n                },\n                {\n                  \"type\": \"metric_row\",\n                  \"component\": \"metric_row\",\n                  \"cols\": 4,\n                  \"accent\": \"#3b82f6\",\n                  \"metrics\": [\n                    { \"value\": \"482K\", \"prefix\": \"$\", \"label\": \"Revenue\", \"sub\": \"+12.4% vs Q2\", \"trend\": \"up\", \"accent\": \"#22c55e\" },\n                    { \"value\": \"18.4K\", \"label\": \"Active Users\", \"sub\": \"+8.1% vs Q2\", \"trend\": \"up\", \"accent\": \"#3b82f6\" },\n                    { \"value\": \"2.1\", \"suffix\": \"%\", \"label\": \"Churn Rate\", \"sub\": \"-0.6 pts vs Q2\", \"trend\": \"down\", \"accent\": \"#a855f7\" },\n                    { \"value\": \"212\", \"suffix\": \"ms\", \"label\": \"Avg Response Time\", \"sub\": \"+18ms vs Q2\", \"trend\": \"up\", \"accent\": \"#ef4444\" }\n                  ]\n                },\n                {\n                  \"type\": \"heading\",\n                  \"component\": \"heading\",\n                  \"text\": \"Monthly Revenue: Q3 vs Q2\"\n                },\n                {\n                  \"type\": \"chartjs_bar\",\n                  \"component\": \"chartjs_bar\",\n                  \"labels\": [\"Month 1\", \"Month 2\", \"Month 3\"],\n                  \"datasets\": [\n                    { \"label\": \"Q2 Revenue ($K)\", \"data\": [138, 142, 149] },\n                    { \"label\": \"Q3 Revenue ($K)\", \"data\": [151, 160, 171] }\n                  ]\n                }\n              ]\n            }\n          ]\n        }\n      ]\n    }\n  }\n]\n</a2ui-json>\n\nThis creates a metrics overview surface. At the top, four KPI tiles show a value, a label, an up/down trend, and the change versus the prior quarter:\n- **Revenue:** $482K, up\n- **Active Users:** 18.4K, up\n- **Churn Rate:** 2.1%, down\n- **Avg Response Time:** 212ms, up\n\nBelow the tiles, a bar chart compares monthly revenue for Q3 against Q2.\n\nThe catalog has no container that references child components, so the root is a single-column `columns` layout with the heading, KPI row and chart written inside it. I used `metric_row` for the tiles because it supports a value, a label and an up/down trend for each tile."
+}

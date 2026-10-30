@@ -1,0 +1,115 @@
+{
+ "label": "oracle-slice-3types__json__sonnet-5-5__temp0__run1",
+ "task": "T6",
+ "format": "json",
+ "model_id": "claude-sonnet-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "vocab_flashcards",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "vocab_flashcards",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "2rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         {
+          "id": "title",
+          "component": "heading",
+          "text": "Vocabulary Flashcards"
+         },
+         {
+          "id": "intro",
+          "component": "body",
+          "text": "Read the word on the front of each card, try to recall its meaning, then flip the card to check your answer. Work through all ten cards."
+         },
+         {
+          "id": "review_progress",
+          "component": "progress_bar",
+          "label": "Cards reviewed: 0 of 10",
+          "value": 0,
+          "accent": "#4f46e5",
+          "show_percent": "true",
+          "caption": "Progress updates as you review each card"
+         },
+         {
+          "id": "tip",
+          "component": "text_callout",
+          "variant": "info",
+          "title": "Tip",
+          "description": "Say the definition out loud before flipping. Active recall helps words stick."
+         }
+        ]
+       },
+       {
+        "blocks": [
+         {
+          "id": "deck",
+          "component": "flashcard_deck",
+          "accent": "#4f46e5",
+          "label_front": "WORD",
+          "label_back": "DEFINITION",
+          "cards": [
+           {
+            "front": "Ephemeral",
+            "back": "Lasting for a very short time; short-lived."
+           },
+           {
+            "front": "Ubiquitous",
+            "back": "Present, appearing, or found everywhere."
+           },
+           {
+            "front": "Pragmatic",
+            "back": "Dealing with things sensibly and realistically, based on practical rather than theoretical considerations."
+           },
+           {
+            "front": "Meticulous",
+            "back": "Showing great attention to detail; very careful and precise."
+           },
+           {
+            "front": "Candid",
+            "back": "Truthful and straightforward; frank."
+           },
+           {
+            "front": "Resilient",
+            "back": "Able to recover quickly from difficulties; tough."
+           },
+           {
+            "front": "Ambiguous",
+            "back": "Open to more than one interpretation; unclear."
+           },
+           {
+            "front": "Benevolent",
+            "back": "Well-meaning and kindly; generous toward others."
+           },
+           {
+            "front": "Eloquent",
+            "back": "Fluent and persuasive in speaking or writing."
+           },
+           {
+            "front": "Tenacious",
+            "back": "Holding firmly to a goal or belief; persistent."
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,122 @@
+{
+ "label": "oracle-slice-6types__express__haiku-5-5__hints-v2__run2",
+ "task": "T4",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/d-t4.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "title",
+      "component": "heading",
+      "text": "Items"
+     },
+     {
+      "id": "statusFilter",
+      "component": "segmented_control",
+      "options": [
+       {
+        "label": "All",
+        "value": "all"
+       },
+       {
+        "label": "Active",
+        "value": "active"
+       },
+       {
+        "label": "Pending",
+        "value": "pending"
+       },
+       {
+        "label": "Blocked",
+        "value": "blocked"
+       },
+       {
+        "label": "Done",
+        "value": "done"
+       }
+      ],
+      "selected_value": "all",
+      "name": "status_filter"
+     },
+     {
+      "id": "itemList",
+      "component": "entity_list",
+      "items": [
+       {
+        "name": "Billing sync",
+        "subtitle": "Invoices reconciled with ledger",
+        "status": "active"
+       },
+       {
+        "name": "Onboarding flow",
+        "subtitle": "Welcome emails queued for review",
+        "status": "pending"
+       },
+       {
+        "name": "Data export",
+        "subtitle": "Nightly CSV export failing on large tables",
+        "status": "blocked"
+       },
+       {
+        "name": "Payment gateway",
+        "subtitle": "Webhook retries configured",
+        "status": "done"
+       },
+       {
+        "name": "Search index",
+        "subtitle": "Reindex running across shards",
+        "status": "active"
+       },
+       {
+        "name": "Access review",
+        "subtitle": "Quarterly permissions audit scheduled",
+        "status": "pending"
+       },
+       {
+        "name": "Mobile release",
+        "subtitle": "Build 2.4 waiting on store approval",
+        "status": "blocked"
+       },
+       {
+        "name": "Docs refresh",
+        "subtitle": "API reference updated for v3",
+        "status": "done"
+       }
+      ]
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "title",
+         "statusFilter"
+        ]
+       },
+       {
+        "blocks": [
+         "itemList"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

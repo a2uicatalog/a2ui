@@ -1,0 +1,52 @@
+{
+ "task": "T1",
+ "condition": "B_haiku-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "rule-slice__express__haiku-5-5__run1",
+ "agent_type": "Learning",
+ "catalogue": "B-learning.json",
+ "atoms_in_catalogue": 184,
+ "prompt_chars": 88519,
+ "slot_recall": [
+  5,
+  5
+ ],
+ "secs": 16.1,
+ "usage": {
+  "input_tokens": 31441,
+  "output_tokens": 3105
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "page_header",
+  "heading",
+  "body",
+  "heading",
+  "body",
+  "heading",
+  "body",
+  "heading",
+  "steps",
+  "quiz_set",
+  "color_section"
+ ],
+ "score": {
+  "precision": 0.909,
+  "recall": 0.8,
+  "f1": 0.851,
+  "slot_hits": {
+   "title": true,
+   "concept sections (x3)": true,
+   "worked example": true,
+   "3-question quiz": true,
+   "quiz result": false
+  }
+ },
+ "reply": "<a2ui>\nintro = page_header(\"The Water Cycle\", \"How water moves between the oceans, the air, and the land\", \"\ud83d\udca7\", \"Lesson 1\", \"#0284c7\")\n\nh_evap = heading(\"1. Evaporation and transpiration\")\nb_evap = body(\"Heat from the Sun turns liquid water in oceans, lakes, and rivers into water vapour. Plants also release water vapour through tiny pores in their leaves. This plant process is called transpiration.\")\n\nh_cond = heading(\"2. Condensation\")\nb_cond = body(\"As water vapour rises, it cools. Cooler air holds less vapour, so the vapour turns back into liquid. It condenses onto tiny particles such as dust, forming droplets that gather into clouds.\")\n\nh_precip = heading(\"3. Precipitation and collection\")\nb_precip = body(\"When cloud droplets grow heavy enough, they fall as rain, snow, sleet, or hail. This water collects in oceans, lakes, rivers, and underground aquifers, and the cycle starts again.\")\n\nh_example = heading(\"Worked example: a puddle after rain\")\nex_steps = steps([\n  {label: \"Sun warms the puddle\", text: \"Sunlight heats the shallow water, so some molecules gain enough energy to escape as vapour (evaporation).\"},\n  {label: \"Vapour rises and cools\", text: \"The vapour climbs into cooler air, where it condenses onto dust particles and forms a small cloud.\"},\n  {label: \"Droplets fall\", text: \"The droplets merge until they are heavy enough to fall as light rain, returning water to the ground.\"},\n  {label: \"Water re-collects\", text: \"The rain refills the puddle and soaks into the soil, so the cycle repeats.\"}\n])\n\nq1 = {question: \"What process moves water from plant leaves into the air?\", options: [\"Condensation\", \"Precipitation\", \"Transpiration\", \"Collection\"], correct: 2, explanation: \"Transpiration is the release of water vapour through the pores in plant leaves.\"}\nq2 = {question: \"Why does water vapour form clouds as it rises?\", options: [\"It gets heavier\", \"It cools and condenses\", \"It is pushed down by wind\", \"It freezes into ice immediately\"], correct: 1, explanation: \"Cooler air holds less vapour, so the vapour condenses into droplets around particles such as dust.\"}\nq3 = {question: \"Which of these is a form of precipitation?\", options: [\"Evaporation\", \"Transpiration\", \"Snow\", \"Groundwater storage\"], correct: 2, explanation: \"Snow, like rain, sleet, and hail, is water that falls from clouds.\"}\n\nself_check = quiz_set(\"Self-check\", [q1, q2, q3], 70, \"#0284c7\")\n\nroot = color_section(\"#0284c7\", \"light\", \"24px\", false, \"100%\", [\n  intro,\n  h_evap,\n  b_evap,\n  h_cond,\n  b_cond,\n  h_precip,\n  b_precip,\n  h_example,\n  ex_steps,\n  self_check\n])\n</a2ui>"
+}

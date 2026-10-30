@@ -1,0 +1,85 @@
+{
+ "label": "oracle-slice-3types__json__gemini-3.5-flash-lite__request-only-timing__run3",
+ "task": "T5",
+ "format": "json",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "pricing-plans",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce.json",
+    "send_data_model": false
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "pricing-plans",
+    "components": [
+     {
+      "id": "root",
+      "component": "gradient_hero",
+      "title": "Choose Your Plan",
+      "subtitle": "Simple, transparent pricing for individuals and teams of all sizes.",
+      "badge": "Pricing",
+      "align": "center",
+      "cta_label": "Start Free Trial",
+      "cta_url": "#signup"
+     },
+     {
+      "id": "plans-section",
+      "component": "pricing_tier_group",
+      "tiers": [
+       {
+        "name": "Starter",
+        "price": "$9",
+        "period": "per month",
+        "description": "Perfect for side projects and individual creators.",
+        "features": [
+         "Up to 3 projects",
+         "Basic analytics",
+         "Community support",
+         "1GB storage"
+        ],
+        "cta_label": "Get Started",
+        "cta_url": "#starter"
+       },
+       {
+        "name": "Pro",
+        "price": "$29",
+        "period": "per month",
+        "description": "Ideal for growing teams and professional businesses.",
+        "recommended": true,
+        "features": [
+         "Unlimited projects",
+         "Advanced analytics & reports",
+         "Priority email support",
+         "50GB storage",
+         "Custom integrations"
+        ],
+        "cta_label": "Start Pro Trial",
+        "cta_url": "#pro"
+       },
+       {
+        "name": "Enterprise",
+        "price": "$99",
+        "period": "per month",
+        "description": "Maximum power and security for large-scale operations.",
+        "features": [
+         "Everything in Pro",
+         "Dedicated account manager",
+         "24/7 phone support",
+         "Unlimited storage",
+         "Custom SLA & Security"
+        ],
+        "cta_label": "Contact Sales",
+        "cta_url": "#enterprise"
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

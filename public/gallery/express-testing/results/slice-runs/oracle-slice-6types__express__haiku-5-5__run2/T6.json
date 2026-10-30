@@ -1,0 +1,42 @@
+{
+ "task": "T6",
+ "condition": "D_haiku-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "oracle-slice-6types__express__haiku-5-5__run2",
+ "agent_type": "T6",
+ "catalogue": "D-t6.json",
+ "atoms_in_catalogue": 12,
+ "prompt_chars": 8305,
+ "slot_recall": [
+  2,
+  2
+ ],
+ "secs": 7.6,
+ "usage": {
+  "input_tokens": 3043,
+  "output_tokens": 1506
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "flashcard_deck",
+  "heading",
+  "progress_bar",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.5,
+  "recall": 1.0,
+  "f1": 0.667,
+  "slot_hits": {
+   "flashcard deck": true,
+   "progress indicator": true
+  }
+ },
+ "reply": "<a2ui>\nvocab_cards = [{front: \"Serendipity\", back: \"The occurrence of finding something good by chance\"}, {front: \"Ephemeral\", back: \"Lasting for a very short time\"}, {front: \"Ubiquitous\", back: \"Present or found everywhere\"}, {front: \"Resilient\", back: \"Able to recover quickly from difficulties\"}, {front: \"Meticulous\", back: \"Showing great attention to detail\"}, {front: \"Eloquent\", back: \"Fluent and persuasive in speaking or writing\"}, {front: \"Pragmatic\", back: \"Dealing with things sensibly and realistically\"}, {front: \"Ambiguous\", back: \"Open to more than one interpretation\"}, {front: \"Candid\", back: \"Truthful and straightforward\"}, {front: \"Diligent\", back: \"Careful and persistent in work or effort\"}]\n\ndeck = flashcard_deck(vocab_cards, \"#4f46e5\", \"WORD\", \"DEFINITION\")\nheading_title = heading(\"Vocabulary Review\")\nprogress = progress_bar(0, \"Cards reviewed\", \"#4f46e5\", true, \"0 of 10 cards reviewed\")\nroot = columns(2, \"1.5rem\", \"top\", [{blocks: [heading_title, progress]}, {blocks: [deck]}])\n</a2ui>"
+}

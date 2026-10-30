@@ -1,0 +1,99 @@
+{
+ "label": "oracle-slice-3types__json__gemini-3.5-flash-lite__request-only-timing__run2",
+ "task": "T2",
+ "format": "json",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "metrics-overview",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display.json",
+    "theme": {
+     "primaryColor": "#2563eb"
+    },
+    "send_data_model": false
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "metrics-overview",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "1.5rem",
+      "items": [
+       {
+        "blocks": [
+         {
+          "id": "heading-1",
+          "component": "heading",
+          "text": "Executive Metrics Overview"
+         },
+         {
+          "id": "metrics-strip",
+          "component": "metric_row",
+          "cols": 4,
+          "metrics": [
+           {
+            "value": "$128,430",
+            "label": "Total Revenue",
+            "prefix": "$",
+            "trend": "up"
+           },
+           {
+            "value": "1,429",
+            "label": "Active Users",
+            "trend": "up"
+           },
+           {
+            "value": "99.9%",
+            "label": "System Uptime",
+            "trend": "up"
+           },
+           {
+            "value": "2.4%",
+            "label": "Churn Rate",
+            "trend": "down"
+           }
+          ]
+         },
+         {
+          "id": "chart-heading",
+          "component": "heading",
+          "text": "Performance Benchmark Comparison"
+         },
+         {
+          "id": "benchmark",
+          "component": "benchmark_comparison",
+          "items": [
+           {
+            "label": "Q1 Target",
+            "value": 85
+           },
+           {
+            "label": "Q2 Target",
+            "value": 92
+           },
+           {
+            "label": "Q3 Target",
+            "value": 78
+           },
+           {
+            "label": "Q4 Projected",
+            "value": 95
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

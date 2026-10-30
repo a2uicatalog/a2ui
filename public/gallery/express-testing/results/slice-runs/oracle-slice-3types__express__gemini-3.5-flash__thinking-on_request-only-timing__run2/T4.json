@@ -1,0 +1,38 @@
+{
+ "task": "T4",
+ "condition": "C_gemini-3.5-flash",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash",
+ "hints": false,
+ "label": "oracle-slice-3types__express__gemini-3.5-flash__thinking-on_request-only-timing__run2",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 16421,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 33.8,
+ "usage": {
+  "input_tokens": 4600,
+  "output_tokens": 6720
+ },
+ "valid": false,
+ "error": "A2uiCompilationValidationError: Property 'selected_value' of component 'segmented_control' does not support dynamic data bindings (paths). - Help: Property 'selected_value' on 'segmented_control' must be a static literal value, not a dynamic databinding ($path).",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "list": false,
+   "status indicator": false,
+   "filter control": false
+  }
+ },
+ "reply": "<a2ui>\n$/filter/status = \"all\"\n\nroot = columns(\n    2,\n    \"2.5rem\",\n    \"top\",\n    [\n        {\n            \"blocks\": [\n                heading(\"Project Tasks\"),\n                body(\"Filter and monitor development tasks across active sprints.\"),\n                metric_row(\n                    3,\n                    \"#4f46e5\",\n                    [\n                        {\"value\": \"3\", \"label\": \"Active\"},\n                        {\"value\": \"2\", \"label\": \"Pending\"},\n                        {\"value\": \"3\", \"label\": \"Completed\"}\n                    ]\n                ),\n                segmented_control(\n                    [\n                        {\"label\": \"All Tasks\", \"value\": \"all\"},\n                        {\"label\": \"Active\", \"value\": \"active\"},\n                        {\"label\": \"Pending\", \"value\": \"pending\"},\n                        {\"label\": \"Completed\", \"value\": \"completed\"}\n                    ],\n                    $/filter/status,\n                    \"status_filter\"\n                )\n            ]\n        },\n        {\n            \"blocks\": [\n                entity_list([\n                    {\"name\": \"Cloud Migration\", \"subtitle\": \"Migrate legacy databases to secure AWS RDS instance\", \"icon\": \"\u2601\ufe0f\", \"status\": \"Active\"},\n                    {\"name\": \"OAuth 2.0 Integration\", \"subtitle\": \"Implement secure Google and Apple login flows\", \"icon\": \"\ud83d\udd10\", \"status\": \"Completed\"},\n                    {\"name\": \"Billing UI Refresh\", \"subtitle\": \"Redesign pricing tables and subscription checkout\", \"icon\": \"\ud83d\udcb3\", \"status\": \"Pending\"},\n                    {\"name\": \"API Performance Audit\", \"subtitle\": \"Optimize bundle size and graphql query latency\", \"icon\": \"\u26a1\", \"status\": \"Active\"},\n                    {\"name\": \"Mobile Push Alerts\", \"subtitle\": \"Configure APNS and FCM notification triggers\", \"icon\": \"\ud83d\udd14\", \"status\": \"Completed\"},\n                    {\"name\": \"GDPR Compliance Check\", \"subtitle\": \"Update cookie consent and user data deletion policy\", \"icon\": \"\u2696\ufe0f\", \"status\": \"Pending\"},\n                    {\"name\": \"GraphQL Gateway\", \"subtitle\": \"Deploy unified query layer for frontend clients\", \"icon\": \"\ud83d\udd78\ufe0f\", \"status\": \"Active\"},\n                    {\"name\": \"Developer Docs\", \"subtitle\": \"Write API reference guides and onboarding tutorials\", \"icon\": \"\ud83d\udcdd\", \"status\": \"Completed\"}\n                ])\n            ]\n        }\n    ]\n)\n</a2ui>"
+}

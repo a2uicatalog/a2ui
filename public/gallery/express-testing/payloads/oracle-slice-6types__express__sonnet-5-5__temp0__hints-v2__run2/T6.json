@@ -1,0 +1,104 @@
+{
+ "label": "oracle-slice-6types__express__sonnet-5-5__temp0__hints-v2__run2",
+ "task": "T6",
+ "format": "express",
+ "model_id": "claude-sonnet-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "vocab-flashcards",
+    "catalog_id": "https://a2uicatalog.ai/catalog/d-t6.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "vocab-flashcards",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "2rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         {
+          "type": "heading",
+          "text": "Vocabulary Flashcards"
+         },
+         {
+          "type": "flashcard_deck",
+          "accent": "#4f46e5",
+          "label_front": "WORD",
+          "label_back": "DEFINITION",
+          "cards": [
+           {
+            "front": "Ephemeral",
+            "back": "Lasting for a very short time."
+           },
+           {
+            "front": "Ubiquitous",
+            "back": "Present, appearing, or found everywhere."
+           },
+           {
+            "front": "Pragmatic",
+            "back": "Dealing with things sensibly and realistically."
+           },
+           {
+            "front": "Eloquent",
+            "back": "Fluent and persuasive in speaking or writing."
+           },
+           {
+            "front": "Resilient",
+            "back": "Able to recover quickly from difficulties."
+           },
+           {
+            "front": "Ambiguous",
+            "back": "Open to more than one interpretation."
+           },
+           {
+            "front": "Meticulous",
+            "back": "Showing great attention to detail; very careful."
+           },
+           {
+            "front": "Benevolent",
+            "back": "Well meaning and kindly."
+           },
+           {
+            "front": "Candid",
+            "back": "Truthful and straightforward; frank."
+           },
+           {
+            "front": "Voracious",
+            "back": "Having a very eager approach to an activity."
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "blocks": [
+         {
+          "type": "heading",
+          "text": "Review Progress"
+         },
+         {
+          "type": "progress_bar",
+          "value": 0,
+          "label": "Cards reviewed",
+          "accent": "#4f46e5",
+          "show_percent": true,
+          "caption": "0 of 10 cards reviewed"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

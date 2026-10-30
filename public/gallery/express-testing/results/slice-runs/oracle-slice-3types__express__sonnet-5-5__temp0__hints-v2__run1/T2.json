@@ -1,0 +1,47 @@
+{
+ "task": "T2",
+ "condition": "CT_sonnet-5-5H2",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-sonnet-5-5",
+ "hints": true,
+ "label": "oracle-slice-3types__express__sonnet-5-5__temp0__hints-v2__run1",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 16421,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 11.5,
+ "usage": {
+  "input_tokens": 6379,
+  "output_tokens": 1224
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns",
+  "heading",
+  "stat_card",
+  "stat_card",
+  "stat_card",
+  "stat_card",
+  "heading",
+  "chartjs_bar"
+ ],
+ "score": {
+  "precision": 0.625,
+  "recall": 1.0,
+  "f1": 0.769,
+  "slot_hits": {
+   "KPI tile (x4)": true,
+   "trend (required only if metric_row was chosen; stat_card's own delta already satisfies it)": true,
+   "comparison chart": true
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"metrics-overview\")\nroot = columns(2, \"1.5rem\", \"top\", [{blocks: [heading(\"Metrics Overview\"), stat_card(\"$128.4K\", \"Monthly Revenue\", \"+12.5%\", true, \"#22c55e\"), stat_card(\"48,210\", \"Active Users\", \"+8.1%\", true, \"#3b82f6\"), stat_card(\"3.9%\", \"Conversion Rate\", \"-0.4%\", false, \"#f59e0b\"), stat_card(\"2.1%\", \"Churn Rate\", \"-0.3%\", false, \"#a855f7\")]}, {blocks: [heading(\"Revenue: This Year vs. Last Year ($K)\"), chartjs_bar([\"Jan\", \"Feb\", \"Mar\", \"Apr\", \"May\", \"Jun\"], [{label: \"This year\", data: [92, 101, 108, 115, 121, 128]}, {label: \"Last year\", data: [80, 85, 94, 99, 106, 114]}])]}])\n</a2ui>"
+}

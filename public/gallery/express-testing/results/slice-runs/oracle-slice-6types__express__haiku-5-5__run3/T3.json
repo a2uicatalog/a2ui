@@ -1,0 +1,45 @@
+{
+ "task": "T3",
+ "condition": "D_haiku-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "oracle-slice-6types__express__haiku-5-5__run3",
+ "agent_type": "T3",
+ "catalogue": "D-t3.json",
+ "atoms_in_catalogue": 21,
+ "prompt_chars": 12164,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 7.6,
+ "usage": {
+  "input_tokens": 4389,
+  "output_tokens": 1306
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "gradient_hero",
+  "feature_grid",
+  "testimonial_card",
+  "cta_button",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.8,
+  "recall": 1.0,
+  "f1": 0.889,
+  "slot_hits": {
+   "hero": true,
+   "feature columns (x3)": true,
+   "testimonial": true,
+   "CTA": true
+  }
+ },
+ "reply": "<a2ui>\nhero = gradient_hero(title=\"Ship faster with less overhead\", subtitle=\"Everything your team needs to plan, build, and launch in one place.\", badge=\"New in 2026\", accent=\"#4f46e5\", accent2=\"#8b5cf6\", align=\"center\", cta_label=\"Start free trial\", cta_url=\"https://example.com/signup\")\n\nfeatures = feature_grid(heading=\"Why teams choose us\", description=\"Built for speed, clarity, and collaboration.\", columns=3, features=[{icon: \"\u26a1\", title: \"Lightning fast\", description: \"Deploy in seconds with zero-config pipelines.\"}, {icon: \"\ud83d\udd12\", title: \"Secure by default\", description: \"Role-based access and encryption at rest and in transit.\"}, {icon: \"\ud83d\udcc8\", title: \"Scales with you\", description: \"From a single project to thousands of services.\"}])\n\ntestimonial = testimonial_card(text=\"We cut our release time in half in the first month. The team actually enjoys shipping now.\", author_name=\"Maya Chen\", author_title=\"VP Engineering, Northwind\", author_avatar_url=\"https://example.com/avatars/maya.jpg\", rating=5)\n\ncta = cta_button(url=\"https://example.com/signup\", label=\"Get started today\", color=\"#4f46e5\", same_tab=false)\n\nroot = columns(cols=1, gap=\"2rem\", align=\"stretch\", items=[{blocks: [hero, features, testimonial, cta]}])\n</a2ui>"
+}

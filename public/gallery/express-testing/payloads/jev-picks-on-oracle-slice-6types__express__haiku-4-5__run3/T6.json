@@ -1,0 +1,106 @@
+{
+ "label": "jev-picks-on-oracle-slice-6types__express__haiku-4-5__run3",
+ "task": "T6",
+ "format": "express",
+ "model_id": null,
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "flashcard-surface",
+    "catalog_id": "https://a2uicatalog.ai/catalog/jd-t6.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "flashcard-surface",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "2rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "_inline_1",
+         "_inline_2"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_3"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "_inline_1",
+      "component": "heading",
+      "text": "Vocabulary Review"
+     },
+     {
+      "id": "_inline_2",
+      "component": "progress_bar",
+      "value": 20,
+      "label": "Progress",
+      "accent": "#4f46e5",
+      "show_percent": true,
+      "caption": "2 of 10 cards reviewed"
+     },
+     {
+      "id": "_inline_3",
+      "component": "flashcard_deck",
+      "cards": [
+       {
+        "front": "Serendipity",
+        "back": "The occurrence of events by chance in a happy or beneficial way"
+       },
+       {
+        "front": "Ephemeral",
+        "back": "Lasting for a very short time; transitory"
+       },
+       {
+        "front": "Ubiquitous",
+        "back": "Present, appearing, or found everywhere"
+       },
+       {
+        "front": "Mellifluous",
+        "back": "Sweet or musical; pleasant to hear"
+       },
+       {
+        "front": "Sanguine",
+        "back": "Optimistic or positive, especially in an unjustifiably confident way"
+       },
+       {
+        "front": "Taciturn",
+        "back": "Reserved or uncommunicative in speech; quiet"
+       },
+       {
+        "front": "Perspicacious",
+        "back": "Having keen insight or understanding; mentally sharp"
+       },
+       {
+        "front": "Obfuscate",
+        "back": "To deliberately make something unclear or harder to understand"
+       },
+       {
+        "front": "Pellucid",
+        "back": "Translucently clear in style or meaning; easy to understand"
+       },
+       {
+        "front": "Quixotic",
+        "back": "Exceedingly idealistic; unrealistic and impractical"
+       }
+      ],
+      "accent": "#4f46e5",
+      "label_front": "TERM",
+      "label_back": "DEFINITION"
+     }
+    ]
+   }
+  }
+ ]
+}

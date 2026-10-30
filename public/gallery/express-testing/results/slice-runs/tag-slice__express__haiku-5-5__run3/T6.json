@@ -1,0 +1,42 @@
+{
+ "task": "T6",
+ "condition": "G_haiku-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "tag-slice__express__haiku-5-5__run3",
+ "agent_type": "Learning",
+ "catalogue": "G-learning.json",
+ "atoms_in_catalogue": 236,
+ "prompt_chars": 117248,
+ "slot_recall": [
+  2,
+  2
+ ],
+ "secs": 8.2,
+ "usage": {
+  "input_tokens": 41969,
+  "output_tokens": 1799
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "heading",
+  "progress_bar",
+  "flashcard_deck",
+  "color_section"
+ ],
+ "score": {
+  "precision": 0.5,
+  "recall": 1.0,
+  "f1": 0.667,
+  "slot_hits": {
+   "flashcard deck": true,
+   "progress indicator": true
+  }
+ },
+ "reply": "<a2ui>\ntitle = heading(\"Spanish Vocabulary Flashcards\")\nprogress = progress_bar(0, \"Cards reviewed\", \"#4f46e5\", true, \"0 of 10 reviewed\")\ndeck = flashcard_deck([{front: \"hola\", back: \"hello\"}, {front: \"gracias\", back: \"thank you\"}, {front: \"perro\", back: \"dog\"}, {front: \"gato\", back: \"cat\"}, {front: \"casa\", back: \"house\"}, {front: \"agua\", back: \"water\"}, {front: \"libro\", back: \"book\"}, {front: \"amigo\", back: \"friend\"}, {front: \"comer\", back: \"to eat\"}, {front: \"escuela\", back: \"school\"}], \"#4f46e5\", \"SPANISH\", \"ENGLISH\")\nroot = color_section(accent=\"#4f46e5\", style=\"light\", blocks=[title, progress, deck])\n</a2ui>\n\nThe deck holds ten Spanish-to-English cards that flip on click. The progress bar starts at 0 of 10. The catalog's progress components take static values, so the count will not update as cards are flipped. A live count would need a server-side update that re-sends the surface."
+}

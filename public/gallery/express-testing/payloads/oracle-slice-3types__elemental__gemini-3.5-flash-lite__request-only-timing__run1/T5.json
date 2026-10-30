@@ -1,0 +1,96 @@
+{
+ "label": "oracle-slice-3types__elemental__gemini-3.5-flash-lite__request-only-timing__run1",
+ "task": "T5",
+ "format": "elemental",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce-elemental.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "gradient_hero",
+      "title": "Simple, transparent pricing",
+      "subtitle": "Choose the plan that fits your needs. Upgrade or downgrade at any time.",
+      "Badge": "Pricing Plans",
+      "align": "center"
+     },
+     {
+      "id": "tier-group",
+      "component": "pricing_tier_group",
+      "tiers": {
+       "path": "/tiers"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_data_model": {
+    "surface_id": "main",
+    "path": "/",
+    "value": {
+     "tiers": [
+      {
+       "name": "Starter",
+       "price": "$9",
+       "period": "/month",
+       "description": "Essential features for individuals and side projects.",
+       "features": [
+        "1 Workspace",
+        "Up to 5 team members",
+        "Basic analytics",
+        "Community support"
+       ],
+       "cta_label": "Get Started",
+       "cta_url": "#starter",
+       "recommended": false
+      },
+      {
+       "name": "Pro",
+       "price": "$29",
+       "period": "/month",
+       "description": "Advanced tools and unlimited resources for growing teams.",
+       "features": [
+        "Unlimited Workspaces",
+        "Up to 25 team members",
+        "Advanced analytics",
+        "Priority 24/7 support",
+        "Custom integrations"
+       ],
+       "cta_label": "Upgrade to Pro",
+       "cta_url": "#pro",
+       "recommended": true
+      },
+      {
+       "name": "Enterprise",
+       "price": "$99",
+       "period": "/month",
+       "description": "Dedicated infrastructure and security for large-scale organizations.",
+       "features": [
+        "Dedicated Server",
+        "Unlimited team members",
+        "Real-time auditing",
+        "Dedicated account manager",
+        "SLA guarantee"
+       ],
+       "cta_label": "Contact Sales",
+       "cta_url": "#enterprise",
+       "recommended": false
+      }
+     ]
+    }
+   }
+  }
+ ]
+}

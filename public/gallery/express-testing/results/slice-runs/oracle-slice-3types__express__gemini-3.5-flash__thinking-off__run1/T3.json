@@ -1,0 +1,45 @@
+{
+ "task": "T3",
+ "condition": "C_gemini-3.5-flash",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 32768,
+ "model_id": "gemini-3.5-flash",
+ "hints": false,
+ "label": "oracle-slice-3types__express__gemini-3.5-flash__thinking-off__run1",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "C-marketing-commerce.json",
+ "atoms_in_catalogue": 23,
+ "prompt_chars": 12467,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 3.8,
+ "usage": {
+  "input_tokens": 3412,
+  "output_tokens": 717
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "gradient_hero",
+  "feature_grid",
+  "testimonial_card",
+  "cta_section",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.8,
+  "recall": 1.0,
+  "f1": 0.889,
+  "slot_hits": {
+   "hero": true,
+   "feature columns (x3)": true,
+   "testimonial": true,
+   "CTA": true
+  }
+ },
+ "reply": "<a2ui>\n# Absolute data model and variables initialization\n$/page/title = \"A2UI Express\"\n\n# Target user interface surface\nsurface(\"product-landing-page\")\n\n# Hero section highlighting the main headline, subhead, and gradient background\nhero = gradient_hero(\n    \"Revolutionize Your Workflow with A2UI\",\n    \"The fastest way to build beautiful, responsive user interfaces using modular component definitions.\",\n    \"INTRODUCING A2UI EXPRESS\",\n    \"#6366f1\",\n    \"#a855f7\",\n    \"linear-gradient(135deg, #e0e7ff, #f3e8ff)\",\n    \"center\",\n    \"Get Started Free\",\n    \"https://a2ui.dev/docs\"\n)\n\n# Feature grid containing three distinct feature columns\nfeatures = feature_grid(\n    \"Why Choose A2UI?\",\n    \"Designed for speed, flexibility, and production-ready performance.\",\n    3,\n    [\n        {\n            icon: \"\u26a1\",\n            title: \"Lightning Fast\",\n            description: \"Compiled directly into highly optimized JSON layouts with zero runtime overhead.\",\n            badge: \"Performance\",\n            color: \"#3b82f6\"\n        },\n        {\n            icon: \"\ud83e\udde9\",\n            title: \"Modular Atoms\",\n            description: \"Construct complex structures easily using a robust library of pre-styled components.\",\n            badge: \"Design System\",\n            color: \"#10b981\"\n        },\n        {\n            icon: \"\ud83c\udfa8\",\n            title: \"Tailwind Styling\",\n            description: \"Modern visual patterns inspired by Tailwind UI and MagicUI out of the box.\",\n            badge: \"Themes\",\n            color: \"#f59e0b\"\n        }\n    ]\n)\n\n# Testimonial card highlighting customer satisfaction\ntestimonial = testimonial_card(\n    \"A2UI has completely transformed our design-to-code pipeline. What used to take days now takes minutes, allowing us to rapidly prototype and ship beautiful landing pages.\",\n    \"Sarah Jenkins\",\n    \"Lead Frontend Engineer at TechFlow\",\n    \"https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150\",\n    5\n)\n\n# Primary call-to-action section highlighting next steps\ncta = cta_section(\n    \"Ready to build your next big idea?\",\n    \"Join thousands of developers and designers already building the future of UI with A2UI Express.\",\n    {label: \"Start Building Now\", url: \"https://a2ui.dev/signup\"},\n    {label: \"View Component Library\", url: \"https://a2ui.dev/docs/components\"},\n    \"#f8fafc\"\n)\n\n# Constructing the layout into columns to structure the page sections cleanly\nroot = columns(\n    1,\n    \"2.5rem\",\n    \"stretch\",\n    [\n        {blocks: [hero]},\n        {blocks: [features]},\n        {blocks: [testimonial]},\n        {blocks: [cta]}\n    ]\n)\n</a2ui>"
+}

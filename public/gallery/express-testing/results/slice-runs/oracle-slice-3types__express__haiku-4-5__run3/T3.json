@@ -1,0 +1,39 @@
+{
+ "task": "T3",
+ "condition": "C",
+ "label": "oracle-slice-3types__express__haiku-4-5__run3",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "C-marketing-commerce.json",
+ "atoms_in_catalogue": 23,
+ "prompt_chars": 12467,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 3.8,
+ "usage": {
+  "input_tokens": 3519,
+  "output_tokens": 360
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns",
+  "gradient_hero",
+  "feature_grid",
+  "blockquote_with_avatar",
+  "cta_button"
+ ],
+ "score": {
+  "precision": 0.8,
+  "recall": 1.0,
+  "f1": 0.889,
+  "slot_hits": {
+   "hero": true,
+   "feature columns (x3)": true,
+   "testimonial": true,
+   "CTA": true
+  }
+ },
+ "reply": "<a2ui>\nroot = columns(2, \"2rem\", \"top\", [\n  {blocks: [\n    gradient_hero(\n      title=\"Transform Your Workflow\",\n      subtitle=\"Streamline your process with powerful, intuitive tools designed for modern teams\",\n      badge=\"New Release\",\n      cta_label=\"Get Started\",\n      cta_url=\"https://example.com/signup\"\n    )\n  ]},\n  {blocks: [\n    feature_grid(\n      heading=\"Why Choose Us\",\n      columns=3,\n      features=[\n        {icon: \"\u26a1\", title: \"Lightning Fast\", description: \"Experience blazing-fast performance that keeps your team productive\"},\n        {icon: \"\ud83d\udd12\", title: \"Secure\", description: \"Enterprise-grade security to protect your sensitive data\"},\n        {icon: \"\ud83c\udfaf\", title: \"Intuitive\", description: \"Clean, simple interface that your team will love to use\"}\n      ]\n    ),\n    blockquote_with_avatar(\n      quote=\"This product completely transformed how our team works. We saved hours every week.\",\n      author_name=\"Sarah Chen\",\n      author_title=\"Product Manager at TechCorp\",\n      avatar_url=\"https://api.example.com/avatars/sarah.jpg\"\n    ),\n    cta_button(\n      label=\"Start Your Free Trial\",\n      url=\"https://example.com/trial\",\n      color=\"#4f46e5\"\n    )\n  ]}\n])\n</a2ui>"
+}

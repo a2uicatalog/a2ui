@@ -1,0 +1,44 @@
+{
+ "task": "T5",
+ "condition": "CTN",
+ "format": "json",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-4-5-20251001",
+ "label": "oracle-slice-3types__json__haiku-4-5__temp0__run2",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "C-marketing-commerce.json",
+ "atoms_in_catalogue": 23,
+ "prompt_chars": 24557,
+ "slot_recall": [
+  1,
+  1
+ ],
+ "secs": 6.4,
+ "usage": {
+  "input_tokens": 6859,
+  "output_tokens": 685
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "pricing_tier_group"
+ ],
+ "score": {
+  "per_approach": {
+   "tier_cards": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+   },
+   "comparison_table": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": null
+   }
+  },
+  "best_approach": "tier_cards",
+  "f1": 1.0
+ },
+ "reply": "I'll create a pricing tier comparison UI with three subscription plans side by side, with one marked as recommended.\n\n<a2ui-json>\n{\n  \"version\": \"v0.9.1\",\n  \"createSurface\": {\n    \"surfaceId\": \"pricing-page\",\n    \"catalogId\": \"https://a2uicatalog.ai/catalog/c-marketing-commerce.json\"\n  }\n}\n</a2ui-json>\n\n<a2ui-json>\n{\n  \"version\": \"v0.9.1\",\n  \"updateComponents\": {\n    \"surfaceId\": \"pricing-page\",\n    \"components\": [\n      {\n        \"id\": \"root\",\n        \"component\": \"pricing_tier_group\",\n        \"tiers\": [\n          {\n            \"name\": \"Starter\",\n            \"price\": \"$29\",\n            \"period\": \"/month\",\n            \"description\": \"Perfect for individuals and small projects\",\n            \"features\": [\n              \"Up to 5 projects\",\n              \"Basic analytics\",\n              \"Community support\",\n              \"1 GB storage\",\n              \"Standard performance\"\n            ],\n            \"cta_label\": \"Get Started\",\n            \"cta_url\": \"#starter\",\n            \"recommended\": false\n          },\n          {\n            \"name\": \"Professional\",\n            \"price\": \"$79\",\n            \"period\": \"/month\",\n            \"description\": \"Ideal for growing teams and businesses\",\n            \"features\": [\n              \"Unlimited projects\",\n              \"Advanced analytics\",\n              \"Priority email support\",\n              \"100 GB storage\",\n              \"High performance\",\n              \"Custom integrations\",\n              \"Team collaboration tools\"\n            ],\n            \"cta_label\": \"Start Free Trial\",\n            \"cta_url\": \"#professional\",\n            \"recommended\": true,\n            \"badge\": \"Most Popular\"\n          },\n          {\n            \"name\": \"Enterprise\",\n            \"price\": \"Custom\",\n            \"period\": \"pricing\",\n            \"description\": \"For large-scale operations and enterprises\",\n            \"features\": [\n              \"Everything in Professional\",\n              \"Unlimited storage\",\n              \"Dedicated support\",\n              \"SLA guarantee\",\n              \"Advanced security\",\n              \"Custom workflows\",\n              \"On-premise deployment option\"\n            ],\n            \"cta_label\": \"Contact Sales\",\n            \"cta_url\": \"#enterprise\",\n            \"recommended\": false\n          }\n        ]\n      }\n    ]\n  }\n}\n</a2ui-json>\n\nThis creates a three-tier pricing comparison with:\n- **Starter** tier on the left with basic features\n- **Professional** tier in the center marked as \"Most Popular\" (recommended)\n- **Enterprise** tier on the right with premium features\n\nEach tier includes its own pricing, description, feature list, and call-to-action button. The Professional tier is highlighted as the recommended option."
+}

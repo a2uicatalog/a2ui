@@ -1,0 +1,119 @@
+{
+ "label": "oracle-slice-3types__json__haiku-5-5__run1",
+ "task": "T2",
+ "format": "json",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "metrics-overview",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "metrics-overview",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         {
+          "id": "overview-heading",
+          "component": "heading",
+          "text": "Metrics overview"
+         },
+         {
+          "id": "kpi-tiles",
+          "component": "metric_row",
+          "cols": 2,
+          "metrics": [
+           {
+            "value": "482K",
+            "prefix": "$",
+            "label": "Revenue",
+            "sub": "vs. last month",
+            "accent": "#22c55e",
+            "trend": "up"
+           },
+           {
+            "value": "12,840",
+            "label": "Active users",
+            "sub": "vs. last month",
+            "accent": "#22c55e",
+            "trend": "up"
+           },
+           {
+            "value": "2.3",
+            "suffix": "%",
+            "label": "Churn rate",
+            "sub": "vs. last month",
+            "accent": "#ef4444",
+            "trend": "down"
+           },
+           {
+            "value": "184",
+            "suffix": " ms",
+            "label": "Avg. response time",
+            "sub": "vs. last month",
+            "accent": "#ef4444",
+            "trend": "down"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "blocks": [
+         {
+          "id": "comparison-chart",
+          "component": "chartjs_bar",
+          "labels": [
+           "Jan",
+           "Feb",
+           "Mar",
+           "Apr",
+           "May",
+           "Jun"
+          ],
+          "datasets": [
+           {
+            "label": "Current period",
+            "data": [
+             320,
+             345,
+             410,
+             388,
+             436,
+             482
+            ]
+           },
+           {
+            "label": "Previous period",
+            "data": [
+             290,
+             310,
+             335,
+             360,
+             372,
+             395
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

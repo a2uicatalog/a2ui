@@ -1,0 +1,105 @@
+{
+ "label": "oracle-slice-6types__json__haiku-5-5__run3",
+ "task": "T2",
+ "format": "json",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9",
+   "create_surface": {
+    "surface_id": "metrics-overview",
+    "catalog_id": "https://a2uicatalog.ai/catalog/d-t2.json"
+   }
+  },
+  {
+   "version": "v0.9",
+   "update_components": {
+    "surface_id": "metrics-overview",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         {
+          "id": "kpi-strip",
+          "component": "metric_row",
+          "cols": 2,
+          "metrics": [
+           {
+            "value": "1.24",
+            "prefix": "$",
+            "suffix": "M",
+            "label": "Revenue",
+            "sub": "vs. last month",
+            "trend": "up"
+           },
+           {
+            "value": "48,210",
+            "label": "Active users",
+            "sub": "vs. last month",
+            "trend": "up"
+           },
+           {
+            "value": "2.1",
+            "suffix": "%",
+            "label": "Churn rate",
+            "sub": "vs. last month",
+            "trend": "down"
+           },
+           {
+            "value": "86.40",
+            "prefix": "$",
+            "label": "Avg. order value",
+            "sub": "vs. last month",
+            "trend": "up"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "blocks": [
+         {
+          "id": "comparison-chart",
+          "component": "chartjs_bar",
+          "labels": [
+           "Q1",
+           "Q2",
+           "Q3",
+           "Q4"
+          ],
+          "datasets": [
+           {
+            "label": "This year",
+            "data": [
+             280,
+             310,
+             345,
+             369
+            ]
+           },
+           {
+            "label": "Last year",
+            "data": [
+             240,
+             265,
+             290,
+             305
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

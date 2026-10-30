@@ -1,0 +1,40 @@
+{
+ "task": "T4",
+ "condition": "DTN_sonnet-5-5",
+ "temperature_applied": false,
+ "format": "json",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-sonnet-5-5",
+ "hints": false,
+ "label": "oracle-slice-6types__json__sonnet-5-5__temp0__run1",
+ "agent_type": "T4",
+ "catalogue": "D-t4.json",
+ "atoms_in_catalogue": 20,
+ "prompt_chars": 21258,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 15.1,
+ "usage": {
+  "input_tokens": 8261,
+  "output_tokens": 1863
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns"
+ ],
+ "score": {
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "list": false,
+   "status indicator": false,
+   "filter control": false
+  }
+ },
+ "reply": "<a2ui-json>\n[\n  {\n    \"version\": \"v0.9.1\",\n    \"createSurface\": {\n      \"surfaceId\": \"status_list\",\n      \"catalogId\": \"https://a2uicatalog.ai/catalog/d-t4.json\"\n    }\n  },\n  {\n    \"version\": \"v0.9.1\",\n    \"updateComponents\": {\n      \"surfaceId\": \"status_list\",\n      \"components\": [\n        {\n          \"id\": \"root\",\n          \"component\": \"columns\",\n          \"cols\": 2,\n          \"gap\": \"1.5rem\",\n          \"align\": \"top\",\n          \"items\": [\n            {\n              \"blocks\": [\n                {\n                  \"component\": \"heading\",\n                  \"text\": \"Filter by status\"\n                },\n                {\n                  \"component\": \"segmented_control\",\n                  \"name\": \"status_filter\",\n                  \"selected_value\": \"all\",\n                  \"options\": [\n                    {\"label\": \"All\", \"value\": \"all\"},\n                    {\"label\": \"Done\", \"value\": \"done\"},\n                    {\"label\": \"In progress\", \"value\": \"in_progress\"},\n                    {\"label\": \"Blocked\", \"value\": \"blocked\"},\n                    {\"label\": \"Queued\", \"value\": \"queued\"}\n                  ]\n                },\n                {\n                  \"component\": \"body\",\n                  \"text\": \"Showing all 8 items. Choose a status to narrow the list.\"\n                }\n              ]\n            },\n            {\n              \"blocks\": [\n                {\n                  \"component\": \"heading\",\n                  \"text\": \"Items\"\n                },\n                {\n                  \"component\": \"entity_list\",\n                  \"items\": [\n                    {\"name\": \"Set up project repository\", \"subtitle\": \"Repo created with branch protection and CI enabled.\", \"status\": \"Done\"},\n                    {\"name\": \"Design onboarding flow\", \"subtitle\": \"Wireframes approved by the product team.\", \"status\": \"Done\"},\n                    {\"name\": \"Build authentication API\", \"subtitle\": \"Login and token refresh endpoints are under review.\", \"status\": \"In progress\"},\n                    {\"name\": \"Implement dashboard charts\", \"subtitle\": \"Line and bar charts done; pie chart still to do.\", \"status\": \"In progress\"},\n                    {\"name\": \"Integrate payment provider\", \"subtitle\": \"Waiting on sandbox credentials from the vendor.\", \"status\": \"Blocked\"},\n                    {\"name\": \"Migrate legacy data\", \"subtitle\": \"Schema mapping is unresolved for the customer table.\", \"status\": \"Blocked\"},\n                    {\"name\": \"Write end-to-end tests\", \"subtitle\": \"Scheduled to start after the auth API merges.\", \"status\": \"Queued\"},\n                    {\"name\": \"Prepare launch announcement\", \"subtitle\": \"Draft copy due the week before release.\", \"status\": \"Queued\"}\n                  ]\n                }\n              ]\n            }\n          ]\n        }\n      ]\n    }\n  }\n]\n</a2ui-json>\n\nThe surface has a status filter (All, Done, In progress, Blocked, Queued) beside a list of eight items. Each item shows a title, a status and a one-line detail. The catalog has no filter-action wiring, so the filter only shows its selected state and does not narrow the list yet."
+}

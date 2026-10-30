@@ -1,0 +1,42 @@
+{
+ "task": "T4",
+ "condition": "CX_haiku-5-5",
+ "temperature_applied": false,
+ "format": "elemental",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "oracle-slice-3types__elemental__haiku-5-5__run2",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 16829,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 10.1,
+ "usage": {
+  "input_tokens": 6734,
+  "output_tokens": 2023
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "heading",
+  "segmented_control",
+  "entity_list"
+ ],
+ "score": {
+  "precision": 0.667,
+  "recall": 0.667,
+  "f1": 0.667,
+  "slot_hits": {
+   "list": true,
+   "status indicator": false,
+   "filter control": true
+  }
+ },
+ "reply": "<a2ui>\n<body id=\"root\">\n  <script type=\"application/json\">{\"filter\": \"All\", \"items\": [\n    {\"name\": \"Payments API\", \"subtitle\": \"Handles card authorisation requests for checkout.\", \"status\": \"Active\", \"meta\": \"Owner: Ada\"},\n    {\"name\": \"Search Index\", \"subtitle\": \"Nightly reindex is running about 12 minutes late.\", \"status\": \"Pending\", \"meta\": \"Owner: Grace\"},\n    {\"name\": \"Auth Service\", \"subtitle\": \"Token refresh failing for some mobile clients.\", \"status\": \"Blocked\", \"meta\": \"Owner: Linus\"},\n    {\"name\": \"Notification Queue\", \"subtitle\": \"Processing at normal throughput with no backlog.\", \"status\": \"Active\", \"meta\": \"Owner: Ada\"},\n    {\"name\": \"Billing Export\", \"subtitle\": \"Waiting on finance to approve the new CSV schema.\", \"status\": \"Pending\", \"meta\": \"Owner: Margaret\"},\n    {\"name\": \"Image Resizer\", \"subtitle\": \"Crashes on oversized TIFF uploads over 200 MB.\", \"status\": \"Blocked\", \"meta\": \"Owner: Dennis\"},\n    {\"name\": \"Reporting Dashboard\", \"subtitle\": \"Dashboards load with current data across all regions.\", \"status\": \"Active\", \"meta\": \"Owner: Grace\"},\n    {\"name\": \"Legacy Import Job\", \"subtitle\": \"Scheduled for retirement after the next release.\", \"status\": \"Pending\", \"meta\": \"Owner: Linus\"}\n  ]}</script>\n\n  <ui-heading id=\"title\" text=\"Items\"></ui-heading>\n\n  <ui-segmented_control id=\"status_filter\" name=\"status\" selected_value=\"{$/filter}\">\n    <script type=\"application/json\" slot=\"options\">[\n      {\"label\": \"All\", \"value\": \"All\"},\n      {\"label\": \"Active\", \"value\": \"Active\"},\n      {\"label\": \"Pending\", \"value\": \"Pending\"},\n      {\"label\": \"Blocked\", \"value\": \"Blocked\"}\n    ]</script>\n  </ui-segmented_control>\n\n  <ui-entity_list id=\"item_list\" items=\"{$/items}\"></ui-entity_list>\n</body>\n</a2ui>\n\nThe eight items are in the data script, and the status filter is a segmented control bound to `/filter`. The catalog has no filter function, so the list itself still shows all eight items. Narrowing it by status needs a filter helper that isn't in the catalog."
+}

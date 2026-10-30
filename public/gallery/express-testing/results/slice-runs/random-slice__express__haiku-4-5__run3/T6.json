@@ -1,0 +1,31 @@
+{
+ "task": "T6",
+ "condition": "F",
+ "label": "random-slice__express__haiku-4-5__run3",
+ "agent_type": "Learning",
+ "catalogue": "F-learning.json",
+ "atoms_in_catalogue": 184,
+ "prompt_chars": 101177,
+ "slot_recall": [
+  2,
+  2
+ ],
+ "secs": 5.7,
+ "usage": {
+  "input_tokens": 29212,
+  "output_tokens": 516
+ },
+ "valid": false,
+ "error": "A2uiCompilationValidationError: Unknown component 'color_section' not defined in catalog 'https://a2uicatalog.ai/catalog/f-learning.json'. - Help: Please correct the syntax error in your Express DSL.",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "flashcard deck": false,
+   "progress indicator": false
+  }
+ },
+ "reply": "<a2ui>\nroot = color_section(\n  [\n    gradient_heading(\n      text=\"Vocabulary Builder\",\n      gradient=\"linear-gradient(135deg, #4f46e5, #7c3aed)\",\n      size=\"2.5rem\",\n      align=\"center\"\n    ),\n    spacer(height=24),\n    progress_bar(\n      value=$/progress/reviewed,\n      label=\"Cards Reviewed\",\n      accent=\"#7c3aed\",\n      show_percent=true\n    ),\n    spacer(height=32),\n    flashcard_grid(),\n    spacer(height=24)\n  ],\n  background=\"#f8fafc\"\n)\n\nflashcard_grid = [\n  flashcard_deck(\n    cards=[\n      {front: \"Ephemeral\", back: \"Lasting for a very short time; temporary\"},\n      {front: \"Serendipity\", back: \"The occurrence of events by chance in a happy or beneficial way\"},\n      {front: \"Ubiquitous\", back: \"Present, appearing, or found everywhere\"},\n      {front: \"Melancholy\", back: \"A feeling of pensive sadness, typically with no obvious cause\"},\n      {front: \"Eloquent\", back: \"Fluent, persuasive, and expressive in speaking or writing\"},\n      {front: \"Pragmatic\", back: \"Dealing with things in a way that is based on practical rather than theoretical considerations\"},\n      {front: \"Nostalgia\", back: \"A sentimental longing for the past, typically for a period or place with happy associations\"},\n      {front: \"Tenacious\", back: \"Holding firmly to something; not readily letting go; persistent\"},\n      {front: \"Ambiguous\", back: \"Open to more than one interpretation; unclear or vague\"},\n      {front: \"Lucid\", back: \"Expressed clearly; easy to understand; or (of a person) in a clear state of mind\"}\n    ],\n    accent=\"#7c3aed\",\n    label_front=\"TERM\",\n    label_back=\"DEFINITION\"\n  )\n]\n\n$/progress/reviewed = 0\n</a2ui>"
+}

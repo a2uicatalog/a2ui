@@ -1,0 +1,226 @@
+{
+ "label": "oracle-slice-3types__elemental__gemini-3.5-flash-lite__first-run-timing-invalid__run2",
+ "task": "T4",
+ "format": "elemental",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display-elemental.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "heading",
+      "text": "System Tasks & Status Monitor"
+     },
+     {
+      "id": "comp_1",
+      "component": "body",
+      "text": "A list of eight items, each with a title, a status, and a one-line detail."
+     },
+     {
+      "id": "status-filter",
+      "component": "form_select",
+      "label": "Filter by Status",
+      "name": "status",
+      "placeholder": "All Statuses",
+      "options": [
+       {
+        "value": "all",
+        "label": "All Statuses"
+       },
+       {
+        "value": "new",
+        "label": "New"
+       },
+       {
+        "value": "inprogress",
+        "label": "In Progress"
+       },
+       {
+        "value": "success",
+        "label": "Success"
+       },
+       {
+        "value": "removed",
+        "label": "Removed"
+       },
+       {
+        "value": "moved",
+        "label": "Moved"
+       }
+      ]
+     },
+     {
+      "id": "summary-badges",
+      "component": "badge_group",
+      "title": "Overview",
+      "badges": [
+       {
+        "text": "Total: 8",
+        "color": "blue"
+       },
+       {
+        "text": "Active",
+        "color": "green"
+       }
+      ]
+     },
+     {
+      "id": "filter-columns",
+      "component": "columns",
+      "cols": 2,
+      "items": [
+       {
+        "blocks": [
+         "status-filter"
+        ]
+       },
+       {
+        "blocks": [
+         "summary-badges"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "task-table",
+      "component": "data_table_sortable",
+      "headers": [
+       "Title",
+       "Status",
+       "Detail",
+       "Date"
+      ],
+      "rows": [
+       [
+        "Database Migration",
+        "In Progress",
+        "Migrating user tables to AWS RDS instance.",
+        "2026-04-01"
+       ],
+       [
+        "API Gateway Refactor",
+        "New",
+        "Implementing GraphQL layer for mobile clients.",
+        "2026-04-02"
+       ],
+       [
+        "Security Audit",
+        "Success",
+        "Q1 penetration testing completed with zero criticals.",
+        "2026-03-28"
+       ],
+       [
+        "Billing Service Outage",
+        "Removed",
+        "Resolved payment webhook timeout issues.",
+        "2026-03-25"
+       ],
+       [
+        "CDN Cache Optimization",
+        "In Progress",
+        "Updating edge caching rules for static assets.",
+        "2026-04-03"
+       ],
+       [
+        "SSO Integration",
+        "Moved",
+        "Transitioning enterprise login to Okta provider.",
+        "2026-03-30"
+       ],
+       [
+        "Mobile App V2 Release",
+        "New",
+        "Preparing TestFlight build for internal QA.",
+        "2026-04-04"
+       ],
+       [
+        "Compliance Check",
+        "Success",
+        "Annual SOC2 Type II documentation verified.",
+        "2026-03-20"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_data_model": {
+    "surface_id": "main",
+    "path": "/",
+    "value": {
+     "filter_status": "all",
+     "items": [
+      {
+       "id": "1",
+       "title": "Database Migration",
+       "status": "inprogress",
+       "detail": "Migrating user tables to AWS RDS instance.",
+       "date": "2026-04-01"
+      },
+      {
+       "id": "2",
+       "title": "API Gateway Refactor",
+       "status": "new",
+       "detail": "Implementing GraphQL layer for mobile clients.",
+       "date": "2026-04-02"
+      },
+      {
+       "id": "3",
+       "title": "Security Audit",
+       "status": "success",
+       "detail": "Q1 penetration testing completed with zero criticals.",
+       "date": "2026-03-28"
+      },
+      {
+       "id": "4",
+       "title": "Billing Service Outage",
+       "status": "removed",
+       "detail": "Resolved payment webhook timeout issues.",
+       "date": "2026-03-25"
+      },
+      {
+       "id": "5",
+       "title": "CDN Cache Optimization",
+       "status": "inprogress",
+       "detail": "Updating edge caching rules for static assets.",
+       "date": "2026-04-03"
+      },
+      {
+       "id": "6",
+       "title": "SSO Integration",
+       "status": "moved",
+       "detail": "Transitioning enterprise login to Okta provider.",
+       "date": "2026-03-30"
+      },
+      {
+       "id": "7",
+       "title": "Mobile App V2 Release",
+       "status": "new",
+       "detail": "Preparing TestFlight build for internal QA.",
+       "date": "2026-04-04"
+      },
+      {
+       "id": "8",
+       "title": "Compliance Check",
+       "status": "success",
+       "detail": "Annual SOC2 Type II documentation verified.",
+       "date": "2026-03-20"
+      }
+     ]
+    }
+   }
+  }
+ ]
+}

@@ -1,0 +1,44 @@
+{
+ "task": "T3",
+ "condition": "CX_sonnet-5-5",
+ "temperature_applied": false,
+ "format": "elemental",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "claude-sonnet-5-5",
+ "hints": false,
+ "label": "oracle-slice-3types__elemental__sonnet-5-5__run1",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "C-marketing-commerce.json",
+ "atoms_in_catalogue": 23,
+ "prompt_chars": 12539,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 12.6,
+ "usage": {
+  "input_tokens": 4938,
+  "output_tokens": 1563
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "gradient_hero",
+  "feature_grid",
+  "testimonial_card",
+  "cta_button"
+ ],
+ "score": {
+  "precision": 1.0,
+  "recall": 1.0,
+  "f1": 1.0,
+  "slot_hits": {
+   "hero": true,
+   "feature columns (x3)": true,
+   "testimonial": true,
+   "CTA": true
+  }
+ },
+ "reply": "<a2ui>\n<body>\n  <ui-gradient_hero id=\"root\" title=\"Meet Lumen: Focus Made Effortless\" subtitle=\"The smart workspace that organizes your day, silences distractions, and helps your team ship better work, faster.\" Badge=\"New in 2025\" accent=\"#4f46e5\" accent2=\"#8b5cf6\" align=\"center\"></ui-gradient_hero>\n\n  <ui-feature_grid id=\"features\" Heading=\"Why teams choose Lumen\" description=\"Everything you need to stay in flow.\" Columns=\"{3}\">\n    <script type=\"application/json\" slot=\"features\">[\n      {\"icon\": \"\u26a1\", \"title\": \"Lightning fast\", \"description\": \"Capture tasks, notes, and ideas instantly with zero lag, on any device.\", \"color\": \"#f59e0b\"},\n      {\"icon\": \"\ud83d\udd12\", \"title\": \"Private by design\", \"description\": \"End-to-end encryption keeps your work yours. No tracking, no compromises.\", \"color\": \"#10b981\"},\n      {\"icon\": \"\ud83e\udd1d\", \"title\": \"Built for teams\", \"description\": \"Share boards, assign work, and collaborate in real time without the noise.\", \"color\": \"#6366f1\"}\n    ]</script>\n  </ui-feature_grid>\n\n  <ui-testimonial_card id=\"testimonial\" text=\"Lumen replaced three tools for our team. We're shipping faster and our meetings are half as long.\" author_name=\"Priya Raman\" author_title=\"Head of Product, Northwind\" author_avatar_url=\"https://example.com/avatars/priya.jpg\" rating=\"{5}\"></ui-testimonial_card>\n\n  <ui-cta_button id=\"cta\" label=\"Start your free trial\" url=\"https://example.com/signup\" color=\"#4f46e5\"></ui-cta_button>\n</body>\n</a2ui>"
+}

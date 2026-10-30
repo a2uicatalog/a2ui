@@ -1,0 +1,37 @@
+{
+ "task": "T6",
+ "condition": "C_gemini-3.5-flash",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash",
+ "hints": false,
+ "label": "oracle-slice-3types__express__gemini-3.5-flash__thinking-on_request-only-timing__run2",
+ "agent_type": "Learning",
+ "catalogue": "C-learning.json",
+ "atoms_in_catalogue": 36,
+ "prompt_chars": 21139,
+ "slot_recall": [
+  2,
+  2
+ ],
+ "secs": 21.1,
+ "usage": {
+  "input_tokens": 5726,
+  "output_tokens": 5346
+ },
+ "valid": false,
+ "error": "A2uiCompilationParseError: Root target 'root' is not defined. - Help: Ensure root component 'root' is assigned in your Express DSL.",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "flashcard deck": false,
+   "progress indicator": false
+  }
+ },
+ "reply": "<a2ui>\nheader = page_header(\n    title=\"**Active Recall: Daily Vocabulary Builder**\",\n    subtitle=\"Review today's 10 high-impact vocabulary cards to boost your verbal reasoning and comprehension skills.\",\n    icon=\"\ud83c\udf93\",\n    tag=\"Day 12\",\n    accent=\"#4f46e5\"\n)\n\nvocab_deck = flashcard_deck(\n    cards=[\n        {\"front\": \"Ephemeral\", \"back\": \"Lasting for a very short time; transient or fleeting.\"},\n        {\"front\": \"Capricious\", \"back\": \"Given to sudden and unaccountable changes of mood or behavior.\"},\n        {\"front\": \"Laconic\", \"back\": \"Using very few words; concise to the point of seeming brief.\"},\n        {\"front\": \"Pragmatic\", \"back\": \"Dealing with things sensibly and realistically in a practical, logical way.\"},\n        {\"front\": \"Cacophony\", \"back\": \"A harsh, discordant mixture of unpleasant sounds.\"},\n        {\"front\": \"Anachronism\", \"back\": \"A thing belonging or appropriate to a period other than that in which it exists.\"},\n        {\"front\": \"Enervate\", \"back\": \"To cause someone to feel completely drained of mental or physical energy.\"},\n        {\"front\": \"Garrulous\", \"back\": \"Excessively talkative, especially on trivial or unimportant matters.\"},\n        {\"front\": \"Misanthrope\", \"back\": \"A person who dislikes humankind and actively avoids human society.\"},\n        {\"front\": \"Obsequious\", \"back\": \"Obedient or attentive to an excessive or servile degree; fawning.\"}\n    ],\n    accent=\"#4f46e5\",\n    label_front=\"WORD\",\n    label_back=\"DEFINITION\"\n)\n\nreview_progress = progress_bar(\n    value=60,\n    label=\"Daily Review Progress\",\n    accent=\"#10b981\",\n    show_percent=true,\n    caption=\"6 out of 10 vocabulary cards reviewed today\"\n)\n\nstreak_box = highlight_box(\n    title=\"5-Day Study Streak!\",\n    text=\"You're on fire! Complete this 10-card vocabulary deck to lock in today's milestone.\",\n    icon=\"\ud83d\udd25\",\n    accent=\"#f59e0b\",\n    style=\"solid\"\n)\n\nxp_indicator = xp_bar(\n    level_label=\"Level 4 \u2014 Word Smith\",\n    xp_current=850,\n    xp_next=1000,\n    accent=\"#4f46e5\",\n    show_flash=true\n)\n\nmain_layout = columns(\n    cols=2,\n    gap=\"2.5rem\",\n    align=\"top\",\n    items=[\n        {\n            \"blocks\": [\n                paragraph(\"Click on any card in the interactive deck to flip and reveal its definition. Review all 10 words to complete your daily challenge.\"),\n                vocab_deck\n            ]\n        },\n        {\n            \"blocks\": [\n                streak_box,\n                review_progress,\n                xp_indicator\n            ]\n        }\n    ]\n)\n\nroot = [\n    header,\n    main_layout\n]\n</a2ui>"
+}

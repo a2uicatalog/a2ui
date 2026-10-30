@@ -1,0 +1,41 @@
+{
+ "task": "T2",
+ "condition": "JBTH2",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "label": "jev-picks-on-rule-slice__express__haiku-4-5__temp0__hints-v2__run2",
+ "agent_type": "jev-narrowed",
+ "catalogue": "JB-T2.json",
+ "atoms_in_catalogue": 9,
+ "prompt_chars": 6944,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 3.3,
+ "usage": {
+  "input_tokens": 2198,
+  "output_tokens": 309
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "stat_card",
+  "stat_card",
+  "stat_card",
+  "stat_card",
+  "benchmark_comparison",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.833,
+  "recall": 1.0,
+  "f1": 0.909,
+  "slot_hits": {
+   "KPI tile (x4)": true,
+   "trend (required only if metric_row was chosen; stat_card's own delta already satisfies it)": true,
+   "comparison chart": true
+  }
+ },
+ "reply": "<a2ui>\nkpi_1 = stat_card(value=\"$124,500\", label=\"Total Revenue\", delta=\"+12%\", is_up=true, accent=\"green\")\nkpi_2 = stat_card(value=\"8,240\", label=\"Active Users\", delta=\"+5%\", is_up=true, accent=\"blue\")\nkpi_3 = stat_card(value=\"3.2s\", label=\"Avg Response Time\", delta=\"-8%\", is_up=true, accent=\"green\")\nkpi_4 = stat_card(value=\"94.2%\", label=\"System Uptime\", delta=\"+0.3%\", is_up=true, accent=\"purple\")\n\ncomparison = benchmark_comparison(items=[\n  {label: \"Product A\", value: 87},\n  {label: \"Product B\", value: 72},\n  {label: \"Product C\", value: 95},\n  {label: \"Product D\", value: 68}\n])\n\nroot = columns(cols=4, gap=\"1.5rem\", items=[\n  {blocks: [kpi_1]},\n  {blocks: [kpi_2]},\n  {blocks: [kpi_3]},\n  {blocks: [kpi_4]}\n])\n</a2ui>"
+}

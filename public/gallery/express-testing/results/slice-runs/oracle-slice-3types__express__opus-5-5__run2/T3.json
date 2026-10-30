@@ -1,0 +1,45 @@
+{
+ "task": "T3",
+ "condition": "C_opus-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-opus-5-5",
+ "hints": false,
+ "label": "oracle-slice-3types__express__opus-5-5__run2",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "C-marketing-commerce.json",
+ "atoms_in_catalogue": 23,
+ "prompt_chars": 12467,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 17.4,
+ "usage": {
+  "input_tokens": 4493,
+  "output_tokens": 1525
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "gradient_hero",
+  "feature_grid",
+  "testimonial_card",
+  "cta_button",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.8,
+  "recall": 1.0,
+  "f1": 0.889,
+  "slot_hits": {
+   "hero": true,
+   "feature columns (x3)": true,
+   "testimonial": true,
+   "CTA": true
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"product-landing\")\n\nhero = gradient_hero(\"Ship faster with Flowline\", \"The all-in-one workspace that turns scattered tasks into a clear, automated workflow, so your team spends less time coordinating and more time building.\", \"New: Flowline 2.0\", \"#4f46e5\", \"#8b5cf6\", _, \"left\", \"Start free trial\", \"https://example.com/signup\")\n\nfeatures = feature_grid(\"Why teams choose Flowline\", \"Everything you need to plan, track, and deliver, in one place.\", 3, [{icon: \"\u26a1\", title: \"Instant automation\", description: \"Set up triggers and rules in seconds to remove repetitive manual work.\"}, {icon: \"\ud83d\udcca\", title: \"Real-time insights\", description: \"Live dashboards show progress, bottlenecks, and team capacity at a glance.\"}, {icon: \"\ud83d\udd12\", title: \"Enterprise security\", description: \"SSO, granular permissions, and SOC 2 compliance keep your data safe.\"}])\n\ntestimonial = testimonial_card(\"Flowline cut our sprint planning time in half. Our whole team finally works from a single source of truth, and it shows in how fast we ship.\", \"Maya Chen\", \"VP of Engineering, Brightpath\", \"https://i.pravatar.cc/150?img=47\", 5)\n\ncta = cta_button(\"https://example.com/signup\", \"Get started free\", \"#4f46e5\", false)\n\nroot = columns(2, \"2rem\", \"top\", [{blocks: [hero, features]}, {blocks: [testimonial, cta]}])\n</a2ui>"
+}

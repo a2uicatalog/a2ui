@@ -1,0 +1,157 @@
+{
+ "label": "rule-slice__express__haiku-4-5__run1",
+ "task": "T6",
+ "format": "express",
+ "model_id": null,
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/b-learning.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "items": [
+       {
+        "blocks": [
+         "_inline_1",
+         "progress_bar_simple",
+         "_inline_2",
+         "flashcard_section"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "_inline_1",
+      "component": "page_header",
+      "title": "Vocabulary Builder",
+      "subtitle": "Master these 10 essential terms",
+      "icon": "\ud83d\udcda"
+     },
+     {
+      "id": "_inline_2",
+      "component": "spacer",
+      "height": "1.5rem"
+     },
+     {
+      "id": "progress_bar_simple",
+      "component": "color_section",
+      "accent": "#4f46e5",
+      "style": "tint",
+      "padding": "16px",
+      "blocks": [
+       "progress_bar_simple_blocks_0"
+      ]
+     },
+     {
+      "id": "progress_bar_simple_blocks_0",
+      "component": "body",
+      "text": "**Progress: 0 / 10 cards reviewed**"
+     },
+     {
+      "id": "flashcard_section",
+      "component": "columns",
+      "cols": 2,
+      "gap": "1.5rem",
+      "items": [
+       {
+        "blocks": [
+         "_inline_3"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_4",
+         "_inline_5",
+         "_inline_6"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "_inline_3",
+      "component": "flashcard_deck",
+      "cards": [
+       {
+        "front": "Serendipity",
+        "back": "The occurrence of events by chance in a happy or beneficial way"
+       },
+       {
+        "front": "Ephemeral",
+        "back": "Lasting for a very short time"
+       },
+       {
+        "front": "Ubiquitous",
+        "back": "Present, appearing, or found everywhere"
+       },
+       {
+        "front": "Ameliorate",
+        "back": "To make something better or improve it"
+       },
+       {
+        "front": "Juxtapose",
+        "back": "To place two things side by side for contrasting effect"
+       },
+       {
+        "front": "Obfuscate",
+        "back": "To deliberately make something unclear or obscure"
+       },
+       {
+        "front": "Pellucid",
+        "back": "Translucently clear in style or meaning"
+       },
+       {
+        "front": "Visceral",
+        "back": "Relating to deep feelings rather than intellect"
+       },
+       {
+        "front": "Propitious",
+        "back": "Giving or indicating a good chance of success"
+       },
+       {
+        "front": "Perspicacious",
+        "back": "Having keen insight or discernment"
+       }
+      ],
+      "accent": "#4f46e5",
+      "label_front": "TERM",
+      "label_back": "DEFINITION"
+     },
+     {
+      "id": "_inline_4",
+      "component": "highlight_box",
+      "title": "Tips for Success",
+      "text": "\u2022 Review each card carefully before flipping\n\u2022 Say the definition aloud to reinforce learning\n\u2022 Focus on cards you find most challenging\n\u2022 Return to this deck daily for spaced repetition",
+      "icon": "\ud83d\udca1",
+      "accent": "#8b5cf6",
+      "style": "gradient"
+     },
+     {
+      "id": "_inline_5",
+      "component": "spacer",
+      "height": "1rem"
+     },
+     {
+      "id": "_inline_6",
+      "component": "key_takeaways",
+      "points": [
+       "Consistent vocabulary building strengthens comprehension and expression",
+       "Spaced repetition is key to long-term retention",
+       "Active recall (testing yourself) beats passive reading"
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

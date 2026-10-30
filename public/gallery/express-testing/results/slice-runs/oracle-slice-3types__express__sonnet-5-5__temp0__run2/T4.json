@@ -1,0 +1,44 @@
+{
+ "task": "T4",
+ "condition": "CT_sonnet-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-sonnet-5-5",
+ "hints": false,
+ "label": "oracle-slice-3types__express__sonnet-5-5__temp0__run2",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 16421,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 13.0,
+ "usage": {
+  "input_tokens": 6049,
+  "output_tokens": 1382
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "segmented_control",
+  "entity_list",
+  "columns",
+  "heading",
+  "body"
+ ],
+ "score": {
+  "precision": 0.4,
+  "recall": 0.667,
+  "f1": 0.5,
+  "slot_hits": {
+   "list": true,
+   "status indicator": false,
+   "filter control": true
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"status-list\")\nfilter = segmented_control([{label: \"All\", value: \"all\"}, {label: \"Done\", value: \"done\"}, {label: \"In progress\", value: \"in_progress\"}, {label: \"Blocked\", value: \"blocked\"}], \"all\", \"status_filter\")\nitems = entity_list([\n  {name: \"Migrate billing database\", subtitle: \"Cutover completed with zero downtime\", status: \"Done\"},\n  {name: \"Redesign onboarding flow\", subtitle: \"Prototype is in user testing this week\", status: \"In progress\"},\n  {name: \"Upgrade payment gateway SDK\", subtitle: \"Waiting on vendor to release the sandbox keys\", status: \"Blocked\"},\n  {name: \"Publish API v2 docs\", subtitle: \"Live on the developer portal since Monday\", status: \"Done\"},\n  {name: \"Set up regional failover\", subtitle: \"Terraform modules are 70% written\", status: \"In progress\"},\n  {name: \"Security audit remediation\", subtitle: \"Legal review is pending on the data-retention clause\", status: \"Blocked\"},\n  {name: \"Mobile push notifications\", subtitle: \"Beta rolled out to 10% of users\", status: \"In progress\"},\n  {name: \"Retire legacy login page\", subtitle: \"Redirects deployed and old routes removed\", status: \"Done\"}\n])\nroot = columns(2, \"1.5rem\", \"top\", [\n  {blocks: [heading(\"Project items\"), body(\"Filter the eight items by status.\"), filter]},\n  {blocks: [items]}\n])\n</a2ui>\n\nThe catalog has no way to bind the filter to the list, so the status control won't hide rows by itself. The host has to wire `status_filter` to the list for filtering to take effect."
+}

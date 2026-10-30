@@ -1,0 +1,32 @@
+{
+ "task": "T4",
+ "condition": "JC",
+ "label": "jev-picks-on-oracle-slice-3types__express__haiku-4-5__run3",
+ "agent_type": "jev-narrowed",
+ "catalogue": "JC-T4.json",
+ "atoms_in_catalogue": 12,
+ "prompt_chars": 8500,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 6.0,
+ "usage": {
+  "input_tokens": 2351,
+  "output_tokens": 622
+ },
+ "valid": false,
+ "error": "A2uiCompilationParseError: Failed to parse expression: Syntax error at line 29:26: extraneous input '=' expecting {<EOF>, '[', '{', '_', 'null', RAW_TRIPLE_STRING, TRIPLE_STRING, RAW_STRING, STANDARD_STRING, PATH, CHECK, NUMBER, BOOLEAN, IDENTIFIER} (line 29) - Line 29, Col 26 - Help: Please correct the syntax error in your E",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "list": false,
+   "status indicator": false,
+   "filter control": false
+  }
+ },
+ "reply": "<a2ui>\n// Initialize filter state\n$/filterStatus = \"all\"\n\n// Sample data\n$/items = [\n  {id: 1, title: \"Project Setup\", status: \"completed\", detail: \"Infrastructure configured and deployed to production\"},\n  {id: 2, title: \"API Integration\", status: \"in_progress\", detail: \"Connecting third-party payment gateway\"},\n  {id: 3, title: \"Database Migration\", status: \"completed\", detail: \"Legacy data successfully migrated to new schema\"},\n  {id: 4, title: \"Security Audit\", status: \"pending\", detail: \"Waiting for compliance team review\"},\n  {id: 5, title: \"Performance Testing\", status: \"in_progress\", detail: \"Load testing under 1000 concurrent users\"},\n  {id: 6, title: \"Documentation\", status: \"pending\", detail: \"API docs and user guide in draft\"},\n  {id: 7, title: \"Team Training\", status: \"completed\", detail: \"All staff certified on new system\"},\n  {id: 8, title: \"Client Handover\", status: \"pending\", detail: \"Final approval before go-live scheduled\"}\n]\n\n// Status filter control\nstatusFilter = segmented_control(\n  options=[\n    {label: \"All\", value: \"all\"},\n    {label: \"Completed\", value: \"completed\"},\n    {label: \"In Progress\", value: \"in_progress\"},\n    {label: \"Pending\", value: \"pending\"}\n  ],\n  selected_value=$/filterStatus,\n  name=\"statusFilter\"\n)\n\n// Helper to map status to lozenge appearance\n_statusAppearance(status) = \n  status == \"completed\" ? \"success\" :\n  status == \"in_progress\" ? \"inprogress\" :\n  status == \"pending\" ? \"moved\" : \"default\"\n\n// Template for each item\nitemTemplate = {\n  blocks: [\n    {\n      type: \"row\",\n      gap: \"1rem\",\n      align: \"center\",\n      blocks: [\n        {\n          type: \"column\",\n          flex: 1,\n          blocks: [\n            heading($title),\n            body($detail)\n          ]\n        },\n        lozenge(text=$status, appearance=_statusAppearance($status))\n      ]\n    }\n  ]\n}\n\n// Filtered items list\nfilteredItems = _template(\n  $/items,\n  itemTemplate\n)\n\nroot = {\n  blocks: [\n    heading(\"Task Status Dashboard\"),\n    statusFilter,\n    filteredItems\n  ]\n}\n</a2ui>"
+}

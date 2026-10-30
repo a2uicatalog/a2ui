@@ -1,0 +1,37 @@
+{
+ "task": "T6",
+ "condition": "G",
+ "label": "tag-slice__express__haiku-4-5__run3",
+ "agent_type": "Learning",
+ "catalogue": "G-learning.json",
+ "atoms_in_catalogue": 236,
+ "prompt_chars": 117248,
+ "slot_recall": [
+  2,
+  2
+ ],
+ "secs": 4.5,
+ "usage": {
+  "input_tokens": 33054,
+  "output_tokens": 406
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns",
+  "heading",
+  "progress_bar",
+  "spacer",
+  "flashcard_deck"
+ ],
+ "score": {
+  "precision": 0.4,
+  "recall": 1.0,
+  "f1": 0.571,
+  "slot_hits": {
+   "flashcard deck": true,
+   "progress indicator": true
+  }
+ },
+ "reply": "<a2ui>\nroot = columns(cols=1, items=[\n  {blocks: [\n    heading(\"Vocabulary Flashcards\"),\n    progress_bar(value=0, label=\"Cards Reviewed\", accent=\"#4f46e5\", show_percent=true),\n    spacer(height=\"24px\")\n  ]},\n  {blocks: [\n    flashcard_deck(\n      cards=[\n        {front: \"Serendipity\", back: \"The occurrence of events by chance in a happy or beneficial way\"},\n        {front: \"Ephemeral\", back: \"Lasting for a very short time; transitory\"},\n        {front: \"Eloquent\", back: \"Fluent or persuasive in speaking or writing\"},\n        {front: \"Ubiquitous\", back: \"Present, appearing, or found everywhere\"},\n        {front: \"Pragmatic\", back: \"Dealing with things in a realistic, sensible way based on practical considerations\"},\n        {front: \"Ameliorate\", back: \"To make something better or improve a condition\"},\n        {front: \"Taciturn\", back: \"Reserved or uncommunicative in speech; quiet\"},\n        {front: \"Paradox\", back: \"A statement or situation that seems contradictory but may reveal a deeper truth\"},\n        {front: \"Meticulous\", back: \"Showing great attention to detail; very careful and precise\"},\n        {front: \"Perspicacious\", back: \"Having keen insight, discernment, or understanding; perceptive\"}\n      ],\n      accent=\"#4f46e5\",\n      label_front=\"WORD\",\n      label_back=\"DEFINITION\"\n    )\n  ]}\n])\n</a2ui>"
+}

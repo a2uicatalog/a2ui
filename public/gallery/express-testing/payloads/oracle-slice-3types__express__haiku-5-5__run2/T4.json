@@ -1,0 +1,118 @@
+{
+ "label": "oracle-slice-3types__express__haiku-5-5__run2",
+ "task": "T4",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "title",
+      "component": "heading",
+      "text": "Service Status"
+     },
+     {
+      "id": "filter",
+      "component": "segmented_control",
+      "options": [
+       {
+        "label": "All",
+        "value": "all"
+       },
+       {
+        "label": "Healthy",
+        "value": "healthy"
+       },
+       {
+        "label": "Warning",
+        "value": "warning"
+       },
+       {
+        "label": "Failed",
+        "value": "failed"
+       }
+      ],
+      "selected_value": "all",
+      "name": "status_filter"
+     },
+     {
+      "id": "list",
+      "component": "entity_list",
+      "items": [
+       {
+        "name": "API Gateway",
+        "subtitle": "Latency within 200 ms target",
+        "status": "healthy"
+       },
+       {
+        "name": "Auth Service",
+        "subtitle": "Token refresh errors up 3%",
+        "status": "warning"
+       },
+       {
+        "name": "Billing Worker",
+        "subtitle": "Last batch job failed at 02:14",
+        "status": "failed"
+       },
+       {
+        "name": "Search Index",
+        "subtitle": "Reindex completed in 41 min",
+        "status": "healthy"
+       },
+       {
+        "name": "Notification Queue",
+        "subtitle": "Backlog of 1,200 messages",
+        "status": "warning"
+       },
+       {
+        "name": "Data Warehouse",
+        "subtitle": "Nightly export finished",
+        "status": "healthy"
+       },
+       {
+        "name": "Payments Webhook",
+        "subtitle": "Retries exhausted for 6 events",
+        "status": "failed"
+       },
+       {
+        "name": "CDN Edge",
+        "subtitle": "Cache hit ratio at 96%",
+        "status": "healthy"
+       }
+      ]
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "title",
+         "filter"
+        ]
+       },
+       {
+        "blocks": [
+         "list"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

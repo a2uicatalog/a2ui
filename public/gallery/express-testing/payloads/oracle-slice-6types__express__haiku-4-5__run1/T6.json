@@ -1,0 +1,79 @@
+{
+ "label": "oracle-slice-6types__express__haiku-4-5__run1",
+ "task": "T6",
+ "format": "express",
+ "model_id": null,
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/d-t6.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "2rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "_inline_1",
+         "_inline_2"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_3",
+         "_inline_4"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "_inline_1",
+      "component": "heading",
+      "text": "Vocabulary Review"
+     },
+     {
+      "id": "_inline_2",
+      "component": "body",
+      "text": "Review vocabulary by flipping each card to see the definition."
+     },
+     {
+      "id": "_inline_3",
+      "component": "heading",
+      "text": "Progress"
+     },
+     {
+      "id": "_inline_4",
+      "component": "progress_bar",
+      "value": 50,
+      "label": "Cards Reviewed",
+      "accent": "#4f46e5",
+      "show_percent": true,
+      "caption": "5 of 10 cards"
+     }
+    ]
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_data_model": {
+    "surface_id": "main",
+    "path": "/",
+    "value": {
+     "flashcards_reviewed": 0,
+     "total_flashcards": 10
+    }
+   }
+  }
+ ]
+}

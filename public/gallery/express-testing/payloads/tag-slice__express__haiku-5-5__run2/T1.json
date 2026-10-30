@@ -1,0 +1,165 @@
+{
+ "label": "tag-slice__express__haiku-5-5__run2",
+ "task": "T1",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/g-learning.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "intro_head",
+      "component": "page_header",
+      "title": "The Water Cycle",
+      "subtitle": "How water moves between ocean, air, land and back again",
+      "icon": "\ud83d\udca7",
+      "tag": "Lesson",
+      "accent": "#0e7bb8",
+      "theme": "light"
+     },
+     {
+      "id": "evap_h",
+      "component": "heading",
+      "text": "1. Evaporation"
+     },
+     {
+      "id": "evap_b",
+      "component": "body",
+      "text": "Sunlight warms water in oceans, lakes and rivers. Some molecules gain enough energy to escape the surface and rise into the air as water vapour."
+     },
+     {
+      "id": "cond_h",
+      "component": "heading",
+      "text": "2. Condensation"
+     },
+     {
+      "id": "cond_b",
+      "component": "body",
+      "text": "As water vapour rises, it cools and turns back into tiny liquid droplets. These droplets gather around dust particles and form clouds."
+     },
+     {
+      "id": "prec_h",
+      "component": "heading",
+      "text": "3. Precipitation"
+     },
+     {
+      "id": "prec_b",
+      "component": "body",
+      "text": "When droplets in a cloud grow heavy enough, they fall as rain, snow, sleet or hail. Some water soaks into the ground, and the rest runs off into rivers that carry it back to the sea."
+     },
+     {
+      "id": "ex_h",
+      "component": "heading",
+      "text": "Worked example: a puddle after a storm"
+     },
+     {
+      "id": "ex_b",
+      "component": "body",
+      "text": "A puddle forms after a summer storm. Within a few hours, sunlight warms the puddle and water evaporates from it. The vapour rises, cools and condenses into a small cloud. The cloud later drops rain on a nearby hill, and that water runs downhill back toward the sea."
+     },
+     {
+      "id": "ex_c",
+      "component": "callout",
+      "kind": "tip",
+      "title": "Trace the path",
+      "text": "Follow the water: puddle, vapour, cloud, rain, runoff, and back to the sea."
+     },
+     {
+      "id": "quiz_h",
+      "component": "heading",
+      "text": "Self-check"
+     },
+     {
+      "id": "quiz",
+      "component": "quiz_set",
+      "title": "Check your understanding",
+      "questions": [
+       {
+        "question": "What process turns liquid water into water vapour?",
+        "options": [
+         "Condensation",
+         "Precipitation",
+         "Evaporation",
+         "Runoff"
+        ],
+        "correct": 2,
+        "explanation": "Evaporation happens when heat energy lifts water molecules from the surface into the air as vapour."
+       },
+       {
+        "question": "What forms when water vapour cools and becomes tiny droplets?",
+        "options": [
+         "Clouds",
+         "Groundwater",
+         "Glaciers",
+         "Sleet"
+        ],
+        "correct": 0,
+        "explanation": "Condensation turns vapour into droplets, which gather into clouds."
+       },
+       {
+        "question": "Which stage returns water to the land and sea as rain, snow, sleet or hail?",
+        "options": [
+         "Evaporation",
+         "Precipitation",
+         "Transpiration",
+         "Condensation"
+        ],
+        "correct": 1,
+        "explanation": "Precipitation is any form of water falling from clouds to the surface."
+       }
+      ],
+      "pass_score": 70,
+      "accent": "#0e7bb8"
+     },
+     {
+      "id": "root",
+      "component": "color_section",
+      "accent": "#0e7bb8",
+      "style": "light",
+      "padding": "32px",
+      "grid": false,
+      "max_width": "900px",
+      "blocks": [
+       "intro_head",
+       "root_blocks_1",
+       "evap_h",
+       "evap_b",
+       "cond_h",
+       "cond_b",
+       "prec_h",
+       "prec_b",
+       "root_blocks_8",
+       "ex_h",
+       "ex_b",
+       "ex_c",
+       "root_blocks_12",
+       "quiz_h",
+       "quiz"
+      ]
+     },
+     {
+      "id": "root_blocks_1",
+      "component": "divider"
+     },
+     {
+      "id": "root_blocks_8",
+      "component": "divider"
+     },
+     {
+      "id": "root_blocks_12",
+      "component": "divider"
+     }
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,45 @@
+{
+ "task": "T2",
+ "condition": "DTH2",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-4-5-20251001",
+ "label": "oracle-slice-6types__express__haiku-4-5__temp0__hints-v2__run3",
+ "agent_type": "T2",
+ "catalogue": "D-t2.json",
+ "atoms_in_catalogue": 16,
+ "prompt_chars": 10550,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 4.6,
+ "usage": {
+  "input_tokens": 3334,
+  "output_tokens": 443
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "stat_card",
+  "stat_card",
+  "stat_card",
+  "stat_card",
+  "metric_row",
+  "chartjs_bar",
+  "columns",
+  "heading",
+  "heading"
+ ],
+ "score": {
+  "precision": 0.667,
+  "recall": 1.0,
+  "f1": 0.8,
+  "slot_hits": {
+   "KPI tile (x4)": true,
+   "trend (required only if metric_row was chosen; stat_card's own delta already satisfies it)": true,
+   "comparison chart": true
+  }
+ },
+ "reply": "<a2ui>\nkpi_1 = stat_card(\"$2.4M\", \"Revenue\", \"+12%\", true, \"#4CAF50\")\nkpi_2 = stat_card(\"8,432\", \"Active Users\", \"+5%\", true, \"#2196F3\")\nkpi_3 = stat_card(\"94.2%\", \"Uptime\", \"-0.3%\", false, \"#FF9800\")\nkpi_4 = stat_card(\"3.2s\", \"Avg Response\", \"-8%\", true, \"#4CAF50\")\n\nmetrics_row = metric_row(4, null, [\n  {value: \"2.4M\", label: \"Revenue\", prefix: \"$\", trend: \"up\", accent: \"#4CAF50\"},\n  {value: \"8,432\", label: \"Active Users\", trend: \"up\", accent: \"#2196F3\"},\n  {value: \"94.2%\", label: \"Uptime\", trend: \"down\", accent: \"#FF9800\"},\n  {value: \"3.2s\", label: \"Avg Response\", trend: \"up\", accent: \"#4CAF50\"}\n])\n\ncomparison_chart = chartjs_bar(\n  [\"Jan\", \"Feb\", \"Mar\", \"Apr\", \"May\", \"Jun\"],\n  [\n    {label: \"Target\", data: [85, 87, 89, 90, 92, 94]},\n    {label: \"Actual\", data: [78, 82, 88, 91, 93, 95]}\n  ]\n)\n\nroot = columns(1, \"2rem\", \"top\", [\n  {blocks: [heading(\"Metrics Overview\")]},\n  {blocks: [metrics_row]},\n  {blocks: [heading(\"Performance Comparison\")]},\n  {blocks: [comparison_chart]}\n])\n</a2ui>"
+}

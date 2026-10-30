@@ -1,0 +1,51 @@
+{
+ "task": "T1",
+ "condition": "CX_sonnet-5-5",
+ "temperature_applied": false,
+ "format": "elemental",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "claude-sonnet-5-5",
+ "hints": false,
+ "label": "oracle-slice-3types__elemental__sonnet-5-5__run1",
+ "agent_type": "Learning",
+ "catalogue": "C-learning.json",
+ "atoms_in_catalogue": 36,
+ "prompt_chars": 21279,
+ "slot_recall": [
+  5,
+  5
+ ],
+ "secs": 17.1,
+ "usage": {
+  "input_tokens": 8148,
+  "output_tokens": 2267
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "page_header",
+  "heading",
+  "highlight_box",
+  "highlight_box",
+  "highlight_box",
+  "callout",
+  "heading",
+  "concept_rung",
+  "heading",
+  "quiz_set"
+ ],
+ "score": {
+  "precision": 1.0,
+  "recall": 0.6,
+  "f1": 0.75,
+  "slot_hits": {
+   "title": true,
+   "concept sections (x3)": false,
+   "worked example": true,
+   "3-question quiz": true,
+   "quiz result": false
+  }
+ },
+ "reply": "<a2ui>\n<body>\n  <ui-page_header id=\"root\" title=\"The Water Cycle\" subtitle=\"How water moves between oceans, air and land\" icon=\"\ud83d\udca7\" tag=\"Earth Science\" accent=\"#0284c7\" />\n\n  <ui-heading id=\"concepts-heading\" text=\"Three Core Concepts\" />\n\n  <ui-highlight_box id=\"concept-evaporation\" icon=\"\u2600\ufe0f\" title=\"1. Evaporation\" text=\"The sun heats water in oceans, lakes and rivers. Liquid water turns into water vapor and rises into the atmosphere. Plants also release vapor through transpiration.\" accent=\"#f59e0b\" style=\"outline\" />\n\n  <ui-highlight_box id=\"concept-condensation\" icon=\"\u2601\ufe0f\" title=\"2. Condensation\" text=\"As water vapor rises it cools and turns back into tiny liquid droplets around dust particles. Billions of droplets gather to form clouds.\" accent=\"#64748b\" style=\"outline\" />\n\n  <ui-highlight_box id=\"concept-precipitation\" icon=\"\ud83c\udf27\ufe0f\" title=\"3. Precipitation and Collection\" text=\"When cloud droplets grow heavy enough, they fall as rain, snow, sleet or hail. The water runs off into rivers, soaks into the ground, or collects in oceans, and the cycle begins again.\" accent=\"#0284c7\" style=\"outline\" />\n\n  <ui-callout id=\"tip-callout\" kind=\"tip\" title=\"Remember\" text=\"The water cycle has no start or end. The same water has been recycling for billions of years.\" />\n\n  <ui-heading id=\"example-heading\" text=\"Worked Example\" />\n\n  <ui-concept_rung id=\"worked-example\" kind=\"example\" badge=\"EX\" title=\"Following one drop of seawater\" Body=\"Start with a drop of water in the Pacific Ocean on a sunny day.\n\nThe sun warms the surface and the drop evaporates as vapor. High in the air it cools and condenses into a cloud. Winds carry the cloud over a mountain, where the droplets merge and fall as snow. In spring the snow melts, flows into a river, and returns to the ocean.\" code=\"Ocean -> evaporation -> vapor -> condensation -> cloud -> precipitation (snow) -> melt and runoff -> river -> Ocean\" code_caption=\"One possible path of a single water drop.\" takeaway=\"Water changes state, but it is never used up.\" />\n\n  <ui-heading id=\"quiz-heading\" text=\"Self-Check Quiz\" />\n\n  <ui-quiz_set id=\"water-cycle-quiz\" title=\"Test what you learned\" pass_score=\"{70}\" accent=\"#0284c7\">\n    <script type=\"application/json\" slot=\"questions\">[\n      {\n        \"question\": \"Which process turns liquid water into water vapor?\",\n        \"options\": [\"Condensation\", \"Evaporation\", \"Precipitation\", \"Collection\"],\n        \"correct\": 1,\n        \"explanation\": \"Evaporation happens when heat from the sun turns liquid water into vapor.\"\n      },\n      {\n        \"question\": \"What forms when water vapor cools and changes back into liquid droplets?\",\n        \"options\": [\"Clouds\", \"Groundwater\", \"Glaciers\", \"Rivers\"],\n        \"correct\": 0,\n        \"explanation\": \"Condensation of vapor into droplets is what forms clouds.\"\n      },\n      {\n        \"question\": \"Which of these is a form of precipitation?\",\n        \"options\": [\"Fog on the ground\", \"Water vapor\", \"Snow\", \"Transpiration\"],\n        \"correct\": 2,\n        \"explanation\": \"Rain, snow, sleet and hail are all precipitation: water falling from clouds.\"\n      }\n    ]</script>\n  </ui-quiz_set>\n</body>\n</a2ui>"
+}

@@ -1,0 +1,101 @@
+{
+ "label": "oracle-slice-3types__json__gemini-3.5-flash-lite__request-only-timing__run3",
+ "task": "T4",
+ "format": "json",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "item_list_surface",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "item_list_surface",
+    "components": [
+     {
+      "id": "root",
+      "component": "heading",
+      "text": "Project Work Items"
+     },
+     {
+      "id": "filter_segment",
+      "component": "segmented_control",
+      "name": "status_filter",
+      "selected_value": "all",
+      "options": "[{\"label\": \"All\", \"value\": \"all\"}, {\"label\": \"Active\", \"value\": \"active\"}, {\"label\": \"Pending\", \"value\": \"pending\"}, {\"label\": \"Completed\", \"value\": \"completed\"}]"
+     },
+     {
+      "id": "items_list",
+      "component": "entity_list",
+      "items": {
+       "type": "array",
+       "description": "List of {name, subtitle?, icon?, status?, meta?} entries.",
+       "value": [
+        {
+         "name": "Design System Refactor",
+         "subtitle": "Update atomic token mappings and variants",
+         "icon": "\ud83c\udfa8",
+         "status": "Active",
+         "meta": "Due in 2 days"
+        },
+        {
+         "name": "Authentication Flow API",
+         "subtitle": "Implement OAuth2 refresh token rotation",
+         "icon": "\ud83d\udd12",
+         "status": "Active",
+         "meta": "In Progress"
+        },
+        {
+         "name": "Billing Gateway Integration",
+         "subtitle": "Stripe webhook error handling & retries",
+         "icon": "\ud83d\udcb3",
+         "status": "Pending",
+         "meta": "Reviewing"
+        },
+        {
+         "name": "Database Index Optimization",
+         "subtitle": "Add composite indexes for high-frequency queries",
+         "icon": "\u26a1",
+         "status": "Completed",
+         "meta": "Finished yesterday"
+        },
+        {
+         "name": "Mobile App Push Notifications",
+         "subtitle": "Configure APNS and Firebase Cloud Messaging",
+         "icon": "\ud83d\udcf1",
+         "status": "Pending",
+         "meta": "Scheduled"
+        },
+        {
+         "name": "Analytics Dashboard Export",
+         "subtitle": "Add CSV and PDF streaming export endpoints",
+         "icon": "\ud83d\udcca",
+         "status": "Active",
+         "meta": "In Progress"
+        },
+        {
+         "name": "Security Audit Remediation",
+         "subtitle": "Resolve dependency vulnerabilities in package.json",
+         "icon": "\ud83d\udee1\ufe0f",
+         "status": "Completed",
+         "meta": "Passed"
+        },
+        {
+         "name": "User Onboarding Walkthrough",
+         "subtitle": "Build multi-step interactive tooltip guide",
+         "icon": "\ud83d\ude80",
+         "status": "Pending",
+         "meta": "Backlog"
+        }
+       ]
+      }
+     }
+    ]
+   }
+  }
+ ]
+}

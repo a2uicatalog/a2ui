@@ -1,0 +1,119 @@
+{
+ "label": "oracle-slice-3types__json__sonnet-5-5__temp0__run2",
+ "task": "T2",
+ "format": "json",
+ "model_id": "claude-sonnet-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "metrics_overview",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "metrics_overview",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "1.5rem",
+      "align": "stretch",
+      "items": [
+       {
+        "blocks": [
+         {
+          "id": "title",
+          "type": "heading",
+          "component": "heading",
+          "text": "Metrics Overview"
+         },
+         {
+          "id": "kpis",
+          "type": "metric_row",
+          "component": "metric_row",
+          "cols": 4,
+          "metrics": [
+           {
+            "value": "48,210",
+            "label": "Active Users",
+            "sub": "vs. last month",
+            "trend": "up",
+            "accent": "#22c55e"
+           },
+           {
+            "value": "128.4",
+            "prefix": "$",
+            "suffix": "k",
+            "label": "Monthly Revenue",
+            "sub": "vs. last month",
+            "trend": "up",
+            "accent": "#06b6d4"
+           },
+           {
+            "value": "3.8",
+            "suffix": "%",
+            "label": "Churn Rate",
+            "sub": "vs. last month",
+            "trend": "down",
+            "accent": "#ef4444"
+           },
+           {
+            "value": "99.2",
+            "suffix": "%",
+            "label": "Uptime",
+            "sub": "vs. last month",
+            "trend": "down",
+            "accent": "#eab308"
+           }
+          ]
+         },
+         {
+          "id": "comparison_heading",
+          "type": "heading",
+          "component": "heading",
+          "text": "This Quarter vs. Last Quarter"
+         },
+         {
+          "id": "comparison_chart",
+          "type": "chartjs_bar",
+          "component": "chartjs_bar",
+          "labels": [
+           "Active Users (k)",
+           "Revenue ($k)",
+           "Churn (%)",
+           "Uptime (%)"
+          ],
+          "datasets": [
+           {
+            "label": "Last Quarter",
+            "data": [
+             41.5,
+             112.0,
+             4.3,
+             99.5
+            ]
+           },
+           {
+            "label": "This Quarter",
+            "data": [
+             48.2,
+             128.4,
+             3.8,
+             99.2
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

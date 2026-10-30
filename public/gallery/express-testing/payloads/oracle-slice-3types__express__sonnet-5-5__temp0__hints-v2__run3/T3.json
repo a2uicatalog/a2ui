@@ -1,0 +1,105 @@
+{
+ "label": "oracle-slice-3types__express__sonnet-5-5__temp0__hints-v2__run3",
+ "task": "T3",
+ "format": "express",
+ "model_id": "claude-sonnet-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "product-landing",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "product-landing",
+    "components": [
+     {
+      "id": "hero",
+      "component": "gradient_hero",
+      "title": "Ship products your customers love, faster",
+      "subtitle": "Plan, build, and launch with one streamlined workspace that keeps your whole team in sync.",
+      "badge": "New: Version 2.0",
+      "accent": "#4f46e5",
+      "accent2": "#8b5cf6",
+      "align": "center",
+      "cta_label": "Get started free",
+      "cta_url": "https://example.com/signup"
+     },
+     {
+      "id": "features",
+      "component": "feature_grid",
+      "heading": "Everything you need to launch",
+      "description": "Three tools that take you from idea to release.",
+      "columns": 3,
+      "features": [
+       {
+        "icon": "\u26a1",
+        "title": "Lightning fast",
+        "description": "Cut setup time from days to minutes with smart templates and instant deployment."
+       },
+       {
+        "icon": "\ud83d\udd12",
+        "title": "Secure by default",
+        "description": "Enterprise-grade encryption and granular access controls protect your data."
+       },
+       {
+        "icon": "\ud83d\udcc8",
+        "title": "Actionable insights",
+        "description": "Real-time analytics show what is working so you can make confident decisions."
+       }
+      ]
+     },
+     {
+      "id": "testimonial",
+      "component": "testimonial_card",
+      "text": "This platform cut our launch cycle in half. Our team finally has one place to plan, build, and ship together.",
+      "author_name": "Maria Alvarez",
+      "author_title": "VP of Product, Brightwave",
+      "author_avatar_url": "https://i.pravatar.cc/120?img=47",
+      "rating": 5
+     },
+     {
+      "id": "cta",
+      "component": "cta_button",
+      "url": "https://example.com/signup",
+      "label": "Start your free trial",
+      "color": "#4f46e5",
+      "same_tab": false
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "2.5rem",
+      "align": "stretch",
+      "items": [
+       {
+        "blocks": [
+         "hero"
+        ]
+       },
+       {
+        "blocks": [
+         "features"
+        ]
+       },
+       {
+        "blocks": [
+         "testimonial"
+        ]
+       },
+       {
+        "blocks": [
+         "cta"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

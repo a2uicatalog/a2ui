@@ -1,0 +1,105 @@
+{
+ "version": "blocks-express-test router tuning set (12 briefs, threshold only)",
+ "scoring": {
+  "unit": "per reply: routed id (exact slug), null, invalid_id, malformed. correct = routed value in accept list (null only where accept has null). Single-answer routers: for multi briefs the accept list holds every catalogue the brief needs and ANY ONE of them counts as correct (reported separately, never blended).",
+  "groups": "clear, judgement, multi, null: each reported separately; no blended number."
+ },
+ "briefs": {
+  "TU1": {
+   "group": "clear",
+   "check": "route",
+   "accept": [
+    "a2ui-bricks-v1"
+   ],
+   "rule": "brick-built model"
+  },
+  "TU2": {
+   "group": "clear",
+   "check": "route",
+   "accept": [
+    "a2ui-charts-v1"
+   ],
+   "rule": "chartjs_pie"
+  },
+  "TU3": {
+   "group": "clear",
+   "check": "route",
+   "accept": [
+    "a2ui-learning-v1"
+   ],
+   "rule": "flashcard_deck"
+  },
+  "TU4": {
+   "group": "clear",
+   "check": "route",
+   "accept": [
+    "a2ui-google-workspace-live-v1"
+   ],
+   "rule": "gmail_unread_count, calendar_today"
+  },
+  "TU5": {
+   "group": "clear",
+   "check": "route",
+   "accept": [
+    "a2ui-editorial-v1"
+   ],
+   "rule": "table_of_contents, footnote"
+  },
+  "TU6": {
+   "group": "clear",
+   "check": "route",
+   "accept": [
+    "a2ui-embeds-v1"
+   ],
+   "rule": "youtube, figma_embed"
+  },
+  "TU7": {
+   "group": "clear",
+   "check": "route",
+   "accept": [
+    "a2ui-marketing-v1"
+   ],
+   "rule": "pricing_tier_group, testimonial_card"
+  },
+  "TU8": {
+   "group": "clear",
+   "check": "route",
+   "accept": [
+    "a2ui-ops-v1"
+   ],
+   "rule": "sprint_board, jira_ticket"
+  },
+  "TU9": {
+   "group": "clear",
+   "check": "route",
+   "accept": [
+    "a2ui-effects-v1"
+   ],
+   "rule": "confetti_burst, neon_text"
+  },
+  "TU10": {
+   "group": "null",
+   "check": "route",
+   "accept": [
+    null
+   ],
+   "rule": "not a UI request"
+  },
+  "TU11": {
+   "group": "null",
+   "check": "route",
+   "accept": [
+    null
+   ],
+   "rule": "not a UI request"
+  },
+  "TU12": {
+   "group": "clear",
+   "check": "route",
+   "accept": [
+    "a2ui-atoms-v1"
+   ],
+   "rule": "form_select, form_checkbox_group in base"
+  }
+ }
+}

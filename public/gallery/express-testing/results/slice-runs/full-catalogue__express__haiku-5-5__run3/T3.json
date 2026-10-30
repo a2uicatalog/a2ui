@@ -1,0 +1,48 @@
+{
+ "task": "T3",
+ "condition": "A_haiku-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "full-catalogue__express__haiku-5-5__run3",
+ "agent_type": "full",
+ "catalogue": "A-full.json",
+ "atoms_in_catalogue": 557,
+ "prompt_chars": 294155,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 7.7,
+ "usage": {
+  "input_tokens": 107823,
+  "output_tokens": 1242
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "gradient_hero",
+  "info_card",
+  "info_card",
+  "info_card",
+  "columns",
+  "blockquote_with_avatar",
+  "cta_button",
+  "color_section"
+ ],
+ "score": {
+  "precision": 0.375,
+  "recall": 0.75,
+  "f1": 0.5,
+  "slot_hits": {
+   "hero": true,
+   "feature columns (x3)": false,
+   "testimonial": true,
+   "CTA": true
+  }
+ },
+ "reply": "<a2ui>\nhero = gradient_hero(title=\"Ship landing pages in minutes, not weeks\", subtitle=\"Compose rich, responsive pages from a tested component catalog. No layout wrangling required.\", badge=\"New in 2.0\", accent=\"#4f46e5\", accent2=\"#8b5cf6\", align=\"center\", cta_label=\"Start free trial\", cta_url=\"#signup\")\n\nfeat1 = info_card(title=\"Drop-in components\", text=\"Choose from heroes, grids, testimonials, and CTAs that already look good together.\")\nfeat2 = info_card(title=\"Live data bindings\", text=\"Connect any field to your data model and keep copy and numbers in sync automatically.\")\nfeat3 = info_card(title=\"Ready for every screen\", text=\"Every layout adapts from phone to desktop without a single media query.\")\n\nfeatures = columns(cols=3, gap=\"1.5rem\", align=\"top\", items=[{blocks: [feat1]}, {blocks: [feat2]}, {blocks: [feat3]}])\n\nquote = blockquote_with_avatar(quote=\"We launched our new pricing page in an afternoon. Conversions went up the first week.\", author_name=\"Maya Chen\", author_title=\"Head of Growth, Northwind\")\n\ncta = cta_button(url=\"#signup\", label=\"Start your free trial\", color=\"#4f46e5\", same_tab=true)\n\nroot = color_section(accent=\"#4f46e5\", style=\"light\", padding=\"48px 24px\", blocks=[hero, features, quote, cta])\n</a2ui>"
+}

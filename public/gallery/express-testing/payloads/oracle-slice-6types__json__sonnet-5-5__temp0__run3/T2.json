@@ -1,0 +1,126 @@
+{
+ "label": "oracle-slice-6types__json__sonnet-5-5__temp0__run3",
+ "task": "T2",
+ "format": "json",
+ "model_id": "claude-sonnet-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "metrics_overview",
+    "catalog_id": "https://a2uicatalog.ai/catalog/d-t2.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "metrics_overview",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         {
+          "id": "kpi_heading",
+          "component": "heading",
+          "text": "Metrics Overview"
+         },
+         {
+          "id": "kpi_intro",
+          "component": "body",
+          "text": "Key performance indicators for the current period, with direction of change versus the previous period."
+         },
+         {
+          "id": "kpi_row",
+          "component": "metric_row",
+          "cols": 2,
+          "accent": "#4F8EF7",
+          "metrics": [
+           {
+            "value": "48.2",
+            "prefix": "$",
+            "suffix": "K",
+            "label": "Monthly Revenue",
+            "sub": "+8.4% vs last month",
+            "trend": "up",
+            "accent": "#2EB67D"
+           },
+           {
+            "value": "12.4",
+            "suffix": "K",
+            "label": "Active Users",
+            "sub": "+5.1% vs last month",
+            "trend": "up",
+            "accent": "#2EB67D"
+           },
+           {
+            "value": "2.1",
+            "suffix": "%",
+            "label": "Churn Rate",
+            "sub": "-0.4 pts vs last month",
+            "trend": "down",
+            "accent": "#4F8EF7"
+           },
+           {
+            "value": "320",
+            "suffix": "ms",
+            "label": "Avg Response Time",
+            "sub": "-12% vs last month",
+            "trend": "down",
+            "accent": "#E8A33D"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "blocks": [
+         {
+          "id": "chart_heading",
+          "component": "heading",
+          "text": "Revenue: This Period vs Previous"
+         },
+         {
+          "id": "comparison_chart",
+          "component": "chartjs_bar",
+          "labels": [
+           "Week 1",
+           "Week 2",
+           "Week 3",
+           "Week 4"
+          ],
+          "datasets": [
+           {
+            "label": "Current period ($K)",
+            "data": [
+             10.8,
+             11.6,
+             12.4,
+             13.4
+            ]
+           },
+           {
+            "label": "Previous period ($K)",
+            "data": [
+             10.1,
+             10.9,
+             11.2,
+             11.9
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

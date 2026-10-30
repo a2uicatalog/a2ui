@@ -1,0 +1,130 @@
+{
+ "label": "oracle-slice-6types__express__sonnet-5-5__temp0__hints-v2__run1",
+ "task": "T6",
+ "format": "express",
+ "model_id": "claude-sonnet-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "vocab-flashcards",
+    "catalog_id": "https://a2uicatalog.ai/catalog/d-t6.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "vocab-flashcards",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "2rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "_inline_1",
+         "_inline_2",
+         "_inline_3"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_4",
+         "_inline_5",
+         "_inline_6"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "_inline_1",
+      "component": "heading",
+      "text": "Vocabulary Flashcards"
+     },
+     {
+      "id": "_inline_2",
+      "component": "body",
+      "text": "Click a card to flip it and reveal the definition. Work through all ten words."
+     },
+     {
+      "id": "_inline_3",
+      "component": "flashcard_deck",
+      "cards": [
+       {
+        "front": "Ephemeral",
+        "back": "Lasting for a very short time."
+       },
+       {
+        "front": "Ubiquitous",
+        "back": "Present or found everywhere."
+       },
+       {
+        "front": "Benevolent",
+        "back": "Kind, generous, and well-meaning."
+       },
+       {
+        "front": "Meticulous",
+        "back": "Showing great attention to detail; very careful and precise."
+       },
+       {
+        "front": "Resilient",
+        "back": "Able to recover quickly from difficulties."
+       },
+       {
+        "front": "Candid",
+        "back": "Truthful and straightforward; frank."
+       },
+       {
+        "front": "Pragmatic",
+        "back": "Dealing with things sensibly and realistically."
+       },
+       {
+        "front": "Eloquent",
+        "back": "Fluent and persuasive in speaking or writing."
+       },
+       {
+        "front": "Ambiguous",
+        "back": "Open to more than one interpretation; unclear."
+       },
+       {
+        "front": "Tenacious",
+        "back": "Holding firmly to a goal or position; persistent."
+       }
+      ],
+      "accent": "#4f46e5",
+      "label_front": "WORD",
+      "label_back": "DEFINITION"
+     },
+     {
+      "id": "_inline_4",
+      "component": "heading",
+      "text": "Your Progress"
+     },
+     {
+      "id": "_inline_5",
+      "component": "progress_bar",
+      "value": 0,
+      "label": "Cards reviewed",
+      "accent": "#4f46e5",
+      "show_percent": true,
+      "caption": "0 of 10 cards reviewed"
+     },
+     {
+      "id": "_inline_6",
+      "component": "progress_ring",
+      "value": 0,
+      "size": 120,
+      "stroke_width": 10,
+      "color": "#4f46e5",
+      "label": "Reviewed",
+      "show_value": true,
+      "unit": "%"
+     }
+    ]
+   }
+  }
+ ]
+}

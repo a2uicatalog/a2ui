@@ -1,0 +1,48 @@
+{
+ "task": "T2",
+ "condition": "C_gemini-3.5-flash",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 32768,
+ "model_id": "gemini-3.5-flash",
+ "hints": false,
+ "label": "oracle-slice-3types__express__gemini-3.5-flash__thinking-off__run3",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 16421,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 2.7,
+ "usage": {
+  "input_tokens": 4602,
+  "output_tokens": 429
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "stat_card",
+  "stat_card",
+  "stat_card",
+  "stat_card",
+  "columns",
+  "heading",
+  "benchmark_comparison",
+  "columns",
+  "heading"
+ ],
+ "score": {
+  "precision": 0.556,
+  "recall": 1.0,
+  "f1": 0.714,
+  "slot_hits": {
+   "KPI tile (x4)": true,
+   "trend (required only if metric_row was chosen; stat_card's own delta already satisfies it)": true,
+   "comparison chart": true
+  }
+ },
+ "reply": "```python\n<a2ui>\n# Surface targeting\nsurface(\"metrics-overview\")\n\n# Define KPIs\nkpi_active_users = stat_card(\"14,250\", \"Active Users\", \"+12%\", true, \"#10B981\")\nkpi_mrr = stat_card(\"$128,400\", \"Monthly Recurring Revenue\", \"+8.4%\", true, \"#10B981\")\nkpi_churn = stat_card(\"1.2%\", \"Churn Rate\", \"-0.4%\", true, \"#10B981\")\nkpi_nps = stat_card(\"72\", \"Net Promoter Score\", \"-2\", false, \"#EF4444\")\n\n# Group KPIs into columns\nkpis_row = columns(4, \"1rem\", \"stretch\", [\n    {\"blocks\": [kpi_active_users]},\n    {\"blocks\": [kpi_mrr]},\n    {\"blocks\": [kpi_churn]},\n    {\"blocks\": [kpi_nps]}\n])\n\n# Define Comparison Chart (Benchmark Comparison)\nchart_section_title = heading(\"Performance vs. Industry Benchmarks\")\nperformance_comparison = benchmark_comparison([\n    {\"label\": \"Our Conversion Rate (4.2%)\", \"value\": 84},\n    {\"label\": \"Industry Median (3.1%)\", \"value\": 62},\n    {\"label\": \"Our Customer Retention (92%)\", \"value\": 92},\n    {\"label\": \"Industry Median (85%)\", \"value\": 85}\n])\n\n# Layout all elements inside the single root component\nroot = columns(1, \"2rem\", \"top\", [\n    {\"blocks\": [\n        heading(\"Executive Metrics Dashboard\"),\n        kpis_row,\n        chart_section_title,\n        performance_comparison\n    ]}\n])\n</a2ui>\n```"
+}

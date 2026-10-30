@@ -1,0 +1,85 @@
+{
+ "label": "wrong-domain-slice__express__haiku-4-5__run3",
+ "task": "T2",
+ "format": "express",
+ "model_id": null,
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/b-marketing-commerce.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 4,
+      "items": [
+       {
+        "blocks": [
+         "_inline_1"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_2"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_3"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_4"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "_inline_1",
+      "component": "glowing_stat",
+      "value": "$2.4M",
+      "label": "Revenue",
+      "colour": "#22d3ee",
+      "prefix": "$",
+      "size": "2rem"
+     },
+     {
+      "id": "_inline_2",
+      "component": "glowing_stat",
+      "value": "8.2%",
+      "label": "Growth Rate",
+      "colour": "#22d3ee",
+      "suffix": "%",
+      "size": "2rem"
+     },
+     {
+      "id": "_inline_3",
+      "component": "glowing_stat",
+      "value": "1,247",
+      "label": "Active Users",
+      "colour": "#22d3ee",
+      "size": "2rem"
+     },
+     {
+      "id": "_inline_4",
+      "component": "glowing_stat",
+      "value": "94.5%",
+      "label": "Uptime",
+      "colour": "#22d3ee",
+      "suffix": "%",
+      "size": "2rem"
+     }
+    ]
+   }
+  }
+ ]
+}

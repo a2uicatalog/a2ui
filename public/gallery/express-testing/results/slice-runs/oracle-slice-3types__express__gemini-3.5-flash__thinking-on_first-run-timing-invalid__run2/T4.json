@@ -1,0 +1,47 @@
+{
+ "task": "T4",
+ "condition": "C_gemini-3.5-flash",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash",
+ "hints": false,
+ "label": "oracle-slice-3types__express__gemini-3.5-flash__thinking-on_first-run-timing-invalid__run2",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 16421,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 26.8,
+ "usage": {
+  "input_tokens": 4600,
+  "output_tokens": 6064
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "heading",
+  "segmented_control",
+  "entity_list",
+  "heading",
+  "gauge_sla",
+  "stat_card",
+  "stat_card",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.25,
+  "recall": 0.667,
+  "f1": 0.364,
+  "slot_hits": {
+   "list": true,
+   "status indicator": false,
+   "filter control": true
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"services-dashboard\")\n\nservice_heading = heading(\"System Services Directory\")\n\nstatus_filter = segmented_control(\n    options=[\n        {\"label\": \"All (8)\", \"value\": \"all\"},\n        {\"label\": \"Active (4)\", \"value\": \"active\"},\n        {\"label\": \"Pending (2)\", \"value\": \"pending\"},\n        {\"label\": \"Inactive (2)\", \"value\": \"inactive\"}\n    ],\n    selected_value=\"all\",\n    name=\"status_filter\"\n)\n\nservices_list = entity_list(\n    items=[\n        {\"name\": \"API Gateway\", \"subtitle\": \"Routing external traffic to microservices\", \"status\": \"Active\", \"icon\": \"\u26a1\", \"meta\": \"v1.2.4\"},\n        {\"name\": \"Auth Service\", \"subtitle\": \"Managing user authentication and JWT tokens\", \"status\": \"Active\", \"icon\": \"\ud83d\udd11\", \"meta\": \"v2.1.0\"},\n        {\"name\": \"Payment Worker\", \"subtitle\": \"Processing queue for monthly subscriptions\", \"status\": \"Pending\", \"icon\": \"\ud83d\udcb3\", \"meta\": \"v0.9.8\"},\n        {\"name\": \"Notification Engine\", \"subtitle\": \"Dispatching email and SMS alerts\", \"status\": \"Active\", \"icon\": \"\u2709\ufe0f\", \"meta\": \"v1.1.2\"},\n        {\"name\": \"Reporting Pipeline\", \"subtitle\": \"Daily analytics aggregation cron job\", \"status\": \"Inactive\", \"icon\": \"\ud83d\udcca\", \"meta\": \"v1.0.0\"},\n        {\"name\": \"Search Indexer\", \"subtitle\": \"Rebuilding Elasticsearch indices\", \"status\": \"Pending\", \"icon\": \"\ud83d\udd0d\", \"meta\": \"v0.8.5\"},\n        {\"name\": \"Media Optimizer\", \"subtitle\": \"On-the-fly image and video compression\", \"status\": \"Active\", \"icon\": \"\ud83d\uddbc\ufe0f\", \"meta\": \"v1.5.0\"},\n        {\"name\": \"Database Backup\", \"subtitle\": \"Hourly snapshot creation and S3 sync\", \"status\": \"Inactive\", \"icon\": \"\ud83d\udcbe\", \"meta\": \"v3.0.1\"}\n    ]\n)\n\nsidebar_heading = heading(\"System Status Overview\")\n\nsla_gauge = gauge_sla(\n    title=\"API Response SLA\",\n    value=99.95,\n    max_value=100.0,\n    unit=\"%\",\n    label=\"SLA Met\"\n)\n\nactive_services_stat = stat_card(\n    value=\"4 Active\",\n    label=\"Running Services\",\n    delta=\"+1 this week\",\n    is_up=true,\n    accent=\"#4CAF50\"\n)\n\npending_services_stat = stat_card(\n    value=\"2 Pending\",\n    label=\"Deploying or Rebuilding\",\n    delta=\"No change\",\n    is_up=true,\n    accent=\"#FF9800\"\n)\n\nroot = columns(\n    cols=2,\n    gap=\"2rem\",\n    align=\"top\",\n    items=[\n        {\n            \"blocks\": [\n                service_heading,\n                status_filter,\n                services_list\n            ]\n        },\n        {\n            \"blocks\": [\n                sidebar_heading,\n                sla_gauge,\n                active_services_stat,\n                pending_services_stat\n            ]\n        }\n    ]\n)\n</a2ui>"
+}

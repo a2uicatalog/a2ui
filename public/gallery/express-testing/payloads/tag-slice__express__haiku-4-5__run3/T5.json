@@ -1,0 +1,87 @@
+{
+ "label": "tag-slice__express__haiku-4-5__run3",
+ "task": "T5",
+ "format": "express",
+ "model_id": null,
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/g-marketing-commerce.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "pricing_tier_group",
+      "tiers": [
+       "root_tiers_0",
+       "root_tiers_1",
+       "root_tiers_2"
+      ]
+     },
+     {
+      "id": "root_tiers_0",
+      "component": "pricing_tier_card",
+      "plan_name": "Starter",
+      "price": "29",
+      "currency": "$",
+      "frequency": "per month",
+      "features": [
+       "Up to 10 projects",
+       "Basic analytics",
+       "Community support",
+       "1 GB storage"
+      ],
+      "call_to_action_label": "Get Started",
+      "call_to_action_url": "#",
+      "is_highlighted": false
+     },
+     {
+      "id": "root_tiers_1",
+      "component": "pricing_tier_card",
+      "plan_name": "Professional",
+      "price": "79",
+      "currency": "$",
+      "frequency": "per month",
+      "features": [
+       "Unlimited projects",
+       "Advanced analytics",
+       "Priority email support",
+       "100 GB storage",
+       "Custom integrations",
+       "Team collaboration"
+      ],
+      "call_to_action_label": "Start Free Trial",
+      "call_to_action_url": "#",
+      "is_highlighted": true
+     },
+     {
+      "id": "root_tiers_2",
+      "component": "pricing_tier_card",
+      "plan_name": "Enterprise",
+      "price": "249",
+      "currency": "$",
+      "frequency": "per month",
+      "features": [
+       "Everything in Professional",
+       "24/7 phone support",
+       "Unlimited storage",
+       "Advanced security",
+       "Custom training",
+       "Dedicated account manager"
+      ],
+      "call_to_action_label": "Contact Sales",
+      "call_to_action_url": "#",
+      "is_highlighted": false
+     }
+    ]
+   }
+  }
+ ]
+}

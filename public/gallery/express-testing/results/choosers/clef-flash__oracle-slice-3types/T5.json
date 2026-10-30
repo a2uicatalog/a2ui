@@ -1,0 +1,168 @@
+{
+ "task": "T5",
+ "condition": "C",
+ "chooser": "clef-flash",
+ "slice_atoms_in_options": 23,
+ "picks": [
+  {
+   "slot": "Three pricing tier cards arranged side by side in a row, each presenting one sub #1",
+   "decomposer_line": "Three pricing tier cards arranged side by side in a row, each presenting one subscription level as a distinct block",
+   "atom": "pricing_tier_group",
+   "confidence": 0.9401,
+   "top3": [
+    [
+     "pricing_tier_group",
+     0.9709
+    ],
+    [
+     "feature_matrix",
+     0.0038
+    ],
+    [
+     "bento_grid",
+     0.003
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "A tier name and price shown prominently at the top of each card #2",
+   "decomposer_line": "A tier name and price shown prominently at the top of each card",
+   "atom": "pricing_tier_group",
+   "confidence": 0.8986,
+   "top3": [
+    [
+     "pricing_tier_group",
+     0.9502
+    ],
+    [
+     "article_hero",
+     0.0068
+    ],
+    [
+     "feature_matrix",
+     0.0062
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "A distinct feature list inside each card, with its own set of included features  #3",
+   "decomposer_line": "A distinct feature list inside each card, with its own set of included features that differ from the other tiers",
+   "atom": "pricing_tier_group",
+   "confidence": 0.4331,
+   "top3": [
+    [
+     "pricing_tier_group",
+     0.6363
+    ],
+    [
+     "feature_matrix",
+     0.2187
+    ],
+    [
+     "feature_grid",
+     0.0619
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "A visual highlight or badge on the one recommended tier that sets it apart from  #4",
+   "decomposer_line": "A visual highlight or badge on the one recommended tier that sets it apart from the other two",
+   "atom": "badge",
+   "confidence": 0.2957,
+   "top3": [
+    [
+     "badge",
+     0.4933
+    ],
+    [
+     "pricing_tier_group",
+     0.2767
+    ],
+    [
+     "feature_grid",
+     0.0646
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "A clear label or marker reading as recommended on the featured tier #5",
+   "decomposer_line": "A clear label or marker reading as recommended on the featured tier",
+   "atom": "badge",
+   "confidence": 0.1522,
+   "top3": [
+    [
+     "badge",
+     0.333
+    ],
+    [
+     "pricing_tier_group",
+     0.2502
+    ],
+    [
+     "gradient_hero",
+     0.0861
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "A call-to-action button at the bottom of each card for choosing that tier #6",
+   "decomposer_line": "A call-to-action button at the bottom of each card for choosing that tier",
+   "atom": "ripple_button",
+   "confidence": 0.2676,
+   "top3": [
+    [
+     "ripple_button",
+     0.4631
+    ],
+    [
+     "cta_button",
+     0.2668
+    ],
+    [
+     "pricing_tier_group",
+     0.0917
+    ]
+   ],
+   "finalists": null
+  }
+ ],
+ "cost": {
+  "decomposer_input_tokens": 0,
+  "decomposer_output_tokens": 0,
+  "decomposer_thinking_tokens": 0,
+  "jev_input_tokens": 5668,
+  "jev_output_tokens": 0,
+  "jev_calls": 6
+ },
+ "error": null,
+ "atoms": [
+  "pricing_tier_group",
+  "pricing_tier_group",
+  "pricing_tier_group",
+  "badge",
+  "badge",
+  "ripple_button"
+ ],
+ "score": {
+  "per_approach": {
+   "tier_cards": {
+    "precision": 0.167,
+    "recall": 1.0,
+    "f1": 0.286
+   },
+   "comparison_table": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": null
+   }
+  },
+  "best_approach": "tier_cards",
+  "f1": 0.286
+ },
+ "secs": 3.2
+}

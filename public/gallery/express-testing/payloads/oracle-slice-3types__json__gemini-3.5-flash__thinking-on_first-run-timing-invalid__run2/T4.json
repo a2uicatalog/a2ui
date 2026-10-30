@@ -1,0 +1,124 @@
+{
+ "label": "oracle-slice-3types__json__gemini-3.5-flash__thinking-on_first-run-timing-invalid__run2",
+ "task": "T4",
+ "format": "json",
+ "model_id": "gemini-3.5-flash",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "task-manager-surface",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "task-manager-surface",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "2rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         {
+          "id": "left-heading",
+          "component": "heading",
+          "text": "Operational Task Queue"
+         },
+         {
+          "id": "left-body",
+          "component": "body",
+          "text": "Monitor ongoing engineering tasks and deployment milestones. Select a status filter below to refine the visible task list."
+         },
+         {
+          "id": "status-filter",
+          "component": "segmented_control",
+          "name": "status_filter",
+          "options": "[{\"label\": \"All (8)\", \"value\": \"all\"}, {\"label\": \"Active (3)\", \"value\": \"active\"}, {\"label\": \"Pending (3)\", \"value\": \"pending\"}, {\"label\": \"Completed (2)\", \"value\": \"completed\"}]",
+          "selected_value": "all"
+         },
+         {
+          "id": "summary-metrics",
+          "component": "metric_row",
+          "cols": 2,
+          "metrics": [
+           {
+            "value": "37.5%",
+            "label": "Completion Rate",
+            "trend": "up"
+           },
+           {
+            "value": "3 Active",
+            "label": "In Progress"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "blocks": [
+         {
+          "id": "right-table",
+          "component": "data_table_sortable",
+          "headers": [
+           "Task / Title",
+           "One-Line Detail",
+           "Status"
+          ],
+          "rows": [
+           [
+            "Database Migration",
+            "Migrate legacy user records to PostgreSQL",
+            "Active"
+           ],
+           [
+            "API Integration",
+            "Connect Stripe billing webhooks and checkout flow",
+            "Active"
+           ],
+           [
+            "Security Audit",
+            "Review IAM permissions and access control lists",
+            "Pending"
+           ],
+           [
+            "UI Redesign",
+            "Refactor core dashboard layouts to CSS Grid",
+            "Completed"
+           ],
+           [
+            "Load Testing",
+            "Simulate 10k concurrent WebSocket connections",
+            "Pending"
+           ],
+           [
+            "Documentation",
+            "Update developer onboarding setup guides",
+            "Completed"
+           ],
+           [
+            "SSL Certificate Renewal",
+            "Rotate wildcard certificates for staging domains",
+            "Active"
+           ],
+           [
+            "Analytics Setup",
+            "Configure Mixpanel event tracking for signup funnels",
+            "Pending"
+           ]
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,133 @@
+{
+ "label": "oracle-slice-3types__express__gemini-3.5-flash-lite__request-only-timing__run1",
+ "task": "T2",
+ "format": "express",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "metric1",
+      "component": "stat_card",
+      "value": "14,850",
+      "label": "Active Users",
+      "delta": "+12.4%",
+      "is_up": true,
+      "accent": "#4CAF50"
+     },
+     {
+      "id": "metric2",
+      "component": "stat_card",
+      "value": "$128.4K",
+      "label": "Monthly Revenue",
+      "delta": "+8.1%",
+      "is_up": true,
+      "accent": "#2196F3"
+     },
+     {
+      "id": "metric3",
+      "component": "stat_card",
+      "value": "99.94%",
+      "label": "Server Uptime",
+      "delta": "+0.02%",
+      "is_up": true,
+      "accent": "#00BCD4"
+     },
+     {
+      "id": "metric4",
+      "component": "stat_card",
+      "value": "244ms",
+      "label": "Average Latency",
+      "delta": "-14.2%",
+      "is_up": false,
+      "accent": "#FF9800"
+     },
+     {
+      "id": "metricsRow",
+      "component": "columns",
+      "cols": 4,
+      "gap": "1.0rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "metric1"
+        ]
+       },
+       {
+        "blocks": [
+         "metric2"
+        ]
+       },
+       {
+        "blocks": [
+         "metric3"
+        ]
+       },
+       {
+        "blocks": [
+         "metric4"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "chartHead",
+      "component": "heading",
+      "text": "Performance Benchmark Comparison"
+     },
+     {
+      "id": "comparison",
+      "component": "benchmark_comparison",
+      "items": [
+       {
+        "label": "Current Period",
+        "value": 88
+       },
+       {
+        "label": "Previous Period",
+        "value": 74
+       },
+       {
+        "label": "Target SLA",
+        "value": 95
+       }
+      ]
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "_inline_1",
+         "metricsRow",
+         "chartHead",
+         "comparison"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "_inline_1",
+      "component": "heading",
+      "text": "Metrics Overview"
+     }
+    ]
+   }
+  }
+ ]
+}

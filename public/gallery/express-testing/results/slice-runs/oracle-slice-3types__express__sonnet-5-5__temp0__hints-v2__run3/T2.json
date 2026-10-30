@@ -1,0 +1,47 @@
+{
+ "task": "T2",
+ "condition": "CT_sonnet-5-5H2",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-sonnet-5-5",
+ "hints": true,
+ "label": "oracle-slice-3types__express__sonnet-5-5__temp0__hints-v2__run3",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 16421,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 12.5,
+ "usage": {
+  "input_tokens": 6379,
+  "output_tokens": 1398
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "stat_card",
+  "stat_card",
+  "stat_card",
+  "stat_card",
+  "heading",
+  "heading",
+  "chartjs_bar",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.625,
+  "recall": 1.0,
+  "f1": 0.769,
+  "slot_hits": {
+   "KPI tile (x4)": true,
+   "trend (required only if metric_row was chosen; stat_card's own delta already satisfies it)": true,
+   "comparison chart": true
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"metrics-overview\")\nkpi1 = stat_card(\"$128.4K\", \"Revenue\", \"+12.4%\", true, \"#22c55e\")\nkpi2 = stat_card(\"12,480\", \"Active users\", \"+8.1%\", true, \"#3b82f6\")\nkpi3 = stat_card(\"3.8%\", \"Conversion rate\", \"-0.4%\", false, \"#f59e0b\")\nkpi4 = stat_card(\"1.9%\", \"Churn\", \"-0.3%\", false, \"#ef4444\")\ntitle = heading(\"Metrics Overview\")\nchartTitle = heading(\"Revenue by region: this month vs last month ($K)\")\nchart = chartjs_bar([\"North America\", \"Europe\", \"Asia Pacific\", \"Latin America\"], [{label: \"This month\", data: [58, 36, 24, 10]}, {label: \"Last month\", data: [52, 33, 21, 9]}])\nroot = columns(2, \"1.5rem\", \"top\", [{blocks: [title, kpi1, kpi2, kpi3, kpi4]}, {blocks: [chartTitle, chart]}])\n</a2ui>"
+}

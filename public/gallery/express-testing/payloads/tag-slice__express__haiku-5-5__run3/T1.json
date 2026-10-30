@@ -1,0 +1,154 @@
+{
+ "label": "tag-slice__express__haiku-5-5__run3",
+ "task": "T1",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/g-learning.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "header",
+      "component": "page_header",
+      "title": "The Water Cycle",
+      "subtitle": "How water moves continuously between oceans, air, and land",
+      "icon": "\ud83d\udca7",
+      "tag": "Lesson 1",
+      "accent": "#0e7bb8",
+      "theme": "light"
+     },
+     {
+      "id": "intro",
+      "component": "body",
+      "text": "Water on Earth is always moving. The same water cycles between oceans, atmosphere, and land over and over. Three processes drive most of this movement."
+     },
+     {
+      "id": "h_evap",
+      "component": "heading",
+      "text": "Concept 1: Evaporation"
+     },
+     {
+      "id": "c_evap",
+      "component": "body",
+      "text": "Heat from the Sun warms liquid water in oceans, lakes, and rivers. Some molecules gain enough energy to escape into the air as water vapor. Plants also release water vapor through transpiration, which is often grouped with evaporation."
+     },
+     {
+      "id": "h_cond",
+      "component": "heading",
+      "text": "Concept 2: Condensation"
+     },
+     {
+      "id": "c_cond",
+      "component": "body",
+      "text": "As water vapor rises, it cools. Cooler air holds less vapor, so the vapor changes back into tiny liquid droplets that cling to dust and other particles. Clusters of these droplets form clouds."
+     },
+     {
+      "id": "h_precip",
+      "component": "heading",
+      "text": "Concept 3: Precipitation"
+     },
+     {
+      "id": "c_precip",
+      "component": "body",
+      "text": "When droplets in a cloud grow heavy enough, they fall as rain, snow, sleet, or hail. Most precipitation lands in the ocean. The rest soaks into the ground or runs off into rivers that carry water back to the sea."
+     },
+     {
+      "id": "h_example",
+      "component": "heading",
+      "text": "Worked Example: Tracing a Puddle"
+     },
+     {
+      "id": "example",
+      "component": "steps",
+      "items": [
+       {
+        "label": "Step 1",
+        "text": "After a rainstorm, a puddle sits on the sidewalk. Sunlight warms the shallow water, and molecules escape into the air. This is evaporation."
+       },
+       {
+        "label": "Step 2",
+        "text": "The water vapor rises, cools, and condenses into tiny droplets high in the atmosphere. Those droplets gather into a cloud. This is condensation."
+       },
+       {
+        "label": "Step 3",
+        "text": "The droplets in the cloud merge until they are heavy enough to fall as rain. The water returns to the ground and the cycle begins again. This is precipitation."
+       }
+      ]
+     },
+     {
+      "id": "check",
+      "component": "quiz_set",
+      "title": "Self-check",
+      "questions": [
+       {
+        "question": "Which process changes water vapor back into liquid droplets?",
+        "options": [
+         "Evaporation",
+         "Condensation",
+         "Precipitation",
+         "Infiltration"
+        ],
+        "correct": 1,
+        "explanation": "Condensation happens when water vapor cools and forms liquid droplets, which gather into clouds."
+       },
+       {
+        "question": "Which process releases water vapor from plants into the air?",
+        "options": [
+         "Runoff",
+         "Transpiration",
+         "Precipitation",
+         "Collection"
+        ],
+        "correct": 1,
+        "explanation": "Transpiration is the release of water vapor from plant leaves into the atmosphere."
+       },
+       {
+        "question": "What is the main energy source that drives evaporation?",
+        "options": [
+         "Wind",
+         "Gravity",
+         "The Sun's heat",
+         "Salt in the ocean"
+        ],
+        "correct": 2,
+        "explanation": "Heat from the Sun gives water molecules the energy they need to escape into the air."
+       }
+      ],
+      "pass_score": 70,
+      "accent": "#0e7bb8"
+     },
+     {
+      "id": "root",
+      "component": "reveal",
+      "animation": "fade_up",
+      "duration": 500,
+      "delay": 0,
+      "stagger_delay": 120,
+      "blocks": [
+       "header",
+       "intro",
+       "h_evap",
+       "c_evap",
+       "h_cond",
+       "c_cond",
+       "h_precip",
+       "c_precip",
+       "h_example",
+       "example",
+       "check"
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

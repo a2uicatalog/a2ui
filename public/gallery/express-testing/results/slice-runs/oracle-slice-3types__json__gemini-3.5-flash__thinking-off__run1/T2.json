@@ -1,0 +1,40 @@
+{
+ "task": "T2",
+ "condition": "CN_gemini-3.5-flash",
+ "temperature_applied": false,
+ "format": "json",
+ "temperature": null,
+ "max_tokens": 32768,
+ "model_id": "gemini-3.5-flash",
+ "hints": false,
+ "label": "oracle-slice-3types__json__gemini-3.5-flash__thinking-off__run1",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 31546,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 3.3,
+ "usage": {
+  "input_tokens": 7914,
+  "output_tokens": 785
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns"
+ ],
+ "score": {
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "KPI tile (x4)": false,
+   "trend (required only if metric_row was chosen; stat_card's own delta already satisfies it)": false,
+   "comparison chart": false
+  }
+ },
+ "reply": "Here is the metrics overview dashboard as specified by your brief. It includes a metrics row showcasing four prominent KPI tiles with labels and trend indicators, followed by a comparative performance bar chart.\n\n<a2ui-json>\n{\n  \"version\": \"v0.9.1\",\n  \"createSurface\": {\n    \"surfaceId\": \"metrics-overview-dashboard\",\n    \"catalogId\": \"https://a2uicatalog.ai/catalog/c-data-display.json\"\n  }\n}\n</a2ui-json>\n\n<a2ui-json>\n{\n  \"version\": \"v0.9.1\",\n  \"updateComponents\": {\n    \"surfaceId\": \"metrics-overview-dashboard\",\n    \"components\": [\n      {\n        \"id\": \"root\",\n        \"component\": \"columns\",\n        \"cols\": 1,\n        \"items\": [\n          {\n            \"blocks\": [\n              {\n                \"id\": \"dashboard-heading\",\n                \"component\": \"heading\",\n                \"text\": \"Executive Performance Overview\"\n              },\n              {\n                \"id\": \"kpi-metrics-strip\",\n                \"component\": \"metric_row\",\n                \"cols\": 4,\n                \"accent\": \"#4f46e5\",\n                \"metrics\": [\n                  {\n                    \"value\": \"$124.8K\",\n                    \"label\": \"Monthly Revenue\",\n                    \"trend\": \"up\",\n                    \"sub\": \"vs. $112.5K last month\",\n                    \"accent\": \"#22c55e\"\n                  },\n                  {\n                    \"value\": \"3,482\",\n                    \"label\": \"Active Users\",\n                    \"trend\": \"up\",\n                    \"sub\": \"+12% growth week-over-week\",\n                    \"accent\": \"#22c55e\"\n                  },\n                  {\n                    \"value\": \"99.4%\",\n                    \"label\": \"SLA Uptime\",\n                    \"trend\": \"up\",\n                    \"sub\": \"Target threshold: 99.0%\",\n                    \"accent\": \"#3b82f6\"\n                  },\n                  {\n                    \"value\": \"18.4 min\",\n                    \"label\": \"Avg. Resolution Time\",\n                    \"trend\": \"down\",\n                    \"sub\": \"5 min faster than last month\",\n                    \"accent\": \"#ef4444\"\n                  }\n                ]\n              },\n              {\n                \"id\": \"chart-section-title\",\n                \"component\": \"heading\",\n                \"text\": \"Quarterly Performance vs Target\"\n              },\n              {\n                \"id\": \"performance-comparison-chart\",\n                \"component\": \"chartjs_bar\",\n                \"labels\": [\"Q1 Actual\", \"Q1 Target\", \"Q2 Actual\", \"Q2 Target\", \"Q3 Actual\", \"Q3 Target\", \"Q4 Actual\", \"Q4 Target\"],\n                \"datasets\": [\n                  {\n                    \"label\": \"Revenue (Thousands USD)\",\n                    \"data\": [98.2, 95.0, 110.5, 105.0, 124.8, 115.0, 142.0, 130.0]\n                  }\n                ]\n              }\n            ]\n          }\n        ]\n      }\n    ]\n  }\n}\n</a2ui-json>"
+}

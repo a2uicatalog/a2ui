@@ -1,0 +1,31 @@
+{
+ "task": "T6",
+ "condition": "JG",
+ "label": "jev-picks-on-tag-slice__express__haiku-4-5__run2",
+ "agent_type": "jev-narrowed",
+ "catalogue": "JG-T6.json",
+ "atoms_in_catalogue": 13,
+ "prompt_chars": 8746,
+ "slot_recall": [
+  2,
+  2
+ ],
+ "secs": 4.5,
+ "usage": {
+  "input_tokens": 2428,
+  "output_tokens": 404
+ },
+ "valid": false,
+ "error": "A2uiCompilationValidationError: Standalone function calls are not supported in A2UI v0.9.1 - Help: Please correct the syntax error in your Express DSL.",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "flashcard deck": false,
+   "progress indicator": false
+  }
+ },
+ "reply": "<a2ui>\nprogress_store(course_id=\"vocabulary-flashcards\")\n\nvocabulary_cards = [\n  {front: \"Serendipity\", back: \"The occurrence of events by chance in a happy or beneficial way\"},\n  {front: \"Ephemeral\", back: \"Lasting for a very short time\"},\n  {front: \"Eloquent\", back: \"Fluent or persuasive in speaking or writing\"},\n  {front: \"Ubiquitous\", back: \"Present, appearing, or found everywhere\"},\n  {front: \"Pragmatic\", back: \"Dealing with things in a realistic and practical way\"},\n  {front: \"Melancholy\", back: \"A feeling of pensive sadness, typically with no obvious cause\"},\n  {front: \"Diligent\", back: \"Having or showing care in one's work or duties\"},\n  {front: \"Ambiguous\", back: \"Open to more than one interpretation; unclear\"},\n  {front: \"Nostalgia\", back: \"A sentimental longing for the past\"},\n  {front: \"Tenacious\", back: \"Holding firmly to something; persistent and determined\"}\n]\n\nroot = columns(1, gap=\"2rem\", items=[\n  {\n    blocks: [\n      heading(\"Vocabulary Flashcards\"),\n      progress_bar(value=0, label=\"Cards Reviewed\", show_percent=true, caption=\"Review all 10 cards to master these terms\"),\n      flashcard_deck(\n        cards=vocabulary_cards,\n        accent=\"#4f46e5\",\n        label_front=\"WORD\",\n        label_back=\"DEFINITION\"\n      )\n    ]\n  }\n])\n</a2ui>"
+}

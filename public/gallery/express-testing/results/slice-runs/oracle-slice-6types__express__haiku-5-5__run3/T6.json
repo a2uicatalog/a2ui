@@ -1,0 +1,42 @@
+{
+ "task": "T6",
+ "condition": "D_haiku-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "oracle-slice-6types__express__haiku-5-5__run3",
+ "agent_type": "T6",
+ "catalogue": "D-t6.json",
+ "atoms_in_catalogue": 12,
+ "prompt_chars": 8305,
+ "slot_recall": [
+  2,
+  2
+ ],
+ "secs": 8.7,
+ "usage": {
+  "input_tokens": 3043,
+  "output_tokens": 1856
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "heading",
+  "progress_bar",
+  "flashcard_deck",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.5,
+  "recall": 1.0,
+  "f1": 0.667,
+  "slot_hits": {
+   "flashcard deck": true,
+   "progress indicator": true
+  }
+ },
+ "reply": "<a2ui>\nheading_title = heading(\"Vocabulary Flashcards\")\n\nreview_progress = progress_bar(value=0, label=\"Cards reviewed\", accent=\"#4f46e5\", show_percent=true, caption=\"0 of 10 cards reviewed\")\n\nvocab_deck = flashcard_deck(\n  cards=[\n    {front: \"Ephemeral\", back: \"Lasting for a very short time\"},\n    {front: \"Ubiquitous\", back: \"Present or found everywhere\"},\n    {front: \"Lucid\", back: \"Clear and easy to understand\"},\n    {front: \"Candid\", back: \"Truthful and straightforward; frank\"},\n    {front: \"Meticulous\", back: \"Showing great attention to detail\"},\n    {front: \"Resilient\", back: \"Able to recover quickly from difficulties\"},\n    {front: \"Ambiguous\", back: \"Open to more than one interpretation\"},\n    {front: \"Eloquent\", back: \"Fluent and persuasive in speech or writing\"},\n    {front: \"Pragmatic\", back: \"Dealing with things sensibly and realistically\"},\n    {front: \"Tenacious\", back: \"Holding firmly to a purpose; persistent\"}\n  ],\n  accent=\"#4f46e5\",\n  label_front=\"WORD\",\n  label_back=\"MEANING\"\n)\n\nroot = columns(\n  cols=2,\n  gap=\"1.5rem\",\n  align=\"top\",\n  items=[\n    {blocks: [heading_title, review_progress]},\n    {blocks: [vocab_deck]}\n  ]\n)\n</a2ui>"
+}

@@ -1,0 +1,45 @@
+{
+ "task": "T3",
+ "condition": "C_gemini-3.5-flash",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash",
+ "hints": false,
+ "label": "oracle-slice-3types__express__gemini-3.5-flash__thinking-on_first-run-timing-invalid__run3",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "C-marketing-commerce.json",
+ "atoms_in_catalogue": 23,
+ "prompt_chars": 12467,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 29.4,
+ "usage": {
+  "input_tokens": 3412,
+  "output_tokens": 5861
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "gradient_hero",
+  "feature_grid",
+  "testimonial_card",
+  "shimmer_button",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.8,
+  "recall": 1.0,
+  "f1": 0.889,
+  "slot_hits": {
+   "hero": true,
+   "feature columns (x3)": true,
+   "testimonial": true,
+   "CTA": true
+  }
+ },
+ "reply": "<a2ui>\nhero = gradient_hero(\n    \"Empower Your Workflow\",\n    \"Streamline your operations, automate repetitive tasks, and boost team productivity with our all-in-one platform.\",\n    \"Introducing Version 2.0\",\n    null,\n    null,\n    null,\n    \"center\",\n    \"Try it Free\",\n    \"https://example.com/signup\"\n)\n\nfeatures = feature_grid(\n    \"Engineered for Modern Teams\",\n    \"Everything you need to collaborate, execute, and deliver high-quality results, faster.\",\n    3,\n    [\n        {\"icon\": \"\u26a1\", \"title\": \"Lightning Fast\", \"description\": \"Real-time collaboration updates and sub-millisecond response times globally.\"},\n        {\"icon\": \"\ud83d\udd12\", \"title\": \"Enterprise Security\", \"description\": \"Bank-grade encryption, role-based access control, and complete compliance standards.\"},\n        {\"icon\": \"\ud83d\udcc8\", \"title\": \"Scale Effortlessly\", \"description\": \"Built on globally distributed edge networks to seamlessly handle any scale.\"}\n    ]\n)\n\ntestimonial = testimonial_card(\n    \"This platform has completely transformed how our engineering team operates. We went from deploying weekly to multiple times a day with zero friction.\",\n    \"Sarah Jenkins\",\n    \"VP of Engineering, CloudScale\",\n    \"https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150\",\n    5\n)\n\ncta = shimmer_button(\n    \"Get Started Now\",\n    \"https://example.com/signup\",\n    \"lg\",\n    \"#38bdf8\",\n    \"#1e293b\",\n    \"normal\",\n    \"No credit card required. Start your 14-day free trial instantly.\"\n)\n\nroot = columns(\n    1,\n    \"3rem\",\n    \"stretch\",\n    [\n        {\n            \"blocks\": [\n                hero,\n                features,\n                testimonial,\n                cta\n            ]\n        }\n    ]\n)\n</a2ui>"
+}

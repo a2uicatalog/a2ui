@@ -1,0 +1,127 @@
+{
+ "label": "oracle-slice-3types__express__gemini-3.5-flash-lite__first-run-timing-invalid__run1",
+ "task": "T4",
+ "format": "express",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "1rem",
+      "items": [
+       {
+        "blocks": [
+         "_inline_1",
+         "_inline_2",
+         "_inline_3",
+         "_inline_4"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "_inline_1",
+      "component": "heading",
+      "text": "Project Tasks & Deliverables"
+     },
+     {
+      "id": "_inline_2",
+      "component": "body",
+      "text": "Filter and review current project deliverables and their statuses."
+     },
+     {
+      "id": "_inline_3",
+      "component": "segmented_control",
+      "options": [
+       {
+        "label": "All",
+        "value": "all"
+       },
+       {
+        "label": "In Progress",
+        "value": "in_progress"
+       },
+       {
+        "label": "Completed",
+        "value": "completed"
+       },
+       {
+        "label": "Pending",
+        "value": "pending"
+       }
+      ],
+      "selected_value": "all",
+      "name": "status_filter"
+     },
+     {
+      "id": "_inline_4",
+      "component": "entity_list",
+      "items": [
+       {
+        "name": "Design System Migration",
+        "subtitle": "Convert legacy CSS to Tailwind tokens",
+        "status": "In Progress",
+        "meta": "Due in 3 days"
+       },
+       {
+        "name": "API Authentication Refactor",
+        "subtitle": "Implement OAuth2 refresh token rotation",
+        "status": "Completed",
+        "meta": "Finished yesterday"
+       },
+       {
+        "name": "User Onboarding Flow",
+        "subtitle": "Add interactive tooltips for first-time users",
+        "status": "Pending",
+        "meta": "Scheduled for next sprint"
+       },
+       {
+        "name": "Performance Optimization",
+        "subtitle": "Reduce bundle size below 200kb",
+        "status": "In Progress",
+        "meta": "Ongoing"
+       },
+       {
+        "name": "Billing Dashboard v2",
+        "subtitle": "Integrate Stripe subscription management",
+        "status": "Pending",
+        "meta": "Blocked on API specs"
+       },
+       {
+        "name": "Automated Test Suite",
+        "subtitle": "Achieve 80% code coverage on core modules",
+        "status": "Completed",
+        "meta": "Finished 2 days ago"
+       },
+       {
+        "name": "Security Audit Remediation",
+        "subtitle": "Address medium vulnerability alerts in dependencies",
+        "status": "In Progress",
+        "meta": "Due Friday"
+       },
+       {
+        "name": "Mobile Responsive Polish",
+        "subtitle": "Fix table overflow on smaller viewports",
+        "status": "Completed",
+        "meta": "Finished last week"
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

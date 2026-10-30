@@ -1,0 +1,98 @@
+{
+ "label": "full-catalogue__express__haiku-5-5__run3",
+ "task": "T6",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/a-full.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "heading_block",
+      "component": "heading",
+      "text": "French Vocabulary"
+     },
+     {
+      "id": "progress",
+      "component": "progress_bar",
+      "value": 0,
+      "label": "Cards reviewed",
+      "caption": "0 of 10 reviewed",
+      "accent": "#4f46e5",
+      "show_percent": true
+     },
+     {
+      "id": "deck",
+      "component": "flashcard_deck",
+      "cards": [
+       {
+        "front": "bonjour",
+        "back": "hello"
+       },
+       {
+        "front": "merci",
+        "back": "thank you"
+       },
+       {
+        "front": "au revoir",
+        "back": "goodbye"
+       },
+       {
+        "front": "s'il vous pla\u00eet",
+        "back": "please"
+       },
+       {
+        "front": "maison",
+        "back": "house"
+       },
+       {
+        "front": "eau",
+        "back": "water"
+       },
+       {
+        "front": "livre",
+        "back": "book"
+       },
+       {
+        "front": "chat",
+        "back": "cat"
+       },
+       {
+        "front": "manger",
+        "back": "to eat"
+       },
+       {
+        "front": "heureux",
+        "back": "happy"
+       }
+      ],
+      "accent": "#4f46e5",
+      "label_front": "FRENCH",
+      "label_back": "ENGLISH"
+     },
+     {
+      "id": "root",
+      "component": "color_section",
+      "accent": "#4f46e5",
+      "style": "light",
+      "padding": "24px",
+      "blocks": [
+       "heading_block",
+       "progress",
+       "deck"
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

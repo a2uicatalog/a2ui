@@ -1,0 +1,45 @@
+{
+ "task": "T3",
+ "condition": "C_haiku-5-5H2",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": true,
+ "label": "oracle-slice-3types__express__haiku-5-5__hints-v2__run2",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "C-marketing-commerce.json",
+ "atoms_in_catalogue": 23,
+ "prompt_chars": 12467,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 9.0,
+ "usage": {
+  "input_tokens": 4812,
+  "output_tokens": 1886
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "gradient_hero",
+  "feature_grid",
+  "blockquote_with_avatar",
+  "cta_button",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.8,
+  "recall": 1.0,
+  "f1": 0.889,
+  "slot_hits": {
+   "hero": true,
+   "feature columns (x3)": true,
+   "testimonial": true,
+   "CTA": true
+  }
+ },
+ "reply": "<a2ui>\nhero = gradient_hero(\"Ship faster with Acme\", \"Acme gives your team one place to plan, build, and launch.\", \"New\", \"#4f46e5\", \"#8b5cf6\", null, \"center\", \"Start free trial\", \"https://example.com/signup\")\n\nfeatures = feature_grid(\"Why teams choose Acme\", \"Everything you need to go from idea to launch.\", 3, [{icon: \"\u26a1\", title: \"Fast setup\", description: \"Connect your repos and start shipping in minutes.\", color: \"#4f46e5\"}, {icon: \"\ud83d\udd12\", title: \"Secure by default\", description: \"Role-based access and audit logs come built in.\", color: \"#4f46e5\"}, {icon: \"\ud83d\udcc8\", title: \"Clear insights\", description: \"Track progress across every project in real time.\", color: \"#4f46e5\"}])\n\ntestimonial = blockquote_with_avatar(\"Acme cut our release time in half.\", \"Jordan Lee\", \"VP Engineering, Northwind\", \"https://example.com/avatars/jordan.jpg\")\n\ncta = cta_button(\"https://example.com/signup\", \"Get started free\", \"#4f46e5\")\n\nroot = columns(1, \"2rem\", \"stretch\", [{blocks: [hero, features, testimonial, cta]}])\n</a2ui>"
+}

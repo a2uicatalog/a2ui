@@ -1,0 +1,106 @@
+{
+ "label": "oracle-slice-6types__express__haiku-4-5__temp0__hints-v2__run2",
+ "task": "T4",
+ "format": "express",
+ "model_id": "claude-haiku-4-5-20251001",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/d-t4.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "filter_control",
+      "component": "segmented_control",
+      "options": [
+       {
+        "label": "All",
+        "value": "all"
+       },
+       {
+        "label": "Active",
+        "value": "active"
+       },
+       {
+        "label": "Inactive",
+        "value": "inactive"
+       },
+       {
+        "label": "Pending",
+        "value": "pending"
+       }
+      ],
+      "selected_value": "all",
+      "name": "status_filter"
+     },
+     {
+      "id": "list_display",
+      "component": "entity_list",
+      "items": [
+       {
+        "name": "Item One",
+        "status": "active",
+        "meta": "Detail line for item one"
+       },
+       {
+        "name": "Item Two",
+        "status": "inactive",
+        "meta": "Detail line for item two"
+       },
+       {
+        "name": "Item Three",
+        "status": "pending",
+        "meta": "Detail line for item three"
+       },
+       {
+        "name": "Item Four",
+        "status": "active",
+        "meta": "Detail line for item four"
+       },
+       {
+        "name": "Item Five",
+        "status": "inactive",
+        "meta": "Detail line for item five"
+       },
+       {
+        "name": "Item Six",
+        "status": "pending",
+        "meta": "Detail line for item six"
+       },
+       {
+        "name": "Item Seven",
+        "status": "active",
+        "meta": "Detail line for item seven"
+       },
+       {
+        "name": "Item Eight",
+        "status": "inactive",
+        "meta": "Detail line for item eight"
+       }
+      ]
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "items": [
+       {
+        "blocks": [
+         "filter_control",
+         "list_display"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

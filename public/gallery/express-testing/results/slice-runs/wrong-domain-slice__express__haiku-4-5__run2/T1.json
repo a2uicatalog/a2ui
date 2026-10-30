@@ -1,0 +1,34 @@
+{
+ "task": "T1",
+ "condition": "E",
+ "label": "wrong-domain-slice__express__haiku-4-5__run2",
+ "agent_type": "Data display",
+ "catalogue": "B-data-display.json",
+ "atoms_in_catalogue": 248,
+ "prompt_chars": 125436,
+ "slot_recall": [
+  3,
+  5
+ ],
+ "secs": 10.0,
+ "usage": {
+  "input_tokens": 36031,
+  "output_tokens": 983
+ },
+ "valid": false,
+ "error": "A2uiCompilationParseError: Failed to parse expression: Syntax error at line 15:15: mismatched input '=' expecting ':' (line 15) - Line 15, Col 15 - Help: Please correct the syntax error in your Express DSL.",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "title": false,
+   "concept sections (x3)": false,
+   "worked example": false,
+   "3-question quiz": false,
+   "quiz result": false
+  }
+ },
+ "reply": "<a2ui>\nroot = color_section(\n  accent=\"#4f46e5\",\n  style=\"tint\",\n  blocks=[\n    article_hero(\n      title=\"The Water Cycle\",\n      subtitle=\"Understanding Earth's continuous movement of water\",\n      image_url=\"https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?w=1200&h=400&fit=crop\"\n    ),\n    heading(\"Key Concepts\"),\n    columns(\n      cols=3,\n      gap=\"2rem\",\n      items=[\n        {blocks=[\n          highlight_box(\n            title=\"Evaporation\",\n            text=\"Water from oceans, lakes, and rivers transforms into water vapor through heat from the sun. This invisible vapor rises into the atmosphere.\",\n            icon=\"\u2600\ufe0f\",\n            accent=\"#3b82f6\"\n          )\n        ]},\n        {blocks=[\n          highlight_box(\n            title=\"Condensation\",\n            text=\"As water vapor rises and cools in the upper atmosphere, it transforms back into liquid water droplets. These form clouds and fog.\",\n            icon=\"\u2601\ufe0f\",\n            accent=\"#06b6d4\"\n          )\n        ]},\n        {blocks=[\n          highlight_box(\n            title=\"Precipitation & Collection\",\n            text=\"Water droplets combine to form clouds, which become heavy and fall as rain, snow, or sleet. Water collects in oceans, lakes, and groundwater.\",\n            icon=\"\ud83c\udf27\ufe0f\",\n            accent=\"#10b981\"\n          )\n        ]}\n      ]\n    ),\n    spacer(height=\"2rem\"),\n    heading(\"Worked Example\"),\n    two_tone_card(\n      title=\"A Day in the Water Cycle\",\n      subtitle=\"Follow one water molecule's journey\",\n      icon=\"\ud83d\udca7\",\n      accent=\"#4f46e5\",\n      blocks=[\n        body(\"A water molecule starts in the Pacific Ocean on a sunny morning. The sun's heat causes it to evaporate, transforming into water vapor and rising into the atmosphere.\"),\n        spacer(height=\"1rem\"),\n        body(\"After several hours of rising, the temperature drops. The water vapor cools and condenses into a tiny droplet, joining millions of others to form a fluffy cumulus cloud.\"),\n        spacer(height=\"1rem\"),\n        body(\"The cloud drifts eastward for two days, growing heavier as more droplets accumulate. Eventually, the droplets merge and become too heavy to float.\"),\n        spacer(height=\"1rem\"),\n        body(\"Precipitation begins. The water falls as rain over the Sierra Nevada mountains. Some soaks into the ground as groundwater, some flows into rivers, and some is absorbed by trees.\"),\n        spacer(height=\"1rem\"),\n        body(\"The river carries water back toward the ocean, completing the cycle and beginning it again.\")\n      ]\n    ),\n    spacer(height=\"2rem\"),\n    heading(\"Self-Check Quiz\"),\n    faq_accordion(\n      items=[\n        {\n          question=\"Question 1: What is the primary energy source that drives the water cycle?\",\n          answer=\"The sun is the primary energy source. Solar radiation heats water in oceans, lakes, and rivers, causing evaporation. This heat energy is essential for transforming liquid water into water vapor.\"\n        },\n        {\n          question=\"Question 2: In what order do the three main processes of the water cycle occur?\",\n          answer=\"The three main processes occur in this order: (1) Evaporation\u2014water transforms into vapor and rises, (2) Condensation\u2014water vapor cools and becomes liquid droplets forming clouds, (3) Precipitation\u2014water falls as rain, snow, or sleet and collects in bodies of water.\"\n        },\n        {\n          question=\"Question 3: Where does most of Earth's water evaporate from?\",\n          answer=\"Most of Earth's water evaporates from the oceans. Oceans cover approximately 71% of Earth's surface and contain about 97% of the planet's water, making them the largest source of evaporation in the water cycle.\"\n        }\n      ]\n    )\n  ]\n)\n</a2ui>"
+}

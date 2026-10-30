@@ -1,0 +1,111 @@
+{
+ "label": "oracle-slice-3types__json__haiku-4-5__temp0__run1",
+ "task": "T2",
+ "format": "json",
+ "model_id": "claude-haiku-4-5-20251001",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "metrics-overview",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "metrics-overview",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "1.5rem",
+      "items": [
+       {
+        "blocks": [
+         {
+          "id": "kpi-1",
+          "component": "metric_delta",
+          "label": "Revenue",
+          "current_value": "$245,680",
+          "delta_value": "+12.5%",
+          "delta_type": "increase",
+          "unit": "USD",
+          "previous_period_label": "vs. last month"
+         },
+         {
+          "id": "kpi-2",
+          "component": "metric_delta",
+          "label": "Customer Acquisition",
+          "current_value": "1,240",
+          "delta_value": "+8.3%",
+          "delta_type": "increase",
+          "previous_period_label": "vs. last month"
+         }
+        ]
+       },
+       {
+        "blocks": [
+         {
+          "id": "kpi-3",
+          "component": "metric_delta",
+          "label": "Churn Rate",
+          "current_value": "2.1%",
+          "delta_value": "-0.4%",
+          "delta_type": "decrease",
+          "previous_period_label": "vs. last month"
+         },
+         {
+          "id": "kpi-4",
+          "component": "metric_delta",
+          "label": "Avg. Session Duration",
+          "current_value": "8m 32s",
+          "delta_value": "+1m 15s",
+          "delta_type": "increase",
+          "previous_period_label": "vs. last month"
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "id": "chart-section",
+      "component": "heading",
+      "text": "Performance Comparison"
+     },
+     {
+      "id": "comparison-chart",
+      "component": "chartjs_bar",
+      "labels": [
+       "Week 1",
+       "Week 2",
+       "Week 3",
+       "Week 4"
+      ],
+      "datasets": [
+       {
+        "label": "Target",
+        "data": [
+         85,
+         88,
+         82,
+         90
+        ]
+       },
+       {
+        "label": "Actual",
+        "data": [
+         78,
+         92,
+         79,
+         95
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

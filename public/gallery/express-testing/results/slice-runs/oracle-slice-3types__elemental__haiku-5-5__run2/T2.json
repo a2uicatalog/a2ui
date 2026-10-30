@@ -1,0 +1,42 @@
+{
+ "task": "T2",
+ "condition": "CX_haiku-5-5",
+ "temperature_applied": false,
+ "format": "elemental",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "oracle-slice-3types__elemental__haiku-5-5__run2",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 16829,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 5.7,
+ "usage": {
+  "input_tokens": 6745,
+  "output_tokens": 1209
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "heading",
+  "metric_row",
+  "chartjs_bar"
+ ],
+ "score": {
+  "precision": 0.667,
+  "recall": 0.667,
+  "f1": 0.667,
+  "slot_hits": {
+   "KPI tile (x4)": true,
+   "trend (required only if metric_row was chosen; stat_card's own delta already satisfies it)": false,
+   "comparison chart": true
+  }
+ },
+ "reply": "<a2ui>\n<body id=\"root\">\n  <ui-heading id=\"metrics-heading\" text=\"Metrics Overview\" />\n\n  <ui-metric_row id=\"kpi-tiles\" cols=\"{4}\">\n    <script type=\"application/json\" slot=\"metrics\">[\n      {\"value\": \"12,480\", \"label\": \"Total Users\", \"trend\": \"up\", \"sub\": \"vs. last month\"},\n      {\"value\": \"$84.2K\", \"label\": \"Revenue\", \"prefix\": \"$\", \"trend\": \"up\", \"sub\": \"vs. last month\"},\n      {\"value\": \"3.8%\", \"label\": \"Churn Rate\", \"trend\": \"down\", \"sub\": \"vs. last month\"},\n      {\"value\": \"142ms\", \"label\": \"Avg Response\", \"trend\": \"down\", \"sub\": \"vs. last month\"}\n    ]</script>\n  </ui-metric_row>\n\n  <ui-chartjs_bar id=\"comparison-chart\">\n    <script type=\"application/json\" slot=\"labels\">[\"Jan\", \"Feb\", \"Mar\", \"Apr\", \"May\", \"Jun\"]</script>\n    <script type=\"application/json\" slot=\"datasets\">[\n      {\"label\": \"This Year\", \"data\": [820, 932, 901, 934, 1290, 1330]},\n      {\"label\": \"Last Year\", \"data\": [720, 810, 850, 880, 990, 1100]}\n    ]</script>\n  </ui-chartjs_bar>\n</body>\n</a2ui>"
+}

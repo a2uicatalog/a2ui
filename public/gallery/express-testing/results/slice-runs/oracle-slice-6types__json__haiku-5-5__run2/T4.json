@@ -1,0 +1,40 @@
+{
+ "task": "T4",
+ "condition": "DN_haiku-5-5",
+ "temperature_applied": false,
+ "format": "json",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "oracle-slice-6types__json__haiku-5-5__run2",
+ "agent_type": "T4",
+ "catalogue": "D-t4.json",
+ "atoms_in_catalogue": 20,
+ "prompt_chars": 21258,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 15.5,
+ "usage": {
+  "input_tokens": 8261,
+  "output_tokens": 3283
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns"
+ ],
+ "score": {
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "list": false,
+   "status indicator": false,
+   "filter control": false
+  }
+ },
+ "reply": "The brief maps to a two-column layout: a heading and status filter on the left, and a sortable table of the eight items on the right. The catalog has no filter function, so the segmented control records the selected status but does not yet hide rows. The client needs to wire that behavior.\n\n<a2ui-json>\n[\n  {\n    \"version\": \"v0.9\",\n    \"createSurface\": {\n      \"surfaceId\": \"work_items\",\n      \"catalogId\": \"https://a2uicatalog.ai/catalog/d-t4.json\"\n    }\n  },\n  {\n    \"version\": \"v0.9\",\n    \"updateComponents\": {\n      \"surfaceId\": \"work_items\",\n      \"components\": [\n        {\n          \"id\": \"root\",\n          \"component\": \"columns\",\n          \"cols\": 2,\n          \"gap\": \"1.5rem\",\n          \"align\": \"top\",\n          \"items\": [\n            {\n              \"blocks\": [\n                {\n                  \"id\": \"items_heading\",\n                  \"component\": \"heading\",\n                  \"text\": \"Work items\"\n                },\n                {\n                  \"id\": \"status_filter\",\n                  \"component\": \"segmented_control\",\n                  \"name\": \"status_filter\",\n                  \"selected_value\": \"all\",\n                  \"options\": \"[{\\\"label\\\":\\\"All\\\",\\\"value\\\":\\\"all\\\"},{\\\"label\\\":\\\"Open\\\",\\\"value\\\":\\\"open\\\"},{\\\"label\\\":\\\"In progress\\\",\\\"value\\\":\\\"in_progress\\\"},{\\\"label\\\":\\\"Blocked\\\",\\\"value\\\":\\\"blocked\\\"},{\\\"label\\\":\\\"Done\\\",\\\"value\\\":\\\"done\\\"}]\"\n                }\n              ]\n            },\n            {\n              \"blocks\": [\n                {\n                  \"id\": \"items_table\",\n                  \"component\": \"data_table_sortable\",\n                  \"headers\": [\"Title\", \"Status\", \"Detail\"],\n                  \"rows\": [\n                    [\"Login API migration\", \"In progress\", \"Token refresh endpoints moved to new auth service\"],\n                    [\"Invoice export\", \"Done\", \"CSV export verified against finance sample\"],\n                    [\"Mobile push alerts\", \"Blocked\", \"Waiting on APNs certificate renewal\"],\n                    [\"Search indexing\", \"Open\", \"Reindex job scheduled for nightly run\"],\n                    [\"Billing webhook retries\", \"In progress\", \"Exponential backoff added, tests pending\"],\n                    [\"Onboarding copy review\", \"Open\", \"Draft copy sent to legal for sign-off\"],\n                    [\"Dashboard charts\", \"Done\", \"Chart library upgraded and visual QA passed\"],\n                    [\"Audit log retention\", \"Blocked\", \"Storage policy decision needed from security\"]\n                  ]\n                }\n              ]\n            }\n          ]\n        }\n      ]\n    }\n  }\n]\n</a2ui-json>"
+}

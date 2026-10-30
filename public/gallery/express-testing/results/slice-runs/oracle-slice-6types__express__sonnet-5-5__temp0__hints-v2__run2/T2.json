@@ -1,0 +1,47 @@
+{
+ "task": "T2",
+ "condition": "DT_sonnet-5-5H2",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-sonnet-5-5",
+ "hints": true,
+ "label": "oracle-slice-6types__express__sonnet-5-5__temp0__hints-v2__run2",
+ "agent_type": "T2",
+ "catalogue": "D-t2.json",
+ "atoms_in_catalogue": 16,
+ "prompt_chars": 10550,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 12.3,
+ "usage": {
+  "input_tokens": 4301,
+  "output_tokens": 964
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "stat_card",
+  "stat_card",
+  "stat_card",
+  "stat_card",
+  "heading",
+  "heading",
+  "chartjs_bar",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.625,
+  "recall": 1.0,
+  "f1": 0.769,
+  "slot_hits": {
+   "KPI tile (x4)": true,
+   "trend (required only if metric_row was chosen; stat_card's own delta already satisfies it)": true,
+   "comparison chart": true
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"metrics-overview\")\nkpi1 = stat_card(\"$128.4K\", \"Monthly Revenue\", \"+12.5%\", true, \"#22c55e\")\nkpi2 = stat_card(\"8,420\", \"Active Users\", \"+6.1%\", true, \"#3b82f6\")\nkpi3 = stat_card(\"3.2%\", \"Churn Rate\", \"-0.4%\", false, \"#ef4444\")\nkpi4 = stat_card(\"94\", \"Support Satisfaction\", \"-2.0%\", false, \"#f59e0b\")\ntitle = heading(\"Metrics Overview\")\nchartTitle = heading(\"This Year vs. Last Year: Revenue by Quarter\")\nchart = chartjs_bar([\"Q1\", \"Q2\", \"Q3\", \"Q4\"], [{label: \"This year\", data: [95, 108, 121, 128]}, {label: \"Last year\", data: [82, 90, 99, 110]}])\nroot = columns(2, \"1.5rem\", \"top\", [{blocks: [title, kpi1, kpi2, kpi3, kpi4]}, {blocks: [chartTitle, chart]}])\n</a2ui>"
+}

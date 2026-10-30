@@ -1,0 +1,17 @@
+{
+ "task": "T6",
+ "condition": "CT",
+ "original_label": "oracle-slice-3types__express__haiku-4-5__temp0__run2",
+ "original_error": "A2uiCompilationValidationError: Property 'front_content' of component 'flip_card' does not support dynamic data bindings (paths). - Help: Property 'front_content' on 'flip_card' must be a static literal value, not a dynamic databinding ($path).",
+ "repaired_valid": false,
+ "produced": [],
+ "f1_after": 0,
+ "prompt_chars": 7089,
+ "attempts": 1,
+ "usage": {
+  "input_tokens": 1970,
+  "output_tokens": 394
+ },
+ "reply": "<a2ui>\n$/reviewed_count = 0\n$/total_cards = 10\n\ncards_data = [\n  {front: \"Serendipity\", back: \"The occurrence of events by chance in a happy or beneficial way\"},\n  {front: \"Ephemeral\", back: \"Lasting for a very short time; transitory\"},\n  {front: \"Eloquent\", back: \"Fluent or persuasive in speaking or writing\"},\n  {front: \"Ubiquitous\", back: \"Present, appearing, or found everywhere\"},\n  {front: \"Pragmatic\", back: \"Dealing with things in a practical, realistic way based on actual circumstances\"},\n  {front: \"Melancholy\", back: \"A feeling of pensive sadness, typically with no obvious cause\"},\n  {front: \"Benevolent\", back: \"Kind, generous, and charitable in nature\"},\n  {front: \"Cacophony\", back: \"A harsh, discordant mixture of sounds\"},\n  {front: \"Diligent\", back: \"Having or showing care in one's work or duties\"},\n  {front: \"Nostalgia\", back: \"A sentimental longing for the past, typically for a period or place with happy associations\"}\n]\n\ncard_template = flip_card(\"$front\", \"$back\", true)\n\nroot = [\n  page_header(\"Vocabulary Flashcards\", \"Review 10 essential vocabulary words\", icon=\"\ud83d\udcda\"),\n  progress_bar($/reviewed_count, \"Cards Reviewed\", accent=\"#4f46e5\", show_percent=true),\n  _template(cards_data, card_template)\n]\n</a2ui>",
+ "final_error": "A2uiCompilationParseError: Root target 'root' is not defined. - Help: Ensure root component 'root' is assigned in your Express DSL."
+}

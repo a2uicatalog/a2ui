@@ -1,0 +1,126 @@
+{
+ "label": "oracle-slice-3types__express__gemini-3.5-flash-lite__request-only-timing__run3",
+ "task": "T6",
+ "format": "express",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "flashcard-study-surface",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "flashcard-study-surface",
+    "components": [
+     {
+      "id": "header",
+      "component": "page_header",
+      "title": "Vocabulary Flashcards",
+      "subtitle": "Flip through the cards to test your knowledge and track your progress.",
+      "icon": "\ud83d\udcda",
+      "tag": "Study Mode",
+      "accent": "#4f46e5"
+     },
+     {
+      "id": "progress",
+      "component": "progress_bar",
+      "value": 40,
+      "label": "Cards Reviewed",
+      "accent": "#4f46e5",
+      "show_percent": true,
+      "caption": "4 of 10 cards reviewed"
+     },
+     {
+      "id": "deck",
+      "component": "flashcard_deck",
+      "cards": [
+       {
+        "front": "Ephemeral",
+        "back": "Lasting for a very short time."
+       },
+       {
+        "front": "Serendipity",
+        "back": "Finding valuable things by chance rather than design."
+       },
+       {
+        "front": "Mellifluous",
+        "back": "Sweet or musical; pleasant to hear."
+       },
+       {
+        "front": "Petrichor",
+        "back": "A pleasant smell that frequently accompanies the first rain after a long period of warm, dry weather."
+       },
+       {
+        "front": "Ineffable",
+        "back": "Too great or extreme to be expressed or described in words."
+       },
+       {
+        "front": "Cynosure",
+        "back": "A person or thing that is the center of attention."
+       },
+       {
+        "front": "Lethologica",
+        "back": "The inability to remember a particular word you want to use."
+       },
+       {
+        "front": "Nebulous",
+        "back": "Inclearly defined, hazy, or vague."
+       },
+       {
+        "front": "Panacea",
+        "back": "A solution or remedy for all difficulties or diseases."
+       },
+       {
+        "front": "Sempiternal",
+        "back": "Eternal and unchanging; everlasting."
+       }
+      ],
+      "accent": "#4f46e5",
+      "label_front": "TERM",
+      "label_back": "DEFINITION"
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "1.5rem",
+      "items": [
+       {
+        "blocks": [
+         "header"
+        ]
+       },
+       {
+        "blocks": [
+         "progress"
+        ]
+       },
+       {
+        "blocks": [
+         "deck"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_data_model": {
+    "surface_id": "flashcard-study-surface",
+    "path": "/",
+    "value": {
+     "vocab": {
+      "reviewed_count": 0,
+      "total_count": 10
+     }
+    }
+   }
+  }
+ ]
+}

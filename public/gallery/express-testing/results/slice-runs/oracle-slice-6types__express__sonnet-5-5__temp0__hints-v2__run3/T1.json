@@ -1,0 +1,51 @@
+{
+ "task": "T1",
+ "condition": "DT_sonnet-5-5H2",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-sonnet-5-5",
+ "hints": true,
+ "label": "oracle-slice-6types__express__sonnet-5-5__temp0__hints-v2__run3",
+ "agent_type": "T1",
+ "catalogue": "D-t1.json",
+ "atoms_in_catalogue": 28,
+ "prompt_chars": 17769,
+ "slot_recall": [
+  5,
+  5
+ ],
+ "secs": 20.1,
+ "usage": {
+  "input_tokens": 6606,
+  "output_tokens": 2449
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "page_header",
+  "body",
+  "concept_rung",
+  "concept_rung",
+  "concept_rung",
+  "concept_rung",
+  "callout",
+  "heading",
+  "quiz_set",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.9,
+  "recall": 0.8,
+  "f1": 0.847,
+  "slot_hits": {
+   "title": true,
+   "concept sections (x3)": true,
+   "worked example": true,
+   "3-question quiz": true,
+   "quiz result": false
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"water-cycle-lesson\")\n\nheader = page_header(title=\"The Water Cycle\", subtitle=\"How water moves between the oceans, the air and the land, again and again\", icon=\"\ud83d\udca7\", tag=\"Earth Science\", accent=\"#0284c7\")\n\nintro = body(\"Water on Earth is never used up. It is recycled continuously by the Sun's energy and gravity. This lesson covers three key stages, then works through an example and ends with a short self-check.\")\n\nc1 = concept_rung(badge=\"1\", kind=\"depth\", title=\"Evaporation\", body=\"The Sun warms water in oceans, lakes and rivers. Heated water changes from a liquid into an invisible gas called `water vapor` and rises into the air.\\n\\nPlants add to this through *transpiration*, releasing water vapor from their leaves.\", takeaway=\"Heat from the Sun turns liquid water into vapor.\")\n\nc2 = concept_rung(badge=\"2\", kind=\"depth\", title=\"Condensation\", body=\"As water vapor rises it meets colder air and loses heat. The vapor changes back into tiny liquid droplets that cling to dust particles.\\n\\nBillions of these droplets gather to form clouds.\", takeaway=\"Cooling turns vapor into droplets, which form clouds.\")\n\nc3 = concept_rung(badge=\"3\", kind=\"depth\", title=\"Precipitation and Collection\", body=\"When cloud droplets merge and grow too heavy to stay aloft, they fall as rain, snow, sleet or hail. This is called `precipitation`.\\n\\nThe water then runs off into rivers, soaks into the ground, or fills lakes and oceans. This is collection, and it starts the cycle again.\", takeaway=\"Gravity pulls water back down, and the cycle restarts.\")\n\nex = concept_rung(badge=\"EX\", kind=\"example\", title=\"Worked Example: A Puddle on a Sunny Day\", body=\"After a rainstorm, a puddle sits on the pavement. Follow its water through the cycle:\\n\\nStep 1: By midday the Sun warms the puddle and its surface water evaporates into vapor.\\n\\nStep 2: The vapor rises and cools high in the sky, then condenses into cloud droplets.\\n\\nStep 3: Later the cloud grows heavy and drops rain far away, refilling a river that flows to the sea.\", code=\"puddle (liquid) -> evaporation -> vapor\\nvapor -> condensation -> cloud\\ncloud -> precipitation -> river -> sea\", code_caption=\"One possible path for the same water.\", takeaway=\"The same water can travel thousands of kilometres and return as rain.\")\n\ntip = callout(kind=\"tip\", title=\"Remember\", text=\"Evaporation needs heat, condensation needs cooling, and precipitation needs droplets heavy enough to fall.\")\n\nquizHeading = heading(\"Self-Check Quiz\")\n\nquiz = quiz_set(title=\"Water Cycle Check\", pass_score=67, accent=\"#0284c7\", questions=[{question: \"Which energy source drives evaporation in the water cycle?\", options: [\"The Moon\", \"The Sun\", \"Wind\", \"Ocean currents\"], correct: 1, explanation: \"The Sun's heat gives water molecules enough energy to become vapor.\"}, {question: \"What happens during condensation?\", options: [\"Liquid water turns into vapor\", \"Water falls from clouds\", \"Water vapor cools and becomes liquid droplets\", \"Water soaks into the ground\"], correct: 2, explanation: \"Cooling vapor changes back into liquid droplets, which form clouds.\"}, {question: \"Which of these is an example of precipitation?\", options: [\"Snow falling from a cloud\", \"A puddle drying up\", \"Fog forming over a lake\", \"A plant releasing vapor\"], correct: 0, explanation: \"Precipitation is any water that falls from clouds: rain, snow, sleet or hail.\"}])\n\nroot = columns(cols=2, gap=\"2rem\", align=\"top\", items=[{blocks: [header, intro, c1, c2, c3]}, {blocks: [ex, tip, quizHeading, quiz]}])\n</a2ui>"
+}

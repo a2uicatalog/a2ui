@@ -1,0 +1,118 @@
+{
+ "label": "oracle-slice-6types__express__haiku-5-5__run3",
+ "task": "T4",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/d-t4.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "filter_control",
+      "component": "segmented_control",
+      "options": [
+       {
+        "label": "All",
+        "value": "all"
+       },
+       {
+        "label": "Open",
+        "value": "open"
+       },
+       {
+        "label": "In progress",
+        "value": "in_progress"
+       },
+       {
+        "label": "Done",
+        "value": "done"
+       }
+      ],
+      "selected_value": "all",
+      "name": "status_filter"
+     },
+     {
+      "id": "title_block",
+      "component": "heading",
+      "text": "Work items"
+     },
+     {
+      "id": "item_list",
+      "component": "entity_list",
+      "items": [
+       {
+        "name": "Set up staging environment",
+        "subtitle": "Provision servers and network rules for the new staging stack.",
+        "status": "Open"
+       },
+       {
+        "name": "Migrate user database",
+        "subtitle": "Move records to the new schema and verify row counts.",
+        "status": "In progress"
+       },
+       {
+        "name": "Write API reference",
+        "subtitle": "Document all v2 endpoints with request and response examples.",
+        "status": "Open"
+       },
+       {
+        "name": "Fix login redirect bug",
+        "subtitle": "Users are sent to a 404 page after signing in via SSO.",
+        "status": "Done"
+       },
+       {
+        "name": "Update billing emails",
+        "subtitle": "Replace legacy templates with the new branded design.",
+        "status": "In progress"
+       },
+       {
+        "name": "Review security audit",
+        "subtitle": "Triage the findings from the third-party penetration test.",
+        "status": "Open"
+       },
+       {
+        "name": "Release notes for 2.4",
+        "subtitle": "Summarise features, fixes, and breaking changes for customers.",
+        "status": "Done"
+       },
+       {
+        "name": "Onboard new support hire",
+        "subtitle": "Create accounts, schedule training, and assign the starter queue.",
+        "status": "In progress"
+       }
+      ]
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "title_block",
+         "filter_control"
+        ]
+       },
+       {
+        "blocks": [
+         "item_list"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

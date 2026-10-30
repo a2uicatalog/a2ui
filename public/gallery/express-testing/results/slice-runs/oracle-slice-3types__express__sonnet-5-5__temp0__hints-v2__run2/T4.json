@@ -1,0 +1,44 @@
+{
+ "task": "T4",
+ "condition": "CT_sonnet-5-5H2",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-sonnet-5-5",
+ "hints": true,
+ "label": "oracle-slice-3types__express__sonnet-5-5__temp0__hints-v2__run2",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 16421,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 10.2,
+ "usage": {
+  "input_tokens": 6368,
+  "output_tokens": 1162
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "segmented_control",
+  "entity_list",
+  "columns",
+  "heading",
+  "heading"
+ ],
+ "score": {
+  "precision": 0.4,
+  "recall": 0.667,
+  "f1": 0.5,
+  "slot_hits": {
+   "list": true,
+   "status indicator": false,
+   "filter control": true
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"status-list\")\nfilter = segmented_control([{label: \"All\", value: \"all\"}, {label: \"Active\", value: \"active\"}, {label: \"Pending\", value: \"pending\"}, {label: \"Blocked\", value: \"blocked\"}, {label: \"Done\", value: \"done\"}], \"all\", \"status_filter\")\nlist = entity_list([{name: \"Migrate billing service\", subtitle: \"Moving invoices to the new ledger API\", status: \"Active\"}, {name: \"Update onboarding emails\", subtitle: \"Copy review is underway with marketing\", status: \"Pending\"}, {name: \"Fix SSO redirect loop\", subtitle: \"Waiting on identity provider fix\", status: \"Blocked\"}, {name: \"Publish Q3 report\", subtitle: \"Final PDF shared with stakeholders\", status: \"Done\"}, {name: \"Refactor search indexer\", subtitle: \"Cutting reindex time by about 40%\", status: \"Active\"}, {name: \"Renew TLS certificates\", subtitle: \"Scheduled for the next maintenance window\", status: \"Pending\"}, {name: \"Provision staging database\", subtitle: \"Blocked by missing cloud quota approval\", status: \"Blocked\"}, {name: \"Archive legacy logs\", subtitle: \"Retention job completed successfully\", status: \"Done\"}])\nroot = columns(2, \"1.5rem\", \"top\", [{blocks: [heading(\"Filter by status\"), filter]}, {blocks: [heading(\"Work items\"), list]}])\n</a2ui>\n\nThe catalog has no component with built-in list filtering that I could wire up. This layout puts a status filter (All, Active, Pending, Blocked, Done) next to the eight-item list. The filter is not connected to the list, so selecting a status will not hide any items."
+}

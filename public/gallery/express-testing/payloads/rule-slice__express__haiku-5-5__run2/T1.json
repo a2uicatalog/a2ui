@@ -1,0 +1,165 @@
+{
+ "label": "rule-slice__express__haiku-5-5__run2",
+ "task": "T1",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/b-learning.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "page",
+      "component": "page_header",
+      "title": "The Water Cycle",
+      "subtitle": "How water moves through air, land, and sea",
+      "icon": "\ud83d\udca7",
+      "tag": "Lesson 1",
+      "accent": "#0e7bb8",
+      "theme": "light"
+     },
+     {
+      "id": "evap_h",
+      "component": "heading",
+      "text": "1. Evaporation"
+     },
+     {
+      "id": "evap_b",
+      "component": "body",
+      "text": "Evaporation is the process by which liquid water turns into water vapour. The Sun heats water in oceans, lakes, and rivers, and the fastest-moving molecules escape into the air as a gas. Plants also release water vapour through their leaves, a process called transpiration."
+     },
+     {
+      "id": "cond_h",
+      "component": "heading",
+      "text": "2. Condensation"
+     },
+     {
+      "id": "cond_b",
+      "component": "body",
+      "text": "As water vapour rises, it cools. Cooler air holds less vapour, so the vapour changes back into tiny liquid droplets. These droplets gather around dust particles and form clouds, which is why clouds appear high in the sky."
+     },
+     {
+      "id": "precip_h",
+      "component": "heading",
+      "text": "3. Precipitation"
+     },
+     {
+      "id": "precip_b",
+      "component": "body",
+      "text": "When the droplets in a cloud grow large and heavy, they fall to the ground as rain, snow, sleet, or hail. Precipitation returns water to lakes, rivers, and oceans, and it soaks into the soil, where it can be taken up by plants or flow underground."
+     },
+     {
+      "id": "example_h",
+      "component": "heading",
+      "text": "Worked example: a puddle after rain"
+     },
+     {
+      "id": "example_b",
+      "component": "body",
+      "text": "Follow one puddle from a rainy afternoon to a dry sidewalk the next morning."
+     },
+     {
+      "id": "example_steps",
+      "component": "steps",
+      "items": [
+       {
+        "label": "Rain",
+        "text": "Rain falls and collects in a low spot on the sidewalk, forming a puddle."
+       },
+       {
+        "label": "Evaporation",
+        "text": "Warm sunlight heats the puddle, and water molecules at the surface escape as vapour."
+       },
+       {
+        "label": "Condensation",
+        "text": "The vapour rises, cools, and forms droplets that become part of a cloud."
+       },
+       {
+        "label": "Precipitation",
+        "text": "Later, those droplets may fall again as rain, completing the cycle."
+       }
+      ]
+     },
+     {
+      "id": "check_h",
+      "component": "heading",
+      "text": "Self-check"
+     },
+     {
+      "id": "check_quiz",
+      "component": "quiz_set",
+      "title": "Check your understanding",
+      "questions": [
+       {
+        "question": "What process turns liquid water into water vapour?",
+        "options": [
+         "Condensation",
+         "Precipitation",
+         "Evaporation",
+         "Infiltration"
+        ],
+        "correct": 2,
+        "explanation": "Evaporation is the change from liquid to vapour, driven mainly by heat from the Sun."
+       },
+       {
+        "question": "Why do clouds form as vapour rises?",
+        "options": [
+         "The vapour heats up and expands",
+         "The vapour cools and condenses into droplets",
+         "The vapour freezes into ice crystals at ground level",
+         "The vapour is pulled into the soil"
+        ],
+        "correct": 1,
+        "explanation": "Cooler air holds less vapour, so the vapour condenses into tiny droplets around dust particles."
+       },
+       {
+        "question": "Which of these is an example of precipitation?",
+        "options": [
+         "Sweat drying on skin",
+         "Dew forming on grass overnight",
+         "Snow falling from a cloud",
+         "Water boiling in a kettle"
+        ],
+        "correct": 2,
+        "explanation": "Precipitation is water falling from clouds as rain, snow, sleet, or hail."
+       }
+      ],
+      "pass_score": 70,
+      "accent": "#4f46e5"
+     },
+     {
+      "id": "root",
+      "component": "color_section",
+      "accent": "#4f46e5",
+      "style": "light",
+      "padding": "32px",
+      "grid": false,
+      "max_width": "900px",
+      "blocks": [
+       "page",
+       "evap_h",
+       "evap_b",
+       "cond_h",
+       "cond_b",
+       "precip_h",
+       "precip_b",
+       "example_h",
+       "example_b",
+       "example_steps",
+       "check_h",
+       "check_quiz"
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

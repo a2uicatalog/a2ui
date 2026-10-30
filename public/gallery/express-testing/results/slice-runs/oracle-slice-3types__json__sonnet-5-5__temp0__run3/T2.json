@@ -1,0 +1,40 @@
+{
+ "task": "T2",
+ "condition": "CTN_sonnet-5-5",
+ "temperature_applied": false,
+ "format": "json",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-sonnet-5-5",
+ "hints": false,
+ "label": "oracle-slice-3types__json__sonnet-5-5__temp0__run3",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 31546,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 19.1,
+ "usage": {
+  "input_tokens": 12376,
+  "output_tokens": 2478
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns"
+ ],
+ "score": {
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "KPI tile (x4)": false,
+   "trend (required only if metric_row was chosen; stat_card's own delta already satisfies it)": false,
+   "comparison chart": false
+  }
+ },
+ "reply": "<a2ui-json>\n[\n  {\n    \"version\": \"v0.9.1\",\n    \"createSurface\": {\n      \"surfaceId\": \"metrics_overview\",\n      \"catalogId\": \"https://a2uicatalog.ai/catalog/c-data-display.json\"\n    }\n  },\n  {\n    \"version\": \"v0.9.1\",\n    \"updateComponents\": {\n      \"surfaceId\": \"metrics_overview\",\n      \"components\": [\n        {\n          \"id\": \"root\",\n          \"component\": \"columns\",\n          \"cols\": 2,\n          \"gap\": \"1.5rem\",\n          \"align\": \"top\",\n          \"items\": [\n            {\n              \"blocks\": [\n                {\n                  \"type\": \"heading\",\n                  \"component\": \"heading\",\n                  \"id\": \"kpi_heading\",\n                  \"text\": \"Metrics overview\"\n                },\n                {\n                  \"type\": \"metric_row\",\n                  \"component\": \"metric_row\",\n                  \"id\": \"kpi_tiles\",\n                  \"cols\": 2,\n                  \"metrics\": [\n                    {\"value\": \"482\", \"prefix\": \"$\", \"suffix\": \"K\", \"label\": \"Revenue\", \"sub\": \"+11.8% vs last quarter\", \"trend\": \"up\", \"accent\": \"#22c55e\"},\n                    {\"value\": \"38.4\", \"suffix\": \"K\", \"label\": \"Active users\", \"sub\": \"+12.6% vs last quarter\", \"trend\": \"up\", \"accent\": \"#22c55e\"},\n                    {\"value\": \"3.8\", \"suffix\": \"%\", \"label\": \"Conversion rate\", \"sub\": \"+0.4 pt vs last quarter\", \"trend\": \"up\", \"accent\": \"#06b6d4\"},\n                    {\"value\": \"2.1\", \"suffix\": \"%\", \"label\": \"Churn rate\", \"sub\": \"-0.5 pt vs last quarter\", \"trend\": \"down\", \"accent\": \"#ef4444\"}\n                  ]\n                }\n              ]\n            },\n            {\n              \"blocks\": [\n                {\n                  \"type\": \"heading\",\n                  \"component\": \"heading\",\n                  \"id\": \"chart_heading\",\n                  \"text\": \"Current vs previous quarter (index, previous = 100)\"\n                },\n                {\n                  \"type\": \"chartjs_bar\",\n                  \"component\": \"chartjs_bar\",\n                  \"id\": \"comparison_chart\",\n                  \"labels\": [\"Revenue\", \"Active users\", \"Conversion\", \"Churn\"],\n                  \"datasets\": [\n                    {\"label\": \"Previous quarter\", \"data\": [100, 100, 100, 100]},\n                    {\"label\": \"Current quarter\", \"data\": [111.8, 112.6, 111.8, 80.8]}\n                  ]\n                }\n              ]\n            }\n          ]\n        }\n      ]\n    }\n  }\n]\n</a2ui-json>\n\nThe overview puts four KPI tiles (revenue, active users, conversion, churn) in a 2\u00d72 grid on the left, each with a value, a label and an up or down trend. On the right, a bar chart compares each metric to the previous quarter, indexed to 100 so the different units sit on one scale. Churn trends down, which is the good direction for that metric.\n\nThe catalog has no container component other than `columns`, so I used it as the root. I wrote the nested blocks with both `type` and `component` keys because the catalog doesn't spell out the block format."
+}

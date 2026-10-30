@@ -1,0 +1,96 @@
+{
+ "label": "oracle-slice-3types__elemental__gemini-3.5-flash-lite__request-only-timing__run3",
+ "task": "T5",
+ "format": "elemental",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce-elemental.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "gradient_hero",
+      "Badge": "Pricing",
+      "title": "Simple, transparent pricing",
+      "subtitle": "Choose the perfect plan for your team. Upgrade or downgrade at any time.",
+      "align": "center",
+      "cta_label": "Get Started",
+      "cta_url": "#pricing"
+     },
+     {
+      "id": "tier-group",
+      "component": "pricing_tier_group",
+      "tiers": [
+       {
+        "name": "Starter",
+        "price": "$9",
+        "cadence": "/month",
+        "description": "Essential features for individuals and small projects.",
+        "features": [
+         "1 User",
+         "5GB Storage",
+         "Basic Support",
+         "Community Access"
+        ],
+        "cta_label": "Start Free Trial",
+        "cta_url": "#",
+        "highlighted": false
+       },
+       {
+        "name": "Pro",
+        "price": "$29",
+        "cadence": "/month",
+        "description": "Advanced features for growing teams and businesses.",
+        "features": [
+         "Unlimited Users",
+         "100GB Storage",
+         "Priority Support",
+         "Advanced Analytics",
+         "Custom Integrations"
+        ],
+        "cta_label": "Get Started",
+        "cta_url": "#",
+        "highlighted": true
+       },
+       {
+        "name": "Enterprise",
+        "price": "$99",
+        "cadence": "/month",
+        "description": "Maximum power and security for large scale operations.",
+        "features": [
+         "Dedicated Support",
+         "Unlimited Storage",
+         "SLA Guarantee",
+         "Custom Security",
+         "Dedicated Account Manager"
+        ],
+        "cta_label": "Contact Sales",
+        "cta_url": "#",
+        "highlighted": false
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_data_model": {
+    "surface_id": "main",
+    "path": "/",
+    "value": {
+     "data": {}
+    }
+   }
+  }
+ ]
+}

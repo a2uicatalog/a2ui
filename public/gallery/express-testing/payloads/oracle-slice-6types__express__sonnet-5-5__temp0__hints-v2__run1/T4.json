@@ -1,0 +1,132 @@
+{
+ "label": "oracle-slice-6types__express__sonnet-5-5__temp0__hints-v2__run1",
+ "task": "T4",
+ "format": "express",
+ "model_id": "claude-sonnet-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "status-list",
+    "catalog_id": "https://a2uicatalog.ai/catalog/d-t4.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "status-list",
+    "components": [
+     {
+      "id": "filter",
+      "component": "segmented_control",
+      "options": [
+       {
+        "label": "All",
+        "value": "all"
+       },
+       {
+        "label": "Done",
+        "value": "done"
+       },
+       {
+        "label": "In progress",
+        "value": "in_progress"
+       },
+       {
+        "label": "Blocked",
+        "value": "blocked"
+       }
+      ],
+      "selected_value": "all",
+      "name": "status_filter"
+     },
+     {
+      "id": "list",
+      "component": "entity_list",
+      "items": [
+       {
+        "name": "Set up project repository",
+        "subtitle": "Repository created and access granted to the team.",
+        "icon": "\ud83d\udcc1",
+        "status": "Done"
+       },
+       {
+        "name": "Design onboarding flow",
+        "subtitle": "Wireframes approved by the product lead.",
+        "icon": "\ud83c\udfa8",
+        "status": "Done"
+       },
+       {
+        "name": "Build authentication",
+        "subtitle": "Login and password reset are being implemented.",
+        "icon": "\ud83d\udd10",
+        "status": "In progress"
+       },
+       {
+        "name": "Write API documentation",
+        "subtitle": "Endpoint reference is half complete.",
+        "icon": "\ud83d\udcdd",
+        "status": "In progress"
+       },
+       {
+        "name": "Integrate payment gateway",
+        "subtitle": "Waiting on credentials from the provider.",
+        "icon": "\ud83d\udcb3",
+        "status": "Blocked"
+       },
+       {
+        "name": "Configure CI pipeline",
+        "subtitle": "Automated tests now run on every pull request.",
+        "icon": "\u2699\ufe0f",
+        "status": "Done"
+       },
+       {
+        "name": "Performance testing",
+        "subtitle": "Load test scripts are being prepared.",
+        "icon": "\ud83d\udcc8",
+        "status": "In progress"
+       },
+       {
+        "name": "Security review",
+        "subtitle": "Blocked until the audit slot opens next week.",
+        "icon": "\ud83d\udee1\ufe0f",
+        "status": "Blocked"
+       }
+      ]
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "2rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "_inline_1",
+         "_inline_2",
+         "filter"
+        ]
+       },
+       {
+        "blocks": [
+         "list"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "_inline_1",
+      "component": "heading",
+      "text": "Project tasks"
+     },
+     {
+      "id": "_inline_2",
+      "component": "body",
+      "text": "Eight items. Choose a status to narrow the list."
+     }
+    ]
+   }
+  }
+ ]
+}

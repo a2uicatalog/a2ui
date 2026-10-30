@@ -1,0 +1,125 @@
+{
+ "label": "oracle-slice-3types__json__opus-5-5__run1",
+ "task": "T2",
+ "format": "json",
+ "model_id": "claude-opus-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "metrics-overview",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "metrics-overview",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "1.5rem",
+      "align": "stretch",
+      "accessibility": {
+       "label": "Metrics overview",
+       "description": "Four KPI tiles with trends alongside a revenue comparison chart"
+      },
+      "items": [
+       {
+        "blocks": [
+         {
+          "component": "heading",
+          "text": "Key Metrics \u2014 Q2"
+         },
+         {
+          "component": "metric_row",
+          "cols": 2,
+          "accent": "#3B82F6",
+          "metrics": [
+           {
+            "value": "482K",
+            "prefix": "$",
+            "label": "Revenue",
+            "sub": "+12.4% vs Q1",
+            "trend": "up",
+            "accent": "#22C55E"
+           },
+           {
+            "value": "12,940",
+            "label": "Active Users",
+            "sub": "+8.1% vs Q1",
+            "trend": "up",
+            "accent": "#3B82F6"
+           },
+           {
+            "value": "3.1",
+            "suffix": "%",
+            "label": "Churn Rate",
+            "sub": "-0.6 pts vs Q1",
+            "trend": "down",
+            "accent": "#A855F7"
+           },
+           {
+            "value": "212",
+            "suffix": " ms",
+            "label": "Avg Response Time",
+            "sub": "+18 ms vs Q1",
+            "trend": "up",
+            "accent": "#EF4444"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "blocks": [
+         {
+          "component": "heading",
+          "text": "Monthly Revenue: 2025 vs 2024 ($K)"
+         },
+         {
+          "component": "chartjs_bar",
+          "labels": [
+           "Jan",
+           "Feb",
+           "Mar",
+           "Apr",
+           "May",
+           "Jun"
+          ],
+          "datasets": [
+           {
+            "label": "2024",
+            "data": [
+             128,
+             134,
+             139,
+             141,
+             147,
+             150
+            ]
+           },
+           {
+            "label": "2025",
+            "data": [
+             138,
+             142,
+             149,
+             155,
+             161,
+             166
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

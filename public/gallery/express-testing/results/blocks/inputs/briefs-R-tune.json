@@ -1,0 +1,53 @@
+{
+ "version": "blocks-express-test router tuning set (12 briefs, threshold only) briefs",
+ "briefs": [
+  {
+   "id": "TU1",
+   "brief": "Draw a toy brick car and show how it is assembled"
+  },
+  {
+   "id": "TU2",
+   "brief": "Show a pie chart of expenses by category"
+  },
+  {
+   "id": "TU3",
+   "brief": "Make a flashcard deck for Spanish vocabulary"
+  },
+  {
+   "id": "TU4",
+   "brief": "Show my unread emails and today's calendar"
+  },
+  {
+   "id": "TU5",
+   "brief": "A blog post layout with a table of contents and footnotes"
+  },
+  {
+   "id": "TU6",
+   "brief": "Embed a YouTube video and a Figma file on the page"
+  },
+  {
+   "id": "TU7",
+   "brief": "Pricing table with three tiers and customer testimonials"
+  },
+  {
+   "id": "TU8",
+   "brief": "A sprint board with Jira tickets and release notes"
+  },
+  {
+   "id": "TU9",
+   "brief": "Confetti and glowing animated text for a launch reveal"
+  },
+  {
+   "id": "TU10",
+   "brief": "Tell me a joke about cats"
+  },
+  {
+   "id": "TU11",
+   "brief": "How many legs does a spider have?"
+  },
+  {
+   "id": "TU12",
+   "brief": "A signup form with a dropdown and a checkbox"
+  }
+ ]
+}

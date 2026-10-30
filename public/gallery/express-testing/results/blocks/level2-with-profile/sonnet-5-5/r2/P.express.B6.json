@@ -1,0 +1,36 @@
+{
+ "model": "sonnet-5-5",
+ "cond": "P",
+ "format": "express",
+ "brief": "B6",
+ "repeat": 2,
+ "seq": 14,
+ "model_id": "claude-sonnet-5-5",
+ "utc": "2026-10-29T20:07:52Z",
+ "prompt_chars": 9736,
+ "prompt_sha256": "(removed for publication)",
+ "temperature_requested": null,
+ "temperature_sent": false,
+ "max_tokens": 32768,
+ "request_secs": 17.47,
+ "input_tokens": 3604,
+ "output_tokens": 1946,
+ "stop_reason": "end_turn",
+ "usage": {
+  "input_tokens": 3604,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "cache_creation": {
+   "ephemeral_5m_input_tokens": 0,
+   "ephemeral_1h_input_tokens": 0
+  },
+  "output_tokens": 1946,
+  "output_tokens_details": {
+   "thinking_tokens": 1597
+  },
+  "service_tier": "standard",
+  "inference_geo": "global",
+  "speed": "standard"
+ },
+ "reply": "<a2ui>\nroot = motion_bricks(null, [[0,0,0,1,1,2,\"#c2410c\"],[3,0,0,1,1,2,\"#c2410c\"],[0,0,5,1,1,2,\"#c2410c\"],[3,0,5,1,1,2,\"#c2410c\"],[0,2,0,4,6,2,\"#f97316\"],[0,4,4,4,3,2,\"#f97316\"],[0,6,4,1,1,1,\"#f97316\"],[3,6,4,1,1,1,\"#f97316\"],[0,5,7,1,1,1,\"#111827\"],[3,5,7,1,1,1,\"#111827\"],[1,4,7,2,1,1,\"#f9a8d4\"],[1,2,-1,1,1,4,\"#f97316\"],[1,6,-1,1,1,1,\"#ffffff\"]], null, null, null, null, null, \"studio\", 24, 26, 1, {order: \"base-up\"}, \"1:1\", false, \"Toy cat built from bricks\")\n</a2ui>"
+}

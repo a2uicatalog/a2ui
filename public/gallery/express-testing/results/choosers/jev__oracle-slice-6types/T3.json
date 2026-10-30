@@ -1,0 +1,162 @@
+{
+ "task": "T3",
+ "condition": "D",
+ "slice_atoms_in_options": 21,
+ "picks": [
+  {
+   "slot": "Hero area at the top of the page showing a large headline and a shorter subhead  #1",
+   "decomposer_line": "Hero area at the top of the page showing a large headline and a shorter subhead beneath it that expands on the value proposition",
+   "atom": "gradient_hero",
+   "confidence": 0.73,
+   "top3": [
+    [
+     "gradient_hero",
+     0.74
+    ],
+    [
+     "dark_hero",
+     0.15
+    ],
+    [
+     "cta_section",
+     0.08
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "First feature column presenting a single product benefit with a short title and  #2",
+   "decomposer_line": "First feature column presenting a single product benefit with a short title and brief description text",
+   "atom": "feature_grid",
+   "confidence": 0.73,
+   "top3": [
+    [
+     "feature_grid",
+     0.74
+    ],
+    [
+     "columns",
+     0.1
+    ],
+    [
+     "bento_grid",
+     0.06
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "Second feature column presenting a second product benefit with a short title and #3",
+   "decomposer_line": "Second feature column presenting a second product benefit with a short title and brief description text",
+   "atom": "feature_grid",
+   "confidence": 0.81,
+   "top3": [
+    [
+     "feature_grid",
+     0.8200000000000001
+    ],
+    [
+     "columns",
+     0.13
+    ],
+    [
+     "icon_feature_grid",
+     0.02
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "Third feature column presenting a third product benefit with a short title and b #4",
+   "decomposer_line": "Third feature column presenting a third product benefit with a short title and brief description text",
+   "atom": "feature_grid",
+   "confidence": 0.83,
+   "top3": [
+    [
+     "feature_grid",
+     0.84
+    ],
+    [
+     "columns",
+     0.11
+    ],
+    [
+     "icon_feature_grid",
+     0.03
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "Testimonial block quoting a customer's praise of the product, with the customer' #5",
+   "decomposer_line": "Testimonial block quoting a customer's praise of the product, with the customer's name and attribution",
+   "atom": "testimonial_card",
+   "confidence": 0.82,
+   "top3": [
+    [
+     "testimonial_card",
+     0.83
+    ],
+    [
+     "blockquote",
+     0.1
+    ],
+    [
+     "blockquote_with_avatar",
+     0.06
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "Call-to-action button that prompts the visitor to take the primary action, such  #6",
+   "decomposer_line": "Call-to-action button that prompts the visitor to take the primary action, such as signing up or starting a trial",
+   "atom": "cta_button",
+   "confidence": 0.87,
+   "top3": [
+    [
+     "cta_button",
+     0.88
+    ],
+    [
+     "ripple_button",
+     0.06
+    ],
+    [
+     "cta_section",
+     0.04
+    ]
+   ],
+   "finalists": null
+  }
+ ],
+ "cost": {
+  "decomposer_input_tokens": 3244,
+  "decomposer_output_tokens": 183,
+  "decomposer_thinking_tokens": 0,
+  "jev_input_tokens": 6073,
+  "jev_output_tokens": 1159,
+  "jev_calls": 6
+ },
+ "error": null,
+ "atoms": [
+  "gradient_hero",
+  "feature_grid",
+  "feature_grid",
+  "feature_grid",
+  "testimonial_card",
+  "cta_button"
+ ],
+ "score": {
+  "precision": 1.0,
+  "recall": 1.0,
+  "f1": 1.0,
+  "slot_hits": {
+   "hero": true,
+   "feature columns (x3)": true,
+   "testimonial": true,
+   "CTA": true
+  }
+ },
+ "secs": 5.2
+}

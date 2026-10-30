@@ -1,0 +1,31 @@
+{
+ "task": "T6",
+ "condition": "JB",
+ "label": "jev-picks-on-rule-slice__express__haiku-4-5__run2",
+ "agent_type": "jev-narrowed",
+ "catalogue": "JB-T6.json",
+ "atoms_in_catalogue": 14,
+ "prompt_chars": 8535,
+ "slot_recall": [
+  1,
+  2
+ ],
+ "secs": 4.4,
+ "usage": {
+  "input_tokens": 2389,
+  "output_tokens": 379
+ },
+ "valid": false,
+ "error": "A2uiCompilationValidationError: Standalone function calls are not supported in A2UI v0.9.1 - Help: Please correct the syntax error in your Express DSL.",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "flashcard deck": false,
+   "progress indicator": false
+  }
+ },
+ "reply": "<a2ui>\nprogress_store(\"vocabulary-course\")\n\nroot = Columns([\n  {\n    blocks: [\n      Heading(\"Vocabulary Builder\"),\n      Body(\"Review these ten essential vocabulary words. Click each card to flip and reveal the definition.\"),\n      PullStat(\"0\", \"Cards Reviewed\", \"\", \"#4f46e5\")\n    ]\n  },\n  {\n    blocks: [\n      FlashcardDeck([\n        {front: \"Ephemeral\", back: \"Lasting for a very short time; temporary\"},\n        {front: \"Serendipity\", back: \"The occurrence of events by chance in a happy or beneficial way\"},\n        {front: \"Ubiquitous\", back: \"Present, appearing, or found everywhere\"},\n        {front: \"Mellifluous\", back: \"Sweet or musical; pleasant to hear\"},\n        {front: \"Pragmatic\", back: \"Dealing with things in a practical, realistic way\"},\n        {front: \"Taciturn\", back: \"Reserved or uncommunicative in speech; quiet\"},\n        {front: \"Obfuscate\", back: \"To deliberately make something obscure or unclear\"},\n        {front: \"Benevolent\", back: \"Kind and generous; showing goodwill\"},\n        {front: \"Perspicacious\", back: \"Having keen insight and discernment; shrewd\"},\n        {front: \"Sanguine\", back: \"Optimistic or positive, especially in an unrealistic way\"}\n      ], \"#4f46e5\")\n    ]\n  }\n])\n</a2ui>"
+}

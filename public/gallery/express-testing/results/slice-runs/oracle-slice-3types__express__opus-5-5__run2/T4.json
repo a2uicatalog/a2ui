@@ -1,0 +1,45 @@
+{
+ "task": "T4",
+ "condition": "C_opus-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-opus-5-5",
+ "hints": false,
+ "label": "oracle-slice-3types__express__opus-5-5__run2",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 16421,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 13.2,
+ "usage": {
+  "input_tokens": 6049,
+  "output_tokens": 1265
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "heading",
+  "body",
+  "segmented_control",
+  "badge_group",
+  "entity_list",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.333,
+  "recall": 0.667,
+  "f1": 0.444,
+  "slot_hits": {
+   "list": true,
+   "status indicator": false,
+   "filter control": true
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"status-list-surface\")\n\ntitle = heading(\"Release Checklist\")\n\nintro = body(\"Eight work items for the v2.4 release. Choose a status to narrow the list.\")\n\nfilter = segmented_control([{label: \"All (8)\", value: \"all\"}, {label: \"Active (3)\", value: \"active\"}, {label: \"Pending (2)\", value: \"pending\"}, {label: \"Blocked (1)\", value: \"blocked\"}, {label: \"Done (2)\", value: \"done\"}], \"all\", \"status_filter\")\n\nlegend = badge_group(\"Status key\", [{text: \"Active\", color: \"blue\", pulse: true}, {text: \"Pending\", color: \"yellow\"}, {text: \"Blocked\", color: \"red\"}, {text: \"Done\", color: \"green\"}])\n\nitems = entity_list([{name: \"API rate limiting\", subtitle: \"Throttling middleware is in code review with the platform team.\", icon: \"\u2699\ufe0f\", status: \"Active\", meta: \"Owner: Priya\"}, {name: \"Billing migration\", subtitle: \"Waiting on finance sign-off before the cutover window opens.\", icon: \"\ud83d\udcb3\", status: \"Pending\", meta: \"Owner: Marcus\"}, {name: \"SSO for enterprise\", subtitle: \"Blocked by expired IdP test credentials from the vendor.\", icon: \"\ud83d\udd10\", status: \"Blocked\", meta: \"Owner: Lena\"}, {name: \"Onboarding redesign\", subtitle: \"New three-step flow shipped to all users last Friday.\", icon: \"\ud83c\udfa8\", status: \"Done\", meta: \"Owner: Sam\"}, {name: \"Search indexing\", subtitle: \"Reindex job is running at about 60% completion.\", icon: \"\ud83d\udd0d\", status: \"Active\", meta: \"Owner: Diego\"}, {name: \"Mobile push alerts\", subtitle: \"Queued behind the notification service upgrade.\", icon: \"\ud83d\udcf1\", status: \"Pending\", meta: \"Owner: Aisha\"}, {name: \"Audit log export\", subtitle: \"CSV and JSON export endpoints are live and documented.\", icon: \"\ud83d\udcc4\", status: \"Done\", meta: \"Owner: Tom\"}, {name: \"Dark mode polish\", subtitle: \"Fixing contrast issues on charts and table headers.\", icon: \"\ud83c\udf19\", status: \"Active\", meta: \"Owner: Yuki\"}])\n\nroot = columns(2, \"1.5rem\", \"top\", [{blocks: [title, intro, filter, legend]}, {blocks: [items]}])\n</a2ui>"
+}

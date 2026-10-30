@@ -1,0 +1,46 @@
+{
+ "task": "T5",
+ "condition": "C_gemini-3.8-flash",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 32768,
+ "model_id": "gemini-3.8-flash",
+ "hints": false,
+ "label": "oracle-slice-3types__express__gemini-3.8-flash__thinking-off__run2",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "C-marketing-commerce.json",
+ "atoms_in_catalogue": 23,
+ "prompt_chars": 12467,
+ "slot_recall": [
+  1,
+  1
+ ],
+ "secs": 7.8,
+ "usage": {
+  "input_tokens": 3402,
+  "output_tokens": 415
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "pricing_tier_group"
+ ],
+ "score": {
+  "per_approach": {
+   "tier_cards": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+   },
+   "comparison_table": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": null
+   }
+  },
+  "best_approach": "tier_cards",
+  "f1": 1.0
+ },
+ "reply": "<a2ui>\nroot = pricing_tier_group([\n  {\n    name: \"Starter\",\n    price: \"$19\",\n    cadence: \"/month\",\n    description: \"Essential tools for individuals and small projects getting started.\",\n    features: [\n      \"Up to 3 active projects\",\n      \"Basic analytics dashboard\",\n      \"5 GB cloud storage\",\n      \"Community support\",\n      \"Standard API access\"\n    ],\n    cta_label: \"Get Started\",\n    cta_url: \"/signup?plan=starter\",\n    highlighted: false\n  },\n  {\n    name: \"Professional\",\n    price: \"$49\",\n    cadence: \"/month\",\n    badge: \"Recommended\",\n    description: \"Advanced capabilities and collaboration tools for growing teams.\",\n    features: [\n      \"Unlimited active projects\",\n      \"Advanced real-time analytics\",\n      \"100 GB cloud storage\",\n      \"Priority email & chat support\",\n      \"Custom integrations & webhooks\",\n      \"Team collaboration & permissions\"\n    ],\n    cta_label: \"Start Free Trial\",\n    cta_url: \"/signup?plan=pro\",\n    highlighted: true\n  },\n  {\n    name: \"Enterprise\",\n    price: \"$129\",\n    cadence: \"/month\",\n    description: \"Dedicated infrastructure, security, and support for large organizations.\",\n    features: [\n      \"Unlimited projects & storage\",\n      \"Enterprise-grade security & SSO\",\n      \"Custom SLA guarantees\",\n      \"Dedicated account manager\",\n      \"24/7 phone & incident support\",\n      \"Audit logging & compliance exports\"\n    ],\n    cta_label: \"Contact Sales\",\n    cta_url: \"/contact-sales\",\n    highlighted: false\n  }\n])\n</a2ui>"
+}

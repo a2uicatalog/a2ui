@@ -1,0 +1,27 @@
+{
+ "task": "T6",
+ "label": "haiku-live3-r3",
+ "secs": 4.2,
+ "usage": {
+  "input_tokens": 84996,
+  "output_tokens": 370
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns",
+  "heading",
+  "progress_bar",
+  "flashcard_deck"
+ ],
+ "score": {
+  "precision": 0.5,
+  "recall": 1.0,
+  "f1": 0.667,
+  "slot_hits": {
+   "flashcard deck": true,
+   "progress indicator": true
+  }
+ },
+ "reply": "<a2ui>\nroot = columns(cols=1, items=[\n  {blocks: [\n    heading(\"Vocabulary Review\"),\n    progress_bar(value=0, label=\"Progress\", accent=\"#4f46e5\", show_percent=true)\n  ]},\n  {blocks: [\n    flashcard_deck(\n      cards=[\n        {front: \"Ambiguous\", back: \"Open to more than one interpretation; unclear\"},\n        {front: \"Benevolent\", back: \"Kind, generous, and charitable in nature\"},\n        {front: \"Candid\", back: \"Truthful and straightforward; frank\"},\n        {front: \"Diligent\", back: \"Showing careful and persistent effort in work\"},\n        {front: \"Eloquent\", back: \"Fluent, persuasive, and expressive in speaking or writing\"},\n        {front: \"Frugal\", back: \"Economical; avoiding unnecessary spending\"},\n        {front: \"Gregarious\", back: \"Fond of being in the company of others; sociable\"},\n        {front: \"Harbinger\", back: \"A person or thing that foreshadows what is to come\"},\n        {front: \"Incisive\", back: \"Intelligently perceptive and clear-thinking\"},\n        {front: \"Jubilant\", back: \"Feeling or expressing great happiness and triumph\"}\n      ],\n      accent=\"#4f46e5\",\n      label_front=\"WORD\",\n      label_back=\"DEFINITION\"\n    )\n  ]}\n])\n</a2ui>"
+}

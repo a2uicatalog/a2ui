@@ -1,0 +1,91 @@
+{
+ "label": "oracle-slice-6types__json__haiku-5-5__run3",
+ "task": "T3",
+ "format": "json",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9",
+   "create_surface": {
+    "surface_id": "landing-page",
+    "catalog_id": "https://a2uicatalog.ai/catalog/d-t3.json"
+   }
+  },
+  {
+   "version": "v0.9",
+   "update_components": {
+    "surface_id": "landing-page",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "2.5rem",
+      "align": "stretch",
+      "items": [
+       {
+        "blocks": [
+         {
+          "id": "hero",
+          "component": "gradient_hero",
+          "badge": "New release",
+          "title": "Ship better products, faster",
+          "subtitle": "Everything your team needs to plan, build, and launch in one place.",
+          "align": "center",
+          "accent": "#4f46e5",
+          "accent2": "#8b5cf6",
+          "cta_label": "Start free trial",
+          "cta_url": "https://example.com/signup"
+         },
+         {
+          "id": "features",
+          "component": "feature_grid",
+          "heading": "Why teams choose us",
+          "description": "Three core strengths that keep your workflow moving.",
+          "columns": 3,
+          "features": [
+           {
+            "icon": "\u26a1",
+            "title": "Lightning fast",
+            "description": "Real-time updates keep everyone in sync without refreshing.",
+            "color": "#4f46e5"
+           },
+           {
+            "icon": "\ud83d\udd12",
+            "title": "Secure by default",
+            "description": "Enterprise-grade encryption and access controls out of the box.",
+            "color": "#8b5cf6"
+           },
+           {
+            "icon": "\ud83d\udd17",
+            "title": "Works with your stack",
+            "description": "Integrates with the tools you already use, with no custom code.",
+            "color": "#0ea5e9"
+           }
+          ]
+         },
+         {
+          "id": "testimonial",
+          "component": "testimonial_card",
+          "text": "We cut our launch cycle in half. The team finally has one source of truth.",
+          "author_name": "Jordan Lee",
+          "author_title": "Head of Product, Northwind",
+          "rating": 5
+         },
+         {
+          "id": "cta",
+          "component": "cta_button",
+          "label": "Get started today",
+          "url": "https://example.com/signup",
+          "color": "#4f46e5",
+          "same_tab": true
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

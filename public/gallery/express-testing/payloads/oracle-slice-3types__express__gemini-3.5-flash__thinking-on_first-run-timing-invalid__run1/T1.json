@@ -1,0 +1,153 @@
+{
+ "label": "oracle-slice-3types__express__gemini-3.5-flash__thinking-on_first-run-timing-invalid__run1",
+ "task": "T1",
+ "format": "express",
+ "model_id": "gemini-3.5-flash",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "header",
+      "component": "page_header",
+      "title": "The Hydrological Cycle",
+      "subtitle": "Explore how water moves continuously on, above, and below the surface of the Earth.",
+      "icon": "\ud83d\udca7",
+      "tag": "Earth Science",
+      "accent": "#0284c7"
+     },
+     {
+      "id": "rung1",
+      "component": "concept_rung",
+      "badge": "1",
+      "kind": "depth",
+      "label": "Stage 1",
+      "title": "Evaporation & Transpiration",
+      "body": "Solar energy heats water in oceans, lakes, and rivers, causing it to turn from liquid into water vapor (gas) and rise into the atmosphere. Plants also release water vapor through their leaves in a process called transpiration.",
+      "takeaway": "The Sun is the primary engine driving the entire water cycle."
+     },
+     {
+      "id": "rung2",
+      "component": "concept_rung",
+      "badge": "2",
+      "kind": "depth",
+      "label": "Stage 2",
+      "title": "Condensation",
+      "body": "As water vapor rises, it cools in the higher altitudes. This cooling causes the gas to turn back into tiny liquid water droplets or ice crystals, gathering together to form clouds and fog.",
+      "takeaway": "Clouds are visible evidence of condensation in action."
+     },
+     {
+      "id": "rung3",
+      "component": "concept_rung",
+      "badge": "3",
+      "kind": "depth",
+      "label": "Stage 3",
+      "title": "Precipitation & Collection",
+      "body": "When cloud droplets combine and grow too heavy to remain suspended in the air, gravity pulls them down as rain, snow, sleet, or hail. This water collects in bodies of water or infiltrates the soil to become groundwater.",
+      "takeaway": "Precipitation is the primary mechanism for transporting water from the atmosphere back to Earth."
+     },
+     {
+      "id": "rung4",
+      "component": "concept_rung",
+      "badge": "EX",
+      "kind": "example",
+      "label": "Worked Example",
+      "title": "Calculating Runoff Coefficient",
+      "body": "Suppose a storm drops 50mm of rain on a paved parking lot of 1,000 square meters. If 45 cubic meters of water runs off into the storm drain, what is the runoff coefficient (C)?",
+      "code": "Total Rainfall Volume = 0.05m * 1000 m^2 = 50 m^3\nRunoff Volume = 45 m^3\nC = Runoff / Total = 45 / 50 = 0.90",
+      "code_caption": "Formula: C = Runoff Volume / Total Rainfall Volume",
+      "takeaway": "A high runoff coefficient (0.90) is typical for impervious surfaces like asphalt."
+     },
+     {
+      "id": "reading_bar",
+      "component": "reading_progress_bar",
+      "color": "#0284c7"
+     },
+     {
+      "id": "side_callout",
+      "component": "callout",
+      "kind": "tip",
+      "title": "Did You Know?",
+      "text": "The water you drink today could have been the same water a dinosaur drank millions of years ago! Earth's water supply is constantly recycled."
+     },
+     {
+      "id": "quiz",
+      "component": "quiz_set",
+      "title": "Self-Check Quiz",
+      "questions": [
+       {
+        "question": "What is the primary source of energy that drives the water cycle?",
+        "options": [
+         "Geothermal heat",
+         "The Sun",
+         "Ocean currents",
+         "Wind patterns"
+        ],
+        "correct": 1,
+        "explanation": "The Sun heats water on Earth's surface, initiating evaporation and driving the cycle."
+       },
+       {
+        "question": "Which process is responsible for the formation of clouds?",
+        "options": [
+         "Evaporation",
+         "Sublimation",
+         "Condensation",
+         "Precipitation"
+        ],
+        "correct": 2,
+        "explanation": "Condensation occurs when water vapor cools and transitions back into liquid water droplets, forming clouds."
+       },
+       {
+        "question": "What is the term for water vapor released from plant leaves?",
+        "options": [
+         "Infiltration",
+         "Transpiration",
+         "Precipitation",
+         "Condensation"
+        ],
+        "correct": 1,
+        "explanation": "Transpiration is the process where plants absorb water through roots and release it as vapor through pores in their leaves."
+       }
+      ],
+      "pass_score": 66,
+      "accent": "#0284c7"
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "2rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "header",
+         "rung1",
+         "rung2",
+         "rung3",
+         "rung4"
+        ]
+       },
+       {
+        "blocks": [
+         "reading_bar",
+         "side_callout",
+         "quiz"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

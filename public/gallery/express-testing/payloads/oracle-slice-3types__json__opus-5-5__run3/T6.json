@@ -1,0 +1,120 @@
+{
+ "label": "oracle-slice-3types__json__opus-5-5__run3",
+ "task": "T6",
+ "format": "json",
+ "model_id": "claude-opus-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "vocab-flashcards",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "vocab-flashcards",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "2rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         {
+          "type": "page_header",
+          "title": "Vocabulary Builder",
+          "subtitle": "Tap or click a card to flip it and reveal the definition.",
+          "icon": "\ud83d\udcda",
+          "tag": "10 cards",
+          "accent": "#4f46e5"
+         },
+         {
+          "type": "flashcard_deck",
+          "accent": "#4f46e5",
+          "label_front": "WORD",
+          "label_back": "DEFINITION",
+          "cards": [
+           {
+            "front": "Ephemeral",
+            "back": "Lasting for a very short time. \u2014 \"The ephemeral beauty of cherry blossoms.\""
+           },
+           {
+            "front": "Ubiquitous",
+            "back": "Present, appearing, or found everywhere. \u2014 \"Smartphones have become ubiquitous.\""
+           },
+           {
+            "front": "Candid",
+            "back": "Truthful and straightforward; frank. \u2014 \"She gave a candid account of her mistakes.\""
+           },
+           {
+            "front": "Meticulous",
+            "back": "Showing great attention to detail; very careful and precise."
+           },
+           {
+            "front": "Resilient",
+            "back": "Able to recover quickly from difficulties; tough."
+           },
+           {
+            "front": "Pragmatic",
+            "back": "Dealing with things sensibly and realistically, based on practical considerations."
+           },
+           {
+            "front": "Ambiguous",
+            "back": "Open to more than one interpretation; not clearly defined."
+           },
+           {
+            "front": "Benevolent",
+            "back": "Well-meaning and kindly; disposed to do good."
+           },
+           {
+            "front": "Eloquent",
+            "back": "Fluent or persuasive in speaking or writing."
+           },
+           {
+            "front": "Tenacious",
+            "back": "Holding firmly to something; persistent and determined."
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "blocks": [
+         {
+          "type": "progress_ring",
+          "value": "0",
+          "size": "140",
+          "stroke_width": "10",
+          "color": "#4f46e5",
+          "label": "Cards reviewed",
+          "show_value": "true",
+          "unit": "%"
+         },
+         {
+          "type": "progress_bar",
+          "value": 0,
+          "label": "Review progress",
+          "accent": "#4f46e5",
+          "show_percent": "true",
+          "caption": "0 of 10 cards reviewed"
+         },
+         {
+          "type": "text_callout",
+          "variant": "info",
+          "title": "Tip",
+          "description": "Say each definition aloud before flipping. Recalling it first strengthens memory far more than simply reading the answer."
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

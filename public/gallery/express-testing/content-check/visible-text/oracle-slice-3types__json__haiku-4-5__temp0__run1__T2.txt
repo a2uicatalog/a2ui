@@ -1,0 +1,12 @@
+Revenue
+ $245,680
+ ↑ +12.5% 
+ Customer Acquisition
+ 1,240
+ ↑ +8.3% 
+ Churn Rate
+ 2.1%
+ ↓ -0.4% 
+ Avg. Session Duration
+ 8m 32s
+ ↑ +1m 15s

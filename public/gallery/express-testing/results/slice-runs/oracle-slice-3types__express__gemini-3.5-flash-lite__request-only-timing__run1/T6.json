@@ -1,0 +1,43 @@
+{
+ "task": "T6",
+ "condition": "C_gemini-3.5-flash-l",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash-lite",
+ "hints": false,
+ "label": "oracle-slice-3types__express__gemini-3.5-flash-lite__request-only-timing__run1",
+ "agent_type": "Learning",
+ "catalogue": "C-learning.json",
+ "atoms_in_catalogue": 36,
+ "prompt_chars": 21139,
+ "slot_recall": [
+  2,
+  2
+ ],
+ "secs": 2.0,
+ "usage": {
+  "input_tokens": 5727,
+  "output_tokens": 523
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "page_header",
+  "xp_bar",
+  "progress_bar",
+  "flashcard_deck",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.6,
+  "recall": 1.0,
+  "f1": 0.75,
+  "slot_hits": {
+   "flashcard deck": true,
+   "progress indicator": true
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"flashcard-vocab-surface\")\n\n$/vocab/reviewed_count = 0\n$/vocab/total_count = 10\n\nheader = page_header(\n    title=\"Vocabulary Mastery\",\n    subtitle=\"Flip the cards to test your knowledge and track your progress.\",\n    icon=\"\ud83d\udcda\",\n    tag=\"Flashcards\",\n    accent=\"#4f46e5\"\n)\n\nxp = xp_bar(\n    level_label=\"Level 1 \u2014 Vocabulary Builder\",\n    xp_current=0,\n    xp_next=10,\n    accent=\"#4f46e5\",\n    show_flash=true\n)\n\nprogress = progress_bar(\n    value=0,\n    label=\"Reviewed Cards\",\n    accent=\"#4f46e5\",\n    show_percent=true,\n    caption=\"Review all 10 cards to complete the session.\"\n)\n\ndeck = flashcard_deck(\n    cards=[\n        {front: \"Ephemeral\", back: \"Lasting for a very short time.\"},\n        {front: \"Serendipity\", back: \"Finding valuable things by chance rather than luck.\"},\n        {front: \"Mellifluous\", back: \"A sound that is sweet and smooth, pleasing to hear.\"},\n        {front: \"Petrichor\", back: \"The pleasant, earthy smell after rain falls on dry soil.\"},\n        {front: \"Ineffable\", back: \"Too great or extreme to be expressed in words.\"},\n        {front: \"Lethargic\", back: \"Affected by lethargy; sluggish and apathetic.\"},\n        {front: \"Panacea\", back: \"A solution or remedy for all difficulties or diseases.\"},\n        {front: \"Resilience\", back: \"The capacity to recover quickly from difficulties.\"},\n        {front: \"Quintessential\", back: \"Representing the most perfect or typical example of a quality.\"},\n        {front: \"Solitude\", back: \"The state or situation of being alone.\"}\n    ],\n    accent=\"#4f46e5\",\n    label_front=\"TERM\",\n    label_back=\"DEFINITION\"\n)\n\nroot = columns(\n    cols=1,\n    gap=\"2rem\",\n    items=[\n        {blocks: [header, xp, progress, deck]}\n    ]\n)\n</a2ui>"
+}

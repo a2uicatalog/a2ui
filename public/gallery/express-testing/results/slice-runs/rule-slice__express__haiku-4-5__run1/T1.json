@@ -1,0 +1,34 @@
+{
+ "task": "T1",
+ "condition": "B",
+ "label": "rule-slice__express__haiku-4-5__run1",
+ "agent_type": "Learning",
+ "catalogue": "B-learning.json",
+ "atoms_in_catalogue": 184,
+ "prompt_chars": 88519,
+ "slot_recall": [
+  5,
+  5
+ ],
+ "secs": 14.4,
+ "usage": {
+  "input_tokens": 24764,
+  "output_tokens": 1354
+ },
+ "valid": false,
+ "error": "A2uiCompilationParseError: Failed to parse expression: Syntax error at line 68:18: mismatched input '=' expecting ':' (line 68) - Line 68, Col 18 - Help: Please correct the syntax error in your Express DSL.",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "title": false,
+   "concept sections (x3)": false,
+   "worked example": false,
+   "3-question quiz": false,
+   "quiz result": false
+  }
+ },
+ "reply": "<a2ui>\nroot = color_section(\n  accent=\"#0ea5e9\",\n  style=\"tint\",\n  blocks=[\n    article_hero(\n      title=\"The Water Cycle\",\n      subtitle=\"Understanding Earth's continuous water movement\",\n      image_url=\"https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1200\"\n    ),\n    divider(),\n    heading(\"How Water Moves Through Our Planet\"),\n    concept_ladder(\n      title=\"The Complete Water Cycle\",\n      eyebrow=\"EARTH SCIENCE\",\n      dek=\"Water continuously circulates through evaporation, condensation, and precipitation\",\n      hook=\"Water never leaves Earth \u2014 it simply changes form and location in an endless cycle powered by the sun's energy.\",\n      model=\"Think of it as a planetary recycling system where water is the only material, constantly changing states between liquid, gas, and solid.\",\n      model_note=\"This cycle has been running for billions of years and is essential for all life.\",\n      rungs=[\n        concept_rung(\n          badge=\"1\",\n          kind=\"depth\",\n          title=\"Evaporation\",\n          body=\"Solar energy heats water in oceans, lakes, and rivers, transforming it from liquid to invisible water vapour. This process removes water from Earth's surface into the atmosphere.\",\n          code=\"Heat + H\u2082O(liquid) \u2192 H\u2082O(gas)\",\n          takeaway=\"The sun's energy is the engine that starts the water cycle.\"\n        ),\n        concept_rung(\n          badge=\"2\",\n          kind=\"depth\",\n          title=\"Condensation\",\n          body=\"As water vapour rises high into the atmosphere, it cools. The gas condenses back into tiny liquid droplets that cluster together to form clouds and fog.\",\n          code=\"H\u2082O(gas) + Cold \u2192 H\u2082O(liquid droplets)\",\n          takeaway=\"Cooling air causes invisible vapour to become visible water droplets.\"\n        ),\n        concept_rung(\n          badge=\"3\",\n          kind=\"depth\",\n          title=\"Precipitation\",\n          body=\"When cloud droplets combine and become heavy enough, they fall as rain, snow, sleet, or hail depending on atmospheric temperature. This returns water to Earth's surface.\",\n          code=\"H\u2082O(droplets in clouds) + Gravity \u2192 Precipitation\",\n          takeaway=\"Precipitation is how water returns to land and oceans.\"\n        ),\n        concept_rung(\n          badge=\"4\",\n          kind=\"depth\",\n          title=\"Collection\",\n          body=\"Precipitated water collects in oceans, rivers, lakes, and groundwater, completing one cycle. Some water is absorbed by soil and plants (infiltration), while some flows directly back to oceans (runoff).\",\n          code=\"Precipitation \u2192 Oceans/Rivers/Groundwater\",\n          takeaway=\"Water returns to collection zones, ready to begin the cycle again.\"\n        ),\n        concept_rung(\n          badge=\"EX\",\n          kind=\"example\",\n          title=\"A Drop's Journey\",\n          body=\"Imagine a water molecule in the Atlantic Ocean. The sun heats it, and it evaporates into vapour. Wind carries it westward for 500 miles. High in the atmosphere, it cools and condenses into a cloud droplet over Miami. Hours later, it falls as part of a thunderstorm. It soaks into soil, is absorbed by a palm tree root, travels up through the tree, and transpires from a leaf back into the atmosphere\u2014beginning the cycle anew.\",\n          takeaway=\"One complete cycle may take days, years, or centuries depending on the path water takes.\"\n        )\n      ],\n      closing_note=\"The water cycle is a closed system \u2014 the total amount of water on Earth remains constant, but its location and state are always changing.\"\n    ),\n    divider(),\n    heading(\"Test Your Understanding\"),\n    quiz_set(\n      title=\"Water Cycle Self-Check\",\n      questions=[\n        {\n          question=\"Which process turns liquid water into water vapour?\",\n          options=[\"Condensation\", \"Evaporation\", \"Precipitation\", \"Infiltration\"],\n          correct=1,\n          explanation=\"Evaporation is the process where solar energy heats water and converts it from liquid to gas form.\"\n        },\n        {\n          question=\"What causes water vapour to turn back into liquid droplets in the atmosphere?\",\n          options=[\"Wind\", \"Cooling\", \"Gravity\", \"Salt in the water\"],\n          correct=1,\n          explanation=\"Condensation occurs when water vapour cools down as it rises into the upper atmosphere, forming visible cloud droplets.\"\n        },\n        {\n          question=\"Which of the following is NOT a form of precipitation?\",\n          options=[\"Rain\", \"Snow\", \"Evaporation\", \"Hail\"],\n          correct=2,\n          explanation=\"Evaporation is the process where water becomes vapour\u2014it is not a form of precipitation. Rain, snow, and hail are all ways water falls from clouds.\"\n        }\n      ],\n      pass_score=70,\n      accent=\"#0ea5e9\"\n    ),\n    spacer(32),\n    key_takeaways(\n      points=[\n        \"The water cycle is powered by solar energy and involves four main stages: evaporation, condensation, precipitation, and collection.\",\n        \"Evaporation moves water from oceans and surface water into the atmosphere as invisible vapour.\",\n        \"Condensation forms visible clouds when cool air causes vapour to become liquid droplets.\",\n        \"Precipitation returns water to Earth as rain, snow, sleet, or hail.\",\n        \"The total amount of water on Earth is constant\u2014it simply cycles through different states and locations.\"\n      ]\n    )\n  ]\n)\n</a2ui>"
+}

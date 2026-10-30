@@ -1,0 +1,53 @@
+{
+ "task": "T1",
+ "condition": "G_haiku-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "tag-slice__express__haiku-5-5__run3",
+ "agent_type": "Learning",
+ "catalogue": "G-learning.json",
+ "atoms_in_catalogue": 236,
+ "prompt_chars": 117248,
+ "slot_recall": [
+  5,
+  5
+ ],
+ "secs": 15.4,
+ "usage": {
+  "input_tokens": 41970,
+  "output_tokens": 3329
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "page_header",
+  "body",
+  "heading",
+  "body",
+  "heading",
+  "body",
+  "heading",
+  "body",
+  "heading",
+  "steps",
+  "quiz_set",
+  "reveal"
+ ],
+ "score": {
+  "precision": 0.917,
+  "recall": 0.8,
+  "f1": 0.854,
+  "slot_hits": {
+   "title": true,
+   "concept sections (x3)": true,
+   "worked example": true,
+   "3-question quiz": true,
+   "quiz result": false
+  }
+ },
+ "reply": "<a2ui>\nheader = page_header(\"The Water Cycle\", \"How water moves continuously between oceans, air, and land\", \"\ud83d\udca7\", \"Lesson 1\", \"#0e7bb8\", \"light\")\n\nintro = body(\"Water on Earth is always moving. The same water cycles between oceans, atmosphere, and land over and over. Three processes drive most of this movement.\")\n\nh_evap = heading(\"Concept 1: Evaporation\")\nc_evap = body(\"Heat from the Sun warms liquid water in oceans, lakes, and rivers. Some molecules gain enough energy to escape into the air as water vapor. Plants also release water vapor through transpiration, which is often grouped with evaporation.\")\n\nh_cond = heading(\"Concept 2: Condensation\")\nc_cond = body(\"As water vapor rises, it cools. Cooler air holds less vapor, so the vapor changes back into tiny liquid droplets that cling to dust and other particles. Clusters of these droplets form clouds.\")\n\nh_precip = heading(\"Concept 3: Precipitation\")\nc_precip = body(\"When droplets in a cloud grow heavy enough, they fall as rain, snow, sleet, or hail. Most precipitation lands in the ocean. The rest soaks into the ground or runs off into rivers that carry water back to the sea.\")\n\nh_example = heading(\"Worked Example: Tracing a Puddle\")\nexample = steps([\n  {label: \"Step 1\", text: \"After a rainstorm, a puddle sits on the sidewalk. Sunlight warms the shallow water, and molecules escape into the air. This is evaporation.\"},\n  {label: \"Step 2\", text: \"The water vapor rises, cools, and condenses into tiny droplets high in the atmosphere. Those droplets gather into a cloud. This is condensation.\"},\n  {label: \"Step 3\", text: \"The droplets in the cloud merge until they are heavy enough to fall as rain. The water returns to the ground and the cycle begins again. This is precipitation.\"}\n])\n\ncheck = quiz_set(\"Self-check\", [\n  {question: \"Which process changes water vapor back into liquid droplets?\", options: [\"Evaporation\", \"Condensation\", \"Precipitation\", \"Infiltration\"], correct: 1, explanation: \"Condensation happens when water vapor cools and forms liquid droplets, which gather into clouds.\"},\n  {question: \"Which process releases water vapor from plants into the air?\", options: [\"Runoff\", \"Transpiration\", \"Precipitation\", \"Collection\"], correct: 1, explanation: \"Transpiration is the release of water vapor from plant leaves into the atmosphere.\"},\n  {question: \"What is the main energy source that drives evaporation?\", options: [\"Wind\", \"Gravity\", \"The Sun's heat\", \"Salt in the ocean\"], correct: 2, explanation: \"Heat from the Sun gives water molecules the energy they need to escape into the air.\"}\n], 70, \"#0e7bb8\")\n\nroot = reveal(\"fade_up\", 500, 0, 120, [header, intro, h_evap, c_evap, h_cond, c_cond, h_precip, c_precip, h_example, example, check])\n</a2ui>"
+}

@@ -1,0 +1,146 @@
+{
+ "label": "oracle-slice-3types__elemental__gemini-3.5-flash-lite__request-only-timing__run1",
+ "task": "T1",
+ "format": "elemental",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning-elemental.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "page_header",
+      "title": "The Water Cycle",
+      "subtitle": "Understand how water continuously moves through Earth's atmosphere, land, and oceans.",
+      "icon": "\ud83d\udca7",
+      "tag": "Earth Science",
+      "accent": "#0284c7"
+     },
+     {
+      "id": "hero",
+      "component": "article_hero",
+      "title": "Journey of a Single Drop",
+      "subtitle": "The Earth's water is a fixed volume, constantly recycled through evaporation, condensation, and precipitation."
+     },
+     {
+      "id": "h_concepts",
+      "component": "heading",
+      "text": "Core Concepts of the Water Cycle"
+     },
+     {
+      "id": "rung_1",
+      "component": "concept_rung",
+      "badge": "1",
+      "kind": "depth",
+      "label": "STAGE 1",
+      "title": "Evaporation and Transpiration",
+      "Body": "Solar energy heats water in oceans, lakes, and rivers, causing it to change from liquid to gas (vapor) via evaporation. Additionally, plants release moisture from their leaves into the atmosphere through transpiration."
+     },
+     {
+      "id": "rung_2",
+      "component": "concept_rung",
+      "badge": "2",
+      "kind": "depth",
+      "label": "STAGE 2",
+      "title": "Condensation and Cloud Formation",
+      "Body": "As warm water vapor rises, it cools and condenses into tiny liquid water droplets or ice crystals around microscopic particles in the air, eventually forming clouds and fog."
+     },
+     {
+      "id": "rung_3",
+      "component": "concept_rung",
+      "badge": "3",
+      "kind": "depth",
+      "label": "STAGE 3",
+      "title": "Precipitation and Collection",
+      "Body": "When condensed water droplets in clouds become too heavy to remain suspended by updrafts, they fall back to Earth as rain, snow, sleet, or hail. This water collects in bodies of water and infiltrates the soil."
+     },
+     {
+      "id": "h_example",
+      "component": "heading",
+      "text": "Worked Example"
+     },
+     {
+      "id": "worked_example",
+      "component": "concept_rung",
+      "badge": "EX",
+      "kind": "example",
+      "label": "WORKED EXAMPLE",
+      "title": "Tracing a Raindrop from Mountain to Ocean",
+      "Body": "Consider a snowflake landing on a high alpine peak. When temperatures rise, it melts into liquid water (run-off), flows into a mountain stream, joins a major river system, and eventually flows back into the ocean, ready to evaporate again.",
+      "code": "Precipitation -> Runoff -> Stream -> River -> Ocean -> Evaporation",
+      "code_caption": "The complete circular pathway of global hydrology.",
+      "takeaway": "Water never truly leaves the planetary system; it merely changes states and locations."
+     },
+     {
+      "id": "h_quiz",
+      "component": "heading",
+      "text": "Self-Check Quiz"
+     },
+     {
+      "id": "water_cycle_quiz",
+      "component": "quiz_set",
+      "title": "Test Your Knowledge",
+      "pass_score": 70,
+      "accent": "#0284c7",
+      "questions": [
+       {
+        "question": "What process converts liquid water from plant leaves into atmospheric water vapor?",
+        "options": [
+         "Evaporation",
+         "Transpiration",
+         "Condensation",
+         "Precipitation"
+        ],
+        "correct": 1,
+        "explanation": "Transpiration is the specific process where plants release water vapor through microscopic pores called stomata."
+       },
+       {
+        "question": "Which phase change occurs when water vapor turns into liquid water droplets in clouds?",
+        "options": [
+         "Condensation",
+         "Evaporation",
+         "Melting",
+         "Freezing"
+        ],
+        "correct": 0,
+        "explanation": "Condensation is the cooling of water vapor back into liquid droplets, forming clouds."
+       },
+       {
+        "question": "Where does the energy that drives the entire water cycle primarily originate?",
+        "options": [
+         "Earth's core",
+         "Ocean currents",
+         "The Sun",
+         "Wind pressure"
+        ],
+        "correct": 2,
+        "explanation": "Solar energy from the Sun provides the heat required to evaporate water from oceans and land surfaces."
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_data_model": {
+    "surface_id": "main",
+    "path": "/",
+    "value": {
+     "water_cycle": {
+      "score": 0
+     }
+    }
+   }
+  }
+ ]
+}

@@ -1,0 +1,103 @@
+{
+ "label": "oracle-slice-3types__json__sonnet-5-5__temp0__run2",
+ "task": "T6",
+ "format": "json",
+ "model_id": "claude-sonnet-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "vocab_flashcards",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "vocab_flashcards",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "2rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         {
+          "type": "heading",
+          "text": "Vocabulary Flashcards"
+         },
+         {
+          "type": "body",
+          "text": "Read the word on the front, try to recall its meaning, then flip the card to check. Work through all ten cards."
+         },
+         {
+          "type": "progress_bar",
+          "label": "Cards reviewed",
+          "value": 0,
+          "show_percent": "true",
+          "caption": "0 of 10 reviewed"
+         }
+        ]
+       },
+       {
+        "blocks": [
+         {
+          "type": "flashcard_deck",
+          "accent": "#4f46e5",
+          "label_front": "WORD",
+          "label_back": "MEANING",
+          "cards": [
+           {
+            "front": "Ephemeral",
+            "back": "Lasting for a very short time."
+           },
+           {
+            "front": "Ubiquitous",
+            "back": "Present, appearing, or found everywhere."
+           },
+           {
+            "front": "Meticulous",
+            "back": "Showing great attention to detail; very careful and precise."
+           },
+           {
+            "front": "Eloquent",
+            "back": "Fluent and persuasive in speaking or writing."
+           },
+           {
+            "front": "Resilient",
+            "back": "Able to recover quickly from difficulties."
+           },
+           {
+            "front": "Pragmatic",
+            "back": "Dealing with things sensibly and realistically."
+           },
+           {
+            "front": "Ambiguous",
+            "back": "Open to more than one interpretation; unclear."
+           },
+           {
+            "front": "Benevolent",
+            "back": "Well-meaning and kindly."
+           },
+           {
+            "front": "Candid",
+            "back": "Truthful and straightforward; frank."
+           },
+           {
+            "front": "Diligent",
+            "back": "Showing steady, careful effort in one's work."
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

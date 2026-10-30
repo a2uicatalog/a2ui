@@ -1,0 +1,44 @@
+{
+ "task": "T6",
+ "condition": "CT_sonnet-5-5H2",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-sonnet-5-5",
+ "hints": true,
+ "label": "oracle-slice-3types__express__sonnet-5-5__temp0__hints-v2__run1",
+ "agent_type": "Learning",
+ "catalogue": "C-learning.json",
+ "atoms_in_catalogue": 36,
+ "prompt_chars": 21139,
+ "slot_recall": [
+  2,
+  2
+ ],
+ "secs": 10.9,
+ "usage": {
+  "input_tokens": 7807,
+  "output_tokens": 1201
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns",
+  "heading",
+  "body",
+  "progress_bar",
+  "text_callout",
+  "flashcard_deck"
+ ],
+ "score": {
+  "precision": 0.333,
+  "recall": 1.0,
+  "f1": 0.5,
+  "slot_hits": {
+   "flashcard deck": true,
+   "progress indicator": true
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"vocab-flashcards\")\nroot = columns(2, \"2rem\", \"top\", [\n  {blocks: [\n    heading(\"Vocabulary Review\"),\n    body(\"Click a card to flip it and reveal the definition. Work through all ten words.\"),\n    progress_bar(0, \"Cards reviewed: 0 of 10\", \"#4f46e5\", true, \"Your progress updates as you review each card.\"),\n    text_callout(\"info\", \"Tip\", \"Try to recall the definition before flipping the card.\")\n  ]},\n  {blocks: [\n    flashcard_deck(\n      [\n        {front: \"Ephemeral\", back: \"Lasting for a very short time.\"},\n        {front: \"Ubiquitous\", back: \"Present, appearing, or found everywhere.\"},\n        {front: \"Pragmatic\", back: \"Dealing with things sensibly and realistically.\"},\n        {front: \"Eloquent\", back: \"Fluent and persuasive in speaking or writing.\"},\n        {front: \"Ambiguous\", back: \"Open to more than one interpretation; unclear.\"},\n        {front: \"Resilient\", back: \"Able to recover quickly from difficulties.\"},\n        {front: \"Meticulous\", back: \"Showing great attention to detail; very careful.\"},\n        {front: \"Benevolent\", back: \"Well meaning and kindly.\"},\n        {front: \"Candid\", back: \"Truthful and straightforward; frank.\"},\n        {front: \"Diligent\", back: \"Showing careful and persistent effort.\"}\n      ],\n      \"#4f46e5\",\n      \"WORD\",\n      \"DEFINITION\"\n    )\n  ]}\n])\n</a2ui>"
+}

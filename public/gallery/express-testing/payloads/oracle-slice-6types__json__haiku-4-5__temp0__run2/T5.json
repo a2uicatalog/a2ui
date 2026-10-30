@@ -1,0 +1,109 @@
+{
+ "label": "oracle-slice-6types__json__haiku-4-5__temp0__run2",
+ "task": "T5",
+ "format": "json",
+ "model_id": "claude-haiku-4-5-20251001",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "pricing_page",
+    "catalog_id": "https://a2uicatalog.ai/catalog/d-t5.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "pricing_page",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 3,
+      "gap": "2rem",
+      "align": "stretch",
+      "items": [
+       {
+        "blocks": [
+         {
+          "id": "starter_heading",
+          "component": "heading",
+          "text": "Starter"
+         },
+         {
+          "id": "starter_price",
+          "component": "body",
+          "text": "$29/month"
+         },
+         {
+          "id": "starter_desc",
+          "component": "body",
+          "text": "Perfect for individuals and small projects"
+         },
+         {
+          "id": "starter_features",
+          "component": "body",
+          "text": "\u2022 Up to 5 projects\n\u2022 10GB storage\n\u2022 Basic support\n\u2022 Community access"
+         }
+        ]
+       },
+       {
+        "blocks": [
+         {
+          "id": "professional_badge",
+          "component": "body",
+          "text": "\u2b50 RECOMMENDED"
+         },
+         {
+          "id": "professional_heading",
+          "component": "heading",
+          "text": "Professional"
+         },
+         {
+          "id": "professional_price",
+          "component": "body",
+          "text": "$79/month"
+         },
+         {
+          "id": "professional_desc",
+          "component": "body",
+          "text": "Ideal for growing teams and businesses"
+         },
+         {
+          "id": "professional_features",
+          "component": "body",
+          "text": "\u2022 Unlimited projects\n\u2022 500GB storage\n\u2022 Priority support\n\u2022 Team collaboration\n\u2022 Advanced analytics"
+         }
+        ]
+       },
+       {
+        "blocks": [
+         {
+          "id": "enterprise_heading",
+          "component": "heading",
+          "text": "Enterprise"
+         },
+         {
+          "id": "enterprise_price",
+          "component": "body",
+          "text": "Custom pricing"
+         },
+         {
+          "id": "enterprise_desc",
+          "component": "body",
+          "text": "For large-scale operations and enterprises"
+         },
+         {
+          "id": "enterprise_features",
+          "component": "body",
+          "text": "\u2022 Unlimited everything\n\u2022 Dedicated storage\n\u2022 24/7 premium support\n\u2022 Custom integrations\n\u2022 SLA guarantee\n\u2022 On-premise option"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

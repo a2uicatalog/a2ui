@@ -1,0 +1,43 @@
+{
+ "task": "T4",
+ "condition": "D_haiku-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "oracle-slice-6types__express__haiku-5-5__run2",
+ "agent_type": "T4",
+ "catalogue": "D-t4.json",
+ "atoms_in_catalogue": 20,
+ "prompt_chars": 10490,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 8.5,
+ "usage": {
+  "input_tokens": 3799,
+  "output_tokens": 1740
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "heading",
+  "segmented_control",
+  "entity_list",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.5,
+  "recall": 0.667,
+  "f1": 0.571,
+  "slot_hits": {
+   "list": true,
+   "status indicator": false,
+   "filter control": true
+  }
+ },
+ "reply": "<a2ui>\ntitle = heading(\"Work items\")\n\nfilter = segmented_control([{label: \"All\", value: \"all\"}, {label: \"Open\", value: \"open\"}, {label: \"In progress\", value: \"in_progress\"}, {label: \"Done\", value: \"done\"}, {label: \"Blocked\", value: \"blocked\"}], \"all\", \"status_filter\")\n\nitems = entity_list([\n  {name: \"Set up CI pipeline\", subtitle: \"Automated builds and tests run on every push.\", status: \"Done\"},\n  {name: \"Draft API reference\", subtitle: \"Endpoint docs are written but examples are missing.\", status: \"In progress\"},\n  {name: \"Migrate user database\", subtitle: \"Schema is ready; cutover date is not yet scheduled.\", status: \"Blocked\"},\n  {name: \"Add rate limiting\", subtitle: \"Limits are defined for public endpoints only.\", status: \"Open\"},\n  {name: \"Update onboarding emails\", subtitle: \"Copy is approved and awaiting template build.\", status: \"In progress\"},\n  {name: \"Audit access logs\", subtitle: \"Quarterly review completed with no findings.\", status: \"Done\"},\n  {name: \"Integrate payment provider\", subtitle: \"Sandbox credentials are missing from staging.\", status: \"Blocked\"},\n  {name: \"Localize settings page\", subtitle: \"Translation requests have not been sent yet.\", status: \"Open\"}\n])\n\nroot = columns(2, \"1.5rem\", \"top\", [{blocks: [title, filter]}, {blocks: [items]}])\n</a2ui>\n\nThe eight items are shown in a list with title, status, and one-line detail, and a status segmented control sits beside them. The catalog has no static-data filter wiring, so the control is set up but won't yet hide rows; that needs a client function or a data-bound list."
+}

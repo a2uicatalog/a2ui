@@ -1,0 +1,126 @@
+{
+ "label": "oracle-slice-6types__express__haiku-5-5__hints-v2__run1",
+ "task": "T4",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/d-t4.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "filter",
+      "component": "segmented_control",
+      "options": [
+       {
+        "label": "All",
+        "value": "all"
+       },
+       {
+        "label": "Active",
+        "value": "active"
+       },
+       {
+        "label": "Pending",
+        "value": "pending"
+       },
+       {
+        "label": "Blocked",
+        "value": "blocked"
+       }
+      ],
+      "selected_value": "all",
+      "name": "status_filter"
+     },
+     {
+      "id": "items",
+      "component": "entity_list",
+      "items": [
+       {
+        "name": "Migrate billing database",
+        "subtitle": "Moving invoice records to the new cluster",
+        "status": "Active",
+        "meta": "Owner: Priya"
+       },
+       {
+        "name": "Rotate API keys",
+        "subtitle": "Replacing keys for the payments integration",
+        "status": "Active",
+        "meta": "Owner: Marcus"
+       },
+       {
+        "name": "Update onboarding emails",
+        "subtitle": "Waiting on legal review of new copy",
+        "status": "Pending",
+        "meta": "Owner: Lena"
+       },
+       {
+        "name": "Audit access logs",
+        "subtitle": "Collecting logs from the last 90 days",
+        "status": "Active",
+        "meta": "Owner: Tomas"
+       },
+       {
+        "name": "Vendor security review",
+        "subtitle": "Questionnaire sent, awaiting response",
+        "status": "Pending",
+        "meta": "Owner: Aisha"
+       },
+       {
+        "name": "Legacy reporting export",
+        "subtitle": "Blocked by missing read permissions",
+        "status": "Blocked",
+        "meta": "Owner: Jonas"
+       },
+       {
+        "name": "Mobile release 4.2",
+        "subtitle": "Crash fix merged, regression tests failing",
+        "status": "Blocked",
+        "meta": "Owner: Mei"
+       },
+       {
+        "name": "Localize help center",
+        "subtitle": "Translations delivered for French and German",
+        "status": "Pending",
+        "meta": "Owner: Ravi"
+       }
+      ]
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "_inline_1",
+         "filter"
+        ]
+       },
+       {
+        "blocks": [
+         "items"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "_inline_1",
+      "component": "heading",
+      "text": "Items"
+     }
+    ]
+   }
+  }
+ ]
+}

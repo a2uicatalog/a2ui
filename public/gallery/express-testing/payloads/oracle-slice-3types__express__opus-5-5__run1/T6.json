@@ -1,0 +1,130 @@
+{
+ "label": "oracle-slice-3types__express__opus-5-5__run1",
+ "task": "T6",
+ "format": "express",
+ "model_id": "claude-opus-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "vocab-flashcards",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "vocab-flashcards",
+    "components": [
+     {
+      "id": "header",
+      "component": "page_header",
+      "title": "Vocabulary Builder",
+      "subtitle": "Flip each card to reveal its definition, then move on to the next.",
+      "icon": "\ud83d\udcda",
+      "tag": "10 cards",
+      "accent": "#4f46e5"
+     },
+     {
+      "id": "deck",
+      "component": "flashcard_deck",
+      "cards": [
+       {
+        "front": "Ephemeral",
+        "back": "Lasting for a very short time. e.g. \"The beauty of the sunset was ephemeral.\""
+       },
+       {
+        "front": "Ubiquitous",
+        "back": "Present, appearing, or found everywhere. e.g. \"Smartphones have become ubiquitous.\""
+       },
+       {
+        "front": "Pragmatic",
+        "back": "Dealing with things sensibly and realistically. e.g. \"She took a pragmatic approach to the problem.\""
+       },
+       {
+        "front": "Eloquent",
+        "back": "Fluent or persuasive in speaking or writing. e.g. \"He gave an eloquent speech.\""
+       },
+       {
+        "front": "Meticulous",
+        "back": "Showing great attention to detail; very careful and precise."
+       },
+       {
+        "front": "Resilient",
+        "back": "Able to recover quickly from difficulties; tough."
+       },
+       {
+        "front": "Ambiguous",
+        "back": "Open to more than one interpretation; not having one obvious meaning."
+       },
+       {
+        "front": "Candid",
+        "back": "Truthful and straightforward; frank."
+       },
+       {
+        "front": "Benevolent",
+        "back": "Well meaning and kindly; generous toward others."
+       },
+       {
+        "front": "Tenacious",
+        "back": "Tending to keep a firm hold; persistent and determined."
+       }
+      ],
+      "accent": "#4f46e5",
+      "label_front": "WORD",
+      "label_back": "DEFINITION"
+     },
+     {
+      "id": "ring",
+      "component": "progress_ring",
+      "value": 30,
+      "size": 120,
+      "stroke_width": 10,
+      "color": "#4f46e5",
+      "label": "Cards reviewed",
+      "show_value": true,
+      "unit": "%"
+     },
+     {
+      "id": "bar",
+      "component": "progress_bar",
+      "value": 30,
+      "label": "Review progress",
+      "accent": "#4f46e5",
+      "show_percent": true,
+      "caption": "3 of 10 cards reviewed"
+     },
+     {
+      "id": "tip",
+      "component": "text_callout",
+      "variant": "info",
+      "title": "Tip",
+      "description": "Try to recall the definition before flipping. Saying the word aloud helps it stick."
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "header",
+         "deck"
+        ]
+       },
+       {
+        "blocks": [
+         "ring",
+         "bar",
+         "tip"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

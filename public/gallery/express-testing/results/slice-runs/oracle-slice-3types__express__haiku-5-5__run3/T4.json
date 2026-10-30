@@ -1,0 +1,43 @@
+{
+ "task": "T4",
+ "condition": "C_haiku-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "oracle-slice-3types__express__haiku-5-5__run3",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 16421,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 11.5,
+ "usage": {
+  "input_tokens": 6049,
+  "output_tokens": 2406
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "segmented_control",
+  "entity_list",
+  "columns",
+  "heading"
+ ],
+ "score": {
+  "precision": 0.5,
+  "recall": 0.667,
+  "f1": 0.571,
+  "slot_hits": {
+   "list": true,
+   "status indicator": false,
+   "filter control": true
+  }
+ },
+ "reply": "<a2ui>\nheading_text = \"Workstream Status\"\nfilter = segmented_control(options=[{label: \"All\", value: \"all\"}, {label: \"Active\", value: \"active\"}, {label: \"Pending\", value: \"pending\"}, {label: \"Blocked\", value: \"blocked\"}, {label: \"Done\", value: \"done\"}], selected_value=\"all\", name=\"status_filter\")\nlist = entity_list(items=[{name: \"Auth service migration\", subtitle: \"Token refresh flow moved to new gateway.\", status: \"Active\"}, {name: \"Billing export\", subtitle: \"Waiting on finance sign-off for CSV schema.\", status: \"Pending\"}, {name: \"Search reindex\", subtitle: \"Full index rebuilt overnight.\", status: \"Done\"}, {name: \"Mobile push alerts\", subtitle: \"Awaiting APNs certificate renewal.\", status: \"Blocked\"}, {name: \"Onboarding emails\", subtitle: \"Drafts in review for copy changes.\", status: \"Active\"}, {name: \"Data retention job\", subtitle: \"Scheduled for next maintenance window.\", status: \"Pending\"}, {name: \"Dashboard caching\", subtitle: \"Cache hit rate up to 92%.\", status: \"Done\"}, {name: \"Payment webhook retries\", subtitle: \"Exponential backoff being tested in staging.\", status: \"Active\"}])\nroot = columns(cols=2, gap=\"1.5rem\", align=\"top\", items=[{blocks: [heading(heading_text), filter]}, {blocks: [list]}])\n</a2ui>\n\nThe list shows all eight items, each with a title, status, and one-line detail. The status filter is a segmented control bound to `status_filter`. The status options come from the statuses in the data, but the control only changes the filter value. The host needs to wire that value to the list to actually hide non-matching rows."
+}

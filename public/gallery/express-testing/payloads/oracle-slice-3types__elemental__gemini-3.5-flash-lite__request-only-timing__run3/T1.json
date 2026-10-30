@@ -1,0 +1,165 @@
+{
+ "label": "oracle-slice-3types__elemental__gemini-3.5-flash-lite__request-only-timing__run3",
+ "task": "T1",
+ "format": "elemental",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning-elemental.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "page_header",
+      "title": "The Water Cycle",
+      "subtitle": "Journey of water through Earth's systems",
+      "icon": "\ud83d\udca7",
+      "tag": "Lesson 1",
+      "accent": "#0284c7"
+     },
+     {
+      "id": "hero",
+      "component": "article_hero",
+      "title": "Continuous Circulation",
+      "subtitle": "Discover how water moves constantly between the surface, atmosphere, and back again.",
+      "image_url": "https://images.unsplash.com/photo-1428592953211-077101b2021b?auto=format&fit=crop&w=1200&q=80"
+     },
+     {
+      "id": "sec_heading",
+      "component": "heading",
+      "text": "Core Concepts"
+     },
+     {
+      "id": "concept_columns",
+      "component": "columns",
+      "cols": 3,
+      "gap": "1.5rem",
+      "items": [
+       {
+        "blocks": [
+         {
+          "id": "c1",
+          "type": "concept_rung",
+          "badge": "1",
+          "kind": "depth",
+          "label": "STAGE 1",
+          "title": "Evaporation & Transpiration",
+          "body": "The sun heats up water in oceans, rivers, and lakes, causing it to turn into vapor and rise into the air. Plants also release moisture from their leaves through transpiration."
+         }
+        ]
+       },
+       {
+        "blocks": [
+         {
+          "id": "c2",
+          "type": "concept_rung",
+          "badge": "2",
+          "kind": "depth",
+          "label": "STAGE 2",
+          "title": "Condensation",
+          "body": "As warm water vapor rises, it cools down at higher altitudes. This cooling causes the invisible gas to turn back into tiny liquid water droplets, forming clouds."
+         }
+        ]
+       },
+       {
+        "blocks": [
+         {
+          "id": "c3",
+          "type": "concept_rung",
+          "badge": "3",
+          "kind": "depth",
+          "label": "STAGE 3",
+          "title": "Precipitation & Collection",
+          "body": "When water droplets in clouds become too heavy, they fall back to Earth as rain, snow, or sleet. This water collects in oceans and rivers, restarting the entire cycle."
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "id": "example_heading",
+      "component": "heading",
+      "text": "Worked Example"
+     },
+     {
+      "id": "worked_example",
+      "component": "concept_rung",
+      "badge": "EX",
+      "kind": "example",
+      "label": "WORKED EXAMPLE",
+      "title": "Tracing a Single Raindrop",
+      "Body": "Let's follow a single molecule starting in the Pacific Ocean. It absorbs thermal energy, transforms into vapor, travels inland on jet stream winds, cools over mountain ranges, falls as fresh snow onto a glacier, melts into a rushing stream, and finally flows back to the sea.",
+      "takeaway": "Water never truly disappears; it only changes states and location across the globe."
+     },
+     {
+      "id": "quiz_heading",
+      "component": "heading",
+      "text": "Self-Check Quiz"
+     },
+     {
+      "id": "water_quiz",
+      "component": "quiz_set",
+      "title": "Test Your Understanding",
+      "pass_score": 70,
+      "accent": "#0284c7",
+      "questions": {
+       "path": "/water_cycle_quiz"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_data_model": {
+    "surface_id": "main",
+    "path": "/",
+    "value": {
+     "water_cycle_quiz": [
+      {
+       "question": "What process turns liquid water into water vapor in the atmosphere?",
+       "options": [
+        "Condensation",
+        "Evaporation",
+        "Precipitation",
+        "Collection"
+       ],
+       "correct": 1,
+       "explanation": "Evaporation is the process where heat from the sun turns liquid water into water vapor."
+      },
+      {
+       "question": "When water vapor cools down and turns back into liquid water droplets to form clouds, what is this called?",
+       "options": [
+        "Transpiration",
+        "Evaporation",
+        "Condensation",
+        "Runoff"
+       ],
+       "correct": 2,
+       "explanation": "Condensation occurs when water vapor cools and changes back into liquid droplets."
+      },
+      {
+       "question": "Which of the following is NOT a form of precipitation?",
+       "options": [
+        "Rain",
+        "Snow",
+        "Sunshine",
+        "Hail"
+       ],
+       "correct": 2,
+       "explanation": "Sunshine is solar radiation, whereas rain, snow, and hail are all forms of precipitation."
+      }
+     ]
+    }
+   }
+  }
+ ]
+}

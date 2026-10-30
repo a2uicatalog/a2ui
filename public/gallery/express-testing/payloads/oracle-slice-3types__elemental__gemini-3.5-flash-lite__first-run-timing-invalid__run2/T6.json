@@ -1,0 +1,93 @@
+{
+ "label": "oracle-slice-3types__elemental__gemini-3.5-flash-lite__first-run-timing-invalid__run2",
+ "task": "T6",
+ "format": "elemental",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning-elemental.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "page_header",
+      "title": "Vocabulary Flashcards",
+      "subtitle": "Review the terms below, flip to check definitions, and track your progress.",
+      "icon": "\ud83d\udcd6",
+      "tag": "Learning Module",
+      "accent": "#4f46e5"
+     },
+     {
+      "id": "deck",
+      "component": "flashcard_deck",
+      "cards": {
+       "path": "/cards"
+      },
+      "accent": "#4f46e5",
+      "label_front": "TERM",
+      "label_back": "DEFINITION"
+     }
+    ]
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_data_model": {
+    "surface_id": "main",
+    "path": "/",
+    "value": {
+     "cards": [
+      {
+       "front": "Ephemeral",
+       "back": "Lasting for a very short time."
+      },
+      {
+       "front": "Mellifluous",
+       "back": "Sweet or musical; pleasant to hear."
+      },
+      {
+       "front": "Serendipity",
+       "back": "The occurrence of events by chance in a happy or beneficial way."
+      },
+      {
+       "front": "Petrichor",
+       "back": "A pleasant smell that frequently accompanies the first rain after a long period of warm, dry weather."
+      },
+      {
+       "front": "Luminous",
+       "back": "Full of or shedding light; bright or shining, especially in the dark."
+      },
+      {
+       "front": "Ineffable",
+       "back": "Too great or extreme to be expressed or described in words."
+      },
+      {
+       "front": "Halcyon",
+       "back": "Denoting a period of time in the past that was idyllically happy and peaceful."
+      },
+      {
+       "front": "Panacea",
+       "back": "A solution or remedy for all difficulties or diseases."
+      },
+      {
+       "front": "Resplendent",
+       "back": "Attractive and impressive through being richly colorful or sumptuous."
+      },
+      {
+       "front": "Susurration",
+       "back": "Whispering, murmuring, or rustling."
+      }
+     ]
+    }
+   }
+  }
+ ]
+}

@@ -1,0 +1,29 @@
+{
+ "task": "T6",
+ "repeat": 1,
+ "writer_model": "gemini-3.5-flash-lite",
+ "decisions": "jev",
+ "jev_ms": 177,
+ "jev_usage": {
+  "input_tokens": 593,
+  "output_tokens": 101
+ },
+ "jev_answers": {
+  "layout": "lesson",
+  "count": "4",
+  "cta": "no"
+ },
+ "layout": "lesson",
+ "count": 4,
+ "cta": false,
+ "writer_secs": 1.06,
+ "writer_tokens": {
+  "in": 155,
+  "out": 144
+ },
+ "build_ms": 0.11,
+ "valid": true,
+ "error": null,
+ "compile_ms": 12.23,
+ "express": "<a2ui>\nhdr = page_header(title=\"Vocabulary Flashcards\", subtitle=\"Reviewed: 0 of 10 cards\")\nh1 = heading(text=\"Card 1: Ephemeral\")\nb1 = body(text=\"Tap to flip and reveal the definition: lasting for a very short time.\")\nh2 = heading(text=\"Card 2: Serendipity\")\nb2 = body(text=\"Tap to flip and reveal the definition: finding valuable things by chance.\")\nh3 = heading(text=\"Card 3: Pragmatic\")\nb3 = body(text=\"Tap to flip and reveal the definition: dealing with things sensibly and realistically.\")\nh4 = heading(text=\"Card 4: Benevolent\")\nb4 = body(text=\"Tap to flip and reveal the definition: well meaning and kindly.\")\nroot = columns(cols=1, gap=\"1.5rem\", align=\"top\", items=[{blocks: [hdr, h1, b1, h2, b2, h3, b3, h4, b4]}])\n</a2ui>"
+}

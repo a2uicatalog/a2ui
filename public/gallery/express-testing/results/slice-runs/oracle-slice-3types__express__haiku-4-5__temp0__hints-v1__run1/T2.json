@@ -1,0 +1,43 @@
+{
+ "task": "T2",
+ "condition": "CTH",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-4-5-20251001",
+ "label": "oracle-slice-3types__express__haiku-4-5__temp0__hints-v1__run1",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 16421,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 3.9,
+ "usage": {
+  "input_tokens": 4949,
+  "output_tokens": 353
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "stat_card",
+  "stat_card",
+  "stat_card",
+  "stat_card",
+  "metric_row",
+  "benchmark_comparison",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.857,
+  "recall": 1.0,
+  "f1": 0.923,
+  "slot_hits": {
+   "KPI tile (x4)": true,
+   "trend (required only if metric_row was chosen; stat_card's own delta already satisfies it)": true,
+   "comparison chart": true
+  }
+ },
+ "reply": "<a2ui>\nkpi_1 = stat_card(\"$2.4M\", \"Revenue\", \"+12%\", true, \"#4CAF50\")\nkpi_2 = stat_card(\"8,432\", \"Active Users\", \"+5%\", true, \"#2196F3\")\nkpi_3 = stat_card(\"94.2%\", \"Uptime\", \"-0.3%\", false, \"#FF9800\")\nkpi_4 = stat_card(\"3.2s\", \"Avg Response\", \"-8%\", true, \"#4CAF50\")\n\nmetrics_row = metric_row(4, null, [\n  {value: \"$2.4M\", label: \"Revenue\", trend: \"up\"},\n  {value: \"8,432\", label: \"Active Users\", trend: \"up\"},\n  {value: \"94.2%\", label: \"Uptime\", trend: \"down\"},\n  {value: \"3.2s\", label: \"Avg Response\", trend: \"up\"}\n])\n\ncomparison_chart = benchmark_comparison([\n  {label: \"Product A\", value: 87},\n  {label: \"Product B\", value: 72},\n  {label: \"Product C\", value: 91},\n  {label: \"Product D\", value: 65}\n])\n\nroot = columns(2, \"2rem\", \"top\", [\n  {blocks: [metrics_row]},\n  {blocks: [comparison_chart]}\n])\n</a2ui>"
+}

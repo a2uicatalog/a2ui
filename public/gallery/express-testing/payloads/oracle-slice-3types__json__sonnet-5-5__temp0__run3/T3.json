@@ -1,0 +1,119 @@
+{
+ "label": "oracle-slice-3types__json__sonnet-5-5__temp0__run3",
+ "task": "T3",
+ "format": "json",
+ "model_id": "claude-sonnet-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "landing_hero",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "landing_hero",
+    "components": [
+     {
+      "id": "root",
+      "component": "gradient_hero",
+      "badge": "New: Flow 2.0",
+      "title": "Ship projects faster, together",
+      "subtitle": "Flow brings your tasks, docs, and team conversations into one calm workspace so nothing slips through the cracks.",
+      "align": "center"
+     }
+    ]
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "landing_features",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "landing_features",
+    "components": [
+     {
+      "id": "root",
+      "component": "feature_grid",
+      "heading": "Everything your team needs",
+      "description": "Three simple ideas that keep work moving.",
+      "columns": 3,
+      "features": [
+       {
+        "icon": "\u26a1",
+        "title": "Fast by default",
+        "description": "Create tasks, assign owners, and set deadlines in seconds with keyboard-first shortcuts.",
+        "color": "#4f46e5"
+       },
+       {
+        "icon": "\ud83e\udd1d",
+        "title": "Built for collaboration",
+        "description": "Comment, share docs, and co-edit in real time without leaving the project you are working on.",
+        "color": "#8b5cf6"
+       },
+       {
+        "icon": "\ud83d\udcca",
+        "title": "Clear progress",
+        "description": "Live dashboards show what is on track, what is blocked, and what ships next.",
+        "color": "#0ea5e9"
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "landing_testimonial",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "landing_testimonial",
+    "components": [
+     {
+      "id": "root",
+      "component": "testimonial_card",
+      "text": "Flow replaced three tools for our team. We cut our weekly status meeting in half and finally know where every project stands.",
+      "author_name": "Priya Raman",
+      "author_title": "Head of Product, Lumen Labs",
+      "rating": 5
+     }
+    ]
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "landing_cta",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "landing_cta",
+    "components": [
+     {
+      "id": "root",
+      "component": "cta_button",
+      "label": "Start your free trial",
+      "url": "https://example.com/signup",
+      "color": "#4f46e5",
+      "same_tab": true
+     }
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,34 @@
+Items
+ All Open In progress Blocked Resolved 
+ 🔐
+ Login timeout on mobile
+ open Sessions expire after 2 minutes on iOS Safari.
+ P1 · Auth
+ 🧾
+ Invoice export fails
+ in_progress CSV export returns a 500 for accounts over 10k rows.
+ P2 · Billing
+ 📊
+ Dashboard chart lag
+ in_progress Line charts take over 4 seconds to render on load.
+ P2 · Analytics
+ ✉️
+ Password reset email delayed
+ blocked Reset emails arrive up to 30 minutes after request.
+ P1 · Notifications
+ 🌗
+ Dark mode contrast
+ open Secondary text falls below WCAG AA on cards.
+ P3 · UI
+ 🔁
+ Webhook retry logic
+ resolved Failed deliveries are not retried after a timeout.
+ P2 · Integrations
+ 🔎
+ Search index rebuild
+ blocked Nightly reindex skips newly created workspaces.
+ P2 · Search
+ 🖼️
+ Avatar upload limit
+ resolved Uploads above 2 MB are rejected without a message.
+ P3 · Profile

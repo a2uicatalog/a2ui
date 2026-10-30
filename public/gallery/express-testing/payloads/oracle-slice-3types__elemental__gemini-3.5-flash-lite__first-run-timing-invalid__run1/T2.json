@@ -1,0 +1,189 @@
+{
+ "label": "oracle-slice-3types__elemental__gemini-3.5-flash-lite__first-run-timing-invalid__run1",
+ "task": "T2",
+ "format": "elemental",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display-elemental.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "heading",
+      "text": "Metrics Overview"
+     },
+     {
+      "id": "kpi_1",
+      "component": "stat_card",
+      "value": {
+       "path": "root/kpis/0/value"
+      },
+      "label": {
+       "path": "root/kpis/0/label"
+      },
+      "delta": {
+       "path": "root/kpis/0/delta"
+      },
+      "accent": {
+       "path": "root/kpis/0/accent"
+      }
+     },
+     {
+      "id": "kpi_2",
+      "component": "stat_card",
+      "value": {
+       "path": "root/kpis/1/value"
+      },
+      "label": {
+       "path": "root/kpis/1/label"
+      },
+      "delta": {
+       "path": "root/kpis/1/delta"
+      },
+      "accent": {
+       "path": "root/kpis/1/accent"
+      }
+     },
+     {
+      "id": "kpi_3",
+      "component": "stat_card",
+      "value": {
+       "path": "root/kpis/2/value"
+      },
+      "label": {
+       "path": "root/kpis/2/label"
+      },
+      "delta": {
+       "path": "root/kpis/2/delta"
+      },
+      "accent": {
+       "path": "root/kpis/2/accent"
+      }
+     },
+     {
+      "id": "kpi_4",
+      "component": "stat_card",
+      "value": {
+       "path": "root/kpis/3/value"
+      },
+      "label": {
+       "path": "root/kpis/3/label"
+      },
+      "delta": {
+       "path": "root/kpis/3/delta"
+      },
+      "accent": {
+       "path": "root/kpis/3/accent"
+      }
+     },
+     {
+      "id": "kpi_columns",
+      "component": "columns",
+      "cols": 4,
+      "gap": "1.0rem",
+      "items": [
+       {
+        "blocks": [
+         "kpi_1"
+        ]
+       },
+       {
+        "blocks": [
+         "kpi_2"
+        ]
+       },
+       {
+        "blocks": [
+         "kpi_3"
+        ]
+       },
+       {
+        "blocks": [
+         "kpi_4"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "benchmark_heading",
+      "component": "heading",
+      "text": "Performance Benchmark Comparison"
+     },
+     {
+      "id": "benchmark_chart",
+      "component": "benchmark_comparison",
+      "items": {
+       "path": "root/benchmark_items"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_data_model": {
+    "surface_id": "main",
+    "path": "/",
+    "value": {
+     "kpis": [
+      {
+       "value": "$124,500",
+       "label": "Total Revenue",
+       "delta": "+12.3%",
+       "is_up": "true",
+       "accent": "#4CAF50"
+      },
+      {
+       "value": "1,420",
+       "label": "New Customers",
+       "delta": "+5.4%",
+       "is_up": "true",
+       "accent": "#2196F3"
+      },
+      {
+       "value": "94.2%",
+       "label": "Retention Rate",
+       "delta": "-0.8%",
+       "is_up": "false",
+       "accent": "#FF9800"
+      },
+      {
+       "value": "3.8s",
+       "label": "Avg Response Time",
+       "delta": "-15.2%",
+       "is_up": "true",
+       "accent": "#9C27B0"
+      }
+     ],
+     "benchmark_items": [
+      {
+       "label": "Q1 Performance",
+       "value": 75
+      },
+      {
+       "label": "Q2 Performance",
+       "value": 88
+      },
+      {
+       "label": "Q3 Performance",
+       "value": 62
+      },
+      {
+       "label": "Q4 Target",
+       "value": 95
+      }
+     ]
+    }
+   }
+  }
+ ]
+}

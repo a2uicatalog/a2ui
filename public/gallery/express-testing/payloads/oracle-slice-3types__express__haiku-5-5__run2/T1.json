@@ -1,0 +1,140 @@
+{
+ "label": "oracle-slice-3types__express__haiku-5-5__run2",
+ "task": "T1",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "header",
+      "component": "page_header",
+      "title": "The Water Cycle",
+      "subtitle": "How water moves between the oceans, the air, the land, and living things",
+      "icon": "\ud83d\udca7",
+      "tag": "Earth Science",
+      "accent": "#0ea5e9"
+     },
+     {
+      "id": "concept1_heading",
+      "component": "heading",
+      "text": "1. Evaporation"
+     },
+     {
+      "id": "concept1_body",
+      "component": "body",
+      "text": "The sun heats water in oceans, lakes, and rivers. The heat turns liquid water into water vapour, a gas that rises into the air."
+     },
+     {
+      "id": "concept2_heading",
+      "component": "heading",
+      "text": "2. Condensation"
+     },
+     {
+      "id": "concept2_body",
+      "component": "body",
+      "text": "As water vapour rises, it cools and condenses onto tiny particles of dust and salt. These droplets gather together to form clouds."
+     },
+     {
+      "id": "concept3_heading",
+      "component": "heading",
+      "text": "3. Precipitation and Collection"
+     },
+     {
+      "id": "concept3_body",
+      "component": "body",
+      "text": "When droplets in a cloud grow heavy enough, they fall as rain, snow, sleet, or hail. The water then runs off into rivers or soaks into the ground, eventually returning to the oceans."
+     },
+     {
+      "id": "worked_example",
+      "component": "concept_rung",
+      "badge": "EX",
+      "kind": "example",
+      "label": "WORKED EXAMPLE",
+      "title": "Tracing one raindrop",
+      "body": "A puddle on a sunny road evaporates. The vapour rises, cools high in the sky, and condenses onto a dust particle to form a cloud droplet.\n\nThe droplet joins others until it is heavy enough to fall as rain. It lands on a hillside, soaks in, and eventually seeps into a stream that flows to the sea.",
+      "takeaway": "One drop of water can pass through every stage of the cycle."
+     },
+     {
+      "id": "quiz",
+      "component": "quiz_set",
+      "title": "Self-Check Quiz",
+      "pass_score": 70,
+      "accent": "#0ea5e9",
+      "questions": [
+       {
+        "question": "What is the main energy source that drives evaporation?",
+        "options": [
+         "Wind",
+         "Heat from the sun",
+         "Gravity",
+         "Pressure in the soil"
+        ],
+        "correct": 1,
+        "explanation": "The sun's heat turns liquid water into vapour."
+       },
+       {
+        "question": "Which process forms clouds from water vapour?",
+        "options": [
+         "Evaporation",
+         "Condensation",
+         "Infiltration",
+         "Runoff"
+        ],
+        "correct": 1,
+        "explanation": "Condensation happens when vapour cools and gathers into droplets."
+       },
+       {
+        "question": "What is the name for water that soaks into the ground?",
+        "options": [
+         "Runoff",
+         "Transpiration",
+         "Infiltration",
+         "Precipitation"
+        ],
+        "correct": 2,
+        "explanation": "Infiltration is when water seeps into soil and rock."
+       }
+      ]
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "2rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "header",
+         "concept1_heading",
+         "concept1_body",
+         "concept2_heading",
+         "concept2_body",
+         "concept3_heading",
+         "concept3_body"
+        ]
+       },
+       {
+        "blocks": [
+         "worked_example",
+         "quiz"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

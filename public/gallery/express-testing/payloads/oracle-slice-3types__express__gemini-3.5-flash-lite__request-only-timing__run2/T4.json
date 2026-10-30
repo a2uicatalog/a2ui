@@ -1,0 +1,127 @@
+{
+ "label": "oracle-slice-3types__express__gemini-3.5-flash-lite__request-only-timing__run2",
+ "task": "T4",
+ "format": "express",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "1.5rem",
+      "items": [
+       {
+        "blocks": [
+         "_inline_1",
+         "_inline_2",
+         "_inline_3",
+         "_inline_4"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "_inline_1",
+      "component": "heading",
+      "text": "System Items Overview"
+     },
+     {
+      "id": "_inline_2",
+      "component": "body",
+      "text": "Filterable list of system resources, operational status, and details."
+     },
+     {
+      "id": "_inline_3",
+      "component": "segmented_control",
+      "name": "status_filter",
+      "selected_value": "all",
+      "options": [
+       {
+        "label": "All",
+        "value": "all"
+       },
+       {
+        "label": "Active",
+        "value": "active"
+       },
+       {
+        "label": "Warning",
+        "value": "warning"
+       },
+       {
+        "label": "Error",
+        "value": "error"
+       }
+      ]
+     },
+     {
+      "id": "_inline_4",
+      "component": "entity_list",
+      "items": [
+       {
+        "name": "Auth Service",
+        "subtitle": "JWT validation & session management",
+        "status": "active",
+        "meta": "99.9% uptime"
+       },
+       {
+        "name": "Payment Gateway",
+        "subtitle": "Stripe & PayPal transaction handler",
+        "status": "active",
+        "meta": "Operational"
+       },
+       {
+        "name": "Notification Engine",
+        "subtitle": "Push, SMS & email delivery worker",
+        "status": "warning",
+        "meta": "High latency"
+       },
+       {
+        "name": "User Analytics",
+        "subtitle": "Event ingestion and stream processing",
+        "status": "active",
+        "meta": "Normal load"
+       },
+       {
+        "name": "Data Backup Worker",
+        "subtitle": "Daily snapshot replication to S3",
+        "status": "error",
+        "meta": "Failed 2h ago"
+       },
+       {
+        "name": "Search Indexer",
+        "subtitle": "Elasticsearch cluster synchronization",
+        "status": "active",
+        "meta": "Synced"
+       },
+       {
+        "name": "File Storage API",
+        "subtitle": "Asset uploads and CDN purging",
+        "status": "warning",
+        "meta": "85% capacity"
+       },
+       {
+        "name": "Audit Logger",
+        "subtitle": "Compliance and security audit trail",
+        "status": "active",
+        "meta": "Recording"
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

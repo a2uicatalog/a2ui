@@ -1,0 +1,39 @@
+{
+ "task": "T3",
+ "condition": "JC",
+ "label": "jev-picks-on-oracle-slice-3types__express__haiku-4-5__run3",
+ "agent_type": "jev-narrowed",
+ "catalogue": "JC-T3.json",
+ "atoms_in_catalogue": 14,
+ "prompt_chars": 9411,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 4.7,
+ "usage": {
+  "input_tokens": 2669,
+  "output_tokens": 447
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns",
+  "gradient_hero",
+  "feature_grid",
+  "testimonial_card",
+  "cta_section"
+ ],
+ "score": {
+  "precision": 0.8,
+  "recall": 1.0,
+  "f1": 0.889,
+  "slot_hits": {
+   "hero": true,
+   "feature columns (x3)": true,
+   "testimonial": true,
+   "CTA": true
+  }
+ },
+ "reply": "<a2ui>\nroot = columns(cols=1, gap=\"2rem\", items=[\n  {blocks: [\n    gradient_hero(\n      title=\"Transform Your Workflow\",\n      subtitle=\"Experience seamless integration and powerful features designed for modern teams\",\n      cta_label=\"Get Started\",\n      cta_url=\"https://example.com/signup\"\n    )\n  ]},\n  {blocks: [\n    feature_grid(\n      heading=\"Why Choose Us\",\n      description=\"Powerful capabilities to streamline your work\",\n      columns=3,\n      features=[\n        {icon: \"\u26a1\", title: \"Lightning Fast\", description: \"Optimized performance that keeps your team moving\"},\n        {icon: \"\ud83d\udd12\", title: \"Secure & Reliable\", description: \"Enterprise-grade security for peace of mind\"},\n        {icon: \"\ud83c\udfaf\", title: \"Easy to Use\", description: \"Intuitive design that requires minimal training\"}\n      ]\n    )\n  ]},\n  {blocks: [\n    testimonial_card(\n      text=\"This product completely transformed how we manage projects. The team productivity has increased by 40% since we started using it.\",\n      author_name=\"Sarah Johnson\",\n      author_title=\"Product Manager at TechCorp\",\n      author_avatar_url=\"https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah\",\n      rating=5\n    )\n  ]},\n  {blocks: [\n    cta_section(\n      heading=\"Ready to Get Started?\",\n      body=\"Join hundreds of teams already using our platform to transform their workflow.\",\n      primary_cta={label: \"Start Free Trial\", url: \"https://example.com/trial\"},\n      secondary_cta={label: \"Learn More\", url: \"https://example.com/learn\"}\n    )\n  ]}\n])\n</a2ui>"
+}

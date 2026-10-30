@@ -1,0 +1,227 @@
+{
+ "task": "T6",
+ "condition": "D",
+ "chooser": "clef-flash",
+ "slice_atoms_in_options": 12,
+ "picks": [
+  {
+   "slot": "A grid or stack of ten vocabulary cards, each showing a single word on its front #1",
+   "decomposer_line": "A grid or stack of ten vocabulary cards, each showing a single word on its front face",
+   "atom": "flashcard_deck",
+   "confidence": 0.6108,
+   "top3": [
+    [
+     "flashcard_deck",
+     0.7958
+    ],
+    [
+     "flip_card",
+     0.0869
+    ],
+    [
+     "spaced_repetition_card",
+     0.031
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "Each flashcard's front face displays the vocabulary word prominently and centere #2",
+   "decomposer_line": "Each flashcard's front face displays the vocabulary word prominently and centered",
+   "atom": "flip_card",
+   "confidence": 0.3447,
+   "top3": [
+    [
+     "flip_card",
+     0.5436
+    ],
+    [
+     "flashcard_deck",
+     0.2997
+    ],
+    [
+     "spaced_repetition_card",
+     0.1173
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "Each flashcard's back face reveals the word's meaning or translation when the ca #3",
+   "decomposer_line": "Each flashcard's back face reveals the word's meaning or translation when the card is flipped",
+   "atom": "flip_card",
+   "confidence": 0.6141,
+   "top3": [
+    [
+     "flip_card",
+     0.7881
+    ],
+    [
+     "flashcard_deck",
+     0.1528
+    ],
+    [
+     "spaced_repetition_card",
+     0.0423
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "A flip action that turns a card over with a smooth rotating animation when the u #4",
+   "decomposer_line": "A flip action that turns a card over with a smooth rotating animation when the user clicks or taps it",
+   "atom": "flip_card",
+   "confidence": 0.8289,
+   "top3": [
+    [
+     "flip_card",
+     0.9159
+    ],
+    [
+     "flashcard_deck",
+     0.0642
+    ],
+    [
+     "spaced_repetition_card",
+     0.0093
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "Controls to move forward and back between the ten cards, or to move through them #5",
+   "decomposer_line": "Controls to move forward and back between the ten cards, or to move through them one at a time",
+   "atom": "flashcard_deck",
+   "confidence": 0.7064,
+   "top3": [
+    [
+     "flashcard_deck",
+     0.8511
+    ],
+    [
+     "flip_card",
+     0.0715
+    ],
+    [
+     "spaced_repetition_card",
+     0.0322
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "A progress indicator that shows how many of the ten cards have been reviewed, su #6",
+   "decomposer_line": "A progress indicator that shows how many of the ten cards have been reviewed, such as a count like '4 of 10'",
+   "atom": "progress_circle",
+   "confidence": 0.2585,
+   "top3": [
+    [
+     "progress_circle",
+     0.5018
+    ],
+    [
+     "progress_bar",
+     0.194
+    ],
+    [
+     "progress_ring",
+     0.1665
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "A visual progress bar or fill that grows as more cards are marked reviewed #7",
+   "decomposer_line": "A visual progress bar or fill that grows as more cards are marked reviewed",
+   "atom": "progress_bar",
+   "confidence": 0.2671,
+   "top3": [
+    [
+     "progress_bar",
+     0.4859
+    ],
+    [
+     "progress_circle",
+     0.2778
+    ],
+    [
+     "progress_ring",
+     0.094
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "A mark-as-reviewed control that records a card as reviewed once the user has loo #8",
+   "decomposer_line": "A mark-as-reviewed control that records a card as reviewed once the user has looked at it",
+   "atom": "spaced_repetition_card",
+   "confidence": 0.481,
+   "top3": [
+    [
+     "spaced_repetition_card",
+     0.7035
+    ],
+    [
+     "flashcard_deck",
+     0.1331
+    ],
+    [
+     "flip_card",
+     0.1051
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "A summary or completion message that appears once all ten cards have been review #9",
+   "decomposer_line": "A summary or completion message that appears once all ten cards have been reviewed",
+   "atom": "flashcard_deck",
+   "confidence": 0.0919,
+   "top3": [
+    [
+     "flashcard_deck",
+     0.2563
+    ],
+    [
+     "progress_circle",
+     0.2528
+    ],
+    [
+     "badge_showcase",
+     0.1154
+    ]
+   ],
+   "finalists": null
+  }
+ ],
+ "cost": {
+  "decomposer_input_tokens": 0,
+  "decomposer_output_tokens": 0,
+  "decomposer_thinking_tokens": 0,
+  "jev_input_tokens": 5292,
+  "jev_output_tokens": 0,
+  "jev_calls": 9
+ },
+ "error": null,
+ "atoms": [
+  "flashcard_deck",
+  "flip_card",
+  "flip_card",
+  "flip_card",
+  "flashcard_deck",
+  "progress_circle",
+  "progress_bar",
+  "spaced_repetition_card",
+  "flashcard_deck"
+ ],
+ "score": {
+  "precision": 1.0,
+  "recall": 1.0,
+  "f1": 1.0,
+  "slot_hits": {
+   "flashcard deck": true,
+   "progress indicator": true
+  }
+ },
+ "secs": 4.2
+}

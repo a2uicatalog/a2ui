@@ -1,0 +1,82 @@
+{
+ "label": "oracle-slice-3types__json__haiku-4-5__temp0__run1",
+ "task": "T5",
+ "format": "json",
+ "model_id": "claude-haiku-4-5-20251001",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "pricing-page",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "pricing-page",
+    "components": [
+     {
+      "id": "root",
+      "component": "pricing_tier_group",
+      "tiers": [
+       {
+        "name": "Starter",
+        "price": "$29",
+        "period": "/month",
+        "description": "Perfect for individuals and small projects",
+        "features": [
+         "Up to 5 projects",
+         "Basic analytics",
+         "Community support",
+         "1 GB storage",
+         "Standard performance"
+        ],
+        "cta_label": "Get Started",
+        "cta_url": "#starter",
+        "recommended": false
+       },
+       {
+        "name": "Professional",
+        "price": "$79",
+        "period": "/month",
+        "description": "Ideal for growing teams and businesses",
+        "features": [
+         "Unlimited projects",
+         "Advanced analytics",
+         "Priority email support",
+         "100 GB storage",
+         "High performance",
+         "Custom integrations",
+         "Team collaboration tools"
+        ],
+        "cta_label": "Start Free Trial",
+        "cta_url": "#professional",
+        "recommended": true,
+        "badge": "Most Popular"
+       },
+       {
+        "name": "Enterprise",
+        "price": "Custom",
+        "period": "pricing",
+        "description": "For large-scale operations and enterprises",
+        "features": [
+         "Everything in Professional",
+         "Unlimited storage",
+         "Dedicated support",
+         "SLA guarantee",
+         "Advanced security",
+         "Custom workflows",
+         "On-premise deployment option"
+        ],
+        "cta_label": "Contact Sales",
+        "cta_url": "#enterprise",
+        "recommended": false
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

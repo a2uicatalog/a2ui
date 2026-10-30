@@ -1,0 +1,47 @@
+{
+ "task": "T5",
+ "condition": "CX_haiku-5-5",
+ "temperature_applied": false,
+ "format": "elemental",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "oracle-slice-3types__elemental__haiku-5-5__run2",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "C-marketing-commerce.json",
+ "atoms_in_catalogue": 23,
+ "prompt_chars": 12539,
+ "slot_recall": [
+  1,
+  1
+ ],
+ "secs": 4.3,
+ "usage": {
+  "input_tokens": 4928,
+  "output_tokens": 964
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "heading",
+  "pricing_tier_group"
+ ],
+ "score": {
+  "per_approach": {
+   "tier_cards": {
+    "precision": 0.5,
+    "recall": 1.0,
+    "f1": 0.667
+   },
+   "comparison_table": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": null
+   }
+  },
+  "best_approach": "tier_cards",
+  "f1": 0.667
+ },
+ "reply": "<a2ui>\n<body id=\"root\">\n  <ui-heading id=\"pricing-heading\" text=\"Choose your plan\"></ui-heading>\n  <ui-pricing_tier_group id=\"pricing-tiers\">\n    <script type=\"application/json\" slot=\"tiers\">[\n      {\n        \"id\": \"starter\",\n        \"name\": \"Starter\",\n        \"price\": \"$9\",\n        \"period\": \"per month\",\n        \"description\": \"For individuals getting started.\",\n        \"recommended\": false,\n        \"features\": [\n          \"Up to 3 projects\",\n          \"5 GB storage\",\n          \"Email support\",\n          \"Basic analytics\"\n        ],\n        \"cta_label\": \"Start free trial\",\n        \"cta_url\": \"https://example.com/signup/starter\"\n      },\n      {\n        \"id\": \"pro\",\n        \"name\": \"Pro\",\n        \"price\": \"$29\",\n        \"period\": \"per month\",\n        \"description\": \"For growing teams that need more.\",\n        \"recommended\": true,\n        \"features\": [\n          \"Unlimited projects\",\n          \"100 GB storage\",\n          \"Priority email and chat support\",\n          \"Advanced analytics\",\n          \"Team collaboration tools\",\n          \"Custom integrations\"\n        ],\n        \"cta_label\": \"Get Pro\",\n        \"cta_url\": \"https://example.com/signup/pro\"\n      },\n      {\n        \"id\": \"enterprise\",\n        \"name\": \"Enterprise\",\n        \"price\": \"$99\",\n        \"period\": \"per month\",\n        \"description\": \"For organisations with advanced needs.\",\n        \"recommended\": false,\n        \"features\": [\n          \"Everything in Pro\",\n          \"Unlimited storage\",\n          \"24/7 phone support\",\n          \"SSO and advanced security\",\n          \"Dedicated account manager\",\n          \"Custom SLA\"\n        ],\n        \"cta_label\": \"Contact sales\",\n        \"cta_url\": \"https://example.com/contact-sales\"\n      }\n    ]</script>\n  </ui-pricing_tier_group>\n</body>\n</a2ui>"
+}

@@ -1,0 +1,39 @@
+{
+ "task": "T3",
+ "condition": "C_gemini-3.5-flash",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash",
+ "hints": false,
+ "label": "oracle-slice-3types__express__gemini-3.5-flash__thinking-on_first-run-timing-invalid__run1",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "C-marketing-commerce.json",
+ "atoms_in_catalogue": 23,
+ "prompt_chars": 12467,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 32.6,
+ "usage": {
+  "input_tokens": 3412,
+  "output_tokens": 5714
+ },
+ "valid": false,
+ "error": "A2uiCompilationParseError: Root target 'root' is not defined. - Help: Ensure root component 'root' is assigned in your Express DSL.",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "hero": false,
+   "feature columns (x3)": false,
+   "testimonial": false,
+   "CTA": false
+  }
+ },
+ "reply": "<a2ui>\nhero = gradient_hero(\n    \"Scale Your SaaS with Lightning Speed\",\n    \"The ultimate developer-first platform for building, deploying, and scaling modern web applications.\",\n    \"INTRODUCING V2.0\",\n    \"#4f46e5\",\n    \"#8b5cf6\",\n    null,\n    \"center\",\n    \"Get Started Free\",\n    \"https://example.com/signup\"\n)\n\nfeatures_list = [\n    {\n        \"icon\": \"\u26a1\",\n        \"title\": \"Instant Deployments\",\n        \"description\": \"Push your code to GitHub and see it live in seconds. Global CDN built-in.\",\n        \"badge\": \"Fast\",\n        \"color\": \"#4f46e5\"\n    },\n    {\n        \"icon\": \"\ud83d\udd12\",\n        \"title\": \"Secure by Default\",\n        \"description\": \"Automatic SSL, DDoS protection, and isolated runtime environments for every app.\",\n        \"badge\": \"Safe\",\n        \"color\": \"#0ea5e9\"\n    },\n    {\n        \"icon\": \"\ud83d\udcc8\",\n        \"title\": \"Auto-scaling\",\n        \"description\": \"Scale from zero to millions of requests seamlessly with zero configuration.\",\n        \"badge\": \"Scale\",\n        \"color\": \"#10b981\"\n    }\n]\n\nfeatures_section = feature_grid(\n    \"Engineered for Performance\",\n    \"Everything you need to deliver high-quality web experiences.\",\n    3,\n    features_list\n)\n\ntestimonial = testimonial_card(\n    \"This platform has completely transformed how our team deploys software. We went from weekly manual releases to continuous deployment with zero downtime.\",\n    \"Sarah Jenkins\",\n    \"VP of Engineering at TechFlow\",\n    \"https://images.unsplash.com/photo-1494790108377-be9c29b29330\",\n    5\n)\n\ncta = ripple_button(\n    \"Start Your Free Trial Now\",\n    \"https://example.com/signup\",\n    \"\ud83d\ude80\",\n    \"#4f46e5\",\n    \"lg\",\n    false,\n    \"center\"\n)\n\nroot = [\n    hero,\n    features_section,\n    testimonial,\n    cta\n]\n</a2ui>"
+}

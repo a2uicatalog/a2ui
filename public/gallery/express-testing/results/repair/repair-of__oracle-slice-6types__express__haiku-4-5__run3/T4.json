@@ -1,0 +1,17 @@
+{
+ "task": "T4",
+ "condition": "D",
+ "original_label": "oracle-slice-6types__express__haiku-4-5__run3",
+ "original_error": "A2uiCompilationParseError: Failed to parse expression: Syntax error at line 29:28: extraneous input '=' expecting {<EOF>, '[', '{', '_', 'null', RAW_TRIPLE_STRING, TRIPLE_STRING, RAW_STRING, STANDARD_STRING, PATH, CHECK, NUMBER, BOOLEAN, IDENTIFIER} (line 29) - Line 29, Col 28 - Help: Please correct the syntax error in your E",
+ "repaired_valid": false,
+ "produced": [],
+ "f1_after": 0,
+ "prompt_chars": 7481,
+ "attempts": 1,
+ "usage": {
+  "input_tokens": 2083,
+  "output_tokens": 439
+ },
+ "reply": "<a2ui>\n// Initialize filter state\n$/filterStatus = \"all\"\n\n// Sample data\n$/items = [\n  {id: 1, title: \"Design System Update\", status: \"in_progress\", detail: \"Refining component library and documentation\"},\n  {id: 2, title: \"API Integration\", status: \"completed\", detail: \"Successfully connected payment gateway\"},\n  {id: 3, title: \"Mobile Optimization\", status: \"pending\", detail: \"Awaiting design approval from stakeholders\"},\n  {id: 4, title: \"Database Migration\", status: \"in_progress\", detail: \"Moving legacy data to new PostgreSQL instance\"},\n  {id: 5, title: \"Security Audit\", status: \"pending\", detail: \"Scheduled for next quarter review cycle\"},\n  {id: 6, title: \"User Authentication\", status: \"completed\", detail: \"OAuth 2.0 implementation now live\"},\n  {id: 7, title: \"Performance Testing\", status: \"in_progress\", detail: \"Load testing with 10k concurrent users\"},\n  {id: 8, title: \"Documentation Portal\", status: \"completed\", detail: \"Published comprehensive API reference guide\"}\n]\n\n// Status filter control\nstatusFilter = segmented_control(\n  options=[\n    {label: \"All\", value: \"all\"},\n    {label: \"Pending\", value: \"pending\"},\n    {label: \"In Progress\", value: \"in_progress\"},\n    {label: \"Completed\", value: \"completed\"}\n  ],\n  selected_value=$/filterStatus,\n  name=\"statusFilter\"\n)\n\n// Item template\nitemTemplate = entity_list(items=[\n  {\n    name: $title,\n    subtitle: $detail,\n    icon: \"\ud83d\udccb\"\n  }\n])\n\n// Root layout\nroot = body(\"Items\")\n</a2ui>",
+ "final_error": "A2uiCompilationValidationError: Property 'selected_value' of component 'segmented_control' does not support dynamic data bindings (paths). - Help: Property 'selected_value' on 'segmented_control' must be a static literal value, not a dynamic databinding ($path)."
+}

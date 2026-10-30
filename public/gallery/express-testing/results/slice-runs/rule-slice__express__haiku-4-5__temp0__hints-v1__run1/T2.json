@@ -1,0 +1,40 @@
+{
+ "task": "T2",
+ "condition": "BTH",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-4-5-20251001",
+ "label": "rule-slice__express__haiku-4-5__temp0__hints-v1__run1",
+ "agent_type": "Data display",
+ "catalogue": "B-data-display.json",
+ "atoms_in_catalogue": 248,
+ "prompt_chars": 125436,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 2.9,
+ "usage": {
+  "input_tokens": 36220,
+  "output_tokens": 273
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns",
+  "metric_row",
+  "metric_row",
+  "chartjs_line"
+ ],
+ "score": {
+  "precision": 0.75,
+  "recall": 0.667,
+  "f1": 0.706,
+  "slot_hits": {
+   "KPI tile (x4)": true,
+   "trend (required only if metric_row was chosen; stat_card's own delta already satisfies it)": false,
+   "comparison chart": true
+  }
+ },
+ "reply": "<a2ui>\nroot = columns(cols=2, items=[\n  {blocks: [\n    metric_row(cols=2, metrics=[\n      {value: \"1,234\", label: \"Revenue\", prefix: \"$\", trend: \"up\"},\n      {value: \"856\", label: \"Users\", suffix: \"k\", trend: \"up\"}\n    ]),\n    metric_row(cols=2, metrics=[\n      {value: \"94.2\", label: \"Uptime\", suffix: \"%\", trend: \"up\"},\n      {value: \"2.3\", label: \"Latency\", suffix: \"ms\", trend: \"down\"}\n    ])\n  ]},\n  {blocks: [\n    chartjs_line(labels=[\"Jan\", \"Feb\", \"Mar\", \"Apr\", \"May\", \"Jun\"], datasets=[\n      {label: \"Revenue\", data: [1000, 1200, 1100, 1400, 1350, 1500]},\n      {label: \"Users\", data: [500, 620, 580, 750, 800, 900]}\n    ])\n  ]}\n])\n</a2ui>"
+}

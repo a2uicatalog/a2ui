@@ -1,0 +1,33 @@
+{
+ "task": "T6",
+ "condition": "JBTH2",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "label": "jev-picks-on-rule-slice__express__haiku-4-5__temp0__hints-v2__run3",
+ "agent_type": "jev-narrowed",
+ "catalogue": "JB-T6.json",
+ "atoms_in_catalogue": 14,
+ "prompt_chars": 8535,
+ "slot_recall": [
+  1,
+  2
+ ],
+ "secs": 4.6,
+ "usage": {
+  "input_tokens": 2634,
+  "output_tokens": 440
+ },
+ "valid": false,
+ "error": "A2uiCompilationValidationError: Standalone function calls are not supported in A2UI v0.9.1 - Help: Please correct the syntax error in your Express DSL.",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "flashcard deck": false,
+   "progress indicator": false
+  }
+ },
+ "reply": "<a2ui>\nprogress_store(course_id=\"vocab-flashcards\")\n\ncards_data = [\n  {front: \"Serendipity\", back: \"The occurrence of events by chance in a happy or beneficial way\"},\n  {front: \"Ephemeral\", back: \"Lasting for a very short time\"},\n  {front: \"Ubiquitous\", back: \"Present, appearing, or found everywhere\"},\n  {front: \"Eloquent\", back: \"Fluent or persuasive in speaking or writing\"},\n  {front: \"Pragmatic\", back: \"Dealing with things in a practical, realistic way based on actual circumstances\"},\n  {front: \"Melancholy\", back: \"A feeling of pensive sadness, typically with no obvious cause\"},\n  {front: \"Benevolent\", back: \"Kind and generous; showing goodwill\"},\n  {front: \"Cacophony\", back: \"A harsh, discordant mixture of sounds\"},\n  {front: \"Diligent\", back: \"Having or showing care in one's work or duties\"},\n  {front: \"Nostalgia\", back: \"Sentimental longing for the past, typically for a period or place with happy associations\"}\n]\n\nflashcard_section = flashcard_deck(\n  cards=cards_data,\n  accent=\"#4f46e5\",\n  label_front=\"TERM\",\n  label_back=\"DEFINITION\"\n)\n\nprogress_indicator = pull_stat(\n  value=\"0\",\n  label=\"Flashcards Reviewed\",\n  unit=\"/ 10\"\n)\n\nroot = columns(\n  cols=1,\n  items=[\n    {blocks: [heading(\"Vocabulary Flashcards\")]},\n    {blocks: [progress_indicator]},\n    {blocks: [flashcard_section]}\n  ]\n)\n</a2ui>"
+}

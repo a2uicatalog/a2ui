@@ -1,0 +1,97 @@
+{
+ "label": "tag-slice__express__haiku-5-5__run3",
+ "task": "T6",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/g-learning.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "title",
+      "component": "heading",
+      "text": "Spanish Vocabulary Flashcards"
+     },
+     {
+      "id": "progress",
+      "component": "progress_bar",
+      "value": 0,
+      "label": "Cards reviewed",
+      "accent": "#4f46e5",
+      "show_percent": true,
+      "caption": "0 of 10 reviewed"
+     },
+     {
+      "id": "deck",
+      "component": "flashcard_deck",
+      "cards": [
+       {
+        "front": "hola",
+        "back": "hello"
+       },
+       {
+        "front": "gracias",
+        "back": "thank you"
+       },
+       {
+        "front": "perro",
+        "back": "dog"
+       },
+       {
+        "front": "gato",
+        "back": "cat"
+       },
+       {
+        "front": "casa",
+        "back": "house"
+       },
+       {
+        "front": "agua",
+        "back": "water"
+       },
+       {
+        "front": "libro",
+        "back": "book"
+       },
+       {
+        "front": "amigo",
+        "back": "friend"
+       },
+       {
+        "front": "comer",
+        "back": "to eat"
+       },
+       {
+        "front": "escuela",
+        "back": "school"
+       }
+      ],
+      "accent": "#4f46e5",
+      "label_front": "SPANISH",
+      "label_back": "ENGLISH"
+     },
+     {
+      "id": "root",
+      "component": "color_section",
+      "accent": "#4f46e5",
+      "style": "light",
+      "blocks": [
+       "title",
+       "progress",
+       "deck"
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

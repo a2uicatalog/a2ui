@@ -1,0 +1,119 @@
+{
+ "label": "oracle-slice-3types__express__haiku-4-5__temp0__hints-v2__run1",
+ "task": "T6",
+ "format": "express",
+ "model_id": "claude-haiku-4-5-20251001",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "progress",
+      "component": "progress_bar",
+      "value": 0,
+      "label": "Flashcards Reviewed",
+      "show_percent": true,
+      "accent": "#4f46e5"
+     },
+     {
+      "id": "deck",
+      "component": "flashcard_deck",
+      "cards": [
+       {
+        "front": "Serendipity",
+        "back": "The occurrence of events by chance in a happy or beneficial way"
+       },
+       {
+        "front": "Ephemeral",
+        "back": "Lasting for a very short time; transitory"
+       },
+       {
+        "front": "Eloquent",
+        "back": "Fluent or persuasive in speaking or writing"
+       },
+       {
+        "front": "Ubiquitous",
+        "back": "Present, appearing, or found everywhere"
+       },
+       {
+        "front": "Pragmatic",
+        "back": "Dealing with things in a realistic and practical way based on actual circumstances"
+       },
+       {
+        "front": "Melancholy",
+        "back": "A feeling of pensive sadness, typically with no obvious cause"
+       },
+       {
+        "front": "Benevolent",
+        "back": "Kind and generous; showing goodwill"
+       },
+       {
+        "front": "Obfuscate",
+        "back": "To deliberately make something unclear or obscure"
+       },
+       {
+        "front": "Nostalgia",
+        "back": "A sentimental longing for the past, typically for a period or place with happy associations"
+       },
+       {
+        "front": "Catalyst",
+        "back": "A person or thing that precipitates an event or change; an agent of change"
+       }
+      ],
+      "accent": "#4f46e5",
+      "label_front": "TERM",
+      "label_back": "DEFINITION"
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "items": [
+       {
+        "blocks": [
+         "_inline_1"
+        ]
+       },
+       {
+        "blocks": [
+         "progress"
+        ]
+       },
+       {
+        "blocks": [
+         "deck"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "_inline_1",
+      "component": "page_header",
+      "title": "Vocabulary Flashcards",
+      "subtitle": "Review these 10 essential vocabulary terms",
+      "icon": "\ud83d\udcda"
+     }
+    ]
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_data_model": {
+    "surface_id": "main",
+    "path": "/",
+    "value": {
+     "reviewed_count": 0
+    }
+   }
+  }
+ ]
+}

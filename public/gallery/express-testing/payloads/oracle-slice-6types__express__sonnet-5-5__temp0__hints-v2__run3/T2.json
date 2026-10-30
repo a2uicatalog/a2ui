@@ -1,0 +1,121 @@
+{
+ "label": "oracle-slice-6types__express__sonnet-5-5__temp0__hints-v2__run3",
+ "task": "T2",
+ "format": "express",
+ "model_id": "claude-sonnet-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "metrics-overview",
+    "catalog_id": "https://a2uicatalog.ai/catalog/d-t2.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "metrics-overview",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "_inline_1",
+         "_inline_2"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_3",
+         "_inline_4"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "_inline_1",
+      "component": "heading",
+      "text": "Key Metrics"
+     },
+     {
+      "id": "_inline_2",
+      "component": "metric_row",
+      "cols": 2,
+      "accent": "#4F8EF7",
+      "metrics": [
+       {
+        "value": "128.4",
+        "label": "Revenue",
+        "prefix": "$",
+        "suffix": "K",
+        "sub": "+12% vs last quarter",
+        "trend": "up"
+       },
+       {
+        "value": "24.8",
+        "label": "Active Users",
+        "suffix": "K",
+        "sub": "+8% vs last quarter",
+        "trend": "up"
+       },
+       {
+        "value": "2.3",
+        "label": "Churn Rate",
+        "suffix": "%",
+        "sub": "-0.4 pts vs last quarter",
+        "trend": "down"
+       },
+       {
+        "value": "420",
+        "label": "Avg. Response Time",
+        "suffix": " ms",
+        "sub": "-6% vs last quarter",
+        "trend": "down"
+       }
+      ]
+     },
+     {
+      "id": "_inline_3",
+      "component": "heading",
+      "text": "Quarterly Revenue: This Year vs Last Year"
+     },
+     {
+      "id": "_inline_4",
+      "component": "chartjs_bar",
+      "labels": [
+       "Q1",
+       "Q2",
+       "Q3",
+       "Q4"
+      ],
+      "datasets": [
+       {
+        "label": "Last Year",
+        "data": [
+         82,
+         91,
+         104,
+         114
+        ]
+       },
+       {
+        "label": "This Year",
+        "data": [
+         96,
+         108,
+         119,
+         128
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,126 @@
+{
+ "label": "oracle-slice-3types__json__gemini-3.5-flash-lite__request-only-timing__run2",
+ "task": "T1",
+ "format": "json",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "water-cycle-lesson",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning.json",
+    "theme": {
+     "primaryColor": "#0284c7"
+    }
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "water-cycle-lesson",
+    "components": [
+     {
+      "id": "root",
+      "component": "page_header",
+      "title": "The Water Cycle",
+      "subtitle": "Journey of water from Earth to the atmosphere and back again",
+      "icon": "\ud83d\udca7",
+      "tag": "Earth Science",
+      "accent": "#0284c7"
+     },
+     {
+      "id": "intro-callout",
+      "component": "text_callout",
+      "variant": "info",
+      "title": "Overview",
+      "description": "The water cycle, also known as the hydrologic cycle, describes the continuous movement of water on, above, and below the surface of the Earth."
+     },
+     {
+      "id": "concept-1",
+      "component": "concept_rung",
+      "badge": "1",
+      "kind": "depth",
+      "label": "STAGE 1",
+      "title": "Evaporation and Transpiration",
+      "body": "Energy from the sun heats up water in oceans, rivers, and lakes, causing it to change from a liquid into water vapor (gas) through evaporation. Plants also release water vapor from their leaves in a process called transpiration."
+     },
+     {
+      "id": "concept-2",
+      "component": "concept_rung",
+      "badge": "2",
+      "kind": "depth",
+      "label": "STAGE 2",
+      "title": "Condensation",
+      "body": "As warm water vapor rises high into the atmosphere, the cooler temperatures at higher altitudes cause it to cool down and turn back into tiny liquid water droplets or ice crystals, forming clouds and fog."
+     },
+     {
+      "id": "concept-3",
+      "component": "concept_rung",
+      "badge": "3",
+      "kind": "depth",
+      "label": "STAGE 3",
+      "title": "Precipitation",
+      "body": "When the water droplets inside clouds become too heavy to remain suspended in the rising air, they fall back to the Earth's surface as precipitation\u2014which can take the form of rain, snow, sleet, or hail."
+     },
+     {
+      "id": "worked-example",
+      "component": "concept_rung",
+      "badge": "EX",
+      "kind": "example",
+      "label": "WORKED EXAMPLE",
+      "title": "Tracing a Single Droplet",
+      "body": "Imagine a water molecule sitting in the Atlantic Ocean. \n\n1. The sun warms the molecule until it evaporates into the air.\n2. Wind carries it over a mountain range where it cools and condenses into a cloud droplet.\n3. It falls as snow onto a glacier, stays frozen for 50 years, then melts and flows into a river leading back to the ocean.",
+      "takeaway": "Water is constantly recycled; the water you drink today has been part of the Earth's system for billions of years."
+     },
+     {
+      "id": "quiz-heading",
+      "component": "heading",
+      "text": "Self-Check Quiz"
+     },
+     {
+      "id": "quiz",
+      "component": "quiz_set",
+      "title": "Test Your Knowledge",
+      "pass_score": 66,
+      "accent": "#0284c7",
+      "questions": [
+       {
+        "question": "What process converts liquid water into water vapor using energy from the sun?",
+        "options": [
+         "Condensation",
+         "Evaporation",
+         "Precipitation",
+         "Infiltration"
+        ],
+        "correct": 1,
+        "explanation": "Evaporation is the process where liquid water turns into gas due to solar heating."
+       },
+       {
+        "question": "What is the release of water vapor from plant leaves called?",
+        "options": [
+         "Transpiration",
+         "Sublimation",
+         "Respiration",
+         "Collection"
+        ],
+        "correct": 0,
+        "explanation": "Plants release water vapor through tiny pores in their leaves called stomata in a process known as transpiration."
+       },
+       {
+        "question": "Which of the following is NOT a form of precipitation?",
+        "options": [
+         "Rain",
+         "Snow",
+         "Cloud vapor",
+         "Hail"
+        ],
+        "correct": 2,
+        "explanation": "Cloud vapor is suspended moisture in the atmosphere before it falls; precipitation is moisture that actually falls to the ground."
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

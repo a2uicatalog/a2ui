@@ -1,0 +1,46 @@
+{
+ "task": "T5",
+ "condition": "BTH",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-4-5-20251001",
+ "label": "rule-slice__express__haiku-4-5__temp0__hints-v1__run3",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "B-marketing-commerce.json",
+ "atoms_in_catalogue": 189,
+ "prompt_chars": 80817,
+ "slot_recall": [
+  1,
+  1
+ ],
+ "secs": 3.7,
+ "usage": {
+  "input_tokens": 23251,
+  "output_tokens": 365
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "pricing_tier_card",
+  "pricing_tier_card",
+  "pricing_tier_card",
+  "pricing_tier_group"
+ ],
+ "score": {
+  "per_approach": {
+   "tier_cards": {
+    "precision": 0.25,
+    "recall": 1.0,
+    "f1": 0.4
+   },
+   "comparison_table": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": null
+   }
+  },
+  "best_approach": "tier_cards",
+  "f1": 0.4
+ },
+ "reply": "<a2ui>\nstarter_tier = pricing_tier_card(\n  plan_name=\"Starter\",\n  price=\"29\",\n  currency=\"$\",\n  frequency=\"per month\",\n  features=[\"Up to 10 projects\", \"Basic analytics\", \"Community support\", \"1 GB storage\"],\n  call_to_action_label=\"Get Started\",\n  call_to_action_url=\"/signup?plan=starter\",\n  is_highlighted=false\n)\n\nprofessional_tier = pricing_tier_card(\n  plan_name=\"Professional\",\n  price=\"79\",\n  currency=\"$\",\n  frequency=\"per month\",\n  features=[\"Unlimited projects\", \"Advanced analytics\", \"Priority email support\", \"100 GB storage\", \"Custom integrations\", \"Team collaboration\"],\n  call_to_action_label=\"Start Free Trial\",\n  call_to_action_url=\"/signup?plan=professional\",\n  is_highlighted=true\n)\n\nenterprise_tier = pricing_tier_card(\n  plan_name=\"Enterprise\",\n  price=\"Custom\",\n  currency=\"\",\n  frequency=\"contact sales\",\n  features=[\"Everything in Professional\", \"Dedicated account manager\", \"24/7 phone support\", \"Unlimited storage\", \"Custom SLA\", \"Advanced security\"],\n  call_to_action_label=\"Contact Sales\",\n  call_to_action_url=\"/contact-sales\",\n  is_highlighted=false\n)\n\nroot = pricing_tier_group(\n  tiers=[starter_tier, professional_tier, enterprise_tier]\n)\n</a2ui>"
+}

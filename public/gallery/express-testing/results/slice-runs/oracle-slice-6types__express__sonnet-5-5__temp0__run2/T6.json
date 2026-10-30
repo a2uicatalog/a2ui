@@ -1,0 +1,45 @@
+{
+ "task": "T6",
+ "condition": "DT_sonnet-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-sonnet-5-5",
+ "hints": false,
+ "label": "oracle-slice-6types__express__sonnet-5-5__temp0__run2",
+ "agent_type": "T6",
+ "catalogue": "D-t6.json",
+ "atoms_in_catalogue": 12,
+ "prompt_chars": 8305,
+ "slot_recall": [
+  2,
+  2
+ ],
+ "secs": 11.8,
+ "usage": {
+  "input_tokens": 3043,
+  "output_tokens": 1399
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "heading",
+  "body",
+  "flashcard_deck",
+  "heading",
+  "progress_bar",
+  "progress_ring",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.429,
+  "recall": 1.0,
+  "f1": 0.6,
+  "slot_hits": {
+   "flashcard deck": true,
+   "progress indicator": true
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"vocab-flashcards\")\npageTitle = heading(\"Vocabulary Review: 10 Words\")\nintro = body(\"Click a card to flip it and reveal the definition. Work through all ten words to complete the set.\")\ndeck = flashcard_deck(\n  cards=[\n    {front: \"Ephemeral\", back: \"Lasting for a very short time.\"},\n    {front: \"Ubiquitous\", back: \"Present, appearing, or found everywhere.\"},\n    {front: \"Pragmatic\", back: \"Dealing with things sensibly and realistically.\"},\n    {front: \"Eloquent\", back: \"Fluent and persuasive in speaking or writing.\"},\n    {front: \"Meticulous\", back: \"Showing great attention to detail; very careful and precise.\"},\n    {front: \"Resilient\", back: \"Able to recover quickly from difficulties.\"},\n    {front: \"Ambiguous\", back: \"Open to more than one interpretation; unclear.\"},\n    {front: \"Benevolent\", back: \"Well meaning and kindly.\"},\n    {front: \"Candid\", back: \"Truthful and straightforward; frank.\"},\n    {front: \"Diligent\", back: \"Having or showing care and effort in one's work.\"}\n  ],\n  accent=\"#4f46e5\",\n  label_front=\"WORD\",\n  label_back=\"DEFINITION\"\n)\nprogressTitle = heading(\"Your Progress\")\nreviewedBar = progress_bar(\n  value=0,\n  label=\"Cards reviewed\",\n  accent=\"#4f46e5\",\n  show_percent=true,\n  caption=\"0 of 10 reviewed\"\n)\nreviewedRing = progress_ring(\n  value=0,\n  size=120,\n  stroke_width=10,\n  color=\"#4f46e5\",\n  label=\"Reviewed\",\n  show_value=true,\n  unit=\"%\"\n)\nroot = columns(\n  cols=2,\n  gap=\"2rem\",\n  align=\"top\",\n  items=[\n    {blocks: [pageTitle, intro, deck]},\n    {blocks: [progressTitle, reviewedBar, reviewedRing]}\n  ]\n)\n</a2ui>"
+}

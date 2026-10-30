@@ -1,0 +1,121 @@
+{
+ "label": "oracle-slice-3types__json__sonnet-5-5__temp0__run2",
+ "task": "T3",
+ "format": "json",
+ "model_id": "claude-sonnet-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "landing_hero",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "landing_hero",
+    "components": [
+     {
+      "id": "root",
+      "component": "gradient_hero",
+      "badge": "New \u00b7 Version 2.0",
+      "title": "Plan less. Ship more.",
+      "subtitle": "Flow brings your roadmap, tasks, and team updates into one calm workspace, so everyone knows what matters today.",
+      "align": "center"
+     }
+    ]
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "landing_features",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "landing_features",
+    "components": [
+     {
+      "id": "root",
+      "component": "feature_grid",
+      "heading": "Everything your team needs",
+      "description": "Three tools that work together, with nothing extra to set up.",
+      "columns": 3,
+      "features": [
+       {
+        "icon": "\ud83d\uddfa\ufe0f",
+        "title": "Visual roadmaps",
+        "description": "Drag and drop initiatives onto a timeline and share a live view with stakeholders.",
+        "color": "#4f46e5"
+       },
+       {
+        "icon": "\u2705",
+        "title": "Focused task boards",
+        "description": "Turn plans into clear, assignable work with priorities, due dates, and automatic reminders.",
+        "color": "#0ea5e9"
+       },
+       {
+        "icon": "\ud83d\udcac",
+        "title": "Built-in updates",
+        "description": "Post async check-ins and progress summaries where the work happens, with no extra meetings.",
+        "color": "#8b5cf6"
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "landing_testimonial",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "landing_testimonial",
+    "components": [
+     {
+      "id": "root",
+      "component": "testimonial_card",
+      "text": "Flow replaced three tools and a weekly status meeting for us. Our team finally has one place to see what's happening and what's next.",
+      "author_name": "Maya Chen",
+      "author_title": "VP of Product, Brightwave",
+      "rating": 5
+     }
+    ]
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "landing_cta",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "landing_cta",
+    "components": [
+     {
+      "id": "root",
+      "component": "cta_section",
+      "heading": "Ready to get your team in flow?",
+      "body": "Start your free 14-day trial. No credit card required.",
+      "primary_cta": {
+       "label": "Start free trial",
+       "url": "https://example.com/signup"
+      }
+     }
+    ]
+   }
+  }
+ ]
+}

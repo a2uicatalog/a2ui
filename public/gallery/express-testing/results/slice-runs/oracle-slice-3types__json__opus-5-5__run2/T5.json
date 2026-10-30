@@ -1,0 +1,46 @@
+{
+ "task": "T5",
+ "condition": "CN_opus-5-5",
+ "temperature_applied": false,
+ "format": "json",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-opus-5-5",
+ "hints": false,
+ "label": "oracle-slice-3types__json__opus-5-5__run2",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "C-marketing-commerce.json",
+ "atoms_in_catalogue": 23,
+ "prompt_chars": 24557,
+ "slot_recall": [
+  1,
+  1
+ ],
+ "secs": 8.5,
+ "usage": {
+  "input_tokens": 9454,
+  "output_tokens": 911
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "pricing_tier_group"
+ ],
+ "score": {
+  "per_approach": {
+   "tier_cards": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+   },
+   "comparison_table": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": null
+   }
+  },
+  "best_approach": "tier_cards",
+  "f1": 1.0
+ },
+ "reply": "Here's a pricing section with three plans side by side. Each plan has its own feature list, and the middle \"Pro\" plan is marked as recommended.\n\n<a2ui-json>\n[\n  {\n    \"version\": \"v0.9.1\",\n    \"createSurface\": {\n      \"surfaceId\": \"pricing\",\n      \"catalogId\": \"https://a2uicatalog.ai/catalog/c-marketing-commerce.json\"\n    }\n  },\n  {\n    \"version\": \"v0.9.1\",\n    \"updateComponents\": {\n      \"surfaceId\": \"pricing\",\n      \"components\": [\n        {\n          \"id\": \"root\",\n          \"component\": \"pricing_tier_group\",\n          \"accessibility\": {\n            \"label\": \"Subscription plans\",\n            \"description\": \"Compare the Starter, Pro and Business plans. Pro is the recommended plan.\"\n          },\n          \"tiers\": [\n            {\n              \"name\": \"Starter\",\n              \"price\": \"$9\",\n              \"period\": \"/month\",\n              \"description\": \"For individuals getting started.\",\n              \"features\": [\n                \"1 user\",\n                \"5 projects\",\n                \"10 GB storage\",\n                \"Email support\"\n              ],\n              \"cta_label\": \"Choose Starter\",\n              \"cta_url\": \"#starter\",\n              \"recommended\": false\n            },\n            {\n              \"name\": \"Pro\",\n              \"price\": \"$29\",\n              \"period\": \"/month\",\n              \"description\": \"For growing teams that need more power.\",\n              \"badge\": \"Recommended\",\n              \"features\": [\n                \"Up to 10 users\",\n                \"Unlimited projects\",\n                \"100 GB storage\",\n                \"Priority support\",\n                \"Advanced analytics\"\n              ],\n              \"cta_label\": \"Choose Pro\",\n              \"cta_url\": \"#pro\",\n              \"recommended\": true,\n              \"highlighted\": true\n            },\n            {\n              \"name\": \"Business\",\n              \"price\": \"$79\",\n              \"period\": \"/month\",\n              \"description\": \"For organizations with advanced needs.\",\n              \"features\": [\n                \"Unlimited users\",\n                \"Unlimited projects\",\n                \"1 TB storage\",\n                \"24/7 dedicated support\",\n                \"SSO & audit logs\",\n                \"Custom integrations\"\n              ],\n              \"cta_label\": \"Choose Business\",\n              \"cta_url\": \"#business\",\n              \"recommended\": false\n            }\n          ]\n        }\n      ]\n    }\n  }\n]\n</a2ui-json>"
+}

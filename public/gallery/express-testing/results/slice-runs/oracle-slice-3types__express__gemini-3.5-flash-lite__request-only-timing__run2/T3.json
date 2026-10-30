@@ -1,0 +1,45 @@
+{
+ "task": "T3",
+ "condition": "C_gemini-3.5-flash-l",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash-lite",
+ "hints": false,
+ "label": "oracle-slice-3types__express__gemini-3.5-flash-lite__request-only-timing__run2",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "C-marketing-commerce.json",
+ "atoms_in_catalogue": 23,
+ "prompt_chars": 12467,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 1.8,
+ "usage": {
+  "input_tokens": 3413,
+  "output_tokens": 466
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "gradient_hero",
+  "feature_grid",
+  "testimonial_card",
+  "cta_section",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.8,
+  "recall": 1.0,
+  "f1": 0.889,
+  "slot_hits": {
+   "hero": true,
+   "feature columns (x3)": true,
+   "testimonial": true,
+   "CTA": true
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"product-landing\")\n\nhero = gradient_hero(\n    \"Transform Your Workflow Today\",\n    \"Experience seamless productivity and powerful automation designed for modern teams.\",\n    \"New Release\",\n    \"#4f46e5\",\n    \"#8b5cf6\",\n    null,\n    \"center\",\n    \"Get Started\",\n    \"https://example.com/get-started\"\n)\n\nfeatures = feature_grid(\n    \"Why Choose Us\",\n    \"Everything you need to scale your operations efficiently.\",\n    3,\n    [\n        {\n            icon: \"\u26a1\",\n            title: \"Lightning Fast\",\n            description: \"Optimized performance ensures zero lag across all your daily operations.\"\n        },\n        {\n            icon: \"\ud83d\udd12\",\n            title: \"Enterprise Security\",\n            description: \"Bank-grade encryption keeps your sensitive data protected 24/7.\"\n        },\n        {\n            icon: \"\ud83d\udcc8\",\n            title: \"Advanced Analytics\",\n            description: \"Gain deep insights into your team's productivity with custom reports.\"\n        }\n    ]\n)\n\ntestimonial = testimonial_card(\n    \"This platform completely transformed how our engineering team collaborates. We shipped our product twice as fast!\",\n    \"Sarah Jenkins\",\n    \"VP of Engineering at TechCorp\",\n    \"https://example.com/avatar.jpg\",\n    5\n)\n\ncta = cta_section(\n    \"Ready to boost your productivity?\",\n    \"Join thousands of teams already using our platform to achieve their goals.\",\n    {label: \"Start Free Trial\", url: \"https://example.com/trial\"},\n    {label: \"Contact Sales\", url: \"https://example.com/contact\"},\n    \"#f8fafc\"\n)\n\nroot = columns(\n    1,\n    \"2.5rem\",\n    \"center\",\n    [\n        {blocks: [hero]},\n        {blocks: [features]},\n        {blocks: [testimonial]},\n        {blocks: [cta]}\n    ]\n)\n</a2ui>"
+}

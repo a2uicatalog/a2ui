@@ -1,0 +1,36 @@
+{
+ "model": "sonnet-5-5",
+ "cond": "B4",
+ "format": "json",
+ "brief": "B4",
+ "repeat": 2,
+ "seq": 23,
+ "model_id": "claude-sonnet-5-5",
+ "utc": "2026-10-29T19:53:55Z",
+ "prompt_chars": 19021,
+ "prompt_sha256": "(removed for publication)",
+ "temperature_requested": null,
+ "temperature_sent": false,
+ "max_tokens": 32768,
+ "request_secs": 4.81,
+ "input_tokens": 7253,
+ "output_tokens": 573,
+ "stop_reason": "end_turn",
+ "usage": {
+  "input_tokens": 7253,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "cache_creation": {
+   "ephemeral_5m_input_tokens": 0,
+   "ephemeral_1h_input_tokens": 0
+  },
+  "output_tokens": 573,
+  "output_tokens_details": {
+   "thinking_tokens": 255
+  },
+  "service_tier": "standard",
+  "inference_geo": "global",
+  "speed": "standard"
+ },
+ "reply": "Here is a toy rocket that builds itself on a gray baseplate, which serves as the launch pad.\n\n<a2ui-json>\n[\n  {\n    \"version\": \"v0.9.1\",\n    \"createSurface\": {\n      \"surfaceId\": \"launchpad\",\n      \"catalogId\": \"https://a2uicatalog.ai/catalog/blocks-b4.json\"\n    }\n  },\n  {\n    \"version\": \"v0.9.1\",\n    \"updateComponents\": {\n      \"surfaceId\": \"launchpad\",\n      \"components\": [\n        {\n          \"id\": \"root\",\n          \"component\": \"block_rocket\",\n          \"look\": \"studio\",\n          \"base\": \"#6b7280\",\n          \"angle\": 24,\n          \"elevation\": 24,\n          \"turns\": 1,\n          \"ratio\": \"4:3\",\n          \"motion\": { \"order\": \"base-up\" },\n          \"label\": \"Toy spaceship on a launch pad\"\n        }\n      ]\n    }\n  }\n]\n</a2ui-json>"
+}

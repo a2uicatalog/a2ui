@@ -1,0 +1,103 @@
+{
+ "label": "oracle-slice-3types__express__gemini-3.5-flash-lite__first-run-timing-invalid__run1",
+ "task": "T3",
+ "format": "express",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "product-landing-page",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "product-landing-page",
+    "components": [
+     {
+      "id": "hero",
+      "component": "gradient_hero",
+      "title": "Supercharge Your Workflow",
+      "subtitle": "Streamline your tasks, collaborate seamlessly, and achieve more in less time with our next-generation platform.",
+      "badge": "New Release",
+      "accent": "#3b82f6",
+      "accent2": "#1d4ed8",
+      "align": "center",
+      "cta_label": "Get Started Free",
+      "cta_url": "https://example.com/signup"
+     },
+     {
+      "id": "features",
+      "component": "feature_grid",
+      "heading": "Everything you need",
+      "description": "Built for modern teams who want to move fast without breaking things.",
+      "columns": 3,
+      "features": [
+       {
+        "icon": "\u26a1",
+        "title": "Lightning Fast",
+        "description": "Optimized for speed so you never wait for your tools to catch up.",
+        "badge": "Performance"
+       },
+       {
+        "icon": "\ud83d\udd12",
+        "title": "Enterprise Security",
+        "description": "Bank-grade encryption keeps your sensitive data completely safe.",
+        "badge": "Secure"
+       },
+       {
+        "icon": "\ud83d\udcc8",
+        "title": "Advanced Analytics",
+        "description": "Gain deep insights into your team's productivity with real-time reports.",
+        "badge": "Insights"
+       }
+      ]
+     },
+     {
+      "id": "testimonial",
+      "component": "testimonial_card",
+      "text": "This platform has completely transformed how our engineering team operates. We've cut our release cycle time in half!",
+      "author_name": "Sarah Jenkins",
+      "author_title": "VP of Engineering at TechFlow",
+      "author_avatar_url": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=200",
+      "rating": 5
+     },
+     {
+      "id": "cta",
+      "component": "cta_section",
+      "heading": "Ready to dive in?",
+      "body": "Start your 14-day free trial today. No credit card required.",
+      "primary_cta": {
+       "label": "Start Free Trial",
+       "url": "https://example.com/signup"
+      },
+      "secondary_cta": {
+       "label": "Contact Sales",
+       "url": "https://example.com/contact"
+      },
+      "background": "#f8fafc"
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "2rem",
+      "align": "center",
+      "items": [
+       {
+        "blocks": [
+         "hero",
+         "features",
+         "testimonial",
+         "cta"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

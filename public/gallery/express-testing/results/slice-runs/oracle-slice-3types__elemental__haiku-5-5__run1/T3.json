@@ -1,0 +1,44 @@
+{
+ "task": "T3",
+ "condition": "CX_haiku-5-5",
+ "temperature_applied": false,
+ "format": "elemental",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "oracle-slice-3types__elemental__haiku-5-5__run1",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "C-marketing-commerce.json",
+ "atoms_in_catalogue": 23,
+ "prompt_chars": 12539,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 6.6,
+ "usage": {
+  "input_tokens": 4938,
+  "output_tokens": 1386
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "gradient_hero",
+  "feature_grid",
+  "testimonial_card",
+  "cta_button"
+ ],
+ "score": {
+  "precision": 1.0,
+  "recall": 1.0,
+  "f1": 1.0,
+  "slot_hits": {
+   "hero": true,
+   "feature columns (x3)": true,
+   "testimonial": true,
+   "CTA": true
+  }
+ },
+ "reply": "<a2ui>\n<body id=\"root\">\n  <ui-gradient_hero\n    id=\"hero\"\n    title=\"Ship faster with less overhead\"\n    subtitle=\"One platform to build, deploy, and scale your product without the complexity.\"\n    Badge=\"New in 2025\"\n    accent=\"#4f46e5\"\n    accent2=\"#8b5cf6\"\n    align=\"center\"\n    cta_label=\"Start free trial\"\n    cta_url=\"#signup\" />\n\n  <ui-feature_grid id=\"features\" Heading=\"Everything you need\" description=\"Core capabilities that help your team move quickly.\" Columns=\"{3}\">\n    <script type=\"application/json\" slot=\"features\">[\n      {\"icon\": \"\u26a1\", \"title\": \"Lightning-fast builds\", \"description\": \"Incremental builds cut your feedback loop from minutes to seconds.\", \"badge\": \"Speed\", \"color\": \"#4f46e5\"},\n      {\"icon\": \"\ud83d\udd12\", \"title\": \"Secure by default\", \"description\": \"Built-in access controls, audit logs, and encryption at rest and in transit.\", \"badge\": \"Security\", \"color\": \"#8b5cf6\"},\n      {\"icon\": \"\ud83d\udcc8\", \"title\": \"Scales with you\", \"description\": \"From prototype to millions of requests with automatic capacity management.\", \"badge\": \"Scale\", \"color\": \"#0ea5e9\"}\n    ]</script>\n  </ui-feature_grid>\n\n  <ui-testimonial_card\n    id=\"testimonial\"\n    text=\"We cut our release cycle in half in the first month. The platform just gets out of the way.\"\n    author_name=\"Maya Chen\"\n    author_title=\"VP of Engineering, Northwind\"\n    rating=\"{5}\" />\n\n  <ui-cta_button\n    id=\"cta\"\n    url=\"#signup\"\n    label=\"Get started today\"\n    color=\"#4f46e5\"\n    same_tab=\"{true}\" />\n</body>\n</a2ui>"
+}

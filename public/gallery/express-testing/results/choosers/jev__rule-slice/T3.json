@@ -1,0 +1,140 @@
+{
+ "task": "T3",
+ "condition": "B",
+ "slice_atoms_in_options": 183,
+ "picks": [
+  {
+   "slot": "Hero area at the top showing a large headline that states the main value proposi #1",
+   "decomposer_line": "Hero area at the top showing a large headline that states the main value proposition",
+   "atom": "dark_hero",
+   "confidence": 0.44,
+   "top3": [
+    [
+     "dark_hero",
+     0.44
+    ],
+    [
+     "gradient_hero",
+     0.36
+    ],
+    [
+     "article_hero",
+     0.08
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "Subhead text directly under the headline that expands on the offer in a sentence #2",
+   "decomposer_line": "Subhead text directly under the headline that expands on the offer in a sentence or two",
+   "atom": "text_block",
+   "confidence": 0.47,
+   "top3": [
+    [
+     "text_block",
+     0.47000000000000003
+    ],
+    [
+     "paragraph",
+     0.2
+    ],
+    [
+     "subheading",
+     0.18000000000000002
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "Three feature columns side by side, each presenting one feature with a short tit #3",
+   "decomposer_line": "Three feature columns side by side, each presenting one feature with a short title and brief description",
+   "atom": "feature_grid",
+   "confidence": 0.91,
+   "top3": [
+    [
+     "feature_grid",
+     0.91
+    ],
+    [
+     "columns",
+     0.08
+    ],
+    [
+     "dark_feature_grid",
+     0.01
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "Customer testimonial section showing a quote from a satisfied user along with th #4",
+   "decomposer_line": "Customer testimonial section showing a quote from a satisfied user along with their name and role",
+   "atom": "testimonial_card",
+   "confidence": 0.98,
+   "top3": [
+    [
+     "testimonial_card",
+     0.98
+    ],
+    [
+     "blockquote_with_avatar",
+     0.01
+    ],
+    [
+     "review_callout",
+     0.01
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "Call-to-action button prompting the visitor to take the primary next step #5",
+   "decomposer_line": "Call-to-action button prompting the visitor to take the primary next step",
+   "atom": "cta_section",
+   "confidence": 0.98,
+   "top3": [
+    [
+     "cta_section",
+     0.98
+    ],
+    [
+     "dark_hero",
+     0.02
+    ],
+    [
+     "intro",
+     0.0
+    ]
+   ],
+   "finalists": null
+  }
+ ],
+ "cost": {
+  "decomposer_input_tokens": 3244,
+  "decomposer_output_tokens": 133,
+  "decomposer_thinking_tokens": 0,
+  "jev_input_tokens": 34606,
+  "jev_output_tokens": 8011,
+  "jev_calls": 5
+ },
+ "error": null,
+ "atoms": [
+  "dark_hero",
+  "text_block",
+  "feature_grid",
+  "testimonial_card",
+  "cta_section"
+ ],
+ "score": {
+  "precision": 0.8,
+  "recall": 1.0,
+  "f1": 0.889,
+  "slot_hits": {
+   "hero": true,
+   "feature columns (x3)": true,
+   "testimonial": true,
+   "CTA": true
+  }
+ },
+ "secs": 5.5
+}

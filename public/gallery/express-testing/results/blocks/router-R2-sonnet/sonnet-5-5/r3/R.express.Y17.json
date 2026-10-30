@@ -1,0 +1,35 @@
+{
+ "model": "sonnet-5-5",
+ "cond": "R",
+ "format": "express",
+ "brief": "Y17",
+ "repeat": 3,
+ "seq": 65,
+ "utc": "2026-10-29T21:03:35Z",
+ "model_id": "claude-sonnet-5-5",
+ "prompt_chars": 4033,
+ "prompt_sha256": "(removed for publication)",
+ "temperature_sent": false,
+ "max_tokens": 256,
+ "request_secs": 2.88,
+ "input_tokens": 1756,
+ "output_tokens": 116,
+ "stop_reason": "end_turn",
+ "usage": {
+  "input_tokens": 1756,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "cache_creation": {
+   "ephemeral_5m_input_tokens": 0,
+   "ephemeral_1h_input_tokens": 0
+  },
+  "output_tokens": 116,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "service_tier": "standard",
+  "inference_geo": "global",
+  "speed": "standard"
+ },
+ "reply": "The brief is just \"Radar\". The aviation catalogue lists radar among its atoms (skill_radar) and covers air-traffic and geospatial radar surfaces. The charts catalogue could also fit a radar chart, but the aviation catalogue is the closest match for the word on its own.\n\n{\"catalogue\": \"a2ui-aviation-v1\"}"
+}

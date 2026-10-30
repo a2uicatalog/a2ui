@@ -1,0 +1,33 @@
+{
+ "task": "T3",
+ "condition": "F",
+ "label": "random-slice__express__haiku-4-5__run3",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "F-marketing-commerce.json",
+ "atoms_in_catalogue": 189,
+ "prompt_chars": 96246,
+ "slot_recall": [
+  3,
+  4
+ ],
+ "secs": 4.1,
+ "usage": {
+  "input_tokens": 27499,
+  "output_tokens": 364
+ },
+ "valid": false,
+ "error": "A2uiCompilationParseError: Failed to parse expression: Syntax error at line 15:14: mismatched input '=' expecting ':' (line 15) - Line 15, Col 14 - Help: Please correct the syntax error in your Express DSL.",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "hero": false,
+   "feature columns (x3)": false,
+   "testimonial": false,
+   "CTA": false
+  }
+ },
+ "reply": "<a2ui>\nroot = color_section(\n  [\n    page_header(\n      title=\"Transform Your Workflow\",\n      subtitle=\"The all-in-one platform designed for modern teams\",\n      theme=\"light\"\n    ),\n    spacer(48),\n    feature_grid(\n      heading=\"Why Choose Us\",\n      description=\"Powerful features built for productivity\",\n      columns=3,\n      features=[\n        {\n          icon=\"\u26a1\",\n          title=\"Lightning Fast\",\n          description=\"Optimize your processes and save hours every week\"\n        },\n        {\n          icon=\"\ud83d\udd12\",\n          title=\"Enterprise Security\",\n          description=\"Bank-grade encryption and compliance built-in\"\n        },\n        {\n          icon=\"\ud83e\udd1d\",\n          title=\"Team Collaboration\",\n          description=\"Work together seamlessly across your organization\"\n        }\n      ]\n    ),\n    spacer(48),\n    expert_endorsement(\n      quote=\"This platform completely transformed how our team works. We've never been more productive.\",\n      expert_name=\"Sarah Chen\",\n      expert_title=\"VP of Product\",\n      expert_organization=\"TechCorp Inc\",\n      expert_avatar_url=\"https://api.placeholder.com/avatar-sarah.jpg\"\n    ),\n    spacer(48),\n    cta_button(\n      label=\"Get Started Free\",\n      url=\"https://example.com/signup\",\n      color=\"#4f46e5\"\n    )\n  ],\n  background=\"#ffffff\"\n)\n</a2ui>"
+}

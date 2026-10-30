@@ -1,0 +1,163 @@
+{
+ "label": "rule-slice__express__haiku-4-5__temp0__run2",
+ "task": "T6",
+ "format": "express",
+ "model_id": "claude-haiku-4-5-20251001",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/b-learning.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "2rem",
+      "items": [
+       {
+        "blocks": [
+         "_inline_1",
+         "_inline_2",
+         "_inline_3",
+         "_inline_4"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_5",
+         "_inline_6",
+         "_inline_7",
+         "_inline_8",
+         "_inline_9",
+         "_inline_10",
+         "_inline_11"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "_inline_1",
+      "component": "heading",
+      "text": "Vocabulary Review"
+     },
+     {
+      "id": "_inline_2",
+      "component": "body",
+      "text": "Master these 10 essential terms by flipping each card to reveal the definition."
+     },
+     {
+      "id": "_inline_3",
+      "component": "spacer",
+      "height": "1.5rem"
+     },
+     {
+      "id": "_inline_4",
+      "component": "flashcard_deck",
+      "cards": [
+       {
+        "front": "Ephemeral",
+        "back": "Lasting for a very short time; transitory"
+       },
+       {
+        "front": "Ubiquitous",
+        "back": "Present, appearing, or found everywhere"
+       },
+       {
+        "front": "Serendipity",
+        "back": "The occurrence of events by chance in a happy or beneficial way"
+       },
+       {
+        "front": "Pragmatic",
+        "back": "Dealing with things in a practical, realistic way based on actual circumstances"
+       },
+       {
+        "front": "Ambiguous",
+        "back": "Open to more than one interpretation; unclear or uncertain"
+       },
+       {
+        "front": "Benevolent",
+        "back": "Kind, generous, and charitable in nature"
+       },
+       {
+        "front": "Candid",
+        "back": "Truthful and straightforward; frank and honest"
+       },
+       {
+        "front": "Diligent",
+        "back": "Showing careful and persistent effort in one's work or duties"
+       },
+       {
+        "front": "Eloquent",
+        "back": "Fluent, persuasive, and expressive in speaking or writing"
+       },
+       {
+        "front": "Fortuitous",
+        "back": "Happening by chance or luck, especially in a beneficial way"
+       }
+      ],
+      "accent": "#4f46e5",
+      "label_front": "TERM",
+      "label_back": "DEFINITION"
+     },
+     {
+      "id": "_inline_5",
+      "component": "heading",
+      "text": "Progress Tracker"
+     },
+     {
+      "id": "_inline_6",
+      "component": "spacer",
+      "height": "1rem"
+     },
+     {
+      "id": "_inline_7",
+      "component": "info_card",
+      "title": "Cards Reviewed",
+      "text": "Track your progress as you flip through each vocabulary card. Return anytime to review terms you'd like to strengthen."
+     },
+     {
+      "id": "_inline_8",
+      "component": "spacer",
+      "height": "1.5rem"
+     },
+     {
+      "id": "_inline_9",
+      "component": "course_progress_card",
+      "course_title": "Vocabulary Mastery",
+      "modules": [
+       {
+        "title": "Essential Terms",
+        "lessons_total": 10,
+        "lessons_done": 0
+       }
+      ],
+      "accent": "#4f46e5"
+     },
+     {
+      "id": "_inline_10",
+      "component": "spacer",
+      "height": "1.5rem"
+     },
+     {
+      "id": "_inline_11",
+      "component": "key_takeaways",
+      "points": [
+       "Flip each card to reveal the definition",
+       "Review cards multiple times to reinforce learning",
+       "Focus on terms you find most challenging",
+       "Use these words in sentences to deepen understanding"
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,226 @@
+{
+ "task": "T6",
+ "condition": "D",
+ "slice_atoms_in_options": 12,
+ "picks": [
+  {
+   "slot": "A grid or stack of ten vocabulary cards, each showing a single word on its front #1",
+   "decomposer_line": "A grid or stack of ten vocabulary cards, each showing a single word on its front face",
+   "atom": "columns",
+   "confidence": 0.3,
+   "top3": [
+    [
+     "columns",
+     0.36
+    ],
+    [
+     "flashcard_deck",
+     0.33
+    ],
+    [
+     "flip_card",
+     0.17
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "Each flashcard's front face displays the vocabulary word prominently and centere #2",
+   "decomposer_line": "Each flashcard's front face displays the vocabulary word prominently and centered",
+   "atom": "spaced_repetition_card",
+   "confidence": 0.47,
+   "top3": [
+    [
+     "spaced_repetition_card",
+     0.51
+    ],
+    [
+     "flip_card",
+     0.27
+    ],
+    [
+     "heading",
+     0.12
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "Each flashcard's back face reveals the word's meaning or translation when the ca #3",
+   "decomposer_line": "Each flashcard's back face reveals the word's meaning or translation when the card is flipped",
+   "atom": "flip_card",
+   "confidence": 0.6,
+   "top3": [
+    [
+     "flip_card",
+     0.63
+    ],
+    [
+     "spaced_repetition_card",
+     0.22
+    ],
+    [
+     "flashcard_deck",
+     0.14
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "A flip action that turns a card over with a smooth rotating animation when the u #4",
+   "decomposer_line": "A flip action that turns a card over with a smooth rotating animation when the user clicks or taps it",
+   "atom": "flip_card",
+   "confidence": 0.98,
+   "top3": [
+    [
+     "flip_card",
+     0.98
+    ],
+    [
+     "spaced_repetition_card",
+     0.01
+    ],
+    [
+     "flashcard_deck",
+     0.01
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "Controls to move forward and back between the ten cards, or to move through them #5",
+   "decomposer_line": "Controls to move forward and back between the ten cards, or to move through them one at a time",
+   "atom": "flashcard_deck",
+   "confidence": 0.93,
+   "top3": [
+    [
+     "flashcard_deck",
+     0.94
+    ],
+    [
+     "flip_card",
+     0.02
+    ],
+    [
+     "columns",
+     0.02
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "A progress indicator that shows how many of the ten cards have been reviewed, su #6",
+   "decomposer_line": "A progress indicator that shows how many of the ten cards have been reviewed, such as a count like '4 of 10'",
+   "atom": "progress_circle",
+   "confidence": 0.51,
+   "top3": [
+    [
+     "progress_circle",
+     0.55
+    ],
+    [
+     "progress_bar",
+     0.25
+    ],
+    [
+     "progress_ring",
+     0.12
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "A visual progress bar or fill that grows as more cards are marked reviewed #7",
+   "decomposer_line": "A visual progress bar or fill that grows as more cards are marked reviewed",
+   "atom": "progress_bar",
+   "confidence": 0.77,
+   "top3": [
+    [
+     "progress_bar",
+     0.79
+    ],
+    [
+     "progress_circle",
+     0.16
+    ],
+    [
+     "xp_bar",
+     0.02
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "A mark-as-reviewed control that records a card as reviewed once the user has loo #8",
+   "decomposer_line": "A mark-as-reviewed control that records a card as reviewed once the user has looked at it",
+   "atom": "spaced_repetition_card",
+   "confidence": 0.89,
+   "top3": [
+    [
+     "spaced_repetition_card",
+     0.9
+    ],
+    [
+     "flashcard_deck",
+     0.06
+    ],
+    [
+     "flip_card",
+     0.03
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "A summary or completion message that appears once all ten cards have been review #9",
+   "decomposer_line": "A summary or completion message that appears once all ten cards have been reviewed",
+   "atom": "body",
+   "confidence": 0.88,
+   "top3": [
+    [
+     "body",
+     0.89
+    ],
+    [
+     "heading",
+     0.04
+    ],
+    [
+     "progress_circle",
+     0.03
+    ]
+   ],
+   "finalists": null
+  }
+ ],
+ "cost": {
+  "decomposer_input_tokens": 3242,
+  "decomposer_output_tokens": 272,
+  "decomposer_thinking_tokens": 0,
+  "jev_input_tokens": 6725,
+  "jev_output_tokens": 1109,
+  "jev_calls": 9
+ },
+ "error": null,
+ "atoms": [
+  "columns",
+  "spaced_repetition_card",
+  "flip_card",
+  "flip_card",
+  "flashcard_deck",
+  "progress_circle",
+  "progress_bar",
+  "spaced_repetition_card",
+  "body"
+ ],
+ "score": {
+  "precision": 0.778,
+  "recall": 1.0,
+  "f1": 0.875,
+  "slot_hits": {
+   "flashcard deck": true,
+   "progress indicator": true
+  }
+ },
+ "secs": 6.8
+}

@@ -1,0 +1,123 @@
+{
+ "label": "oracle-slice-6types__json__sonnet-5-5__temp0__run2",
+ "task": "T4",
+ "format": "json",
+ "model_id": "claude-sonnet-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "status_list",
+    "catalog_id": "https://a2uicatalog.ai/catalog/d-t4.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "status_list",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "1rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         {
+          "id": "list_heading",
+          "component": "heading",
+          "text": "Work items"
+         },
+         {
+          "id": "status_filter",
+          "component": "segmented_control",
+          "name": "status_filter",
+          "selected_value": "all",
+          "options": [
+           {
+            "label": "All",
+            "value": "all"
+           },
+           {
+            "label": "Active",
+            "value": "active"
+           },
+           {
+            "label": "Pending",
+            "value": "pending"
+           },
+           {
+            "label": "Blocked",
+            "value": "blocked"
+           },
+           {
+            "label": "Done",
+            "value": "done"
+           }
+          ]
+         },
+         {
+          "id": "items_list",
+          "component": "entity_list",
+          "items": [
+           {
+            "name": "Migrate billing service",
+            "subtitle": "Moving invoices to the new payments API.",
+            "icon": "\ud83d\udcb3",
+            "status": "Active"
+           },
+           {
+            "name": "Update onboarding copy",
+            "subtitle": "Waiting on legal review of the revised terms.",
+            "icon": "\ud83d\udcdd",
+            "status": "Pending"
+           },
+           {
+            "name": "Fix login redirect loop",
+            "subtitle": "Blocked by an upstream SSO provider outage.",
+            "icon": "\ud83d\udd10",
+            "status": "Blocked"
+           },
+           {
+            "name": "Quarterly security audit",
+            "subtitle": "All findings resolved and report signed off.",
+            "icon": "\ud83d\udee1\ufe0f",
+            "status": "Done"
+           },
+           {
+            "name": "Redesign dashboard charts",
+            "subtitle": "Second round of mockups in progress.",
+            "icon": "\ud83d\udcca",
+            "status": "Active"
+           },
+           {
+            "name": "Provision staging database",
+            "subtitle": "Queued until the infrastructure budget is approved.",
+            "icon": "\ud83d\uddc4\ufe0f",
+            "status": "Pending"
+           },
+           {
+            "name": "Integrate partner webhook",
+            "subtitle": "Blocked pending API credentials from the partner.",
+            "icon": "\ud83d\udd17",
+            "status": "Blocked"
+           },
+           {
+            "name": "Publish release notes",
+            "subtitle": "Shipped with version 2.4 on Monday.",
+            "icon": "\ud83d\udce3",
+            "status": "Done"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

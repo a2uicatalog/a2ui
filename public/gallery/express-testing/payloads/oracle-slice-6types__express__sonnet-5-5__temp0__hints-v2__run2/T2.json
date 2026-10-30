@@ -1,0 +1,123 @@
+{
+ "label": "oracle-slice-6types__express__sonnet-5-5__temp0__hints-v2__run2",
+ "task": "T2",
+ "format": "express",
+ "model_id": "claude-sonnet-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "metrics-overview",
+    "catalog_id": "https://a2uicatalog.ai/catalog/d-t2.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "metrics-overview",
+    "components": [
+     {
+      "id": "kpi1",
+      "component": "stat_card",
+      "value": "$128.4K",
+      "label": "Monthly Revenue",
+      "delta": "+12.5%",
+      "is_up": true,
+      "accent": "#22c55e"
+     },
+     {
+      "id": "kpi2",
+      "component": "stat_card",
+      "value": "8,420",
+      "label": "Active Users",
+      "delta": "+6.1%",
+      "is_up": true,
+      "accent": "#3b82f6"
+     },
+     {
+      "id": "kpi3",
+      "component": "stat_card",
+      "value": "3.2%",
+      "label": "Churn Rate",
+      "delta": "-0.4%",
+      "is_up": false,
+      "accent": "#ef4444"
+     },
+     {
+      "id": "kpi4",
+      "component": "stat_card",
+      "value": "94",
+      "label": "Support Satisfaction",
+      "delta": "-2.0%",
+      "is_up": false,
+      "accent": "#f59e0b"
+     },
+     {
+      "id": "title",
+      "component": "heading",
+      "text": "Metrics Overview"
+     },
+     {
+      "id": "chartTitle",
+      "component": "heading",
+      "text": "This Year vs. Last Year: Revenue by Quarter"
+     },
+     {
+      "id": "chart",
+      "component": "chartjs_bar",
+      "labels": [
+       "Q1",
+       "Q2",
+       "Q3",
+       "Q4"
+      ],
+      "datasets": [
+       {
+        "label": "This year",
+        "data": [
+         95,
+         108,
+         121,
+         128
+        ]
+       },
+       {
+        "label": "Last year",
+        "data": [
+         82,
+         90,
+         99,
+         110
+        ]
+       }
+      ]
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "title",
+         "kpi1",
+         "kpi2",
+         "kpi3",
+         "kpi4"
+        ]
+       },
+       {
+        "blocks": [
+         "chartTitle",
+         "chart"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Same payloads, two renderers</title><style>
+:root{color-scheme:light dark;--bg:#fbfaf7;--fg:#1d1c1a;--mut:#5a564e;--line:#d9d4c8;--card:#fff;--acc:#0b5cad;--hd:#efebe1}
+@media (prefers-color-scheme:dark){:root{--bg:#161513;--fg:#ece9e1;--mut:#b0aa9d;--line:#3a3731;--card:#1f1d1a;--acc:#7db4f0;--hd:#2a2722}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:72rem;margin:0 auto;padding:1rem 1rem 3rem}
+h1{font-size:1.6rem;line-height:1.25}h2{font-size:1.2rem;margin-top:2rem}
+a{color:var(--acc)}a:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.wrap{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--card)}
+table{border-collapse:collapse;width:100%;min-width:46rem;font-size:.92rem}
+th,td{text-align:left;vertical-align:top;padding:.55rem .7rem;border-bottom:1px solid var(--line)}
+th{background:var(--hd);position:sticky;top:0}
+code{font:.88em ui-monospace,Menlo,Consolas,monospace;word-break:break-word}
+.note{border-left:4px solid var(--acc);background:var(--card);padding:.6rem .9rem;margin:1rem 0}
+.tag{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:0 .55rem;font-size:.8rem;white-space:nowrap}
+.skip{position:absolute;left:-999px}.skip:focus{left:1rem;top:1rem;background:var(--card);padding:.4rem}
+</style></head><body><a class="skip" href="#main">Skip to content</a><main id="main"><p><a href="../index.html">Back to where the data lives</a></p><h1>Same saved payloads, same harness, two renderers</h1>
+<p class="note">Sonnet 5.5, Express, oracle slice (3 types), run 1. Only the renderer differs: left is the 10 Oct 2026 snapshot, right is origin/main of 27 Oct 2026 (17 days later). T1 and T5 look the same; T2, T4 and T6 differ. One model, one run, five cells: this shows what changed for these saved outputs, it is not a measured rate of improvement. The price shown as $$9 in an earlier comparison came from a test-harness workaround, so that comparison is withdrawn and not included. The renderer still prepends a dollar sign to any price (defect R2 in <a href="../content-check/REPORT.md">the content check</a>).</p>
+<style>.r{display:flex;gap:12px;flex-wrap:wrap}.r>div{flex:1 1 20rem;min-width:0}iframe{width:100%;height:560px;border:1px solid var(--line);border-radius:8px;background:#fff}</style>
+<h2>T1</h2><div class="r"><div><b>10 Oct renderer</b><iframe title="T1 on the 10 Oct renderer" src="T1_old.html"></iframe></div><div><b>27 Oct renderer</b><iframe title="T1 on the 27 Oct renderer" src="T1_new.html"></iframe></div></div><h2>T2</h2><div class="r"><div><b>10 Oct renderer</b><iframe title="T2 on the 10 Oct renderer" src="T2_old.html"></iframe></div><div><b>27 Oct renderer</b><iframe title="T2 on the 27 Oct renderer" src="T2_new.html"></iframe></div></div><h2>T4</h2><div class="r"><div><b>10 Oct renderer</b><iframe title="T4 on the 10 Oct renderer" src="T4_old.html"></iframe></div><div><b>27 Oct renderer</b><iframe title="T4 on the 27 Oct renderer" src="T4_new.html"></iframe></div></div><h2>T5</h2><div class="r"><div><b>10 Oct renderer</b><iframe title="T5 on the 10 Oct renderer" src="T5_old.html"></iframe></div><div><b>27 Oct renderer</b><iframe title="T5 on the 27 Oct renderer" src="T5_new.html"></iframe></div></div><h2>T6</h2><div class="r"><div><b>10 Oct renderer</b><iframe title="T6 on the 10 Oct renderer" src="T6_old.html"></iframe></div><div><b>27 Oct renderer</b><iframe title="T6 on the 27 Oct renderer" src="T6_new.html"></iframe></div></div>
+<h2>Stills</h2><p>Static images of the same pairs, in case the frames above do not load.</p>
+<ul>
+<li><a href="stills/renderer-only-T2.png">T2, data display</a>: left a dark grey chart with wrong axis labels (for example "183.2" between 111.5 and 95) and no legend; right a labelled bar chart with a legend and a 0-140 axis. A clear renderer difference.</li>
+<li><a href="stills/renderer-only-T6.png">T6, vocabulary flashcards</a>: left the deck is missing (title, progress bar and note only); right the flashcard deck renders with Prev, Flip and Next. The flashcard_deck atom did not render on the old snapshot.</li>
+<li><a href="stills/renderer-only-T4.png">T4, list of eight work items with a status filter</a>: left plain rows; right rows as cards with status chips. The list is better styled, but in both columns the filter strip overlaps the list at this narrow width.</li>
+<li><a href="stills/renderer-only-overview-T1-T2-T4-T5.png">Overview of T1, T2, T4, T5</a>: T1 (lesson) and T5 (pricing) look the same in both columns. Not every cell improved.</li></ul></main></body></html>

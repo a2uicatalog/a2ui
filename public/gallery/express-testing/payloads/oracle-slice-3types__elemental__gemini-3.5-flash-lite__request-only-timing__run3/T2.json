@@ -1,0 +1,185 @@
+{
+ "label": "oracle-slice-3types__elemental__gemini-3.5-flash-lite__request-only-timing__run3",
+ "task": "T2",
+ "format": "elemental",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display-elemental.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "heading",
+      "text": "Metrics Overview"
+     },
+     {
+      "id": "stat-1",
+      "component": "stat_card",
+      "value": {
+       "path": "/metricsData/0/value"
+      },
+      "label": {
+       "path": "/metricsData/0/label"
+      },
+      "delta": {
+       "path": "/metricsData/0/delta"
+      },
+      "accent": {
+       "path": "/metricsData/0/accent"
+      }
+     },
+     {
+      "id": "stat-2",
+      "component": "stat_card",
+      "value": {
+       "path": "/metricsData/1/value"
+      },
+      "label": {
+       "path": "/metricsData/1/label"
+      },
+      "delta": {
+       "path": "/metricsData/1/delta"
+      },
+      "accent": {
+       "path": "/metricsData/1/accent"
+      }
+     },
+     {
+      "id": "stat-3",
+      "component": "stat_card",
+      "value": {
+       "path": "/metricsData/2/value"
+      },
+      "label": {
+       "path": "/metricsData/2/label"
+      },
+      "delta": {
+       "path": "/metricsData/2/delta"
+      },
+      "accent": {
+       "path": "/metricsData/2/accent"
+      }
+     },
+     {
+      "id": "stat-4",
+      "component": "stat_card",
+      "value": {
+       "path": "/metricsData/3/value"
+      },
+      "label": {
+       "path": "/metricsData/3/label"
+      },
+      "delta": {
+       "path": "/metricsData/3/delta"
+      },
+      "accent": {
+       "path": "/metricsData/3/accent"
+      }
+     },
+     {
+      "id": "kpi-columns",
+      "component": "columns",
+      "cols": 4,
+      "gap": "1rem",
+      "items": [
+       {
+        "blocks": [
+         "stat-1"
+        ]
+       },
+       {
+        "blocks": [
+         "stat-2"
+        ]
+       },
+       {
+        "blocks": [
+         "stat-3"
+        ]
+       },
+       {
+        "blocks": [
+         "stat-4"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "comparison-heading",
+      "component": "heading",
+      "text": "Quarterly Benchmark Comparison"
+     },
+     {
+      "id": "benchmark-comp",
+      "component": "benchmark_comparison",
+      "items": {
+       "path": "/benchmarkItems"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_data_model": {
+    "surface_id": "main",
+    "path": "/",
+    "value": {
+     "metricsData": [
+      {
+       "value": "$128,450",
+       "label": "Total Revenue",
+       "delta": "+12.4%",
+       "is_up": "true",
+       "accent": "#4CAF50"
+      },
+      {
+       "value": "1,429",
+       "label": "New Customers",
+       "delta": "+5.2%",
+       "is_up": "true",
+       "accent": "#2196F3"
+      },
+      {
+       "value": "94.2%",
+       "label": "Retention Rate",
+       "delta": "-0.8%",
+       "is_up": "false",
+       "accent": "#FF9800"
+      },
+      {
+       "value": "3.8s",
+       "label": "Avg Response Time",
+       "delta": "-14.1%",
+       "is_up": "true",
+       "accent": "#9C27B0"
+      }
+     ],
+     "benchmarkItems": [
+      {
+       "label": "Q1 Performance",
+       "value": 75
+      },
+      {
+       "label": "Q2 Performance",
+       "value": 88
+      },
+      {
+       "label": "Q3 Target",
+       "value": 95
+      }
+     ]
+    }
+   }
+  }
+ ]
+}

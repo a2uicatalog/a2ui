@@ -1,0 +1,95 @@
+{
+ "label": "jev-layout-pipeline__run2",
+ "task": "T2",
+ "format": "express",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "ttl",
+      "component": "heading",
+      "text": "Performance Metrics Overview"
+     },
+     {
+      "id": "kpis",
+      "component": "metric_row",
+      "cols": 4,
+      "metrics": [
+       {
+        "value": "$48,250",
+        "label": "Total Revenue",
+        "sub": "+12.4% vs last period",
+        "trend": "up"
+       },
+       {
+        "value": "1,420",
+        "label": "New Customers",
+        "sub": "+5.1% vs last period",
+        "trend": "up"
+       },
+       {
+        "value": "94.2%",
+        "label": "Satisfaction Rate",
+        "sub": "-0.8% vs last period",
+        "trend": "down"
+       },
+       {
+        "value": "3.8%",
+        "label": "Churn Rate",
+        "sub": "-1.2% vs last period",
+        "trend": "down"
+       }
+      ]
+     },
+     {
+      "id": "chart",
+      "component": "chartjs_bar",
+      "labels": [
+       "Week 1",
+       "Week 2",
+       "Week 3",
+       "Week 4"
+      ],
+      "datasets": [
+       {
+        "label": "Revenue Trend ($)",
+        "data": [
+         10500,
+         11800,
+         12400,
+         13550
+        ]
+       }
+      ]
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "ttl",
+         "kpis",
+         "chart"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

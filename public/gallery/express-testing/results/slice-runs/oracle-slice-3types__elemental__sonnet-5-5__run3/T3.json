@@ -1,0 +1,44 @@
+{
+ "task": "T3",
+ "condition": "CX_sonnet-5-5",
+ "temperature_applied": false,
+ "format": "elemental",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "claude-sonnet-5-5",
+ "hints": false,
+ "label": "oracle-slice-3types__elemental__sonnet-5-5__run3",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "C-marketing-commerce.json",
+ "atoms_in_catalogue": 23,
+ "prompt_chars": 12539,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 11.0,
+ "usage": {
+  "input_tokens": 4938,
+  "output_tokens": 1306
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "gradient_hero",
+  "feature_grid",
+  "testimonial_card",
+  "cta_button"
+ ],
+ "score": {
+  "precision": 1.0,
+  "recall": 1.0,
+  "f1": 1.0,
+  "slot_hits": {
+   "hero": true,
+   "feature columns (x3)": true,
+   "testimonial": true,
+   "CTA": true
+  }
+ },
+ "reply": "<a2ui>\n<body>\n  <ui-gradient_hero id=\"root\" title=\"Plan your work in half the time\" subtitle=\"Flowdesk brings your tasks, calendar, and team updates into one calm workspace, so nothing slips through the cracks.\" Badge=\"New: Flowdesk 2.0\" align=\"center\" cta_label=\"Start free trial\" cta_url=\"https://example.com/signup\" />\n\n  <ui-feature_grid id=\"features\" Heading=\"Everything you need to stay on track\" description=\"Three tools that work together out of the box.\" Columns=\"{3}\">\n    <script type=\"application/json\" slot=\"features\">[\n      {\"icon\": \"\u26a1\", \"title\": \"Fast capture\", \"description\": \"Turn ideas, emails, and messages into tasks in a single keystroke.\", \"color\": \"#4f46e5\"},\n      {\"icon\": \"\ud83d\udcc5\", \"title\": \"Smart scheduling\", \"description\": \"Flowdesk finds the best time for each task and keeps your calendar balanced.\", \"color\": \"#8b5cf6\"},\n      {\"icon\": \"\ud83e\udd1d\", \"title\": \"Team clarity\", \"description\": \"Shared boards and live status updates keep everyone aligned without extra meetings.\", \"color\": \"#0ea5e9\"}\n    ]</script>\n  </ui-feature_grid>\n\n  <ui-testimonial_card id=\"testimonial\" text=\"Flowdesk replaced three separate tools for our team. We ship faster and our weekly status meeting is now ten minutes long.\" author_name=\"Maya Patel\" author_title=\"Head of Operations, Brightwave\" rating=\"{5}\" />\n\n  <ui-cta_button id=\"cta\" label=\"Start your free trial\" url=\"https://example.com/signup\" color=\"#4f46e5\" same_tab=\"{true}\" />\n</body>\n</a2ui>"
+}

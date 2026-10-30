@@ -1,0 +1,36 @@
+{
+ "model": "sonnet-5-5",
+ "cond": "B4",
+ "format": "json",
+ "brief": "B6",
+ "repeat": 3,
+ "seq": 44,
+ "model_id": "claude-sonnet-5-5",
+ "utc": "2026-10-29T19:57:35Z",
+ "prompt_chars": 19017,
+ "prompt_sha256": "(removed for publication)",
+ "temperature_requested": null,
+ "temperature_sent": false,
+ "max_tokens": 32768,
+ "request_secs": 18.9,
+ "input_tokens": 7251,
+ "output_tokens": 2812,
+ "stop_reason": "end_turn",
+ "usage": {
+  "input_tokens": 7251,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "cache_creation": {
+   "ephemeral_5m_input_tokens": 0,
+   "ephemeral_1h_input_tokens": 0
+  },
+  "output_tokens": 2812,
+  "output_tokens_details": {
+   "thinking_tokens": 1558
+  },
+  "service_tier": "standard",
+  "inference_geo": "global",
+  "speed": "standard"
+ },
+ "reply": "Here's a sitting toy cat built from orange bricks, with a cream chest and paws, green eyes, a pink nose and a curled tail. You can drag it to orbit, or use the scrubber to step through the build.\n\n<a2ui-json>\n[\n  {\n    \"version\": \"v0.9.1\",\n    \"createSurface\": {\n      \"surfaceId\": \"toy_cat\",\n      \"catalogId\": \"https://a2uicatalog.ai/catalog/blocks-b4.json\"\n    }\n  },\n  {\n    \"version\": \"v0.9.1\",\n    \"updateComponents\": {\n      \"surfaceId\": \"toy_cat\",\n      \"components\": [\n        {\n          \"id\": \"root\",\n          \"component\": \"brick_build_3d\",\n          \"label\": \"Toy cat built from bricks\",\n          \"look\": \"studio\",\n          \"height\": 440,\n          \"orbit\": true,\n          \"scrubber\": true,\n          \"checks\": true,\n          \"parts\": true,\n          \"bricks\": [\n            {\"x\": 2, \"y\": 0, \"z\": 2, \"w\": 4, \"d\": 4, \"h\": 3, \"c\": \"#f08a24\"},\n            {\"x\": 1, \"y\": 0, \"z\": 2, \"w\": 1, \"d\": 3, \"h\": 2, \"c\": \"#f08a24\"},\n            {\"x\": 6, \"y\": 0, \"z\": 2, \"w\": 1, \"d\": 3, \"h\": 2, \"c\": \"#f08a24\"},\n            {\"x\": 3, \"y\": 0, \"z\": 6, \"w\": 2, \"d\": 1, \"h\": 2, \"c\": \"#f5e6c8\"},\n            {\"x\": 2, \"y\": 0, \"z\": 6, \"w\": 1, \"d\": 1, \"h\": 1, \"c\": \"#f5e6c8\"},\n            {\"x\": 5, \"y\": 0, \"z\": 6, \"w\": 1, \"d\": 1, \"h\": 1, \"c\": \"#f5e6c8\"},\n            {\"x\": 2, \"y\": 1, \"z\": 6, \"w\": 1, \"d\": 1, \"h\": 1, \"c\": \"#f08a24\"},\n            {\"x\": 5, \"y\": 1, \"z\": 6, \"w\": 1, \"d\": 1, \"h\": 1, \"c\": \"#f08a24\"},\n            {\"x\": 5, \"y\": 0, \"z\": 0, \"w\": 1, \"d\": 2, \"h\": 1, \"c\": \"#f08a24\"},\n            {\"x\": 5, \"y\": 1, \"z\": 0, \"w\": 1, \"d\": 1, \"h\": 3, \"c\": \"#f08a24\"},\n            {\"x\": 5, \"y\": 4, \"z\": 0, \"w\": 1, \"d\": 1, \"h\": 1, \"c\": \"#8a4b12\"},\n            {\"x\": 2, \"y\": 3, \"z\": 3, \"w\": 4, \"d\": 3, \"h\": 2, \"c\": \"#f08a24\"},\n            {\"x\": 2, \"y\": 5, \"z\": 3, \"w\": 1, \"d\": 1, \"h\": 1, \"c\": \"#f08a24\"},\n            {\"x\": 5, \"y\": 5, \"z\": 3, \"w\": 1, \"d\": 1, \"h\": 1, \"c\": \"#f08a24\"},\n            {\"x\": 3, \"y\": 3, \"z\": 6, \"w\": 2, \"d\": 1, \"h\": 1, \"c\": \"#f5e6c8\"},\n            {\"x\": 2, \"y\": 4, \"z\": 6, \"w\": 1, \"d\": 1, \"h\": 1, \"c\": \"#3cb44b\"},\n            {\"x\": 5, \"y\": 4, \"z\": 6, \"w\": 1, \"d\": 1, \"h\": 1, \"c\": \"#3cb44b\"},\n            {\"x\": 3, \"y\": 4, \"z\": 6, \"w\": 2, \"d\": 1, \"h\": 1, \"c\": \"#ff8fab\"}\n          ]\n        }\n      ]\n    }\n  }\n]\n</a2ui-json>"
+}

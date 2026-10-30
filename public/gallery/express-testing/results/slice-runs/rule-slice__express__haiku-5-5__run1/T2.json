@@ -1,0 +1,42 @@
+{
+ "task": "T2",
+ "condition": "B_haiku-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "rule-slice__express__haiku-5-5__run1",
+ "agent_type": "Data display",
+ "catalogue": "B-data-display.json",
+ "atoms_in_catalogue": 248,
+ "prompt_chars": 125436,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 9.8,
+ "usage": {
+  "input_tokens": 45619,
+  "output_tokens": 1696
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "metric_row",
+  "chartjs_bar",
+  "color_section"
+ ],
+ "score": {
+  "precision": 0.667,
+  "recall": 0.667,
+  "f1": 0.667,
+  "slot_hits": {
+   "KPI tile (x4)": true,
+   "trend (required only if metric_row was chosen; stat_card's own delta already satisfies it)": false,
+   "comparison chart": true
+  }
+ },
+ "reply": "<a2ui>\nkpis = metric_row(cols=4, accent=\"#4f46e5\", metrics=[{value: \"$1.28M\", label: \"Revenue\", sub: \"+8.4% vs last month\", trend: \"up\"}, {value: \"42.7k\", label: \"Active users\", sub: \"+3.1% vs last month\", trend: \"up\"}, {value: \"2.4%\", label: \"Churn rate\", sub: \"-0.6 pts vs last month\", trend: \"down\"}, {value: \"182 ms\", label: \"Avg. response time\", sub: \"-12 ms vs last month\", trend: \"down\"}])\n\ncomparison = chartjs_bar(labels=[\"Jan\", \"Feb\", \"Mar\", \"Apr\", \"May\", \"Jun\"], datasets=[{label: \"Actual revenue ($k)\", data: [820, 875, 910, 960, 1010, 1280]}, {label: \"Target revenue ($k)\", data: [800, 850, 900, 950, 1000, 1050]}])\n\nroot = color_section(accent=\"#4f46e5\", style=\"light\", padding=\"24px\", blocks=[kpis, comparison])\n</a2ui>"
+}

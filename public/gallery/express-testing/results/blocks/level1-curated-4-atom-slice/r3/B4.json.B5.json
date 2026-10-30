@@ -1,0 +1,36 @@
+{
+ "model": "sonnet-5-5",
+ "cond": "B4",
+ "format": "json",
+ "brief": "B5",
+ "repeat": 3,
+ "seq": 42,
+ "model_id": "claude-sonnet-5-5",
+ "utc": "2026-10-29T19:56:53Z",
+ "prompt_chars": 19021,
+ "prompt_sha256": "(removed for publication)",
+ "temperature_requested": null,
+ "temperature_sent": false,
+ "max_tokens": 32768,
+ "request_secs": 11.65,
+ "input_tokens": 7251,
+ "output_tokens": 569,
+ "stop_reason": "end_turn",
+ "usage": {
+  "input_tokens": 7251,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "cache_creation": {
+   "ephemeral_5m_input_tokens": 0,
+   "ephemeral_1h_input_tokens": 0
+  },
+  "output_tokens": 569,
+  "output_tokens_details": {
+   "thinking_tokens": 206
+  },
+  "service_tier": "standard",
+  "inference_geo": "global",
+  "speed": "standard"
+ },
+ "reply": "Here's a toy house that assembles itself brick by brick. Drag to orbit it, or switch to the instructions view to step through the build.\n\n<a2ui-json>\n[\n  {\n    \"version\": \"v0.9.1\",\n    \"createSurface\": {\n      \"surfaceId\": \"toy_house\",\n      \"catalogId\": \"https://a2uicatalog.ai/catalog/blocks-b4.json\"\n    }\n  },\n  {\n    \"version\": \"v0.9.1\",\n    \"updateComponents\": {\n      \"surfaceId\": \"toy_house\",\n      \"components\": [\n        {\n          \"id\": \"root\",\n          \"component\": \"brick_build_3d\",\n          \"shape\": \"house\",\n          \"mode\": \"animate\",\n          \"orbit\": true,\n          \"scrubber\": true,\n          \"checks\": true,\n          \"parts\": true,\n          \"height\": 420,\n          \"look\": \"studio\",\n          \"accessibility\": {\n            \"label\": \"Toy brick house\",\n            \"description\": \"A 3D toy house that assembles itself from bricks and can be rotated by dragging.\"\n          }\n        }\n      ]\n    }\n  }\n]\n</a2ui-json>"
+}

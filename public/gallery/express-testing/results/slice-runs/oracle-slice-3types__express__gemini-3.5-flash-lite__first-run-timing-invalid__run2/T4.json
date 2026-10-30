@@ -1,0 +1,44 @@
+{
+ "task": "T4",
+ "condition": "C_gemini-3.5-f",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash-lite",
+ "hints": false,
+ "label": "oracle-slice-3types__express__gemini-3.5-flash-lite__first-run-timing-invalid__run2",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 16421,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 21.1,
+ "usage": {
+  "input_tokens": 4601,
+  "output_tokens": 531
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns",
+  "heading",
+  "body",
+  "segmented_control",
+  "entity_list"
+ ],
+ "score": {
+  "precision": 0.4,
+  "recall": 0.667,
+  "f1": 0.5,
+  "slot_hits": {
+   "list": true,
+   "status indicator": false,
+   "filter control": true
+  }
+ },
+ "reply": "<a2ui>\nroot = columns(\n  cols=1,\n  gap=\"1.5rem\",\n  items=[\n    {\n      blocks: [\n        heading(\"Task Items Overview\"),\n        body(\"Filterable list of items showing title, status, and details.\"),\n        segmented_control(\n          options=[\n            {label: \"All\", value: \"all\"},\n            {label: \"Active\", value: \"active\"},\n            {label: \"Completed\", value: \"completed\"}\n          ],\n          selected_value=\"all\",\n          name=\"status_filter\"\n        ),\n        entity_list(\n          items=[\n            {\n              name: \"Server Migration\",\n              subtitle: \"Migrate legacy databases to cloud infrastructure\",\n              status: \"Active\",\n              meta: \"Due in 3 days\"\n            },\n            {\n              name: \"Security Audit\",\n              subtitle: \"Perform annual penetration testing and vulnerability scan\",\n              status: \"Pending\",\n              meta: \"Due next week\"\n            },\n            {\n              name: \"Design System Update\",\n              subtitle: \"Refresh typography and button components in Figma\",\n              status: \"Completed\",\n              meta: \"Finished yesterday\"\n            },\n            {\n              name: \"API Rate Limiting\",\n              subtitle: \"Implement Redis-backed rate limiting for public endpoints\",\n              status: \"Active\",\n              meta: \"In progress\"\n            },\n            {\n              name: \"Billing Portal Redesign\",\n              subtitle: \"Upgrade Stripe integration and invoice PDF generation\",\n              status: \"Pending\",\n              meta: \"Scheduled\"\n            },\n            {\n              name: \"User Onboarding Flow\",\n              subtitle: \"A/B test new tooltips for first-time dashboard visitors\",\n              status: \"Completed\",\n              meta: \"Finished 2 days ago\"\n            },\n            {\n              name: \"Mobile App Push Notifications\",\n              subtitle: \"Integrate Firebase Cloud Messaging for iOS and Android\",\n              status: \"Active\",\n              meta: \"In review\"\n            },\n            {\n              name: \"Database Indexing\",\n              subtitle: \"Optimize slow-running queries on the transactions table\",\n              status: \"Completed\",\n              meta: \"Finished last week\"\n            }\n          ]\n        )\n      ]\n    }\n  ]\n)\n</a2ui>"
+}

@@ -1,0 +1,90 @@
+{
+ "label": "jev-picks-on-tag-slice__express__haiku-4-5__run3",
+ "task": "T3",
+ "format": "express",
+ "model_id": null,
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/jg-t3.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "body",
+      "text": [
+       "root_text_0",
+       "root_text_1",
+       "root_text_2",
+       "root_text_3",
+       "root_text_4",
+       "root_text_5"
+      ]
+     },
+     {
+      "id": "root_text_0",
+      "component": "article_hero",
+      "title": "Transform Your Workflow",
+      "subtitle": "Experience seamless integration and unmatched performance",
+      "image_url": "https://images.unsplash.com/photo-1552664730-d307ca884978?w=1200&h=400&fit=crop"
+     },
+     {
+      "id": "root_text_1",
+      "component": "heading",
+      "text": "Why Choose Us"
+     },
+     {
+      "id": "root_text_2",
+      "component": "feature_grid",
+      "columns": 3,
+      "features": [
+       {
+        "icon": "\u26a1",
+        "title": "Lightning Fast",
+        "description": "Experience blazing-fast performance optimized for your needs"
+       },
+       {
+        "icon": "\ud83d\udd12",
+        "title": "Secure & Reliable",
+        "description": "Enterprise-grade security with 99.9% uptime guarantee"
+       },
+       {
+        "icon": "\ud83c\udfaf",
+        "title": "Easy to Use",
+        "description": "Intuitive interface designed for seamless user experience"
+       }
+      ]
+     },
+     {
+      "id": "root_text_3",
+      "component": "heading",
+      "text": "What Our Customers Say"
+     },
+     {
+      "id": "root_text_4",
+      "component": "testimonial_card",
+      "text": "This product completely transformed how we work. Highly recommend!",
+      "author_name": "Sarah Johnson",
+      "author_title": "CEO, Tech Innovations Inc.",
+      "author_avatar_url": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop",
+      "rating": 5
+     },
+     {
+      "id": "root_text_5",
+      "component": "cta_button",
+      "url": "https://example.com/signup",
+      "label": "Get Started Today",
+      "color": "#4f46e5"
+     }
+    ]
+   }
+  }
+ ]
+}

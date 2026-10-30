@@ -1,0 +1,38 @@
+{
+ "task": "T4",
+ "condition": "CX_gemini-3.5-flash-l",
+ "temperature_applied": false,
+ "format": "elemental",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash-lite",
+ "hints": false,
+ "label": "oracle-slice-3types__elemental__gemini-3.5-flash-lite__first-run-timing-invalid__run3",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 16829,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 20.6,
+ "usage": {
+  "input_tokens": 4974,
+  "output_tokens": 728
+ },
+ "valid": false,
+ "error": "A2uiCompilationValidationError: Invalid element tag 'items'. Only 'ui-*' components are supported inside A2UI surfaces. - Help: Please correct the validation or syntax error in your Elemental XML/HTML.",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "list": false,
+   "status indicator": false,
+   "filter control": false
+  }
+ },
+ "reply": "<a2ui>\n  <body>\n    <script type=\"application/json\">{\n      \"filter\": \"all\",\n      \"items\": [\n        { \"id\": \"1\", \"title\": \"API Gateway Migration\", \"status\": \"In Progress\", \"detail\": \"Transitioning legacy routes to v2 proxy cluster\", \"appearance\": \"inprogress\" },\n        { \"id\": \"2\", \"title\": \"Billing Engine Hotfix\", \"status\": \"Completed\", \"detail\": \"Resolved rounding discrepancy on annual invoices\", \"appearance\": \"success\" },\n        { \"id\": \"3\", \"title\": \"Auth Service Scaling\", \"status\": \"Pending\", \"detail\": \"Awaiting approval for multi-region Redis cache\", \"appearance\": \"new\" },\n        { \"id\": \"4\", \"title\": \"Database Index Optimization\", \"status\": \"In Progress\", \"detail\": \"Rebuilding secondary indexes on user activity tables\", \"appearance\": \"inprogress\" },\n        { \"id\": \"5\", \"title\": \"CDN Purge Automation\", \"status\": \"Completed\", \"detail\": \"Implemented webhook listener for automatic asset invalidation\", \"appearance\": \"success\" },\n        { \"id\": \"6\", \"title\": \"Security Vulnerability Scan\", \"status\": \"Pending\", \"detail\": \"Scheduled bi-weekly dependency check with Snyk\", \"appearance\": \"new\" },\n        { \"id\": \"7\", \"title\": \"Metrics Exporter Upgrade\", \"status\": \"Completed\", \"detail\": \"Migrated Prometheus scrapers to native OpenTelemetry format\", \"appearance\": \"success\" },\n        { \"id\": \"8\", \"title\": \"Customer Feedback Portal\", \"status\": \"Pending\", \"detail\": \"Drafting UI wireframes for user submission pipeline\", \"appearance\": \"new\" }\n      ]\n    }</script>\n\n    <ui-heading id=\"root\" text=\"System Tasks &amp; Status\" />\n\n    <ui-columns id=\"filter-section\" cols=\"{2}\" gap=\"1rem\">\n      <items>\n        <blocks>\n          <ui-segmented_control \n            id=\"status-filter\" \n            name=\"filter\" \n            selected_value=\"{$/filter}\" \n            on-click=\"{Event('filter_change', {value: $/filter})}\"\n          >\n            <script type=\"application/json\" slot=\"options\">[\n              {\"label\": \"All\", \"value\": \"all\"},\n              {\"label\": \"In Progress\", \"value\": \"In Progress\"},\n              {\"label\": \"Completed\", \"value\": \"Completed\"},\n              {\"label\": \"Pending\", \"value\": \"Pending\"}\n            ]</script>\n          </ui-segmented_control>\n        </blocks>\n      </items>\n      <items>\n        <blocks>\n          <ui-metric_delta \n            id=\"total-metric\" \n            label=\"Active Items\" \n            current_value=\"8\" \n            delta_type=\"no_change\" \n          />\n        </blocks>\n      </items>\n    </ui-columns>\n\n    <ui-data_table_sortable \n      id=\"task-table\"\n      headers=\"['Task Title', 'Status', 'Detail']\"\n      rows=\"{$/items}\"\n    />\n  </body>\n</a2ui>"
+}

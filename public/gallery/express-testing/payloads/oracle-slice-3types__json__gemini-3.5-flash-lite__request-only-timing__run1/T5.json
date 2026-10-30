@@ -1,0 +1,87 @@
+{
+ "label": "oracle-slice-3types__json__gemini-3.5-flash-lite__request-only-timing__run1",
+ "task": "T5",
+ "format": "json",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "pricing-surface",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce.json",
+    "theme": {
+     "primaryColor": "#4f46e5"
+    }
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "pricing-surface",
+    "components": [
+     {
+      "id": "root",
+      "component": "gradient_hero",
+      "title": "Simple, transparent pricing",
+      "subtitle": "Choose the plan that's right for you. Upgrade or downgrade at any time.",
+      "badge": "Pricing Plans",
+      "align": "center"
+     },
+     {
+      "id": "pricing_section",
+      "component": "pricing_tier_group",
+      "tiers": [
+       {
+        "name": "Starter",
+        "price": "$9",
+        "cadence": "per month",
+        "description": "Essential features for individuals and side projects.",
+        "features": [
+         "Up to 5 projects",
+         "Basic analytics",
+         "Community support",
+         "1GB storage"
+        ],
+        "cta_label": "Start with Starter",
+        "cta_url": "#starter",
+        "recommended": false
+       },
+       {
+        "name": "Pro",
+        "price": "$29",
+        "cadence": "per month",
+        "description": "Advanced features for growing teams and businesses.",
+        "features": [
+         "Unlimited projects",
+         "Advanced analytics & reporting",
+         "Priority support",
+         "50GB storage",
+         "Custom domain integration"
+        ],
+        "cta_label": "Get Started Pro",
+        "cta_url": "#pro",
+        "recommended": true
+       },
+       {
+        "name": "Enterprise",
+        "price": "$99",
+        "cadence": "per month",
+        "description": "Dedicated support and infrastructure for large-scale operations.",
+        "features": [
+         "Dedicated account manager",
+         "Custom SLA & security",
+         "Unlimited storage",
+         "Advanced team permissions",
+         "24/7 phone support"
+        ],
+        "cta_label": "Contact Sales",
+        "cta_url": "#enterprise",
+        "recommended": false
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

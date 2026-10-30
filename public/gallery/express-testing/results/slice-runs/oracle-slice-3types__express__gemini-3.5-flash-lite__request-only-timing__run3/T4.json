@@ -1,0 +1,44 @@
+{
+ "task": "T4",
+ "condition": "C_gemini-3.5-flash-l",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash-lite",
+ "hints": false,
+ "label": "oracle-slice-3types__express__gemini-3.5-flash-lite__request-only-timing__run3",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 16421,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 2.5,
+ "usage": {
+  "input_tokens": 4601,
+  "output_tokens": 624
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns",
+  "heading",
+  "body",
+  "chip_group",
+  "entity_list"
+ ],
+ "score": {
+  "precision": 0.4,
+  "recall": 0.667,
+  "f1": 0.5,
+  "slot_hits": {
+   "list": true,
+   "status indicator": false,
+   "filter control": true
+  }
+ },
+ "reply": "<a2ui>\nroot = columns(\n  cols=1,\n  gap=\"1.5rem\",\n  items=[\n    {\n      blocks: [\n        heading(\"Task Filter and Status Dashboard\"),\n        body(\"Review and track the current operational tasks and their statuses across all systems.\"),\n        chip_group(\n          label=\"Filter by Status\",\n          layout=\"wrap\",\n          same_tab=true,\n          chips=[\n            {\"label\": \"All (8)\", \"color\": \"#0070f3\", \"active\": true},\n            {\"label\": \"Success\", \"color\": \"#10b981\", \"active\": false},\n            {\"label\": \"In Progress\", \"color\": \"#f59e0b\", \"active\": false},\n            {\"label\": \"Error\", \"color\": \"#ef4444\", \"active\": false}\n          ]\n        ),\n        entity_list(\n          items=[\n            {\n              name: \"Database Migration\",\n              subtitle: \"Migrated legacy user tables to primary PostgreSQL cluster.\",\n              status: \"Success\",\n              meta: \"Completed 2h ago\"\n            },\n            {\n              name: \"API Gateway Scaling\",\n              subtitle: \"Scaling up replica sets to handle peak traffic load.\",\n              status: \"In Progress\",\n              meta: \"Active now\"\n            },\n            {\n              name: \"SSL Certificate Renewal\",\n              subtitle: \"Wildcard cert for *.enterprise.io expired or near expiration.\",\n              status: \"Error\",\n              meta: \"Failed 1h ago\"\n            },\n            {\n              name: \"Cache Cluster Flush\",\n              subtitle: \"Cleared Redis instance memory due to stale session keys.\",\n              status: \"Success\",\n              meta: \"Completed 5h ago\"\n            },\n            {\n              name: \"Billing Webhook Sync\",\n              subtitle: \"Retrying failed Stripe webhook deliveries for subscription updates.\",\n              status: \"In Progress\",\n              meta: \"Retrying 3/5\"\n            },\n            {\n              name: \"CDN Asset Purge\",\n              subtitle: \"Purged edge cache for frontend static bundles after release.\",\n              status: \"Success\",\n              meta: \"Completed yesterday\"\n            },\n            {\n              name: \"Security Vulnerability Scan\",\n              subtitle: \"Automated weekly dependency audit completed with 0 high risks.\",\n              status: \"Success\",\n              meta: \"Completed yesterday\"\n            },\n            {\n              name: \"Backup Snapshot Verification\",\n              subtitle: \"Integrity check failed on storage volume snapshot #402.\",\n              status: \"Error\",\n              meta: \"Flagged 3h ago\"\n            }\n          ]\n        )\n      ]\n    }\n  ]\n)\n</a2ui>"
+}

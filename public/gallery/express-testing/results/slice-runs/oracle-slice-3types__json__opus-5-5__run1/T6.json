@@ -1,0 +1,39 @@
+{
+ "task": "T6",
+ "condition": "CN_opus-5-5",
+ "temperature_applied": false,
+ "format": "json",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-opus-5-5",
+ "hints": false,
+ "label": "oracle-slice-3types__json__opus-5-5__run1",
+ "agent_type": "Learning",
+ "catalogue": "C-learning.json",
+ "atoms_in_catalogue": 36,
+ "prompt_chars": 37811,
+ "slot_recall": [
+  2,
+  2
+ ],
+ "secs": 20.7,
+ "usage": {
+  "input_tokens": 14391,
+  "output_tokens": 2157
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns"
+ ],
+ "score": {
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "flashcard deck": false,
+   "progress indicator": false
+  }
+ },
+ "reply": "Here's a vocabulary review screen: a ten-card flip deck on the left and a progress panel on the right.\n\n<a2ui-json>\n[\n  {\n    \"version\": \"v0.9.1\",\n    \"createSurface\": {\n      \"surfaceId\": \"vocab-flashcards\",\n      \"catalogId\": \"https://a2uicatalog.ai/catalog/c-learning.json\"\n    }\n  },\n  {\n    \"version\": \"v0.9.1\",\n    \"updateComponents\": {\n      \"surfaceId\": \"vocab-flashcards\",\n      \"components\": [\n        {\n          \"id\": \"root\",\n          \"component\": \"columns\",\n          \"cols\": 2,\n          \"gap\": \"2rem\",\n          \"align\": \"top\",\n          \"items\": [\n            {\n              \"blocks\": [\n                {\n                  \"type\": \"page_header\",\n                  \"title\": \"Vocabulary Review\",\n                  \"subtitle\": \"Ten words to flip through. Read the word, recall its meaning, then flip to check.\",\n                  \"icon\": \"\ud83d\udcda\",\n                  \"tag\": \"10 cards\",\n                  \"accent\": \"#4f46e5\",\n                  \"meta\": [\n                    { \"label\": \"Deck\", \"value\": \"Advanced English\" },\n                    { \"label\": \"Cards\", \"value\": \"10\" }\n                  ]\n                },\n                {\n                  \"type\": \"flashcard_deck\",\n                  \"accent\": \"#4f46e5\",\n                  \"label_front\": \"WORD\",\n                  \"label_back\": \"MEANING\",\n                  \"cards\": [\n                    { \"front\": \"Ephemeral\", \"back\": \"Lasting a very short time. \\\"The ephemeral beauty of cherry blossoms.\\\"\" },\n                    { \"front\": \"Ubiquitous\", \"back\": \"Present or found everywhere. \\\"Smartphones have become ubiquitous.\\\"\" },\n                    { \"front\": \"Candid\", \"back\": \"Truthful and straightforward; frank. \\\"She gave a candid account of the mistake.\\\"\" },\n                    { \"front\": \"Meticulous\", \"back\": \"Showing great attention to detail. \\\"He kept meticulous records.\\\"\" },\n                    { \"front\": \"Resilient\", \"back\": \"Able to recover quickly from difficulty. \\\"Children are often remarkably resilient.\\\"\" },\n                    { \"front\": \"Ambiguous\", \"back\": \"Open to more than one interpretation. \\\"The ending of the film was deliberately ambiguous.\\\"\" },\n                    { \"front\": \"Pragmatic\", \"back\": \"Dealing with things sensibly and realistically. \\\"We need a pragmatic solution.\\\"\" },\n                    { \"front\": \"Benevolent\", \"back\": \"Well-meaning and kindly. \\\"A benevolent donor funded the library.\\\"\" },\n                    { \"front\": \"Lucid\", \"back\": \"Expressed clearly; easy to understand. \\\"She wrote a lucid summary of the research.\\\"\" },\n                    { \"front\": \"Tenacious\", \"back\": \"Holding firmly to a goal; persistent. \\\"A tenacious reporter chasing the story.\\\"\" }\n                  ]\n                }\n              ]\n            },\n            {\n              \"blocks\": [\n                {\n                  \"type\": \"heading\",\n                  \"text\": \"Your progress\"\n                },\n                {\n                  \"type\": \"progress_ring\",\n                  \"value\": \"60\",\n                  \"size\": \"140\",\n                  \"stroke_width\": \"10\",\n                  \"color\": \"#4f46e5\",\n                  \"label\": \"Cards reviewed\",\n                  \"show_value\": \"true\",\n                  \"unit\": \"%\"\n                },\n                {\n                  \"type\": \"progress_bar\",\n                  \"value\": 60,\n                  \"label\": \"Reviewed\",\n                  \"accent\": \"#4f46e5\",\n                  \"show_percent\": \"true\",\n                  \"caption\": \"6 of 10 cards reviewed \u00b7 4 remaining\"\n                },\n                {\n                  \"type\": \"text_callout\",\n                  \"variant\": \"info\",\n                  \"title\": \"How to review\",\n                  \"description\": \"Say the meaning out loud before you flip. If you got it right, move on; if not, revisit the card at the end of the deck.\"\n                }\n              ]\n            }\n          ]\n        }\n      ]\n    }\n  }\n]\n</a2ui-json>\n\nThe progress ring and bar show a snapshot of 6 of 10 reviewed. This catalog's flashcard deck exposes no data binding, so the progress panel can't update itself as cards are flipped. To reflect real progress, send updated `value` and `caption` figures after each review."
+}

@@ -1,0 +1,32 @@
+{
+ "task": "T1",
+ "label": "haiku-live3-r2",
+ "secs": 10.1,
+ "usage": {
+  "input_tokens": 85004,
+  "output_tokens": 865
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "concept_ladder",
+  "concept_rung",
+  "concept_rung",
+  "concept_rung",
+  "concept_rung",
+  "concept_rung"
+ ],
+ "score": {
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "title": false,
+   "concept sections (x3)": false,
+   "worked example": false,
+   "3-question quiz": false,
+   "quiz result": false
+  }
+ },
+ "reply": "<a2ui>\nroot = concept_ladder(\n  title=\"The Water Cycle\",\n  eyebrow=\"EARTH SCIENCE 101\",\n  dek=\"How water moves and transforms in Earth's systems\",\n  hook=\"Water covers 71% of Earth and never leaves the planet\u2014it just changes form and location in an endless cycle powered by the sun.\",\n  model=\"Think of it as an enormous recycling system where the sun is the engine.\",\n  model_note=\"Every drop that ever existed still exists today.\",\n  rungs=[\n    concept_rung(\n      badge=\"1\",\n      kind=\"depth\",\n      label=\"EVAPORATION\",\n      title=\"Water Rises as Vapor\",\n      body=\"The sun heats water in oceans, lakes, and rivers, turning it from liquid to invisible water vapor. This water rises into the atmosphere. Plants also release water through their leaves in a process called transpiration.\",\n      code=\"Heat + Liquid Water \u2192 Water Vapor\",\n      takeaway=\"The hotter it is, the faster water evaporates.\"\n    ),\n    concept_rung(\n      badge=\"2\",\n      kind=\"depth\",\n      label=\"CONDENSATION\",\n      title=\"Vapor Becomes Clouds\",\n      body=\"As rising air cools high in the atmosphere, water vapor condenses into tiny liquid droplets around dust particles. Billions of these droplets cluster together to form visible clouds.\",\n      code=\"Water Vapor + Cold \u2192 Liquid Droplets\",\n      takeaway=\"Clouds are just water droplets suspended in air.\"\n    ),\n    concept_rung(\n      badge=\"3\",\n      kind=\"depth\",\n      label=\"PRECIPITATION\",\n      title=\"Water Falls as Rain or Snow\",\n      body=\"Droplets in clouds merge and grow heavier until they fall as precipitation\u2014rain, snow, sleet, or hail. This water returns to Earth's surface, where it collects in oceans, lands on soil, or feeds into rivers and lakes.\",\n      code=\"Heavy Droplets \u2192 Gravity Pull \u2192 Precipitation\",\n      takeaway=\"Precipitation is how water returns to the surface.\"\n    ),\n    concept_rung(\n      badge=\"4\",\n      kind=\"depth\",\n      label=\"COLLECTION & INFILTRATION\",\n      title=\"Water Gathers and Seeps\",\n      body=\"Precipitated water collects in oceans, lakes, and rivers (surface collection), or soaks into soil as groundwater (infiltration). This water then flows toward lower elevations or evaporates again, continuing the cycle.\",\n      code=\"Surface Flow + Underground Seepage = Cycling\",\n      takeaway=\"Water takes many paths after it lands.\"\n    ),\n    concept_rung(\n      badge=\"EX\",\n      kind=\"example\",\n      label=\"WORKED EXAMPLE\",\n      title=\"Tracking One Water Molecule\",\n      body=\"Imagine a water molecule in the Pacific Ocean. The sun heats it and it evaporates into the air above California. Wind carries the vapor inland where it meets cool mountain air. The vapor condenses into clouds over the Sierra Nevada. Cold overnight temperatures trigger precipitation as snow. In spring, that snowmelt infiltrates the soil and reaches an underground aquifer, where it stays for years until a farmer's well extracts it for irrigation. The water evaporates from crop leaves, rises again, and the cycle continues.\",\n      code=\"Ocean \u2192 Vapor \u2192 Mountain \u2192 Cloud \u2192 Snow \u2192 Groundwater \u2192 Crop \u2192 Vapor\",\n      code_caption=\"The journey of one molecule over months and across space\",\n      takeaway=\"Every part of the cycle connects; water is always in motion.\"\n    )\n  ],\n  closing_note=\"The water cycle has operated unchanged for billions of years, making Earth uniquely suited for life.\"\n)\n</a2ui>"
+}

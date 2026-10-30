@@ -1,0 +1,40 @@
+{
+ "task": "T4",
+ "condition": "A_haiku-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "full-catalogue__express__haiku-5-5__run1",
+ "agent_type": "full",
+ "catalogue": "A-full.json",
+ "atoms_in_catalogue": 557,
+ "prompt_chars": 294155,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 6.1,
+ "usage": {
+  "input_tokens": 107814,
+  "output_tokens": 1009
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "filterable_list"
+ ],
+ "score": {
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "list": false,
+   "status indicator": false,
+   "filter control": false
+  }
+ },
+ "reply": "<a2ui>\nroot = filterable_list(\n  \"Launch checklist\",\n  [\n    {title: \"Database migration\", status: \"done\", detail: \"Schema v12 applied to production.\"},\n    {title: \"API gateway rollout\", status: \"in_progress\", detail: \"Canary running at 25% of traffic.\"},\n    {title: \"Auth token rotation\", status: \"blocked\", detail: \"Waiting on security sign-off.\"},\n    {title: \"Load test\", status: \"done\", detail: \"Sustained 2k req/s for 30 minutes.\"},\n    {title: \"Public docs update\", status: \"open\", detail: \"API reference still lists v1 endpoints.\"},\n    {title: \"Billing webhook\", status: \"in_progress\", detail: \"Retry logic under review.\"},\n    {title: \"Feature flag cleanup\", status: \"open\", detail: \"Twelve stale flags remain in code.\"},\n    {title: \"Incident runbook\", status: \"done\", detail: \"Reviewed and linked from the on-call wiki.\"}\n  ],\n  filter_field=\"status\",\n  show_counts=true,\n  empty_text=\"No items match this status.\"\n)\n</a2ui>"
+}

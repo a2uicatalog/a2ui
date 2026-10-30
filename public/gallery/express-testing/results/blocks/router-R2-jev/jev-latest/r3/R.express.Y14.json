@@ -1,0 +1,38 @@
+{
+ "model": "jev-latest",
+ "cond": "R",
+ "format": "express",
+ "brief": "Y14",
+ "repeat": 3,
+ "seq": 62,
+ "utc": "2026-10-29T21:14:12Z",
+ "reply": "{\"catalogue\": \"a2ui-bricks-v1\"}",
+ "jev_choice": "a2ui-bricks-v1",
+ "confidence": 0.69,
+ "probabilities": {
+  "a2ui-atoms-v1": 0.01,
+  "a2ui-aviation-v1": 0.0,
+  "a2ui-bricks-v1": 0.71,
+  "a2ui-charts-v1": 0.0,
+  "a2ui-display-v1": 0.0,
+  "a2ui-editorial-v1": 0.0,
+  "a2ui-effects-v1": 0.01,
+  "a2ui-embeds-v1": 0.0,
+  "a2ui-google-workspace-live-v1": 0.0,
+  "a2ui-learning-v1": 0.0,
+  "a2ui-marketing-v1": 0.0,
+  "a2ui-meta-v1": 0.0,
+  "a2ui-ops-v1": 0.0,
+  "a2ui-presentation-v1": 0.0,
+  "none": 0.27
+ },
+ "request_secs": 0.18,
+ "input_tokens": 1454,
+ "output_tokens": 217,
+ "usage": {
+  "input_tokens": 1454,
+  "output_tokens": 217
+ },
+ "stop_reason": "choice",
+ "model_id": "jev-1.14.0"
+}

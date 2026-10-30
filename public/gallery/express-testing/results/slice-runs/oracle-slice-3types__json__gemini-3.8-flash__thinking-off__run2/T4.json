@@ -1,0 +1,38 @@
+{
+ "task": "T4",
+ "condition": "CN_gemini-3.8-flash",
+ "temperature_applied": false,
+ "format": "json",
+ "temperature": null,
+ "max_tokens": 32768,
+ "model_id": "gemini-3.8-flash",
+ "hints": false,
+ "label": "oracle-slice-3types__json__gemini-3.8-flash__thinking-off__run2",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 31546,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 8.8,
+ "usage": {
+  "input_tokens": 7912,
+  "output_tokens": 892
+ },
+ "valid": false,
+ "error": "A2uiValidationError: Validation failed for component 'entity_list': components.items-entity-list: Unevaluated properties are not allowed ('component', 'items' were unexpected)\ncomponents.items-entity-list.items: [{'name': 'Authentication Flow Overhaul', 'subtitle': 'Migrating legacy auth endpoints to OAuth 2.0 with PKCE",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "list": false,
+   "status indicator": false,
+   "filter control": false
+  }
+ },
+ "reply": "Here is the UI matching your brief, featuring a status filter and a list of eight items displaying their title, status, and detail.\n\n<a2ui-json>\n[\n  {\n    \"version\": \"v0.9.1\",\n    \"createSurface\": {\n      \"surfaceId\": \"items-list-surface\",\n      \"catalogId\": \"https://a2uicatalog.ai/catalog/c-data-display.json\"\n    }\n  },\n  {\n    \"version\": \"v0.9.1\",\n    \"updateComponents\": {\n      \"surfaceId\": \"items-list-surface\",\n      \"components\": [\n        {\n          \"id\": \"root\",\n          \"component\": \"heading\",\n          \"text\": \"Project Work Items\"\n        },\n        {\n          \"id\": \"filter-control\",\n          \"component\": \"segmented_control\",\n          \"name\": \"status_filter\",\n          \"selected_value\": \"all\",\n          \"options\": \"[{\\\"label\\\": \\\"All\\\", \\\"value\\\": \\\"all\\\"}, {\\\"label\\\": \\\"Active\\\", \\\"value\\\": \\\"active\\\"}, {\\\"label\\\": \\\"In Review\\\", \\\"value\\\": \\\"review\\\"}, {\\\"label\\\": \\\"Completed\\\", \\\"value\\\": \\\"completed\\\"}, {\\\"label\\\": \\\"Blocked\\\", \\\"value\\\": \\\"blocked\\\"}]\"\n        },\n        {\n          \"id\": \"items-entity-list\",\n          \"component\": \"entity_list\",\n          \"items\": [\n            {\n              \"name\": \"Authentication Flow Overhaul\",\n              \"subtitle\": \"Migrating legacy auth endpoints to OAuth 2.0 with PKCE support.\",\n              \"icon\": \"\ud83d\udd10\",\n              \"status\": \"Active\",\n              \"meta\": \"ID: TASK-101\"\n            },\n            {\n              \"name\": \"Payment Gateway Integration\",\n              \"subtitle\": \"Connecting Stripe webhook listener for real-time subscription lifecycle.\",\n              \"icon\": \"\ud83d\udcb3\",\n              \"status\": \"In Review\",\n              \"meta\": \"ID: TASK-102\"\n            },\n            {\n              \"name\": \"Audit Log Export Service\",\n              \"subtitle\": \"Background worker for exporting compliance logs in compressed CSV format.\",\n              \"icon\": \"\ud83d\udccb\",\n              \"status\": \"Completed\",\n              \"meta\": \"ID: TASK-103\"\n            },\n            {\n              \"name\": \"Search Re-indexing Pipeline\",\n              \"subtitle\": \"Elasticsearch cluster node memory exhaustion under high ingest load.\",\n              \"icon\": \"\ud83d\udd0d\",\n              \"status\": \"Blocked\",\n              \"meta\": \"ID: TASK-104\"\n            },\n            {\n              \"name\": \"Role-Based Access Control\",\n              \"subtitle\": \"Implementing granular permissions for workspace owner and editor roles.\",\n              \"icon\": \"\ud83d\udee1\ufe0f\",\n              \"status\": \"Active\",\n              \"meta\": \"ID: TASK-105\"\n            },\n            {\n              \"name\": \"Notification Dispatch Engine\",\n              \"subtitle\": \"Multi-channel fanout for email, Slack, and in-app alert delivery.\",\n              \"icon\": \"\ud83d\udd14\",\n              \"status\": \"In Review\",\n              \"meta\": \"ID: TASK-106\"\n            },\n            {\n              \"name\": \"Database Connection Pool Tuning\",\n              \"subtitle\": \"Adjusted max connection ceilings to mitigate intermittent pool timeouts.\",\n              \"icon\": \"\ud83d\uddc4\ufe0f\",\n              \"status\": \"Completed\",\n              \"meta\": \"ID: TASK-107\"\n            },\n            {\n              \"name\": \"SSO SAML Identity Provider\",\n              \"subtitle\": \"Awaiting third-party IdP metadata verification and signing certificates.\",\n              \"icon\": \"\ud83d\udd11\",\n              \"status\": \"Blocked\",\n              \"meta\": \"ID: TASK-108\"\n            }\n          ]\n        }\n      ]\n    }\n  }\n]\n</a2ui-json>"
+}

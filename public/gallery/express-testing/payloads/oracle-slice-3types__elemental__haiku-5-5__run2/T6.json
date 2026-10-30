@@ -1,0 +1,107 @@
+{
+ "label": "oracle-slice-3types__elemental__haiku-5-5__run2",
+ "task": "T6",
+ "format": "elemental",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "root",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning-elemental.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "root",
+    "components": [
+     {
+      "id": "header",
+      "component": "page_header",
+      "title": "Vocabulary Flashcards",
+      "subtitle": "Flip each card to reveal its definition.",
+      "icon": "\ud83d\udcda",
+      "tag": "10 cards",
+      "accent": "#4f46e5",
+      "theme": "light"
+     },
+     {
+      "id": "progress",
+      "component": "progress_bar",
+      "value": {
+       "path": "/progress/percent"
+      },
+      "label": "Cards reviewed",
+      "accent": "#4f46e5",
+      "show_percent": true,
+      "caption": "Flip each card to mark it as reviewed"
+     },
+     {
+      "id": "vocab-deck",
+      "component": "flashcard_deck",
+      "accent": "#4f46e5",
+      "label_front": "WORD",
+      "label_back": "DEFINITION",
+      "cards": [
+       {
+        "front": "Ephemeral",
+        "back": "Lasting for a very short time."
+       },
+       {
+        "front": "Ubiquitous",
+        "back": "Present, appearing, or found everywhere."
+       },
+       {
+        "front": "Meticulous",
+        "back": "Showing great attention to detail; very careful."
+       },
+       {
+        "front": "Resilient",
+        "back": "Able to recover quickly from difficulties."
+       },
+       {
+        "front": "Ambiguous",
+        "back": "Open to more than one interpretation; unclear."
+       },
+       {
+        "front": "Candid",
+        "back": "Truthful and straightforward; frank."
+       },
+       {
+        "front": "Diligent",
+        "back": "Having or showing care and effort in work or duties."
+       },
+       {
+        "front": "Eloquent",
+        "back": "Fluent or persuasive in speaking or writing."
+       },
+       {
+        "front": "Pragmatic",
+        "back": "Dealing with things sensibly and realistically."
+       },
+       {
+        "front": "Tenacious",
+        "back": "Holding firmly to a goal; persistent."
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_data_model": {
+    "surface_id": "root",
+    "path": "/",
+    "value": {
+     "progress": {
+      "percent": 0,
+      "reviewed": 0,
+      "total": 10
+     }
+    }
+   }
+  }
+ ]
+}

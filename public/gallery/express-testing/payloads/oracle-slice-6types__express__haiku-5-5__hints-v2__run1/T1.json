@@ -1,0 +1,135 @@
+{
+ "label": "oracle-slice-6types__express__haiku-5-5__hints-v2__run1",
+ "task": "T1",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/d-t1.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "header",
+      "component": "page_header",
+      "title": "The Water Cycle",
+      "subtitle": "How water moves between the ocean, the air, and the land",
+      "icon": "\ud83d\udca7",
+      "tag": "Lesson"
+     },
+     {
+      "id": "c1",
+      "component": "concept_rung",
+      "badge": "1",
+      "kind": "depth",
+      "label": "DEPTH 1",
+      "title": "Evaporation",
+      "body": "The Sun heats water in oceans, lakes, and rivers. The water turns into vapor and rises into the air, leaving most salt and impurities behind."
+     },
+     {
+      "id": "c2",
+      "component": "concept_rung",
+      "badge": "2",
+      "kind": "depth",
+      "label": "DEPTH 2",
+      "title": "Condensation and Precipitation",
+      "body": "As water vapor rises it cools and condenses into tiny droplets that form clouds. When the droplets grow heavy enough, they fall as rain, snow, sleet, or hail."
+     },
+     {
+      "id": "c3",
+      "component": "concept_rung",
+      "badge": "3",
+      "kind": "depth",
+      "label": "DEPTH 3",
+      "title": "Collection and Runoff",
+      "body": "Precipitation collects in oceans, lakes, and underground aquifers. Some water soaks into the soil, some runs off across the land into streams, and plants release water vapor through transpiration."
+     },
+     {
+      "id": "example",
+      "component": "concept_rung",
+      "badge": "EX",
+      "kind": "example",
+      "label": "WORKED EXAMPLE",
+      "title": "Tracing One Raindrop",
+      "body": "1. Evaporation: sunlight lifts water from the Pacific Ocean into the air.\n\n2. Transport: winds carry the vapor inland over a mountain range.\n\n3. Condensation: the vapor cools and forms a cloud.\n\n4. Precipitation: the droplet falls as snow on the mountain peak.\n\n5. Runoff: meltwater flows downhill into a river and returns to the ocean.",
+      "code": "",
+      "code_caption": "",
+      "takeaway": "The same water molecules keep cycling through every stage."
+     },
+     {
+      "id": "quiz",
+      "component": "quiz_set",
+      "title": "Self-check",
+      "questions": [
+       {
+        "question": "What process turns liquid water into water vapor?",
+        "options": [
+         "Condensation",
+         "Precipitation",
+         "Evaporation",
+         "Runoff"
+        ],
+        "correct": 2,
+        "explanation": "Evaporation happens when the Sun heats liquid water and it becomes vapor."
+       },
+       {
+        "question": "What happens when water vapor cools and forms clouds?",
+        "options": [
+         "Transpiration",
+         "Condensation",
+         "Infiltration",
+         "Collection"
+        ],
+        "correct": 1,
+        "explanation": "Condensation turns vapor into tiny droplets that make up clouds."
+       },
+       {
+        "question": "Which of these is NOT a form of precipitation?",
+        "options": [
+         "Rain",
+         "Snow",
+         "Hail",
+         "Evaporation"
+        ],
+        "correct": 3,
+        "explanation": "Evaporation is a stage of the cycle where water becomes vapor. Rain, snow, and hail all fall from clouds."
+       }
+      ],
+      "pass_score": 70,
+      "accent": "#4f46e5"
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "header",
+         "c1",
+         "c2",
+         "c3"
+        ]
+       },
+       {
+        "blocks": [
+         "example",
+         "quiz"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

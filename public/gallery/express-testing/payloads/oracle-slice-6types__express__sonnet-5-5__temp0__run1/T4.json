@@ -1,0 +1,144 @@
+{
+ "label": "oracle-slice-6types__express__sonnet-5-5__temp0__run1",
+ "task": "T4",
+ "format": "express",
+ "model_id": "claude-sonnet-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "status-list",
+    "catalog_id": "https://a2uicatalog.ai/catalog/d-t4.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "status-list",
+    "components": [
+     {
+      "id": "filterHeading",
+      "component": "heading",
+      "text": "Filter by status"
+     },
+     {
+      "id": "filter",
+      "component": "segmented_control",
+      "options": [
+       {
+        "label": "All",
+        "value": "all"
+       },
+       {
+        "label": "Active",
+        "value": "active"
+       },
+       {
+        "label": "Pending",
+        "value": "pending"
+       },
+       {
+        "label": "Blocked",
+        "value": "blocked"
+       },
+       {
+        "label": "Done",
+        "value": "done"
+       }
+      ],
+      "selected_value": "all",
+      "name": "status_filter"
+     },
+     {
+      "id": "listHeading",
+      "component": "heading",
+      "text": "Items (8)"
+     },
+     {
+      "id": "list",
+      "component": "entity_list",
+      "items": [
+       {
+        "name": "Design system audit",
+        "subtitle": "Review component usage across all product surfaces",
+        "icon": "\ud83c\udfa8",
+        "status": "Active",
+        "meta": "Due Fri"
+       },
+       {
+        "name": "Payment API migration",
+        "subtitle": "Waiting on vendor credentials before cutover",
+        "icon": "\ud83d\udcb3",
+        "status": "Blocked",
+        "meta": "Due Mar 3"
+       },
+       {
+        "name": "Onboarding copy refresh",
+        "subtitle": "Draft of new welcome emails ready for review",
+        "icon": "\u2709\ufe0f",
+        "status": "Pending",
+        "meta": "Due Mar 6"
+       },
+       {
+        "name": "Accessibility fixes",
+        "subtitle": "All critical contrast issues resolved and verified",
+        "icon": "\u267f",
+        "status": "Done",
+        "meta": "Closed Feb 20"
+       },
+       {
+        "name": "Search relevance tuning",
+        "subtitle": "Testing new ranking weights on 10% of traffic",
+        "icon": "\ud83d\udd0e",
+        "status": "Active",
+        "meta": "Due Mar 10"
+       },
+       {
+        "name": "Q2 roadmap planning",
+        "subtitle": "Needs stakeholder sign-off on priorities",
+        "icon": "\ud83d\uddfa\ufe0f",
+        "status": "Pending",
+        "meta": "Due Mar 12"
+       },
+       {
+        "name": "Data retention policy",
+        "subtitle": "Legal review is holding up the final draft",
+        "icon": "\ud83d\uddc4\ufe0f",
+        "status": "Blocked",
+        "meta": "Due Mar 15"
+       },
+       {
+        "name": "Mobile release 4.2",
+        "subtitle": "Shipped to both app stores without incidents",
+        "icon": "\ud83d\udcf1",
+        "status": "Done",
+        "meta": "Closed Feb 28"
+       }
+      ]
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "filterHeading",
+         "filter"
+        ]
+       },
+       {
+        "blocks": [
+         "listHeading",
+         "list"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

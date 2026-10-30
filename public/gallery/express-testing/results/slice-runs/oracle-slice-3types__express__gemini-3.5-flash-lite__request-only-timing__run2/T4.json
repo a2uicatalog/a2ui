@@ -1,0 +1,44 @@
+{
+ "task": "T4",
+ "condition": "C_gemini-3.5-flash-l",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash-lite",
+ "hints": false,
+ "label": "oracle-slice-3types__express__gemini-3.5-flash-lite__request-only-timing__run2",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 16421,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 3.2,
+ "usage": {
+  "input_tokens": 4601,
+  "output_tokens": 442
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns",
+  "heading",
+  "body",
+  "segmented_control",
+  "entity_list"
+ ],
+ "score": {
+  "precision": 0.4,
+  "recall": 0.667,
+  "f1": 0.5,
+  "slot_hits": {
+   "list": true,
+   "status indicator": false,
+   "filter control": true
+  }
+ },
+ "reply": "<a2ui>\nroot = columns(cols=1, gap=\"1.5rem\", items=[\n  {\n    blocks: [\n      heading(\"System Items Overview\"),\n      body(\"Filterable list of system resources, operational status, and details.\"),\n      segmented_control(\n        name=\"status_filter\",\n        selected_value=\"all\",\n        options=[\n          {\"label\": \"All\", \"value\": \"all\"},\n          {\"label\": \"Active\", \"value\": \"active\"},\n          {\"label\": \"Warning\", \"value\": \"warning\"},\n          {\"label\": \"Error\", \"value\": \"error\"}\n        ]\n      ),\n      entity_list(\n        items=[\n          {\"name\": \"Auth Service\", \"subtitle\": \"JWT validation & session management\", \"status\": \"active\", \"meta\": \"99.9% uptime\"},\n          {\"name\": \"Payment Gateway\", \"subtitle\": \"Stripe & PayPal transaction handler\", \"status\": \"active\", \"meta\": \"Operational\"},\n          {\"name\": \"Notification Engine\", \"subtitle\": \"Push, SMS & email delivery worker\", \"status\": \"warning\", \"meta\": \"High latency\"},\n          {\"name\": \"User Analytics\", \"subtitle\": \"Event ingestion and stream processing\", \"status\": \"active\", \"meta\": \"Normal load\"},\n          {\"name\": \"Data Backup Worker\", \"subtitle\": \"Daily snapshot replication to S3\", \"status\": \"error\", \"meta\": \"Failed 2h ago\"},\n          {\"name\": \"Search Indexer\", \"subtitle\": \"Elasticsearch cluster synchronization\", \"status\": \"active\", \"meta\": \"Synced\"},\n          {\"name\": \"File Storage API\", \"subtitle\": \"Asset uploads and CDN purging\", \"status\": \"warning\", \"meta\": \"85% capacity\"},\n          {\"name\": \"Audit Logger\", \"subtitle\": \"Compliance and security audit trail\", \"status\": \"active\", \"meta\": \"Recording\"}\n        ]\n      )\n    ]\n  }\n])\n</a2ui>"
+}

@@ -1,0 +1,79 @@
+{
+ "label": "oracle-slice-3types__elemental__haiku-5-5__run2",
+ "task": "T3",
+ "format": "elemental",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "root",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce-elemental.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "root",
+    "components": [
+     {
+      "id": "hero",
+      "component": "gradient_hero",
+      "Badge": "New release",
+      "title": "Ship faster with Nimbus",
+      "subtitle": "The developer platform that turns your ideas into production-ready apps in minutes, not weeks.",
+      "accent": "#4f46e5",
+      "accent2": "#8b5cf6",
+      "align": "center",
+      "cta_label": "Start free trial",
+      "cta_url": "https://example.com/signup"
+     },
+     {
+      "id": "features",
+      "component": "feature_grid",
+      "Heading": "Everything you need to launch",
+      "description": "Built-in tools that help your team move from prototype to production.",
+      "Columns": 3,
+      "features": [
+       {
+        "icon": "\u26a1",
+        "title": "Lightning-fast builds",
+        "description": "Incremental builds and smart caching cut your deploy times dramatically.",
+        "color": "#4f46e5"
+       },
+       {
+        "icon": "\ud83d\udd12",
+        "title": "Secure by default",
+        "description": "Automatic certificates, secret management, and role-based access controls.",
+        "color": "#8b5cf6"
+       },
+       {
+        "icon": "\ud83d\udcc8",
+        "title": "Scales with you",
+        "description": "From a single service to thousands of containers, scaling happens automatically.",
+        "color": "#0ea5e9"
+       }
+      ]
+     },
+     {
+      "id": "testimonial",
+      "component": "testimonial_card",
+      "text": "Nimbus cut our release cycle from two weeks to two days. Our engineers finally spend their time building features instead of managing infrastructure.",
+      "author_name": "Priya Raman",
+      "author_title": "VP of Engineering, Lumen Labs",
+      "author_avatar_url": "https://example.com/avatars/priya.jpg",
+      "rating": 5
+     },
+     {
+      "id": "cta",
+      "component": "cta_button",
+      "label": "Get started today",
+      "url": "https://example.com/signup",
+      "color": "#4f46e5",
+      "same_tab": true
+     }
+    ]
+   }
+  }
+ ]
+}

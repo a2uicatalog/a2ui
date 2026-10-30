@@ -1,0 +1,19 @@
+{
+ "task": "T1",
+ "repeat": 3,
+ "ms": 206,
+ "answers": {
+  "layout": "lesson",
+  "count": "4",
+  "cta": "no"
+ },
+ "confidence": {
+  "layout": 1.0,
+  "count": 0.51,
+  "cta": 1.0
+ },
+ "usage": {
+  "input_tokens": 599,
+  "output_tokens": 101
+ }
+}

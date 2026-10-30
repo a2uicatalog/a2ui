@@ -1,0 +1,42 @@
+{
+ "task": "T6",
+ "condition": "CX_gemini-3.5-flash-l",
+ "temperature_applied": false,
+ "format": "elemental",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash-lite",
+ "hints": false,
+ "label": "oracle-slice-3types__elemental__gemini-3.5-flash-lite__request-only-timing__run1",
+ "agent_type": "Learning",
+ "catalogue": "C-learning.json",
+ "atoms_in_catalogue": 36,
+ "prompt_chars": 21352,
+ "slot_recall": [
+  2,
+  2
+ ],
+ "secs": 2.3,
+ "usage": {
+  "input_tokens": 6068,
+  "output_tokens": 764
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "page_header",
+  "progress_bar",
+  "heading",
+  "flashcard_deck"
+ ],
+ "score": {
+  "precision": 0.5,
+  "recall": 1.0,
+  "f1": 0.667,
+  "slot_hits": {
+   "flashcard deck": true,
+   "progress indicator": true
+  }
+ },
+ "reply": "<a2ui>\n  <body>\n    <script type=\"application/json\">\n      {\n        \"flashcards\": [\n          { \"front\": \"Ephemeral\", \"back\": \"Lasting for a very short time.\" },\n          { \"front\": \"Ubiquitous\", \"back\": \"Present, appearing, or found everywhere.\" },\n          { \"front\": \"Pragmatic\", \"back\": \"Dealing with things sensibly and realistically.\" },\n          { \"front\": \"Meticulous\", \"back\": \"Showing great attention to detail; very careful.\" },\n          { \"front\": \"Ambivalent\", \"back\": \"Having mixed feelings or contradictory ideas about something.\" },\n          { \"front\": \"Gregarious\", \"back\": \"Fond of company; sociable.\" },\n          { \"front\": \"Scrutinize\", \"back\": \"Examine or inspect closely and thoroughly.\" },\n          { \"front\": \"Altruistic\", \"back\": \"Showing a disinterested and selfless concern for the well-being of others.\" },\n          { \"front\": \"Cacophony\", \"back\": \"A harsh, discordant mixture of sounds.\" },\n          { \"front\": \"Venerable\", \"back\": \"Accorded a great deal of respect, especially because of age, wisdom, or character.\" }\n        ]\n      }\n    </script>\n    <ui-page_header \n      id=\"root\" \n      title=\"Vocabulary Flashcards\" \n      subtitle=\"Review your vocabulary list and track your study progress.\" \n      icon=\"\ud83d\udcda\" \n      tag=\"SRS Study Session\" \n      accent=\"#4f46e5\" \n    />\n    <ui-progress_bar \n      id=\"progress\" \n      value=\"{40}\" \n      label=\"Cards Reviewed\" \n      show_percent=\"{true}\" \n      caption=\"4 of 10 cards completed in this session\" \n      accent=\"#4f46e5\" \n    />\n    <ui-heading id=\"deck_heading\" text=\"Interactive Deck\" />\n    <ui-flashcard_deck \n      id=\"deck\" \n      accent=\"#4f46e5\" \n      label_front=\"TERM\" \n      label_back=\"DEFINITION\" \n      cards=\"{[\n        {'front': 'Ephemeral', 'back': 'Lasting for a very short time.'},\n        {'front': 'Ubiquitous', 'back': 'Present, appearing, or found everywhere.'},\n        {'front': 'Pragmatic', 'back': 'Dealing with things sensibly and realistically.'},\n        {'front': 'Meticulous', 'back': 'Showing great attention to detail; very careful.'},\n        {'front': 'Ambivalent', 'back': 'Having mixed feelings or contradictory ideas about something.'},\n        {'front': 'Gregarious', 'back': 'Fond of company; sociable.'},\n        {'front': 'Scrutinize', 'back': 'Examine or inspect closely and thoroughly.'},\n        {'front': 'Altruistic', 'back': 'Showing a disinterested and selfless concern for the well-being of others.'},\n        {'front': 'Cacophony', 'back': 'A harsh, discordant mixture of sounds.'},\n        {'front': 'Venerable', 'back': 'Accorded a great deal of respect, especially because of age, wisdom, or character.'}\n      ]}\" \n    />\n  </body>\n</a2ui>"
+}

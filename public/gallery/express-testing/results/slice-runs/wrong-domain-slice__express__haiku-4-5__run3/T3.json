@@ -1,0 +1,39 @@
+{
+ "task": "T3",
+ "condition": "E",
+ "label": "wrong-domain-slice__express__haiku-4-5__run3",
+ "agent_type": "Learning",
+ "catalogue": "B-learning.json",
+ "atoms_in_catalogue": 184,
+ "prompt_chars": 88519,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 4.7,
+ "usage": {
+  "input_tokens": 24766,
+  "output_tokens": 462
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns",
+  "gradient_hero",
+  "feature_grid",
+  "blockquote_with_avatar",
+  "cta_section"
+ ],
+ "score": {
+  "precision": 0.8,
+  "recall": 1.0,
+  "f1": 0.889,
+  "slot_hits": {
+   "hero": true,
+   "feature columns (x3)": true,
+   "testimonial": true,
+   "CTA": true
+  }
+ },
+ "reply": "<a2ui>\nroot = columns(\n  cols=1,\n  gap=\"0\",\n  items=[\n    {blocks: [\n      gradient_hero(\n        title=\"Transform Your Workflow\",\n        subtitle=\"Streamline your processes, boost productivity, and achieve more with our cutting-edge solution.\",\n        cta_label=\"Get Started\",\n        cta_url=\"/signup\"\n      )\n    ]},\n    {blocks: [\n      feature_grid(\n        heading=\"Why Choose Us\",\n        columns=3,\n        features=[\n          {icon: \"\u26a1\", title: \"Lightning Fast\", description: \"Experience blazing-fast performance that keeps up with your ambitions.\"},\n          {icon: \"\ud83d\udd12\", title: \"Secure & Reliable\", description: \"Enterprise-grade security ensures your data stays protected 24/7.\"},\n          {icon: \"\ud83c\udfaf\", title: \"Easy Integration\", description: \"Seamlessly integrate with your existing tools in minutes, not days.\"}\n        ]\n      )\n    ]},\n    {blocks: [\n      blockquote_with_avatar(\n        quote=\"This product completely transformed how we work. It's intuitive, powerful, and the support team is exceptional.\",\n        author_name=\"Sarah Mitchell\",\n        author_title=\"CEO at TechCorp\",\n        avatar_url=\"https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop\"\n      )\n    ]},\n    {blocks: [\n      cta_section(\n        heading=\"Ready to Get Started?\",\n        body=\"Join thousands of teams already transforming their workflow. Start your free trial today\u2014no credit card required.\",\n        primary_cta={label: \"Start Free Trial\", url: \"/trial\"},\n        secondary_cta={label: \"Learn More\", url: \"/docs\"}\n      )\n    ]}\n  ]\n)\n</a2ui>"
+}

@@ -1,0 +1,29 @@
+{
+ "task": "T6",
+ "repeat": 3,
+ "writer_model": "gemini-3.5-flash-lite",
+ "decisions": "jev",
+ "jev_ms": 171,
+ "jev_usage": {
+  "input_tokens": 593,
+  "output_tokens": 101
+ },
+ "jev_answers": {
+  "layout": "lesson",
+  "count": "4",
+  "cta": "no"
+ },
+ "layout": "lesson",
+ "count": 4,
+ "cta": false,
+ "writer_secs": 1.02,
+ "writer_tokens": {
+  "in": 155,
+  "out": 208
+ },
+ "build_ms": 0.11,
+ "valid": true,
+ "error": null,
+ "compile_ms": 12.68,
+ "express": "<a2ui>\nhdr = page_header(title=\"Spanish Vocabulary Builder\", subtitle=\"Reviewed: 3 of 10 flashcards\")\nh1 = heading(text=\"Card 4: El desarrollo\")\nb1 = body(text=\"Tap the card to flip and reveal the English translation, meaning development or growth.\")\nh2 = heading(text=\"Progress Tracker\")\nb2 = body(text=\"You have successfully reviewed 3 out of 10 cards in this session. Keep going to finish the deck!\")\nh3 = heading(text=\"Quick Actions\")\nb3 = body(text=\"Tap 'Mark as Known' to remove this word from the active queue, or 'Review Again' to practice later.\")\nh4 = heading(text=\"Session Stats\")\nb4 = body(text=\"Your current streak is 3 cards correct. Take your time to memorize each term thoroughly.\")\nroot = columns(cols=1, gap=\"1.5rem\", align=\"top\", items=[{blocks: [hdr, h1, b1, h2, b2, h3, b3, h4, b4]}])\n</a2ui>"
+}

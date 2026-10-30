@@ -1,0 +1,46 @@
+{
+ "task": "T4",
+ "condition": "C_gemini-3.5-flash",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash",
+ "hints": false,
+ "label": "oracle-slice-3types__express__gemini-3.5-flash__thinking-on_request-only-timing__run3",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 16421,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 28.2,
+ "usage": {
+  "input_tokens": 4600,
+  "output_tokens": 5351
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns",
+  "heading",
+  "body",
+  "segmented_control",
+  "stat_card",
+  "heading",
+  "entity_list"
+ ],
+ "score": {
+  "precision": 0.286,
+  "recall": 0.667,
+  "f1": 0.4,
+  "slot_hits": {
+   "list": true,
+   "status indicator": false,
+   "filter control": true
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"task-tracker-surface\")\n\n$/filter = \"all\"\n\nleft_blocks = [\n    heading(\"Filters & Stats\"),\n    body(\"Use the filter control below to filter system-wide tasks by their operational status.\"),\n    segmented_control([\n        {\"label\": \"All (8)\", \"value\": \"all\"},\n        {\"label\": \"Active (3)\", \"value\": \"active\"},\n        {\"label\": \"Pending (3)\", \"value\": \"pending\"},\n        {\"label\": \"Completed (2)\", \"value\": \"completed\"}\n    ], \"all\", \"status_filter\"),\n    stat_card(\"8\", \"Total Tracked Tasks\", \"100%\", true, \"#4CAF50\")\n]\n\nright_blocks = [\n    heading(\"System Tasks\"),\n    entity_list([\n        {\"name\": \"API Gateway Integration\", \"subtitle\": \"Connect the payment gateway to the central API dispatch.\", \"icon\": \"\u26a1\", \"status\": \"Active\", \"meta\": \"High Priority\"},\n        {\"name\": \"Database Migration\", \"subtitle\": \"Schema update for user profile tables to support multi-tenancy.\", \"icon\": \"\ud83d\uddc4\ufe0f\", \"status\": \"Pending\", \"meta\": \"Scheduled\"},\n        {\"name\": \"Auth0 SSO Setup\", \"subtitle\": \"Configure single sign-on for enterprise customer domains.\", \"icon\": \"\ud83d\udd10\", \"status\": \"Completed\", \"meta\": \"Verified\"},\n        {\"name\": \"UI Refactoring\", \"subtitle\": \"Clean up legacy CSS styles and transition to CSS variables.\", \"icon\": \"\ud83c\udfa8\", \"status\": \"Active\", \"meta\": \"Medium Priority\"},\n        {\"name\": \"Disaster Recovery Drill\", \"subtitle\": \"Simulate multi-region failover and verify recovery points.\", \"icon\": \"\ud83d\udea8\", \"status\": \"Pending\", \"meta\": \"Compliance\"},\n        {\"name\": \"GDPR Compliance Audit\", \"subtitle\": \"Review log retention policies and data erasure requests.\", \"icon\": \"\ud83d\udccb\", \"status\": \"Completed\", \"meta\": \"Legal\"},\n        {\"name\": \"Mobile Push Notifications\", \"subtitle\": \"Configure APNS and FCM payloads for delivery.\", \"icon\": \"\ud83d\udcf1\", \"status\": \"Active\", \"meta\": \"Low Priority\"},\n        {\"name\": \"Billing System Webhooks\", \"subtitle\": \"Handle stripe invoice payment success and failure events.\", \"icon\": \"\ud83d\udcb3\", \"status\": \"Pending\", \"meta\": \"Finance\"}\n    ])\n]\n\nroot = columns(2, \"2rem\", \"top\", [{\"blocks\": left_blocks}, {\"blocks\": right_blocks}])\n</a2ui>"
+}

@@ -1,0 +1,36 @@
+{
+ "model": "sonnet-5-5",
+ "cond": "B4",
+ "format": "json",
+ "brief": "B7",
+ "repeat": 1,
+ "seq": 14,
+ "model_id": "claude-sonnet-5-5",
+ "utc": "2026-10-29T19:52:56Z",
+ "prompt_chars": 19034,
+ "prompt_sha256": "(removed for publication)",
+ "temperature_requested": null,
+ "temperature_sent": false,
+ "max_tokens": 32768,
+ "request_secs": 12.14,
+ "input_tokens": 7254,
+ "output_tokens": 1543,
+ "stop_reason": "end_turn",
+ "usage": {
+  "input_tokens": 7254,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "cache_creation": {
+   "ephemeral_5m_input_tokens": 0,
+   "ephemeral_1h_input_tokens": 0
+  },
+  "output_tokens": 1543,
+  "output_tokens_details": {
+   "thinking_tokens": 912
+  },
+  "service_tier": "standard",
+  "inference_geo": "global",
+  "speed": "standard"
+ },
+ "reply": "<a2ui-json>\n[\n  {\n    \"version\": \"v0.9.1\",\n    \"createSurface\": {\n      \"surfaceId\": \"table_build\",\n      \"catalogId\": \"https://a2uicatalog.ai/catalog/blocks-b4.json\"\n    }\n  },\n  {\n    \"version\": \"v0.9.1\",\n    \"updateComponents\": {\n      \"surfaceId\": \"table_build\",\n      \"components\": [\n        {\n          \"id\": \"root\",\n          \"component\": \"brick_build_3d\",\n          \"partsModel\": [\n            [\"3005\", -50, 0, -30, 0, 70],\n            [\"3005\", 50, 0, -30, 0, 70],\n            [\"3005\", -50, 0, 30, 0, 70],\n            [\"3005\", 50, 0, 30, 0, 70],\n            [\"3005\", -50, 24, -30, 0, 70],\n            [\"3005\", 50, 24, -30, 0, 70],\n            [\"3005\", -50, 24, 30, 0, 70],\n            [\"3005\", 50, 24, 30, 0, 70],\n            [\"3032\", 0, 48, 0, 0, 19]\n          ],\n          \"mode\": \"steps\",\n          \"step\": 1,\n          \"orbit\": true,\n          \"height\": 440,\n          \"scrubber\": true,\n          \"checks\": true,\n          \"parts\": true,\n          \"look\": \"studio\"\n        }\n      ]\n    }\n  }\n]\n</a2ui-json>\n\nThis is a small table built from real LDraw parts: four legs, each a stack of two 1\u00d71 bricks (part 3005, reddish brown), under a 4\u00d76 tan plate top (part 3032). It opens in step-by-step mode, so you can scrub through the build, and the parts list is switched on. Drag to orbit the model.\n\nI couldn't test how the viewer reads the vertical axis, so I assumed y increases upward from the baseplate. If the table renders upside down, flip the sign of the y values."
+}

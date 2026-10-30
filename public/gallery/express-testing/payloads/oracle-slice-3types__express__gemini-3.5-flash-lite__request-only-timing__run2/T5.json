@@ -1,0 +1,130 @@
+{
+ "label": "oracle-slice-3types__express__gemini-3.5-flash-lite__request-only-timing__run2",
+ "task": "T5",
+ "format": "express",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "pricing-surface",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "pricing-surface",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 3,
+      "gap": "2rem",
+      "align": "stretch",
+      "items": [
+       {
+        "blocks": [
+         "_inline_1",
+         "_inline_2",
+         "_inline_3",
+         "_inline_4"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_5",
+         "_inline_6",
+         "_inline_7",
+         "_inline_8",
+         "_inline_9"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_10",
+         "_inline_11",
+         "_inline_12",
+         "_inline_13"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "_inline_1",
+      "component": "heading",
+      "text": "Starter"
+     },
+     {
+      "id": "_inline_2",
+      "component": "body",
+      "text": "$9 / month"
+     },
+     {
+      "id": "_inline_3",
+      "component": "body",
+      "text": "Essential features for individuals and small side projects."
+     },
+     {
+      "id": "_inline_4",
+      "component": "link_button",
+      "url": "#",
+      "label": "Get Started",
+      "same_tab": true
+     },
+     {
+      "id": "_inline_5",
+      "component": "badge",
+      "text": "Recommended",
+      "color": "#4f46e5"
+     },
+     {
+      "id": "_inline_6",
+      "component": "heading",
+      "text": "Pro"
+     },
+     {
+      "id": "_inline_7",
+      "component": "body",
+      "text": "$29 / month"
+     },
+     {
+      "id": "_inline_8",
+      "component": "body",
+      "text": "Advanced features for growing teams and professionals."
+     },
+     {
+      "id": "_inline_9",
+      "component": "shimmer_button",
+      "label": "Start Free Trial",
+      "href": "#",
+      "accent": "#38bdf8",
+      "background": "#1e293b"
+     },
+     {
+      "id": "_inline_10",
+      "component": "heading",
+      "text": "Enterprise"
+     },
+     {
+      "id": "_inline_11",
+      "component": "body",
+      "text": "$99 / month"
+     },
+     {
+      "id": "_inline_12",
+      "component": "body",
+      "text": "Maximum power, security, and support for large organizations."
+     },
+     {
+      "id": "_inline_13",
+      "component": "link_button",
+      "url": "#",
+      "label": "Contact Sales",
+      "same_tab": true
+     }
+    ]
+   }
+  }
+ ]
+}

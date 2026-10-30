@@ -1,0 +1,110 @@
+{
+ "label": "full-catalogue__express__haiku-5-5__run1",
+ "task": "T2",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/a-full.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "kpis",
+      "component": "metric_row",
+      "cols": 4,
+      "accent": "#4f46e5",
+      "metrics": [
+       {
+        "value": "$128.4k",
+        "label": "Monthly revenue",
+        "sub": "+12% vs last month",
+        "trend": "up"
+       },
+       {
+        "value": "8,420",
+        "label": "Active users",
+        "sub": "+6% vs last month",
+        "trend": "up"
+       },
+       {
+        "value": "2.1%",
+        "label": "Churn rate",
+        "sub": "-0.4 pts vs last month",
+        "trend": "down"
+       },
+       {
+        "value": "1.8k",
+        "label": "Support tickets",
+        "sub": "+3% vs last month",
+        "trend": "up"
+       }
+      ]
+     },
+     {
+      "id": "chart",
+      "component": "chartjs_bar",
+      "labels": [
+       "Jan",
+       "Feb",
+       "Mar",
+       "Apr",
+       "May",
+       "Jun"
+      ],
+      "datasets": [
+       {
+        "label": "This year",
+        "data": [
+         82,
+         91,
+         98,
+         105,
+         112,
+         128
+        ]
+       },
+       {
+        "label": "Last year",
+        "data": [
+         70,
+         74,
+         80,
+         86,
+         90,
+         96
+        ]
+       }
+      ]
+     },
+     {
+      "id": "title",
+      "component": "heading",
+      "text": "Metrics overview"
+     },
+     {
+      "id": "root",
+      "component": "color_section",
+      "accent": "#4f46e5",
+      "style": "light",
+      "padding": "24px",
+      "grid": false,
+      "max_width": "100%",
+      "blocks": [
+       "title",
+       "kpis",
+       "chart"
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

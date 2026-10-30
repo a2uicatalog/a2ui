@@ -1,0 +1,191 @@
+{
+ "label": "oracle-slice-3types__json__opus-5-5__run1",
+ "task": "T1",
+ "format": "json",
+ "model_id": "claude-opus-5-5",
+ "messages": [
+  {
+   "version": "v0.9",
+   "create_surface": {
+    "surface_id": "water-cycle-title",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning.json"
+   }
+  },
+  {
+   "version": "v0.9",
+   "update_components": {
+    "surface_id": "water-cycle-title",
+    "components": [
+     {
+      "id": "root",
+      "component": "gradient_hero",
+      "badge": "Earth Science \u00b7 Lesson 4",
+      "title": "The Water Cycle",
+      "subtitle": "How Earth moves the same water around, again and again, through evaporation, condensation and precipitation.",
+      "accent": "#0284c7",
+      "accent2": "#38bdf8",
+      "align": "left"
+     }
+    ]
+   }
+  },
+  {
+   "version": "v0.9",
+   "create_surface": {
+    "surface_id": "water-cycle-concept-1",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning.json"
+   }
+  },
+  {
+   "version": "v0.9",
+   "update_components": {
+    "surface_id": "water-cycle-concept-1",
+    "components": [
+     {
+      "id": "root",
+      "component": "concept_rung",
+      "badge": "1",
+      "kind": "depth",
+      "label": "CONCEPT 1",
+      "title": "Evaporation: water rises as vapour",
+      "body": "The Sun heats water in oceans, lakes and rivers. Molecules at the surface gain enough energy to escape into the air as invisible water vapour.\n\nPlants also release water vapour through tiny pores in their leaves, a process called transpiration. Together, these are often called evapotranspiration.",
+      "takeaway": "Energy from the Sun powers the whole cycle by turning liquid water into vapour."
+     }
+    ]
+   }
+  },
+  {
+   "version": "v0.9",
+   "create_surface": {
+    "surface_id": "water-cycle-concept-2",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning.json"
+   }
+  },
+  {
+   "version": "v0.9",
+   "update_components": {
+    "surface_id": "water-cycle-concept-2",
+    "components": [
+     {
+      "id": "root",
+      "component": "concept_rung",
+      "badge": "2",
+      "kind": "depth",
+      "label": "CONCEPT 2",
+      "title": "Condensation: vapour becomes clouds",
+      "body": "As warm, moist air rises, it expands and cools. Cooler air can hold less water vapour, so the vapour condenses onto tiny particles of dust, salt or smoke.\n\nBillions of these microscopic droplets cluster together and become visible as clouds or fog.",
+      "takeaway": "Cooling turns vapour back into liquid droplets, and that is what makes clouds."
+     }
+    ]
+   }
+  },
+  {
+   "version": "v0.9",
+   "create_surface": {
+    "surface_id": "water-cycle-concept-3",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning.json"
+   }
+  },
+  {
+   "version": "v0.9",
+   "update_components": {
+    "surface_id": "water-cycle-concept-3",
+    "components": [
+     {
+      "id": "root",
+      "component": "concept_rung",
+      "badge": "3",
+      "kind": "depth",
+      "label": "CONCEPT 3",
+      "title": "Precipitation and collection: water returns",
+      "body": "When cloud droplets merge and grow too heavy to stay aloft, they fall as rain, snow, sleet or hail.\n\nOn the ground, water runs off into rivers, soaks into soil as groundwater, or is stored in ice sheets. Eventually it reaches the ocean or evaporates again, and the cycle restarts.",
+      "takeaway": "Water falls, collects and flows back, so the cycle has no start or end."
+     }
+    ]
+   }
+  },
+  {
+   "version": "v0.9",
+   "create_surface": {
+    "surface_id": "water-cycle-example",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning.json"
+   }
+  },
+  {
+   "version": "v0.9",
+   "update_components": {
+    "surface_id": "water-cycle-example",
+    "components": [
+     {
+      "id": "root",
+      "component": "concept_rung",
+      "badge": "EX",
+      "kind": "example",
+      "title": "How long does a water molecule stay in the ocean?",
+      "body": "Scientists estimate *residence time* by dividing how much water a reservoir holds by how fast water leaves it. Let's apply that to the ocean.\n\nThe ocean holds about 1,338,000,000 km\u00b3 of water. Roughly 413,000 km\u00b3 evaporates from Earth's surface each year, and most of that comes from the ocean.",
+      "code": "residence_time = volume / outflow_rate\n\nvolume        \u2248 1,338,000,000 km\u00b3\noutflow_rate  \u2248       413,000 km\u00b3 / year\n\nresidence_time \u2248 1,338,000,000 / 413,000\n               \u2248 3,240 years",
+      "code_caption": "Using total global evaporation as an upper bound for ocean outflow.",
+      "takeaway": "On average, a water molecule spends about 3,000+ years in the ocean before evaporating."
+     }
+    ]
+   }
+  },
+  {
+   "version": "v0.9",
+   "create_surface": {
+    "surface_id": "water-cycle-quiz",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning.json"
+   }
+  },
+  {
+   "version": "v0.9",
+   "update_components": {
+    "surface_id": "water-cycle-quiz",
+    "components": [
+     {
+      "id": "root",
+      "component": "quiz_set",
+      "title": "Self-check: The Water Cycle",
+      "pass_score": 67,
+      "accent": "#0284c7",
+      "questions": [
+       {
+        "question": "What provides the energy that drives evaporation?",
+        "options": [
+         "The Moon's gravity",
+         "Heat from the Sun",
+         "Wind from the ocean",
+         "Earth's magnetic field"
+        ],
+        "correct": 1,
+        "explanation": "Solar energy heats surface water, giving molecules enough energy to escape as vapour."
+       },
+       {
+        "question": "Why does water vapour condense into clouds as air rises?",
+        "options": [
+         "The air gets warmer",
+         "The air gains more dust",
+         "The air cools and can hold less vapour",
+         "The air pressure increases"
+        ],
+        "correct": 2,
+        "explanation": "Rising air expands and cools. Cooler air holds less vapour, so the excess condenses into droplets."
+       },
+       {
+        "question": "In the worked example, roughly how long does a water molecule stay in the ocean?",
+        "options": [
+         "About 9 days",
+         "About 30 years",
+         "About 3,000 years",
+         "About 3 million years"
+        ],
+        "correct": 2,
+        "explanation": "1,338,000,000 km\u00b3 \u00f7 413,000 km\u00b3/year \u2248 3,240 years."
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

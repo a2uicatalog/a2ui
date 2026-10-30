@@ -1,0 +1,124 @@
+{
+ "label": "oracle-slice-3types__json__sonnet-5-5__temp0__run3",
+ "task": "T6",
+ "format": "json",
+ "model_id": "claude-sonnet-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "vocab_flashcards",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "vocab_flashcards",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "2rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         {
+          "type": "page_header",
+          "component": "page_header",
+          "id": "header",
+          "title": "Vocabulary Flashcards",
+          "subtitle": "Read the word, recall its meaning, then flip the card to check yourself.",
+          "icon": "\ud83d\udcda",
+          "tag": "10 words",
+          "accent": "#4f46e5"
+         },
+         {
+          "type": "flashcard_deck",
+          "component": "flashcard_deck",
+          "id": "deck",
+          "accent": "#4f46e5",
+          "label_front": "WORD",
+          "label_back": "MEANING",
+          "cards": [
+           {
+            "front": "Ephemeral",
+            "back": "Lasting for a very short time; fleeting."
+           },
+           {
+            "front": "Ubiquitous",
+            "back": "Present, appearing, or found everywhere."
+           },
+           {
+            "front": "Serendipity",
+            "back": "The occurrence of happy or beneficial events by chance."
+           },
+           {
+            "front": "Meticulous",
+            "back": "Showing great attention to detail; very careful and precise."
+           },
+           {
+            "front": "Resilient",
+            "back": "Able to recover quickly from difficulties; tough."
+           },
+           {
+            "front": "Ambiguous",
+            "back": "Open to more than one interpretation; unclear."
+           },
+           {
+            "front": "Pragmatic",
+            "back": "Dealing with things sensibly and realistically."
+           },
+           {
+            "front": "Eloquent",
+            "back": "Fluent and persuasive in speaking or writing."
+           },
+           {
+            "front": "Benevolent",
+            "back": "Well-meaning and kindly; generous toward others."
+           },
+           {
+            "front": "Candid",
+            "back": "Truthful and straightforward; frank."
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "blocks": [
+         {
+          "type": "heading",
+          "component": "heading",
+          "id": "progress_heading",
+          "text": "Your Progress"
+         },
+         {
+          "type": "progress_bar",
+          "component": "progress_bar",
+          "id": "review_progress",
+          "value": 0,
+          "label": "Cards reviewed",
+          "accent": "#4f46e5",
+          "show_percent": "true",
+          "caption": "0 of 10 reviewed"
+         },
+         {
+          "type": "text_callout",
+          "component": "text_callout",
+          "id": "tip",
+          "variant": "info",
+          "title": "Tip",
+          "description": "Try to say the meaning out loud before flipping each card. Active recall helps words stick."
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

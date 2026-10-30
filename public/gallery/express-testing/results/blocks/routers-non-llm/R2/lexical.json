@@ -1,0 +1,674 @@
+[
+ {
+  "model": "lexical",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "Y1",
+  "reply": "{\"catalogue\": \"a2ui-bricks-v1\"}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 8.250414510257542e-05,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-bricks-v1",
+    9.4059
+   ],
+   [
+    "a2ui-charts-v1",
+    6.7036
+   ],
+   [
+    "a2ui-google-workspace-live-v1",
+    5.3975
+   ]
+  ],
+  "threshold": 4.207038359774457
+ },
+ {
+  "model": "lexical",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "Y2",
+  "reply": "{\"catalogue\": \"a2ui-aviation-v1\"}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 6.31093798438087e-05,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-aviation-v1",
+    6.7378
+   ],
+   [
+    "a2ui-ops-v1",
+    6.1656
+   ],
+   [
+    "a2ui-presentation-v1",
+    6.0817
+   ]
+  ],
+  "threshold": 4.207038359774457
+ },
+ {
+  "model": "lexical",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "Y3",
+  "reply": "{\"catalogue\": \"a2ui-marketing-v1\"}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 4.9322039703838524e-05,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-marketing-v1",
+    8.044
+   ],
+   [
+    "a2ui-meta-v1",
+    4.6222
+   ],
+   [
+    "a2ui-effects-v1",
+    2.5397
+   ]
+  ],
+  "threshold": 4.207038359774457
+ },
+ {
+  "model": "lexical",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "Y4",
+  "reply": "{\"catalogue\": null}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 5.221653962507844e-05,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-google-workspace-live-v1",
+    3.9325
+   ],
+   [
+    "a2ui-ops-v1",
+    3.2032
+   ],
+   [
+    "a2ui-marketing-v1",
+    2.9352
+   ]
+  ],
+  "threshold": 4.207038359774457
+ },
+ {
+  "model": "lexical",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "Y5",
+  "reply": "{\"catalogue\": \"a2ui-marketing-v1\"}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 5.143700982443988e-05,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-marketing-v1",
+    4.2688
+   ],
+   [
+    "a2ui-effects-v1",
+    3.2508
+   ],
+   [
+    "a2ui-display-v1",
+    3.2437
+   ]
+  ],
+  "threshold": 4.207038359774457
+ },
+ {
+  "model": "lexical",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "Y6",
+  "reply": "{\"catalogue\": \"a2ui-bricks-v1\"}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 4.363095504231751e-05,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-bricks-v1",
+    10.5927
+   ],
+   [
+    "a2ui-aviation-v1",
+    3.0004
+   ],
+   [
+    "a2ui-effects-v1",
+    2.751
+   ]
+  ],
+  "threshold": 4.207038359774457
+ },
+ {
+  "model": "lexical",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "Y7",
+  "reply": "{\"catalogue\": \"a2ui-charts-v1\"}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 5.7261144975200294e-05,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-charts-v1",
+    5.4346
+   ],
+   [
+    "a2ui-editorial-v1",
+    5.3955
+   ],
+   [
+    "a2ui-ops-v1",
+    4.554
+   ]
+  ],
+  "threshold": 4.207038359774457
+ },
+ {
+  "model": "lexical",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "Y8",
+  "reply": "{\"catalogue\": \"a2ui-learning-v1\"}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 6.083866464905441e-05,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-learning-v1",
+    12.7251
+   ],
+   [
+    "a2ui-editorial-v1",
+    3.0281
+   ],
+   [
+    "a2ui-marketing-v1",
+    2.5111
+   ]
+  ],
+  "threshold": 4.207038359774457
+ },
+ {
+  "model": "lexical",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "Y9",
+  "reply": "{\"catalogue\": \"a2ui-ops-v1\"}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 8.334423007909208e-05,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-ops-v1",
+    11.4398
+   ],
+   [
+    "a2ui-charts-v1",
+    5.1076
+   ],
+   [
+    "a2ui-atoms-v1",
+    5.0284
+   ]
+  ],
+  "threshold": 4.207038359774457
+ },
+ {
+  "model": "lexical",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "Y10",
+  "reply": "{\"catalogue\": \"a2ui-learning-v1\"}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 5.015767994336784e-05,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-learning-v1",
+    12.246
+   ],
+   [
+    "a2ui-embeds-v1",
+    5.5214
+   ],
+   [
+    "a2ui-display-v1",
+    4.7255
+   ]
+  ],
+  "threshold": 4.207038359774457
+ },
+ {
+  "model": "lexical",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "Y11",
+  "reply": "{\"catalogue\": \"a2ui-aviation-v1\"}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 6.840430025476962e-05,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-aviation-v1",
+    10.9746
+   ],
+   [
+    "a2ui-marketing-v1",
+    9.0909
+   ],
+   [
+    "a2ui-meta-v1",
+    6.6826
+   ]
+  ],
+  "threshold": 4.207038359774457
+ },
+ {
+  "model": "lexical",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "Y12",
+  "reply": "{\"catalogue\": \"a2ui-bricks-v1\"}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 5.30303898267448e-05,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-bricks-v1",
+    9.9693
+   ],
+   [
+    "a2ui-charts-v1",
+    4.6786
+   ],
+   [
+    "a2ui-ops-v1",
+    3.7589
+   ]
+  ],
+  "threshold": 4.207038359774457
+ },
+ {
+  "model": "lexical",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "Y13",
+  "reply": "{\"catalogue\": null}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 2.8325265157036482e-05,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-atoms-v1",
+    0.0
+   ],
+   [
+    "a2ui-aviation-v1",
+    0.0
+   ],
+   [
+    "a2ui-bricks-v1",
+    0.0
+   ]
+  ],
+  "threshold": 4.207038359774457
+ },
+ {
+  "model": "lexical",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "Y14",
+  "reply": "{\"catalogue\": \"a2ui-bricks-v1\"}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 2.699098491575569e-05,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-bricks-v1",
+    5.1529
+   ],
+   [
+    "a2ui-atoms-v1",
+    0.0
+   ],
+   [
+    "a2ui-aviation-v1",
+    0.0
+   ]
+  ],
+  "threshold": 4.207038359774457
+ },
+ {
+  "model": "lexical",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "Y15",
+  "reply": "{\"catalogue\": null}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 3.586639533750713e-05,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-atoms-v1",
+    1.3919
+   ],
+   [
+    "a2ui-aviation-v1",
+    0.0
+   ],
+   [
+    "a2ui-bricks-v1",
+    0.0
+   ]
+  ],
+  "threshold": 4.207038359774457
+ },
+ {
+  "model": "lexical",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "Y16",
+  "reply": "{\"catalogue\": null}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 2.0727100200019777e-05,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-learning-v1",
+    3.9793
+   ],
+   [
+    "a2ui-atoms-v1",
+    0.0
+   ],
+   [
+    "a2ui-aviation-v1",
+    0.0
+   ]
+  ],
+  "threshold": 4.207038359774457
+ },
+ {
+  "model": "lexical",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "Y17",
+  "reply": "{\"catalogue\": null}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 1.9817540305666625e-05,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-aviation-v1",
+    3.8284
+   ],
+   [
+    "a2ui-charts-v1",
+    1.7505
+   ],
+   [
+    "a2ui-atoms-v1",
+    0.0
+   ]
+  ],
+  "threshold": 4.207038359774457
+ },
+ {
+  "model": "lexical",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "Y18",
+  "reply": "{\"catalogue\": null}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 1.8093885155394674e-05,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-ops-v1",
+    3.2195
+   ],
+   [
+    "a2ui-atoms-v1",
+    0.0
+   ],
+   [
+    "a2ui-aviation-v1",
+    0.0
+   ]
+  ],
+  "threshold": 4.207038359774457
+ },
+ {
+  "model": "lexical",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "Y19",
+  "reply": "{\"catalogue\": null}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 4.775230481754988e-05,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-atoms-v1",
+    0.0
+   ],
+   [
+    "a2ui-aviation-v1",
+    0.0
+   ],
+   [
+    "a2ui-bricks-v1",
+    0.0
+   ]
+  ],
+  "threshold": 4.207038359774457
+ },
+ {
+  "model": "lexical",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "Y20",
+  "reply": "{\"catalogue\": \"a2ui-bricks-v1\"}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 5.068873520940542e-05,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-bricks-v1",
+    10.5316
+   ],
+   [
+    "a2ui-learning-v1",
+    2.5598
+   ],
+   [
+    "a2ui-marketing-v1",
+    2.3419
+   ]
+  ],
+  "threshold": 4.207038359774457
+ },
+ {
+  "model": "lexical",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "Y21",
+  "reply": "{\"catalogue\": \"a2ui-charts-v1\"}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 5.9126074775122105e-05,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-charts-v1",
+    6.4756
+   ],
+   [
+    "a2ui-learning-v1",
+    4.9205
+   ],
+   [
+    "a2ui-meta-v1",
+    2.0127
+   ]
+  ],
+  "threshold": 4.207038359774457
+ },
+ {
+  "model": "lexical",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "Y22",
+  "reply": "{\"catalogue\": null}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 3.94404202234e-05,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-learning-v1",
+    4.0151
+   ],
+   [
+    "a2ui-editorial-v1",
+    2.1422
+   ],
+   [
+    "a2ui-display-v1",
+    1.1332
+   ]
+  ],
+  "threshold": 4.207038359774457
+ },
+ {
+  "model": "lexical",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "Y23",
+  "reply": "{\"catalogue\": null}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 3.637049521785229e-05,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-atoms-v1",
+    2.475
+   ],
+   [
+    "a2ui-ops-v1",
+    1.7389
+   ],
+   [
+    "a2ui-aviation-v1",
+    0.0
+   ]
+  ],
+  "threshold": 4.207038359774457
+ },
+ {
+  "model": "lexical",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "Y24",
+  "reply": "{\"catalogue\": null}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 4.961956990882754e-05,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-charts-v1",
+    3.9313
+   ],
+   [
+    "a2ui-effects-v1",
+    2.9865
+   ],
+   [
+    "a2ui-marketing-v1",
+    2.7708
+   ]
+  ],
+  "threshold": 4.207038359774457
+ }
+]

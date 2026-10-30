@@ -1,0 +1,46 @@
+{
+ "task": "T5",
+ "condition": "A_haiku-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "full-catalogue__express__haiku-5-5__run2",
+ "agent_type": "full",
+ "catalogue": "A-full.json",
+ "atoms_in_catalogue": 557,
+ "prompt_chars": 294155,
+ "slot_recall": [
+  1,
+  1
+ ],
+ "secs": 4.6,
+ "usage": {
+  "input_tokens": 107813,
+  "output_tokens": 975
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "pricing_tier_group"
+ ],
+ "score": {
+  "per_approach": {
+   "tier_cards": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+   },
+   "comparison_table": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": null
+   }
+  },
+  "best_approach": "tier_cards",
+  "f1": 1.0
+ },
+ "reply": "<a2ui>\nroot = pricing_tier_group([\n  {plan_name: \"Starter\", price: \"9\", currency: \"$\", frequency: \"per month\", features: [\"Up to 3 projects\", \"5 GB of storage\", \"Email support\", \"Basic analytics\"], call_to_action_label: \"Start free trial\", call_to_action_url: \"https://example.com/signup?plan=starter\", is_highlighted: false},\n  {plan_name: \"Pro\", price: \"29\", currency: \"$\", frequency: \"per month\", features: [\"Unlimited projects\", \"100 GB of storage\", \"Priority email and chat support\", \"Advanced analytics\", \"Team collaboration tools\", \"Custom integrations\"], call_to_action_label: \"Get Pro\", call_to_action_url: \"https://example.com/signup?plan=pro\", is_highlighted: true},\n  {plan_name: \"Enterprise\", price: \"99\", currency: \"$\", frequency: \"per month\", features: [\"Everything in Pro\", \"Unlimited storage\", \"24/7 phone and dedicated support\", \"SSO and advanced security\", \"Audit logs and compliance reports\", \"Custom SLA\"], call_to_action_label: \"Contact sales\", call_to_action_url: \"https://example.com/contact-sales\", is_highlighted: false}\n])\n</a2ui>"
+}

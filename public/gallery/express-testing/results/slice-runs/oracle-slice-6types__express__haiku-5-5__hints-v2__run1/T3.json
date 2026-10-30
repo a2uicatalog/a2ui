@@ -1,0 +1,45 @@
+{
+ "task": "T3",
+ "condition": "D_haiku-5-5H2",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": true,
+ "label": "oracle-slice-6types__express__haiku-5-5__hints-v2__run1",
+ "agent_type": "T3",
+ "catalogue": "D-t3.json",
+ "atoms_in_catalogue": 21,
+ "prompt_chars": 12164,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 8.6,
+ "usage": {
+  "input_tokens": 4708,
+  "output_tokens": 1800
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "gradient_hero",
+  "feature_grid",
+  "blockquote_with_avatar",
+  "cta_button",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.8,
+  "recall": 1.0,
+  "f1": 0.889,
+  "slot_hits": {
+   "hero": true,
+   "feature columns (x3)": true,
+   "testimonial": true,
+   "CTA": true
+  }
+ },
+ "reply": "<a2ui>\nhero = gradient_hero(\"Ship faster with Lumen\", \"The all-in-one workspace that keeps your team in sync.\", \"New in 2026\", _, _, _, \"center\", \"Start free trial\", \"https://example.com/signup\")\nfeatures = feature_grid(\"Everything you need\", \"Built for teams that move quickly.\", 3, [{icon: \"\u26a1\", title: \"Lightning fast\", description: \"Ship builds in seconds with our optimized pipeline.\", color: \"#4f46e5\"}, {icon: \"\ud83d\udd12\", title: \"Secure by default\", description: \"Role-based access and encryption at rest and in transit.\", color: \"#4f46e5\"}, {icon: \"\ud83d\udd17\", title: \"Works with your stack\", description: \"Connect to the tools your team already uses.\", color: \"#4f46e5\"}])\ntestimonial = blockquote_with_avatar(\"Lumen cut our release time in half.\", \"Priya Shah\", \"VP Engineering, Northwind\", \"https://example.com/avatars/priya.jpg\")\ncta = cta_button(\"https://example.com/signup\", \"Start your free trial\", \"#4f46e5\")\nroot = columns(2, \"2rem\", \"stretch\", [{blocks: [hero, features]}, {blocks: [testimonial, cta]}])\n</a2ui>"
+}

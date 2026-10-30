@@ -1,0 +1,133 @@
+{
+ "label": "oracle-slice-3types__elemental__haiku-5-5__run1",
+ "task": "T4",
+ "format": "elemental",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "root",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display-elemental.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "root",
+    "components": [
+     {
+      "id": "title",
+      "component": "heading",
+      "text": "Items"
+     },
+     {
+      "id": "status-filter",
+      "component": "segmented_control",
+      "name": "status",
+      "selected_value": {
+       "path": "/filter"
+      },
+      "options": [
+       {
+        "label": "All",
+        "value": "all"
+       },
+       {
+        "label": "Open",
+        "value": "open"
+       },
+       {
+        "label": "In progress",
+        "value": "in_progress"
+       },
+       {
+        "label": "Blocked",
+        "value": "blocked"
+       },
+       {
+        "label": "Resolved",
+        "value": "resolved"
+       }
+      ]
+     },
+     {
+      "id": "item-list",
+      "component": "entity_list",
+      "items": {
+       "path": "/items"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_data_model": {
+    "surface_id": "root",
+    "path": "/",
+    "value": {
+     "filter": "all",
+     "items": [
+      {
+       "name": "Login timeout on mobile",
+       "subtitle": "Sessions expire after 2 minutes on iOS Safari.",
+       "icon": "\ud83d\udd10",
+       "status": "open",
+       "meta": "P1 \u00b7 Auth"
+      },
+      {
+       "name": "Invoice export fails",
+       "subtitle": "CSV export returns a 500 for accounts over 10k rows.",
+       "icon": "\ud83e\uddfe",
+       "status": "in_progress",
+       "meta": "P2 \u00b7 Billing"
+      },
+      {
+       "name": "Dashboard chart lag",
+       "subtitle": "Line charts take over 4 seconds to render on load.",
+       "icon": "\ud83d\udcca",
+       "status": "in_progress",
+       "meta": "P2 \u00b7 Analytics"
+      },
+      {
+       "name": "Password reset email delayed",
+       "subtitle": "Reset emails arrive up to 30 minutes after request.",
+       "icon": "\u2709\ufe0f",
+       "status": "blocked",
+       "meta": "P1 \u00b7 Notifications"
+      },
+      {
+       "name": "Dark mode contrast",
+       "subtitle": "Secondary text falls below WCAG AA on cards.",
+       "icon": "\ud83c\udf17",
+       "status": "open",
+       "meta": "P3 \u00b7 UI"
+      },
+      {
+       "name": "Webhook retry logic",
+       "subtitle": "Failed deliveries are not retried after a timeout.",
+       "icon": "\ud83d\udd01",
+       "status": "resolved",
+       "meta": "P2 \u00b7 Integrations"
+      },
+      {
+       "name": "Search index rebuild",
+       "subtitle": "Nightly reindex skips newly created workspaces.",
+       "icon": "\ud83d\udd0e",
+       "status": "blocked",
+       "meta": "P2 \u00b7 Search"
+      },
+      {
+       "name": "Avatar upload limit",
+       "subtitle": "Uploads above 2 MB are rejected without a message.",
+       "icon": "\ud83d\uddbc\ufe0f",
+       "status": "resolved",
+       "meta": "P3 \u00b7 Profile"
+      }
+     ]
+    }
+   }
+  }
+ ]
+}

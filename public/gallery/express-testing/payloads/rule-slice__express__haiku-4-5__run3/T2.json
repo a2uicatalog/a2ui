@@ -1,0 +1,91 @@
+{
+ "label": "rule-slice__express__haiku-4-5__run3",
+ "task": "T2",
+ "format": "express",
+ "model_id": null,
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/b-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "items": [
+       {
+        "blocks": [
+         "_inline_1",
+         "_inline_2"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_3"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "_inline_1",
+      "component": "icon_stat_row",
+      "cols": 2,
+      "stats": [
+       {
+        "icon": "\ud83d\udcca",
+        "value": "2,847",
+        "label": "Total Revenue",
+        "prefix": "$",
+        "accent": "#10b981"
+       },
+       {
+        "icon": "\ud83d\udc65",
+        "value": "1,204",
+        "label": "Active Users",
+        "suffix": "k",
+        "accent": "#3b82f6"
+       }
+      ]
+     },
+     {
+      "id": "_inline_2",
+      "component": "icon_stat_row",
+      "cols": 2,
+      "stats": [
+       {
+        "icon": "\ud83d\udcc8",
+        "value": "34.2",
+        "label": "Growth Rate",
+        "suffix": "%",
+        "accent": "#f59e0b"
+       },
+       {
+        "icon": "\u26a1",
+        "value": "98.5",
+        "label": "System Uptime",
+        "suffix": "%",
+        "accent": "#8b5cf6"
+       }
+      ]
+     },
+     {
+      "id": "_inline_3",
+      "component": "metric_comparison_card",
+      "label": "Monthly Revenue",
+      "value": 45230,
+      "previous": 38950,
+      "lower_is_better": false
+     }
+    ]
+   }
+  }
+ ]
+}

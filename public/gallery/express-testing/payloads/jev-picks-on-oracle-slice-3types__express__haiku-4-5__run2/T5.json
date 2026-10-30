@@ -1,0 +1,75 @@
+{
+ "label": "jev-picks-on-oracle-slice-3types__express__haiku-4-5__run2",
+ "task": "T5",
+ "format": "express",
+ "model_id": null,
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/jc-t5.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "pricing_tier_group",
+      "tiers": [
+       {
+        "name": "Starter",
+        "price": "$29",
+        "description": "Perfect for individuals and small projects",
+        "features": [
+         "Up to 5 projects",
+         "1 GB storage",
+         "Basic analytics",
+         "Community support"
+        ],
+        "cta_label": "Get Started",
+        "cta_url": "https://example.com/starter"
+       },
+       {
+        "name": "Professional",
+        "price": "$79",
+        "description": "Ideal for growing teams and businesses",
+        "features": [
+         "Unlimited projects",
+         "100 GB storage",
+         "Advanced analytics",
+         "Priority email support",
+         "Team collaboration",
+         "Custom integrations"
+        ],
+        "cta_label": "Start Free Trial",
+        "cta_url": "https://example.com/professional",
+        "recommended": true,
+        "badge": "Most Popular"
+       },
+       {
+        "name": "Enterprise",
+        "price": "Custom",
+        "description": "For large-scale operations and enterprises",
+        "features": [
+         "Unlimited everything",
+         "Unlimited storage",
+         "Real-time analytics",
+         "24/7 dedicated support",
+         "Advanced security",
+         "Custom contracts",
+         "SLA guarantee"
+        ],
+        "cta_label": "Contact Sales",
+        "cta_url": "https://example.com/enterprise"
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

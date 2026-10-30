@@ -1,0 +1,36 @@
+{
+ "task": "T1",
+ "condition": "JBTH2",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "label": "jev-picks-on-rule-slice__express__haiku-4-5__temp0__hints-v2__run2",
+ "agent_type": "jev-narrowed",
+ "catalogue": "JB-T1.json",
+ "atoms_in_catalogue": 13,
+ "prompt_chars": 11444,
+ "slot_recall": [
+  4,
+  5
+ ],
+ "secs": 13.9,
+ "usage": {
+  "input_tokens": 3445,
+  "output_tokens": 1614
+ },
+ "valid": false,
+ "error": "A2uiCompilationValidationError: Standalone function calls are not supported in A2UI v0.9.1 - Help: Please correct the syntax error in your Express DSL.",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "title": false,
+   "concept sections (x3)": false,
+   "worked example": false,
+   "3-question quiz": false,
+   "quiz result": false
+  }
+ },
+ "reply": "<a2ui>\nconcept_ladder(\n  title=\"The Water Cycle\",\n  eyebrow=\"Earth Science\",\n  dek=\"How water moves through our planet\",\n  hook=\"Water is constantly on the move\u2014evaporating from oceans, falling as rain, and flowing back to the sea. This endless journey shapes our climate and sustains all life.\",\n  model=\"Think of it as a `planetary recycling system` where water changes form but never disappears.\",\n  model_note=\"The same water molecules have cycled through Earth for billions of years.\",\n  rungs=[\n    concept_rung(\n      badge=\"1\",\n      kind=\"depth\",\n      title=\"Evaporation\",\n      body=\"Solar energy heats water in oceans, lakes, and rivers, turning it from liquid into invisible water vapor. This vapor rises into the atmosphere, carrying energy with it.\\n\\nPlants also release water through their leaves in a process called `transpiration`\u2014together, we call this `evapotranspiration`.\"\n    ),\n    concept_rung(\n      badge=\"2\",\n      kind=\"depth\",\n      title=\"Condensation\",\n      body=\"As water vapor rises and cools in the upper atmosphere, it transforms back into liquid water droplets. These droplets cluster together to form clouds.\\n\\nThis phase change releases heat energy back into the atmosphere, which drives weather patterns and wind systems.\"\n    ),\n    concept_rung(\n      badge=\"3\",\n      kind=\"depth\",\n      title=\"Precipitation\",\n      body=\"When cloud droplets become heavy enough, they fall to Earth as rain, snow, sleet, or hail. The form depends on atmospheric temperature.\\n\\nPrecipitation is the primary way water returns to land and oceans, replenishing freshwater sources and completing the cycle.\"\n    ),\n    concept_rung(\n      badge=\"4\",\n      kind=\"depth\",\n      title=\"Collection & Runoff\",\n      body=\"Precipitation collects in oceans, lakes, rivers, and groundwater aquifers. Some water soaks into soil (`infiltration`), while other water flows downhill as `runoff` back toward the sea.\\n\\nThis collected water feeds ecosystems and human communities before eventually evaporating again.\"\n    ),\n    concept_rung(\n      badge=\"EX\",\n      kind=\"example\",\n      title=\"A Raindrop's Journey\",\n      body=\"Imagine a raindrop falling into the Pacific Ocean near Hawaii.\",\n      code=\"Day 1:   Raindrop lands in warm ocean water\\nDay 5:   Solar heat evaporates it into vapor\\nDay 8:   Vapor rises and cools; condenses into cloud\\nDay 10:  Cloud drifts eastward; droplet falls as rain\\nDay 15:  Rain soaks into soil; absorbed by tree roots\\nDay 30:  Tree transpires it back to atmosphere\\nDay 45:  Vapor condenses again; forms new cloud\\nDay 60:  Falls as snow in Rocky Mountains\\nDay 365: Snowmelt flows to river, then to ocean\\n\u2192 Cycle repeats\",\n      code_caption=\"The same water molecule can complete multiple cycles in a year.\",\n      takeaway=\"Every water molecule on Earth has cycled countless times\u2014your drinking water contains atoms that dinosaurs drank.\"\n    )\n  ],\n  closing_note=\"The water cycle is powered by solar energy and gravity, making it one of Earth's most fundamental and resilient systems.\"\n)\n\nroot = concept_ladder(\n  title=\"The Water Cycle\",\n  eyebrow=\"Earth Science\",\n  dek=\"How water moves through our planet\",\n  hook=\"Water is constantly on the move\u2014evaporating from oceans, falling as rain, and flowing back to the sea. This endless journey shapes our climate and sustains all life.\",\n  model=\"Think of it as a `planetary recycling system` where water changes form but never disappears.\",\n  model_note=\"The same water molecules have cycled through Earth for billions of years.\",\n  rungs=[\n    concept_rung(\n      badge=\"1\",\n      kind=\"depth\",\n      title=\"Evaporation\",\n      body=\"Solar energy heats water in oceans, lakes, and rivers, turning it from liquid into invisible water vapor. This vapor rises into the atmosphere, carrying energy with it.\\n\\nPlants also release water through their leaves in a process called `transpiration`\u2014together, we call this `evapotranspiration`.\"\n    ),\n    concept_rung(\n      badge=\"2\",\n      kind=\"depth\",\n      title=\"Condensation\",\n      body=\"As water vapor rises and cools in the upper atmosphere, it transforms back into liquid water droplets. These droplets cluster together to form clouds.\\n\\nThis phase change releases heat energy back into the atmosphere, which drives weather patterns and wind systems.\"\n    ),\n    concept_rung(\n      badge=\"3\",\n      kind=\"depth\",\n      title=\"Precipitation\",\n      body=\"When cloud droplets become heavy enough, they fall to Earth as rain, snow, sleet, or hail. The form depends on atmospheric temperature.\\n\\nPrecipitation is the primary way water returns to land and oceans, replenishing freshwater sources and completing the cycle.\"\n    ),\n    concept_rung(\n      badge=\"4\",\n      kind=\"depth\",\n      title=\"Collection & Runoff\",\n      body=\"Precipitation collects in oceans, lakes, rivers, and groundwater aquifers. Some water soaks into soil (`infiltration`), while other water flows downhill as `runoff` back toward the sea.\\n\\nThis collected water feeds ecosystems and human communities before eventually evaporating again.\"\n    ),\n    concept_rung(\n      badge=\"EX\",\n      kind=\"example\",\n      title=\"A Raindrop's Journey\",\n      body=\"Imagine a raindrop falling into the Pacific Ocean near Hawaii.\",\n      code=\"Day 1:   Raindrop lands in warm ocean water\\nDay 5:   Solar heat evaporates it into vapor\\nDay 8:   Vapor rises and cools; condenses into cloud\\nDay 10:  Cloud drifts eastward; droplet falls as rain\\nDay 15:  Rain soaks into soil; absorbed by tree roots\\nDay 30:  Tree transpires it back to atmosphere\\nDay 45:  Vapor condenses again; forms new cloud\\nDay 60:  Falls as snow in Rocky Mountains\\nDay 365: Snowmelt flows to river, then to ocean\\n\u2192 Cycle repeats\",\n      code_caption=\"The same water molecule can complete multiple cycles in a year.\",\n      takeaway=\"Every water molecule on Earth has cycled countless times\u2014your drinking water contains atoms that dinosaurs drank.\"\n    )\n  ],\n  closing_note=\"The water cycle is powered by solar energy and gravity, making it one of Earth's most fundamental and resilient systems.\"\n)\n</a2ui>"
+}

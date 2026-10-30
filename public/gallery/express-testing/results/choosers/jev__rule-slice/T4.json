@@ -1,0 +1,183 @@
+{
+ "task": "T4",
+ "condition": "B",
+ "slice_atoms_in_options": 231,
+ "picks": [
+  {
+   "slot": "A vertical list showing eight rows, one per item, each row displaying the item's #1",
+   "decomposer_line": "A vertical list showing eight rows, one per item, each row displaying the item's title in prominent text",
+   "atom": "bullet_list",
+   "confidence": 0.44,
+   "top3": [
+    [
+     "bullet_list",
+     0.44
+    ],
+    [
+     "entity_list",
+     0.35000000000000003
+    ],
+    [
+     "numbered_list",
+     0.11
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "A status indicator on each row showing that item's current state, such as a colo #2",
+   "decomposer_line": "A status indicator on each row showing that item's current state, such as a colored label or badge",
+   "atom": "status_pill",
+   "confidence": 0.65,
+   "top3": [
+    [
+     "status_pill",
+     0.65
+    ],
+    [
+     "lozenge",
+     0.19
+    ],
+    [
+     "badge",
+     0.08
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "A short one-line detail beneath each item's title giving supplementary informati #3",
+   "decomposer_line": "A short one-line detail beneath each item's title giving supplementary information about that item",
+   "atom": "entity_list",
+   "confidence": 0.24,
+   "top3": [
+    [
+     "subheading",
+     0.24000000000000002
+    ],
+    [
+     "entity_list",
+     0.24000000000000002
+    ],
+    [
+     "text_block",
+     0.15000000000000002
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "A row of filter controls, one per status value, that lets the user choose which  #4",
+   "decomposer_line": "A row of filter controls, one per status value, that lets the user choose which statuses to display",
+   "atom": "badge_group",
+   "confidence": 0.52,
+   "top3": [
+    [
+     "badge_group",
+     0.52
+    ],
+    [
+     "lozenge",
+     0.19
+    ],
+    [
+     "tab_group",
+     0.11
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "Behavior that hides any items whose status does not match the selected filter an #5",
+   "decomposer_line": "Behavior that hides any items whose status does not match the selected filter and shows only the matching items",
+   "atom": "tab_group",
+   "confidence": 0.31,
+   "top3": [
+    [
+     "entity_list",
+     0.31
+    ],
+    [
+     "tab_group",
+     0.31
+    ],
+    [
+     "focus_lens",
+     0.05
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "An option to clear the active filter so that all eight items are visible again #6",
+   "decomposer_line": "An option to clear the active filter so that all eight items are visible again",
+   "atom": "tag_chip",
+   "confidence": 0.26,
+   "top3": [
+    [
+     "tag_chip",
+     0.26
+    ],
+    [
+     "cta_section",
+     0.19
+    ],
+    [
+     "tag_block",
+     0.14
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "A count or summary indicating how many items are currently shown out of the tota #7",
+   "decomposer_line": "A count or summary indicating how many items are currently shown out of the total",
+   "atom": "pull_stat",
+   "confidence": 0.27,
+   "top3": [
+    [
+     "pull_stat",
+     0.27
+    ],
+    [
+     "metric_row",
+     0.27
+    ],
+    [
+     "drive_storage_usage",
+     0.15000000000000002
+    ]
+   ],
+   "finalists": null
+  }
+ ],
+ "cost": {
+  "decomposer_input_tokens": 3235,
+  "decomposer_output_tokens": 196,
+  "decomposer_thinking_tokens": 0,
+  "jev_input_tokens": 61943,
+  "jev_output_tokens": 14309,
+  "jev_calls": 7
+ },
+ "error": null,
+ "atoms": [
+  "bullet_list",
+  "status_pill",
+  "entity_list",
+  "badge_group",
+  "tab_group",
+  "tag_chip",
+  "pull_stat"
+ ],
+ "score": {
+  "precision": 0.571,
+  "recall": 0.667,
+  "f1": 0.615,
+  "slot_hits": {
+   "list": true,
+   "status indicator": true,
+   "filter control": false
+  }
+ },
+ "secs": 7.1
+}

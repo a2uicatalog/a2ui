@@ -1,0 +1,110 @@
+{
+ "label": "oracle-slice-3types__json__gemini-3.5-flash-lite__request-only-timing__run1",
+ "task": "T4",
+ "format": "json",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "status_filtered_list",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display.json",
+    "send_data_model": false
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "status_filtered_list",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "1rem",
+      "items": [
+       {
+        "blocks": [
+         {
+          "id": "header",
+          "component": "heading",
+          "text": "Project Tasks & Status"
+         },
+         {
+          "id": "filter_control",
+          "component": "segmented_control",
+          "name": "status_filter",
+          "selected_value": "all",
+          "options": "[{\"label\": \"All (8)\", \"value\": \"all\"}, {\"label\": \"In Progress\", \"value\": \"inprogress\"}, {\"label\": \"Success\", \"value\": \"success\"}, {\"label\": \"Removed\", \"value\": \"removed\"}]"
+         },
+         {
+          "id": "item_list",
+          "component": "entity_list",
+          "items": [
+           {
+            "name": "User Authentication API",
+            "subtitle": "Implement OAuth2 authorization code flow with PKCE support.",
+            "icon": "\ud83d\udd10",
+            "status": "In Progress",
+            "meta": "Due in 2 days"
+           },
+           {
+            "name": "Database Migration",
+            "subtitle": "Migrate primary PostgreSQL cluster to version 15 with zero downtime.",
+            "icon": "\ud83d\uddc4\ufe0f",
+            "status": "Success",
+            "meta": "Completed yesterday"
+           },
+           {
+            "name": "Legacy Billing Endpoint",
+            "subtitle": "Deprecate v1 invoices router in favor of the unified billing service.",
+            "icon": "\ud83d\udcb3",
+            "status": "Removed",
+            "meta": "Archived"
+           },
+           {
+            "name": "Automated Testing Suite",
+            "subtitle": "Increase unit test coverage to 85% across core modules.",
+            "icon": "\ud83e\uddea",
+            "status": "In Progress",
+            "meta": "Ongoing"
+           },
+           {
+            "name": "Performance Profiling",
+            "subtitle": "Analyze memory leaks in the real-time notification socket worker.",
+            "icon": "\u26a1",
+            "status": "In Progress",
+            "meta": "High Priority"
+           },
+           {
+            "name": "Security Audit Remediation",
+            "subtitle": "Address all medium and high severity findings from external penetration test.",
+            "icon": "\ud83d\udee1\ufe0f",
+            "status": "Success",
+            "meta": "Passed"
+           },
+           {
+            "name": "Redundant Log Parser",
+            "subtitle": "Remove obsolete file-based log ingestion scripts.",
+            "icon": "\ud83d\udcdc",
+            "status": "Removed",
+            "meta": "Archived"
+           },
+           {
+            "name": "Design System Integration",
+            "subtitle": "Upgrade component library to latest design tokens release.",
+            "icon": "\ud83c\udfa8",
+            "status": "Success",
+            "meta": "Completed"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

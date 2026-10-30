@@ -1,0 +1,45 @@
+{
+ "task": "T3",
+ "condition": "DT_sonnet-5-5H2",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-sonnet-5-5",
+ "hints": true,
+ "label": "oracle-slice-6types__express__sonnet-5-5__temp0__hints-v2__run1",
+ "agent_type": "T3",
+ "catalogue": "D-t3.json",
+ "atoms_in_catalogue": 21,
+ "prompt_chars": 12164,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 14.7,
+ "usage": {
+  "input_tokens": 4708,
+  "output_tokens": 1676
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "gradient_hero",
+  "feature_grid",
+  "testimonial_card",
+  "cta_button",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.8,
+  "recall": 1.0,
+  "f1": 0.889,
+  "slot_hits": {
+   "hero": true,
+   "feature columns (x3)": true,
+   "testimonial": true,
+   "CTA": true
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"product-landing\")\nhero = gradient_hero(\"Ship your best work, faster\", \"Meet Launchpad: the all-in-one workspace that turns ideas into shipped products without the busywork.\", \"New: Launchpad 2.0\", \"#4f46e5\", \"#8b5cf6\", null, \"center\", \"Get started free\", \"https://example.com/signup\")\nfeatures = feature_grid(\"Everything you need\", \"Three reasons teams choose Launchpad.\", 3, [{icon: \"\u26a1\", title: \"Lightning fast\", description: \"Automate repetitive tasks and move from idea to launch in record time.\", color: \"#f59e0b\"}, {icon: \"\ud83e\udd1d\", title: \"Built for teams\", description: \"Share work, leave feedback and stay aligned in one shared space.\", color: \"#10b981\"}, {icon: \"\ud83d\udd12\", title: \"Secure by default\", description: \"Enterprise-grade encryption and access controls come standard.\", color: \"#4f46e5\"}])\nquote = testimonial_card(\"Launchpad cut our release cycle in half. We can't imagine working without it.\", \"Dana Whitaker\", \"VP of Product, Brightside\", \"https://example.com/avatars/dana.jpg\", 5)\ncta = cta_button(\"https://example.com/signup\", \"Start your free trial\", \"#4f46e5\", false)\nroot = columns(2, \"2rem\", \"top\", [{blocks: [hero, features, quote, cta]}])\n</a2ui>\n\nThe catalog's only container is `columns`, which needs at least 2 columns. I put the whole page in one column of it, so the right half may render empty depending on the host."
+}

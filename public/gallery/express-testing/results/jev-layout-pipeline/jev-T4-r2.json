@@ -1,0 +1,19 @@
+{
+ "task": "T4",
+ "repeat": 2,
+ "ms": 192,
+ "answers": {
+  "layout": "dashboard",
+  "count": "4",
+  "cta": "no"
+ },
+ "confidence": {
+  "layout": 0.7,
+  "count": 0.98,
+  "cta": 1.0
+ },
+ "usage": {
+  "input_tokens": 599,
+  "output_tokens": 101
+ }
+}

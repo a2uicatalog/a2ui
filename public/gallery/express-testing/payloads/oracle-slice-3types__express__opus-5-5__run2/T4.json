@@ -1,0 +1,169 @@
+{
+ "label": "oracle-slice-3types__express__opus-5-5__run2",
+ "task": "T4",
+ "format": "express",
+ "model_id": "claude-opus-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "status-list-surface",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "status-list-surface",
+    "components": [
+     {
+      "id": "title",
+      "component": "heading",
+      "text": "Release Checklist"
+     },
+     {
+      "id": "intro",
+      "component": "body",
+      "text": "Eight work items for the v2.4 release. Choose a status to narrow the list."
+     },
+     {
+      "id": "filter",
+      "component": "segmented_control",
+      "options": [
+       {
+        "label": "All (8)",
+        "value": "all"
+       },
+       {
+        "label": "Active (3)",
+        "value": "active"
+       },
+       {
+        "label": "Pending (2)",
+        "value": "pending"
+       },
+       {
+        "label": "Blocked (1)",
+        "value": "blocked"
+       },
+       {
+        "label": "Done (2)",
+        "value": "done"
+       }
+      ],
+      "selected_value": "all",
+      "name": "status_filter"
+     },
+     {
+      "id": "legend",
+      "component": "badge_group",
+      "title": "Status key",
+      "badges": [
+       {
+        "text": "Active",
+        "color": "blue",
+        "pulse": true
+       },
+       {
+        "text": "Pending",
+        "color": "yellow"
+       },
+       {
+        "text": "Blocked",
+        "color": "red"
+       },
+       {
+        "text": "Done",
+        "color": "green"
+       }
+      ]
+     },
+     {
+      "id": "items",
+      "component": "entity_list",
+      "items": [
+       {
+        "name": "API rate limiting",
+        "subtitle": "Throttling middleware is in code review with the platform team.",
+        "icon": "\u2699\ufe0f",
+        "status": "Active",
+        "meta": "Owner: Priya"
+       },
+       {
+        "name": "Billing migration",
+        "subtitle": "Waiting on finance sign-off before the cutover window opens.",
+        "icon": "\ud83d\udcb3",
+        "status": "Pending",
+        "meta": "Owner: Marcus"
+       },
+       {
+        "name": "SSO for enterprise",
+        "subtitle": "Blocked by expired IdP test credentials from the vendor.",
+        "icon": "\ud83d\udd10",
+        "status": "Blocked",
+        "meta": "Owner: Lena"
+       },
+       {
+        "name": "Onboarding redesign",
+        "subtitle": "New three-step flow shipped to all users last Friday.",
+        "icon": "\ud83c\udfa8",
+        "status": "Done",
+        "meta": "Owner: Sam"
+       },
+       {
+        "name": "Search indexing",
+        "subtitle": "Reindex job is running at about 60% completion.",
+        "icon": "\ud83d\udd0d",
+        "status": "Active",
+        "meta": "Owner: Diego"
+       },
+       {
+        "name": "Mobile push alerts",
+        "subtitle": "Queued behind the notification service upgrade.",
+        "icon": "\ud83d\udcf1",
+        "status": "Pending",
+        "meta": "Owner: Aisha"
+       },
+       {
+        "name": "Audit log export",
+        "subtitle": "CSV and JSON export endpoints are live and documented.",
+        "icon": "\ud83d\udcc4",
+        "status": "Done",
+        "meta": "Owner: Tom"
+       },
+       {
+        "name": "Dark mode polish",
+        "subtitle": "Fixing contrast issues on charts and table headers.",
+        "icon": "\ud83c\udf19",
+        "status": "Active",
+        "meta": "Owner: Yuki"
+       }
+      ]
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "title",
+         "intro",
+         "filter",
+         "legend"
+        ]
+       },
+       {
+        "blocks": [
+         "items"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

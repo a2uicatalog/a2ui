@@ -1,0 +1,22 @@
+{
+ "task": "T6",
+ "label": "haiku-live3-r2",
+ "secs": 4.2,
+ "usage": {
+  "input_tokens": 84996,
+  "output_tokens": 350
+ },
+ "valid": false,
+ "error": "A2uiCompilationValidationError: Standalone function calls are not supported in A2UI v0.9.1 - Help: Please correct the syntax error in your Express DSL.",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "flashcard deck": false,
+   "progress indicator": false
+  }
+ },
+ "reply": "<a2ui>\nprogress_checkpoint(current_step=0, total_steps=10)\nspacer(height=\"24px\")\nflashcard_deck(\n  cards=[\n    {front: \"Serendipity\", back: \"The occurrence of events by chance in a happy or beneficial way\"},\n    {front: \"Ephemeral\", back: \"Lasting for a very short time; transitory\"},\n    {front: \"Ubiquitous\", back: \"Present, appearing, or found everywhere\"},\n    {front: \"Eloquent\", back: \"Fluent or persuasive in speaking or writing\"},\n    {front: \"Meticulous\", back: \"Showing great attention to detail; very careful and precise\"},\n    {front: \"Sanguine\", back: \"Optimistic or positive, especially in an unjustifiably confident way\"},\n    {front: \"Benevolent\", back: \"Kind, generous, and charitable\"},\n    {front: \"Cacophony\", back: \"A harsh, discordant mixture of sounds; discord\"},\n    {front: \"Pragmatic\", back: \"Dealing with things in a practical, realistic way based on actual circumstances\"},\n    {front: \"Nostalgia\", back: \"A sentimental longing for the past, typically for a period or place with happy associations\"}\n  ],\n  accent=\"#4f46e5\",\n  label_front=\"WORD\",\n  label_back=\"DEFINITION\"\n)\n</a2ui>"
+}

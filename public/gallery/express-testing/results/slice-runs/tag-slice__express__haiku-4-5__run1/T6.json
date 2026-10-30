@@ -1,0 +1,31 @@
+{
+ "task": "T6",
+ "condition": "G",
+ "label": "tag-slice__express__haiku-4-5__run1",
+ "agent_type": "Learning",
+ "catalogue": "G-learning.json",
+ "atoms_in_catalogue": 236,
+ "prompt_chars": 117248,
+ "slot_recall": [
+  2,
+  2
+ ],
+ "secs": 7.1,
+ "usage": {
+  "input_tokens": 33054,
+  "output_tokens": 795
+ },
+ "valid": false,
+ "error": "A2uiCompilationValidationError: Property 'cols' of component 'columns' was provided multiple times. - Help: Remove duplicate specification of property 'cols' for component 'columns'.",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "flashcard deck": false,
+   "progress indicator": false
+  }
+ },
+ "reply": "<a2ui>\nroot = columns([\n  {\n    blocks: [\n      heading(\"Vocabulary Review\"),\n      progress_bar(\n        value=0,\n        label=\"Cards Reviewed\",\n        accent=\"#4f46e5\",\n        show_percent=true\n      ),\n      spacer(24)\n    ]\n  }\n], cols=1, gap=\"1.5rem\")\n\ncard_1 = flip_card(\n  front_content=\"Eloquent\",\n  back_content=\"Fluent or persuasive in speaking or writing\",\n  trigger_on_hover=true\n)\n\ncard_2 = flip_card(\n  front_content=\"Ephemeral\",\n  back_content=\"Lasting for a very short time; transitory\",\n  trigger_on_hover=true\n)\n\ncard_3 = flip_card(\n  front_content=\"Pragmatic\",\n  back_content=\"Dealing with things in a realistic and practical way\",\n  trigger_on_hover=true\n)\n\ncard_4 = flip_card(\n  front_content=\"Benevolent\",\n  back_content=\"Kind, generous, and charitable in nature\",\n  trigger_on_hover=true\n)\n\ncard_5 = flip_card(\n  front_content=\"Obfuscate\",\n  back_content=\"To deliberately make something unclear or obscure\",\n  trigger_on_hover=true\n)\n\ncard_6 = flip_card(\n  front_content=\"Serendipity\",\n  back_content=\"The occurrence of events by chance in a happy or beneficial way\",\n  trigger_on_hover=true\n)\n\ncard_7 = flip_card(\n  front_content=\"Ubiquitous\",\n  back_content=\"Present, appearing, or found everywhere\",\n  trigger_on_hover=true\n)\n\ncard_8 = flip_card(\n  front_content=\"Mellifluous\",\n  back_content=\"Sweet or musical; pleasant to hear\",\n  trigger_on_hover=true\n)\n\ncard_9 = flip_card(\n  front_content=\"Perspicacious\",\n  back_content=\"Having keen insight, discernment, or understanding\",\n  trigger_on_hover=true\n)\n\ncard_10 = flip_card(\n  front_content=\"Inchoate\",\n  back_content=\"Just begun and not yet fully formed or developed\",\n  trigger_on_hover=true\n)\n\nroot = columns([\n  {\n    blocks: [\n      heading(\"Vocabulary Review\"),\n      progress_bar(\n        value=0,\n        label=\"Cards Reviewed\",\n        accent=\"#4f46e5\",\n        show_percent=true\n      ),\n      spacer(24),\n      card_1,\n      spacer(12),\n      card_2,\n      spacer(12),\n      card_3,\n      spacer(12),\n      card_4,\n      spacer(12),\n      card_5,\n      spacer(12),\n      card_6,\n      spacer(12),\n      card_7,\n      spacer(12),\n      card_8,\n      spacer(12),\n      card_9,\n      spacer(12),\n      card_10\n    ]\n  }\n], cols=1, gap=\"1.5rem\")\n</a2ui>"
+}

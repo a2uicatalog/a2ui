@@ -1,0 +1,31 @@
+{
+ "task": "T6",
+ "condition": "B",
+ "label": "rule-slice__express__haiku-4-5__run2",
+ "agent_type": "Learning",
+ "catalogue": "B-learning.json",
+ "atoms_in_catalogue": 184,
+ "prompt_chars": 88519,
+ "slot_recall": [
+  1,
+  2
+ ],
+ "secs": 6.9,
+ "usage": {
+  "input_tokens": 24756,
+  "output_tokens": 600
+ },
+ "valid": false,
+ "error": "A2uiCompilationValidationError: Standalone function calls are not supported in A2UI v0.9.1 - Help: Please correct the syntax error in your Express DSL.",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "flashcard deck": false,
+   "progress indicator": false
+  }
+ },
+ "reply": "<a2ui>\n// Initialize progress store for tracking reviewed cards\nprogress_store(\"flashcards-vocab\")\n\n// Track which cards have been reviewed\n$/flashcards/reviewed = 0\n\n// Define the flashcard data\n$/flashcards/cards = [\n  {front: \"Ephemeral\", back: \"Lasting for a very short time; transitory\"},\n  {front: \"Ubiquitous\", back: \"Present, appearing, or found everywhere\"},\n  {front: \"Serendipity\", back: \"The occurrence of events by chance in a happy or beneficial way\"},\n  {front: \"Pragmatic\", back: \"Dealing with things in a realistic, practical way based on actual circumstances\"},\n  {front: \"Meticulous\", back: \"Showing great attention to detail; very careful and precise\"},\n  {front: \"Ambiguous\", back: \"Open to more than one interpretation; unclear in meaning\"},\n  {front: \"Benevolent\", back: \"Kind, generous, and charitable; showing goodwill\"},\n  {front: \"Diligent\", back: \"Having or showing care in one's work or duties\"},\n  {front: \"Eloquent\", back: \"Fluent, persuasive, and expressive in speaking or writing\"},\n  {front: \"Nostalgia\", back: \"A sentimental longing for the past, typically for a period or place with happy associations\"}\n]\n\nroot = color_section(\n  accent=\"#4f46e5\",\n  style=\"tint\",\n  padding=\"40px\",\n  blocks=[\n    heading(\"Vocabulary Flashcards\"),\n    body(\"Review these 10 vocabulary words. Click each card to flip and see the definition. Your progress is tracked as you review.\"),\n    \n    // Progress indicator\n    course_progress_card(\n      course_title=\"Vocabulary Review\",\n      modules=[\n        {title: \"Cards Reviewed\", lessons_total: 10, lessons_done: $/flashcards/reviewed}\n      ],\n      accent=\"#4f46e5\"\n    ),\n    \n    spacer(height=\"24px\"),\n    \n    // Flashcard deck\n    flashcard_deck(\n      cards=$/flashcards/cards,\n      accent=\"#4f46e5\",\n      label_front=\"WORD\",\n      label_back=\"DEFINITION\"\n    ),\n    \n    spacer(height=\"24px\"),\n    body(\"**Tip:** Review each card to strengthen your vocabulary knowledge. Return anytime to continue practicing.\")\n  ]\n)\n</a2ui>"
+}

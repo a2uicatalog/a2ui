@@ -1,0 +1,102 @@
+{
+ "label": "oracle-slice-3types__express__gemini-3.5-flash-lite__first-run-timing-invalid__run1",
+ "task": "T5",
+ "format": "express",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "pricing-surface",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "pricing-surface",
+    "components": [
+     {
+      "id": "pricingSectionHeading",
+      "component": "heading",
+      "text": "Choose Your Plan"
+     },
+     {
+      "id": "pricingSectionBody",
+      "component": "body",
+      "text": "Select the perfect subscription tier for your needs. Upgrade or downgrade at any time."
+     },
+     {
+      "id": "pricingComp",
+      "component": "pricing_tier_group",
+      "tiers": [
+       {
+        "name": "Starter",
+        "price": "$9",
+        "period": "/month",
+        "description": "Essential features for individuals getting started.",
+        "features": [
+         "1 Workspace",
+         "Basic Analytics",
+         "Community Support",
+         "1GB Storage"
+        ],
+        "recommended": false,
+        "cta_label": "Get Started",
+        "cta_url": "/signup?plan=starter"
+       },
+       {
+        "name": "Pro",
+        "price": "$29",
+        "period": "/month",
+        "description": "Advanced features and priority support for professionals.",
+        "features": [
+         "Unlimited Workspaces",
+         "Advanced Analytics",
+         "Priority Support",
+         "50GB Storage",
+         "Custom Integrations"
+        ],
+        "recommended": true,
+        "cta_label": "Start Free Trial",
+        "cta_url": "/signup?plan=pro"
+       },
+       {
+        "name": "Enterprise",
+        "price": "$99",
+        "period": "/month",
+        "description": "Maximum security, dedicated infrastructure, and 24/7 support.",
+        "features": [
+         "Everything in Pro",
+         "Dedicated Account Manager",
+         "99.9% Uptime SLA",
+         "Unlimited Storage",
+         "Custom Security Controls"
+        ],
+        "recommended": false,
+        "cta_label": "Contact Sales",
+        "cta_url": "/contact"
+       }
+      ]
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 3,
+      "gap": "2rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "pricingSectionHeading",
+         "pricingSectionBody",
+         "pricingComp"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

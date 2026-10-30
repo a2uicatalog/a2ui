@@ -1,0 +1,31 @@
+{
+ "task": "T6",
+ "condition": "JC",
+ "label": "jev-picks-on-oracle-slice-3types__express__haiku-4-5__run2",
+ "agent_type": "jev-narrowed",
+ "catalogue": "JC-T6.json",
+ "atoms_in_catalogue": 10,
+ "prompt_chars": 7860,
+ "slot_recall": [
+  2,
+  2
+ ],
+ "secs": 5.0,
+ "usage": {
+  "input_tokens": 2197,
+  "output_tokens": 429
+ },
+ "valid": false,
+ "error": "A2uiCompilationValidationError: Property 'front_content' of component 'flip_card' does not support dynamic data bindings (paths). - Help: Property 'front_content' on 'flip_card' must be a static literal value, not a dynamic databinding ($path).",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "flashcard deck": false,
+   "progress indicator": false
+  }
+ },
+ "reply": "<a2ui>\n// Initialize progress tracking\n$/progress/reviewed = 0\n$/progress/total = 10\n\n// Define flashcard data\n$/cards = [\n  {front: \"Serendipity\", back: \"The occurrence of events by chance in a happy or beneficial way\"},\n  {front: \"Ephemeral\", back: \"Lasting for a very short time\"},\n  {front: \"Eloquent\", back: \"Fluent or persuasive in speaking or writing\"},\n  {front: \"Ubiquitous\", back: \"Present, appearing, or found everywhere\"},\n  {front: \"Pragmatic\", back: \"Dealing with things in a practical, realistic way\"},\n  {front: \"Melancholy\", back: \"A pensive sadness, typically with no obvious cause\"},\n  {front: \"Obfuscate\", back: \"To deliberately make something unclear or obscure\"},\n  {front: \"Sanguine\", back: \"Optimistic or positive, especially about future outcomes\"},\n  {front: \"Nostalgia\", back: \"A sentimental longing for the past\"},\n  {front: \"Perspicacious\", back: \"Having keen insight, discernment, or understanding\"}\n]\n\n// Card template for flip interaction\ncard_template = flip_card($front, $back, true)\n\nroot = columns(1, \"2rem\", \"top\", [\n  {blocks: [\n    heading(\"Vocabulary Builder\"),\n    body(\"Review these 10 vocabulary words. Hover over each card to reveal the definition.\"),\n    progress_bar(0, \"Cards Reviewed\", \"#4f46e5\", true, \"0 of 10 completed\")\n  ]},\n  {blocks: [\n    _template($/cards, card_template)\n  ]}\n])\n</a2ui>"
+}

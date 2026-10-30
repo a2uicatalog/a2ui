@@ -1,0 +1,132 @@
+{
+ "label": "oracle-slice-3types__elemental__sonnet-5-5__run2",
+ "task": "T4",
+ "format": "elemental",
+ "model_id": "claude-sonnet-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display-elemental.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "title",
+      "component": "heading",
+      "text": "Project Items"
+     },
+     {
+      "id": "status-filter",
+      "component": "segmented_control",
+      "name": "status_filter",
+      "selected_value": {
+       "path": "/filter"
+      },
+      "options": [
+       {
+        "label": "All",
+        "value": "all"
+       },
+       {
+        "label": "Active",
+        "value": "Active"
+       },
+       {
+        "label": "Pending",
+        "value": "Pending"
+       },
+       {
+        "label": "Blocked",
+        "value": "Blocked"
+       },
+       {
+        "label": "Done",
+        "value": "Done"
+       }
+      ]
+     },
+     {
+      "id": "item-list",
+      "component": "entity_list",
+      "items": {
+       "path": "/visibleItems"
+      }
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "1rem",
+      "items": [
+       {
+        "blocks": [
+         "title",
+         "status-filter",
+         "item-list"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_data_model": {
+    "surface_id": "main",
+    "path": "/",
+    "value": {
+     "filter": "all",
+     "visibleItems": [
+      {
+       "name": "Migrate billing service",
+       "subtitle": "Cutover completed and verified in production",
+       "status": "Done"
+      },
+      {
+       "name": "Upgrade auth gateway",
+       "subtitle": "Rolling out to 60% of traffic",
+       "status": "Active"
+      },
+      {
+       "name": "Rotate API credentials",
+       "subtitle": "Waiting on security team approval",
+       "status": "Pending"
+      },
+      {
+       "name": "Refactor search indexer",
+       "subtitle": "Blocked by upstream schema change",
+       "status": "Blocked"
+      },
+      {
+       "name": "Launch onboarding flow",
+       "subtitle": "A/B test running with 2 variants",
+       "status": "Active"
+      },
+      {
+       "name": "Update privacy policy",
+       "subtitle": "Legal review scheduled for Friday",
+       "status": "Pending"
+      },
+      {
+       "name": "Decommission legacy cluster",
+       "subtitle": "All workloads drained and shut down",
+       "status": "Done"
+      },
+      {
+       "name": "Integrate payment provider",
+       "subtitle": "Sandbox credentials not yet issued",
+       "status": "Blocked"
+      }
+     ]
+    }
+   }
+  }
+ ]
+}

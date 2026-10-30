@@ -1,0 +1,113 @@
+{
+ "label": "tag-slice__express__haiku-4-5__run1",
+ "task": "T2",
+ "format": "express",
+ "model_id": null,
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/g-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "items": [
+       {
+        "blocks": [
+         "_inline_1"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_2"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_3"
+        ]
+       },
+       {
+        "blocks": []
+       }
+      ]
+     },
+     {
+      "id": "_inline_1",
+      "component": "metric_row",
+      "cols": 2,
+      "metrics": [
+       {
+        "value": "24.5K",
+        "label": "Total Users",
+        "trend": "up"
+       },
+       {
+        "value": "$1.2M",
+        "label": "Revenue",
+        "trend": "up"
+       }
+      ]
+     },
+     {
+      "id": "_inline_2",
+      "component": "metric_row",
+      "cols": 2,
+      "metrics": [
+       {
+        "value": "8.3%",
+        "label": "Conversion Rate",
+        "trend": "down"
+       },
+       {
+        "value": "4.2",
+        "label": "Avg Rating",
+        "trend": "up"
+       }
+      ]
+     },
+     {
+      "id": "_inline_3",
+      "component": "comparison_grid",
+      "products": [
+       "This Period",
+       "Last Period"
+      ],
+      "features": [
+       {
+        "name": "Revenue",
+        "values": [
+         "$1.2M",
+         "$980K"
+        ]
+       },
+       {
+        "name": "Users",
+        "values": [
+         "24.5K",
+         "21.2K"
+        ]
+       },
+       {
+        "name": "Engagement",
+        "values": [
+         "68%",
+         "62%"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

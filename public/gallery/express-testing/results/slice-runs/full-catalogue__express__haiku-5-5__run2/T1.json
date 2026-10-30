@@ -1,0 +1,58 @@
+{
+ "task": "T1",
+ "condition": "A_haiku-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "full-catalogue__express__haiku-5-5__run2",
+ "agent_type": "full",
+ "catalogue": "A-full.json",
+ "atoms_in_catalogue": 557,
+ "prompt_chars": 294155,
+ "slot_recall": [
+  5,
+  5
+ ],
+ "secs": 13.7,
+ "usage": {
+  "input_tokens": 107822,
+  "output_tokens": 2355
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "heading",
+  "body",
+  "subheading",
+  "body",
+  "subheading",
+  "body",
+  "subheading",
+  "body",
+  "divider",
+  "subheading",
+  "body",
+  "steps",
+  "callout",
+  "divider",
+  "subheading",
+  "quiz_set",
+  "color_section"
+ ],
+ "score": {
+  "precision": 0.529,
+  "recall": 0.8,
+  "f1": 0.637,
+  "slot_hits": {
+   "title": true,
+   "concept sections (x3)": true,
+   "worked example": true,
+   "3-question quiz": true,
+   "quiz result": false
+  }
+ },
+ "reply": "<a2ui>\ntitle = heading(\"The Water Cycle\")\nintro = body(\"Water never leaves Earth. It moves endlessly between oceans, air and land in a loop called the water cycle. This lesson covers three core processes, works through one example, and ends with a short self-check.\")\n\nevap_h = subheading(\"1. Evaporation\")\nevap_b = body(\"The sun heats water at the surface of oceans, lakes and rivers. Fast-moving molecules break free as water vapour and rise into the air. Plants also release vapour through their leaves, a process called transpiration.\")\n\ncond_h = subheading(\"2. Condensation and precipitation\")\ncond_b = body(\"As warm vapour rises it cools and turns back into tiny droplets around dust and salt particles, forming clouds. When droplets grow heavy enough they fall as precipitation: rain, snow, sleet or hail.\")\n\ncoll_h = subheading(\"3. Collection and runoff\")\ncoll_b = body(\"Precipitation gathers in rivers, lakes, groundwater and glaciers. Water flows downhill as runoff or soaks into the ground, eventually reaching the sea, where evaporation starts the cycle again.\")\n\ndiv1 = divider()\n\nex_h = subheading(\"Worked example: a puddle after rain\")\nex_intro = body(\"A 2 cm deep puddle forms after a storm. Follow what happens to its water over one sunny day.\")\nex_steps = steps([\n  {label: \"Morning\", text: \"Sunlight warms the puddle. Some water molecules gain enough energy to escape as vapour.\"},\n  {label: \"Midday\", text: \"The puddle shrinks as evaporation speeds up. The vapour rises and cools in the air above.\"},\n  {label: \"Afternoon\", text: \"Cooling vapour condenses into small clouds. No rain falls, so the vapour stays in the air.\"},\n  {label: \"Evening\", text: \"The puddle is gone. Its water is now in the atmosphere, ready to fall again as precipitation.\"}\n])\nex_callout = callout(\"tip\", \"Key idea\", \"Water changes state but is never destroyed. The total amount of water on Earth stays roughly constant.\")\n\ndiv2 = divider()\n\ncheck_h = subheading(\"Self-check\")\nquiz = quiz_set(title=\"Check your understanding\", pass_score=67, questions=[\n  {question: \"Which process turns water vapour back into liquid droplets?\", options: [\"Evaporation\", \"Condensation\", \"Runoff\", \"Transpiration\"], correct: 1, explanation: \"Condensation happens when vapour cools and forms droplets, which build up into clouds.\"},\n  {question: \"What is the main energy source that drives evaporation?\", options: [\"The moon\", \"Wind\", \"The sun\", \"Gravity\"], correct: 2, explanation: \"Solar heating gives water molecules the energy they need to escape into the air.\"},\n  {question: \"In the worked example, why did the puddle disappear without any rain?\", options: [\"It drained into the ground\", \"It evaporated into the atmosphere\", \"It froze\", \"It was absorbed by plants\"], correct: 1, explanation: \"Evaporation moved the water from the puddle into the air as vapour.\"}\n])\n\nroot = color_section(blocks=[title, intro, evap_h, evap_b, cond_h, cond_b, coll_h, coll_b, div1, ex_h, ex_intro, ex_steps, ex_callout, div2, check_h, quiz])\n</a2ui>"
+}

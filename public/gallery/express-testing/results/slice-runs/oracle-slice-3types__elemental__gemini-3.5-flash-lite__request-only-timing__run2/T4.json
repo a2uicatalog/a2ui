@@ -1,0 +1,43 @@
+{
+ "task": "T4",
+ "condition": "CX_gemini-3.5-flash-l",
+ "temperature_applied": false,
+ "format": "elemental",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash-lite",
+ "hints": false,
+ "label": "oracle-slice-3types__elemental__gemini-3.5-flash-lite__request-only-timing__run2",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 16902,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 2.3,
+ "usage": {
+  "input_tokens": 4993,
+  "output_tokens": 732
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "heading",
+  "chip_group",
+  "data_table_sortable",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.5,
+  "recall": 0.667,
+  "f1": 0.571,
+  "slot_hits": {
+   "list": true,
+   "status indicator": false,
+   "filter control": true
+  }
+ },
+ "reply": "<a2ui>\n  <body>\n    <script type=\"application/json\">\n      {\n        \"items\": [\n          {\"id\": \"1\", \"title\": \"Database Migration\", \"status\": \"In Progress\", \"detail\": \"Migrating user records to AWS RDS cluster\", \"status_color\": \"inprogress\"},\n          {\"id\": \"2\", \"title\": \"API Rate Limiting\", \"status\": \"Completed\", \"detail\": \"Implemented Redis sliding window limiter\", \"status_color\": \"success\"},\n          {\"id\": \"3\", \"title\": \"SSL Certificate Renewal\", \"status\": \"Pending\", \"detail\": \"Wildcard cert expires in 14 days\", \"status_color\": \"new\"},\n          {\"id\": \"4\", \"title\": \"Frontend Bundle Optimization\", \"status\": \"In Progress\", \"detail\": \"Code splitting vendor chunks for faster load times\", \"status_color\": \"inprogress\"},\n          {\"id\": \"5\", \"title\": \"Security Audit\", \"status\": \"Completed\", \"detail\": \"Penetration test passed with zero critical findings\", \"status_color\": \"success\"},\n          {\"id\": \"6\", \"title\": \"CI/CD Pipeline Speedup\", \"status\": \"Pending\", \"detail\": \"Caching node_modules across workflow runs\", \"status_color\": \"new\"},\n          {\"id\": \"7\", \"title\": \"Error Tracking Integration\", \"status\": \"Completed\", \"detail\": \"Connected Sentry for real-time exception alerts\", \"status_color\": \"success\"},\n          {\"id\": \"8\", \"title\": \"Dark Mode Support\", \"status\": \"In Progress\", \"detail\": \"Refactoring CSS variables for surface themes\", \"status_color\": \"inprogress\"}\n        ]\n      }\n    </script>\n    <ui-columns id=\"root\" cols=\"{1}\" gap=\"1.5rem\">\n      <ui-heading id=\"h1\" text=\"Project Tasks & Status\" slot=\"children\" />\n      <ui-chip_group id=\"filters\" label=\"Filter by Status\" layout=\"wrap\" chips=\"JSON: [\n        { 'label': 'All', 'active': true },\n        { 'label': 'In Progress' },\n        { 'label': 'Completed' },\n        { 'label': 'Pending' }\n      ]\" slot=\"children\" />\n      <ui-data_table_sortable id=\"task-table\" headers=\"JSON: ['Task', 'Status', 'Details']\" rows=\"JSON: [\n        ['Database Migration', 'In Progress', 'Migrating user records to AWS RDS cluster'],\n        ['API Rate Limiting', 'Completed', 'Implemented Redis sliding window limiter'],\n        ['SSL Certificate Renewal', 'Pending', 'Wildcard cert expires in 14 days'],\n        ['Frontend Bundle Optimization', 'In Progress', 'Code splitting vendor chunks for faster load times'],\n        ['Security Audit', 'Completed', 'Penetration test passed with zero critical findings'],\n        ['CI/CD Pipeline Speedup', 'Pending', 'Caching node_modules across workflow runs'],\n        ['Error Tracking Integration', 'Completed', 'Connected Sentry for real-time exception alerts'],\n        ['Dark Mode Support', 'In Progress', 'Refactoring CSS variables for surface themes']\n      ]\" slot=\"children\" />\n    </ui-columns>\n  </body>\n</a2ui>"
+}

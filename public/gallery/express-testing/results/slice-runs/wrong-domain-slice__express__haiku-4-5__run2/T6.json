@@ -1,0 +1,31 @@
+{
+ "task": "T6",
+ "condition": "E",
+ "label": "wrong-domain-slice__express__haiku-4-5__run2",
+ "agent_type": "Data display",
+ "catalogue": "B-data-display.json",
+ "atoms_in_catalogue": 248,
+ "prompt_chars": 125436,
+ "slot_recall": [
+  2,
+  2
+ ],
+ "secs": 6.0,
+ "usage": {
+  "input_tokens": 36023,
+  "output_tokens": 599
+ },
+ "valid": false,
+ "error": "A2uiCompilationValidationError: Standalone function calls are not supported in A2UI v0.9.1 - Help: Please correct the syntax error in your Express DSL.",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "flashcard deck": false,
+   "progress indicator": false
+  }
+ },
+ "reply": "<a2ui>\npalette(accent=\"#4f46e5\")\n\nroot = columns(\n  cols=1,\n  items=[\n    {blocks: [\n      page_header(\n        title=\"Vocabulary Flashcards\",\n        subtitle=\"Review and learn new words\"\n      ),\n      progress_bar(\n        value=0,\n        label=\"Cards Reviewed\",\n        show_percent=true\n      ),\n      spacer(height=\"1.5rem\")\n    ]},\n    {blocks: [\n      flip_card(\n        front_content=\"**Serendipity**\\n\\n*noun*\",\n        back_content=\"The occurrence of events by chance in a happy or beneficial way\"\n      ),\n      flip_card(\n        front_content=\"**Ephemeral**\\n\\n*adjective*\",\n        back_content=\"Lasting for a very short time; transient\"\n      ),\n      flip_card(\n        front_content=\"**Ubiquitous**\\n\\n*adjective*\",\n        back_content=\"Present, appearing, or found everywhere\"\n      ),\n      flip_card(\n        front_content=\"**Mellifluous**\\n\\n*adjective*\",\n        back_content=\"Sweet or musical; pleasant to hear\"\n      ),\n      flip_card(\n        front_content=\"**Perspicacious**\\n\\n*adjective*\",\n        back_content=\"Having keen insight, understanding, or discernment\"\n      ),\n      flip_card(\n        front_content=\"**Obfuscate**\\n\\n*verb*\",\n        back_content=\"To deliberately make obscure or unclear\"\n      ),\n      flip_card(\n        front_content=\"**Pragmatic**\\n\\n*adjective*\",\n        back_content=\"Dealing with things in a practical, realistic way based on actual circumstances\"\n      ),\n      flip_card(\n        front_content=\"**Elucidate**\\n\\n*verb*\",\n        back_content=\"To make something clear or explain it in detail\"\n      ),\n      flip_card(\n        front_content=\"**Tacit**\\n\\n*adjective*\",\n        back_content=\"Understood or implied without being stated explicitly\"\n      ),\n      flip_card(\n        front_content=\"**Aesthetic**\\n\\n*adjective*\",\n        back_content=\"Concerned with beauty or the appreciation of beauty\"\n      )\n    ]}\n  ]\n)\n</a2ui>"
+}

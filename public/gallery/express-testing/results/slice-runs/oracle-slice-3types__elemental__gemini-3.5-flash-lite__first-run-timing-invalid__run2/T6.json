@@ -1,0 +1,40 @@
+{
+ "task": "T6",
+ "condition": "CX_gemini-3.5-flash-l",
+ "temperature_applied": false,
+ "format": "elemental",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash-lite",
+ "hints": false,
+ "label": "oracle-slice-3types__elemental__gemini-3.5-flash-lite__first-run-timing-invalid__run2",
+ "agent_type": "Learning",
+ "catalogue": "C-learning.json",
+ "atoms_in_catalogue": 36,
+ "prompt_chars": 21279,
+ "slot_recall": [
+  2,
+  2
+ ],
+ "secs": 20.3,
+ "usage": {
+  "input_tokens": 6049,
+  "output_tokens": 440
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "page_header",
+  "flashcard_deck"
+ ],
+ "score": {
+  "precision": 0.5,
+  "recall": 0.5,
+  "f1": 0.5,
+  "slot_hits": {
+   "flashcard deck": true,
+   "progress indicator": false
+  }
+ },
+ "reply": "<a2ui>\n  <body>\n    <script type=\"application/json\">\n      {\n        \"cards\": [\n          {\"front\": \"Ephemeral\", \"back\": \"Lasting for a very short time.\"},\n          {\"front\": \"Mellifluous\", \"back\": \"Sweet or musical; pleasant to hear.\"},\n          {\"front\": \"Serendipity\", \"back\": \"The occurrence of events by chance in a happy or beneficial way.\"},\n          {\"front\": \"Petrichor\", \"back\": \"A pleasant smell that frequently accompanies the first rain after a long period of warm, dry weather.\"},\n          {\"front\": \"Luminous\", \"back\": \"Full of or shedding light; bright or shining, especially in the dark.\"},\n          {\"front\": \"Ineffable\", \"back\": \"Too great or extreme to be expressed or described in words.\"},\n          {\"front\": \"Halcyon\", \"back\": \"Denoting a period of time in the past that was idyllically happy and peaceful.\"},\n          {\"front\": \"Panacea\", \"back\": \"A solution or remedy for all difficulties or diseases.\"},\n          {\"front\": \"Resplendent\", \"back\": \"Attractive and impressive through being richly colorful or sumptuous.\"},\n          {\"front\": \"Susurration\", \"back\": \"Whispering, murmuring, or rustling.\"}\n        ]\n      }\n    </script>\n    <ui-page_header \n      id=\"root\" \n      title=\"Vocabulary Flashcards\" \n      subtitle=\"Review the terms below, flip to check definitions, and track your progress.\" \n      icon=\"\ud83d\udcd6\" \n      tag=\"Learning Module\" \n      accent=\"#4f46e5\" \n    />\n    <ui-flashcard_deck \n      id=\"deck\" \n      cards=\"{$/cards}\" \n      accent=\"#4f46e5\" \n      label_front=\"TERM\" \n      label_back=\"DEFINITION\" \n    />\n  </body>\n</a2ui>"
+}

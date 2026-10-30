@@ -1,0 +1,111 @@
+{
+ "label": "random-slice__express__haiku-4-5__run3",
+ "task": "T2",
+ "format": "express",
+ "model_id": null,
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/f-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "1.5rem",
+      "items": [
+       {
+        "blocks": [
+         "_inline_1",
+         "_inline_2"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_3",
+         "_inline_4"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_5"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "_inline_1",
+      "component": "stat_card",
+      "value": "$124.5K",
+      "label": "Revenue",
+      "delta": "+12%",
+      "is_up": true,
+      "accent": "#10b981"
+     },
+     {
+      "id": "_inline_2",
+      "component": "stat_card",
+      "value": "8,420",
+      "label": "Users",
+      "delta": "+5%",
+      "is_up": true,
+      "accent": "#3b82f6"
+     },
+     {
+      "id": "_inline_3",
+      "component": "stat_card",
+      "value": "92%",
+      "label": "Conversion",
+      "delta": "-2%",
+      "is_up": false,
+      "accent": "#f59e0b"
+     },
+     {
+      "id": "_inline_4",
+      "component": "stat_card",
+      "value": "4.2s",
+      "label": "Avg. Load Time",
+      "delta": "-8%",
+      "is_up": true,
+      "accent": "#10b981"
+     },
+     {
+      "id": "_inline_5",
+      "component": "chartjs_pie",
+      "title": "Revenue Distribution",
+      "variant": "donut",
+      "data": [
+       {
+        "label": "Product Sales",
+        "value": 65000
+       },
+       {
+        "label": "Services",
+        "value": 35000
+       },
+       {
+        "label": "Partnerships",
+        "value": 24500
+       }
+      ],
+      "colors": [
+       "#3b82f6",
+       "#8b5cf6",
+       "#10b981"
+      ],
+      "show_legend": true,
+      "show_labels": true
+     }
+    ]
+   }
+  }
+ ]
+}

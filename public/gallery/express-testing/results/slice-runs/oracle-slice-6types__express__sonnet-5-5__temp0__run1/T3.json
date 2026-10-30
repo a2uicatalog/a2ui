@@ -1,0 +1,50 @@
+{
+ "task": "T3",
+ "condition": "DT_sonnet-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-sonnet-5-5",
+ "hints": false,
+ "label": "oracle-slice-6types__express__sonnet-5-5__temp0__run1",
+ "agent_type": "T3",
+ "catalogue": "D-t3.json",
+ "atoms_in_catalogue": 21,
+ "prompt_chars": 12164,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 8.1,
+ "usage": {
+  "input_tokens": 4389,
+  "output_tokens": 1137
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "gradient_hero",
+  "feature_grid",
+  "testimonial_card",
+  "cta_button",
+  "columns",
+  "gradient_hero",
+  "feature_grid",
+  "testimonial_card",
+  "cta_section",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.8,
+  "recall": 1.0,
+  "f1": 0.889,
+  "slot_hits": {
+   "hero": true,
+   "feature columns (x3)": true,
+   "testimonial": true,
+   "CTA": true
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"landing-page\")\nhero = gradient_hero(\"Ship faster with Lumen\", \"The all-in-one workspace that helps your team plan, build, and launch products without the busywork.\", \"New: Lumen 2.0\", \"#4f46e5\", \"#8b5cf6\", null, \"center\", \"Get started free\", \"https://example.com/signup\")\nfeatures = feature_grid(\"Everything your team needs\", \"Three core capabilities that keep projects moving from idea to launch.\", 3, [{icon: \"\u26a1\", title: \"Lightning fast\", description: \"Instant search, real-time sync, and zero-lag editing keep your team in flow.\", color: \"#f59e0b\"}, {icon: \"\ud83e\udd1d\", title: \"Seamless collaboration\", description: \"Comment, assign, and review together in one shared space, wherever your team works.\", color: \"#4f46e5\"}, {icon: \"\ud83d\udd12\", title: \"Secure by default\", description: \"Enterprise-grade encryption and granular permissions protect your work.\", color: \"#10b981\"}])\ntestimonial = testimonial_card(\"Lumen cut our planning time in half. Our team finally has one place where everything lives, and we have shipped more in the last quarter than in the whole year before.\", \"Priya Raman\", \"VP of Product, Northwind\", \"https://i.pravatar.cc/120?img=47\", 5)\ncta = cta_button(\"https://example.com/signup\", \"Start your free trial\", \"#4f46e5\", false)\nroot = columns(2, \"1.5rem\", \"top\", [])\n</a2ui>\n\nWait \u2014 the root should be a single entry that holds all sections. Here is the corrected, final output:\n\n<a2ui>\nsurface(\"landing-page\")\nhero = gradient_hero(\"Ship faster with Lumen\", \"The all-in-one workspace that helps your team plan, build, and launch products without the busywork.\", \"New: Lumen 2.0\", \"#4f46e5\", \"#8b5cf6\", null, \"center\", \"Get started free\", \"https://example.com/signup\")\nfeatures = feature_grid(\"Everything your team needs\", \"Three core capabilities that keep projects moving from idea to launch.\", 3, [{icon: \"\u26a1\", title: \"Lightning fast\", description: \"Instant search, real-time sync, and zero-lag editing keep your team in flow.\", color: \"#f59e0b\"}, {icon: \"\ud83e\udd1d\", title: \"Seamless collaboration\", description: \"Comment, assign, and review together in one shared space, wherever your team works.\", color: \"#4f46e5\"}, {icon: \"\ud83d\udd12\", title: \"Secure by default\", description: \"Enterprise-grade encryption and granular permissions protect your work.\", color: \"#10b981\"}])\ntestimonial = testimonial_card(\"Lumen cut our planning time in half. Our team finally has one place where everything lives, and we have shipped more in the last quarter than in the whole year before.\", \"Priya Raman\", \"VP of Product, Northwind\", \"https://i.pravatar.cc/120?img=47\", 5)\ncta = cta_section(\"Ready to ship faster?\", \"Join thousands of teams already building with Lumen. Start your free trial today. No credit card required.\", {label: \"Start your free trial\", url: \"https://example.com/signup\"}, {label: \"Talk to sales\", url: \"https://example.com/contact\"}, \"#4f46e5\")\nroot = columns(1, \"2rem\", \"stretch\", [{blocks: [hero, features, testimonial, cta]}])\n</a2ui>"
+}

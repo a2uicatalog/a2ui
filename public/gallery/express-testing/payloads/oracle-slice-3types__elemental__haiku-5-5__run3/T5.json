@@ -1,0 +1,76 @@
+{
+ "label": "oracle-slice-3types__elemental__haiku-5-5__run3",
+ "task": "T5",
+ "format": "elemental",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "root",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce-elemental.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "root",
+    "components": [
+     {
+      "id": "pricing-tiers",
+      "component": "pricing_tier_group",
+      "tiers": [
+       {
+        "name": "Starter",
+        "price": "$9",
+        "period": "per month",
+        "recommended": false,
+        "features": [
+         "Up to 3 projects",
+         "5 GB of storage",
+         "Community support",
+         "Basic analytics"
+        ],
+        "cta_label": "Start free trial",
+        "cta_url": "https://example.com/signup?plan=starter"
+       },
+       {
+        "name": "Professional",
+        "price": "$29",
+        "period": "per month",
+        "recommended": true,
+        "badge": "Recommended",
+        "features": [
+         "Unlimited projects",
+         "100 GB of storage",
+         "Priority email support",
+         "Advanced analytics",
+         "Team collaboration for up to 10 members",
+         "Custom integrations"
+        ],
+        "cta_label": "Choose Professional",
+        "cta_url": "https://example.com/signup?plan=professional"
+       },
+       {
+        "name": "Enterprise",
+        "price": "$99",
+        "period": "per month",
+        "recommended": false,
+        "features": [
+         "Everything in Professional",
+         "Unlimited storage",
+         "24/7 phone and chat support",
+         "Single sign-on (SSO)",
+         "Dedicated account manager",
+         "Custom SLA"
+        ],
+        "cta_label": "Contact sales",
+        "cta_url": "https://example.com/contact-sales"
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

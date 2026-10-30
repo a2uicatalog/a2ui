@@ -1,0 +1,90 @@
+{
+ "label": "jev-layout-pipeline__run3",
+ "task": "T1",
+ "format": "express",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "hdr",
+      "component": "page_header",
+      "title": "The Water Cycle",
+      "subtitle": "Journey of Earth's Most Precious Resource"
+     },
+     {
+      "id": "h1",
+      "component": "heading",
+      "text": "Evaporation and Transpiration"
+     },
+     {
+      "id": "b1",
+      "component": "body",
+      "text": "Heat from the sun turns liquid water from oceans and lakes into water vapor. Plants also release water vapor into the air through tiny pores in their leaves called transpiration."
+     },
+     {
+      "id": "h2",
+      "component": "heading",
+      "text": "Condensation"
+     },
+     {
+      "id": "b2",
+      "component": "body",
+      "text": "As water vapor rises high into the atmosphere, it cools down and turns back into tiny liquid water droplets. These droplets cluster together to form clouds and fog."
+     },
+     {
+      "id": "h3",
+      "component": "heading",
+      "text": "Precipitation and Collection"
+     },
+     {
+      "id": "b3",
+      "component": "body",
+      "text": "When the water droplets in clouds become too heavy to stay afloat, they fall back to Earth as rain, snow, or hail. This water collects in oceans, rivers, and groundwater systems, ready to start the cycle again."
+     },
+     {
+      "id": "h4",
+      "component": "heading",
+      "text": "Worked Example"
+     },
+     {
+      "id": "b4",
+      "component": "body",
+      "text": "Consider a puddle on a sunny sidewalk: solar heat evaporates the liquid into vapor, it condenses into a cloud overhead, falls as rain miles away, and collects in a reservoir."
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "hdr",
+         "h1",
+         "b1",
+         "h2",
+         "b2",
+         "h3",
+         "b3",
+         "h4",
+         "b4"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

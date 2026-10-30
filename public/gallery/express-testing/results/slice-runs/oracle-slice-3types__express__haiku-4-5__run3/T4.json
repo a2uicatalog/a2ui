@@ -1,0 +1,32 @@
+{
+ "task": "T4",
+ "condition": "C",
+ "label": "oracle-slice-3types__express__haiku-4-5__run3",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 16421,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 5.0,
+ "usage": {
+  "input_tokens": 4758,
+  "output_tokens": 460
+ },
+ "valid": false,
+ "error": "A2uiCompilationValidationError: Property 'selected_value' of component 'segmented_control' does not support dynamic data bindings (paths). - Help: Property 'selected_value' on 'segmented_control' must be a static literal value, not a dynamic databinding ($path).",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "list": false,
+   "status indicator": false,
+   "filter control": false
+  }
+ },
+ "reply": "<a2ui>\n// Data model initialization\n$/statusFilter = \"all\"\n$/items = [\n  {id: 1, title: \"Q1 Planning\", status: \"in_progress\", detail: \"Budget allocation for new initiatives\"},\n  {id: 2, title: \"Market Research\", status: \"completed\", detail: \"Analysis of competitor positioning\"},\n  {id: 3, title: \"Design System\", status: \"in_progress\", detail: \"Component library standardization\"},\n  {id: 4, title: \"Client Onboarding\", status: \"pending\", detail: \"Training materials preparation\"},\n  {id: 5, title: \"API Documentation\", status: \"completed\", detail: \"REST endpoints fully documented\"},\n  {id: 6, title: \"Security Audit\", status: \"pending\", detail: \"Third-party penetration testing\"},\n  {id: 7, title: \"Performance Optimization\", status: \"in_progress\", detail: \"Database query optimization\"},\n  {id: 8, title: \"Mobile App Release\", status: \"completed\", detail: \"Version 2.0 deployed to app stores\"}\n]\n\n// Status filter control\nstatusFilter = segmented_control(\n  options=[\n    {label: \"All\", value: \"all\"},\n    {label: \"Pending\", value: \"pending\"},\n    {label: \"In Progress\", value: \"in_progress\"},\n    {label: \"Completed\", value: \"completed\"}\n  ],\n  selected_value=$/statusFilter,\n  name=\"statusFilter\"\n)\n\n// Entity list with filtered items\nfilteredItems = _template($/items, itemRow)\nitemRow = entity_list(items=[\n  {\n    name: $title,\n    subtitle: $detail,\n    status: $status,\n    icon: null\n  }\n])\n\n// Root layout\nroot = [\n  heading(\"Task Overview\"),\n  statusFilter,\n  filteredItems\n]\n</a2ui>"
+}

@@ -1,0 +1,38 @@
+{
+ "model": "jev-latest",
+ "cond": "R",
+ "format": "express",
+ "brief": "Y2",
+ "repeat": 2,
+ "seq": 26,
+ "utc": "2026-10-29T21:14:05Z",
+ "reply": "{\"catalogue\": \"a2ui-aviation-v1\"}",
+ "jev_choice": "a2ui-aviation-v1",
+ "confidence": 0.59,
+ "probabilities": {
+  "a2ui-atoms-v1": 0.16,
+  "a2ui-aviation-v1": 0.62,
+  "a2ui-bricks-v1": 0.0,
+  "a2ui-charts-v1": 0.0,
+  "a2ui-display-v1": 0.02,
+  "a2ui-editorial-v1": 0.0,
+  "a2ui-effects-v1": 0.0,
+  "a2ui-embeds-v1": 0.0,
+  "a2ui-google-workspace-live-v1": 0.0,
+  "a2ui-learning-v1": 0.0,
+  "a2ui-marketing-v1": 0.0,
+  "a2ui-meta-v1": 0.0,
+  "a2ui-ops-v1": 0.17,
+  "a2ui-presentation-v1": 0.02,
+  "none": 0.01
+ },
+ "request_secs": 0.18,
+ "input_tokens": 1456,
+ "output_tokens": 218,
+ "usage": {
+  "input_tokens": 1456,
+  "output_tokens": 218
+ },
+ "stop_reason": "choice",
+ "model_id": "jev-1.14.0"
+}

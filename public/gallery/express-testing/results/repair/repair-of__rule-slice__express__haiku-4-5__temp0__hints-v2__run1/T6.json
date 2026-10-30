@@ -1,0 +1,19 @@
+{
+ "task": "T6",
+ "condition": "BTH2",
+ "original_label": "rule-slice__express__haiku-4-5__temp0__hints-v2__run1",
+ "original_error": "A2uiCompilationValidationError: Standalone function calls are not supported in A2UI v0.9.1 - Help: Please correct the syntax error in your Express DSL.",
+ "repaired_valid": true,
+ "produced": [
+  "flashcard_deck"
+ ],
+ "f1_after": 0.667,
+ "prompt_chars": 6615,
+ "attempts": 1,
+ "usage": {
+  "input_tokens": 1862,
+  "output_tokens": 315
+ },
+ "reply": "<a2ui>\nroot = flashcard_deck(\n  cards=[\n    {front: \"Serendipity\", back: \"The occurrence of events by chance in a happy or beneficial way\"},\n    {front: \"Ephemeral\", back: \"Lasting for a very short time; transitory\"},\n    {front: \"Ubiquitous\", back: \"Present, appearing, or found everywhere\"},\n    {front: \"Mellifluous\", back: \"Sweet or musical; pleasant to hear\"},\n    {front: \"Perspicacious\", back: \"Having keen insight, discernment, or understanding\"},\n    {front: \"Obfuscate\", back: \"To deliberately make something unclear or obscure\"},\n    {front: \"Sanguine\", back: \"Optimistic or positive, especially in an unlikely situation\"},\n    {front: \"Pellucid\", back: \"Translucently clear in style or meaning; easy to understand\"},\n    {front: \"Quixotic\", back: \"Exceedingly idealistic; unrealistic and impractical\"},\n    {front: \"Verisimilitude\", back: \"The quality of appearing to be true or real\"}\n  ],\n  accent=\"#4f46e5\",\n  label_front=\"TERM\",\n  label_back=\"DEFINITION\"\n)\n</a2ui>",
+ "final_error": null
+}

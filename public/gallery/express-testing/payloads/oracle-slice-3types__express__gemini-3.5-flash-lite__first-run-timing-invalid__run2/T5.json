@@ -1,0 +1,100 @@
+{
+ "label": "oracle-slice-3types__express__gemini-3.5-flash-lite__first-run-timing-invalid__run2",
+ "task": "T5",
+ "format": "express",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "pricing-surface",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "pricing-surface",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "2rem",
+      "items": [
+       {
+        "blocks": [
+         "_inline_1",
+         "_inline_2"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "_inline_1",
+      "component": "gradient_hero",
+      "title": "Flexible Plans for Every Team",
+      "subtitle": "Choose the perfect plan to scale your workflow. Upgrade or downgrade at any time.",
+      "badge": "PRICING",
+      "align": "center",
+      "cta_label": "View Comparison",
+      "cta_url": "#compare"
+     },
+     {
+      "id": "_inline_2",
+      "component": "pricing_tier_group",
+      "tiers": [
+       {
+        "name": "Starter",
+        "price": "$15",
+        "cadence": "/month",
+        "description": "Perfect for individuals and small side projects.",
+        "features": [
+         "Up to 5 team members",
+         "Basic analytics dashboard",
+         "24/7 email support",
+         "10GB cloud storage"
+        ],
+        "recommended": false,
+        "cta_label": "Get Started",
+        "cta_url": "#starter"
+       },
+       {
+        "name": "Pro",
+        "price": "$49",
+        "cadence": "/month",
+        "description": "Best for growing teams and scaling businesses.",
+        "features": [
+         "Unlimited team members",
+         "Advanced real-time analytics",
+         "Priority 24/7 support & chat",
+         "500GB cloud storage",
+         "Custom domain integration"
+        ],
+        "recommended": true,
+        "cta_label": "Start Free Trial",
+        "cta_url": "#pro"
+       },
+       {
+        "name": "Enterprise",
+        "price": "$199",
+        "cadence": "/month",
+        "description": "Maximum power, security, and dedicated support for large organizations.",
+        "features": [
+         "Dedicated enterprise support",
+         "Custom AI model training",
+         "Unlimited cloud storage",
+         "99.99% uptime SLA",
+         "Advanced security & audit logs"
+        ],
+        "recommended": false,
+        "cta_label": "Contact Sales",
+        "cta_url": "#enterprise"
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

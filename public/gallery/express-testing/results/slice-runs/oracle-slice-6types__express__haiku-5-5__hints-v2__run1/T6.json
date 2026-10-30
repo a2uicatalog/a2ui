@@ -1,0 +1,42 @@
+{
+ "task": "T6",
+ "condition": "D_haiku-5-5H2",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": true,
+ "label": "oracle-slice-6types__express__haiku-5-5__hints-v2__run1",
+ "agent_type": "T6",
+ "catalogue": "D-t6.json",
+ "atoms_in_catalogue": 12,
+ "prompt_chars": 8305,
+ "slot_recall": [
+  2,
+  2
+ ],
+ "secs": 6.4,
+ "usage": {
+  "input_tokens": 3362,
+  "output_tokens": 1463
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "flashcard_deck",
+  "heading",
+  "progress_bar",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.5,
+  "recall": 1.0,
+  "f1": 0.667,
+  "slot_hits": {
+   "flashcard deck": true,
+   "progress indicator": true
+  }
+ },
+ "reply": "<a2ui>\ncards = [{front: \"Ephemeral\", back: \"Lasting for a very short time\"}, {front: \"Lucid\", back: \"Clear, easy to understand\"}, {front: \"Resilient\", back: \"Able to recover quickly from difficulty\"}, {front: \"Ambiguous\", back: \"Open to more than one interpretation\"}, {front: \"Meticulous\", back: \"Showing great attention to detail\"}, {front: \"Candid\", back: \"Truthful and straightforward\"}, {front: \"Diligent\", back: \"Careful and persistent in work\"}, {front: \"Frugal\", back: \"Sparing with money or resources\"}, {front: \"Eloquent\", back: \"Fluent and persuasive in speech\"}, {front: \"Tenacious\", back: \"Holding firmly to a purpose\"}]\ndeck = flashcard_deck(cards, \"#4f46e5\", \"TERM\", \"MEANING\")\nheading_text = heading(\"Vocabulary Flashcards\")\nprogress = progress_bar(0, \"Cards reviewed\", \"#4f46e5\", true, \"0 of 10 reviewed\")\nroot = columns(2, \"1.5rem\", \"top\", [{blocks: [heading_text, progress]}, {blocks: [deck]}])\n</a2ui>"
+}

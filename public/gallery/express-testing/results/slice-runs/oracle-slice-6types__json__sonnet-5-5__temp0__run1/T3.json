@@ -1,0 +1,39 @@
+{
+ "task": "T3",
+ "condition": "DTN_sonnet-5-5",
+ "temperature_applied": false,
+ "format": "json",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-sonnet-5-5",
+ "hints": false,
+ "label": "oracle-slice-6types__json__sonnet-5-5__temp0__run1",
+ "agent_type": "T3",
+ "catalogue": "D-t3.json",
+ "atoms_in_catalogue": 21,
+ "prompt_chars": 23591,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 14.4,
+ "usage": {
+  "input_tokens": 9076,
+  "output_tokens": 1729
+ },
+ "valid": false,
+ "error": "A2uiIntegrityError: Component 'cta' is not reachable from 'root'",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "hero": false,
+   "feature columns (x3)": false,
+   "testimonial": false,
+   "CTA": false
+  }
+ },
+ "reply": "This catalog has no container component, so the page is a flat sequence of blocks. The hero is the `root` and the other sections follow in reading order.\n\n<a2ui-json>\n[\n  {\n    \"version\": \"v0.9.1\",\n    \"createSurface\": {\n      \"surfaceId\": \"landing\",\n      \"catalogId\": \"https://a2uicatalog.ai/catalog/d-t3.json\"\n    }\n  },\n  {\n    \"version\": \"v0.9.1\",\n    \"updateComponents\": {\n      \"surfaceId\": \"landing\",\n      \"components\": [\n        {\n          \"id\": \"root\",\n          \"component\": \"gradient_hero\",\n          \"badge\": \"New \u00b7 Version 2.0\",\n          \"title\": \"Ship your best work, faster\",\n          \"subtitle\": \"Flowdesk brings planning, collaboration, and delivery into one calm workspace, so your team spends less time coordinating and more time creating.\",\n          \"align\": \"center\",\n          \"cta_label\": \"Start free trial\",\n          \"cta_url\": \"https://example.com/signup\"\n        },\n        {\n          \"id\": \"features\",\n          \"component\": \"feature_grid\",\n          \"heading\": \"Everything your team needs\",\n          \"description\": \"Three core capabilities that keep projects moving.\",\n          \"columns\": 3,\n          \"features\": [\n            {\n              \"icon\": \"\u26a1\",\n              \"title\": \"Lightning-fast setup\",\n              \"description\": \"Import your projects and invite your team in minutes, with no training required.\",\n              \"color\": \"#4f46e5\"\n            },\n            {\n              \"icon\": \"\ud83e\udd1d\",\n              \"title\": \"Real-time collaboration\",\n              \"description\": \"Comment, edit, and review together with live updates that keep everyone in sync.\",\n              \"color\": \"#8b5cf6\"\n            },\n            {\n              \"icon\": \"\ud83d\udcca\",\n              \"title\": \"Insightful reporting\",\n              \"description\": \"Track progress with clear dashboards that show what is on track and what needs attention.\",\n              \"color\": \"#0ea5e9\"\n            }\n          ]\n        },\n        {\n          \"id\": \"testimonial\",\n          \"component\": \"testimonial_card\",\n          \"text\": \"Flowdesk replaced three separate tools for us. Our team ships weekly now instead of monthly, and everyone actually enjoys the process.\",\n          \"author_name\": \"Priya Raman\",\n          \"author_title\": \"VP of Product, Brightwave\",\n          \"rating\": 5\n        },\n        {\n          \"id\": \"cta\",\n          \"component\": \"cta_button\",\n          \"label\": \"Get started today\",\n          \"url\": \"https://example.com/signup\",\n          \"color\": \"#4f46e5\"\n        }\n      ]\n    }\n  }\n]\n</a2ui-json>"
+}

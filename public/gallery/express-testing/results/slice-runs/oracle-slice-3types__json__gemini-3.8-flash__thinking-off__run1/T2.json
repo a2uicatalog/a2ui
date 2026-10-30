@@ -1,0 +1,40 @@
+{
+ "task": "T2",
+ "condition": "CN_gemini-3.8-flash",
+ "temperature_applied": false,
+ "format": "json",
+ "temperature": null,
+ "max_tokens": 32768,
+ "model_id": "gemini-3.8-flash",
+ "hints": false,
+ "label": "oracle-slice-3types__json__gemini-3.8-flash__thinking-off__run1",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 31546,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 6.2,
+ "usage": {
+  "input_tokens": 7914,
+  "output_tokens": 696
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns"
+ ],
+ "score": {
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "KPI tile (x4)": false,
+   "trend (required only if metric_row was chosen; stat_card's own delta already satisfies it)": false,
+   "comparison chart": false
+  }
+ },
+ "reply": "Here is the metrics overview dashboard featuring four KPI tiles with directional trends and a comparison chart.\n\n<a2ui-json>\n[\n  {\n    \"version\": \"v0.9.1\",\n    \"createSurface\": {\n      \"surfaceId\": \"metrics-overview-surface\",\n      \"catalogId\": \"https://a2uicatalog.ai/catalog/c-data-display.json\"\n    }\n  },\n  {\n    \"version\": \"v0.9.1\",\n    \"updateComponents\": {\n      \"surfaceId\": \"metrics-overview-surface\",\n      \"components\": [\n        {\n          \"id\": \"root\",\n          \"component\": \"columns\",\n          \"cols\": 1,\n          \"gap\": \"1.5rem\",\n          \"items\": [\n            {\n              \"blocks\": [\n                {\n                  \"component\": \"heading\",\n                  \"text\": \"Executive Performance Overview\"\n                },\n                {\n                  \"component\": \"metric_row\",\n                  \"cols\": 4,\n                  \"metrics\": [\n                    {\n                      \"label\": \"Total Revenue\",\n                      \"value\": \"128.4K\",\n                      \"prefix\": \"$\",\n                      \"trend\": \"up\",\n                      \"sub\": \"+14.2% vs last month\",\n                      \"accent\": \"#10B981\"\n                    },\n                    {\n                      \"label\": \"Active Users\",\n                      \"value\": \"24,890\",\n                      \"trend\": \"up\",\n                      \"sub\": \"+8.5% vs last month\",\n                      \"accent\": \"#3B82F6\"\n                    },\n                    {\n                      \"label\": \"Customer Churn\",\n                      \"value\": \"1.8\",\n                      \"suffix\": \"%\",\n                      \"trend\": \"down\",\n                      \"sub\": \"-0.4% vs last month\",\n                      \"accent\": \"#10B981\"\n                    },\n                    {\n                      \"label\": \"Avg Response Time\",\n                      \"value\": \"210\",\n                      \"suffix\": \"ms\",\n                      \"trend\": \"down\",\n                      \"sub\": \"+25ms slower\",\n                      \"accent\": \"#EF4444\"\n                    }\n                  ]\n                },\n                {\n                  \"component\": \"heading\",\n                  \"text\": \"Quarterly Performance vs Benchmark\"\n                },\n                {\n                  \"component\": \"chartjs_bar\",\n                  \"labels\": [\"Q1\", \"Q2\", \"Q3\", \"Q4\"],\n                  \"datasets\": [\n                    {\n                      \"label\": \"Actual Performance\",\n                      \"data\": [85, 92, 110, 128]\n                    },\n                    {\n                      \"label\": \"Target Benchmark\",\n                      \"data\": [80, 88, 100, 115]\n                    }\n                  ]\n                }\n              ]\n            }\n          ]\n        }\n      ]\n    }\n  }\n]\n</a2ui-json>"
+}

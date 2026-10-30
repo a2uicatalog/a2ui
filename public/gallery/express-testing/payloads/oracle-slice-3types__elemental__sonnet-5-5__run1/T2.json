@@ -1,0 +1,107 @@
+{
+ "label": "oracle-slice-3types__elemental__sonnet-5-5__run1",
+ "task": "T2",
+ "format": "elemental",
+ "model_id": "claude-sonnet-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display-elemental.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "kpi-tiles",
+      "component": "metric_row",
+      "cols": 2,
+      "metrics": [
+       {
+        "value": "$128.4K",
+        "label": "Monthly Revenue",
+        "sub": "+12.5% vs. last month",
+        "trend": "up",
+        "accent": "#22c55e"
+       },
+       {
+        "value": "8,420",
+        "label": "Active Users",
+        "sub": "+6.1% vs. last month",
+        "trend": "up",
+        "accent": "#3b82f6"
+       },
+       {
+        "value": "3.2%",
+        "label": "Churn Rate",
+        "sub": "+0.4% vs. last month",
+        "trend": "down",
+        "accent": "#ef4444"
+       },
+       {
+        "value": "4.6",
+        "label": "Avg. Satisfaction",
+        "sub": "-0.1 vs. last month",
+        "trend": "down",
+        "accent": "#f59e0b"
+       }
+      ]
+     },
+     {
+      "id": "comparison-chart",
+      "component": "chartjs_bar",
+      "labels": [
+       "Revenue ($K)",
+       "Active Users (hundreds)",
+       "Churn (%)",
+       "Satisfaction (x10)"
+      ],
+      "datasets": [
+       {
+        "label": "Last Month",
+        "data": [
+         114,
+         79,
+         2.8,
+         47
+        ]
+       },
+       {
+        "label": "This Month",
+        "data": [
+         128,
+         84,
+         3.2,
+         46
+        ]
+       }
+      ]
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "kpi-tiles"
+        ]
+       },
+       {
+        "blocks": [
+         "comparison-chart"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

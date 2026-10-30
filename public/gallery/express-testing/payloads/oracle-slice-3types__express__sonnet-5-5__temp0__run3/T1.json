@@ -1,0 +1,184 @@
+{
+ "label": "oracle-slice-3types__express__sonnet-5-5__temp0__run3",
+ "task": "T1",
+ "format": "express",
+ "model_id": "claude-sonnet-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "water-cycle-lesson",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "water-cycle-lesson",
+    "components": [
+     {
+      "id": "header",
+      "component": "page_header",
+      "title": "The Water Cycle",
+      "subtitle": "How water moves between the oceans, the air, and the land",
+      "icon": "\ud83d\udca7",
+      "tag": "Earth Science",
+      "accent": "#0284c7"
+     },
+     {
+      "id": "intro",
+      "component": "body",
+      "text": "Water is always on the move. The sun's energy drives a continuous loop that carries water from the surface of the Earth up into the atmosphere and back down again. This loop is called the water cycle. In this lesson you will learn its three main stages, work through an example, and check your understanding."
+     },
+     {
+      "id": "h1",
+      "component": "heading",
+      "text": "1. Evaporation"
+     },
+     {
+      "id": "p1",
+      "component": "paragraph",
+      "text": "The sun heats water in oceans, lakes, and rivers. Some of the liquid turns into water vapor, an invisible gas that rises into the air. Plants also release water vapor through their leaves, which is called transpiration."
+     },
+     {
+      "id": "c1",
+      "component": "callout",
+      "kind": "tip",
+      "title": "Key idea",
+      "text": "Heat energy is what changes liquid water into vapor. More sunshine means faster evaporation."
+     },
+     {
+      "id": "h2",
+      "component": "heading",
+      "text": "2. Condensation"
+     },
+     {
+      "id": "p2",
+      "component": "paragraph",
+      "text": "As water vapor rises, it cools. Cool air cannot hold as much vapor, so the vapor turns back into tiny liquid droplets. These droplets gather around dust particles and group together to form clouds."
+     },
+     {
+      "id": "c2",
+      "component": "callout",
+      "kind": "info",
+      "title": "Key idea",
+      "text": "Condensation is the opposite of evaporation: a gas cools and becomes a liquid."
+     },
+     {
+      "id": "h3",
+      "component": "heading",
+      "text": "3. Precipitation and Collection"
+     },
+     {
+      "id": "p3",
+      "component": "paragraph",
+      "text": "When cloud droplets grow heavy enough, they fall as rain, snow, sleet, or hail. This is precipitation. The water then flows over land into streams and rivers, soaks into the ground, or fills lakes and oceans. This is collection, and the cycle begins again."
+     },
+     {
+      "id": "c3",
+      "component": "callout",
+      "kind": "tip",
+      "title": "Key idea",
+      "text": "Precipitation returns water to the surface, where it is collected and can evaporate once more."
+     },
+     {
+      "id": "exHeading",
+      "component": "heading",
+      "text": "Worked Example: A Puddle on a Sunny Day"
+     },
+     {
+      "id": "ex",
+      "component": "concept_rung",
+      "badge": "EX",
+      "kind": "example",
+      "label": "WORKED EXAMPLE",
+      "title": "Where does the puddle go?",
+      "body": "After a rainstorm, a puddle sits on the playground. By afternoon it has disappeared. Where did the water go?\n\nStep 1: The sun warms the puddle, and the liquid water evaporates into vapor.\n\nStep 2: The vapor rises and cools high in the air, where it condenses into cloud droplets.\n\nStep 3: When the droplets become heavy, they fall as precipitation, and the cycle continues.",
+      "code": "Puddle -> (evaporation) -> vapor -> (condensation) -> cloud -> (precipitation) -> rain",
+      "code_caption": "The water was not lost. It moved to a different stage of the cycle.",
+      "takeaway": "The same water can be recycled again and again."
+     },
+     {
+      "id": "quizHeading",
+      "component": "heading",
+      "text": "Self-Check Quiz"
+     },
+     {
+      "id": "quiz",
+      "component": "quiz_set",
+      "title": "Water Cycle Check",
+      "questions": [
+       {
+        "question": "What process turns liquid water into water vapor?",
+        "options": [
+         "Condensation",
+         "Evaporation",
+         "Precipitation",
+         "Collection"
+        ],
+        "correct": 1,
+        "explanation": "Evaporation happens when heat energy changes liquid water into a gas."
+       },
+       {
+        "question": "What forms when water vapor cools and turns into tiny droplets?",
+        "options": [
+         "Clouds",
+         "Rivers",
+         "Glaciers",
+         "Soil"
+        ],
+        "correct": 0,
+        "explanation": "Condensation of water vapor into droplets forms clouds."
+       },
+       {
+        "question": "Which of these is an example of precipitation?",
+        "options": [
+         "A puddle drying up",
+         "Fog rising off a lake",
+         "Snow falling from a cloud",
+         "A plant releasing vapor"
+        ],
+        "correct": 2,
+        "explanation": "Precipitation is any water that falls from clouds, including rain, snow, sleet, and hail."
+       }
+      ],
+      "pass_score": 70,
+      "accent": "#0284c7"
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "header",
+         "intro"
+        ]
+       },
+       {
+        "blocks": [
+         "h1",
+         "p1",
+         "c1",
+         "h2",
+         "p2",
+         "c2",
+         "h3",
+         "p3",
+         "c3",
+         "exHeading",
+         "ex",
+         "quizHeading",
+         "quiz"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

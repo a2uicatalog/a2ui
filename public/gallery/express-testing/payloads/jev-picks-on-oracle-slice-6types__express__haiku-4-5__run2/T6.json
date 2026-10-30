@@ -1,0 +1,106 @@
+{
+ "label": "jev-picks-on-oracle-slice-6types__express__haiku-4-5__run2",
+ "task": "T6",
+ "format": "express",
+ "model_id": null,
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "flashcard-surface",
+    "catalog_id": "https://a2uicatalog.ai/catalog/jd-t6.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "flashcard-surface",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "2rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "_inline_1",
+         "_inline_2"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_3"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "_inline_1",
+      "component": "heading",
+      "text": "Vocabulary Review"
+     },
+     {
+      "id": "_inline_2",
+      "component": "progress_bar",
+      "value": 50,
+      "label": "Progress",
+      "accent": "#4f46e5",
+      "show_percent": true,
+      "caption": "5 of 10 cards reviewed"
+     },
+     {
+      "id": "_inline_3",
+      "component": "flashcard_deck",
+      "cards": [
+       {
+        "front": "Ephemeral",
+        "back": "Lasting for a very short time"
+       },
+       {
+        "front": "Serendipity",
+        "back": "The occurrence of events by chance in a happy or beneficial way"
+       },
+       {
+        "front": "Eloquent",
+        "back": "Fluent or persuasive in speaking or writing"
+       },
+       {
+        "front": "Ubiquitous",
+        "back": "Present, appearing, or found everywhere"
+       },
+       {
+        "front": "Pragmatic",
+        "back": "Dealing with things in a practical, realistic way"
+       },
+       {
+        "front": "Melancholy",
+        "back": "A feeling of thoughtful sadness; pensive"
+       },
+       {
+        "front": "Benevolent",
+        "back": "Kind and generous; showing goodwill"
+       },
+       {
+        "front": "Meticulous",
+        "back": "Showing great attention to detail; very careful and precise"
+       },
+       {
+        "front": "Nostalgia",
+        "back": "A sentimental longing for the past"
+       },
+       {
+        "front": "Tangible",
+        "back": "Able to be touched or felt; clear and definite"
+       }
+      ],
+      "accent": "#4f46e5",
+      "label_front": "WORD",
+      "label_back": "DEFINITION"
+     }
+    ]
+   }
+  }
+ ]
+}

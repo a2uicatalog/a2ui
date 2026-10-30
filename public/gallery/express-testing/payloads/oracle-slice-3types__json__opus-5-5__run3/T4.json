@@ -1,0 +1,121 @@
+{
+ "label": "oracle-slice-3types__json__opus-5-5__run3",
+ "task": "T4",
+ "format": "json",
+ "model_id": "claude-opus-5-5",
+ "messages": [
+  {
+   "version": "v0.9",
+   "create_surface": {
+    "surface_id": "status-list",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9",
+   "update_components": {
+    "surface_id": "status-list",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "1rem",
+      "align": "stretch",
+      "items": [
+       {
+        "blocks": [
+         {
+          "id": "list_heading",
+          "component": "heading",
+          "text": "Launch Checklist"
+         },
+         {
+          "id": "status_filter",
+          "component": "segmented_control",
+          "name": "status_filter",
+          "selected_value": "all",
+          "options": "[{\"label\": \"All (8)\", \"value\": \"all\"}, {\"label\": \"Done (3)\", \"value\": \"done\"}, {\"label\": \"In progress (2)\", \"value\": \"in_progress\"}, {\"label\": \"Blocked (1)\", \"value\": \"blocked\"}, {\"label\": \"Not started (2)\", \"value\": \"not_started\"}]"
+         },
+         {
+          "id": "status_legend",
+          "component": "lozenge",
+          "items": [
+           {
+            "text": "Done",
+            "appearance": "success"
+           },
+           {
+            "text": "In progress",
+            "appearance": "inprogress"
+           },
+           {
+            "text": "Blocked",
+            "appearance": "removed"
+           },
+           {
+            "text": "Not started",
+            "appearance": "default"
+           }
+          ]
+         },
+         {
+          "id": "items_table",
+          "component": "data_table_sortable",
+          "headers": [
+           "Title",
+           "Status",
+           "Detail"
+          ],
+          "rows": [
+           [
+            "Domain & DNS setup",
+            "Done",
+            "Records verified and propagated across all regions."
+           ],
+           [
+            "Brand assets",
+            "Done",
+            "Logo, palette and type scale signed off by design."
+           ],
+           [
+            "Pricing page copy",
+            "Done",
+            "Final copy approved by marketing on Monday."
+           ],
+           [
+            "Payment integration",
+            "In progress",
+            "Webhook handling complete; refunds still pending."
+           ],
+           [
+            "Onboarding flow",
+            "In progress",
+            "Steps two and three are in usability testing."
+           ],
+           [
+            "Security review",
+            "Blocked",
+            "Waiting on the vendor's penetration test report."
+           ],
+           [
+            "Help center articles",
+            "Not started",
+            "Outline drafted; writers start next sprint."
+           ],
+           [
+            "Launch announcement",
+            "Not started",
+            "Scheduled once the security review clears."
+           ]
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,138 @@
+{
+ "label": "oracle-slice-6types__express__haiku-5-5__run3",
+ "task": "T1",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "water-cycle-lesson",
+    "catalog_id": "https://a2uicatalog.ai/catalog/d-t1.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "water-cycle-lesson",
+    "components": [
+     {
+      "id": "title",
+      "component": "page_header",
+      "title": "The Water Cycle",
+      "subtitle": "How water moves through land, sea, and sky",
+      "icon": "\ud83d\udca7",
+      "tag": "Earth Science"
+     },
+     {
+      "id": "h1",
+      "component": "heading",
+      "text": "1. Evaporation"
+     },
+     {
+      "id": "b1",
+      "component": "body",
+      "text": "Heat from the sun warms liquid water in oceans, lakes, and rivers. As it warms, molecules gain enough energy to escape into the air as water vapour, an invisible gas."
+     },
+     {
+      "id": "h2",
+      "component": "heading",
+      "text": "2. Condensation"
+     },
+     {
+      "id": "b2",
+      "component": "body",
+      "text": "Water vapour rises and cools. When it cools enough, it changes back into tiny liquid droplets that gather around dust particles, forming clouds."
+     },
+     {
+      "id": "h3",
+      "component": "heading",
+      "text": "3. Precipitation"
+     },
+     {
+      "id": "b3",
+      "component": "body",
+      "text": "When cloud droplets grow heavy, they fall as rain, snow, sleet, or hail. Some water soaks into the ground, some runs off into rivers, and the cycle begins again."
+     },
+     {
+      "id": "example",
+      "component": "concept_rung",
+      "badge": "EX",
+      "kind": "example",
+      "title": "Worked example: a puddle disappears",
+      "body": "A puddle forms after a morning rain. By noon, sunlight has warmed it, so water evaporates into the air. The vapour cools higher up, condenses into a small cloud, and may later fall again as rain.",
+      "takeaway": "The same water can move through every stage of the cycle."
+     },
+     {
+      "id": "quiz",
+      "component": "quiz_set",
+      "title": "Self-check",
+      "questions": [
+       {
+        "question": "What process turns liquid water into water vapour?",
+        "options": [
+         "Condensation",
+         "Precipitation",
+         "Evaporation",
+         "Collection"
+        ],
+        "correct": 2,
+        "explanation": "Evaporation happens when the sun's heat gives water molecules enough energy to escape as vapour."
+       },
+       {
+        "question": "Which stage forms clouds?",
+        "options": [
+         "Evaporation",
+         "Condensation",
+         "Precipitation",
+         "Runoff"
+        ],
+        "correct": 1,
+        "explanation": "Condensation occurs when water vapour cools and turns into tiny droplets that form clouds."
+       },
+       {
+        "question": "Rain, snow, sleet, and hail are all forms of what?",
+        "options": [
+         "Evaporation",
+         "Condensation",
+         "Precipitation",
+         "Transpiration"
+        ],
+        "correct": 2,
+        "explanation": "Precipitation is any water that falls from clouds to the ground."
+       }
+      ],
+      "pass_score": 70,
+      "accent": "#4f46e5"
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "title",
+         "h1",
+         "b1",
+         "h2",
+         "b2",
+         "h3",
+         "b3"
+        ]
+       },
+       {
+        "blocks": [
+         "example",
+         "quiz"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

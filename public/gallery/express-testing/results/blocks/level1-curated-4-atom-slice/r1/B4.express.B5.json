@@ -1,0 +1,36 @@
+{
+ "model": "sonnet-5-5",
+ "cond": "B4",
+ "format": "express",
+ "brief": "B5",
+ "repeat": 1,
+ "seq": 9,
+ "model_id": "claude-sonnet-5-5",
+ "utc": "2026-10-29T19:51:45Z",
+ "prompt_chars": 12613,
+ "prompt_sha256": "(removed for publication)",
+ "temperature_requested": null,
+ "temperature_sent": false,
+ "max_tokens": 32768,
+ "request_secs": 16.15,
+ "input_tokens": 4671,
+ "output_tokens": 2147,
+ "stop_reason": "end_turn",
+ "usage": {
+  "input_tokens": 4671,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "cache_creation": {
+   "ephemeral_5m_input_tokens": 0,
+   "ephemeral_1h_input_tokens": 0
+  },
+  "output_tokens": 2147,
+  "output_tokens_details": {
+   "thinking_tokens": 1318
+  },
+  "service_tier": "standard",
+  "inference_geo": "global",
+  "speed": "standard"
+ },
+ "reply": "<a2ui>\nsurface(\"toy-house\")\nroot = brick_build_3d(\n  bricks=[\n    {x: 0, y: 0, z: 0, w: 3, d: 1, h: 3, c: 0},\n    {x: 3, y: 0, z: 0, w: 2, d: 1, h: 3, c: 2},\n    {x: 5, y: 0, z: 0, w: 3, d: 1, h: 3, c: 0},\n    {x: 0, y: 0, z: 5, w: 8, d: 1, h: 3, c: 0},\n    {x: 0, y: 0, z: 1, w: 1, d: 1, h: 3, c: 0},\n    {x: 0, y: 0, z: 2, w: 1, d: 2, h: 1, c: 0},\n    {x: 0, y: 1, z: 2, w: 1, d: 2, h: 1, c: 3},\n    {x: 0, y: 2, z: 2, w: 1, d: 2, h: 1, c: 0},\n    {x: 0, y: 0, z: 4, w: 1, d: 1, h: 3, c: 0},\n    {x: 7, y: 0, z: 1, w: 1, d: 1, h: 3, c: 0},\n    {x: 7, y: 0, z: 2, w: 1, d: 2, h: 1, c: 0},\n    {x: 7, y: 1, z: 2, w: 1, d: 2, h: 1, c: 3},\n    {x: 7, y: 2, z: 2, w: 1, d: 2, h: 1, c: 0},\n    {x: 7, y: 0, z: 4, w: 1, d: 1, h: 3, c: 0},\n    {x: 0, y: 3, z: 0, w: 8, d: 6, h: 1, c: 4},\n    {x: 1, y: 4, z: 1, w: 6, d: 4, h: 1, c: 4},\n    {x: 2, y: 5, z: 2, w: 3, d: 2, h: 1, c: 4},\n    {x: 5, y: 5, z: 3, w: 1, d: 1, h: 2, c: 0}\n  ],\n  palette=[\"#c91a09\", \"#f2f3f2\", \"#6a3b1e\", \"#0055bf\", \"#4b4f54\", \"#f2cd37\"],\n  mode=\"animate\",\n  orbit=true,\n  height=420,\n  checks=true,\n  parts=true,\n  look=\"studio\"\n)\n</a2ui>"
+}

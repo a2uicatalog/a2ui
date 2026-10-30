@@ -1,0 +1,116 @@
+{
+ "task": "T6",
+ "condition": "C",
+ "slice_atoms_in_options": 36,
+ "picks": [
+  {
+   "slot": "A set of ten vocabulary cards, each showing a single word on its front face, arr #1",
+   "decomposer_line": "A set of ten vocabulary cards, each showing a single word on its front face, arranged so the user can move through them one at a time",
+   "atom": "flashcard_deck",
+   "confidence": 0.92,
+   "top3": [
+    [
+     "flashcard_deck",
+     0.92
+    ],
+    [
+     "flip_card",
+     0.04
+    ],
+    [
+     "spaced_repetition_card",
+     0.03
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "A flip action on each card that reveals the word's meaning or translation on the #2",
+   "decomposer_line": "A flip action on each card that reveals the word's meaning or translation on the back face when the user taps or clicks it, and turns it back to the front on another tap",
+   "atom": "flip_card",
+   "confidence": 0.87,
+   "top3": [
+    [
+     "flip_card",
+     0.87
+    ],
+    [
+     "flashcard_deck",
+     0.1
+    ],
+    [
+     "spaced_repetition_card",
+     0.03
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "A progress indicator that shows how many of the ten cards have been reviewed out #3",
+   "decomposer_line": "A progress indicator that shows how many of the ten cards have been reviewed out of the total, updating as the user moves through the deck",
+   "atom": "progress_bar",
+   "confidence": 0.55,
+   "top3": [
+    [
+     "progress_bar",
+     0.56
+    ],
+    [
+     "progress_circle",
+     0.2
+    ],
+    [
+     "stepper",
+     0.1
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "Controls that let the user advance to the next card or return to the previous on #4",
+   "decomposer_line": "Controls that let the user advance to the next card or return to the previous one",
+   "atom": "flashcard_deck",
+   "confidence": 0.73,
+   "top3": [
+    [
+     "flashcard_deck",
+     0.74
+    ],
+    [
+     "quiz_result_summary",
+     0.08
+    ],
+    [
+     "stepper",
+     0.06
+    ]
+   ],
+   "finalists": null
+  }
+ ],
+ "cost": {
+  "decomposer_input_tokens": 3242,
+  "decomposer_output_tokens": 162,
+  "decomposer_thinking_tokens": 0,
+  "jev_input_tokens": 7056,
+  "jev_output_tokens": 1302,
+  "jev_calls": 4
+ },
+ "error": null,
+ "atoms": [
+  "flashcard_deck",
+  "flip_card",
+  "progress_bar",
+  "flashcard_deck"
+ ],
+ "score": {
+  "precision": 1.0,
+  "recall": 1.0,
+  "f1": 1.0,
+  "slot_hits": {
+   "flashcard deck": true,
+   "progress indicator": true
+  }
+ },
+ "secs": 5.2
+}

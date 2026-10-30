@@ -1,0 +1,32 @@
+{
+ "task": "T4",
+ "condition": "JG",
+ "label": "jev-picks-on-tag-slice__express__haiku-4-5__run1",
+ "agent_type": "jev-narrowed",
+ "catalogue": "JG-T4.json",
+ "atoms_in_catalogue": 11,
+ "prompt_chars": 7364,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 4.5,
+ "usage": {
+  "input_tokens": 2075,
+  "output_tokens": 428
+ },
+ "valid": false,
+ "error": "A2uiCompilationParseError: Syntax error at line 34:15: token recognition error at: '.' (line 34) - Line 34, Col 15 - Help: Please correct the syntax error in your Express DSL.",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "list": false,
+   "status indicator": false,
+   "filter control": false
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"main-surface\")\n\n// Initialize filter state\n$/filterStatus = \"all\"\n\n// Sample data\n$/items = [\n  {title: \"Project Alpha\", status: \"active\", detail: \"Backend infrastructure migration in progress\"},\n  {title: \"Project Beta\", status: \"completed\", detail: \"Frontend redesign delivered to stakeholders\"},\n  {title: \"Project Gamma\", status: \"pending\", detail: \"Awaiting client approval on requirements\"},\n  {title: \"Project Delta\", status: \"active\", detail: \"Database optimization phase underway\"},\n  {title: \"Project Epsilon\", status: \"pending\", detail: \"Design mockups under review\"},\n  {title: \"Project Zeta\", status: \"completed\", detail: \"Launch completed with 99.9% uptime\"},\n  {title: \"Project Eta\", status: \"active\", detail: \"QA testing and bug fixes ongoing\"},\n  {title: \"Project Theta\", status: \"completed\", detail: \"Maintenance mode with monthly updates\"}\n]\n\n// Status filter chips\nstatusFilter = chip_group(\n  \"Filter by Status\",\n  \"wrap\",\n  true,\n  [\n    {label: \"All\", color: \"#38bdf8\", active: true},\n    {label: \"Active\", color: \"#10b981\"},\n    {label: \"Pending\", color: \"#f59e0b\"},\n    {label: \"Completed\", color: \"#6366f1\"}\n  ]\n)\n\n// Filtered items list\nfilteredItems = [\n  {\n    name: $item.title,\n    status: $item.status,\n    meta: $item.detail\n  }\n]\n\nroot = body([\n  heading(\"Projects\"),\n  statusFilter,\n  entity_list(filteredItems)\n])\n</a2ui>"
+}

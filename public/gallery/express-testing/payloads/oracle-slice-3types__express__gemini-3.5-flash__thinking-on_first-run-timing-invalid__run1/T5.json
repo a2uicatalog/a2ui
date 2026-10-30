@@ -1,0 +1,82 @@
+{
+ "label": "oracle-slice-3types__express__gemini-3.5-flash__thinking-on_first-run-timing-invalid__run1",
+ "task": "T5",
+ "format": "express",
+ "model_id": "gemini-3.5-flash",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "pricing_tier_group",
+      "tiers": [
+       {
+        "title": "Starter",
+        "price": "$19",
+        "frequency": "/mo",
+        "description": "Essential features for individuals and small projects.",
+        "features": [
+         "Up to 3 active projects",
+         "Basic performance analytics",
+         "Standard email support",
+         "10 GB cloud storage"
+        ],
+        "button_label": "Get Started",
+        "button_url": "#starter",
+        "recommended": false,
+        "is_recommended": false,
+        "popular": false
+       },
+       {
+        "title": "Pro",
+        "price": "$49",
+        "frequency": "/mo",
+        "description": "Advanced tools for growing teams and professionals.",
+        "features": [
+         "Unlimited active projects",
+         "Advanced real-time analytics",
+         "Priority 24/7 chat support",
+         "100 GB cloud storage",
+         "Team collaboration tools"
+        ],
+        "button_label": "Start 14-Day Free Trial",
+        "button_url": "#pro",
+        "recommended": true,
+        "is_recommended": true,
+        "popular": true
+       },
+       {
+        "title": "Enterprise",
+        "price": "$149",
+        "frequency": "/mo",
+        "description": "Custom solutions and dedicated support for large scale.",
+        "features": [
+         "Everything in Pro",
+         "Custom integration options",
+         "Dedicated account manager",
+         "SSO and advanced security",
+         "99.9% SLA guarantee"
+        ],
+        "button_label": "Contact Sales",
+        "button_url": "#enterprise",
+        "recommended": false,
+        "is_recommended": false,
+        "popular": false
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

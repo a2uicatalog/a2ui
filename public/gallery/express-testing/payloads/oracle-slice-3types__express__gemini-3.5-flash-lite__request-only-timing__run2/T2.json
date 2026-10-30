@@ -1,0 +1,143 @@
+{
+ "label": "oracle-slice-3types__express__gemini-3.5-flash-lite__request-only-timing__run2",
+ "task": "T2",
+ "format": "express",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "metric1",
+      "component": "stat_card",
+      "value": "12,480",
+      "label": "Active Users",
+      "delta": "+12.3%",
+      "is_up": true,
+      "accent": "#4CAF50"
+     },
+     {
+      "id": "metric2",
+      "component": "stat_card",
+      "value": "$48,250",
+      "label": "Monthly Revenue",
+      "delta": "+8.4%",
+      "is_up": true,
+      "accent": "#2196F3"
+     },
+     {
+      "id": "metric3",
+      "component": "stat_card",
+      "value": "99.94%",
+      "label": "Server Uptime",
+      "delta": "-0.02%",
+      "is_up": false,
+      "accent": "#FF9800"
+     },
+     {
+      "id": "metric4",
+      "component": "stat_card",
+      "value": "342ms",
+      "label": "Avg. Latency",
+      "delta": "-5.1%",
+      "is_up": true,
+      "accent": "#9C27B0"
+     },
+     {
+      "id": "metricsRow",
+      "component": "columns",
+      "cols": 4,
+      "gap": "1rem",
+      "align": "stretch",
+      "items": [
+       {
+        "blocks": [
+         "metric1"
+        ]
+       },
+       {
+        "blocks": [
+         "metric2"
+        ]
+       },
+       {
+        "blocks": [
+         "metric3"
+        ]
+       },
+       {
+        "blocks": [
+         "metric4"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "chart",
+      "component": "benchmark_comparison",
+      "items": [
+       {
+        "label": "Product A",
+        "value": 85
+       },
+       {
+        "label": "Product B",
+        "value": 65
+       },
+       {
+        "label": "Product C",
+        "value": 92
+       },
+       {
+        "label": "Product D",
+        "value": 48
+       }
+      ]
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "_inline_1",
+         "_inline_2",
+         "metricsRow",
+         "_inline_3",
+         "chart"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "_inline_1",
+      "component": "heading",
+      "text": "Executive Metrics Overview"
+     },
+     {
+      "id": "_inline_2",
+      "component": "body",
+      "text": "Real-time performance metrics and cross-product benchmark comparison."
+     },
+     {
+      "id": "_inline_3",
+      "component": "heading",
+      "text": "Performance Benchmark"
+     }
+    ]
+   }
+  }
+ ]
+}

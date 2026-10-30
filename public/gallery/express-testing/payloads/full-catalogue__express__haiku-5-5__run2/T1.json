@@ -1,0 +1,178 @@
+{
+ "label": "full-catalogue__express__haiku-5-5__run2",
+ "task": "T1",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/a-full.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "title",
+      "component": "heading",
+      "text": "The Water Cycle"
+     },
+     {
+      "id": "intro",
+      "component": "body",
+      "text": "Water never leaves Earth. It moves endlessly between oceans, air and land in a loop called the water cycle. This lesson covers three core processes, works through one example, and ends with a short self-check."
+     },
+     {
+      "id": "evap_h",
+      "component": "subheading",
+      "text": "1. Evaporation"
+     },
+     {
+      "id": "evap_b",
+      "component": "body",
+      "text": "The sun heats water at the surface of oceans, lakes and rivers. Fast-moving molecules break free as water vapour and rise into the air. Plants also release vapour through their leaves, a process called transpiration."
+     },
+     {
+      "id": "cond_h",
+      "component": "subheading",
+      "text": "2. Condensation and precipitation"
+     },
+     {
+      "id": "cond_b",
+      "component": "body",
+      "text": "As warm vapour rises it cools and turns back into tiny droplets around dust and salt particles, forming clouds. When droplets grow heavy enough they fall as precipitation: rain, snow, sleet or hail."
+     },
+     {
+      "id": "coll_h",
+      "component": "subheading",
+      "text": "3. Collection and runoff"
+     },
+     {
+      "id": "coll_b",
+      "component": "body",
+      "text": "Precipitation gathers in rivers, lakes, groundwater and glaciers. Water flows downhill as runoff or soaks into the ground, eventually reaching the sea, where evaporation starts the cycle again."
+     },
+     {
+      "id": "div1",
+      "component": "divider"
+     },
+     {
+      "id": "ex_h",
+      "component": "subheading",
+      "text": "Worked example: a puddle after rain"
+     },
+     {
+      "id": "ex_intro",
+      "component": "body",
+      "text": "A 2 cm deep puddle forms after a storm. Follow what happens to its water over one sunny day."
+     },
+     {
+      "id": "ex_steps",
+      "component": "steps",
+      "items": [
+       {
+        "label": "Morning",
+        "text": "Sunlight warms the puddle. Some water molecules gain enough energy to escape as vapour."
+       },
+       {
+        "label": "Midday",
+        "text": "The puddle shrinks as evaporation speeds up. The vapour rises and cools in the air above."
+       },
+       {
+        "label": "Afternoon",
+        "text": "Cooling vapour condenses into small clouds. No rain falls, so the vapour stays in the air."
+       },
+       {
+        "label": "Evening",
+        "text": "The puddle is gone. Its water is now in the atmosphere, ready to fall again as precipitation."
+       }
+      ]
+     },
+     {
+      "id": "ex_callout",
+      "component": "callout",
+      "kind": "tip",
+      "title": "Key idea",
+      "text": "Water changes state but is never destroyed. The total amount of water on Earth stays roughly constant."
+     },
+     {
+      "id": "div2",
+      "component": "divider"
+     },
+     {
+      "id": "check_h",
+      "component": "subheading",
+      "text": "Self-check"
+     },
+     {
+      "id": "quiz",
+      "component": "quiz_set",
+      "title": "Check your understanding",
+      "pass_score": 67,
+      "questions": [
+       {
+        "question": "Which process turns water vapour back into liquid droplets?",
+        "options": [
+         "Evaporation",
+         "Condensation",
+         "Runoff",
+         "Transpiration"
+        ],
+        "correct": 1,
+        "explanation": "Condensation happens when vapour cools and forms droplets, which build up into clouds."
+       },
+       {
+        "question": "What is the main energy source that drives evaporation?",
+        "options": [
+         "The moon",
+         "Wind",
+         "The sun",
+         "Gravity"
+        ],
+        "correct": 2,
+        "explanation": "Solar heating gives water molecules the energy they need to escape into the air."
+       },
+       {
+        "question": "In the worked example, why did the puddle disappear without any rain?",
+        "options": [
+         "It drained into the ground",
+         "It evaporated into the atmosphere",
+         "It froze",
+         "It was absorbed by plants"
+        ],
+        "correct": 1,
+        "explanation": "Evaporation moved the water from the puddle into the air as vapour."
+       }
+      ]
+     },
+     {
+      "id": "root",
+      "component": "color_section",
+      "blocks": [
+       "title",
+       "intro",
+       "evap_h",
+       "evap_b",
+       "cond_h",
+       "cond_b",
+       "coll_h",
+       "coll_b",
+       "div1",
+       "ex_h",
+       "ex_intro",
+       "ex_steps",
+       "ex_callout",
+       "div2",
+       "check_h",
+       "quiz"
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

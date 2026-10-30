@@ -1,0 +1,45 @@
+{
+ "task": "T3",
+ "condition": "C_gemini-3.5-f",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash-lite",
+ "hints": false,
+ "label": "oracle-slice-3types__express__gemini-3.5-flash-lite__first-run-timing-invalid__run2",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "C-marketing-commerce.json",
+ "atoms_in_catalogue": 23,
+ "prompt_chars": 12467,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 26.5,
+ "usage": {
+  "input_tokens": 3413,
+  "output_tokens": 531
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "gradient_hero",
+  "feature_grid",
+  "testimonial_card",
+  "cta_section",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.8,
+  "recall": 1.0,
+  "f1": 0.889,
+  "slot_hits": {
+   "hero": true,
+   "feature columns (x3)": true,
+   "testimonial": true,
+   "CTA": true
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"product-landing\")\n\nhero = gradient_hero(\n    \"Transform Your Workflow Today\",\n    \"Experience the ultimate productivity suite designed to help teams collaborate, ship faster, and scale effortlessly.\",\n    \"NEW RELEASE\",\n    \"#2563eb\",\n    \"#7c3aed\",\n    r\"linear-gradient(135deg,#1e1b4b,#312e81)\",\n    \"center\",\n    \"Get Started\",\n    \"https://example.com/signup\"\n)\n\nfeatures = feature_grid(\n    \"Why Choose Us\",\n    \"Everything you need to succeed in a modern fast-paced environment.\",\n    3,\n    [\n        {\n            \"icon\": \"\u26a1\",\n            \"title\": \"Lightning Fast\",\n            \"description\": \"Optimized performance ensures zero lag so you can stay in your creative flow.\"\n        },\n        {\n            \"icon\": \"\ud83d\udd12\",\n            \"title\": \"Enterprise Security\",\n            \"description\": \"State-of-the-art encryption keeps your critical data safe and compliant at all times.\"\n        },\n        {\n            \"icon\": \"\ud83e\udd1d\",\n            \"title\": \"Seamless Collaboration\",\n            \"description\": \"Work together in real-time with team members no matter where they are located.\"\n        }\n    ]\n)\n\ntestimonial = testimonial_card(\n    \"This platform completely transformed how our engineering and product teams operate. We shipped our last three major features ahead of schedule!\",\n    \"Sarah Jenkins\",\n    \"VP of Engineering, TechCorp\",\n    \"https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150\",\n    5\n)\n\ncta = cta_section(\n    \"Ready to accelerate your growth?\",\n    \"Join thousands of satisfied teams already using our platform to build the future.\",\n    {\"label\": \"Start Free Trial\", \"url\": \"https://example.com/trial\"},\n    {\"label\": \"Contact Sales\", \"url\": \"https://example.com/contact\"}\n)\n\nroot = columns(\n    1,\n    \"2.5rem\",\n    \"center\",\n    [\n        {\"blocks\": [hero, features, testimonial, cta]}\n    ]\n)\n</a2ui>"
+}

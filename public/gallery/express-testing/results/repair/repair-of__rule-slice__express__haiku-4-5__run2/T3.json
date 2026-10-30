@@ -1,0 +1,23 @@
+{
+ "task": "T3",
+ "condition": "B",
+ "original_label": "rule-slice__express__haiku-4-5__run2",
+ "original_error": "A2uiCompilationParseError: Failed to parse expression: Syntax error at line 20:16: mismatched input '=' expecting ':' (line 20) - Line 20, Col 16 - Help: Please correct the syntax error in your Express DSL.",
+ "repaired_valid": true,
+ "produced": [
+  "columns",
+  "gradient_hero",
+  "feature_grid",
+  "testimonial_card",
+  "cta_section"
+ ],
+ "f1_after": 0.889,
+ "prompt_chars": 8530,
+ "attempts": 1,
+ "usage": {
+  "input_tokens": 2336,
+  "output_tokens": 463
+ },
+ "reply": "<a2ui>\nroot = columns(\n  1,\n  \"0\",\n  \"top\",\n  [\n    {blocks: [\n      gradient_hero(\n        \"Transform Your Workflow\",\n        \"Streamline your process with intelligent automation and seamless integration\",\n        null,\n        null,\n        null,\n        null,\n        null,\n        \"Get Started Free\",\n        \"#signup\"\n      )\n    ]},\n    {blocks: [\n      feature_grid(\n        \"Why Choose Us\",\n        null,\n        3,\n        [\n          {\n            icon: \"\u26a1\",\n            title: \"Lightning Fast\",\n            description: \"Process workflows 10x faster with our optimized engine\"\n          },\n          {\n            icon: \"\ud83d\udd12\",\n            title: \"Bank-Level Security\",\n            description: \"Enterprise-grade encryption protects your sensitive data\"\n          },\n          {\n            icon: \"\ud83e\udd1d\",\n            title: \"Seamless Integration\",\n            description: \"Connect with 500+ tools your team already uses\"\n          }\n        ]\n      )\n    ]},\n    {blocks: [\n      testimonial_card(\n        \"This platform completely transformed how our team works. We've cut our project timelines in half and everyone loves how intuitive it is.\",\n        \"Sarah Chen\",\n        \"Product Lead at TechCorp\",\n        \"https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop\",\n        5\n      )\n    ]},\n    {blocks: [\n      cta_section(\n        \"Ready to Get Started?\",\n        \"Join thousands of teams already using our platform to accelerate their workflows.\",\n        {label: \"Start Free Trial\", url: \"#signup\"},\n        {label: \"Schedule Demo\", url: \"#demo\"}\n      )\n    ]}\n  ]\n)\n</a2ui>",
+ "final_error": null
+}

@@ -1,0 +1,123 @@
+{
+ "label": "oracle-slice-3types__json__sonnet-5-5__temp0__run3",
+ "task": "T4",
+ "format": "json",
+ "model_id": "claude-sonnet-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "status_list",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "status_list",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "1rem",
+      "align": "stretch",
+      "items": [
+       {
+        "blocks": [
+         {
+          "component": "heading",
+          "id": "title",
+          "text": "Project Tasks"
+         },
+         {
+          "component": "segmented_control",
+          "id": "status_filter",
+          "name": "status_filter",
+          "selected_value": "all",
+          "options": [
+           {
+            "label": "All",
+            "value": "all"
+           },
+           {
+            "label": "Done",
+            "value": "done"
+           },
+           {
+            "label": "In progress",
+            "value": "in_progress"
+           },
+           {
+            "label": "Blocked",
+            "value": "blocked"
+           },
+           {
+            "label": "Planned",
+            "value": "planned"
+           }
+          ]
+         },
+         {
+          "component": "entity_list",
+          "id": "items_list",
+          "items": [
+           {
+            "name": "Set up CI pipeline",
+            "subtitle": "Automated builds and tests run on every pull request.",
+            "icon": "\u2699\ufe0f",
+            "status": "Done"
+           },
+           {
+            "name": "Design system audit",
+            "subtitle": "Reviewing component usage across all product screens.",
+            "icon": "\ud83c\udfa8",
+            "status": "In progress"
+           },
+           {
+            "name": "Payment gateway integration",
+            "subtitle": "Waiting on vendor API credentials to proceed.",
+            "icon": "\ud83d\udcb3",
+            "status": "Blocked"
+           },
+           {
+            "name": "User onboarding flow",
+            "subtitle": "Three-step welcome tour with progress tracking.",
+            "icon": "\ud83d\udc4b",
+            "status": "In progress"
+           },
+           {
+            "name": "Database migration",
+            "subtitle": "Move legacy tables to the new schema with zero downtime.",
+            "icon": "\ud83d\uddc4\ufe0f",
+            "status": "Planned"
+           },
+           {
+            "name": "Accessibility fixes",
+            "subtitle": "Resolved all critical contrast and keyboard issues.",
+            "icon": "\u267f",
+            "status": "Done"
+           },
+           {
+            "name": "Analytics dashboard",
+            "subtitle": "Draft KPI layout pending stakeholder sign-off.",
+            "icon": "\ud83d\udcca",
+            "status": "Planned"
+           },
+           {
+            "name": "Email notifications",
+            "subtitle": "Template rendering fails for some locales.",
+            "icon": "\u2709\ufe0f",
+            "status": "Blocked"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

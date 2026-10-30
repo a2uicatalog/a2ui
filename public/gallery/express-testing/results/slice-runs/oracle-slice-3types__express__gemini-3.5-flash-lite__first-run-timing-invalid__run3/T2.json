@@ -1,0 +1,43 @@
+{
+ "task": "T2",
+ "condition": "C_gemini-3.5-f",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash-lite",
+ "hints": false,
+ "label": "oracle-slice-3types__express__gemini-3.5-flash-lite__first-run-timing-invalid__run3",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 16421,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 16.7,
+ "usage": {
+  "input_tokens": 4603,
+  "output_tokens": 318
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "metric_row",
+  "heading",
+  "benchmark_comparison",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.5,
+  "recall": 0.667,
+  "f1": 0.571,
+  "slot_hits": {
+   "KPI tile (x4)": true,
+   "trend (required only if metric_row was chosen; stat_card's own delta already satisfies it)": false,
+   "comparison chart": true
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"metrics-overview\")\n\nkpis = [\n  {value: \"$128,430\", label: \"Monthly Recurring Revenue\", prefix: \"$\", trend: \"up\", accent: \"#4CAF50\"},\n  {value: \"1,429\", label: \"Active Enterprise Customers\", prefix: \"\", trend: \"up\", accent: \"#2196F3\"},\n  {value: \"99.98%\", label: \"Platform Uptime SLA\", prefix: \"\", trend: \"up\", accent: \"#9C27B0\"},\n  {value: \"4.2%\", label: \"Net Churn Rate\", prefix: \"\", trend: \"down\", accent: \"#FF9800\"}\n]\n\nmetricsStrip = metric_row(4, \"#3f51b5\", kpis)\n\nheadingTitle = heading(\"Performance Comparison (Q3 vs Q4)\")\ncomparisonChart = benchmark_comparison([\n  {label: \"Customer Acquisition Cost\", value: 85},\n  {label: \"Average Revenue Per User\", value: 65},\n  {label: \"Support Resolution Speed\", value: 92},\n  {label: \"Feature Adoption Rate\", value: 78}\n])\n\nroot = columns(1, \"1.5rem\", \"top\", [\n  {blocks: [metricsStrip, headingTitle, comparisonChart]}\n])\n</a2ui>"
+}

@@ -1,0 +1,91 @@
+{
+ "label": "rule-slice__express__haiku-4-5__temp0__hints-v2__run3",
+ "task": "T2",
+ "format": "express",
+ "model_id": "claude-haiku-4-5-20251001",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/b-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "kpi_1",
+      "component": "stat_card",
+      "value": "$2.4M",
+      "label": "Total Revenue",
+      "delta": "+12%",
+      "is_up": true,
+      "accent": "#10b981"
+     },
+     {
+      "id": "kpi_2",
+      "component": "stat_card",
+      "value": "8,432",
+      "label": "Active Users",
+      "delta": "+5%",
+      "is_up": true,
+      "accent": "#3b82f6"
+     },
+     {
+      "id": "kpi_3",
+      "component": "stat_card",
+      "value": "94.2%",
+      "label": "Uptime",
+      "delta": "-0.3%",
+      "is_up": false,
+      "accent": "#f59e0b"
+     },
+     {
+      "id": "kpi_4",
+      "component": "stat_card",
+      "value": "3.2s",
+      "label": "Avg Response Time",
+      "delta": "-8%",
+      "is_up": true,
+      "accent": "#8b5cf6"
+     },
+     {
+      "id": "comparison",
+      "component": "metric_comparison_card",
+      "label": "Conversion Rate",
+      "value": 4.8,
+      "previous": 4.2,
+      "lower_is_better": false
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "items": [
+       {
+        "blocks": [
+         "kpi_1",
+         "kpi_2"
+        ]
+       },
+       {
+        "blocks": [
+         "kpi_3",
+         "kpi_4"
+        ]
+       },
+       {
+        "blocks": [
+         "comparison"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

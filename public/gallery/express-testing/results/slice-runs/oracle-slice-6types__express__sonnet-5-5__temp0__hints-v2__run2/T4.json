@@ -1,0 +1,44 @@
+{
+ "task": "T4",
+ "condition": "DT_sonnet-5-5H2",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-sonnet-5-5",
+ "hints": true,
+ "label": "oracle-slice-6types__express__sonnet-5-5__temp0__hints-v2__run2",
+ "agent_type": "T4",
+ "catalogue": "D-t4.json",
+ "atoms_in_catalogue": 20,
+ "prompt_chars": 10490,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 10.7,
+ "usage": {
+  "input_tokens": 4118,
+  "output_tokens": 1270
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "heading",
+  "body",
+  "segmented_control",
+  "entity_list",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.4,
+  "recall": 0.667,
+  "f1": 0.5,
+  "slot_hits": {
+   "list": true,
+   "status indicator": false,
+   "filter control": true
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"status-list\")\ntitle = heading(\"Project tasks\")\nhint = body(\"Pick a status to narrow the list. Showing all 8 items.\")\nfilter = segmented_control([{label: \"All\", value: \"all\"}, {label: \"Done\", value: \"done\"}, {label: \"In progress\", value: \"in_progress\"}, {label: \"Blocked\", value: \"blocked\"}], \"all\", \"status_filter\")\nlist = entity_list([\n  {name: \"Set up CI pipeline\", subtitle: \"Automated builds run on every push to main.\", status: \"Done\"},\n  {name: \"Design login screen\", subtitle: \"Final mockups approved by the product team.\", status: \"Done\"},\n  {name: \"Write API documentation\", subtitle: \"Endpoints for users and billing are drafted.\", status: \"In progress\"},\n  {name: \"Migrate user database\", subtitle: \"Schema changes are running on the staging server.\", status: \"In progress\"},\n  {name: \"Implement search\", subtitle: \"Query indexing is half complete.\", status: \"In progress\"},\n  {name: \"Integrate payment gateway\", subtitle: \"Waiting on vendor API credentials.\", status: \"Blocked\"},\n  {name: \"Security audit\", subtitle: \"Third-party auditor has not yet been scheduled.\", status: \"Blocked\"},\n  {name: \"Release notes\", subtitle: \"Draft completed and reviewed by the team.\", status: \"Done\"}\n])\nroot = columns(2, \"2rem\", \"top\", [{blocks: [title, hint, filter]}, {blocks: [list]}])\n</a2ui>\n\nThe filter control and the list are both on the page, but the catalog has no component that connects a selection to the list contents. Choosing a status in the segmented control therefore won't hide the other rows yet. The list shows all eight items, each with a title, a status and a one-line detail."
+}

@@ -1,0 +1,131 @@
+{
+ "label": "oracle-slice-3types__elemental__sonnet-5-5__run1",
+ "task": "T4",
+ "format": "elemental",
+ "model_id": "claude-sonnet-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display-elemental.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "status-filter",
+      "component": "segmented_control",
+      "name": "status_filter",
+      "selected_value": {
+       "path": "/filter"
+      },
+      "options": [
+       {
+        "label": "All",
+        "value": "all"
+       },
+       {
+        "label": "Done",
+        "value": "Done"
+       },
+       {
+        "label": "In progress",
+        "value": "In progress"
+       },
+       {
+        "label": "Blocked",
+        "value": "Blocked"
+       },
+       {
+        "label": "Not started",
+        "value": "Not started"
+       }
+      ]
+     },
+     {
+      "id": "item-list",
+      "component": "entity_list",
+      "items": {
+       "path": "/visible"
+      }
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "status-filter"
+        ]
+       },
+       {
+        "blocks": [
+         "item-list"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_data_model": {
+    "surface_id": "main",
+    "path": "/",
+    "value": {
+     "filter": "all",
+     "visible": [
+      {
+       "name": "Design system audit",
+       "subtitle": "Inventory of components across all product surfaces",
+       "status": "Done"
+      },
+      {
+       "name": "Checkout redesign",
+       "subtitle": "New payment step is in review with the UX team",
+       "status": "In progress"
+      },
+      {
+       "name": "API rate limiting",
+       "subtitle": "Waiting on infrastructure quota approval",
+       "status": "Blocked"
+      },
+      {
+       "name": "Onboarding emails",
+       "subtitle": "Copy drafted for the first three messages",
+       "status": "In progress"
+      },
+      {
+       "name": "Accessibility fixes",
+       "subtitle": "All critical contrast issues have been resolved",
+       "status": "Done"
+      },
+      {
+       "name": "Data export tool",
+       "subtitle": "Scoping not yet started for CSV and JSON formats",
+       "status": "Not started"
+      },
+      {
+       "name": "Mobile push alerts",
+       "subtitle": "Blocked by the vendor SDK upgrade",
+       "status": "Blocked"
+      },
+      {
+       "name": "Analytics dashboard",
+       "subtitle": "Backlog item, planned for next quarter",
+       "status": "Not started"
+      }
+     ]
+    }
+   }
+  }
+ ]
+}

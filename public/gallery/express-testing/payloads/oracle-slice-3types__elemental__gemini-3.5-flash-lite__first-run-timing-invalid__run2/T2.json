@@ -1,0 +1,106 @@
+{
+ "label": "oracle-slice-3types__elemental__gemini-3.5-flash-lite__first-run-timing-invalid__run2",
+ "task": "T2",
+ "format": "elemental",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display-elemental.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "heading",
+      "text": "Metrics Overview"
+     },
+     {
+      "id": "comp_1",
+      "component": "metric_row",
+      "cols": 4,
+      "accent": "#4F46E5",
+      "metrics": {
+       "path": "/kpis"
+      }
+     },
+     {
+      "id": "heading-comparison",
+      "component": "heading",
+      "text": "Performance Benchmark Comparison"
+     },
+     {
+      "id": "comparison",
+      "component": "benchmark_comparison",
+      "items": {
+       "path": "/benchmark"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_data_model": {
+    "surface_id": "main",
+    "path": "/",
+    "value": {
+     "kpis": [
+      {
+       "value": "$45,231",
+       "label": "Monthly Revenue",
+       "delta": "+12.5%",
+       "is_up": "true",
+       "accent": "#4CAF50"
+      },
+      {
+       "value": "1,429",
+       "label": "Active Subscriptions",
+       "delta": "+3.2%",
+       "is_up": "true",
+       "accent": "#2196F3"
+      },
+      {
+       "value": "99.8%",
+       "label": "System Uptime",
+       "delta": "+0.1%",
+       "is_up": "true",
+       "accent": "#00BCD4"
+      },
+      {
+       "value": "4.2%",
+       "label": "Churn Rate",
+       "delta": "-0.8%",
+       "is_up": "false",
+       "accent": "#FF9800"
+      }
+     ],
+     "benchmark": [
+      {
+       "label": "Product A",
+       "value": 85
+      },
+      {
+       "label": "Product B",
+       "value": 62
+      },
+      {
+       "label": "Product C",
+       "value": 94
+      },
+      {
+       "label": "Product D",
+       "value": 78
+      }
+     ]
+    }
+   }
+  }
+ ]
+}

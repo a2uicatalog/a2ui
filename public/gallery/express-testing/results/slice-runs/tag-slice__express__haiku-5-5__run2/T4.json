@@ -1,0 +1,40 @@
+{
+ "task": "T4",
+ "condition": "G_haiku-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "tag-slice__express__haiku-5-5__run2",
+ "agent_type": "Data display",
+ "catalogue": "G-data-display.json",
+ "atoms_in_catalogue": 354,
+ "prompt_chars": 179044,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 6.5,
+ "usage": {
+  "input_tokens": 65258,
+  "output_tokens": 818
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "filterable_list"
+ ],
+ "score": {
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "list": false,
+   "status indicator": false,
+   "filter control": false
+  }
+ },
+ "reply": "<a2ui>\nroot = filterable_list(\"Work items\", [\n  {title: \"Set up CI pipeline\", detail: \"Configure build and test jobs for the main branch\", status: \"done\"},\n  {title: \"Migrate user database\", detail: \"Move records from legacy schema to the new tables\", status: \"in_progress\"},\n  {title: \"Write API documentation\", detail: \"Document all public endpoints with examples\", status: \"open\"},\n  {title: \"Fix login timeout\", detail: \"Sessions expire early on mobile devices\", status: \"in_progress\"},\n  {title: \"Add rate limiting\", detail: \"Throttle anonymous requests to protect the API\", status: \"open\"},\n  {title: \"Update dependencies\", detail: \"Upgrade framework to the latest stable release\", status: \"done\"},\n  {title: \"Design onboarding flow\", detail: \"Draft the three-step setup wizard for new users\", status: \"open\"},\n  {title: \"Review security audit\", detail: \"Triage findings from the external penetration test\", status: \"done\"}\n], filter_field=\"status\", show_counts=true, empty_text=\"No items match this status.\")\n</a2ui>"
+}

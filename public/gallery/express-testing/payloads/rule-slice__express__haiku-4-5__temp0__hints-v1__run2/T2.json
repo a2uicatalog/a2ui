@@ -1,0 +1,115 @@
+{
+ "label": "rule-slice__express__haiku-4-5__temp0__hints-v1__run2",
+ "task": "T2",
+ "format": "express",
+ "model_id": "claude-haiku-4-5-20251001",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/b-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "items": [
+       {
+        "blocks": [
+         "_inline_1",
+         "_inline_2"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_3"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "_inline_1",
+      "component": "metric_row",
+      "cols": 2,
+      "metrics": [
+       {
+        "value": "1,234",
+        "label": "Revenue",
+        "prefix": "$",
+        "trend": "up"
+       },
+       {
+        "value": "856",
+        "label": "Users",
+        "suffix": "k",
+        "trend": "up"
+       }
+      ]
+     },
+     {
+      "id": "_inline_2",
+      "component": "metric_row",
+      "cols": 2,
+      "metrics": [
+       {
+        "value": "94.2",
+        "label": "Uptime",
+        "suffix": "%",
+        "trend": "up"
+       },
+       {
+        "value": "2.3",
+        "label": "Latency",
+        "suffix": "ms",
+        "trend": "down"
+       }
+      ]
+     },
+     {
+      "id": "_inline_3",
+      "component": "chartjs_line",
+      "labels": [
+       "Jan",
+       "Feb",
+       "Mar",
+       "Apr",
+       "May",
+       "Jun"
+      ],
+      "datasets": [
+       {
+        "label": "Revenue",
+        "data": [
+         1000,
+         1200,
+         1100,
+         1400,
+         1350,
+         1500
+        ]
+       },
+       {
+        "label": "Users",
+        "data": [
+         500,
+         620,
+         580,
+         750,
+         800,
+         900
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,39 @@
+{
+ "task": "T3",
+ "condition": "B",
+ "label": "rule-slice__express__haiku-4-5__run1",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "B-marketing-commerce.json",
+ "atoms_in_catalogue": 189,
+ "prompt_chars": 80817,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 4.6,
+ "usage": {
+  "input_tokens": 23073,
+  "output_tokens": 437
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns",
+  "gradient_hero",
+  "feature_grid",
+  "testimonial_card",
+  "cta_section"
+ ],
+ "score": {
+  "precision": 0.8,
+  "recall": 1.0,
+  "f1": 0.889,
+  "slot_hits": {
+   "hero": true,
+   "feature columns (x3)": true,
+   "testimonial": true,
+   "CTA": true
+  }
+ },
+ "reply": "<a2ui>\nroot = columns(cols=1, items=[\n  {blocks: [\n    gradient_hero(\n      title=\"Transform Your Workflow\",\n      subtitle=\"Streamline operations, boost productivity, and achieve more with our powerful platform\",\n      accent=\"#4f46e5\",\n      accent2=\"#8b5cf6\",\n      cta_label=\"Get Started\",\n      cta_url=\"#\"\n    )\n  ]},\n  {blocks: [\n    feature_grid(\n      heading=\"Why Choose Us\",\n      columns=3,\n      features=[\n        {icon: \"\u26a1\", title: \"Lightning Fast\", description: \"Optimized performance with millisecond response times\"},\n        {icon: \"\ud83d\udd12\", title: \"Enterprise Security\", description: \"Bank-grade encryption and compliance standards\"},\n        {icon: \"\ud83d\ude80\", title: \"Easy Integration\", description: \"Seamless API connections with your existing tools\"}\n      ]\n    )\n  ]},\n  {blocks: [\n    testimonial_card(\n      text=\"This platform has completely transformed how our team works. We've cut our workflow time in half and couldn't be happier with the results.\",\n      author_name=\"Sarah Chen\",\n      author_title=\"CEO, TechVentures Inc\",\n      author_avatar_url=\"https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah\",\n      rating=5\n    )\n  ]},\n  {blocks: [\n    cta_section(\n      heading=\"Ready to Get Started?\",\n      body=\"Join thousands of companies already using our platform to transform their operations.\",\n      primary_cta={label: \"Start Your Free Trial\", url: \"#\"},\n      secondary_cta={label: \"Schedule a Demo\", url: \"#\"}\n    )\n  ]}\n])\n</a2ui>"
+}

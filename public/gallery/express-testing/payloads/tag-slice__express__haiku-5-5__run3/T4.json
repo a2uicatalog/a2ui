@@ -1,0 +1,79 @@
+{
+ "label": "tag-slice__express__haiku-5-5__run3",
+ "task": "T4",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/g-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "filterable_list",
+      "title": "Work items",
+      "items": [
+       {
+        "title": "Set up CI pipeline",
+        "detail": "Build and test run on every push to main.",
+        "status": "done"
+       },
+       {
+        "title": "Migrate user database",
+        "detail": "Schema migration staged; backfill is running.",
+        "status": "in_progress"
+       },
+       {
+        "title": "Write API docs",
+        "detail": "Endpoints documented; code examples still pending.",
+        "status": "open"
+       },
+       {
+        "title": "Rotate service credentials",
+        "detail": "Blocked waiting on vendor access approval.",
+        "status": "blocked"
+       },
+       {
+        "title": "Update onboarding emails",
+        "detail": "Copy drafted; awaiting legal review.",
+        "status": "open"
+       },
+       {
+        "title": "Fix login timeout bug",
+        "detail": "Root cause identified; patch in code review.",
+        "status": "in_progress"
+       },
+       {
+        "title": "Review billing rules",
+        "detail": "All rules checked against the new pricing sheet.",
+        "status": "done"
+       },
+       {
+        "title": "Load-test checkout flow",
+        "detail": "Scenario scripted; test environment not yet provisioned.",
+        "status": "open"
+       }
+      ],
+      "filter_field": "status",
+      "colors": {
+       "open": "#3b82f6",
+       "in_progress": "#f59e0b",
+       "done": "#10b981",
+       "blocked": "#ef4444"
+      },
+      "show_counts": true,
+      "empty_text": "No items match this status."
+     }
+    ]
+   }
+  }
+ ]
+}

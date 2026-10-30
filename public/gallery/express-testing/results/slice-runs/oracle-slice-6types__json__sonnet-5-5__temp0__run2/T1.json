@@ -1,0 +1,40 @@
+{
+ "task": "T1",
+ "condition": "DTN_sonnet-5-5",
+ "temperature_applied": false,
+ "format": "json",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-sonnet-5-5",
+ "hints": false,
+ "label": "oracle-slice-6types__json__sonnet-5-5__temp0__run2",
+ "agent_type": "T1",
+ "catalogue": "D-t1.json",
+ "atoms_in_catalogue": 28,
+ "prompt_chars": 31739,
+ "slot_recall": [
+  5,
+  5
+ ],
+ "secs": 15.0,
+ "usage": {
+  "input_tokens": 12049,
+  "output_tokens": 2103
+ },
+ "valid": false,
+ "error": "A2uiIntegrityError: Component 'b-condensation' is not reachable from 'root'",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "title": false,
+   "concept sections (x3)": false,
+   "worked example": false,
+   "3-question quiz": false,
+   "quiz result": false
+  }
+ },
+ "reply": "<a2ui-json>\n[\n  {\n    \"version\": \"v0.9.1\",\n    \"createSurface\": {\n      \"surfaceId\": \"water-cycle-lesson\",\n      \"catalogId\": \"https://a2uicatalog.ai/catalog/d-t1.json\"\n    }\n  },\n  {\n    \"version\": \"v0.9.1\",\n    \"updateComponents\": {\n      \"surfaceId\": \"water-cycle-lesson\",\n      \"components\": [\n        {\n          \"id\": \"root\",\n          \"component\": \"page_header\",\n          \"title\": \"The Water Cycle\",\n          \"subtitle\": \"How water moves between the oceans, the air, and the land, again and again.\",\n          \"icon\": \"\ud83d\udca7\",\n          \"tag\": \"Earth Science\",\n          \"accent\": \"#0284c7\"\n        },\n        {\n          \"id\": \"h-evaporation\",\n          \"component\": \"heading\",\n          \"text\": \"1. Evaporation\"\n        },\n        {\n          \"id\": \"b-evaporation\",\n          \"component\": \"body\",\n          \"text\": \"The Sun warms water in oceans, lakes, and rivers. Some of the liquid water gains enough energy to become water vapor, an invisible gas that rises into the air. Plants also release water vapor through their leaves, which is called transpiration.\"\n        },\n        {\n          \"id\": \"h-condensation\",\n          \"component\": \"heading\",\n          \"text\": \"2. Condensation\"\n        },\n        {\n          \"id\": \"b-condensation\",\n          \"component\": \"body\",\n          \"text\": \"As water vapor rises, the air gets colder. Cold air cannot hold as much vapor, so the vapor cools and turns back into tiny liquid droplets around specks of dust. Millions of these droplets gather to form clouds.\"\n        },\n        {\n          \"id\": \"h-precipitation\",\n          \"component\": \"heading\",\n          \"text\": \"3. Precipitation and Collection\"\n        },\n        {\n          \"id\": \"b-precipitation\",\n          \"component\": \"body\",\n          \"text\": \"When cloud droplets merge and grow heavy, they fall as rain, snow, sleet, or hail. This water soaks into the ground or runs off into streams, rivers, and oceans. From there the Sun starts the cycle over again.\"\n        },\n        {\n          \"id\": \"worked-example\",\n          \"component\": \"concept_rung\",\n          \"kind\": \"example\",\n          \"badge\": \"EX\",\n          \"title\": \"Worked example: How long does a puddle last?\",\n          \"body\": \"A puddle is 2 cm deep on a sunny day. Evaporation removes about 0.5 cm of water per day, and no new rain falls. How many days until the puddle is gone?\\n\\nDivide the total depth by the daily evaporation rate.\",\n          \"code\": \"depth        = 2 cm\\nrate         = 0.5 cm/day\\ntime         = depth / rate\\n             = 2 / 0.5\\n             = 4 days\",\n          \"code_caption\": \"Assuming a constant evaporation rate and no rainfall.\",\n          \"takeaway\": \"The puddle's water isn't lost. It becomes vapor, and it will fall again as rain somewhere.\"\n        },\n        {\n          \"id\": \"h-quiz\",\n          \"component\": \"heading\",\n          \"text\": \"Self-Check\"\n        },\n        {\n          \"id\": \"quiz\",\n          \"component\": \"quiz_set\",\n          \"title\": \"Water Cycle Quiz\",\n          \"pass_score\": 70,\n          \"accent\": \"#0284c7\",\n          \"questions\": [\n            {\n              \"question\": \"Which energy source drives evaporation in the water cycle?\",\n              \"options\": [\"The Moon\", \"The Sun\", \"Wind\", \"Ocean tides\"],\n              \"correct\": 1,\n              \"explanation\": \"The Sun's heat gives water molecules the energy to become vapor.\"\n            },\n            {\n              \"question\": \"What happens during condensation?\",\n              \"options\": [\n                \"Liquid water turns into vapor\",\n                \"Water falls from clouds as rain\",\n                \"Water vapor cools and becomes liquid droplets\",\n                \"Water soaks into the ground\"\n              ],\n              \"correct\": 2,\n              \"explanation\": \"Condensation is vapor cooling into liquid droplets, which is how clouds form.\"\n            },\n            {\n              \"question\": \"Which of these is a form of precipitation?\",\n              \"options\": [\"Snow\", \"Fog\", \"Transpiration\", \"Humidity\"],\n              \"correct\": 0,\n              \"explanation\": \"Precipitation is any water that falls from clouds: rain, snow, sleet, or hail.\"\n            }\n          ]\n        }\n      ]\n    }\n  }\n]\n</a2ui-json>"
+}

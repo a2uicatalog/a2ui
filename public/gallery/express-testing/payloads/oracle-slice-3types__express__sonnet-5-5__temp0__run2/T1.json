@@ -1,0 +1,208 @@
+{
+ "label": "oracle-slice-3types__express__sonnet-5-5__temp0__run2",
+ "task": "T1",
+ "format": "express",
+ "model_id": "claude-sonnet-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "water-cycle-lesson",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "water-cycle-lesson",
+    "components": [
+     {
+      "id": "header",
+      "component": "page_header",
+      "title": "The Water Cycle",
+      "subtitle": "How water moves between the oceans, the air, and the land",
+      "icon": "\ud83d\udca7",
+      "tag": "Earth Science",
+      "accent": "#0284c7"
+     },
+     {
+      "id": "intro",
+      "component": "body",
+      "text": "Water is always on the move. The sun's energy drives a continuous loop that carries water from the surface into the atmosphere and back again. This lesson covers the three main stages of that loop, works through an example, and ends with a short self-check."
+     },
+     {
+      "id": "h1",
+      "component": "heading",
+      "text": "1. Evaporation"
+     },
+     {
+      "id": "p1",
+      "component": "paragraph",
+      "text": "Heat from the sun turns liquid water in oceans, lakes, and rivers into water vapour, an invisible gas that rises into the air. Plants add to this through transpiration, releasing water vapour from their leaves."
+     },
+     {
+      "id": "c1",
+      "component": "text_callout",
+      "variant": "info",
+      "title": "Key idea",
+      "description": "Evaporation takes in energy. This is why sweating cools your skin."
+     },
+     {
+      "id": "h2",
+      "component": "heading",
+      "text": "2. Condensation"
+     },
+     {
+      "id": "p2",
+      "component": "paragraph",
+      "text": "As water vapour rises, it meets cooler air and loses heat. The vapour turns back into tiny liquid droplets that cluster around dust particles. Together these droplets form clouds."
+     },
+     {
+      "id": "c2",
+      "component": "text_callout",
+      "variant": "info",
+      "title": "Key idea",
+      "description": "Condensation releases energy. This is the opposite of evaporation."
+     },
+     {
+      "id": "h3",
+      "component": "heading",
+      "text": "3. Precipitation and Collection"
+     },
+     {
+      "id": "p3",
+      "component": "paragraph",
+      "text": "When cloud droplets merge and grow heavy, they fall as rain, snow, sleet, or hail. This water runs off into rivers, soaks into the ground as groundwater, or settles in oceans and lakes. From there the cycle begins again."
+     },
+     {
+      "id": "c3",
+      "component": "text_callout",
+      "variant": "success",
+      "title": "Key idea",
+      "description": "The total amount of water on Earth stays almost the same. It only changes form and location."
+     },
+     {
+      "id": "hex",
+      "component": "heading",
+      "text": "Worked Example: A Puddle on a Warm Day"
+     },
+     {
+      "id": "exIntro",
+      "component": "body",
+      "text": "Follow a single puddle after a rainstorm to see all three stages in action."
+     },
+     {
+      "id": "exSteps",
+      "component": "steps",
+      "items": [
+       {
+        "label": "Step 1",
+        "text": "Rain falls and fills a puddle on the pavement. This is precipitation and collection."
+       },
+       {
+        "label": "Step 2",
+        "text": "The sun warms the puddle. Surface water molecules gain energy and escape into the air as vapour. This is evaporation."
+       },
+       {
+        "label": "Step 3",
+        "text": "By afternoon the puddle has disappeared. Its water is now vapour in the air."
+       },
+       {
+        "label": "Step 4",
+        "text": "The vapour rises, cools, and condenses into cloud droplets. This is condensation."
+       },
+       {
+        "label": "Step 5",
+        "text": "The cloud grows heavy and rain falls somewhere else, starting a new loop."
+       }
+      ]
+     },
+     {
+      "id": "exNote",
+      "component": "callout",
+      "kind": "tip",
+      "title": "Check your understanding",
+      "text": "Name the stage at each step. The puddle goes through all three stages of the cycle."
+     },
+     {
+      "id": "hq",
+      "component": "heading",
+      "text": "Self-Check Quiz"
+     },
+     {
+      "id": "quiz",
+      "component": "quiz_set",
+      "title": "Water Cycle Self-Check",
+      "questions": [
+       {
+        "question": "Which process turns liquid water into water vapour?",
+        "options": [
+         "Condensation",
+         "Evaporation",
+         "Precipitation",
+         "Collection"
+        ],
+        "correct": 1,
+        "explanation": "Evaporation happens when the sun's heat gives liquid water enough energy to become a gas."
+       },
+       {
+        "question": "What forms when water vapour cools and turns back into tiny droplets?",
+        "options": [
+         "Groundwater",
+         "Rivers",
+         "Clouds",
+         "Glaciers"
+        ],
+        "correct": 2,
+        "explanation": "Condensation of water vapour into droplets forms clouds."
+       },
+       {
+        "question": "Which of these is a form of precipitation?",
+        "options": [
+         "Snow",
+         "Transpiration",
+         "Fog on the sea",
+         "Evaporation"
+        ],
+        "correct": 0,
+        "explanation": "Precipitation is any water that falls from clouds, including rain, snow, sleet, and hail."
+       }
+      ],
+      "pass_score": 70,
+      "accent": "#0284c7"
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "1.25rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "header",
+         "intro",
+         "h1",
+         "p1",
+         "c1",
+         "h2",
+         "p2",
+         "c2",
+         "h3",
+         "p3",
+         "c3",
+         "hex",
+         "exIntro",
+         "exSteps",
+         "exNote",
+         "hq",
+         "quiz"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

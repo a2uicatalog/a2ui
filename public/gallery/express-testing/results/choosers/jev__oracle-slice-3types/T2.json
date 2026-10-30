@@ -1,0 +1,139 @@
+{
+ "task": "T2",
+ "condition": "C",
+ "slice_atoms_in_options": 33,
+ "picks": [
+  {
+   "slot": "KPI tile showing one metric's headline value, its label, and an up or down trend #1",
+   "decomposer_line": "KPI tile showing one metric's headline value, its label, and an up or down trend indicator",
+   "atom": "stat_card",
+   "confidence": 0.41,
+   "top3": [
+    [
+     "stat_card",
+     0.43
+    ],
+    [
+     "metric_row",
+     0.33
+    ],
+    [
+     "metric_delta",
+     0.22
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "Second KPI tile showing one metric's headline value, its label, and an up or dow #2",
+   "decomposer_line": "Second KPI tile showing one metric's headline value, its label, and an up or down trend indicator",
+   "atom": "metric_row",
+   "confidence": 0.41,
+   "top3": [
+    [
+     "metric_row",
+     0.43
+    ],
+    [
+     "stat_card",
+     0.39
+    ],
+    [
+     "metric_delta",
+     0.16
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "Third KPI tile showing one metric's headline value, its label, and an up or down #3",
+   "decomposer_line": "Third KPI tile showing one metric's headline value, its label, and an up or down trend indicator",
+   "atom": "metric_row",
+   "confidence": 0.39,
+   "top3": [
+    [
+     "metric_row",
+     0.41000000000000003
+    ],
+    [
+     "stat_card",
+     0.39
+    ],
+    [
+     "metric_delta",
+     0.17
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "Fourth KPI tile showing one metric's headline value, its label, and an up or dow #4",
+   "decomposer_line": "Fourth KPI tile showing one metric's headline value, its label, and an up or down trend indicator",
+   "atom": "stat_card",
+   "confidence": 0.44,
+   "top3": [
+    [
+     "stat_card",
+     0.46
+    ],
+    [
+     "metric_row",
+     0.31
+    ],
+    [
+     "metric_delta",
+     0.21
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "Comparison chart that plots the metrics side by side for comparison #5",
+   "decomposer_line": "Comparison chart that plots the metrics side by side for comparison",
+   "atom": "benchmark_comparison",
+   "confidence": 0.66,
+   "top3": [
+    [
+     "benchmark_comparison",
+     0.67
+    ],
+    [
+     "chartjs_bar",
+     0.17
+    ],
+    [
+     "table",
+     0.12
+    ]
+   ],
+   "finalists": null
+  }
+ ],
+ "cost": {
+  "decomposer_input_tokens": 3246,
+  "decomposer_output_tokens": 344,
+  "decomposer_thinking_tokens": 0,
+  "jev_input_tokens": 6676,
+  "jev_output_tokens": 1497,
+  "jev_calls": 5
+ },
+ "error": null,
+ "atoms": [
+  "stat_card",
+  "metric_row",
+  "metric_row",
+  "stat_card",
+  "benchmark_comparison"
+ ],
+ "score": {
+  "precision": 1.0,
+  "recall": 1.0,
+  "f1": 1.0,
+  "slot_hits": {
+   "KPI tile (x4)": true,
+   "trend (required only if metric_row was chosen; stat_card's own delta already satisfies it)": true,
+   "comparison chart": true
+  }
+ },
+ "secs": 5.4
+}

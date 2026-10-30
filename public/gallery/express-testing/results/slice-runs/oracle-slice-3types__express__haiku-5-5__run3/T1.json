@@ -1,0 +1,51 @@
+{
+ "task": "T1",
+ "condition": "C_haiku-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "oracle-slice-3types__express__haiku-5-5__run3",
+ "agent_type": "Learning",
+ "catalogue": "C-learning.json",
+ "atoms_in_catalogue": 36,
+ "prompt_chars": 21139,
+ "slot_recall": [
+  5,
+  5
+ ],
+ "secs": 14.7,
+ "usage": {
+  "input_tokens": 7489,
+  "output_tokens": 3121
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "page_header",
+  "heading",
+  "body",
+  "heading",
+  "body",
+  "heading",
+  "body",
+  "concept_rung",
+  "quiz_set",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.9,
+  "recall": 0.8,
+  "f1": 0.847,
+  "slot_hits": {
+   "title": true,
+   "concept sections (x3)": true,
+   "worked example": true,
+   "3-question quiz": true,
+   "quiz result": false
+  }
+ },
+ "reply": "<a2ui>\nheader = page_header(\"The Water Cycle\", \"How water moves between the oceans, atmosphere, and land\", \"\ud83d\udca7\", \"SCIENCE 101\", \"#0284c7\")\n\nsec1_h = heading(\"1. Evaporation and transpiration\")\nsec1_b = body(\"The sun heats water in oceans, lakes, and rivers, turning it into water vapour that rises into the air. Plants also release water vapour through their leaves in a process called transpiration.\")\n\nsec2_h = heading(\"2. Condensation\")\nsec2_b = body(\"As warm, moist air rises, it cools. Cooler air holds less vapour, so the vapour condenses onto tiny particles of dust and salt, forming droplets that gather into clouds.\")\n\nsec3_h = heading(\"3. Precipitation and collection\")\nsec3_b = body(\"When cloud droplets grow heavy enough, they fall as rain, snow, sleet, or hail. The water then collects in oceans, lakes, rivers, and groundwater, and the cycle begins again.\")\n\nexample = concept_rung(\"1\", \"example\", \"WORKED EXAMPLE\", \"A puddle disappears\", \"A 2-litre puddle sits on a sunny pavement. By afternoon it is gone. The sun heated the water, so it evaporated into the air as vapour.\\n\\nLater, that vapour cools high in the atmosphere, condenses into a cloud, and may return as rain.\", _, _, \"Heat drives evaporation; vapour eventually returns to the ground as precipitation.\")\n\nquiz = quiz_set(\"Self-check\", [\n  {question: \"What process turns liquid water into water vapour?\", options: [\"Condensation\", \"Evaporation\", \"Precipitation\", \"Infiltration\"], correct: 1, explanation: \"Evaporation is caused by heat turning liquid water into vapour.\"},\n  {question: \"What causes water vapour to form clouds?\", options: [\"Cooling air causing condensation\", \"Rising sea levels\", \"Increased wind speed\", \"Rivers freezing\"], correct: 0, explanation: \"As air cools, it can hold less vapour, so the vapour condenses into droplets.\"},\n  {question: \"Which of these is a form of precipitation?\", options: [\"Transpiration\", \"Snow\", \"Evaporation\", \"Runoff\"], correct: 1, explanation: \"Snow is water falling from clouds, which makes it precipitation.\"}\n], 70, \"#0284c7\")\n\nroot = columns(2, \"2rem\", \"top\", [\n  {blocks: [header, sec1_h, sec1_b, sec2_h, sec2_b, sec3_h, sec3_b]},\n  {blocks: [example, quiz]}\n])\n</a2ui>"
+}

@@ -1,0 +1,170 @@
+{
+ "label": "oracle-slice-3types__express__gemini-3.5-flash__thinking-on_first-run-timing-invalid__run2",
+ "task": "T4",
+ "format": "express",
+ "model_id": "gemini-3.5-flash",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "services-dashboard",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "services-dashboard",
+    "components": [
+     {
+      "id": "service_heading",
+      "component": "heading",
+      "text": "System Services Directory"
+     },
+     {
+      "id": "status_filter",
+      "component": "segmented_control",
+      "options": [
+       {
+        "label": "All (8)",
+        "value": "all"
+       },
+       {
+        "label": "Active (4)",
+        "value": "active"
+       },
+       {
+        "label": "Pending (2)",
+        "value": "pending"
+       },
+       {
+        "label": "Inactive (2)",
+        "value": "inactive"
+       }
+      ],
+      "selected_value": "all",
+      "name": "status_filter"
+     },
+     {
+      "id": "services_list",
+      "component": "entity_list",
+      "items": [
+       {
+        "name": "API Gateway",
+        "subtitle": "Routing external traffic to microservices",
+        "status": "Active",
+        "icon": "\u26a1",
+        "meta": "v1.2.4"
+       },
+       {
+        "name": "Auth Service",
+        "subtitle": "Managing user authentication and JWT tokens",
+        "status": "Active",
+        "icon": "\ud83d\udd11",
+        "meta": "v2.1.0"
+       },
+       {
+        "name": "Payment Worker",
+        "subtitle": "Processing queue for monthly subscriptions",
+        "status": "Pending",
+        "icon": "\ud83d\udcb3",
+        "meta": "v0.9.8"
+       },
+       {
+        "name": "Notification Engine",
+        "subtitle": "Dispatching email and SMS alerts",
+        "status": "Active",
+        "icon": "\u2709\ufe0f",
+        "meta": "v1.1.2"
+       },
+       {
+        "name": "Reporting Pipeline",
+        "subtitle": "Daily analytics aggregation cron job",
+        "status": "Inactive",
+        "icon": "\ud83d\udcca",
+        "meta": "v1.0.0"
+       },
+       {
+        "name": "Search Indexer",
+        "subtitle": "Rebuilding Elasticsearch indices",
+        "status": "Pending",
+        "icon": "\ud83d\udd0d",
+        "meta": "v0.8.5"
+       },
+       {
+        "name": "Media Optimizer",
+        "subtitle": "On-the-fly image and video compression",
+        "status": "Active",
+        "icon": "\ud83d\uddbc\ufe0f",
+        "meta": "v1.5.0"
+       },
+       {
+        "name": "Database Backup",
+        "subtitle": "Hourly snapshot creation and S3 sync",
+        "status": "Inactive",
+        "icon": "\ud83d\udcbe",
+        "meta": "v3.0.1"
+       }
+      ]
+     },
+     {
+      "id": "sidebar_heading",
+      "component": "heading",
+      "text": "System Status Overview"
+     },
+     {
+      "id": "sla_gauge",
+      "component": "gauge_sla",
+      "title": "API Response SLA",
+      "value": 99.95,
+      "max_value": 100.0,
+      "unit": "%",
+      "label": "SLA Met"
+     },
+     {
+      "id": "active_services_stat",
+      "component": "stat_card",
+      "value": "4 Active",
+      "label": "Running Services",
+      "delta": "+1 this week",
+      "is_up": true,
+      "accent": "#4CAF50"
+     },
+     {
+      "id": "pending_services_stat",
+      "component": "stat_card",
+      "value": "2 Pending",
+      "label": "Deploying or Rebuilding",
+      "delta": "No change",
+      "is_up": true,
+      "accent": "#FF9800"
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "2rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "service_heading",
+         "status_filter",
+         "services_list"
+        ]
+       },
+       {
+        "blocks": [
+         "sidebar_heading",
+         "sla_gauge",
+         "active_services_stat",
+         "pending_services_stat"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

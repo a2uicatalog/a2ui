@@ -1,0 +1,45 @@
+{
+ "task": "T3",
+ "condition": "G_haiku-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "tag-slice__express__haiku-5-5__run1",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "G-marketing-commerce.json",
+ "atoms_in_catalogue": 263,
+ "prompt_chars": 119490,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 8.8,
+ "usage": {
+  "input_tokens": 43135,
+  "output_tokens": 1583
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "gradient_hero",
+  "feature_grid",
+  "blockquote_with_avatar",
+  "cta_button",
+  "color_section"
+ ],
+ "score": {
+  "precision": 0.8,
+  "recall": 1.0,
+  "f1": 0.889,
+  "slot_hits": {
+   "hero": true,
+   "feature columns (x3)": true,
+   "testimonial": true,
+   "CTA": true
+  }
+ },
+ "reply": "<a2ui>\nhero = gradient_hero(title=\"Ship faster with A2UI\", subtitle=\"Turn agent output into live, interactive interfaces in minutes, not weeks.\", badge=\"New release\", accent=\"#4f46e5\", accent2=\"#8b5cf6\", align=\"center\", cta_label=\"Get started\", cta_url=\"https://example.com/start\")\n\nfeatures = feature_grid(heading=\"Why teams choose us\", description=\"Everything you need to go from idea to launch.\", columns=3, features=[{icon: \"\u26a1\", title: \"Fast to build\", description: \"Compose full interfaces from a catalog of ready-made components.\", color: \"#4f46e5\"}, {icon: \"\ud83d\udd12\", title: \"Secure by default\", description: \"Actions run on your server, and your data never leaves your control.\", color: \"#0e7bb8\"}, {icon: \"\ud83e\udde9\", title: \"Works everywhere\", description: \"One interface definition renders across web, docs, and workspace apps.\", color: \"#8b5cf6\"}])\n\ntestimonial = blockquote_with_avatar(quote=\"We replaced three weeks of front-end work with an afternoon. Our agents now ship real product pages.\", author_name=\"Jordan Lee\", author_title=\"Head of Product, Northwind\", avatar_url=\"https://example.com/avatars/jordan.jpg\")\n\ncta = cta_button(url=\"https://example.com/start\", label=\"Start your free trial\", color=\"#4f46e5\", same_tab=true)\n\nroot = color_section(style=\"light\", accent=\"#4f46e5\", blocks=[hero, features, testimonial, cta])\n</a2ui>"
+}

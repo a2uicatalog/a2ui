@@ -1,0 +1,141 @@
+{
+ "version": "blocks-express-test answer key R v1 (catalogue router)",
+ "scoring": {
+  "unit": "per reply: routed id (exact slug from the list), null, invalid_id (not in list), or malformed (no parseable JSON with key 'catalogue'). correct = routed value is in the brief's accept list (null counts only where accept has null). invalid_id and malformed are wrong.",
+  "groups": "block (B1-B6, clear), cross (B8,X1-X6, clear), null (X7), judgement (B7,X8). Each reported separately; no blended mean. Also reported: non-block briefs sent to bricks (false positives) and block briefs not sent to bricks (misses).",
+  "downstream": "Step 2 (block agent) is NOT a model call here. Where the router chose a2ui-bricks-v1 for a B-brief, the already-measured P Express reply for the same repeat is re-scored with the P key (informational, labelled REUSED). Elsewhere: 'agent step not run'."
+ },
+ "catalogue_ids": "slugs from public/catalogue/index.json (14), see catalogs/ROUTER-R.json",
+ "briefs": {
+  "B1": {
+   "group": "block",
+   "check": "route",
+   "accept": [
+    "a2ui-bricks-v1"
+   ],
+   "rule": "expected a2ui-bricks-v1 (toy robot = block_robot)"
+  },
+  "B2": {
+   "group": "block",
+   "check": "route",
+   "accept": [
+    "a2ui-bricks-v1"
+   ],
+   "rule": "expected a2ui-bricks-v1 (toy rocket = block_rocket)"
+  },
+  "B3": {
+   "group": "block",
+   "check": "route",
+   "accept": [
+    "a2ui-bricks-v1"
+   ],
+   "rule": "expected a2ui-bricks-v1"
+  },
+  "B4": {
+   "group": "block",
+   "check": "route",
+   "accept": [
+    "a2ui-bricks-v1"
+   ],
+   "rule": "expected a2ui-bricks-v1"
+  },
+  "B5": {
+   "group": "block",
+   "check": "route",
+   "accept": [
+    "a2ui-bricks-v1"
+   ],
+   "rule": "expected a2ui-bricks-v1 (toy bricks)"
+  },
+  "B6": {
+   "group": "block",
+   "check": "route",
+   "accept": [
+    "a2ui-bricks-v1"
+   ],
+   "rule": "expected a2ui-bricks-v1 (toy bricks)"
+  },
+  "B7": {
+   "group": "judgement",
+   "check": "route_judgement",
+   "accept": [
+    "a2ui-bricks-v1"
+   ],
+   "rule": "accept a2ui-bricks-v1: the LDraw real-parts engine (brick_build_3d) is in that pack. JUDGEMENT cell: reported separately, no pass rate in the headline.",
+   "note": "In the profiled P condition the block agent REFUSES B7 (slice P3 excludes brick_build_3d). Routing to bricks is right for the router; a refusal downstream is a separate question (not scored here)."
+  },
+  "B8": {
+   "group": "cross",
+   "check": "route",
+   "accept": [
+    "a2ui-charts-v1"
+   ],
+   "rule": "expected a2ui-charts-v1 (sales dashboard with a bar chart)"
+  },
+  "X1": {
+   "group": "cross",
+   "check": "route",
+   "accept": [
+    "a2ui-charts-v1"
+   ],
+   "rule": "expected a2ui-charts-v1 (line chart)"
+  },
+  "X2": {
+   "group": "cross",
+   "check": "route",
+   "accept": [
+    "a2ui-atoms-v1"
+   ],
+   "rule": "expected a2ui-atoms-v1 (base has form, form_input, form_textarea; no other catalogue has form atoms). Base is always resolved, so a base answer means no extension slice is needed."
+  },
+  "X3": {
+   "group": "cross",
+   "check": "route",
+   "accept": [
+    "a2ui-learning-v1"
+   ],
+   "rule": "expected a2ui-learning-v1 (lesson/quiz)"
+  },
+  "X4": {
+   "group": "cross",
+   "check": "route",
+   "accept": [
+    "a2ui-aviation-v1"
+   ],
+   "rule": "expected a2ui-aviation-v1 (adsb_feed, geo_mercator_radar). Our example was a departures board; replaced by an ADS-B radar brief because fids_board is in atom-packs.yaml but not in the published index the router sees."
+  },
+  "X5": {
+   "group": "cross",
+   "check": "route",
+   "accept": [
+    "a2ui-ops-v1"
+   ],
+   "rule": "expected a2ui-ops-v1 (incident_log, service_status_board)"
+  },
+  "X6": {
+   "group": "cross",
+   "check": "route",
+   "accept": [
+    "a2ui-marketing-v1"
+   ],
+   "rule": "expected a2ui-marketing-v1 (dark_hero, gradient_hero)"
+  },
+  "X7": {
+   "group": "null",
+   "check": "route",
+   "accept": [
+    null
+   ],
+   "rule": "expected null: not a request for an interface, no catalogue fits. Caveat: base could render text; the router prompt says null for non-UI requests, so a base answer counts as wrong here."
+  },
+  "X8": {
+   "group": "judgement",
+   "check": "route_judgement",
+   "accept": [
+    "a2ui-marketing-v1",
+    "a2ui-display-v1"
+   ],
+   "rule": "accept-set {marketing (feature_matrix, comparison_grid, versus_block), display (side_by_side_spec)}. JUDGEMENT cell: two catalogues acceptable."
+  }
+ }
+}

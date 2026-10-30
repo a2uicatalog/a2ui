@@ -1,0 +1,106 @@
+{
+ "label": "rule-slice__express__haiku-4-5__run1",
+ "task": "T3",
+ "format": "express",
+ "model_id": null,
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/b-marketing-commerce.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "items": [
+       {
+        "blocks": [
+         "_inline_1"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_2"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_3"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_4"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "_inline_1",
+      "component": "gradient_hero",
+      "title": "Transform Your Workflow",
+      "subtitle": "Streamline operations, boost productivity, and achieve more with our powerful platform",
+      "accent": "#4f46e5",
+      "accent2": "#8b5cf6",
+      "cta_label": "Get Started",
+      "cta_url": "#"
+     },
+     {
+      "id": "_inline_2",
+      "component": "feature_grid",
+      "heading": "Why Choose Us",
+      "columns": 3,
+      "features": [
+       {
+        "icon": "\u26a1",
+        "title": "Lightning Fast",
+        "description": "Optimized performance with millisecond response times"
+       },
+       {
+        "icon": "\ud83d\udd12",
+        "title": "Enterprise Security",
+        "description": "Bank-grade encryption and compliance standards"
+       },
+       {
+        "icon": "\ud83d\ude80",
+        "title": "Easy Integration",
+        "description": "Seamless API connections with your existing tools"
+       }
+      ]
+     },
+     {
+      "id": "_inline_3",
+      "component": "testimonial_card",
+      "text": "This platform has completely transformed how our team works. We've cut our workflow time in half and couldn't be happier with the results.",
+      "author_name": "Sarah Chen",
+      "author_title": "CEO, TechVentures Inc",
+      "author_avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah",
+      "rating": 5
+     },
+     {
+      "id": "_inline_4",
+      "component": "cta_section",
+      "heading": "Ready to Get Started?",
+      "body": "Join thousands of companies already using our platform to transform their operations.",
+      "primary_cta": {
+       "label": "Start Your Free Trial",
+       "url": "#"
+      },
+      "secondary_cta": {
+       "label": "Schedule a Demo",
+       "url": "#"
+      }
+     }
+    ]
+   }
+  }
+ ]
+}

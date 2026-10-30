@@ -1,0 +1,89 @@
+{
+ "label": "oracle-slice-3types__elemental__haiku-5-5__run3",
+ "task": "T2",
+ "format": "elemental",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "root",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display-elemental.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "root",
+    "components": [
+     {
+      "id": "kpi-row",
+      "component": "metric_row",
+      "cols": 4,
+      "accent": "#00f2ff",
+      "metrics": [
+       {
+        "value": "1.24",
+        "prefix": "$",
+        "suffix": "M",
+        "label": "Revenue",
+        "sub": "vs. last quarter",
+        "trend": "up"
+       },
+       {
+        "value": "48,210",
+        "label": "Active users",
+        "sub": "vs. last quarter",
+        "trend": "up"
+       },
+       {
+        "value": "2.1",
+        "suffix": "%",
+        "label": "Churn rate",
+        "sub": "vs. last quarter",
+        "trend": "down"
+       },
+       {
+        "value": "182",
+        "suffix": " ms",
+        "label": "Avg. response time",
+        "sub": "vs. last quarter",
+        "trend": "down"
+       }
+      ]
+     },
+     {
+      "id": "comparison-chart",
+      "component": "chartjs_bar",
+      "labels": [
+       "Q1",
+       "Q2",
+       "Q3",
+       "Q4"
+      ],
+      "datasets": [
+       {
+        "label": "This year",
+        "data": [
+         820,
+         932,
+         901,
+         1240
+        ]
+       },
+       {
+        "label": "Last year",
+        "data": [
+         640,
+         710,
+         765,
+         880
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

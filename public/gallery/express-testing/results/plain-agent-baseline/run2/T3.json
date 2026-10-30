@@ -1,0 +1,24 @@
+{
+ "task": "T3",
+ "label": "haiku-live3-r2",
+ "secs": 5.2,
+ "usage": {
+  "input_tokens": 85006,
+  "output_tokens": 496
+ },
+ "valid": false,
+ "error": "A2uiCompilationParseError: Failed to parse expression: Syntax error at line 19:14: mismatched input '=' expecting ':' (line 19) - Line 19, Col 14 - Help: Please correct the syntax error in your Express DSL.",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "hero": false,
+   "feature columns (x3)": false,
+   "testimonial": false,
+   "CTA": false
+  }
+ },
+ "reply": "<a2ui>\nroot = color_section(\n  accent=\"#4f46e5\",\n  style=\"solid\",\n  blocks=[\n    gradient_hero(\n      title=\"Transform Your Workflow\",\n      subtitle=\"Streamline your productivity with our powerful platform designed for modern teams\",\n      badge=\"Now Available\",\n      accent=\"#4f46e5\",\n      cta_label=\"Get Started Free\",\n      cta_url=\"https://example.com/signup\"\n    ),\n    spacer(\"60px\"),\n    feature_grid(\n      heading=\"Why Choose Us\",\n      columns=3,\n      features=[\n        {\n          icon=\"\u26a1\",\n          title=\"Lightning Fast\",\n          description=\"Experience blazing-fast performance that keeps your team moving at the speed of thought\"\n        },\n        {\n          icon=\"\ud83d\udd12\",\n          title=\"Enterprise Security\",\n          description=\"Bank-grade encryption and compliance with industry standards to protect your data\"\n        },\n        {\n          icon=\"\ud83e\udd1d\",\n          title=\"Easy Collaboration\",\n          description=\"Seamless teamwork with real-time updates and intuitive sharing across your organization\"\n        }\n      ]\n    ),\n    spacer(\"60px\"),\n    blockquote_with_avatar(\n      quote=\"This platform completely transformed how our team works together. We've cut our project timelines in half.\",\n      author_name=\"Sarah Chen\",\n      author_title=\"Product Manager at TechCorp\",\n      avatar_url=\"https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah\"\n    ),\n    spacer(\"60px\"),\n    cta_section(\n      heading=\"Ready to Get Started?\",\n      body=\"Join thousands of teams already using our platform to boost their productivity.\",\n      primary_cta={\n        label: \"Start Your Free Trial\",\n        url: \"https://example.com/trial\"\n      },\n      secondary_cta={\n        label: \"View Pricing\",\n        url: \"https://example.com/pricing\"\n      }\n    )\n  ]\n)\n</a2ui>"
+}

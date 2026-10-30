@@ -1,0 +1,43 @@
+{
+ "task": "T6",
+ "condition": "C_gemini-3.5-f",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash-lite",
+ "hints": false,
+ "label": "oracle-slice-3types__express__gemini-3.5-flash-lite__first-run-timing-invalid__run3",
+ "agent_type": "Learning",
+ "catalogue": "C-learning.json",
+ "atoms_in_catalogue": 36,
+ "prompt_chars": 21139,
+ "slot_recall": [
+  2,
+  2
+ ],
+ "secs": 9.7,
+ "usage": {
+  "input_tokens": 5727,
+  "output_tokens": 495
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "page_header",
+  "xp_bar",
+  "flashcard_deck",
+  "text_callout",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.4,
+  "recall": 1.0,
+  "f1": 0.571,
+  "slot_hits": {
+   "flashcard deck": true,
+   "progress indicator": true
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"vocab-flashcards\")\n\nheader = page_header(\n    title=\"Vocabulary Flashcards\",\n    subtitle=\"Review key terms and flip cards to test your retention.\",\n    icon=\"\ud83d\udcda\",\n    tag=\"Study Mode\",\n    accent=\"#4f46e5\"\n)\n\nxp = xp_bar(\n    level_label=\"Level 1 \u2014 Reviewer\",\n    xp_current=4,\n    xp_next=10,\n    accent=\"#4f46e5\"\n)\n\ndeck = flashcard_deck(\n    cards=[\n        {\"front\": \"Ephemeral\", \"back\": \"Lasting for a very short time; transient.\"},\n        {\"front\": \"Pragmatic\", \"back\": \"Dealing with things sensibly and realistically.\"},\n        {\"front\": \"Synergy\", \"back\": \"The interaction of elements that produce a combined effect greater than the sum.\"},\n        {\"front\": \"Ambivalent\", \"back\": \"Having mixed feelings or contradictory ideas about something.\"},\n        {\"front\": \"Cacophony\", \"back\": \"A harsh, discordant mixture of sounds.\"},\n        {\"front\": \"Mundane\", \"back\": \"Lacking interest or excitement; dull; routine.\"},\n        {\"front\": \"Fastidious\", \"back\": \"Very attentive to and concerned about accuracy and detail.\"},\n        {\"front\": \"Obfuscate\", \"back\": \"Render obscure, unclear, or unintelligible.\"},\n        {\"front\": \"Pernicious\", \"back\": \"Having a harmful effect, especially in a gradual or subtle way.\"},\n        {\"front\": \"Resilient\", \"back\": \"Able to withstand or recover quickly from difficult conditions.\"}\n    ],\n    accent=\"#4f46e5\",\n    label_front=\"TERM\",\n    label_back=\"DEFINITION\"\n)\n\ntip = text_callout(\n    variant=\"info\",\n    title=\"Study Tip\",\n    description=\"Flip each card to check your understanding. Keep reviewing until you are confident with all ten terms.\"\n)\n\nroot = columns(\n    cols=1,\n    gap=\"1.5rem\",\n    items=[\n        {blocks: [header, xp, deck, tip]}\n    ]\n)\n</a2ui>"
+}

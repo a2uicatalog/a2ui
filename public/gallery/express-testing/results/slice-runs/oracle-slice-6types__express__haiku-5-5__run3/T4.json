@@ -1,0 +1,43 @@
+{
+ "task": "T4",
+ "condition": "D_haiku-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "oracle-slice-6types__express__haiku-5-5__run3",
+ "agent_type": "T4",
+ "catalogue": "D-t4.json",
+ "atoms_in_catalogue": 20,
+ "prompt_chars": 10490,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 8.5,
+ "usage": {
+  "input_tokens": 3799,
+  "output_tokens": 1614
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "segmented_control",
+  "heading",
+  "entity_list",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.5,
+  "recall": 0.667,
+  "f1": 0.571,
+  "slot_hits": {
+   "list": true,
+   "status indicator": false,
+   "filter control": true
+  }
+ },
+ "reply": "<a2ui>\nfilter_control = segmented_control([{label: \"All\", value: \"all\"}, {label: \"Open\", value: \"open\"}, {label: \"In progress\", value: \"in_progress\"}, {label: \"Done\", value: \"done\"}], \"all\", \"status_filter\")\n\ntitle_block = heading(\"Work items\")\n\nitem_list = entity_list([{name: \"Set up staging environment\", subtitle: \"Provision servers and network rules for the new staging stack.\", status: \"Open\"}, {name: \"Migrate user database\", subtitle: \"Move records to the new schema and verify row counts.\", status: \"In progress\"}, {name: \"Write API reference\", subtitle: \"Document all v2 endpoints with request and response examples.\", status: \"Open\"}, {name: \"Fix login redirect bug\", subtitle: \"Users are sent to a 404 page after signing in via SSO.\", status: \"Done\"}, {name: \"Update billing emails\", subtitle: \"Replace legacy templates with the new branded design.\", status: \"In progress\"}, {name: \"Review security audit\", subtitle: \"Triage the findings from the third-party penetration test.\", status: \"Open\"}, {name: \"Release notes for 2.4\", subtitle: \"Summarise features, fixes, and breaking changes for customers.\", status: \"Done\"}, {name: \"Onboard new support hire\", subtitle: \"Create accounts, schedule training, and assign the starter queue.\", status: \"In progress\"}])\n\nroot = columns(cols=2, gap=\"1.5rem\", align=\"top\", items=[{blocks: [title_block, filter_control]}, {blocks: [item_list]}])\n</a2ui>"
+}

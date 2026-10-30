@@ -1,0 +1,40 @@
+{
+ "task": "T1",
+ "condition": "DTN_sonnet-5-5",
+ "temperature_applied": false,
+ "format": "json",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-sonnet-5-5",
+ "hints": false,
+ "label": "oracle-slice-6types__json__sonnet-5-5__temp0__run3",
+ "agent_type": "T1",
+ "catalogue": "D-t1.json",
+ "atoms_in_catalogue": 28,
+ "prompt_chars": 31739,
+ "slot_recall": [
+  5,
+  5
+ ],
+ "secs": 18.3,
+ "usage": {
+  "input_tokens": 12049,
+  "output_tokens": 2572
+ },
+ "valid": false,
+ "error": "A2uiIntegrityError: Component 'b-condensation' is not reachable from 'root'",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "title": false,
+   "concept sections (x3)": false,
+   "worked example": false,
+   "3-question quiz": false,
+   "quiz result": false
+  }
+ },
+ "reply": "<a2ui-json>\n[\n  {\n    \"version\": \"v0.9.1\",\n    \"createSurface\": {\n      \"surfaceId\": \"water-cycle-lesson\",\n      \"catalogId\": \"https://a2uicatalog.ai/catalog/d-t1.json\"\n    }\n  },\n  {\n    \"version\": \"v0.9.1\",\n    \"updateComponents\": {\n      \"surfaceId\": \"water-cycle-lesson\",\n      \"components\": [\n        {\n          \"id\": \"root\",\n          \"component\": \"page_header\",\n          \"title\": \"The Water Cycle\",\n          \"subtitle\": \"How water moves between the oceans, the air, and the land\",\n          \"icon\": \"\ud83d\udca7\",\n          \"tag\": \"Earth Science\",\n          \"accent\": \"#0284c7\",\n          \"meta\": [\n            { \"label\": \"Concepts\", \"value\": \"3\" },\n            { \"label\": \"Worked example\", \"value\": \"1\" },\n            { \"label\": \"Self-check\", \"value\": \"3 questions\" }\n          ]\n        },\n        {\n          \"id\": \"intro\",\n          \"component\": \"body\",\n          \"text\": \"Water on Earth is constantly on the move. The sun's energy drives a continuous loop in which water changes state and travels between the surface and the atmosphere. In this lesson you'll learn the three key processes that power the loop, work through an example, and check your understanding.\"\n        },\n        {\n          \"id\": \"h-evaporation\",\n          \"component\": \"heading\",\n          \"text\": \"1. Evaporation\"\n        },\n        {\n          \"id\": \"b-evaporation\",\n          \"component\": \"body\",\n          \"text\": \"Heat from the sun turns liquid water from oceans, lakes, and rivers into water vapour, an invisible gas that rises into the air. Plants add to this through transpiration, releasing water vapour from their leaves. Together these are sometimes called evapotranspiration.\"\n        },\n        {\n          \"id\": \"h-condensation\",\n          \"component\": \"heading\",\n          \"text\": \"2. Condensation\"\n        },\n        {\n          \"id\": \"b-condensation\",\n          \"component\": \"body\",\n          \"text\": \"As water vapour rises, it meets cooler air and loses heat. The vapour changes back into tiny liquid droplets that cling to dust particles, forming clouds. You see the same process when water beads on the outside of a cold glass.\"\n        },\n        {\n          \"id\": \"h-precipitation\",\n          \"component\": \"heading\",\n          \"text\": \"3. Precipitation and Collection\"\n        },\n        {\n          \"id\": \"b-precipitation\",\n          \"component\": \"body\",\n          \"text\": \"When cloud droplets merge and grow too heavy to stay aloft, they fall as rain, snow, sleet, or hail. This water collects in oceans, lakes, rivers, soil, and groundwater, and the cycle begins again.\"\n        },\n        {\n          \"id\": \"tip-energy\",\n          \"component\": \"callout\",\n          \"kind\": \"tip\",\n          \"title\": \"Remember\",\n          \"text\": \"The cycle never creates or destroys water. It only changes its state (liquid, gas, solid) and its location.\"\n        },\n        {\n          \"id\": \"worked-example\",\n          \"component\": \"concept_rung\",\n          \"kind\": \"example\",\n          \"badge\": \"EX\",\n          \"title\": \"Following one water molecule around the cycle\",\n          \"body\": \"Trace a single water molecule that starts in the Pacific Ocean on a sunny day.\\n\\nThe sun warms the surface, and the molecule gains enough energy to escape as vapour (evaporation). It rises and cools, then joins thousands of others on a dust particle to form a cloud droplet (condensation). Wind carries the cloud inland over mountains, where the droplets grow heavy and fall as snow (precipitation). In spring the snow melts, flows into a river, and returns to the ocean (collection).\",\n          \"code\": \"Ocean (liquid)\\n  -> evaporation    -> water vapour (gas)\\n  -> condensation   -> cloud droplet (liquid)\\n  -> precipitation  -> snow (solid)\\n  -> melt + runoff  -> river -> Ocean (liquid)\",\n          \"code_caption\": \"One possible path of a single molecule through the cycle.\",\n          \"takeaway\": \"Each stage is just a change of state or location, and the sun supplies the energy.\"\n        },\n        {\n          \"id\": \"h-quiz\",\n          \"component\": \"heading\",\n          \"text\": \"Self-Check Quiz\"\n        },\n        {\n          \"id\": \"quiz\",\n          \"component\": \"quiz_set\",\n          \"title\": \"Test your understanding of the water cycle\",\n          \"accent\": \"#0284c7\",\n          \"pass_score\": 70,\n          \"questions\": [\n            {\n              \"question\": \"Which process turns liquid water into water vapour?\",\n              \"options\": [\"Condensation\", \"Evaporation\", \"Precipitation\", \"Collection\"],\n              \"correct\": 1,\n              \"explanation\": \"Evaporation is the change from liquid to gas, powered by heat from the sun.\"\n            },\n            {\n              \"question\": \"What happens during condensation?\",\n              \"options\": [\n                \"Water vapour cools and becomes liquid droplets\",\n                \"Rain falls from clouds to the ground\",\n                \"Liquid water is heated into a gas\",\n                \"Snow melts and flows into rivers\"\n              ],\n              \"correct\": 0,\n              \"explanation\": \"Condensation occurs when water vapour cools and changes back into liquid droplets, forming clouds.\"\n            },\n            {\n              \"question\": \"True or false: the water cycle creates new water that did not exist before.\",\n              \"options\": [\"True\", \"False\"],\n              \"correct\": 1,\n              \"explanation\": \"False. The water cycle only moves and changes the state of water that already exists.\"\n            }\n          ]\n        }\n      ]\n    }\n  }\n]\n</a2ui-json>\n\nThe lesson opens with a title header and a short intro. Three concept sections follow (evaporation, condensation, precipitation and collection), then a worked example that traces one water molecule. It ends with a three-question self-check quiz.\n\nThe catalog has no container component, so the page is a flat list of components in reading order. The title header is the root."
+}

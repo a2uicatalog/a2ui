@@ -1,0 +1,75 @@
+{
+ "label": "oracle-slice-6types__json__sonnet-5-5__temp0__run3",
+ "task": "T5",
+ "format": "json",
+ "model_id": "claude-sonnet-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "pricing",
+    "catalog_id": "https://a2uicatalog.ai/catalog/d-t5.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "pricing",
+    "components": [
+     {
+      "id": "root",
+      "component": "pricing_tier_group",
+      "tiers": [
+       {
+        "name": "Starter",
+        "price": "$9",
+        "period": "per month",
+        "description": "For individuals getting started.",
+        "features": [
+         "1 user",
+         "5 projects",
+         "2 GB storage",
+         "Community support"
+        ],
+        "recommended": false,
+        "cta": "Choose Starter"
+       },
+       {
+        "name": "Pro",
+        "price": "$29",
+        "period": "per month",
+        "description": "For growing teams that need more power.",
+        "features": [
+         "Up to 10 users",
+         "Unlimited projects",
+         "100 GB storage",
+         "Priority email support",
+         "Advanced analytics"
+        ],
+        "recommended": true,
+        "badge": "Recommended",
+        "cta": "Choose Pro"
+       },
+       {
+        "name": "Enterprise",
+        "price": "$99",
+        "period": "per month",
+        "description": "For organizations with advanced needs.",
+        "features": [
+         "Unlimited users",
+         "Unlimited projects",
+         "1 TB storage",
+         "24/7 dedicated support",
+         "Advanced analytics",
+         "SSO and audit logs"
+        ],
+        "recommended": false,
+        "cta": "Contact Sales"
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,42 @@
+{
+ "task": "T6",
+ "condition": "CX_sonnet-5-5",
+ "temperature_applied": false,
+ "format": "elemental",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "claude-sonnet-5-5",
+ "hints": false,
+ "label": "oracle-slice-3types__elemental__sonnet-5-5__run1",
+ "agent_type": "Learning",
+ "catalogue": "C-learning.json",
+ "atoms_in_catalogue": 36,
+ "prompt_chars": 21279,
+ "slot_recall": [
+  2,
+  2
+ ],
+ "secs": 12.3,
+ "usage": {
+  "input_tokens": 8147,
+  "output_tokens": 1504
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "page_header",
+  "progress_bar",
+  "flashcard_deck",
+  "text_callout"
+ ],
+ "score": {
+  "precision": 0.5,
+  "recall": 1.0,
+  "f1": 0.667,
+  "slot_hits": {
+   "flashcard deck": true,
+   "progress indicator": true
+  }
+ },
+ "reply": "<a2ui>\n<body>\n<ui-page_header id=\"root\" title=\"Vocabulary Flashcards\" subtitle=\"Click a card to flip it and reveal the definition.\" icon=\"\ud83d\udcda\" tag=\"10 words\" accent=\"#4f46e5\" />\n<ui-progress_bar id=\"review_progress\" label=\"Cards reviewed\" value=\"{0}\" accent=\"#4f46e5\" show_percent=\"true\" caption=\"0 of 10 reviewed\" />\n<ui-flashcard_deck id=\"vocab_deck\" accent=\"#4f46e5\" label_front=\"WORD\" label_back=\"DEFINITION\">\n<script type=\"application/json\" slot=\"cards\">[\n{\"front\": \"Ephemeral\", \"back\": \"Lasting for a very short time.\"},\n{\"front\": \"Ubiquitous\", \"back\": \"Present, appearing, or found everywhere.\"},\n{\"front\": \"Pragmatic\", \"back\": \"Dealing with things sensibly and realistically, based on practical rather than theoretical considerations.\"},\n{\"front\": \"Eloquent\", \"back\": \"Fluent or persuasive in speaking or writing.\"},\n{\"front\": \"Meticulous\", \"back\": \"Showing great attention to detail; very careful and precise.\"},\n{\"front\": \"Resilient\", \"back\": \"Able to recover quickly from difficulties; able to withstand stress.\"},\n{\"front\": \"Ambiguous\", \"back\": \"Open to more than one interpretation; unclear.\"},\n{\"front\": \"Benevolent\", \"back\": \"Well-meaning and kindly.\"},\n{\"front\": \"Candid\", \"back\": \"Truthful and straightforward; frank.\"},\n{\"front\": \"Diligent\", \"back\": \"Having or showing care and effort in one's work or duties.\"}\n]</script>\n</ui-flashcard_deck>\n<ui-text_callout id=\"tip\" variant=\"info\" title=\"Tip\" description=\"Try to recall the definition before flipping each card. Review all ten to reach 100%.\" />\n</body>\n</a2ui>"
+}

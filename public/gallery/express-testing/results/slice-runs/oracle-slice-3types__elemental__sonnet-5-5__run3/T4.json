@@ -1,0 +1,42 @@
+{
+ "task": "T4",
+ "condition": "CX_sonnet-5-5",
+ "temperature_applied": false,
+ "format": "elemental",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "claude-sonnet-5-5",
+ "hints": false,
+ "label": "oracle-slice-3types__elemental__sonnet-5-5__run3",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 16829,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 14.8,
+ "usage": {
+  "input_tokens": 6734,
+  "output_tokens": 1774
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "heading",
+  "segmented_control",
+  "entity_list"
+ ],
+ "score": {
+  "precision": 0.667,
+  "recall": 0.667,
+  "f1": 0.667,
+  "slot_hits": {
+   "list": true,
+   "status indicator": false,
+   "filter control": true
+  }
+ },
+ "reply": "<a2ui>\n<body>\n<script type=\"application/json\">\n{\n  \"filter\": \"all\",\n  \"items\": [\n    {\"name\": \"Migrate billing database\", \"subtitle\": \"Cutover scheduled after the nightly backup completes.\", \"icon\": \"\ud83d\uddc4\ufe0f\", \"status\": \"In progress\", \"meta\": \"Infra\"},\n    {\"name\": \"Update onboarding emails\", \"subtitle\": \"New copy approved and live for all new signups.\", \"icon\": \"\u2709\ufe0f\", \"status\": \"Done\", \"meta\": \"Marketing\"},\n    {\"name\": \"Fix checkout timeout\", \"subtitle\": \"Waiting on payment provider to confirm the API limit.\", \"icon\": \"\ud83d\uded2\", \"status\": \"Blocked\", \"meta\": \"Payments\"},\n    {\"name\": \"Design settings page\", \"subtitle\": \"Wireframes drafted, awaiting design review.\", \"icon\": \"\ud83c\udfa8\", \"status\": \"Pending\", \"meta\": \"Design\"},\n    {\"name\": \"Rotate API keys\", \"subtitle\": \"All production keys replaced and verified.\", \"icon\": \"\ud83d\udd11\", \"status\": \"Done\", \"meta\": \"Security\"},\n    {\"name\": \"Add CSV export\", \"subtitle\": \"Backend endpoint finished, UI work under way.\", \"icon\": \"\ud83d\udcc4\", \"status\": \"In progress\", \"meta\": \"Product\"},\n    {\"name\": \"Renew SSL certificates\", \"subtitle\": \"Blocked until the DNS change is approved.\", \"icon\": \"\ud83d\udd12\", \"status\": \"Blocked\", \"meta\": \"Infra\"},\n    {\"name\": \"Plan Q3 roadmap\", \"subtitle\": \"Kickoff meeting not yet scheduled.\", \"icon\": \"\ud83d\uddfa\ufe0f\", \"status\": \"Pending\", \"meta\": \"Strategy\"}\n  ]\n}\n</script>\n<ui-heading id=\"root\" text=\"Work Items\"></ui-heading>\n<ui-segmented_control id=\"status_filter\" name=\"status_filter\" selected_value=\"{$/filter}\" on-change=\"{Event('filter_changed', {status: $/filter})}\">\n  <script type=\"application/json\" slot=\"options\">[{\"label\": \"All\", \"value\": \"all\"}, {\"label\": \"Done\", \"value\": \"Done\"}, {\"label\": \"In progress\", \"value\": \"In progress\"}, {\"label\": \"Blocked\", \"value\": \"Blocked\"}, {\"label\": \"Pending\", \"value\": \"Pending\"}]</script>\n</ui-segmented_control>\n<ui-entity_list id=\"item_list\" items=\"{$/items}\"></ui-entity_list>\n</body>\n</a2ui>"
+}

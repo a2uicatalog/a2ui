@@ -1,0 +1,101 @@
+{
+ "label": "oracle-slice-3types__elemental__gemini-3.5-flash-lite__first-run-timing-invalid__run1",
+ "task": "T6",
+ "format": "elemental",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning-elemental.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "page_header",
+      "title": "Vocabulary Flashcards",
+      "subtitle": "Flip each card to reveal the definition and test your recall.",
+      "icon": "\ud83d\udcda",
+      "tag": "SRS Study Deck",
+      "accent": "#4f46e5"
+     },
+     {
+      "id": "flashcard-progress",
+      "component": "progress_bar",
+      "value": 40,
+      "label": "Cards Reviewed",
+      "show_percent": true,
+      "caption": "4 of 10 reviewed",
+      "accent": "#4f46e5"
+     },
+     {
+      "id": "vocabulary-deck",
+      "component": "flashcard_deck",
+      "accent": "#4f46e5",
+      "label_front": "TERM",
+      "label_back": "DEFINITION",
+      "cards": [
+       {
+        "front": "Ephemeral",
+        "back": "Lasting for a very short time; transient."
+       },
+       {
+        "front": "Serendipity",
+        "back": "The occurrence of events by chance in a happy or beneficial way."
+       },
+       {
+        "front": "Pragmatic",
+        "back": "Dealing with things sensibly and realistically in a way that is based on practical rather than theoretical considerations."
+       },
+       {
+        "front": "Mellifluous",
+        "back": "(Of a voice or words) sweet or musical; pleasant to hear."
+       },
+       {
+        "front": "Resilient",
+        "back": "Able to withstand or recover quickly from difficult conditions."
+       },
+       {
+        "front": "Ubiquitous",
+        "back": "Present, appearing, or found everywhere."
+       },
+       {
+        "front": "Cacophony",
+        "back": "A harsh, discordant mixture of sounds."
+       },
+       {
+        "front": "Ineffable",
+        "back": "Too great or extreme to be expressed or described in words."
+       },
+       {
+        "front": "Fastidious",
+        "back": "Very attentive to and concerned about accuracy and detail."
+       },
+       {
+        "front": "Benevolent",
+        "back": "Well meaning and kindly."
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_data_model": {
+    "surface_id": "main",
+    "path": "/",
+    "value": {
+     "reviewed_count": 0,
+     "total_cards": 10
+    }
+   }
+  }
+ ]
+}

@@ -1,0 +1,141 @@
+{
+ "version": "blocks-express-test answer key P v1 (profiled block agent, slice P3)",
+ "scoring": {
+  "f1": "set-F1 on atom type names after removing ignore_atoms from the produced set; per brief the score is the MAX over alternatives (each alternative is a full expected set). Empty produced set = F1 0 (a refusal is not an atom choice) except where the brief's check is b8_trap.",
+  "ignore_atoms": [
+   "heading",
+   "body",
+   "columns"
+  ],
+  "ignore_note": "Container/text atoms are neither credited nor penalised (DECISION D3). The B4 catalogue contains none of them, so they can only appear in FULL.",
+  "compiled_vs_raw": "Primary score uses atoms from the compiled reply (empty when the compiler/validator rejects). A secondary raw score uses constructor names/components found in the raw reply text, so a rejected reply still shows what it tried to pick."
+ },
+ "briefs": {
+  "B1": {
+   "check": "atoms",
+   "rule": "exact match: block_robot",
+   "conditions": {
+    "P": {
+     "alternatives": [
+      [
+       "block_robot"
+      ]
+     ]
+    }
+   }
+  },
+  "B2": {
+   "check": "atoms",
+   "rule": "exact match: block_rocket",
+   "conditions": {
+    "P": {
+     "alternatives": [
+      [
+       "block_rocket"
+      ]
+     ]
+    }
+   }
+  },
+  "B3": {
+   "check": "atoms+b3_invented_fields",
+   "rule": "block_robot OR motion_bricks; PASS also requires NO invented fields (same raw-text rule as stage 1, against the P3 catalogue). base=red on block_robot is a real field: flagged semantic_misuse, not invented.",
+   "conditions": {
+    "P": {
+     "alternatives": [
+      [
+       "block_robot"
+      ],
+      [
+       "motion_bricks"
+      ]
+     ],
+     "invented_field_check": true
+    }
+   }
+  },
+  "B4": {
+   "check": "atoms",
+   "rule": "block_rocket OR motion_bricks",
+   "conditions": {
+    "P": {
+     "alternatives": [
+      [
+       "block_rocket"
+      ],
+      [
+       "motion_bricks"
+      ]
+     ]
+    }
+   }
+  },
+  "B5": {
+   "check": "atoms+brick_validate",
+   "rule": "motion_bricks (the only brick atom in the slice); validator verdict recorded for a bricks list, named shape recorded as such.",
+   "conditions": {
+    "P": {
+     "alternatives": [
+      [
+       "motion_bricks"
+      ]
+     ],
+     "brick_validate": "procedural"
+    }
+   }
+  },
+  "B6": {
+   "check": "atoms+brick_validate",
+   "rule": "as B5.",
+   "conditions": {
+    "P": {
+     "alternatives": [
+      [
+       "motion_bricks"
+      ]
+     ],
+     "brick_validate": "procedural"
+    }
+   }
+  },
+  "B7": {
+   "check": "refusal",
+   "rule": "REFUSE: real LDraw parts are out of scope for the block agent. PASS = reply compiles to zero components or is text only. Any component = fail. A compile rejection is NOT a pass (recorded as rejected_unknown_component for information).",
+   "conditions": {
+    "P": {
+     "alternatives": [],
+     "pass_if": "refused"
+    }
+   }
+  },
+  "B8": {
+   "check": "refusal",
+   "rule": "REFUSE: not a toy-brick model. Same rule as B7.",
+   "conditions": {
+    "P": {
+     "alternatives": [],
+     "pass_if": "refused"
+    }
+   }
+  }
+ },
+ "block_atoms": [
+  "motion_bricks",
+  "brick_build_3d",
+  "block_robot",
+  "block_rocket"
+ ],
+ "note": "Condition P tests COMPLIANCE with the profile (partly by design), not discovery. Matching briefs = B1-B6, refusal briefs = B7, B8.",
+ "matching_briefs": [
+  "B1",
+  "B2",
+  "B3",
+  "B4",
+  "B5",
+  "B6"
+ ],
+ "refusal_briefs": [
+  "B7",
+  "B8"
+ ]
+}

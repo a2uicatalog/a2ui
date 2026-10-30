@@ -1,0 +1,99 @@
+{
+ "label": "oracle-slice-6types__express__haiku-5-5__run2",
+ "task": "T3",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/d-t3.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "hero",
+      "component": "gradient_hero",
+      "title": "Ship faster with less overhead",
+      "subtitle": "A simple toolkit that turns your ideas into production-ready pages in minutes.",
+      "badge": "New in 2026",
+      "accent": "#4f46e5",
+      "accent2": "#8b5cf6",
+      "align": "center",
+      "cta_label": "Get started",
+      "cta_url": "https://example.com/signup"
+     },
+     {
+      "id": "features",
+      "component": "feature_grid",
+      "heading": "Why teams choose us",
+      "description": "Everything you need to launch, measure, and iterate.",
+      "columns": 3,
+      "features": [
+       {
+        "icon": "\u26a1",
+        "title": "Blazing fast",
+        "description": "Pages load in under a second on any connection.",
+        "color": "#4f46e5"
+       },
+       {
+        "icon": "\ud83d\udd12",
+        "title": "Secure by default",
+        "description": "Built-in protections keep your data safe.",
+        "color": "#8b5cf6"
+       },
+       {
+        "icon": "\ud83d\udcc8",
+        "title": "Built to scale",
+        "description": "From first visitor to first million without re-architecting.",
+        "color": "#0ea5e9"
+       }
+      ]
+     },
+     {
+      "id": "testimonial",
+      "component": "blockquote_with_avatar",
+      "quote": "We cut our launch time in half. The team now ships landing pages in a single afternoon.",
+      "author_name": "Maya Chen",
+      "author_title": "Head of Product, Acme Co.",
+      "avatar_url": "https://example.com/avatars/maya.jpg"
+     },
+     {
+      "id": "cta",
+      "component": "cta_button",
+      "url": "https://example.com/signup",
+      "label": "Start your free trial",
+      "color": "#4f46e5",
+      "same_tab": true
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "2rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "hero",
+         "features"
+        ]
+       },
+       {
+        "blocks": [
+         "testimonial",
+         "cta"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

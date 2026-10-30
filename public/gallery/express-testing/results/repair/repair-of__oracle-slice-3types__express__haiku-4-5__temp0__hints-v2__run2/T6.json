@@ -1,0 +1,22 @@
+{
+ "task": "T6",
+ "condition": "CTH2",
+ "original_label": "oracle-slice-3types__express__haiku-4-5__temp0__hints-v2__run2",
+ "original_error": "A2uiCompilationValidationError: Standalone function calls are not supported in A2UI v0.9.1 - Help: Please correct the syntax error in your Express DSL.",
+ "repaired_valid": true,
+ "produced": [
+  "columns",
+  "page_header",
+  "progress_bar",
+  "flashcard_deck"
+ ],
+ "f1_after": 0.667,
+ "prompt_chars": 8806,
+ "attempts": 1,
+ "usage": {
+  "input_tokens": 2475,
+  "output_tokens": 446
+ },
+ "reply": "<a2ui>\nroot = columns(\n  cols=1,\n  items=[\n    {blocks: [\n      page_header(\n        title=\"Vocabulary Builder\",\n        subtitle=\"Master 10 essential words with interactive flashcards\"\n      )\n    ]},\n    {blocks: [\n      progress_bar(\n        value=0,\n        label=\"Cards Reviewed\",\n        show_percent=true,\n        accent=\"#4f46e5\"\n      )\n    ]},\n    {blocks: [\n      flashcard_deck(\n        cards=[\n          {front: \"Serendipity\", back: \"The occurrence of events by chance in a happy or beneficial way\"},\n          {front: \"Ephemeral\", back: \"Lasting for a very short time; transitory\"},\n          {front: \"Eloquent\", back: \"Fluent or persuasive in speaking or writing\"},\n          {front: \"Ubiquitous\", back: \"Present, appearing, or found everywhere\"},\n          {front: \"Pragmatic\", back: \"Dealing with things in a practical, realistic way based on actual circumstances\"},\n          {front: \"Melancholy\", back: \"A feeling of pensive sadness, typically with no obvious cause\"},\n          {front: \"Benevolent\", back: \"Kind, generous, and charitable in nature\"},\n          {front: \"Cacophony\", back: \"A harsh, discordant mixture of sounds\"},\n          {front: \"Diligent\", back: \"Having or showing care in one's work or duties\"},\n          {front: \"Nostalgia\", back: \"A sentimental longing for the past, typically for a period or place with happy associations\"}\n        ],\n        accent=\"#4f46e5\",\n        label_front=\"WORD\",\n        label_back=\"DEFINITION\"\n      )\n    ]}\n  ]\n)\n</a2ui>",
+ "final_error": null
+}

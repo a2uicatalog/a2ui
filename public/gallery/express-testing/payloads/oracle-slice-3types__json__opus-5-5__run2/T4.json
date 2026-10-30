@@ -1,0 +1,104 @@
+{
+ "label": "oracle-slice-3types__json__opus-5-5__run2",
+ "task": "T4",
+ "format": "json",
+ "model_id": "claude-opus-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "status-filter",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "status-filter",
+    "components": [
+     {
+      "id": "root",
+      "component": "segmented_control",
+      "name": "status_filter",
+      "selected_value": "all",
+      "options": "[{\"label\": \"All (8)\", \"value\": \"all\"}, {\"label\": \"Active (3)\", \"value\": \"active\"}, {\"label\": \"Pending (2)\", \"value\": \"pending\"}, {\"label\": \"Blocked (1)\", \"value\": \"blocked\"}, {\"label\": \"Done (2)\", \"value\": \"done\"}]",
+      "accessibility": {
+       "label": "Filter by status",
+       "description": "Shows only the items with the selected status"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "item-list",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "item-list",
+    "components": [
+     {
+      "id": "root",
+      "component": "data_table_sortable",
+      "headers": [
+       "Title",
+       "Status",
+       "Detail"
+      ],
+      "rows": [
+       [
+        "Onboarding flow redesign",
+        "Active",
+        "New welcome screens are in design review this week."
+       ],
+       [
+        "Billing API migration",
+        "Active",
+        "Moving invoice endpoints to the v2 gateway."
+       ],
+       [
+        "Search relevance tuning",
+        "Active",
+        "Testing a new ranking model on 10% of traffic."
+       ],
+       [
+        "Mobile push notifications",
+        "Pending",
+        "Waiting on copy approval from marketing."
+       ],
+       [
+        "Data retention policy",
+        "Pending",
+        "Legal review is scheduled for next Tuesday."
+       ],
+       [
+        "SSO for enterprise tenants",
+        "Blocked",
+        "Needs a SAML certificate from the identity team."
+       ],
+       [
+        "Dark mode support",
+        "Done",
+        "Shipped to all users in release 4.2."
+       ],
+       [
+        "Audit log export",
+        "Done",
+        "CSV and JSON export are now available in settings."
+       ]
+      ],
+      "accessibility": {
+       "label": "Items",
+       "description": "Eight items, each with a title, status, and one-line detail"
+      }
+     }
+    ]
+   }
+  }
+ ]
+}

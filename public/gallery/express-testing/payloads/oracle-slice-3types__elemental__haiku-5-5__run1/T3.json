@@ -1,0 +1,81 @@
+{
+ "label": "oracle-slice-3types__elemental__haiku-5-5__run1",
+ "task": "T3",
+ "format": "elemental",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "root",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce-elemental.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "root",
+    "components": [
+     {
+      "id": "hero",
+      "component": "gradient_hero",
+      "title": "Ship faster with less overhead",
+      "subtitle": "One platform to build, deploy, and scale your product without the complexity.",
+      "Badge": "New in 2025",
+      "accent": "#4f46e5",
+      "accent2": "#8b5cf6",
+      "align": "center",
+      "cta_label": "Start free trial",
+      "cta_url": "#signup"
+     },
+     {
+      "id": "features",
+      "component": "feature_grid",
+      "Heading": "Everything you need",
+      "description": "Core capabilities that help your team move quickly.",
+      "Columns": 3,
+      "features": [
+       {
+        "icon": "\u26a1",
+        "title": "Lightning-fast builds",
+        "description": "Incremental builds cut your feedback loop from minutes to seconds.",
+        "badge": "Speed",
+        "color": "#4f46e5"
+       },
+       {
+        "icon": "\ud83d\udd12",
+        "title": "Secure by default",
+        "description": "Built-in access controls, audit logs, and encryption at rest and in transit.",
+        "badge": "Security",
+        "color": "#8b5cf6"
+       },
+       {
+        "icon": "\ud83d\udcc8",
+        "title": "Scales with you",
+        "description": "From prototype to millions of requests with automatic capacity management.",
+        "badge": "Scale",
+        "color": "#0ea5e9"
+       }
+      ]
+     },
+     {
+      "id": "testimonial",
+      "component": "testimonial_card",
+      "text": "We cut our release cycle in half in the first month. The platform just gets out of the way.",
+      "author_name": "Maya Chen",
+      "author_title": "VP of Engineering, Northwind",
+      "rating": 5
+     },
+     {
+      "id": "cta",
+      "component": "cta_button",
+      "url": "#signup",
+      "label": "Get started today",
+      "color": "#4f46e5",
+      "same_tab": true
+     }
+    ]
+   }
+  }
+ ]
+}

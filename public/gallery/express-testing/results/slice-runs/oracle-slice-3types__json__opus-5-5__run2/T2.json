@@ -1,0 +1,40 @@
+{
+ "task": "T2",
+ "condition": "CN_opus-5-5",
+ "temperature_applied": false,
+ "format": "json",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-opus-5-5",
+ "hints": false,
+ "label": "oracle-slice-3types__json__opus-5-5__run2",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 31546,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 13.1,
+ "usage": {
+  "input_tokens": 12376,
+  "output_tokens": 1350
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns"
+ ],
+ "score": {
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "KPI tile (x4)": false,
+   "trend (required only if metric_row was chosen; stat_card's own delta already satisfies it)": false,
+   "comparison chart": false
+  }
+ },
+ "reply": "Here is a metrics overview with four KPI tiles and a bar chart comparing this quarter with last quarter.\n\n<a2ui-json>\n[\n  {\n    \"version\": \"v0.9.1\",\n    \"createSurface\": {\n      \"surfaceId\": \"metrics-overview\",\n      \"catalogId\": \"https://a2uicatalog.ai/catalog/c-data-display.json\"\n    }\n  },\n  {\n    \"version\": \"v0.9.1\",\n    \"updateComponents\": {\n      \"surfaceId\": \"metrics-overview\",\n      \"components\": [\n        {\n          \"id\": \"root\",\n          \"component\": \"columns\",\n          \"cols\": 1,\n          \"gap\": \"1.5rem\",\n          \"align\": \"stretch\",\n          \"items\": [\n            {\n              \"blocks\": [\n                {\n                  \"id\": \"overview-heading\",\n                  \"component\": \"heading\",\n                  \"text\": \"Metrics Overview \u2014 Q3\"\n                },\n                {\n                  \"id\": \"kpi-row\",\n                  \"component\": \"metric_row\",\n                  \"cols\": 4,\n                  \"accent\": \"#3B82F6\",\n                  \"metrics\": [\n                    { \"value\": \"482K\", \"prefix\": \"$\", \"label\": \"Monthly Recurring Revenue\", \"sub\": \"+8.4% vs Q2\", \"trend\": \"up\" },\n                    { \"value\": \"18,240\", \"label\": \"Active Users\", \"sub\": \"+12.1% vs Q2\", \"trend\": \"up\" },\n                    { \"value\": \"2.1\", \"suffix\": \"%\", \"label\": \"Customer Churn\", \"sub\": \"\u22120.6 pts vs Q2\", \"trend\": \"down\" },\n                    { \"value\": \"214\", \"suffix\": \"ms\", \"label\": \"Avg Response Time\", \"sub\": \"\u22129.3% vs Q2\", \"trend\": \"down\" }\n                  ]\n                },\n                {\n                  \"id\": \"comparison-heading\",\n                  \"component\": \"heading\",\n                  \"text\": \"Revenue: Q3 vs Q2 (in $K)\"\n                },\n                {\n                  \"id\": \"comparison-chart\",\n                  \"component\": \"chartjs_bar\",\n                  \"labels\": [\"Month 1\", \"Month 2\", \"Month 3\"],\n                  \"datasets\": [\n                    { \"label\": \"Q2\", \"data\": [428, 441, 445] },\n                    { \"label\": \"Q3\", \"data\": [459, 471, 482] }\n                  ]\n                }\n              ]\n            }\n          ]\n        }\n      ]\n    }\n  }\n]\n</a2ui-json>\n\nThe four tiles show revenue, active users, churn and response time. Each tile shows its change from Q2 and an up or down trend. Revenue and active users went up. Churn and response time went down, which is good for those two metrics.\n\nThe chart puts each month of Q3 next to the same month of Q2. Q3 is higher in all three months, and the gap reaches $37K by the third month."
+}

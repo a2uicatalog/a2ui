@@ -1,0 +1,39 @@
+{
+ "task": "T3",
+ "condition": "C_gemini-3.5-flash",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash",
+ "hints": false,
+ "label": "oracle-slice-3types__express__gemini-3.5-flash__thinking-on_request-only-timing__run1",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "C-marketing-commerce.json",
+ "atoms_in_catalogue": 23,
+ "prompt_chars": 12467,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 16.4,
+ "usage": {
+  "input_tokens": 3412,
+  "output_tokens": 4593
+ },
+ "valid": false,
+ "error": "A2uiCompilationParseError: Root target 'root' is not defined. - Help: Ensure root component 'root' is assigned in your Express DSL.",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "hero": false,
+   "feature columns (x3)": false,
+   "testimonial": false,
+   "CTA": false
+  }
+ },
+ "reply": "<a2ui>\nhero = gradient_hero(\n    \"Supercharge Your Workspace\",\n    \"The ultimate tool for high-performing teams to stay organized, aligned, and focused.\",\n    \"WORKSPACE OS\",\n    null,\n    null,\n    null,\n    \"center\",\n    \"Get Started Free\",\n    \"https://example.com/signup\"\n)\n\nfeatures = feature_grid(\n    \"Everything you need to succeed\",\n    \"Engineered for teams who demand lightning speed and bulletproof security.\",\n    3,\n    [\n        {\n            \"icon\": \"\u26a1\",\n            \"title\": \"Lightning Fast\",\n            \"description\": \"Real-time sync with zero delay.\",\n            \"badge\": \"Core\"\n        },\n        {\n            \"icon\": \"\ud83d\udee1\ufe0f\",\n            \"title\": \"Enterprise Security\",\n            \"description\": \"End-to-end encryption protecting your data.\",\n            \"badge\": \"Secure\"\n        },\n        {\n            \"icon\": \"\u2699\ufe0f\",\n            \"title\": \"Universal Integrations\",\n            \"description\": \"Connect easily with your existing dev stack.\",\n            \"badge\": \"Connected\"\n        }\n    ]\n)\n\ntestimonial = testimonial_card(\n    \"Workspace OS transformed our chaotic task management into a perfectly organized machine. Highly recommended!\",\n    \"Sarah Jenkins\",\n    \"VP of Product, TechCorp\",\n    \"https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150\",\n    5\n)\n\ncta_btn = shimmer_button(\n    \"Get Workspace OS Now\",\n    \"https://example.com/signup\",\n    \"lg\",\n    \"#38bdf8\",\n    \"#1e293b\",\n    \"normal\",\n    \"No credit card required. Cancel anytime.\"\n)\n\nroot = [\n    hero,\n    features,\n    testimonial,\n    cta_btn\n]\n</a2ui>"
+}

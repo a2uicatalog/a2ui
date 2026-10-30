@@ -1,0 +1,54 @@
+{
+ "task": "T1",
+ "condition": "B_haiku-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "rule-slice__express__haiku-5-5__run2",
+ "agent_type": "Learning",
+ "catalogue": "B-learning.json",
+ "atoms_in_catalogue": 184,
+ "prompt_chars": 88519,
+ "slot_recall": [
+  5,
+  5
+ ],
+ "secs": 12.3,
+ "usage": {
+  "input_tokens": 31441,
+  "output_tokens": 2237
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "page_header",
+  "heading",
+  "body",
+  "heading",
+  "body",
+  "heading",
+  "body",
+  "heading",
+  "body",
+  "steps",
+  "heading",
+  "quiz_set",
+  "color_section"
+ ],
+ "score": {
+  "precision": 0.923,
+  "recall": 0.8,
+  "f1": 0.857,
+  "slot_hits": {
+   "title": true,
+   "concept sections (x3)": true,
+   "worked example": true,
+   "3-question quiz": true,
+   "quiz result": false
+  }
+ },
+ "reply": "<a2ui>\npage = page_header(\"The Water Cycle\", \"How water moves through air, land, and sea\", \"\ud83d\udca7\", \"Lesson 1\", \"#0e7bb8\", \"light\")\n\nevap_h = heading(\"1. Evaporation\")\nevap_b = body(\"Evaporation is the process by which liquid water turns into water vapour. The Sun heats water in oceans, lakes, and rivers, and the fastest-moving molecules escape into the air as a gas. Plants also release water vapour through their leaves, a process called transpiration.\")\n\ncond_h = heading(\"2. Condensation\")\ncond_b = body(\"As water vapour rises, it cools. Cooler air holds less vapour, so the vapour changes back into tiny liquid droplets. These droplets gather around dust particles and form clouds, which is why clouds appear high in the sky.\")\n\nprecip_h = heading(\"3. Precipitation\")\nprecip_b = body(\"When the droplets in a cloud grow large and heavy, they fall to the ground as rain, snow, sleet, or hail. Precipitation returns water to lakes, rivers, and oceans, and it soaks into the soil, where it can be taken up by plants or flow underground.\")\n\nexample_h = heading(\"Worked example: a puddle after rain\")\nexample_b = body(\"Follow one puddle from a rainy afternoon to a dry sidewalk the next morning.\")\nexample_steps = steps([\n  {label: \"Rain\", text: \"Rain falls and collects in a low spot on the sidewalk, forming a puddle.\"},\n  {label: \"Evaporation\", text: \"Warm sunlight heats the puddle, and water molecules at the surface escape as vapour.\"},\n  {label: \"Condensation\", text: \"The vapour rises, cools, and forms droplets that become part of a cloud.\"},\n  {label: \"Precipitation\", text: \"Later, those droplets may fall again as rain, completing the cycle.\"}\n])\n\ncheck_h = heading(\"Self-check\")\ncheck_quiz = quiz_set(\"Check your understanding\", [\n  {question: \"What process turns liquid water into water vapour?\", options: [\"Condensation\", \"Precipitation\", \"Evaporation\", \"Infiltration\"], correct: 2, explanation: \"Evaporation is the change from liquid to vapour, driven mainly by heat from the Sun.\"},\n  {question: \"Why do clouds form as vapour rises?\", options: [\"The vapour heats up and expands\", \"The vapour cools and condenses into droplets\", \"The vapour freezes into ice crystals at ground level\", \"The vapour is pulled into the soil\"], correct: 1, explanation: \"Cooler air holds less vapour, so the vapour condenses into tiny droplets around dust particles.\"},\n  {question: \"Which of these is an example of precipitation?\", options: [\"Sweat drying on skin\", \"Dew forming on grass overnight\", \"Snow falling from a cloud\", \"Water boiling in a kettle\"], correct: 2, explanation: \"Precipitation is water falling from clouds as rain, snow, sleet, or hail.\"}\n], 70, \"#4f46e5\")\n\nroot = color_section(\"#4f46e5\", \"light\", \"32px\", false, \"900px\", [page, evap_h, evap_b, cond_h, cond_b, precip_h, precip_b, example_h, example_b, example_steps, check_h, check_quiz])\n</a2ui>"
+}

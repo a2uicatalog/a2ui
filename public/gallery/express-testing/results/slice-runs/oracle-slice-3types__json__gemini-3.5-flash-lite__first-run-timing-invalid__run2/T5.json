@@ -1,0 +1,47 @@
+{
+ "task": "T5",
+ "condition": "CN_gemini-3.5-f",
+ "temperature_applied": false,
+ "format": "json",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash-lite",
+ "hints": false,
+ "label": "oracle-slice-3types__json__gemini-3.5-flash-lite__first-run-timing-invalid__run2",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "C-marketing-commerce.json",
+ "atoms_in_catalogue": 23,
+ "prompt_chars": 24557,
+ "slot_recall": [
+  1,
+  1
+ ],
+ "secs": 26.6,
+ "usage": {
+  "input_tokens": 5991,
+  "output_tokens": 646
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "gradient_hero",
+  "pricing_tier_group"
+ ],
+ "score": {
+  "per_approach": {
+   "tier_cards": {
+    "precision": 0.5,
+    "recall": 1.0,
+    "f1": 0.667
+   },
+   "comparison_table": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": null
+   }
+  },
+  "best_approach": "tier_cards",
+  "f1": 0.667
+ },
+ "reply": "<a2ui-json>\n{\n  \"version\": \"v0.9.1\",\n  \"createSurface\": {\n    \"surfaceId\": \"pricing-surface\",\n    \"catalogId\": \"https://a2uicatalog.ai/catalog/c-marketing-commerce.json\",\n    \"theme\": {\n      \"primaryColor\": \"#4f46e5\"\n    }\n  }\n}\n</a2ui-json>\n\n<a2ui-json>\n{\n  \"version\": \"v0.9.1\",\n  \"updateComponents\": {\n    \"surfaceId\": \"pricing-surface\",\n    \"components\": [\n      {\n        \"id\": \"root\",\n        \"component\": \"gradient_hero\",\n        \"title\": \"Find the right plan for your team\",\n        \"subtitle\": \"Simple, transparent pricing that grows with you. No hidden fees.\",\n        \"badge\": \"Pricing Plans\",\n        \"align\": \"center\",\n        \"cta_label\": \"Contact Sales\",\n        \"cta_url\": \"#contact\"\n      },\n      {\n        \"id\": \"pricing_group\",\n        \"component\": \"pricing_tier_group\",\n        \"tiers\": [\n          {\n            \"name\": \"Starter\",\n            \"price\": \"$9\",\n            \"period\": \"/month\",\n            \"description\": \"Essential features for individuals and small projects.\",\n            \"features\": [\n              \"Up to 5 team members\",\n              \"10GB cloud storage\",\n              \"Basic support\",\n              \"Community access\"\n            ],\n            \"cta_label\": \"Start Free Trial\",\n            \"cta_url\": \"#signup-starter\"\n          },\n          {\n            \"name\": \"Pro\",\n            \"price\": \"$29\",\n            \"period\": \"/month\",\n            \"description\": \"Advanced features for growing teams and businesses.\",\n            \"features\": [\n              \"Up to 25 team members\",\n              \"100GB cloud storage\",\n              \"Priority support\",\n              \"Advanced analytics\",\n              \"Custom integrations\"\n            ],\n            \"recommended\": true,\n            \"cta_label\": \"Get Started\",\n            \"cta_url\": \"#signup-pro\"\n          },\n          {\n            \"name\": \"Enterprise\",\n            \"price\": \"$99\",\n            \"period\": \"/month\",\n            \"description\": \"Maximum power and security for large scale operations.\",\n            \"features\": [\n              \"Unlimited team members\",\n              \"1TB cloud storage\",\n              \"24/7 dedicated support\",\n              \"Custom security controls\",\n              \"SLA guarantees\"\n            ],\n            \"cta_label\": \"Contact Sales\",\n            \"cta_url\": \"#signup-enterprise\"\n          }\n        ]\n      }\n    ]\n  }\n}\n</a2ui-json>"
+}

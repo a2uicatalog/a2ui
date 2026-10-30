@@ -1,0 +1,10 @@
+Executive Performance Metrics
+ Total Revenue
+ $128,430 ▲ +12.4% 
+ Active Users
+ 14,230 ▲ +5.1% 
+ Operational Health
+ Conversion Rate
+ 3.42% ▲ -0.8% 
+ Avg Latency
+ 120ms ▲ -15ms

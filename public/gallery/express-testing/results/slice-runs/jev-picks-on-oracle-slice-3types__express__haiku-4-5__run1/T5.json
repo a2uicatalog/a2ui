@@ -1,0 +1,44 @@
+{
+ "task": "T5",
+ "condition": "JC",
+ "label": "jev-picks-on-oracle-slice-3types__express__haiku-4-5__run1",
+ "agent_type": "jev-narrowed",
+ "catalogue": "JC-T5.json",
+ "atoms_in_catalogue": 9,
+ "prompt_chars": 6392,
+ "slot_recall": [
+  1,
+  1
+ ],
+ "secs": 3.2,
+ "usage": {
+  "input_tokens": 1771,
+  "output_tokens": 328
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "pricing_tier_group",
+  "ripple_button",
+  "ripple_button",
+  "badge",
+  "ripple_button"
+ ],
+ "score": {
+  "per_approach": {
+   "tier_cards": {
+    "precision": 0.2,
+    "recall": 1.0,
+    "f1": 0.333
+   },
+   "comparison_table": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": null
+   }
+  },
+  "best_approach": "tier_cards",
+  "f1": 0.333
+ },
+ "reply": "<a2ui>\nroot = pricing_tier_group(\n  tiers=[\n    {\n      name: \"Starter\",\n      price: \"$29\",\n      description: \"Perfect for individuals\",\n      features: [\n        \"Up to 10 projects\",\n        \"Basic analytics\",\n        \"Community support\",\n        \"1 GB storage\"\n      ],\n      cta: ripple_button(\"Get Started\", icon=\"\u2192\")\n    },\n    {\n      name: \"Professional\",\n      price: \"$79\",\n      description: \"Ideal for growing teams\",\n      features: [\n        \"Unlimited projects\",\n        \"Advanced analytics\",\n        \"Priority email support\",\n        \"100 GB storage\",\n        \"Custom integrations\"\n      ],\n      cta: ripple_button(\"Get Started\", icon=\"\u2192\", accent=\"#0066ff\"),\n      badge: badge(\"Recommended\", \"#0066ff\")\n    },\n    {\n      name: \"Enterprise\",\n      price: \"Custom\",\n      description: \"For large organizations\",\n      features: [\n        \"Everything in Professional\",\n        \"Dedicated account manager\",\n        \"24/7 phone support\",\n        \"Unlimited storage\",\n        \"Custom SLA\",\n        \"Advanced security\"\n      ],\n      cta: ripple_button(\"Contact Sales\", icon=\"\u2192\")\n    }\n  ]\n)\n</a2ui>"
+}

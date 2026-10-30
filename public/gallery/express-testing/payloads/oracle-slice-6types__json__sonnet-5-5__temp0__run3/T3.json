@@ -1,0 +1,83 @@
+{
+ "label": "oracle-slice-6types__json__sonnet-5-5__temp0__run3",
+ "task": "T3",
+ "format": "json",
+ "model_id": "claude-sonnet-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "landing",
+    "catalog_id": "https://a2uicatalog.ai/catalog/d-t3.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "landing",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "2.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         {
+          "id": "hero",
+          "component": "gradient_hero",
+          "badge": "New: Lumen 2.0",
+          "title": "Plan smarter. Ship faster.",
+          "subtitle": "Lumen brings your tasks, docs, and team conversations into one calm workspace so projects move forward without the chaos.",
+          "align": "center"
+         },
+         {
+          "id": "features",
+          "component": "feature_grid",
+          "heading": "Everything your team needs",
+          "description": "Powerful tools that stay out of your way.",
+          "columns": 3,
+          "features": [
+           {
+            "icon": "\u26a1",
+            "title": "Lightning fast",
+            "description": "Instant search and keyboard-first navigation keep you in flow, even on the largest projects."
+           },
+           {
+            "icon": "\ud83e\udd1d",
+            "title": "Built for collaboration",
+            "description": "Comment, assign, and co-edit in real time so everyone stays aligned."
+           },
+           {
+            "icon": "\ud83d\udd12",
+            "title": "Secure by default",
+            "description": "Enterprise-grade encryption and granular permissions protect your work."
+           }
+          ]
+         },
+         {
+          "id": "testimonial",
+          "component": "testimonial_card",
+          "text": "Lumen replaced three tools for us. Our team ships a week faster every sprint, and nobody misses the old setup.",
+          "author_name": "Priya Raman",
+          "author_title": "VP of Product, Northwind",
+          "rating": 5
+         },
+         {
+          "id": "cta",
+          "component": "cta_button",
+          "label": "Start your free trial",
+          "url": "https://example.com/signup",
+          "color": "#4f46e5"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

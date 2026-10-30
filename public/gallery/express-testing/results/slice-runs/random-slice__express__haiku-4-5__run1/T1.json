@@ -1,0 +1,34 @@
+{
+ "task": "T1",
+ "condition": "F",
+ "label": "random-slice__express__haiku-4-5__run1",
+ "agent_type": "Learning",
+ "catalogue": "F-learning.json",
+ "atoms_in_catalogue": 184,
+ "prompt_chars": 101177,
+ "slot_recall": [
+  4,
+  5
+ ],
+ "secs": 12.7,
+ "usage": {
+  "input_tokens": 29220,
+  "output_tokens": 1388
+ },
+ "valid": false,
+ "error": "A2uiCompilationParseError: Failed to parse expression: Syntax error at line 87:15: mismatched input ':' expecting {',', ')'} (line 87) - Line 87, Col 15 - Help: Please correct the syntax error in your Express DSL.",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "title": false,
+   "concept sections (x3)": false,
+   "worked example": false,
+   "3-question quiz": false,
+   "quiz result": false
+  }
+ },
+ "reply": "<a2ui>\nroot = content_tabs(\n  tabs=[\n    {\n      label: \"Overview\",\n      blocks: [\n        gradient_heading(\n          text=\"The Water Cycle\",\n          gradient=\"linear-gradient(135deg, #3b82f6, #06b6d4)\",\n          size=\"clamp(2rem, 5vw, 3.5rem)\"\n        ),\n        spacer(height=16),\n        learning_objectives(\n          objectives=[\n            \"Understand the four main stages of the water cycle\",\n            \"Explain how water transforms between states\",\n            \"Identify real-world examples of evaporation, condensation, precipitation, and collection\"\n          ]\n        )\n      ]\n    },\n    {\n      label: \"Concepts\",\n      blocks: [\n        bento_grid(\n          heading=\"Key Processes\",\n          columns=2,\n          tiles=[\n            {\n              title: \"Evaporation\",\n              subtitle: \"Water transforms to vapor\",\n              icon: \"\u2600\ufe0f\",\n              span: 1,\n              color: \"#fbbf24\",\n              background: \"#fef3c7\"\n            },\n            {\n              title: \"Condensation\",\n              subtitle: \"Vapor becomes liquid water\",\n              icon: \"\u2601\ufe0f\",\n              span: 1,\n              color: \"#60a5fa\",\n              background: \"#dbeafe\"\n            },\n            {\n              title: \"Precipitation\",\n              subtitle: \"Water falls as rain or snow\",\n              icon: \"\ud83c\udf27\ufe0f\",\n              span: 1,\n              color: \"#3b82f6\",\n              background: \"#eff6ff\"\n            },\n            {\n              title: \"Collection\",\n              subtitle: \"Water gathers in oceans and lakes\",\n              icon: \"\ud83c\udf0a\",\n              span: 1,\n              color: \"#0369a1\",\n              background: \"#f0f9ff\"\n            }\n          ]\n        )\n      ]\n    },\n    {\n      label: \"Example\",\n      blocks: [\n        case_study_card(\n          title=\"Tracking a Water Droplet\",\n          situation=\"A droplet of water begins in the Pacific Ocean on a sunny morning. The sun warms the surface, and the droplet evaporates into water vapor, rising into the atmosphere. As it climbs higher, the temperature drops, and the vapor condenses into a tiny water droplet that joins millions of others forming a cloud. Hours later, the cloud drifts over the Rocky Mountains, cools further, and precipitation begins\u2014our droplet falls as rain onto a mountain slope.\",\n          data_points=[\n            {label: \"Starting Temperature\", value: \"22\u00b0C\", note: \"Ocean surface\"},\n            {label: \"Peak Altitude\", value: \"2,000 m\", note: \"Cloud formation\"},\n            {label: \"Final Temperature\", value: \"5\u00b0C\", note: \"Mountain peak\"}\n          ],\n          questions=[\n            \"What energy source powers evaporation in this scenario?\",\n            \"Why does temperature decrease as the droplet rises?\"\n          ],\n          model_answer=\"The sun provides the energy that causes water to evaporate. Temperature decreases with altitude because the atmosphere is heated from below by the Earth's surface, not directly by the sun. As the droplet rises away from this heat source, it encounters cooler air, which causes condensation.\"\n        )\n      ]\n    },\n    {\n      label: \"Quiz\",\n      blocks: [\n        choicebox_group(\n          label: \"Question 1: What is evaporation?\",\n          name: \"q1\",\n          items=[\n            {\n              value: \"a\",\n              title: \"Water changes from liquid to gas\",\n              description: \"Driven by heat energy from the sun\",\n              icon: \"\u2713\"\n            },\n            {\n              value: \"b\",\n              title: \"Water freezes into ice\",\n              description: \"A solid state transformation\",\n              icon: \"\u2717\"\n            },\n            {\n              value: \"c\",\n              title: \"Water flows downhill\",\n              description: \"Movement through landscapes\",\n              icon: \"\u2717\"\n            }\n          ]\n        ),\n        spacer(height=24),\n        choicebox_group(\n          label: \"Question 2: Condensation occurs when...\",\n          name: \"q2\",\n          items=[\n            {\n              value: \"a\",\n              title: \"Water vapor cools and forms liquid droplets\",\n              description: \"The reverse process of evaporation\",\n              icon: \"\u2713\"\n            },\n            {\n              value: \"b\",\n              title: \"Rain falls from clouds\",\n              description: \"This is precipitation, not condensation\",\n              icon: \"\u2717\"\n            },\n            {\n              value: \"c\",\n              title: \"Ice melts in the sun\",\n              description: \"This is melting, not condensation\",\n              icon: \"\u2717\"\n            }\n          ]\n        ),\n        spacer(height=24),\n        choicebox_group(\n          label: \"Question 3: Which process returns water to the Earth's surface?\",\n          name: \"q3\",\n          items=[\n            {\n              value: \"a\",\n              title: \"Evaporation\",\n              description: \"Water rises, not returns\",\n              icon: \"\u2717\"\n            },\n            {\n              value: \"b\",\n              title: \"Precipitation\",\n              description: \"Rain, snow, and sleet fall from clouds\",\n              icon: \"\u2713\"\n            },\n            {\n              value: \"c\",\n              title: \"Condensation\",\n              description: \"Forms clouds, but doesn't directly return water\",\n              icon: \"\u2717\"\n            }\n          ]\n        )\n      ]\n    }\n  ]\n)\n</a2ui>"
+}

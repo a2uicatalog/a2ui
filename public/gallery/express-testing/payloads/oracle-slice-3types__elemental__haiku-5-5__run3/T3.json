@@ -1,0 +1,80 @@
+{
+ "label": "oracle-slice-3types__elemental__haiku-5-5__run3",
+ "task": "T3",
+ "format": "elemental",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "root",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce-elemental.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "root",
+    "components": [
+     {
+      "id": "hero",
+      "component": "gradient_hero",
+      "title": "Ship faster with Lumen Pro",
+      "subtitle": "The all-in-one workspace that keeps your team aligned, your projects on track, and your releases on schedule.",
+      "Badge": "New in 2025",
+      "accent": "#4f46e5",
+      "accent2": "#8b5cf6",
+      "align": "center",
+      "cta_label": "Start your free trial",
+      "cta_url": "https://example.com/signup"
+     },
+     {
+      "id": "features",
+      "component": "feature_grid",
+      "Heading": "Everything your team needs",
+      "description": "Three core capabilities that replace the tools you juggle today.",
+      "Columns": 3,
+      "features": [
+       {
+        "icon": "bolt",
+        "title": "Lightning-fast sync",
+        "description": "Changes appear across every device in milliseconds, so no one works from stale data.",
+        "badge": "Real-time",
+        "color": "#4f46e5"
+       },
+       {
+        "icon": "hub",
+        "title": "Connected workflows",
+        "description": "Link tasks, docs, and code reviews in one place to keep context from getting lost.",
+        "badge": "Integrations",
+        "color": "#8b5cf6"
+       },
+       {
+        "icon": "shield",
+        "title": "Enterprise-grade security",
+        "description": "SSO, audit logs, and granular permissions keep your data protected at every level.",
+        "badge": "SOC 2",
+        "color": "#0ea5e9"
+       }
+      ]
+     },
+     {
+      "id": "testimonial",
+      "component": "testimonial_card",
+      "text": "Lumen Pro cut our release planning time in half. Our whole engineering org now runs on one shared view of what matters.",
+      "author_name": "Maya Chen",
+      "author_title": "VP of Engineering, Northwind Labs",
+      "rating": 5
+     },
+     {
+      "id": "cta",
+      "component": "cta_button",
+      "url": "https://example.com/signup",
+      "label": "Get started free",
+      "color": "#4f46e5"
+     }
+    ]
+   }
+  }
+ ]
+}

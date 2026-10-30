@@ -1,0 +1,41 @@
+{
+ "task": "T3",
+ "condition": "CN_haiku-5-5",
+ "temperature_applied": false,
+ "format": "json",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "oracle-slice-3types__json__haiku-5-5__run2",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "C-marketing-commerce.json",
+ "atoms_in_catalogue": 23,
+ "prompt_chars": 24557,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 15.0,
+ "usage": {
+  "input_tokens": 9464,
+  "output_tokens": 3585
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns"
+ ],
+ "score": {
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "hero": false,
+   "feature columns (x3)": false,
+   "testimonial": false,
+   "CTA": false
+  }
+ },
+ "reply": "The page is one vertical stack: hero, three-column feature grid, testimonial, and CTA. The catalog's only container is `columns`, so the root uses a single column to stack the sections.\n\n<a2ui-json>\n[\n  {\n    \"version\": \"v0.9.1\",\n    \"createSurface\": {\n      \"surfaceId\": \"landing-page\",\n      \"catalogId\": \"https://a2uicatalog.ai/catalog/c-marketing-commerce.json\"\n    }\n  },\n  {\n    \"version\": \"v0.9.1\",\n    \"updateComponents\": {\n      \"surfaceId\": \"landing-page\",\n      \"components\": [\n        {\n          \"id\": \"root\",\n          \"component\": \"columns\",\n          \"cols\": 1,\n          \"gap\": \"0\",\n          \"align\": \"stretch\",\n          \"items\": [\n            {\n              \"blocks\": [\n                {\n                  \"id\": \"hero\",\n                  \"component\": \"gradient_hero\",\n                  \"badge\": \"New: now shipping\",\n                  \"title\": \"Ship faster with a workspace your team will love\",\n                  \"subtitle\": \"Plan, build, and launch in one place. Less switching, more shipping.\",\n                  \"align\": \"center\",\n                  \"cta_label\": \"Start free trial\",\n                  \"cta_url\": \"https://example.com/signup\"\n                },\n                {\n                  \"id\": \"features\",\n                  \"component\": \"feature_grid\",\n                  \"heading\": \"Everything you need\",\n                  \"description\": \"Three tools that work together out of the box.\",\n                  \"columns\": 3,\n                  \"features\": [\n                    {\n                      \"icon\": \"\u26a1\",\n                      \"title\": \"Lightning fast\",\n                      \"description\": \"Sub-second loads and instant search across every project.\",\n                      \"color\": \"#4f46e5\"\n                    },\n                    {\n                      \"icon\": \"\ud83d\udd12\",\n                      \"title\": \"Secure by default\",\n                      \"description\": \"SSO, role-based access, and encryption at rest and in transit.\",\n                      \"color\": \"#0891b2\"\n                    },\n                    {\n                      \"icon\": \"\ud83e\udd1d\",\n                      \"title\": \"Built for teams\",\n                      \"description\": \"Real-time collaboration with comments, reviews, and shared views.\",\n                      \"color\": \"#16a34a\"\n                    }\n                  ]\n                },\n                {\n                  \"id\": \"testimonial\",\n                  \"component\": \"testimonial_card\",\n                  \"text\": \"We cut our launch cycle in half. It's the first tool our whole team actually opens every morning.\",\n                  \"author_name\": \"Maya Chen\",\n                  \"author_title\": \"Head of Product, Northwind\",\n                  \"author_avatar_url\": \"https://example.com/avatars/maya.jpg\",\n                  \"rating\": 5\n                },\n                {\n                  \"id\": \"cta\",\n                  \"component\": \"cta_section\",\n                  \"heading\": \"Ready to ship your next launch?\",\n                  \"body\": \"Start your free 14-day trial. No credit card required.\",\n                  \"primary_cta\": {\n                    \"label\": \"Get started free\",\n                    \"url\": \"https://example.com/signup\"\n                  },\n                  \"background\": \"#4f46e5\"\n                }\n              ]\n            }\n          ]\n        }\n      ]\n    }\n  }\n]\n</a2ui-json>"
+}

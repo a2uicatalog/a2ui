@@ -1,0 +1,116 @@
+{
+ "label": "oracle-slice-3types__express__sonnet-5-5__temp0__hints-v2__run2",
+ "task": "T2",
+ "format": "express",
+ "model_id": "claude-sonnet-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "metrics-overview",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "metrics-overview",
+    "components": [
+     {
+      "id": "title",
+      "component": "heading",
+      "text": "Metrics Overview"
+     },
+     {
+      "id": "kpis",
+      "component": "metric_row",
+      "cols": 2,
+      "accent": "#4f8cff",
+      "metrics": [
+       {
+        "value": "$128.4K",
+        "label": "Monthly Revenue",
+        "trend": "up",
+        "sub": "+12.4% vs last month"
+       },
+       {
+        "value": "24,310",
+        "label": "Active Users",
+        "trend": "up",
+        "sub": "+5.1% vs last month"
+       },
+       {
+        "value": "3.2%",
+        "label": "Conversion Rate",
+        "trend": "down",
+        "sub": "-0.4% vs last month"
+       },
+       {
+        "value": "1.8%",
+        "label": "Churn Rate",
+        "trend": "down",
+        "sub": "-0.3% vs last month"
+       }
+      ]
+     },
+     {
+      "id": "chartTitle",
+      "component": "heading",
+      "text": "Quarterly Revenue: This Year vs Last Year ($K)"
+     },
+     {
+      "id": "chart",
+      "component": "chartjs_bar",
+      "labels": [
+       "Q1",
+       "Q2",
+       "Q3",
+       "Q4"
+      ],
+      "datasets": [
+       {
+        "label": "This year",
+        "data": [
+         310,
+         345,
+         372,
+         401
+        ]
+       },
+       {
+        "label": "Last year",
+        "data": [
+         270,
+         298,
+         325,
+         349
+        ]
+       }
+      ]
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "title",
+         "kpis"
+        ]
+       },
+       {
+        "blocks": [
+         "chartTitle",
+         "chart"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,36 @@
+{
+ "task": "T6",
+ "condition": "JD",
+ "label": "jev-picks-on-oracle-slice-6types__express__haiku-4-5__run2",
+ "agent_type": "jev-narrowed",
+ "catalogue": "JD-T6.json",
+ "atoms_in_catalogue": 10,
+ "prompt_chars": 7642,
+ "slot_recall": [
+  2,
+  2
+ ],
+ "secs": 4.2,
+ "usage": {
+  "input_tokens": 2176,
+  "output_tokens": 369
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns",
+  "heading",
+  "progress_bar",
+  "flashcard_deck"
+ ],
+ "score": {
+  "precision": 0.5,
+  "recall": 1.0,
+  "f1": 0.667,
+  "slot_hits": {
+   "flashcard deck": true,
+   "progress indicator": true
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"flashcard-surface\")\n\nroot = columns(1, \"2rem\", \"top\", [\n  {blocks: [\n    heading(\"Vocabulary Review\"),\n    progress_bar(50, \"Progress\", \"#4f46e5\", true, \"5 of 10 cards reviewed\")\n  ]},\n  {blocks: [\n    flashcard_deck([\n      {front: \"Ephemeral\", back: \"Lasting for a very short time\"},\n      {front: \"Serendipity\", back: \"The occurrence of events by chance in a happy or beneficial way\"},\n      {front: \"Eloquent\", back: \"Fluent or persuasive in speaking or writing\"},\n      {front: \"Ubiquitous\", back: \"Present, appearing, or found everywhere\"},\n      {front: \"Pragmatic\", back: \"Dealing with things in a practical, realistic way\"},\n      {front: \"Melancholy\", back: \"A feeling of thoughtful sadness; pensive\"},\n      {front: \"Benevolent\", back: \"Kind and generous; showing goodwill\"},\n      {front: \"Meticulous\", back: \"Showing great attention to detail; very careful and precise\"},\n      {front: \"Nostalgia\", back: \"A sentimental longing for the past\"},\n      {front: \"Tangible\", back: \"Able to be touched or felt; clear and definite\"}\n    ], \"#4f46e5\", \"WORD\", \"DEFINITION\")\n  ]}\n])\n\n</a2ui>"
+}

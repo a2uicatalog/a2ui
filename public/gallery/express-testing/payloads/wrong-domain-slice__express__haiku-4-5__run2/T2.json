@@ -1,0 +1,119 @@
+{
+ "label": "wrong-domain-slice__express__haiku-4-5__run2",
+ "task": "T2",
+ "format": "express",
+ "model_id": null,
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/b-marketing-commerce.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "2rem",
+      "items": [
+       {
+        "blocks": [
+         "_inline_1",
+         "_inline_2"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_3",
+         "_inline_4"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_5",
+         "_inline_6"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_7",
+         "_inline_8"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "_inline_1",
+      "component": "pull_stat",
+      "value": "$2.4M",
+      "label": "Total Revenue",
+      "unit": "",
+      "color": "#4f46e5"
+     },
+     {
+      "id": "_inline_2",
+      "component": "trend_indicator",
+      "trend_direction": "up",
+      "label": "12% growth",
+      "context": "vs last month",
+      "color": "green"
+     },
+     {
+      "id": "_inline_3",
+      "component": "pull_stat",
+      "value": "8,432",
+      "label": "Active Users",
+      "unit": "",
+      "color": "#8b5cf6"
+     },
+     {
+      "id": "_inline_4",
+      "component": "trend_indicator",
+      "trend_direction": "up",
+      "label": "5.2% increase",
+      "context": "vs last month",
+      "color": "green"
+     },
+     {
+      "id": "_inline_5",
+      "component": "pull_stat",
+      "value": "94.2%",
+      "label": "Customer Satisfaction",
+      "unit": "",
+      "color": "#06b6d4"
+     },
+     {
+      "id": "_inline_6",
+      "component": "trend_indicator",
+      "trend_direction": "up",
+      "label": "2.1% improvement",
+      "context": "vs last month",
+      "color": "green"
+     },
+     {
+      "id": "_inline_7",
+      "component": "pull_stat",
+      "value": "3.2s",
+      "label": "Avg Response Time",
+      "unit": "",
+      "color": "#ec4899"
+     },
+     {
+      "id": "_inline_8",
+      "component": "trend_indicator",
+      "trend_direction": "down",
+      "label": "0.3s faster",
+      "context": "vs last month",
+      "color": "green"
+     }
+    ]
+   }
+  }
+ ]
+}

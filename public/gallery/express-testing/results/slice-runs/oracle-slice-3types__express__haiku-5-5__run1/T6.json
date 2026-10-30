@@ -1,0 +1,41 @@
+{
+ "task": "T6",
+ "condition": "C_haiku-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "oracle-slice-3types__express__haiku-5-5__run1",
+ "agent_type": "Learning",
+ "catalogue": "C-learning.json",
+ "atoms_in_catalogue": 36,
+ "prompt_chars": 21139,
+ "slot_recall": [
+  2,
+  2
+ ],
+ "secs": 6.9,
+ "usage": {
+  "input_tokens": 7488,
+  "output_tokens": 1555
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "progress_bar",
+  "flashcard_deck",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.667,
+  "recall": 1.0,
+  "f1": 0.8,
+  "slot_hits": {
+   "flashcard deck": true,
+   "progress indicator": true
+  }
+ },
+ "reply": "<a2ui>\nprogress = progress_bar(value=0, label=\"Cards reviewed\", accent=\"#4f46e5\", show_percent=true, caption=\"0 of 10 cards reviewed\")\n\ndeck = flashcard_deck(cards=[\n  {front: \"Ephemeral\", back: \"Lasting for a very short time\"},\n  {front: \"Ubiquitous\", back: \"Present or found everywhere\"},\n  {front: \"Meticulous\", back: \"Showing great attention to detail\"},\n  {front: \"Resilient\", back: \"Able to recover quickly from difficulty\"},\n  {front: \"Ambiguous\", back: \"Open to more than one interpretation\"},\n  {front: \"Candid\", back: \"Truthful and straightforward\"},\n  {front: \"Diligent\", back: \"Careful and persistent in work or effort\"},\n  {front: \"Lucid\", back: \"Clear and easy to understand\"},\n  {front: \"Pragmatic\", back: \"Dealing with things sensibly and realistically\"},\n  {front: \"Tenacious\", back: \"Holding firmly to a purpose or position\"}\n], accent=\"#4f46e5\", label_front=\"WORD\", label_back=\"MEANING\")\n\nroot = columns(cols=2, gap=\"1.5rem\", align=\"top\", items=[{blocks: [progress]}, {blocks: [deck]}])\n</a2ui>"
+}

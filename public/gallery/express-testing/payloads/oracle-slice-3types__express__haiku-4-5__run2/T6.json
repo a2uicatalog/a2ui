@@ -1,0 +1,21 @@
+{
+ "label": "oracle-slice-3types__express__haiku-4-5__run2",
+ "task": "T6",
+ "format": "express",
+ "model_id": null,
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "update_data_model": {
+    "surface_id": "main",
+    "path": "/",
+    "value": {
+     "progress": {
+      "reviewed": 0,
+      "total": 10
+     }
+    }
+   }
+  }
+ ]
+}

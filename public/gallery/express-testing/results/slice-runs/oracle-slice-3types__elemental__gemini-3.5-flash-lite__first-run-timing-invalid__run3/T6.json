@@ -1,0 +1,41 @@
+{
+ "task": "T6",
+ "condition": "CX_gemini-3.5-flash-l",
+ "temperature_applied": false,
+ "format": "elemental",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash-lite",
+ "hints": false,
+ "label": "oracle-slice-3types__elemental__gemini-3.5-flash-lite__first-run-timing-invalid__run3",
+ "agent_type": "Learning",
+ "catalogue": "C-learning.json",
+ "atoms_in_catalogue": 36,
+ "prompt_chars": 21279,
+ "slot_recall": [
+  2,
+  2
+ ],
+ "secs": 20.4,
+ "usage": {
+  "input_tokens": 6049,
+  "output_tokens": 617
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "page_header",
+  "progress_bar",
+  "flashcard_deck"
+ ],
+ "score": {
+  "precision": 0.667,
+  "recall": 1.0,
+  "f1": 0.8,
+  "slot_hits": {
+   "flashcard deck": true,
+   "progress indicator": true
+  }
+ },
+ "reply": "<a2ui>\n  <body>\n    <script type=\"application/json\">\n      {\n        \"reviewed_count\": 0,\n        \"total_cards\": 10\n      }\n    </script>\n    <ui-page_header\n      id=\"root\"\n      title=\"Vocabulary Flashcards\"\n      subtitle=\"Flip each card to reveal definitions and build your active vocabulary.\"\n      icon=\"\ud83d\udcda\"\n      tag=\"SRS Practice\"\n      accent=\"#4f46e5\"\n    />\n    <ui-progress_bar\n      id=\"flashcard-progress\"\n      value=\"{40}\"\n      label=\"Review Progress\"\n      accent=\"#4f46e5\"\n      show_percent=\"{true}\"\n      caption=\"4 of 10 reviewed\"\n    />\n    <ui-flashcard_deck\n      id=\"vocab-deck\"\n      accent=\"#4f46e5\"\n      label_front=\"TERM\"\n      label_back=\"DEFINITION\"\n    >\n      <script type=\"application/json\" slot=\"cards\">[\n        {\n          \"front\": \"Ephemeral\",\n          \"back\": \"Lasting for a very short time.\"\n        },\n        {\n          \"front\": \"Serendipity\",\n          \"back\": \"The occurrence of events by chance in a happy or beneficial way.\"\n        },\n        {\n          \"front\": \"Mellifluous\",\n          \"back\": \"(Of a voice or words) sweet or musical; pleasant to hear.\"\n        },\n        {\n          \"front\": \"Petrichor\",\n          \"back\": \"A pleasant smell that frequently accompanies the first rain after a long period of warm, dry weather.\"\n        },\n        {\n          \"front\": \"Halcyon\",\n          \"back\": \"Denoting a period of time in the past that was idyllically happy and peaceful.\"\n        },\n        {\n          \"front\": \"Aurora\",\n          \"back\": \"The dawn or natural electrical phenomenon characterized by the appearance of streamers of reddish or greenish light in the sky.\"\n        },\n        {\n          \"front\": \"Panacea\",\n          \"back\": \"An solution or remedy for all difficulties or diseases.\"\n        },\n        {\n          \"front\": \"Solitude\",\n          \"back\": \"The state or situation of being alone, often providing peace and reflection.\"\n        },\n        {\n          \"front\": \"Luminous\",\n          \"back\": \"Full of or shedding light; bright or shining, especially in the dark.\"\n        },\n        {\n          \"front\": \"Resilience\",\n          \"back\": \"The capacity to recover quickly from difficulties; toughness.\"\n        }\n      ]</script>\n    </ui-flashcard_deck>\n  </body>\n</a2ui>"
+}

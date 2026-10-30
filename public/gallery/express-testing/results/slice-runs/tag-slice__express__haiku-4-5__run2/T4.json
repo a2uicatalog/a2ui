@@ -1,0 +1,34 @@
+{
+ "task": "T4",
+ "condition": "G",
+ "label": "tag-slice__express__haiku-4-5__run2",
+ "agent_type": "Data display",
+ "catalogue": "G-data-display.json",
+ "atoms_in_catalogue": 354,
+ "prompt_chars": 179044,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 2.8,
+ "usage": {
+  "input_tokens": 51579,
+  "output_tokens": 302
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "filterable_list"
+ ],
+ "score": {
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "list": false,
+   "status indicator": false,
+   "filter control": false
+  }
+ },
+ "reply": "<a2ui>\nroot = filterable_list(\n  title=\"Items\",\n  items=[\n    {title: \"Item 1\", detail: \"First item detail\", status: \"open\"},\n    {title: \"Item 2\", detail: \"Second item detail\", status: \"in_progress\"},\n    {title: \"Item 3\", detail: \"Third item detail\", status: \"done\"},\n    {title: \"Item 4\", detail: \"Fourth item detail\", status: \"open\"},\n    {title: \"Item 5\", detail: \"Fifth item detail\", status: \"in_progress\"},\n    {title: \"Item 6\", detail: \"Sixth item detail\", status: \"done\"},\n    {title: \"Item 7\", detail: \"Seventh item detail\", status: \"open\"},\n    {title: \"Item 8\", detail: \"Eighth item detail\", status: \"in_progress\"}\n  ],\n  filter_field=\"status\",\n  filters=[\n    {value: \"open\", label: \"Open\", color: \"#ef4444\"},\n    {value: \"in_progress\", label: \"In Progress\", color: \"#f59e0b\"},\n    {value: \"done\", label: \"Done\", color: \"#10b981\"}\n  ]\n)\n</a2ui>"
+}

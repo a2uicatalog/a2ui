@@ -1,0 +1,45 @@
+{
+ "task": "T3",
+ "condition": "DT_sonnet-5-5H2",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-sonnet-5-5",
+ "hints": true,
+ "label": "oracle-slice-6types__express__sonnet-5-5__temp0__hints-v2__run3",
+ "agent_type": "T3",
+ "catalogue": "D-t3.json",
+ "atoms_in_catalogue": 21,
+ "prompt_chars": 12164,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 13.8,
+ "usage": {
+  "input_tokens": 4708,
+  "output_tokens": 1636
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "gradient_hero",
+  "feature_grid",
+  "testimonial_card",
+  "cta_button",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.8,
+  "recall": 1.0,
+  "f1": 0.889,
+  "slot_hits": {
+   "hero": true,
+   "feature columns (x3)": true,
+   "testimonial": true,
+   "CTA": true
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"product-landing\")\nhero = gradient_hero(\"Ship your best work, faster\", \"Flowdesk brings your team's tasks, docs and conversations into one calm workspace so nothing slips through the cracks.\", \"New: Flowdesk 2.0\", \"#4f46e5\", \"#8b5cf6\", null, \"left\", null, null)\nfeatures = feature_grid(\"Why teams choose Flowdesk\", \"Everything you need to stay aligned, with none of the clutter.\", 3, [{icon: \"\u26a1\", title: \"Fast by default\", description: \"Instant search and keyboard shortcuts keep your team moving without waiting on the app.\", badge: \"Speed\", color: \"#4f46e5\"}, {icon: \"\ud83e\udd1d\", title: \"Built for collaboration\", description: \"Comment, assign and review in real time, with shared context that stays attached to the work.\", badge: \"Teams\", color: \"#8b5cf6\"}, {icon: \"\ud83d\udd12\", title: \"Secure and private\", description: \"Enterprise-grade encryption and granular permissions keep your data safe and under your control.\", badge: \"Security\", color: \"#0ea5e9\"}])\nquote = testimonial_card(\"Flowdesk replaced three separate tools for us. Our planning meetings are half as long and everyone knows what to do next.\", \"Priya Natarajan\", \"Head of Operations, Brightwave\", \"https://example.com/avatars/priya.jpg\", 5)\ncta = cta_button(\"https://example.com/signup\", \"Start your free trial\", \"#4f46e5\", false)\nroot = columns(2, \"2rem\", \"top\", [{blocks: [hero, features]}, {blocks: [quote, cta]}])\n</a2ui>"
+}

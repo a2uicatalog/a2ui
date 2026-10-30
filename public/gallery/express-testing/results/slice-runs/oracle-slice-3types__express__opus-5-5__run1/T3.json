@@ -1,0 +1,46 @@
+{
+ "task": "T3",
+ "condition": "C_opus-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-opus-5-5",
+ "hints": false,
+ "label": "oracle-slice-3types__express__opus-5-5__run1",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "C-marketing-commerce.json",
+ "atoms_in_catalogue": 23,
+ "prompt_chars": 12467,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 11.4,
+ "usage": {
+  "input_tokens": 4493,
+  "output_tokens": 990
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "gradient_hero",
+  "feature_grid",
+  "testimonial_card",
+  "heading",
+  "body",
+  "cta_button"
+ ],
+ "score": {
+  "precision": 0.667,
+  "recall": 1.0,
+  "f1": 0.8,
+  "slot_hits": {
+   "hero": true,
+   "feature columns (x3)": true,
+   "testimonial": true,
+   "CTA": true
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"product-landing\")\nhero = gradient_hero(\"Ship work faster with Flowline\", \"The all-in-one workspace that turns scattered tasks, docs, and chats into one calm, focused flow.\", \"New: Flowline 2.0\", \"#4f46e5\", \"#8b5cf6\", _, \"center\", \"Start free trial\", \"https://flowline.example.com/signup\")\nfeatures = feature_grid(\"Everything your team needs\", \"Three core capabilities that keep projects moving.\", 3, [{icon: \"\u26a1\", title: \"Instant Sync\", description: \"Every update appears for your whole team in real time, on every device.\"}, {icon: \"\ud83e\udde0\", title: \"Smart Automation\", description: \"Let Flowline handle reminders, handoffs, and status updates automatically.\"}, {icon: \"\ud83d\udd12\", title: \"Enterprise Security\", description: \"SSO, granular permissions, and end-to-end encryption come standard.\"}])\ntestimonial = testimonial_card(\"Flowline cut our weekly status meetings in half. Everyone finally knows what's happening without having to ask.\", \"Maya Chen\", \"Head of Operations, Brightlane\", \"https://i.pravatar.cc/150?img=47\", 5)\nctaHeading = heading(\"Ready to find your flow?\")\nctaText = body(\"Join thousands of teams already working smarter. Free for 14 days, no credit card required.\")\ncta = cta_button(\"https://flowline.example.com/signup\", \"Get started free\", \"#4f46e5\")\nroot = [hero, features, testimonial, ctaHeading, ctaText, cta]\n</a2ui>"
+}

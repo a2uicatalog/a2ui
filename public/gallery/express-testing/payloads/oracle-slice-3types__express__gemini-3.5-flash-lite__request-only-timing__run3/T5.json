@@ -1,0 +1,90 @@
+{
+ "label": "oracle-slice-3types__express__gemini-3.5-flash-lite__request-only-timing__run3",
+ "task": "T5",
+ "format": "express",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "pricing-surface",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "pricing-surface",
+    "components": [
+     {
+      "id": "pricingSectionHeading",
+      "component": "heading",
+      "text": "Choose Your Plan"
+     },
+     {
+      "id": "pricingGrid",
+      "component": "pricing_tier_group",
+      "tiers": [
+       {
+        "name": "Starter",
+        "price": "$9",
+        "cadence": "/month",
+        "description": "Perfect for individuals and side projects.",
+        "features": [
+         "1 User",
+         "5GB Storage",
+         "Community Support",
+         "Basic Analytics"
+        ],
+        "recommended": false
+       },
+       {
+        "name": "Pro",
+        "price": "$29",
+        "cadence": "/month",
+        "description": "Ideal for growing teams and professionals.",
+        "features": [
+         "5 Users",
+         "50GB Storage",
+         "Priority Support",
+         "Advanced Analytics",
+         "Custom Domain"
+        ],
+        "recommended": true
+       },
+       {
+        "name": "Enterprise",
+        "price": "$99",
+        "cadence": "/month",
+        "description": "For large organizations with heavy demands.",
+        "features": [
+         "Unlimited Users",
+         "500GB Storage",
+         "24/7 Dedicated Support",
+         "Custom Integrations",
+         "SLA Guarantee"
+        ],
+        "recommended": false
+       }
+      ]
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "2rem",
+      "align": "center",
+      "items": [
+       {
+        "blocks": [
+         "pricingSectionHeading",
+         "pricingGrid"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

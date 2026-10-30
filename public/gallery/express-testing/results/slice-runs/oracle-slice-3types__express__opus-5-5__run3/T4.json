@@ -1,0 +1,45 @@
+{
+ "task": "T4",
+ "condition": "C_opus-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-opus-5-5",
+ "hints": false,
+ "label": "oracle-slice-3types__express__opus-5-5__run3",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 16421,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 13.1,
+ "usage": {
+  "input_tokens": 6049,
+  "output_tokens": 1246
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "heading",
+  "body",
+  "segmented_control",
+  "lozenge",
+  "entity_list",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.5,
+  "recall": 1.0,
+  "f1": 0.667,
+  "slot_hits": {
+   "list": true,
+   "status indicator": true,
+   "filter control": true
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"status-list-surface\")\n\ntitle = heading(\"Release Tasks\")\nintro = body(\"Eight tasks for the v2.4 release. Choose a status to filter the list.\")\nfilter = segmented_control(options=[{label: \"All (8)\", value: \"all\"}, {label: \"Open (2)\", value: \"open\"}, {label: \"In progress (2)\", value: \"in_progress\"}, {label: \"Blocked (2)\", value: \"blocked\"}, {label: \"Done (2)\", value: \"done\"}], selected_value=\"all\", name=\"status_filter\")\nlegend = lozenge(items=[{text: \"Open\", appearance: \"new\"}, {text: \"In progress\", appearance: \"inprogress\"}, {text: \"Blocked\", appearance: \"removed\"}, {text: \"Done\", appearance: \"success\"}])\n\nitems = entity_list(items=[\n  {name: \"Finalize API schema\", subtitle: \"Lock request and response contracts for public endpoints.\", icon: \"\ud83d\udcd0\", status: \"In progress\", meta: \"Due Mar 14\"},\n  {name: \"Migrate user database\", subtitle: \"Move accounts to the new cluster with zero downtime.\", icon: \"\ud83d\uddc4\ufe0f\", status: \"Blocked\", meta: \"Waiting on infra\"},\n  {name: \"Update onboarding flow\", subtitle: \"Add a welcome checklist and product tour.\", icon: \"\ud83e\udded\", status: \"Open\", meta: \"Due Mar 18\"},\n  {name: \"Write release notes\", subtitle: \"Summarize new features and breaking changes.\", icon: \"\ud83d\udcdd\", status: \"Open\", meta: \"Due Mar 20\"},\n  {name: \"Security audit\", subtitle: \"Third-party penetration test of the auth service.\", icon: \"\ud83d\udd12\", status: \"Done\", meta: \"Completed Mar 8\"},\n  {name: \"Performance tuning\", subtitle: \"Cut dashboard load time below two seconds.\", icon: \"\u26a1\", status: \"In progress\", meta: \"Due Mar 15\"},\n  {name: \"Localization pass\", subtitle: \"Translate new strings into French and German.\", icon: \"\ud83c\udf0d\", status: \"Blocked\", meta: \"Waiting on vendor\"},\n  {name: \"Set up monitoring alerts\", subtitle: \"Configure error-rate and latency alerts.\", icon: \"\ud83d\udcc8\", status: \"Done\", meta: \"Completed Mar 10\"}\n])\n\nroot = columns(cols=2, gap=\"1.5rem\", align=\"top\", items=[\n  {blocks: [title, intro, filter, legend]},\n  {blocks: [items]}\n])\n</a2ui>"
+}

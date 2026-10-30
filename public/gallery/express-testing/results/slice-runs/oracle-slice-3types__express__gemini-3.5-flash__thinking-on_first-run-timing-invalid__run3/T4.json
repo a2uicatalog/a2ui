@@ -1,0 +1,46 @@
+{
+ "task": "T4",
+ "condition": "C_gemini-3.5-flash",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash",
+ "hints": false,
+ "label": "oracle-slice-3types__express__gemini-3.5-flash__thinking-on_first-run-timing-invalid__run3",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 16421,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 17.9,
+ "usage": {
+  "input_tokens": 4600,
+  "output_tokens": 4667
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns",
+  "heading",
+  "body",
+  "segmented_control",
+  "metric_row",
+  "heading",
+  "entity_list"
+ ],
+ "score": {
+  "precision": 0.286,
+  "recall": 0.667,
+  "f1": 0.4,
+  "slot_hits": {
+   "list": true,
+   "status indicator": false,
+   "filter control": true
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"task-filter-board\")\n\nleft_col = {\n    \"blocks\": [\n        heading(\"Task Control Center\"),\n        body(\"Monitor, filter, and track active system tasks and maintenance events across all environment clusters in real-time.\"),\n        segmented_control([\n            {\"label\": \"All (8)\", \"value\": \"all\"},\n            {\"label\": \"Completed\", \"value\": \"completed\"},\n            {\"label\": \"In Progress\", \"value\": \"inprogress\"},\n            {\"label\": \"Pending\", \"value\": \"pending\"}\n        ], \"all\", \"status_filter\"),\n        metric_row(2, \"#4F46E5\", [\n            {\"value\": \"8\", \"label\": \"Total Tasks\", \"prefix\": \"\"},\n            {\"value\": \"3\", \"label\": \"Action Needed\", \"trend\": \"up\"}\n        ])\n    ]\n}\n\nright_col = {\n    \"blocks\": [\n        heading(\"System Tasks & Logs\"),\n        entity_list([\n            {\"name\": \"Server Migration\", \"subtitle\": \"Transferring core assets to us-east cluster\", \"icon\": \"\ud83d\ude80\", \"status\": \"In Progress\", \"meta\": \"Ops\"},\n            {\"name\": \"Database Backup\", \"subtitle\": \"Nightly snapshot of production database\", \"icon\": \"\ud83d\udcbe\", \"status\": \"Completed\", \"meta\": \"Storage\"},\n            {\"name\": \"API Integration\", \"subtitle\": \"Syncing payment gateway webhooks\", \"icon\": \"\ud83d\udd0c\", \"status\": \"Pending\", \"meta\": \"Dev\"},\n            {\"name\": \"SSL Certificate Renewal\", \"subtitle\": \"Renewing wildcard certs for public domains\", \"icon\": \"\ud83d\udd12\", \"status\": \"Expired\", \"meta\": \"Sec\"},\n            {\"name\": \"Firewall Rule Update\", \"subtitle\": \"Restricting port 22 access to internal VPN\", \"icon\": \"\ud83d\udee1\ufe0f\", \"status\": \"In Progress\", \"meta\": \"Sec\"},\n            {\"name\": \"Billing Audit\", \"subtitle\": \"Quarterly cloud spend and resource analysis\", \"icon\": \"\ud83d\udcca\", \"status\": \"Pending\", \"meta\": \"Finance\"},\n            {\"name\": \"DNS Routing Optimization\", \"subtitle\": \"Configuring latency-based routing via Cloudflare\", \"icon\": \"\ud83c\udf10\", \"status\": \"Completed\", \"meta\": \"Ops\"},\n            {\"name\": \"User Access Review\", \"subtitle\": \"IAM permission compliance and audit check\", \"icon\": \"\ud83d\udc65\", \"status\": \"Scheduled\", \"meta\": \"Sec\"}\n        ])\n    ]\n}\n\nroot = columns(2, \"2rem\", \"top\", [left_col, right_col])\n</a2ui>"
+}

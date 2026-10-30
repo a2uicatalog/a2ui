@@ -1,0 +1,182 @@
+{
+ "label": "wrong-domain-slice__express__haiku-4-5__run3",
+ "task": "T5",
+ "format": "express",
+ "model_id": null,
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/b-learning.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 3,
+      "items": [
+       {
+        "blocks": [
+         "_inline_1"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_2"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_3"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "_inline_1",
+      "component": "two_tone_card",
+      "title": "Starter",
+      "subtitle": "Perfect for individuals",
+      "accent": "#4f46e5",
+      "blocks": [
+       "_inline_1_blocks_0",
+       "_inline_1_blocks_1",
+       "_inline_1_blocks_2"
+      ]
+     },
+     {
+      "id": "_inline_1_blocks_0",
+      "component": "body",
+      "text": "$9/month"
+     },
+     {
+      "id": "_inline_1_blocks_1",
+      "component": "bullet_list",
+      "items": [
+       {
+        "text": "Up to 5 projects"
+       },
+       {
+        "text": "Basic analytics"
+       },
+       {
+        "text": "Community support"
+       },
+       {
+        "text": "1GB storage"
+       }
+      ]
+     },
+     {
+      "id": "_inline_1_blocks_2",
+      "component": "ripple_button",
+      "label": "Get Started",
+      "accent": "#4f46e5"
+     },
+     {
+      "id": "_inline_2",
+      "component": "two_tone_card",
+      "title": "Professional",
+      "subtitle": "Most popular",
+      "accent": "#8b5cf6",
+      "blocks": [
+       "_inline_2_blocks_0",
+       "_inline_2_blocks_1",
+       "_inline_2_blocks_2",
+       "_inline_2_blocks_3"
+      ]
+     },
+     {
+      "id": "_inline_2_blocks_0",
+      "component": "highlight_box",
+      "text": "Recommended",
+      "accent": "#8b5cf6",
+      "style": "solid"
+     },
+     {
+      "id": "_inline_2_blocks_1",
+      "component": "body",
+      "text": "$29/month"
+     },
+     {
+      "id": "_inline_2_blocks_2",
+      "component": "bullet_list",
+      "items": [
+       {
+        "text": "Unlimited projects"
+       },
+       {
+        "text": "Advanced analytics"
+       },
+       {
+        "text": "Priority email support"
+       },
+       {
+        "text": "100GB storage"
+       },
+       {
+        "text": "Custom integrations"
+       }
+      ]
+     },
+     {
+      "id": "_inline_2_blocks_3",
+      "component": "ripple_button",
+      "label": "Start Free Trial",
+      "accent": "#8b5cf6"
+     },
+     {
+      "id": "_inline_3",
+      "component": "two_tone_card",
+      "title": "Enterprise",
+      "subtitle": "For large teams",
+      "accent": "#06b6d4",
+      "blocks": [
+       "_inline_3_blocks_0",
+       "_inline_3_blocks_1",
+       "_inline_3_blocks_2"
+      ]
+     },
+     {
+      "id": "_inline_3_blocks_0",
+      "component": "body",
+      "text": "Custom pricing"
+     },
+     {
+      "id": "_inline_3_blocks_1",
+      "component": "bullet_list",
+      "items": [
+       {
+        "text": "Everything in Professional"
+       },
+       {
+        "text": "Dedicated account manager"
+       },
+       {
+        "text": "24/7 phone support"
+       },
+       {
+        "text": "Unlimited storage"
+       },
+       {
+        "text": "Advanced security"
+       }
+      ]
+     },
+     {
+      "id": "_inline_3_blocks_2",
+      "component": "ripple_button",
+      "label": "Contact Sales",
+      "accent": "#06b6d4"
+     }
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,64 @@
+{
+ "label": "oracle-slice-6types__express__haiku-5-5__run3",
+ "task": "T5",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/d-t5.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "pricing_tier_group",
+      "tiers": [
+       {
+        "name": "Starter",
+        "price": "$9/mo",
+        "description": "For individuals getting started",
+        "features": [
+         "1 project",
+         "Basic analytics",
+         "Email support"
+        ],
+        "recommended": false
+       },
+       {
+        "name": "Pro",
+        "price": "$29/mo",
+        "description": "For growing teams",
+        "features": [
+         "Unlimited projects",
+         "Advanced analytics",
+         "Priority support",
+         "Custom integrations"
+        ],
+        "recommended": true
+       },
+       {
+        "name": "Enterprise",
+        "price": "$99/mo",
+        "description": "For large organizations",
+        "features": [
+         "Everything in Pro",
+         "SSO and audit logs",
+         "Dedicated account manager",
+         "99.99% uptime SLA"
+        ],
+        "recommended": false
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

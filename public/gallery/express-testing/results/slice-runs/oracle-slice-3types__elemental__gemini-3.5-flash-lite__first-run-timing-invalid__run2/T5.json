@@ -1,0 +1,46 @@
+{
+ "task": "T5",
+ "condition": "CX_gemini-3.5-flash-l",
+ "temperature_applied": false,
+ "format": "elemental",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash-lite",
+ "hints": false,
+ "label": "oracle-slice-3types__elemental__gemini-3.5-flash-lite__first-run-timing-invalid__run2",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "C-marketing-commerce.json",
+ "atoms_in_catalogue": 23,
+ "prompt_chars": 12539,
+ "slot_recall": [
+  1,
+  1
+ ],
+ "secs": 18.5,
+ "usage": {
+  "input_tokens": 3611,
+  "output_tokens": 356
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "pricing_tier_group"
+ ],
+ "score": {
+  "per_approach": {
+   "tier_cards": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+   },
+   "comparison_table": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": null
+   }
+  },
+  "best_approach": "tier_cards",
+  "f1": 1.0
+ },
+ "reply": "<a2ui>\n  <body>\n    <script type=\"application/json\">\n      {\n        \"tiers\": [\n          {\n            \"name\": \"Starter\",\n            \"price\": \"$9\",\n            \"cadence\": \"/month\",\n            \"description\": \"Ideal for individuals and small side projects.\",\n            \"features\": [\"1 User\", \"Basic Analytics\", \"Community Support\", \"1GB Storage\"],\n            \"cta_label\": \"Get Started\",\n            \"cta_url\": \"#starter\"\n          },\n          {\n            \"name\": \"Pro\",\n            \"price\": \"$29\",\n            \"cadence\": \"/month\",\n            \"description\": \"Best for growing teams and professionals.\",\n            \"features\": [\"5 Users\", \"Advanced Analytics\", \"Priority Email Support\", \"50GB Storage\", \"Custom Domain\"],\n            \"cta_label\": \"Start Free Trial\",\n            \"cta_url\": \"#pro\",\n            \"recommended\": true\n          },\n          {\n            \"name\": \"Enterprise\",\n            \"price\": \"$99\",\n            \"cadence\": \"/month\",\n            \"description\": \"For large-scale operations with advanced needs.\",\n            \"features\": [\"Unlimited Users\", \"Real-time Analytics\", \"24/7 Dedicated Support\", \"Unlimited Storage\", \"SLA Guarantee\"],\n            \"cta_label\": \"Contact Sales\",\n            \"cta_url\": \"#enterprise\"\n          }\n        ]\n      }\n    </script>\n    <ui-pricing_tier_group id=\"root\" tiers=\"{$/tiers}\" />\n  </body>\n</a2ui>"
+}

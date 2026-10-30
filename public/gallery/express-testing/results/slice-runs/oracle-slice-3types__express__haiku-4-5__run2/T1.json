@@ -1,0 +1,34 @@
+{
+ "task": "T1",
+ "condition": "C",
+ "label": "oracle-slice-3types__express__haiku-4-5__run2",
+ "agent_type": "Learning",
+ "catalogue": "C-learning.json",
+ "atoms_in_catalogue": 36,
+ "prompt_chars": 21139,
+ "slot_recall": [
+  5,
+  5
+ ],
+ "secs": 10.8,
+ "usage": {
+  "input_tokens": 5886,
+  "output_tokens": 1060
+ },
+ "valid": false,
+ "error": "A2uiCompilationParseError: Syntax error at line 1:136: token recognition error at: '+' (line 1) - Line 1, Col 136 - Help: Please correct the syntax error in your Express DSL.",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "title": false,
+   "concept sections (x3)": false,
+   "worked example": false,
+   "3-question quiz": false,
+   "quiz result": false
+  }
+ },
+ "reply": "<a2ui>\nroot = page_header(\"The Water Cycle\", \"Learn how water moves through Earth's atmosphere, land, and oceans\", icon=\"\ud83d\udca7\", accent=\"#0284c7\") + [\n  concept_ladder_intro,\n  quiz_section\n]\n\nconcept_ladder_intro = [\n  concept_rung(\n    badge=\"1\",\n    kind=\"depth\",\n    title=\"Evaporation\",\n    body=\"Water from oceans, lakes, and rivers is heated by the sun and transforms into water vapor, rising into the atmosphere. This is the first major stage of the water cycle.\",\n    code=\"Heat + Liquid Water \u2192 Water Vapor\\nExample: A puddle disappearing on a sunny day\",\n    takeaway=\"Evaporation is the key process that lifts water into the sky\"\n  ),\n  concept_rung(\n    badge=\"2\",\n    kind=\"depth\",\n    title=\"Condensation\",\n    body=\"As water vapor rises and cools in the upper atmosphere, it transforms back into liquid water droplets. These droplets form clouds and fog. Temperature drop triggers this phase change.\",\n    code=\"Cool Temperature + Water Vapor \u2192 Liquid Droplets\\nExample: Dew forming on grass in the morning\",\n    takeaway=\"Condensation creates the clouds we see in the sky\"\n  ),\n  concept_rung(\n    badge=\"3\",\n    kind=\"depth\",\n    title=\"Precipitation\",\n    body=\"When water droplets in clouds combine and become too heavy, they fall back to Earth as rain, snow, sleet, or hail. This returns water to the land and oceans.\",\n    code=\"Heavy Cloud Droplets \u2192 Precipitation\\nExample: Rain falling after a storm develops\",\n    takeaway=\"Precipitation completes the cycle by returning water to Earth's surface\"\n  ),\n  concept_rung(\n    badge=\"EX\",\n    kind=\"example\",\n    title=\"The Complete Water Cycle in Action\",\n    body=\"Imagine a summer afternoon at the beach. The hot sun heats the ocean surface, causing water to evaporate into invisible vapor. This vapor rises high into the atmosphere where it cools. As temperatures drop, the vapor condenses into visible water droplets, forming puffy cumulus clouds. Over time, more droplets combine, making the clouds darker and heavier. Eventually, the clouds release their water as rain, which falls into the ocean, nearby lakes, and land. Some of this rainwater soaks into the soil (infiltration), some flows downhill into rivers (runoff), and some is taken up by plants (transpiration). This water eventually makes its way back to the ocean, and the whole cycle begins again.\",\n    takeaway=\"The water cycle is continuous\u2014water never leaves our planet, it just changes form and location\"\n  )\n]\n\nquiz_section = [\n  heading(\"Self-Check Quiz\"),\n  quiz_set(\n    title=\"Test Your Understanding of the Water Cycle\",\n    questions=[\n      {\n        question=\"Which process describes water transforming from a liquid into a gas?\",\n        options=[\"Evaporation\", \"Condensation\", \"Precipitation\", \"Infiltration\"],\n        correct=0,\n        explanation=\"Correct! Evaporation is when the sun's heat causes water to transform into water vapor and rise into the atmosphere.\"\n      },\n      {\n        question=\"What causes water vapor to turn back into liquid droplets in the atmosphere?\",\n        options=[\"Increased heat from the sun\", \"Cooling temperatures at higher altitudes\", \"Gravity pulling the vapor down\", \"Salt in the ocean water\"],\n        correct=1,\n        explanation=\"Correct! As water vapor rises and cools in the upper atmosphere, the temperature drop causes it to condense back into liquid water droplets, forming clouds.\"\n      },\n      {\n        question=\"Which of the following is a form of precipitation?\",\n        options=[\"Evaporation\", \"Transpiration\", \"Snow\", \"Condensation\"],\n        correct=2,\n        explanation=\"Correct! Snow is a form of precipitation. Other forms include rain, sleet, and hail\u2014all water falling back to Earth from clouds.\"\n      }\n    ],\n    pass_score=70,\n    accent=\"#0284c7\",\n    on_pass=callout(kind=\"tip\", title=\"Great Job!\", text=\"You understand the water cycle! Water continuously moves through evaporation, condensation, and precipitation.\"),\n    on_fail=callout(kind=\"warning\", title=\"Try Again\", text=\"Review the concept sections above and retake the quiz to master the water cycle.\")\n  )\n]\n</a2ui>"
+}

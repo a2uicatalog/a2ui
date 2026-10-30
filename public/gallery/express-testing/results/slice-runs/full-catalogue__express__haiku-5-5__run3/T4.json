@@ -1,0 +1,40 @@
+{
+ "task": "T4",
+ "condition": "A_haiku-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "full-catalogue__express__haiku-5-5__run3",
+ "agent_type": "full",
+ "catalogue": "A-full.json",
+ "atoms_in_catalogue": 557,
+ "prompt_chars": 294155,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 4.2,
+ "usage": {
+  "input_tokens": 107814,
+  "output_tokens": 821
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "filterable_list"
+ ],
+ "score": {
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "list": false,
+   "status indicator": false,
+   "filter control": false
+  }
+ },
+ "reply": "<a2ui>\nroot = filterable_list(\n  title=\"Work items\",\n  filter_field=\"status\",\n  show_counts=true,\n  empty_text=\"No items match this status.\",\n  colors={open: \"#2563eb\", in_progress: \"#f59e0b\", blocked: \"#dc2626\", done: \"#16a34a\"},\n  items=[\n    {title: \"Set up CI pipeline\", detail: \"Build and test run on every push to main.\", status: \"done\"},\n    {title: \"Draft API reference\", detail: \"Endpoint docs are written but need a review pass.\", status: \"in_progress\"},\n    {title: \"Migrate user database\", detail: \"Blocked until the staging credentials are issued.\", status: \"blocked\"},\n    {title: \"Write onboarding guide\", detail: \"Outline agreed; first draft not started.\", status: \"open\"},\n    {title: \"Fix login timeout\", detail: \"Root cause identified; patch is merged and deployed.\", status: \"done\"},\n    {title: \"Add rate limiting\", detail: \"Design chosen; implementation is under way.\", status: \"in_progress\"},\n    {title: \"Audit third-party licences\", detail: \"Waiting on legal to confirm two packages.\", status: \"blocked\"},\n    {title: \"Plan Q3 roadmap\", detail: \"Kickoff scheduled; no owner assigned yet.\", status: \"open\"}\n  ]\n)\n</a2ui>"
+}

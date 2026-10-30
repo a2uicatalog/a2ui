@@ -1,0 +1,124 @@
+{
+ "label": "oracle-slice-6types__json__sonnet-5-5__temp0__run1",
+ "task": "T2",
+ "format": "json",
+ "model_id": "claude-sonnet-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "metrics_overview",
+    "catalog_id": "https://a2uicatalog.ai/catalog/d-t2.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "metrics_overview",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         {
+          "type": "heading",
+          "component": "heading",
+          "id": "kpi_heading",
+          "text": "Key Metrics"
+         },
+         {
+          "type": "metric_row",
+          "component": "metric_row",
+          "id": "kpi_tiles",
+          "cols": 2,
+          "accent": "#4f8cff",
+          "metrics": [
+           {
+            "value": "48.2",
+            "prefix": "$",
+            "suffix": "K",
+            "label": "Monthly Revenue",
+            "sub": "vs. last month",
+            "trend": "up",
+            "accent": "#22c55e"
+           },
+           {
+            "value": "12,480",
+            "label": "Active Users",
+            "sub": "vs. last month",
+            "trend": "up",
+            "accent": "#4f8cff"
+           },
+           {
+            "value": "3.1",
+            "suffix": "%",
+            "label": "Churn Rate",
+            "sub": "vs. last month",
+            "trend": "down",
+            "accent": "#ef4444"
+           },
+           {
+            "value": "4.6",
+            "suffix": "/5",
+            "label": "Customer Satisfaction",
+            "sub": "vs. last month",
+            "trend": "up",
+            "accent": "#f59e0b"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "blocks": [
+         {
+          "type": "heading",
+          "component": "heading",
+          "id": "chart_heading",
+          "text": "Quarterly Comparison"
+         },
+         {
+          "type": "chartjs_bar",
+          "component": "chartjs_bar",
+          "id": "comparison_chart",
+          "labels": [
+           "Revenue ($K)",
+           "Active Users (100s)",
+           "Churn (%)",
+           "CSAT (x10)"
+          ],
+          "datasets": [
+           {
+            "label": "Last Quarter",
+            "data": [
+             41.5,
+             108,
+             3.6,
+             43
+            ]
+           },
+           {
+            "label": "This Quarter",
+            "data": [
+             48.2,
+             124.8,
+             3.1,
+             46
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

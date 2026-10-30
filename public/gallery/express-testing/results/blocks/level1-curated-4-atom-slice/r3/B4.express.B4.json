@@ -1,0 +1,36 @@
+{
+ "model": "sonnet-5-5",
+ "cond": "B4",
+ "format": "express",
+ "brief": "B4",
+ "repeat": 3,
+ "seq": 39,
+ "model_id": "claude-sonnet-5-5",
+ "utc": "2026-10-29T19:56:26Z",
+ "prompt_chars": 12613,
+ "prompt_sha256": "(removed for publication)",
+ "temperature_requested": null,
+ "temperature_sent": false,
+ "max_tokens": 32768,
+ "request_secs": 10.05,
+ "input_tokens": 4673,
+ "output_tokens": 344,
+ "stop_reason": "end_turn",
+ "usage": {
+  "input_tokens": 4673,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "cache_creation": {
+   "ephemeral_5m_input_tokens": 0,
+   "ephemeral_1h_input_tokens": 0
+  },
+  "output_tokens": 344,
+  "output_tokens_details": {
+   "thinking_tokens": 245
+  },
+  "service_tier": "standard",
+  "inference_geo": "global",
+  "speed": "standard"
+ },
+ "reply": "<a2ui>\nsurface(\"launch-pad\")\nroot = block_rocket(motion={order: \"base-up\"}, angle=30, elevation=24, turns=1, look=\"studio\", base=\"#5b6270\", ratio=\"4:3\", label=\"Toy spaceship on a launch pad\")\n</a2ui>"
+}

@@ -1,0 +1,41 @@
+{
+ "task": "T2",
+ "condition": "CT",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-4-5-20251001",
+ "label": "oracle-slice-3types__express__haiku-4-5__temp0__run1",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 16421,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 2.6,
+ "usage": {
+  "input_tokens": 4761,
+  "output_tokens": 204
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns",
+  "stat_card",
+  "stat_card",
+  "stat_card",
+  "stat_card"
+ ],
+ "score": {
+  "precision": 0.8,
+  "recall": 0.667,
+  "f1": 0.727,
+  "slot_hits": {
+   "KPI tile (x4)": true,
+   "trend (required only if metric_row was chosen; stat_card's own delta already satisfies it)": true,
+   "comparison chart": false
+  }
+ },
+ "reply": "<a2ui>\nroot = columns(cols=4, gap=\"1.5rem\", items=[\n  {blocks: [stat_card(value=\"$2.4M\", label=\"Revenue\", delta=\"+12%\", is_up=true, accent=\"#10B981\")]},\n  {blocks: [stat_card(value=\"8,432\", label=\"Active Users\", delta=\"+5%\", is_up=true, accent=\"#3B82F6\")]},\n  {blocks: [stat_card(value=\"94.2%\", label=\"Uptime\", delta=\"-0.3%\", is_up=false, accent=\"#EF4444\")]},\n  {blocks: [stat_card(value=\"2.1s\", label=\"Avg Response\", delta=\"-8%\", is_up=true, accent=\"#10B981\")]}\n])\n</a2ui>"
+}

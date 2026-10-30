@@ -1,0 +1,35 @@
+{
+ "model": "sonnet-5-5",
+ "cond": "R",
+ "format": "express",
+ "brief": "Y2",
+ "repeat": 3,
+ "seq": 50,
+ "utc": "2026-10-29T21:03:07Z",
+ "model_id": "claude-sonnet-5-5",
+ "prompt_chars": 4084,
+ "prompt_sha256": "(removed for publication)",
+ "temperature_sent": false,
+ "max_tokens": 256,
+ "request_secs": 2.3,
+ "input_tokens": 1770,
+ "output_tokens": 140,
+ "stop_reason": "end_turn",
+ "usage": {
+  "input_tokens": 1770,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "cache_creation": {
+   "ephemeral_5m_input_tokens": 0,
+   "ephemeral_1h_input_tokens": 0
+  },
+  "output_tokens": 140,
+  "output_tokens_details": {
+   "thinking_tokens": 118
+  },
+  "service_tier": "standard",
+  "inference_geo": "global",
+  "speed": "standard"
+ },
+ "reply": "{\"catalogue\": \"a2ui-ops-v1\"}"
+}

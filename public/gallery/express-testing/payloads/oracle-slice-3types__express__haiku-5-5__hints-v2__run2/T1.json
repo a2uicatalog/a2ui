@@ -1,0 +1,141 @@
+{
+ "label": "oracle-slice-3types__express__haiku-5-5__hints-v2__run2",
+ "task": "T1",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "header",
+      "component": "page_header",
+      "title": "The Water Cycle",
+      "subtitle": "How water moves between the oceans, atmosphere, and land",
+      "icon": "\ud83d\udca7",
+      "tag": "Earth Science",
+      "accent": "#0ea5e9"
+     },
+     {
+      "id": "evap_h",
+      "component": "heading",
+      "text": "1. Evaporation"
+     },
+     {
+      "id": "evap_b",
+      "component": "body",
+      "text": "Heat from the Sun warms water at the surface of oceans, lakes, and rivers. Molecules gain enough energy to escape as water vapour, rising into the atmosphere. Plants also release water vapour through their leaves in a process called transpiration."
+     },
+     {
+      "id": "cond_h",
+      "component": "heading",
+      "text": "2. Condensation"
+     },
+     {
+      "id": "cond_b",
+      "component": "body",
+      "text": "As water vapour rises, it cools. Cooler air holds less moisture, so the vapour changes back into tiny liquid droplets. These droplets cluster around dust and salt particles, forming clouds."
+     },
+     {
+      "id": "precip_h",
+      "component": "heading",
+      "text": "3. Precipitation"
+     },
+     {
+      "id": "precip_b",
+      "component": "body",
+      "text": "When droplets in clouds grow heavy enough, they fall as rain, snow, sleet, or hail. Most precipitation lands in the oceans, but some soaks into the ground or runs off into rivers, which carry it back to the sea."
+     },
+     {
+      "id": "example",
+      "component": "concept_rung",
+      "badge": "EX",
+      "kind": "example",
+      "label": "WORKED EXAMPLE",
+      "title": "Tracing one raindrop",
+      "body": "A drop evaporates from a lake on a warm afternoon. It rises, cools high in the sky, and condenses onto a dust particle to form a cloud droplet. Later, it joins other droplets, falls as rain onto a hillside, soaks into the soil, and eventually seeps into a stream that flows back to the lake.",
+      "code": "",
+      "code_caption": "",
+      "takeaway": "Water is continuously recycled, so the same molecules can cycle through many stages over time."
+     },
+     {
+      "id": "quiz",
+      "component": "quiz_set",
+      "title": "Self-check",
+      "questions": [
+       {
+        "question": "What primarily drives evaporation?",
+        "options": [
+         "Wind",
+         "Heat from the Sun",
+         "Gravity",
+         "Soil pressure"
+        ],
+        "correct": 1,
+        "explanation": "Solar heat gives water molecules the energy needed to become vapour."
+       },
+       {
+        "question": "What happens to water vapour as it cools?",
+        "options": [
+         "It condenses into droplets",
+         "It turns into salt",
+         "It sinks to the ground",
+         "It disappears"
+        ],
+        "correct": 0,
+        "explanation": "Cooler air can hold less vapour, so it condenses into liquid droplets that form clouds."
+       },
+       {
+        "question": "Which process returns water from clouds to the surface?",
+        "options": [
+         "Transpiration",
+         "Precipitation",
+         "Evaporation",
+         "Infiltration"
+        ],
+        "correct": 1,
+        "explanation": "Precipitation is any form of water falling from clouds, such as rain or snow."
+       }
+      ],
+      "pass_score": 70
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "2rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "header",
+         "evap_h",
+         "evap_b",
+         "cond_h",
+         "cond_b",
+         "precip_h",
+         "precip_b"
+        ]
+       },
+       {
+        "blocks": [
+         "example",
+         "quiz"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

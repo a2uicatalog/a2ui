@@ -1,0 +1,70 @@
+{
+ "version": "blocks-express-test condition R briefs v1",
+ "source": "B1-B8 verbatim from briefs.json; X1-X8 written 2026-10-29 for the routing test",
+ "briefs": [
+  {
+   "id": "B1",
+   "brief": "Show me a toy robot"
+  },
+  {
+   "id": "B2",
+   "brief": "Show me a toy rocket"
+  },
+  {
+   "id": "B3",
+   "brief": "Build a small robot with a red head and show it"
+  },
+  {
+   "id": "B4",
+   "brief": "A toy spaceship on a launch pad"
+  },
+  {
+   "id": "B5",
+   "brief": "Build a toy house out of bricks"
+  },
+  {
+   "id": "B6",
+   "brief": "Build a toy cat from bricks"
+  },
+  {
+   "id": "B7",
+   "brief": "Assemble a real-parts model of a small table"
+  },
+  {
+   "id": "B8",
+   "brief": "Show a sales dashboard with a bar chart"
+  },
+  {
+   "id": "X1",
+   "brief": "Plot our monthly website visitors as a line chart with a trend line"
+  },
+  {
+   "id": "X2",
+   "brief": "Create a contact form with name, email and message fields and a send button"
+  },
+  {
+   "id": "X3",
+   "brief": "A lesson card for Introduction to Fractions with a short quiz question at the end"
+  },
+  {
+   "id": "X4",
+   "brief": "Show live flights over Europe on a radar map using ADS-B positions"
+  },
+  {
+   "id": "X5",
+   "brief": "An incident panel for the on-call team showing which services are down and their status"
+  },
+  {
+   "id": "X6",
+   "brief": "A promotional hero banner with a headline and a sign-up button for our new product"
+  },
+  {
+   "id": "X7",
+   "brief": "What is the capital of Australia?"
+  },
+  {
+   "id": "X8",
+   "brief": "A feature comparison table of our product against two competitors"
+  }
+ ]
+}

@@ -1,0 +1,36 @@
+{
+ "model": "sonnet-5-5",
+ "cond": "B4",
+ "format": "express",
+ "brief": "B7",
+ "repeat": 2,
+ "seq": 30,
+ "model_id": "claude-sonnet-5-5",
+ "utc": "2026-10-29T19:55:22Z",
+ "prompt_chars": 12626,
+ "prompt_sha256": "(removed for publication)",
+ "temperature_requested": null,
+ "temperature_sent": false,
+ "max_tokens": 32768,
+ "request_secs": 14.08,
+ "input_tokens": 4674,
+ "output_tokens": 1588,
+ "stop_reason": "end_turn",
+ "usage": {
+  "input_tokens": 4674,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "cache_creation": {
+   "ephemeral_5m_input_tokens": 0,
+   "ephemeral_1h_input_tokens": 0
+  },
+  "output_tokens": 1588,
+  "output_tokens_details": {
+   "thinking_tokens": 1178
+  },
+  "service_tier": "standard",
+  "inference_geo": "global",
+  "speed": "standard"
+ },
+ "reply": "<a2ui>\nsurface(\"small-table\")\nroot = brick_build_3d(null, null, null, \"animate\", 1, 1, true, 420, null, true, true, true, null, null, null, [[\"3005\", -50, -24, -30, 0, 6], [\"3005\", 50, -24, -30, 0, 6], [\"3005\", -50, -24, 30, 0, 6], [\"3005\", 50, -24, 30, 0, 6], [\"3005\", -50, -48, -30, 0, 6], [\"3005\", 50, -48, -30, 0, 6], [\"3005\", -50, -48, 30, 0, 6], [\"3005\", 50, -48, 30, 0, 6], [\"3032\", 0, -56, 0, 0, 19]], \"studio\")\n</a2ui>\n\nI used `brick_build_3d` with a `partsModel` of real LDraw parts. The model is a small table with a 4\u00d76 plate top (part 3032, tan) on four legs. Each leg is two stacked 1\u00d71 bricks (part 3005, brown). It animates as it assembles, and the parts list and build checks are shown.\n\nI assumed standard LDraw coordinates, where negative y is up. If the table renders upside down or below the baseplate, flip the sign of the y values."
+}

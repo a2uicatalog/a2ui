@@ -1,0 +1,34 @@
+{
+ "task": "T1",
+ "condition": "D",
+ "label": "oracle-slice-6types__express__haiku-4-5__run3",
+ "agent_type": "T1",
+ "catalogue": "D-t1.json",
+ "atoms_in_catalogue": 28,
+ "prompt_chars": 17769,
+ "slot_recall": [
+  5,
+  5
+ ],
+ "secs": 12.6,
+ "usage": {
+  "input_tokens": 4914,
+  "output_tokens": 1180
+ },
+ "valid": false,
+ "error": "A2uiCompilationParseError: Failed to parse expression: Syntax error at line 52:14: mismatched input '=' expecting ':' (line 52) - Line 52, Col 14 - Help: Please correct the syntax error in your Express DSL.",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "title": false,
+   "concept sections (x3)": false,
+   "worked example": false,
+   "3-question quiz": false,
+   "quiz result": false
+  }
+ },
+ "reply": "<a2ui>\nroot = gradient_hero(\n  title=\"The Water Cycle\",\n  subtitle=\"Understanding how water moves through Earth's systems\",\n  badge=\"Earth Science\",\n  accent=\"#0ea5e9\",\n  accent2=\"#06b6d4\",\n  cta_label=\"Start Learning\",\n  cta_url=\"#content\"\n)\n\nheading_section = heading(\"How Water Moves Through Our Planet\")\n\nconcept_ladder = [\n  concept_rung(\n    badge=\"1\",\n    kind=\"depth\",\n    title=\"Evaporation\",\n    body=\"Water from oceans, lakes, and rivers absorbs heat energy from the sun and transforms into water vapor. This invisible gas rises into the atmosphere, beginning the water cycle's continuous journey.\\n\\nKey factors:\\n\u2022 Solar radiation provides the energy\\n\u2022 Temperature increases evaporation rates\\n\u2022 Both liquid water and ice can contribute\",\n    takeaway=\"Heat transforms liquid water into atmospheric vapor\"\n  ),\n  concept_rung(\n    badge=\"2\",\n    kind=\"depth\",\n    title=\"Condensation\",\n    body=\"As water vapor rises and cools in the upper atmosphere, it transforms back into liquid droplets. These droplets cluster together to form clouds and fog, visible signs of the water cycle in action.\\n\\nKey factors:\\n\u2022 Temperature decrease triggers condensation\\n\u2022 Dust particles act as condensation nuclei\\n\u2022 Clouds form at specific altitudes\",\n    takeaway=\"Cooling transforms vapor back into liquid water droplets\"\n  ),\n  concept_rung(\n    badge=\"3\",\n    kind=\"depth\",\n    title=\"Precipitation\",\n    body=\"Water droplets in clouds combine and grow heavy enough to fall as rain, snow, sleet, or hail depending on atmospheric conditions. This returns water to Earth's surface, completing a major phase of the cycle.\\n\\nKey factors:\\n\u2022 Droplet coalescence increases weight\\n\u2022 Temperature determines precipitation type\\n\u2022 Gravity pulls water earthward\",\n    takeaway=\"Accumulated droplets become heavy enough to fall to Earth\"\n  ),\n  concept_rung(\n    badge=\"EX\",\n    kind=\"example\",\n    title=\"Worked Example: Tracking a Water Molecule\",\n    body=\"Follow one molecule through the complete cycle:\",\n    code=\"1. Evaporation: Water molecule evaporates from Pacific Ocean (25\u00b0C)\\n2. Transportation: Carried eastward by wind currents\\n3. Condensation: Cools to 10\u00b0C over mountain range \u2192 forms cloud\\n4. Precipitation: Falls as rain on forest (0.5 inches/hour)\\n5. Collection: Flows into stream \u2192 river \u2192 returns to ocean\",\n    code_caption=\"Complete cycle takes ~9 days for this molecule\",\n    takeaway=\"Every water molecule continuously cycles through these four stages\"\n  )\n]\n\nquiz_section = heading(\"Check Your Understanding\")\n\nquiz = quiz_set(\n  title=\"Water Cycle Knowledge Check\",\n  questions=[\n    {\n      question=\"What provides the primary energy source for evaporation in the water cycle?\",\n      options=[\"Wind currents\", \"Solar radiation\", \"Gravity\", \"Ocean pressure\"],\n      correct=1,\n      explanation=\"The sun's energy is the driving force that heats water and causes it to evaporate from Earth's surface.\"\n    },\n    {\n      question=\"At what point in the water cycle do water droplets combine to form visible clouds?\",\n      options=[\"During evaporation\", \"During condensation\", \"During precipitation\", \"During collection\"],\n      correct=1,\n      explanation=\"Condensation is when water vapor cools and transforms into liquid droplets that cluster together to form clouds.\"\n    },\n    {\n      question=\"Which of the following is an example of precipitation?\",\n      options=[\"Evaporation from a lake\", \"Cloud formation\", \"Snow falling from clouds\", \"Water flowing in a river\"],\n      correct=2,\n      explanation=\"Precipitation is any form of water falling from clouds to Earth's surface, including rain, snow, sleet, and hail.\"\n    }\n  ],\n  pass_score=70,\n  accent=\"#0ea5e9\",\n  on_pass=callout(\n    kind=\"tip\",\n    title=\"Excellent Work!\",\n    text=\"You've demonstrated a solid understanding of the water cycle. Continue exploring how this cycle impacts weather patterns and climate.\"\n  ),\n  on_fail=callout(\n    kind=\"warning\",\n    title=\"Review and Try Again\",\n    text=\"Take another look at the concept sections above, then retake the quiz to reinforce your learning.\"\n  )\n)\n\nroot = [\n  root,\n  heading_section,\n  columns(\n    cols=3,\n    gap=\"2rem\",\n    align=\"top\",\n    items=[\n      {blocks: [concept_ladder[0]]},\n      {blocks: [concept_ladder[1]]},\n      {blocks: [concept_ladder[2]]}\n    ]\n  ),\n  concept_ladder[3],\n  quiz_section,\n  quiz\n]\n</a2ui>"
+}

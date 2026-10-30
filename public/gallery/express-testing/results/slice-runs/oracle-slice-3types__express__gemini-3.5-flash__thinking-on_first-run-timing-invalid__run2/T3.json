@@ -1,0 +1,39 @@
+{
+ "task": "T3",
+ "condition": "C_gemini-3.5-flash",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash",
+ "hints": false,
+ "label": "oracle-slice-3types__express__gemini-3.5-flash__thinking-on_first-run-timing-invalid__run2",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "C-marketing-commerce.json",
+ "atoms_in_catalogue": 23,
+ "prompt_chars": 12467,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 22.3,
+ "usage": {
+  "input_tokens": 3412,
+  "output_tokens": 3983
+ },
+ "valid": false,
+ "error": "A2uiCompilationParseError: Root target 'root' is not defined. - Help: Ensure root component 'root' is assigned in your Express DSL.",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "hero": false,
+   "feature columns (x3)": false,
+   "testimonial": false,
+   "CTA": false
+  }
+ },
+ "reply": "<a2ui>\ncol1 = {blocks: [heading(\"Lightning Fast\"), body(\"Experience sub-millisecond response times and instant real-time sync across all your active devices.\")]}\ncol2 = {blocks: [heading(\"Secure by Default\"), body(\"Enterprise-grade end-to-end encryption keeping your sensitive business data safe and compliant.\")]}\ncol3 = {blocks: [heading(\"Deep Integrations\"), body(\"Connect seamlessly with Slack, GitHub, Figma, and hundreds of other tools you already use.\")]}\n\nhero = gradient_hero(\n    \"Supercharge Your Workflow\",\n    \"The all-in-one platform for modern team productivity and seamless collaboration.\",\n    \"VERSION 2.0\",\n    \"#4f46e5\",\n    \"#8b5cf6\",\n    null,\n    \"center\",\n    \"Get Started Free\",\n    \"https://example.com/signup\"\n)\n\nfeatures = columns(3, \"2.5rem\", \"top\", [col1, col2, col3])\n\ntestimonial = testimonial_card(\n    \"This platform completely transformed how our engineering team operates. We've seen a 40% increase in shipping velocity since switching.\",\n    \"Sarah Jenkins\",\n    \"VP of Engineering at TechFlow\",\n    \"https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150\",\n    5\n)\n\ncta = shimmer_button(\n    \"Start Your 14-Day Free Trial\",\n    \"https://example.com/signup\",\n    \"lg\",\n    \"#38bdf8\",\n    \"#1e293b\",\n    \"normal\",\n    \"No credit card required. Cancel anytime.\"\n)\n\nroot = [\n    hero,\n    features,\n    testimonial,\n    cta\n]\n</a2ui>"
+}

@@ -1,0 +1,101 @@
+{
+ "label": "oracle-slice-3types__elemental__gemini-3.5-flash-lite__first-run-timing-invalid__run3",
+ "task": "T6",
+ "format": "elemental",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning-elemental.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "page_header",
+      "title": "Vocabulary Flashcards",
+      "subtitle": "Flip each card to reveal definitions and build your active vocabulary.",
+      "icon": "\ud83d\udcda",
+      "tag": "SRS Practice",
+      "accent": "#4f46e5"
+     },
+     {
+      "id": "flashcard-progress",
+      "component": "progress_bar",
+      "value": 40,
+      "label": "Review Progress",
+      "accent": "#4f46e5",
+      "show_percent": true,
+      "caption": "4 of 10 reviewed"
+     },
+     {
+      "id": "vocab-deck",
+      "component": "flashcard_deck",
+      "accent": "#4f46e5",
+      "label_front": "TERM",
+      "label_back": "DEFINITION",
+      "cards": [
+       {
+        "front": "Ephemeral",
+        "back": "Lasting for a very short time."
+       },
+       {
+        "front": "Serendipity",
+        "back": "The occurrence of events by chance in a happy or beneficial way."
+       },
+       {
+        "front": "Mellifluous",
+        "back": "(Of a voice or words) sweet or musical; pleasant to hear."
+       },
+       {
+        "front": "Petrichor",
+        "back": "A pleasant smell that frequently accompanies the first rain after a long period of warm, dry weather."
+       },
+       {
+        "front": "Halcyon",
+        "back": "Denoting a period of time in the past that was idyllically happy and peaceful."
+       },
+       {
+        "front": "Aurora",
+        "back": "The dawn or natural electrical phenomenon characterized by the appearance of streamers of reddish or greenish light in the sky."
+       },
+       {
+        "front": "Panacea",
+        "back": "An solution or remedy for all difficulties or diseases."
+       },
+       {
+        "front": "Solitude",
+        "back": "The state or situation of being alone, often providing peace and reflection."
+       },
+       {
+        "front": "Luminous",
+        "back": "Full of or shedding light; bright or shining, especially in the dark."
+       },
+       {
+        "front": "Resilience",
+        "back": "The capacity to recover quickly from difficulties; toughness."
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_data_model": {
+    "surface_id": "main",
+    "path": "/",
+    "value": {
+     "reviewed_count": 0,
+     "total_cards": 10
+    }
+   }
+  }
+ ]
+}

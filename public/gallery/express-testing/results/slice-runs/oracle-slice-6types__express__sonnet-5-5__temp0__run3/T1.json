@@ -1,0 +1,55 @@
+{
+ "task": "T1",
+ "condition": "DT_sonnet-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-sonnet-5-5",
+ "hints": false,
+ "label": "oracle-slice-6types__express__sonnet-5-5__temp0__run3",
+ "agent_type": "T1",
+ "catalogue": "D-t1.json",
+ "atoms_in_catalogue": 28,
+ "prompt_chars": 17769,
+ "slot_recall": [
+  5,
+  5
+ ],
+ "secs": 8.6,
+ "usage": {
+  "input_tokens": 6287,
+  "output_tokens": 1079
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "page_header",
+  "body",
+  "heading",
+  "paragraph",
+  "heading",
+  "paragraph",
+  "heading",
+  "paragraph",
+  "callout",
+  "heading",
+  "concept_rung",
+  "heading",
+  "quiz_set",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.929,
+  "recall": 0.8,
+  "f1": 0.86,
+  "slot_hits": {
+   "title": true,
+   "concept sections (x3)": true,
+   "worked example": true,
+   "3-question quiz": true,
+   "quiz result": false
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"water-cycle-lesson\")\nheader = page_header(\"The Water Cycle\", \"How water moves between oceans, air, and land\", \"\ud83d\udca7\", \"Earth Science\", \"#0284c7\")\nintro = body(\"Water is never used up. It constantly moves around the planet, changing form as it goes. This lesson covers the three main stages of that journey, works through an example, and ends with a short quiz.\")\n\nh1 = heading(\"1. Evaporation\")\np1 = paragraph(\"The sun heats water in oceans, lakes, and rivers. The water turns into invisible water vapor and rises into the air. Plants add to this through transpiration, releasing water vapor from their leaves.\")\n\nh2 = heading(\"2. Condensation\")\np2 = paragraph(\"As water vapor rises, it cools. The cooled vapor turns back into tiny liquid droplets around dust particles. Together, these droplets form clouds.\")\n\nh3 = heading(\"3. Precipitation and Collection\")\np3 = paragraph(\"When cloud droplets grow heavy, they fall as rain, snow, sleet, or hail. This water collects in rivers, lakes, oceans, and underground, and the cycle starts again.\")\n\ntip = callout(\"tip\", \"Key idea\", \"The total amount of water on Earth stays about the same. Only its location and form change.\")\n\nexH = heading(\"Worked Example: A Puddle on a Sunny Day\")\nex = concept_rung(\"EX\", \"example\", \"WORKED EXAMPLE\", \"Where does the puddle go?\", \"After a rainstorm, a puddle sits on the pavement. By afternoon it has disappeared.\\n\\nThe sun's heat gives the water molecules enough energy to escape as vapor. This is evaporation. The vapor rises, cools high in the sky, and may condense into a cloud. Later it can fall as rain somewhere else.\", \"Puddle (liquid) -> evaporation -> vapor -> condensation -> cloud -> precipitation -> rain\", \"The puddle did not vanish. It moved into the air.\", \"Water changes state, but it is not destroyed.\")\n\nquizH = heading(\"Self-Check Quiz\")\nquiz = quiz_set(\"Water Cycle Check\", [{question: \"What process turns liquid water into water vapor?\", options: [\"Condensation\", \"Evaporation\", \"Precipitation\", \"Collection\"], correct: 1, explanation: \"Evaporation happens when heat from the sun turns liquid water into vapor.\"}, {question: \"What forms when water vapor cools and turns into droplets?\", options: [\"Clouds\", \"Rivers\", \"Soil\", \"Wind\"], correct: 0, explanation: \"Condensation of water vapor into droplets forms clouds.\"}, {question: \"Which of these is a form of precipitation?\", options: [\"Fog on the ground only\", \"Snow\", \"Steam from a kettle\", \"Dew on a leaf\"], correct: 1, explanation: \"Precipitation is water falling from clouds as rain, snow, sleet, or hail.\"}], 70, \"#0284c7\")\n\nroot = columns(1, \"1.25rem\", \"top\", [{blocks: [header, intro, h1, p1, h2, p2, h3, p3, tip, exH, ex, quizH, quiz]}])\n</a2ui>"
+}

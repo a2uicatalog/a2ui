@@ -1,0 +1,152 @@
+{
+ "label": "rule-slice__express__haiku-5-5__run1",
+ "task": "T1",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/b-learning.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "intro",
+      "component": "page_header",
+      "title": "The Water Cycle",
+      "subtitle": "How water moves between the oceans, the air, and the land",
+      "icon": "\ud83d\udca7",
+      "tag": "Lesson 1",
+      "accent": "#0284c7"
+     },
+     {
+      "id": "h_evap",
+      "component": "heading",
+      "text": "1. Evaporation and transpiration"
+     },
+     {
+      "id": "b_evap",
+      "component": "body",
+      "text": "Heat from the Sun turns liquid water in oceans, lakes, and rivers into water vapour. Plants also release water vapour through tiny pores in their leaves. This plant process is called transpiration."
+     },
+     {
+      "id": "h_cond",
+      "component": "heading",
+      "text": "2. Condensation"
+     },
+     {
+      "id": "b_cond",
+      "component": "body",
+      "text": "As water vapour rises, it cools. Cooler air holds less vapour, so the vapour turns back into liquid. It condenses onto tiny particles such as dust, forming droplets that gather into clouds."
+     },
+     {
+      "id": "h_precip",
+      "component": "heading",
+      "text": "3. Precipitation and collection"
+     },
+     {
+      "id": "b_precip",
+      "component": "body",
+      "text": "When cloud droplets grow heavy enough, they fall as rain, snow, sleet, or hail. This water collects in oceans, lakes, rivers, and underground aquifers, and the cycle starts again."
+     },
+     {
+      "id": "h_example",
+      "component": "heading",
+      "text": "Worked example: a puddle after rain"
+     },
+     {
+      "id": "ex_steps",
+      "component": "steps",
+      "items": [
+       {
+        "label": "Sun warms the puddle",
+        "text": "Sunlight heats the shallow water, so some molecules gain enough energy to escape as vapour (evaporation)."
+       },
+       {
+        "label": "Vapour rises and cools",
+        "text": "The vapour climbs into cooler air, where it condenses onto dust particles and forms a small cloud."
+       },
+       {
+        "label": "Droplets fall",
+        "text": "The droplets merge until they are heavy enough to fall as light rain, returning water to the ground."
+       },
+       {
+        "label": "Water re-collects",
+        "text": "The rain refills the puddle and soaks into the soil, so the cycle repeats."
+       }
+      ]
+     },
+     {
+      "id": "self_check",
+      "component": "quiz_set",
+      "title": "Self-check",
+      "questions": [
+       {
+        "question": "What process moves water from plant leaves into the air?",
+        "options": [
+         "Condensation",
+         "Precipitation",
+         "Transpiration",
+         "Collection"
+        ],
+        "correct": 2,
+        "explanation": "Transpiration is the release of water vapour through the pores in plant leaves."
+       },
+       {
+        "question": "Why does water vapour form clouds as it rises?",
+        "options": [
+         "It gets heavier",
+         "It cools and condenses",
+         "It is pushed down by wind",
+         "It freezes into ice immediately"
+        ],
+        "correct": 1,
+        "explanation": "Cooler air holds less vapour, so the vapour condenses into droplets around particles such as dust."
+       },
+       {
+        "question": "Which of these is a form of precipitation?",
+        "options": [
+         "Evaporation",
+         "Transpiration",
+         "Snow",
+         "Groundwater storage"
+        ],
+        "correct": 2,
+        "explanation": "Snow, like rain, sleet, and hail, is water that falls from clouds."
+       }
+      ],
+      "pass_score": 70,
+      "accent": "#0284c7"
+     },
+     {
+      "id": "root",
+      "component": "color_section",
+      "accent": "#0284c7",
+      "style": "light",
+      "padding": "24px",
+      "grid": false,
+      "max_width": "100%",
+      "blocks": [
+       "intro",
+       "h_evap",
+       "b_evap",
+       "h_cond",
+       "b_cond",
+       "h_precip",
+       "b_precip",
+       "h_example",
+       "ex_steps",
+       "self_check"
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

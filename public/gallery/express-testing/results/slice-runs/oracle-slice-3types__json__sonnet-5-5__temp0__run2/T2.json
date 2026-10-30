@@ -1,0 +1,40 @@
+{
+ "task": "T2",
+ "condition": "CTN_sonnet-5-5",
+ "temperature_applied": false,
+ "format": "json",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-sonnet-5-5",
+ "hints": false,
+ "label": "oracle-slice-3types__json__sonnet-5-5__temp0__run2",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 31546,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 12.5,
+ "usage": {
+  "input_tokens": 12376,
+  "output_tokens": 1669
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns"
+ ],
+ "score": {
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "KPI tile (x4)": false,
+   "trend (required only if metric_row was chosen; stat_card's own delta already satisfies it)": false,
+   "comparison chart": false
+  }
+ },
+ "reply": "<a2ui-json>\n[\n  {\n    \"version\": \"v0.9.1\",\n    \"createSurface\": {\n      \"surfaceId\": \"metrics_overview\",\n      \"catalogId\": \"https://a2uicatalog.ai/catalog/c-data-display.json\"\n    }\n  },\n  {\n    \"version\": \"v0.9.1\",\n    \"updateComponents\": {\n      \"surfaceId\": \"metrics_overview\",\n      \"components\": [\n        {\n          \"id\": \"root\",\n          \"component\": \"columns\",\n          \"cols\": 1,\n          \"gap\": \"1.5rem\",\n          \"align\": \"stretch\",\n          \"items\": [\n            {\n              \"blocks\": [\n                {\n                  \"id\": \"title\",\n                  \"type\": \"heading\",\n                  \"component\": \"heading\",\n                  \"text\": \"Metrics Overview\"\n                },\n                {\n                  \"id\": \"kpis\",\n                  \"type\": \"metric_row\",\n                  \"component\": \"metric_row\",\n                  \"cols\": 4,\n                  \"metrics\": [\n                    { \"value\": \"48,210\", \"label\": \"Active Users\", \"sub\": \"vs. last month\", \"trend\": \"up\", \"accent\": \"#22c55e\" },\n                    { \"value\": \"128.4\", \"prefix\": \"$\", \"suffix\": \"k\", \"label\": \"Monthly Revenue\", \"sub\": \"vs. last month\", \"trend\": \"up\", \"accent\": \"#06b6d4\" },\n                    { \"value\": \"3.8\", \"suffix\": \"%\", \"label\": \"Churn Rate\", \"sub\": \"vs. last month\", \"trend\": \"down\", \"accent\": \"#ef4444\" },\n                    { \"value\": \"99.2\", \"suffix\": \"%\", \"label\": \"Uptime\", \"sub\": \"vs. last month\", \"trend\": \"down\", \"accent\": \"#eab308\" }\n                  ]\n                },\n                {\n                  \"id\": \"comparison_heading\",\n                  \"type\": \"heading\",\n                  \"component\": \"heading\",\n                  \"text\": \"This Quarter vs. Last Quarter\"\n                },\n                {\n                  \"id\": \"comparison_chart\",\n                  \"type\": \"chartjs_bar\",\n                  \"component\": \"chartjs_bar\",\n                  \"labels\": [\"Active Users (k)\", \"Revenue ($k)\", \"Churn (%)\", \"Uptime (%)\"],\n                  \"datasets\": [\n                    { \"label\": \"Last Quarter\", \"data\": [41.5, 112.0, 4.3, 99.5] },\n                    { \"label\": \"This Quarter\", \"data\": [48.2, 128.4, 3.8, 99.2] }\n                  ]\n                }\n              ]\n            }\n          ]\n        }\n      ]\n    }\n  }\n]\n</a2ui-json>\n\nThe catalog has no generic container, so I used a single-column `columns` component as the root and put the heading, the four KPI tiles (a `metric_row` with up/down trends) and the comparison bar chart inside it as nested blocks. The nested blocks carry both `type` and `component` keys because the catalog doesn't specify the block format."
+}

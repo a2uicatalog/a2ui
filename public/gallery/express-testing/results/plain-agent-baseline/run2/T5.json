@@ -1,0 +1,31 @@
+{
+ "task": "T5",
+ "label": "haiku-live3-r2",
+ "secs": 4.1,
+ "usage": {
+  "input_tokens": 84996,
+  "output_tokens": 392
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "pricing_tier_group"
+ ],
+ "score": {
+  "per_approach": {
+   "tier_cards": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+   },
+   "comparison_table": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": null
+   }
+  },
+  "best_approach": "tier_cards",
+  "f1": 1.0
+ },
+ "reply": "<a2ui>\nroot = pricing_tier_group(\n  tiers=[\n    {\n      plan_name: \"Starter\",\n      price: \"29\",\n      currency: \"$\",\n      frequency: \"/month\",\n      features: [\n        \"Up to 10 projects\",\n        \"5 GB storage\",\n        \"Basic support\",\n        \"Community access\"\n      ],\n      call_to_action_label: \"Get Started\",\n      call_to_action_url: \"https://example.com/starter\",\n      is_highlighted: false\n    },\n    {\n      plan_name: \"Professional\",\n      price: \"79\",\n      currency: \"$\",\n      frequency: \"/month\",\n      features: [\n        \"Unlimited projects\",\n        \"100 GB storage\",\n        \"Priority support\",\n        \"Advanced analytics\",\n        \"Team collaboration\",\n        \"Custom integrations\"\n      ],\n      call_to_action_label: \"Get Started\",\n      call_to_action_url: \"https://example.com/professional\",\n      is_highlighted: true\n    },\n    {\n      plan_name: \"Enterprise\",\n      price: \"Custom\",\n      currency: \"\",\n      frequency: \"pricing\",\n      features: [\n        \"Everything in Professional\",\n        \"Unlimited storage\",\n        \"Dedicated support\",\n        \"Advanced security\",\n        \"SLA guarantee\",\n        \"Custom workflows\"\n      ],\n      call_to_action_label: \"Contact Sales\",\n      call_to_action_url: \"https://example.com/enterprise\",\n      is_highlighted: false\n    }\n  ]\n)\n</a2ui>"
+}

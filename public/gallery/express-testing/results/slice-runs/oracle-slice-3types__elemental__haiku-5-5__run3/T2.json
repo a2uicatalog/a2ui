@@ -1,0 +1,41 @@
+{
+ "task": "T2",
+ "condition": "CX_haiku-5-5",
+ "temperature_applied": false,
+ "format": "elemental",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "oracle-slice-3types__elemental__haiku-5-5__run3",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 16829,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 7.5,
+ "usage": {
+  "input_tokens": 6745,
+  "output_tokens": 1623
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "metric_row",
+  "chartjs_bar"
+ ],
+ "score": {
+  "precision": 1.0,
+  "recall": 0.667,
+  "f1": 0.8,
+  "slot_hits": {
+   "KPI tile (x4)": true,
+   "trend (required only if metric_row was chosen; stat_card's own delta already satisfies it)": false,
+   "comparison chart": true
+  }
+ },
+ "reply": "<a2ui>\n<body id=\"root\">\n  <ui-metric_row id=\"kpi-row\" cols=\"4\" accent=\"#00f2ff\">\n    <script type=\"application/json\" slot=\"metrics\">[\n      {\"value\": \"1.24\", \"prefix\": \"$\", \"suffix\": \"M\", \"label\": \"Revenue\", \"sub\": \"vs. last quarter\", \"trend\": \"up\"},\n      {\"value\": \"48,210\", \"label\": \"Active users\", \"sub\": \"vs. last quarter\", \"trend\": \"up\"},\n      {\"value\": \"2.1\", \"suffix\": \"%\", \"label\": \"Churn rate\", \"sub\": \"vs. last quarter\", \"trend\": \"down\"},\n      {\"value\": \"182\", \"suffix\": \" ms\", \"label\": \"Avg. response time\", \"sub\": \"vs. last quarter\", \"trend\": \"down\"}\n    ]</script>\n  </ui-metric_row>\n\n  <ui-chartjs_bar id=\"comparison-chart\">\n    <script type=\"application/json\" slot=\"labels\">[\"Q1\", \"Q2\", \"Q3\", \"Q4\"]</script>\n    <script type=\"application/json\" slot=\"datasets\">[\n      {\"label\": \"This year\", \"data\": [820, 932, 901, 1240]},\n      {\"label\": \"Last year\", \"data\": [640, 710, 765, 880]}\n    ]</script>\n  </ui-chartjs_bar>\n</body>\n</a2ui>"
+}

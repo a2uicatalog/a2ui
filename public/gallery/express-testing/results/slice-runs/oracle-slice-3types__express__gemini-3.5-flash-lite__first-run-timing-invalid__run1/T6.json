@@ -1,0 +1,43 @@
+{
+ "task": "T6",
+ "condition": "C_gemini-3.5-f",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash-lite",
+ "hints": false,
+ "label": "oracle-slice-3types__express__gemini-3.5-flash-lite__first-run-timing-invalid__run1",
+ "agent_type": "Learning",
+ "catalogue": "C-learning.json",
+ "atoms_in_catalogue": 36,
+ "prompt_chars": 21139,
+ "slot_recall": [
+  2,
+  2
+ ],
+ "secs": 22.2,
+ "usage": {
+  "input_tokens": 5727,
+  "output_tokens": 750
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "page_header",
+  "xp_bar",
+  "flashcard_deck",
+  "text_callout",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.4,
+  "recall": 1.0,
+  "f1": 0.571,
+  "slot_hits": {
+   "flashcard deck": true,
+   "progress indicator": true
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"vocab-flashcards\")\n\nheader = page_header(\n    title=\"Vocabulary Flashcards\",\n    subtitle=\"Review key terms and flip cards to test your retention\",\n    icon=\"\ud83d\udcda\",\n    tag=\"Interactive Study\",\n    accent=\"#4f46e5\"\n)\n\nxp = xp_bar(\n    level_label=\"Review Session \u2014 10 Terms\",\n    xp_current=0,\n    xp_next=10,\n    accent=\"#4f46e5\",\n    show_flash=false\n)\n\ndeck = flashcard_deck(\n    cards=[\n        {\n            \"front\": \"Algorithmic Complexity\",\n            \"back\": \"A metric that measures the amount of resources (such as time and memory) required to execute an algorithm as a function of the input size.\"\n        },\n        {\n            \"front\": \"Closure\",\n            \"back\": \"A function bundled together with references to its surrounding state, allowing it to access variables from an outer function even after that outer function has finished executing.\"\n        },\n        {\n            \"front\": \"Idempotence\",\n            \"back\": \"A property of certain operations in mathematics and computer science whereby they can be applied multiple times without changing the result beyond the initial application.\"\n        },\n        {\n            \"front\": \"Polymorphism\",\n            \"back\": \"The provision of a single interface to entities of different types, or the use of a single symbol to represent multiple different types.\"\n        },\n        {\n            \"front\": \"Recursion\",\n            \"back\": \"A method of solving a problem where the solution depends on solutions to smaller instances of the same problem.\"\n        },\n        {\n            \"front\": \"Concurrency\",\n            \"back\": \"The ability of different parts or blocks of a program to be executed out-of-order or in partial order without affecting the final outcome.\"\n        },\n        {\n            \"front\": \"Memoization\",\n            \"back\": \"An optimization technique used primarily to speed up computer programs by storing the results of expensive function calls and returning the cached result when the same inputs occur again.\"\n        },\n        {\n            \"front\": \"Mutation\",\n            \"back\": \"The act of changing an object's state or value after it has been created, often contrasted with immutable data structures.\"\n        },\n        {\n            \"front\": \"Serialisation\",\n            \"back\": \"The process of translating a data structure or object state into a format that can be stored or transmitted and reconstructed later.\"\n        },\n        {\n            \"front\": \"Throttling\",\n            \"back\": \"A technique used to limit the rate at which a function can fire, ensuring it only executes once over a specified time interval.\"\n        }\n    ],\n    accent=\"#4f46e5\",\n    label_front=\"TERM\",\n    label_back=\"DEFINITION\"\n)\n\ntip = text_callout(\n    variant=\"info\",\n    title=\"Study Tip\",\n    description=\"Hover or click each card to flip it and test your memory before checking the definition.\"\n)\n\nroot = columns(\n    cols=1,\n    gap=\"1.5rem\",\n    items=[\n        {\n            \"blocks\": [\n                header,\n                xp,\n                tip,\n                deck\n            ]\n        }\n    ]\n)\n</a2ui>"
+}

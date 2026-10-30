@@ -1,0 +1,46 @@
+{
+ "task": "T5",
+ "condition": "C_gemini-3.5-flash",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash",
+ "hints": false,
+ "label": "oracle-slice-3types__express__gemini-3.5-flash__thinking-on_request-only-timing__run3",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "C-marketing-commerce.json",
+ "atoms_in_catalogue": 23,
+ "prompt_chars": 12467,
+ "slot_recall": [
+  1,
+  1
+ ],
+ "secs": 7.8,
+ "usage": {
+  "input_tokens": 3402,
+  "output_tokens": 1931
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "pricing_tier_group"
+ ],
+ "score": {
+  "per_approach": {
+   "tier_cards": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+   },
+   "comparison_table": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": null
+   }
+  },
+  "best_approach": "tier_cards",
+  "f1": 1.0
+ },
+ "reply": "<a2ui>\ntiers = [\n  {\n    \"name\": \"Starter\",\n    \"price\": \"$19\",\n    \"interval\": \"/mo\",\n    \"description\": \"Essential features for individuals and side projects.\",\n    \"features\": [\n      \"Up to 5 active projects\",\n      \"Basic performance analytics\",\n      \"Community forum access\",\n      \"Weekly automated backups\"\n    ],\n    \"cta_label\": \"Start Trial\",\n    \"cta_url\": \"https://example.com/signup?plan=starter\",\n    \"recommended\": false\n  },\n  {\n    \"name\": \"Pro\",\n    \"price\": \"$49\",\n    \"interval\": \"/mo\",\n    \"description\": \"Advanced tools and performance for growing teams.\",\n    \"features\": [\n      \"Unlimited active projects\",\n      \"Real-time advanced analytics\",\n      \"24/7 Priority chat support\",\n      \"Custom integrations & API key access\",\n      \"Collaborative shared team workspaces\"\n    ],\n    \"cta_label\": \"Upgrade to Pro\",\n    \"cta_url\": \"https://example.com/signup?plan=pro\",\n    \"recommended\": true\n  },\n  {\n    \"name\": \"Enterprise\",\n    \"price\": \"$99\",\n    \"interval\": \"/mo\",\n    \"description\": \"Maximum security, control, and support for enterprise scale.\",\n    \"features\": [\n      \"Everything in Pro tier\",\n      \"Dedicated account manager\",\n      \"99.9% SLA guaranteed uptime\",\n      \"Custom security policies & SSO\",\n      \"Tailored onboarding & training sessions\"\n    ],\n    \"cta_label\": \"Contact Sales\",\n    \"cta_url\": \"https://example.com/contact-sales\",\n    \"recommended\": false\n  }\n]\n\nroot = pricing_tier_group(tiers)\n</a2ui>"
+}

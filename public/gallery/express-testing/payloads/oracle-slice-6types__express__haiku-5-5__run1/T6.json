@@ -1,0 +1,101 @@
+{
+ "label": "oracle-slice-6types__express__haiku-5-5__run1",
+ "task": "T6",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/d-t6.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "title",
+      "component": "heading",
+      "text": "Vocabulary Flashcards"
+     },
+     {
+      "id": "progress",
+      "component": "progress_bar",
+      "value": 0,
+      "label": "Reviewed",
+      "show_percent": true,
+      "caption": "0 of 10 cards reviewed"
+     },
+     {
+      "id": "deck",
+      "component": "flashcard_deck",
+      "cards": [
+       {
+        "front": "Serendipity",
+        "back": "The occurrence of happy discoveries by accident"
+       },
+       {
+        "front": "Ephemeral",
+        "back": "Lasting for a very short time"
+       },
+       {
+        "front": "Ubiquitous",
+        "back": "Present or found everywhere"
+       },
+       {
+        "front": "Meticulous",
+        "back": "Showing great attention to detail"
+       },
+       {
+        "front": "Resilient",
+        "back": "Able to recover quickly from difficulties"
+       },
+       {
+        "front": "Ambiguous",
+        "back": "Open to more than one interpretation"
+       },
+       {
+        "front": "Eloquent",
+        "back": "Fluent and persuasive in speech or writing"
+       },
+       {
+        "front": "Candid",
+        "back": "Truthful and straightforward"
+       },
+       {
+        "front": "Diligent",
+        "back": "Careful and persistent in work or effort"
+       },
+       {
+        "front": "Pragmatic",
+        "back": "Dealing with things sensibly and realistically"
+       }
+      ],
+      "accent": "#4f46e5",
+      "label_front": "WORD",
+      "label_back": "DEFINITION"
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "1.5rem",
+      "align": "stretch",
+      "items": [
+       {
+        "blocks": [
+         "title",
+         "progress",
+         "deck"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,109 @@
+{
+ "label": "rule-slice__express__haiku-5-5__run2",
+ "task": "T2",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/b-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "kpis",
+      "component": "metric_row",
+      "cols": 4,
+      "accent": "#4f46e5",
+      "metrics": [
+       {
+        "value": "12,480",
+        "label": "Active users",
+        "sub": "vs. last month",
+        "trend": "up"
+       },
+       {
+        "value": "$38.2k",
+        "label": "Revenue",
+        "sub": "vs. last month",
+        "trend": "up"
+       },
+       {
+        "value": "2.9%",
+        "label": "Churn rate",
+        "sub": "vs. last month",
+        "trend": "down"
+       },
+       {
+        "value": "4.6 min",
+        "label": "Avg. session",
+        "sub": "vs. last month",
+        "trend": "down"
+       }
+      ]
+     },
+     {
+      "id": "comparison",
+      "component": "chartjs_bar",
+      "labels": [
+       "Jan",
+       "Feb",
+       "Mar",
+       "Apr",
+       "May",
+       "Jun"
+      ],
+      "datasets": [
+       {
+        "label": "This year",
+        "data": [
+         8200,
+         9100,
+         9750,
+         10400,
+         11200,
+         12480
+        ]
+       },
+       {
+        "label": "Last year",
+        "data": [
+         6900,
+         7300,
+         7800,
+         8100,
+         8600,
+         9050
+        ]
+       }
+      ]
+     },
+     {
+      "id": "root",
+      "component": "color_section",
+      "accent": "#4f46e5",
+      "style": "light",
+      "padding": "24px",
+      "grid": false,
+      "blocks": [
+       "root_blocks_0",
+       "kpis",
+       "comparison"
+      ]
+     },
+     {
+      "id": "root_blocks_0",
+      "component": "heading",
+      "text": "Metrics overview"
+     }
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,7 @@
+{
+ "label": "oracle-slice-3types__json__gemini-3.5-flash__thinking-on_first-run-timing-invalid__run2",
+ "task": "T1",
+ "format": "json",
+ "model_id": "gemini-3.5-flash",
+ "messages": []
+}

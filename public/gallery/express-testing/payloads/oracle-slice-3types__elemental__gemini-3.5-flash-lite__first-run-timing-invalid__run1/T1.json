@@ -1,0 +1,150 @@
+{
+ "label": "oracle-slice-3types__elemental__gemini-3.5-flash-lite__first-run-timing-invalid__run1",
+ "task": "T1",
+ "format": "elemental",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning-elemental.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "page_header",
+      "title": "The Water Cycle",
+      "subtitle": "Journey of water around our planet through evaporation, condensation, and precipitation.",
+      "icon": "\ud83d\udca7",
+      "tag": "Lesson 1",
+      "accent": "#0284c7",
+      "background": "#f0f9ff"
+     },
+     {
+      "id": "hero",
+      "component": "article_hero",
+      "title": "Never-Ending Journey",
+      "subtitle": "Discover how every drop of water on Earth has been here for billions of years, constantly cycling."
+     },
+     {
+      "id": "sections_title",
+      "component": "heading",
+      "text": "Core Concepts"
+     },
+     {
+      "id": "rung_1",
+      "component": "concept_rung",
+      "badge": "1",
+      "kind": "depth",
+      "label": "STEP 1",
+      "title": "Evaporation and Transpiration",
+      "Body": "The sun heats up water in oceans, lakes, and rivers, causing it to turn into invisible water vapour and rise into the air. Plants also release water vapour through tiny pores in their leaves in a process called transpiration.",
+      "takeaway": "Heat energy powers the first major phase of the water cycle."
+     },
+     {
+      "id": "rung_2",
+      "component": "concept_rung",
+      "badge": "2",
+      "kind": "depth",
+      "label": "STEP 2",
+      "title": "Condensation",
+      "Body": "As the warm water vapour rises higher into the atmosphere, the air gets colder. This cold air causes the water vapour to turn back into tiny liquid water droplets or ice crystals, gathering together to form clouds and fog.",
+      "takeaway": "Cooling causes gas to turn back into liquid droplets."
+     },
+     {
+      "id": "rung_3",
+      "component": "concept_rung",
+      "badge": "3",
+      "kind": "depth",
+      "label": "STEP 3",
+      "title": "Precipitation and Collection",
+      "Body": "When the water droplets in clouds become too heavy to stay suspended in the air, they fall back down to Earth as precipitation\u2014rain, snow, sleet, or hail. This water is eventually collected in oceans, rivers, and underground aquifers, ready to start the cycle all over again.",
+      "takeaway": "Gravity pulls condensed moisture back to Earth's surface."
+     },
+     {
+      "id": "example_title",
+      "component": "heading",
+      "text": "Worked Example"
+     },
+     {
+      "id": "worked_example",
+      "component": "concept_rung",
+      "badge": "EX",
+      "kind": "example",
+      "label": "REAL WORLD EXAMPLE",
+      "title": "A Puddle on a Sunny Day",
+      "Body": "After a heavy rainstorm, you notice a large puddle on the playground. Over a few hours of sunshine, the puddle shrinks and eventually disappears entirely.",
+      "code": "Puddle Water (Liquid) + Solar Heat -> Water Vapour (Gas) -> Atmosphere",
+      "code_caption": "The water did not vanish; it transformed states and joined the air.",
+      "takeaway": "Every puddle demonstrates evaporation right in front of our eyes."
+     },
+     {
+      "id": "quiz_title",
+      "component": "heading",
+      "text": "Self-Check Quiz"
+     },
+     {
+      "id": "water_cycle_quiz",
+      "component": "quiz_set",
+      "title": "Water Cycle Knowledge Check",
+      "pass_score": 70,
+      "accent": "#0284c7",
+      "questions": {
+       "path": "/quiz_data"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_data_model": {
+    "surface_id": "main",
+    "path": "/",
+    "value": {
+     "quiz_data": [
+      {
+       "question": "What process turns liquid water into water vapour?",
+       "options": [
+        "Condensation",
+        "Evaporation",
+        "Precipitation",
+        "Collection"
+       ],
+       "correct": 1,
+       "explanation": "Evaporation is the process where heat from the sun turns liquid water into gas or water vapour."
+      },
+      {
+       "question": "What happens when water vapour cools down high in the atmosphere?",
+       "options": [
+        "It melts",
+        "It evaporates",
+        "It condenses to form clouds",
+        "It freezes into solid rocks"
+       ],
+       "correct": 2,
+       "explanation": "Cooling water vapour condenses around tiny particles to form clouds."
+      },
+      {
+       "question": "Which of the following is a form of precipitation?",
+       "options": [
+        "Rain",
+        "Sunshine",
+        "Wind",
+        "Shadow"
+       ],
+       "correct": 0,
+       "explanation": "Rain, snow, sleet, and hail are all forms of precipitation that fall from clouds back to Earth."
+      }
+     ]
+    }
+   }
+  }
+ ]
+}

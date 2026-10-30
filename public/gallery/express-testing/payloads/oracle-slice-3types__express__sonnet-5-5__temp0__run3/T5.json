@@ -1,0 +1,78 @@
+{
+ "label": "oracle-slice-3types__express__sonnet-5-5__temp0__run3",
+ "task": "T5",
+ "format": "express",
+ "model_id": "claude-sonnet-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "pricing-tiers",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "pricing-tiers",
+    "components": [
+     {
+      "id": "root",
+      "component": "pricing_tier_group",
+      "tiers": [
+       {
+        "name": "Starter",
+        "price": "$9",
+        "period": "per month",
+        "description": "For individuals getting started.",
+        "features": [
+         "1 project",
+         "Basic analytics",
+         "Community support",
+         "1 GB storage"
+        ],
+        "cta_label": "Choose Starter",
+        "cta_url": "https://example.com/signup?plan=starter",
+        "recommended": false
+       },
+       {
+        "name": "Pro",
+        "price": "$29",
+        "period": "per month",
+        "description": "For growing teams that need more power.",
+        "features": [
+         "Unlimited projects",
+         "Advanced analytics",
+         "Priority email support",
+         "50 GB storage",
+         "Team collaboration"
+        ],
+        "cta_label": "Choose Pro",
+        "cta_url": "https://example.com/signup?plan=pro",
+        "recommended": true,
+        "badge": "Recommended"
+       },
+       {
+        "name": "Enterprise",
+        "price": "$99",
+        "period": "per month",
+        "description": "For organizations with advanced needs.",
+        "features": [
+         "Unlimited everything",
+         "Custom reporting",
+         "24/7 dedicated support",
+         "1 TB storage",
+         "SSO and audit logs",
+         "Custom integrations"
+        ],
+        "cta_label": "Contact Sales",
+        "cta_url": "https://example.com/contact-sales",
+        "recommended": false
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

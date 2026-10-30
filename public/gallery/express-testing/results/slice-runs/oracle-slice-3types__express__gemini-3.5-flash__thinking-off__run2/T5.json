@@ -1,0 +1,46 @@
+{
+ "task": "T5",
+ "condition": "C_gemini-3.5-flash",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 32768,
+ "model_id": "gemini-3.5-flash",
+ "hints": false,
+ "label": "oracle-slice-3types__express__gemini-3.5-flash__thinking-off__run2",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "C-marketing-commerce.json",
+ "atoms_in_catalogue": 23,
+ "prompt_chars": 12467,
+ "slot_recall": [
+  1,
+  1
+ ],
+ "secs": 3.1,
+ "usage": {
+  "input_tokens": 3402,
+  "output_tokens": 462
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "pricing_tier_group"
+ ],
+ "score": {
+  "per_approach": {
+   "tier_cards": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+   },
+   "comparison_table": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": null
+   }
+  },
+  "best_approach": "tier_cards",
+  "f1": 1.0
+ },
+ "reply": "<a2ui>\nsurface(\"subscription-tiers\")\n\ntier_basic = {\n  \"name\": \"Starter\",\n  \"price\": \"$9\",\n  \"period\": \"/ month\",\n  \"description\": \"Essential features for individuals and small hobby projects.\",\n  \"features\": [\n    \"1 User License\",\n    \"Up to 5 Active Projects\",\n    \"Community Support\",\n    \"Basic Integration API\",\n    \"5 GB Cloud Storage\"\n  ],\n  \"button\": {\n    \"label\": \"Get Started\",\n    \"url\": \"https://example.com/signup/starter\"\n  }\n}\n\ntier_pro = {\n  \"name\": \"Professional\",\n  \"price\": \"$29\",\n  \"period\": \"/ month\",\n  \"description\": \"Our most popular package for growing teams and serious creators.\",\n  \"features\": [\n    \"Unlimited Active Projects\",\n    \"Up to 10 Team Members\",\n    \"Priority Email Support\",\n    \"Advanced Core Integrations\",\n    \"100 GB Cloud Storage\",\n    \"Shared Team Workspaces\"\n  ],\n  \"button\": {\n    \"label\": \"Start Free Trial\",\n    \"url\": \"https://example.com/signup/pro\"\n  },\n  \"recommended\": true\n}\n\ntier_enterprise = {\n  \"name\": \"Enterprise\",\n  \"price\": \"$99\",\n  \"period\": \"/ month\",\n  \"description\": \"Advanced controls, premium security, and dedicated workflows.\",\n  \"features\": [\n    \"Unlimited Team Members\",\n    \"Custom Integrations & Webhooks\",\n    \"24/7 Phone & Slack Support\",\n    \"Dedicated Account Manager\",\n    \"1 TB Secure Cloud Storage\",\n    \"Custom SLA & Compliance Controls\"\n  ],\n  \"button\": {\n    \"label\": \"Contact Sales\",\n    \"url\": \"https://example.com/contact\"\n  }\n}\n\nroot = pricing_tier_group([tier_basic, tier_pro, tier_enterprise])\n</a2ui>"
+}

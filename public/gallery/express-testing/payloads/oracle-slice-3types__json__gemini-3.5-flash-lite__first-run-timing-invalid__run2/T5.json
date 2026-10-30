@@ -1,0 +1,87 @@
+{
+ "label": "oracle-slice-3types__json__gemini-3.5-flash-lite__first-run-timing-invalid__run2",
+ "task": "T5",
+ "format": "json",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "pricing-surface",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce.json",
+    "theme": {
+     "primaryColor": "#4f46e5"
+    }
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "pricing-surface",
+    "components": [
+     {
+      "id": "root",
+      "component": "gradient_hero",
+      "title": "Find the right plan for your team",
+      "subtitle": "Simple, transparent pricing that grows with you. No hidden fees.",
+      "badge": "Pricing Plans",
+      "align": "center",
+      "cta_label": "Contact Sales",
+      "cta_url": "#contact"
+     },
+     {
+      "id": "pricing_group",
+      "component": "pricing_tier_group",
+      "tiers": [
+       {
+        "name": "Starter",
+        "price": "$9",
+        "period": "/month",
+        "description": "Essential features for individuals and small projects.",
+        "features": [
+         "Up to 5 team members",
+         "10GB cloud storage",
+         "Basic support",
+         "Community access"
+        ],
+        "cta_label": "Start Free Trial",
+        "cta_url": "#signup-starter"
+       },
+       {
+        "name": "Pro",
+        "price": "$29",
+        "period": "/month",
+        "description": "Advanced features for growing teams and businesses.",
+        "features": [
+         "Up to 25 team members",
+         "100GB cloud storage",
+         "Priority support",
+         "Advanced analytics",
+         "Custom integrations"
+        ],
+        "recommended": true,
+        "cta_label": "Get Started",
+        "cta_url": "#signup-pro"
+       },
+       {
+        "name": "Enterprise",
+        "price": "$99",
+        "period": "/month",
+        "description": "Maximum power and security for large scale operations.",
+        "features": [
+         "Unlimited team members",
+         "1TB cloud storage",
+         "24/7 dedicated support",
+         "Custom security controls",
+         "SLA guarantees"
+        ],
+        "cta_label": "Contact Sales",
+        "cta_url": "#signup-enterprise"
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

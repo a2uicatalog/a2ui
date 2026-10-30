@@ -1,0 +1,42 @@
+{
+ "task": "T6",
+ "condition": "G_haiku-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "tag-slice__express__haiku-5-5__run2",
+ "agent_type": "Learning",
+ "catalogue": "G-learning.json",
+ "atoms_in_catalogue": 236,
+ "prompt_chars": 117248,
+ "slot_recall": [
+  2,
+  2
+ ],
+ "secs": 10.1,
+ "usage": {
+  "input_tokens": 41969,
+  "output_tokens": 1794
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "color_section",
+  "heading",
+  "progress_bar",
+  "flashcard_deck"
+ ],
+ "score": {
+  "precision": 0.5,
+  "recall": 1.0,
+  "f1": 0.667,
+  "slot_hits": {
+   "flashcard deck": true,
+   "progress indicator": true
+  }
+ },
+ "reply": "<a2ui>\nroot = color_section(\"#4f46e5\", \"light\", \"24px\", false, \"90%\", [heading(\"French Vocabulary\"), progress_bar(0, \"Cards reviewed\", \"#4f46e5\", true, \"0 of 10 cards reviewed\"), flashcard_deck([{front: \"bonjour\", back: \"hello\"}, {front: \"merci\", back: \"thank you\"}, {front: \"chat\", back: \"cat\"}, {front: \"chien\", back: \"dog\"}, {front: \"maison\", back: \"house\"}, {front: \"eau\", back: \"water\"}, {front: \"pain\", back: \"bread\"}, {front: \"livre\", back: \"book\"}, {front: \"soleil\", back: \"sun\"}, {front: \"ami\", back: \"friend\"}], \"#4f46e5\", \"FRENCH\", \"ENGLISH\")])\n</a2ui>\n\nThe deck has ten French-to-English cards that flip on interaction. The progress bar is set to 0 of 10 because the catalog's progress components take static values, so the count won't update as cards are flipped. A live count would need a data-bound progress component, which isn't in this catalog."
+}

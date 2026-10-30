@@ -1,0 +1,38 @@
+{
+ "task": "T4",
+ "condition": "CN_gemini-3.8-flash",
+ "temperature_applied": false,
+ "format": "json",
+ "temperature": null,
+ "max_tokens": 32768,
+ "model_id": "gemini-3.8-flash",
+ "hints": false,
+ "label": "oracle-slice-3types__json__gemini-3.8-flash__thinking-off__run3",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 31546,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 10.0,
+ "usage": {
+  "input_tokens": 7912,
+  "output_tokens": 822
+ },
+ "valid": false,
+ "error": "A2uiValidationError: Validation failed for component 'entity_list': components.item-list: Unevaluated properties are not allowed ('component', 'items' were unexpected)\ncomponents.item-list.items: [{'name': 'Database Migration Script', 'subtitle': 'Executing zero-downtime schema migrations for PostgreSQL v16 upgrade.', '",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "list": false,
+   "status indicator": false,
+   "filter control": false
+  }
+ },
+ "reply": "An interface displaying eight items with status, details, and filtering controls.\n\n<a2ui-json>\n[\n  {\n    \"version\": \"v0.9.1\",\n    \"createSurface\": {\n      \"surfaceId\": \"item-list-surface\",\n      \"catalogId\": \"https://a2uicatalog.ai/catalog/c-data-display.json\"\n    }\n  },\n  {\n    \"version\": \"v0.9.1\",\n    \"updateComponents\": {\n      \"surfaceId\": \"item-list-surface\",\n      \"components\": [\n        {\n          \"id\": \"root\",\n          \"component\": \"heading\",\n          \"text\": \"Project Tasks & Deliverables\"\n        },\n        {\n          \"id\": \"filter-control\",\n          \"component\": \"segmented_control\",\n          \"name\": \"status_filter\",\n          \"selected_value\": \"all\",\n          \"options\": \"[{\\\"label\\\": \\\"All (8)\\\", \\\"value\\\": \\\"all\\\"}, {\\\"label\\\": \\\"Active\\\", \\\"value\\\": \\\"active\\\"}, {\\\"label\\\": \\\"Completed\\\", \\\"value\\\": \\\"completed\\\"}, {\\\"label\\\": \\\"Pending\\\", \\\"value\\\": \\\"pending\\\"}, {\\\"label\\\": \\\"Blocked\\\", \\\"value\\\": \\\"blocked\\\"}]\"\n        },\n        {\n          \"id\": \"item-list\",\n          \"component\": \"entity_list\",\n          \"items\": [\n            {\n              \"name\": \"Database Migration Script\",\n              \"subtitle\": \"Executing zero-downtime schema migrations for PostgreSQL v16 upgrade.\",\n              \"status\": \"In Progress\",\n              \"meta\": \"DevOps\",\n              \"icon\": \"\ud83d\uddc4\ufe0f\"\n            },\n            {\n              \"name\": \"OAuth2 Authentication Flow\",\n              \"subtitle\": \"Integrated SSO with Google Workspace and GitHub directory providers.\",\n              \"status\": \"Completed\",\n              \"meta\": \"Security\",\n              \"icon\": \"\ud83d\udd11\"\n            },\n            {\n              \"name\": \"Payment Gateway Integration\",\n              \"subtitle\": \"Awaiting webhook configuration and merchant account verification.\",\n              \"status\": \"Pending\",\n              \"meta\": \"Billing\",\n              \"icon\": \"\ud83d\udcb3\"\n            },\n            {\n              \"name\": \"Legacy API Rate Limiter\",\n              \"subtitle\": \"Redis cluster connection timeout issue blocking traffic throttle rollout.\",\n              \"status\": \"Blocked\",\n              \"meta\": \"Backend\",\n              \"icon\": \"\u26a0\ufe0f\"\n            },\n            {\n              \"name\": \"User Profile Redesign\",\n              \"subtitle\": \"Implemented responsive layout and avatar upload cropper.\",\n              \"status\": \"Completed\",\n              \"meta\": \"Frontend\",\n              \"icon\": \"\ud83c\udfa8\"\n            },\n            {\n              \"name\": \"Realtime Notification Engine\",\n              \"subtitle\": \"Configuring WebSocket broadcast channels and fallback SSE endpoints.\",\n              \"status\": \"In Progress\",\n              \"meta\": \"Core\",\n              \"icon\": \"\ud83d\udd14\"\n            },\n            {\n              \"name\": \"Automated E2E Testing Suite\",\n              \"subtitle\": \"Setting up Playwright pipeline runs in GitHub Actions workflow.\",\n              \"status\": \"Pending\",\n              \"meta\": \"QA\",\n              \"icon\": \"\ud83e\uddea\"\n            },\n            {\n              \"name\": \"Third-Party CRM Webhooks\",\n              \"subtitle\": \"Waiting on external vendor compliance sign-off for enterprise export.\",\n              \"status\": \"Blocked\",\n              \"meta\": \"Integrations\",\n              \"icon\": \"\ud83d\udce6\"\n            }\n          ]\n        }\n      ]\n    }\n  }\n]\n</a2ui-json>"
+}

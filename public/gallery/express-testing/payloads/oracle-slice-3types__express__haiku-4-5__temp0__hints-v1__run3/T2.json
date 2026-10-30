@@ -1,0 +1,127 @@
+{
+ "label": "oracle-slice-3types__express__haiku-4-5__temp0__hints-v1__run3",
+ "task": "T2",
+ "format": "express",
+ "model_id": "claude-haiku-4-5-20251001",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "kpi_1",
+      "component": "stat_card",
+      "value": "$2.4M",
+      "label": "Revenue",
+      "delta": "+12%",
+      "is_up": true,
+      "accent": "#4CAF50"
+     },
+     {
+      "id": "kpi_2",
+      "component": "stat_card",
+      "value": "8,432",
+      "label": "Active Users",
+      "delta": "+5%",
+      "is_up": true,
+      "accent": "#2196F3"
+     },
+     {
+      "id": "kpi_3",
+      "component": "stat_card",
+      "value": "94.2%",
+      "label": "Uptime",
+      "delta": "-0.3%",
+      "is_up": false,
+      "accent": "#FF9800"
+     },
+     {
+      "id": "kpi_4",
+      "component": "stat_card",
+      "value": "3.2s",
+      "label": "Avg Response",
+      "delta": "-8%",
+      "is_up": true,
+      "accent": "#4CAF50"
+     },
+     {
+      "id": "metrics_row",
+      "component": "metric_row",
+      "cols": 4,
+      "metrics": [
+       {
+        "value": "$2.4M",
+        "label": "Revenue",
+        "trend": "up"
+       },
+       {
+        "value": "8,432",
+        "label": "Active Users",
+        "trend": "up"
+       },
+       {
+        "value": "94.2%",
+        "label": "Uptime",
+        "trend": "down"
+       },
+       {
+        "value": "3.2s",
+        "label": "Avg Response",
+        "trend": "up"
+       }
+      ]
+     },
+     {
+      "id": "comparison_chart",
+      "component": "benchmark_comparison",
+      "items": [
+       {
+        "label": "Product A",
+        "value": 87
+       },
+       {
+        "label": "Product B",
+        "value": 72
+       },
+       {
+        "label": "Product C",
+        "value": 91
+       },
+       {
+        "label": "Product D",
+        "value": 65
+       }
+      ]
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "2rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "metrics_row"
+        ]
+       },
+       {
+        "blocks": [
+         "comparison_chart"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,90 @@
+{
+ "label": "jev-layout-pipeline__run1",
+ "task": "T1",
+ "format": "express",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "hdr",
+      "component": "page_header",
+      "title": "The Water Cycle",
+      "subtitle": "Journey of Earth's Most Precious Resource"
+     },
+     {
+      "id": "h1",
+      "component": "heading",
+      "text": "Evaporation and Transpiration"
+     },
+     {
+      "id": "b1",
+      "component": "body",
+      "text": "The sun heats water in oceans and lakes, turning it into invisible vapor. Plants also release moisture from their leaves into the air through a process called transpiration."
+     },
+     {
+      "id": "h2",
+      "component": "heading",
+      "text": "Condensation"
+     },
+     {
+      "id": "b2",
+      "component": "body",
+      "text": "As the warm water vapor rises high into the atmosphere, it cools and turns back into tiny liquid water droplets. These droplets cluster together to form visible clouds."
+     },
+     {
+      "id": "h3",
+      "component": "heading",
+      "text": "Precipitation"
+     },
+     {
+      "id": "b3",
+      "component": "body",
+      "text": "When the water droplets in clouds become too heavy to stay afloat, they fall back to the Earth as rain, snow, sleet, or hail. This completes the primary loop of the cycle before the water eventually returns to the oceans."
+     },
+     {
+      "id": "h4",
+      "component": "heading",
+      "text": "Worked Example: A Puddle's Journey"
+     },
+     {
+      "id": "b4",
+      "component": "body",
+      "text": "Imagine a puddle on a sunny sidewalk: solar energy evaporates the water into the atmosphere, where it cools into a cloud, and later falls as rain onto a mountain stream flowing back to the sea."
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "hdr",
+         "h1",
+         "b1",
+         "h2",
+         "b2",
+         "h3",
+         "b3",
+         "h4",
+         "b4"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,29 @@
+{
+ "task": "T5",
+ "repeat": 2,
+ "writer_model": "gemini-3.5-flash-lite",
+ "decisions": "jev",
+ "jev_ms": 170,
+ "jev_usage": {
+  "input_tokens": 592,
+  "output_tokens": 101
+ },
+ "jev_answers": {
+  "layout": "landing",
+  "count": "3",
+  "cta": "no"
+ },
+ "layout": "landing",
+ "count": 3,
+ "cta": false,
+ "writer_secs": 0.85,
+ "writer_tokens": {
+  "in": 171,
+  "out": 182
+ },
+ "build_ms": 0.14,
+ "valid": true,
+ "error": null,
+ "compile_ms": 9.31,
+ "express": "<a2ui>\nhero = gradient_hero(title=\"Choose Your Plan\", subtitle=\"Select the perfect tier for your workflow with flexible pricing options.\", cta_label=\"Get Started\", cta_url=\"#start\")\nfeats = feature_grid(heading=\"Compare Tiers\", columns=3, features=[{icon:\"\ud83c\udf31\", title:\"Starter\", description:\"Essential tools for individuals and hobbyists starting out.\"}, {icon:\"\u2b50\", title:\"Professional\", description:\"Advanced features and priority support for growing teams.\"}, {icon:\"\ud83d\ude80\", title:\"Enterprise\", description:\"Maximum power, custom security, and dedicated infrastructure.\"}])\nroot = columns(cols=1, gap=\"1.5rem\", align=\"top\", items=[{blocks: [hero, feats]}])\n</a2ui>"
+}

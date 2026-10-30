@@ -1,0 +1,76 @@
+{
+ "label": "wrong-domain-slice__express__haiku-4-5__run2",
+ "task": "T4",
+ "format": "express",
+ "model_id": null,
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/b-marketing-commerce.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "filterable_list",
+      "title": "Items",
+      "items": [
+       {
+        "title": "Item 1",
+        "detail": "First item detail",
+        "status": "active"
+       },
+       {
+        "title": "Item 2",
+        "detail": "Second item detail",
+        "status": "completed"
+       },
+       {
+        "title": "Item 3",
+        "detail": "Third item detail",
+        "status": "active"
+       },
+       {
+        "title": "Item 4",
+        "detail": "Fourth item detail",
+        "status": "pending"
+       },
+       {
+        "title": "Item 5",
+        "detail": "Fifth item detail",
+        "status": "completed"
+       },
+       {
+        "title": "Item 6",
+        "detail": "Sixth item detail",
+        "status": "active"
+       },
+       {
+        "title": "Item 7",
+        "detail": "Seventh item detail",
+        "status": "pending"
+       },
+       {
+        "title": "Item 8",
+        "detail": "Eighth item detail",
+        "status": "completed"
+       }
+      ],
+      "filter_field": "status",
+      "filters": [
+       "active",
+       "completed",
+       "pending"
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

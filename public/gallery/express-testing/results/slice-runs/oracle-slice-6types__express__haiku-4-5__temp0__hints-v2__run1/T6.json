@@ -1,0 +1,39 @@
+{
+ "task": "T6",
+ "condition": "DTH2",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-4-5-20251001",
+ "label": "oracle-slice-6types__express__haiku-4-5__temp0__hints-v2__run1",
+ "agent_type": "T6",
+ "catalogue": "D-t6.json",
+ "atoms_in_catalogue": 12,
+ "prompt_chars": 8305,
+ "slot_recall": [
+  2,
+  2
+ ],
+ "secs": 4.1,
+ "usage": {
+  "input_tokens": 2589,
+  "output_tokens": 352
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "progress_bar",
+  "flashcard_deck",
+  "columns",
+  "heading"
+ ],
+ "score": {
+  "precision": 0.5,
+  "recall": 1.0,
+  "f1": 0.667,
+  "slot_hits": {
+   "flashcard deck": true,
+   "progress indicator": true
+  }
+ },
+ "reply": "<a2ui>\ncards = [\n  {front: \"Serendipity\", back: \"The occurrence of events by chance in a happy or beneficial way\"},\n  {front: \"Ephemeral\", back: \"Lasting for a very short time\"},\n  {front: \"Eloquent\", back: \"Fluent or persuasive in speaking or writing\"},\n  {front: \"Ubiquitous\", back: \"Present, appearing, or found everywhere\"},\n  {front: \"Pragmatic\", back: \"Dealing with things in a realistic and practical way\"},\n  {front: \"Melancholy\", back: \"A feeling of pensive sadness, typically with no obvious cause\"},\n  {front: \"Benevolent\", back: \"Kind and generous\"},\n  {front: \"Cacophony\", back: \"A harsh, discordant mixture of sounds\"},\n  {front: \"Diligent\", back: \"Having or showing care in one's work or duties\"},\n  {front: \"Nostalgia\", back: \"Sentimental longing for the past\"}\n]\n\nprogress = progress_bar(50, \"Vocabulary Review Progress\", \"#4f46e5\", true, \"5 of 10 cards reviewed\")\n\ndeck = flashcard_deck(cards, \"#4f46e5\", \"WORD\", \"DEFINITION\")\n\nroot = columns(1, \"2rem\", \"top\", [{blocks: [heading(\"Vocabulary Flashcards\"), progress, deck]}])\n</a2ui>"
+}

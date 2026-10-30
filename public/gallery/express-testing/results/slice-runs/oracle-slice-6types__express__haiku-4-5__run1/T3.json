@@ -1,0 +1,33 @@
+{
+ "task": "T3",
+ "condition": "D",
+ "label": "oracle-slice-6types__express__haiku-4-5__run1",
+ "agent_type": "T3",
+ "catalogue": "D-t3.json",
+ "atoms_in_catalogue": 21,
+ "prompt_chars": 12164,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 4.3,
+ "usage": {
+  "input_tokens": 3439,
+  "output_tokens": 421
+ },
+ "valid": false,
+ "error": "A2uiCompilationParseError: Failed to parse expression: Syntax error at line 14:12: mismatched input '=' expecting ':' (line 14) - Line 14, Col 12 - Help: Please correct the syntax error in your Express DSL.",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "hero": false,
+   "feature columns (x3)": false,
+   "testimonial": false,
+   "CTA": false
+  }
+ },
+ "reply": "<a2ui>\nroot = body([\n  gradient_hero(\n    title=\"Transform Your Workflow\",\n    subtitle=\"Streamline your process with our innovative solution designed for modern teams\",\n    cta_label=\"Get Started\",\n    cta_url=\"https://example.com/signup\"\n  ),\n  feature_grid(\n    heading=\"Why Choose Us\",\n    description=\"Powerful features built for your success\",\n    columns=3,\n    features=[\n      {\n        icon=\"\u26a1\",\n        title=\"Lightning Fast\",\n        description=\"Experience blazing-fast performance that keeps your team productive\"\n      },\n      {\n        icon=\"\ud83d\udd12\",\n        title=\"Secure & Reliable\",\n        description=\"Enterprise-grade security to protect your most valuable data\"\n      },\n      {\n        icon=\"\ud83e\udd1d\",\n        title=\"Easy Collaboration\",\n        description=\"Seamless teamwork tools that bring everyone together\"\n      }\n    ]\n  ),\n  testimonial_card(\n    text=\"This product completely transformed how we work. The team loves it and we've seen a 40% boost in productivity.\",\n    author_name=\"Sarah Johnson\",\n    author_title=\"CEO at TechCorp\",\n    author_avatar_url=\"https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah\",\n    rating=5\n  ),\n  cta_section(\n    heading=\"Ready to Get Started?\",\n    body=\"Join thousands of teams already using our platform to accelerate their success.\",\n    primary_cta={label: \"Start Free Trial\", url: \"https://example.com/trial\"},\n    secondary_cta={label: \"Learn More\", url: \"https://example.com/features\"}\n  )\n])\n</a2ui>"
+}

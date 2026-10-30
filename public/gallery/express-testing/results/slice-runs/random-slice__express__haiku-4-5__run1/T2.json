@@ -1,0 +1,38 @@
+{
+ "task": "T2",
+ "condition": "F",
+ "label": "random-slice__express__haiku-4-5__run1",
+ "agent_type": "Data display",
+ "catalogue": "F-data-display.json",
+ "atoms_in_catalogue": 248,
+ "prompt_chars": 130958,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 3.0,
+ "usage": {
+  "input_tokens": 37601,
+  "output_tokens": 202
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns",
+  "stat_card",
+  "stat_card",
+  "stat_card",
+  "stat_card"
+ ],
+ "score": {
+  "precision": 0.8,
+  "recall": 0.667,
+  "f1": 0.727,
+  "slot_hits": {
+   "KPI tile (x4)": true,
+   "trend (required only if metric_row was chosen; stat_card's own delta already satisfies it)": true,
+   "comparison chart": false
+  }
+ },
+ "reply": "<a2ui>\nroot = columns(cols=2, gap=\"2rem\", items=[\n  {blocks: [\n    stat_card(value=\"$2.4M\", label=\"Revenue\", delta=\"+12%\", is_up=true, accent=\"#10b981\"),\n    stat_card(value=\"8,420\", label=\"Active Users\", delta=\"+8%\", is_up=true, accent=\"#3b82f6\"),\n  ]},\n  {blocks: [\n    stat_card(value=\"94.2%\", label=\"Conversion Rate\", delta=\"-2%\", is_up=false, accent=\"#ef4444\"),\n    stat_card(value=\"3.2s\", label=\"Avg Response Time\", delta=\"-0.4s\", is_up=true, accent=\"#10b981\"),\n  ]},\n])\n</a2ui>"
+}

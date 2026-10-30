@@ -1,0 +1,77 @@
+{
+ "label": "oracle-slice-3types__json__gemini-3.5-flash__thinking-on_first-run-timing-invalid__run1",
+ "task": "T5",
+ "format": "json",
+ "model_id": "gemini-3.5-flash",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "pricing-surface",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "pricing-surface",
+    "components": [
+     {
+      "id": "root",
+      "component": "pricing_tier_group",
+      "tiers": [
+       {
+        "name": "Starter",
+        "price": "$12",
+        "interval": "mo",
+        "description": "Essential features for individuals and small projects.",
+        "features": [
+         "Up to 3 active projects",
+         "Standard community support",
+         "Basic templates library",
+         "5 GB cloud storage"
+        ],
+        "cta_label": "Start Free Trial",
+        "cta_url": "#",
+        "recommended": false
+       },
+       {
+        "name": "Professional",
+        "price": "$29",
+        "interval": "mo",
+        "description": "Our most popular plan for scaling teams and creators.",
+        "features": [
+         "Unlimited active projects",
+         "Priority 24/7 email support",
+         "Premium analytics and reporting",
+         "50 GB cloud storage",
+         "Colleague sharing & collaboration tools"
+        ],
+        "cta_label": "Get Professional",
+        "cta_url": "#",
+        "recommended": true,
+        "popular": true
+       },
+       {
+        "name": "Enterprise",
+        "price": "$89",
+        "interval": "mo",
+        "description": "Advanced power, security, and controls for businesses.",
+        "features": [
+         "Everything in Professional",
+         "Dedicated accounts manager",
+         "SSO and advanced access controls",
+         "Unlimited secure cloud storage",
+         "Custom integration support"
+        ],
+        "cta_label": "Contact Sales",
+        "cta_url": "#",
+        "recommended": false
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

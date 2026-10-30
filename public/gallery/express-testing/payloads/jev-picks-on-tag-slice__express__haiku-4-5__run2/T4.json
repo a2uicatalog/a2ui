@@ -1,0 +1,98 @@
+{
+ "label": "jev-picks-on-tag-slice__express__haiku-4-5__run2",
+ "task": "T4",
+ "format": "express",
+ "model_id": null,
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "list-surface-1",
+    "components": [
+     {
+      "id": "filterChips",
+      "component": "chip_group",
+      "label": "Filter by Status",
+      "layout": "wrap",
+      "same_tab": true,
+      "chips": [
+       {
+        "label": "All",
+        "active": true,
+        "color": "#38bdf8"
+       },
+       {
+        "label": "Active",
+        "color": "#10b981"
+       },
+       {
+        "label": "Pending",
+        "color": "#f59e0b"
+       },
+       {
+        "label": "Completed",
+        "color": "#6366f1"
+       },
+       {
+        "label": "Paused",
+        "color": "#ef4444"
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_data_model": {
+    "surface_id": "list-surface-1",
+    "path": "/",
+    "value": {
+     "filterStatus": "all",
+     "items": [
+      {
+       "title": "Project Alpha",
+       "status": "active",
+       "detail": "Launched Q1 2024"
+      },
+      {
+       "title": "Project Beta",
+       "status": "pending",
+       "detail": "Awaiting stakeholder approval"
+      },
+      {
+       "title": "Project Gamma",
+       "status": "completed",
+       "detail": "Delivered ahead of schedule"
+      },
+      {
+       "title": "Project Delta",
+       "status": "active",
+       "detail": "On track for Q2 release"
+      },
+      {
+       "title": "Project Epsilon",
+       "status": "active",
+       "detail": "Currently in development phase"
+      },
+      {
+       "title": "Project Zeta",
+       "status": "pending",
+       "detail": "Scheduled to begin next month"
+      },
+      {
+       "title": "Project Eta",
+       "status": "completed",
+       "detail": "Archived and documented"
+      },
+      {
+       "title": "Project Theta",
+       "status": "paused",
+       "detail": "Waiting for budget allocation"
+      }
+     ]
+    }
+   }
+  }
+ ]
+}

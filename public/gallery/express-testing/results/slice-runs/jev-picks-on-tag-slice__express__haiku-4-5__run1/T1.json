@@ -1,0 +1,34 @@
+{
+ "task": "T1",
+ "condition": "JG",
+ "label": "jev-picks-on-tag-slice__express__haiku-4-5__run1",
+ "agent_type": "jev-narrowed",
+ "catalogue": "JG-T1.json",
+ "atoms_in_catalogue": 16,
+ "prompt_chars": 10615,
+ "slot_recall": [
+  4,
+  5
+ ],
+ "secs": 11.1,
+ "usage": {
+  "input_tokens": 2908,
+  "output_tokens": 1096
+ },
+ "valid": false,
+ "error": "A2uiCompilationValidationError: Unknown function 'concept_ladder' not defined in catalog 'https://a2uicatalog.ai/catalog/jg-t1.json'. - Help: Please correct the syntax error in your Express DSL.",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "title": false,
+   "concept sections (x3)": false,
+   "worked example": false,
+   "3-question quiz": false,
+   "quiz result": false
+  }
+ },
+ "reply": "<a2ui>\nroot = body([\n  page_header(\n    \"The Water Cycle\",\n    \"Understanding how water moves through Earth's systems\",\n    \"\ud83d\udca7\"\n  ),\n  heading(\"Core Concepts\"),\n  concept_ladder([\n    evaporation_rung,\n    condensation_rung,\n    precipitation_rung,\n    worked_example_rung\n  ]),\n  heading(\"Self-Check Quiz\"),\n  quiz_section\n])\n\nevaporation_rung = concept_rung(\n  badge=\"1\",\n  kind=\"depth\",\n  label=\"EVAPORATION\",\n  title=\"Evaporation: Water Rises\",\n  body=\"Evaporation is the process where water from oceans, lakes, and rivers transforms into water vapor and rises into the atmosphere. Solar energy heats the water surface, causing molecules to escape as invisible gas. This is a key driver of the water cycle.\",\n  takeaway=\"Heat + Water Surface = Water Vapor\"\n)\n\ncondensation_rung = concept_rung(\n  badge=\"2\",\n  kind=\"depth\",\n  label=\"CONDENSATION\",\n  title=\"Condensation: Vapor Becomes Cloud\",\n  body=\"As water vapor rises higher in the atmosphere, it cools down. When temperature drops below the dew point, water vapor condenses into tiny liquid droplets around dust particles, forming clouds. This phase change releases heat energy back into the atmosphere.\",\n  takeaway=\"Cool Air + Water Vapor = Cloud Formation\"\n)\n\nprecipitation_rung = concept_rung(\n  badge=\"3\",\n  kind=\"depth\",\n  label=\"PRECIPITATION\",\n  title=\"Precipitation: Water Falls\",\n  body=\"Water droplets in clouds combine and grow heavier. When droplets become too heavy to float, they fall as precipitation\u2014rain, snow, sleet, or hail\u2014depending on atmospheric temperature. This water returns to Earth's surface, completing one cycle phase.\",\n  takeaway=\"Heavy Droplets + Gravity = Precipitation\"\n)\n\nworked_example_rung = concept_rung(\n  badge=\"EX\",\n  kind=\"example\",\n  label=\"WORKED EXAMPLE\",\n  title=\"A Complete Cycle: Lake to Cloud to Rain\",\n  body=\"Imagine a sunny day over Lake Michigan. Solar radiation heats the lake surface to 20\u00b0C. Water molecules evaporate and rise as invisible vapor. At 5,000 meters altitude, the air temperature drops to 5\u00b0C, below the dew point of 8\u00b0C. Water vapor condenses on microscopic dust particles. Billions of tiny droplets cluster, forming a visible cumulus cloud. As more droplets collide and merge inside the cloud, they grow heavier. After 30 minutes, droplets reach 0.1 mm diameter\u2014heavy enough to fall. Rain begins, returning water to the lake.\",\n  takeaway=\"Solar energy \u2192 Evaporation \u2192 Rise \u2192 Cool \u2192 Condense \u2192 Cloud \u2192 Merge \u2192 Fall \u2192 Rain\"\n)\n\nquiz_section = columns(\n  cols=1,\n  items=[\n    {blocks: [q1]},\n    {blocks: [q2]},\n    {blocks: [q3]}\n  ]\n)\n\nq1 = quiz_question(\n  question=\"What is the primary energy source that drives evaporation in the water cycle?\",\n  options=[\n    \"Wind\",\n    \"Solar radiation (heat from the sun)\",\n    \"Atmospheric pressure\",\n    \"Ocean currents\"\n  ],\n  correct=1,\n  explanation=\"Solar radiation heats water surfaces, providing the energy needed for water molecules to escape as vapor. Wind, pressure, and currents play supporting roles but are not the primary driver.\"\n)\n\nq2 = quiz_question(\n  question=\"At what point does water vapor transform into liquid water droplets?\",\n  options=[\n    \"When it rises above sea level\",\n    \"When it reaches the stratosphere\",\n    \"When it cools below the dew point temperature\",\n    \"When it mixes with salt water\"\n  ],\n  correct=2,\n  explanation=\"Condensation occurs when cooling water vapor reaches its dew point\u2014the temperature at which vapor becomes supersaturated and condenses into liquid droplets around microscopic particles.\"\n)\n\nq3 = quiz_question(\n  question=\"Which of these is NOT a form of precipitation?\",\n  options=[\n    \"Rain\",\n    \"Snow\",\n    \"Evaporation\",\n    \"Hail\"\n  ],\n  correct=2,\n  explanation=\"Evaporation is the opposite process\u2014it's when water transforms into vapor. Rain, snow, and hail are all forms of precipitation, where water falls from clouds back to Earth's surface.\"\n)\n</a2ui>"
+}

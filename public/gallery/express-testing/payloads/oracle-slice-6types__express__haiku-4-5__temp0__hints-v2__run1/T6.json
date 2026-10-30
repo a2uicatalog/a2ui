@@ -1,0 +1,102 @@
+{
+ "label": "oracle-slice-6types__express__haiku-4-5__temp0__hints-v2__run1",
+ "task": "T6",
+ "format": "express",
+ "model_id": "claude-haiku-4-5-20251001",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/d-t6.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "progress",
+      "component": "progress_bar",
+      "value": 50,
+      "label": "Vocabulary Review Progress",
+      "accent": "#4f46e5",
+      "show_percent": true,
+      "caption": "5 of 10 cards reviewed"
+     },
+     {
+      "id": "deck",
+      "component": "flashcard_deck",
+      "cards": [
+       {
+        "front": "Serendipity",
+        "back": "The occurrence of events by chance in a happy or beneficial way"
+       },
+       {
+        "front": "Ephemeral",
+        "back": "Lasting for a very short time"
+       },
+       {
+        "front": "Eloquent",
+        "back": "Fluent or persuasive in speaking or writing"
+       },
+       {
+        "front": "Ubiquitous",
+        "back": "Present, appearing, or found everywhere"
+       },
+       {
+        "front": "Pragmatic",
+        "back": "Dealing with things in a realistic and practical way"
+       },
+       {
+        "front": "Melancholy",
+        "back": "A feeling of pensive sadness, typically with no obvious cause"
+       },
+       {
+        "front": "Benevolent",
+        "back": "Kind and generous"
+       },
+       {
+        "front": "Cacophony",
+        "back": "A harsh, discordant mixture of sounds"
+       },
+       {
+        "front": "Diligent",
+        "back": "Having or showing care in one's work or duties"
+       },
+       {
+        "front": "Nostalgia",
+        "back": "Sentimental longing for the past"
+       }
+      ],
+      "accent": "#4f46e5",
+      "label_front": "WORD",
+      "label_back": "DEFINITION"
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "2rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "_inline_1",
+         "progress",
+         "deck"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "_inline_1",
+      "component": "heading",
+      "text": "Vocabulary Flashcards"
+     }
+    ]
+   }
+  }
+ ]
+}

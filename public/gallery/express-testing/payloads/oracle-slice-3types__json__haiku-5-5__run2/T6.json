@@ -1,0 +1,103 @@
+{
+ "label": "oracle-slice-3types__json__haiku-5-5__run2",
+ "task": "T6",
+ "format": "json",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9",
+   "create_surface": {
+    "surface_id": "vocab-flashcards",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning.json"
+   }
+  },
+  {
+   "version": "v0.9",
+   "update_components": {
+    "surface_id": "vocab-flashcards",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "2rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         {
+          "id": "deck-heading",
+          "component": "heading",
+          "text": "Vocabulary Flashcards"
+         },
+         {
+          "id": "review-progress",
+          "component": "progress_bar",
+          "value": 0,
+          "label": "Reviewed 0 of 10",
+          "accent": "#4f46e5",
+          "show_percent": "true",
+          "caption": "Cards reviewed so far"
+         }
+        ]
+       },
+       {
+        "blocks": [
+         {
+          "id": "vocab-deck",
+          "component": "flashcard_deck",
+          "accent": "#4f46e5",
+          "label_front": "WORD",
+          "label_back": "MEANING",
+          "cards": [
+           {
+            "front": "Serendipity",
+            "back": "The occurrence of happy discoveries by accident"
+           },
+           {
+            "front": "Ephemeral",
+            "back": "Lasting for a very short time"
+           },
+           {
+            "front": "Ubiquitous",
+            "back": "Present or found everywhere"
+           },
+           {
+            "front": "Resilient",
+            "back": "Able to recover quickly from difficulties"
+           },
+           {
+            "front": "Meticulous",
+            "back": "Showing great attention to detail"
+           },
+           {
+            "front": "Ambiguous",
+            "back": "Open to more than one interpretation"
+           },
+           {
+            "front": "Eloquent",
+            "back": "Fluent, persuasive, and expressive in speech or writing"
+           },
+           {
+            "front": "Pragmatic",
+            "back": "Dealing with things sensibly and realistically"
+           },
+           {
+            "front": "Candid",
+            "back": "Truthful and straightforward; frank"
+           },
+           {
+            "front": "Diligent",
+            "back": "Careful and persistent in work or effort"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

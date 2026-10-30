@@ -1,0 +1,42 @@
+{
+ "task": "T4",
+ "condition": "CX_haiku-5-5",
+ "temperature_applied": false,
+ "format": "elemental",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "oracle-slice-3types__elemental__haiku-5-5__run3",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 16829,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 10.3,
+ "usage": {
+  "input_tokens": 6734,
+  "output_tokens": 2162
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "heading",
+  "segmented_control",
+  "entity_list"
+ ],
+ "score": {
+  "precision": 0.667,
+  "recall": 0.667,
+  "f1": 0.667,
+  "slot_hits": {
+   "list": true,
+   "status indicator": false,
+   "filter control": true
+  }
+ },
+ "reply": "<a2ui>\n<body id=\"root\">\n<script type=\"application/json\">{\"filter\": \"All\", \"items\": [\n{\"name\": \"API gateway migration\", \"subtitle\": \"Moving routing rules to the new edge proxy.\", \"status\": \"Active\"},\n{\"name\": \"Billing webhook retries\", \"subtitle\": \"Add exponential backoff to failed deliveries.\", \"status\": \"Pending\"},\n{\"name\": \"Search index rebuild\", \"subtitle\": \"Nightly reindex is exceeding its time window.\", \"status\": \"Blocked\"},\n{\"name\": \"SSO certificate rotation\", \"subtitle\": \"Rotate signing keys before the March expiry.\", \"status\": \"Done\"},\n{\"name\": \"Mobile onboarding flow\", \"subtitle\": \"Usability fixes from the latest round of testing.\", \"status\": \"Active\"},\n{\"name\": \"Log retention policy\", \"subtitle\": \"Confirm 90-day retention with the compliance team.\", \"status\": \"Pending\"},\n{\"name\": \"Payment provider upgrade\", \"subtitle\": \"Waiting on sandbox access from the vendor.\", \"status\": \"Blocked\"},\n{\"name\": \"Dashboard caching layer\", \"subtitle\": \"Cache hit rate reached target in staging.\", \"status\": \"Done\"}\n]}</script>\n<ui-heading id=\"list-title\" text=\"Items\" />\n<ui-segmented_control id=\"status-filter\" name=\"status\" selected_value=\"{$/filter}\">\n<script type=\"application/json\" slot=\"options\">[\n{\"label\": \"All\", \"value\": \"All\"},\n{\"label\": \"Active\", \"value\": \"Active\"},\n{\"label\": \"Pending\", \"value\": \"Pending\"},\n{\"label\": \"Blocked\", \"value\": \"Blocked\"},\n{\"label\": \"Done\", \"value\": \"Done\"}\n]</script>\n</ui-segmented_control>\n<ui-entity_list id=\"item-list\" items=\"{$/items}\" />\n</body>\n</a2ui>\n\nNote: the catalog has no filter function, so the status control sets `/filter` but the list shows all eight items. Applying the filter needs a catalog function that returns the matching subset."
+}

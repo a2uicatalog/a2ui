@@ -1,0 +1,128 @@
+{
+ "label": "oracle-slice-3types__json__opus-5-5__run2",
+ "task": "T6",
+ "format": "json",
+ "model_id": "claude-opus-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "vocab-flashcards",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "vocab-flashcards",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "2rem",
+      "align": "top",
+      "accessibility": {
+       "label": "Vocabulary flashcards",
+       "description": "Flip through ten vocabulary cards and track how many you have reviewed."
+      },
+      "items": [
+       {
+        "blocks": [
+         {
+          "type": "page_header",
+          "title": "Vocabulary Review",
+          "subtitle": "Flip each card to reveal its definition.",
+          "icon": "\ud83d\udcda",
+          "tag": "10 cards",
+          "accent": "#4f46e5"
+         },
+         {
+          "type": "flashcard_deck",
+          "accent": "#4f46e5",
+          "label_front": "WORD",
+          "label_back": "DEFINITION",
+          "cards": [
+           {
+            "front": "Ephemeral",
+            "back": "Lasting for a very short time. \"The ephemeral beauty of cherry blossoms.\""
+           },
+           {
+            "front": "Ubiquitous",
+            "back": "Present, appearing, or found everywhere. \"Smartphones have become ubiquitous.\""
+           },
+           {
+            "front": "Meticulous",
+            "back": "Showing great attention to detail; very careful and precise."
+           },
+           {
+            "front": "Pragmatic",
+            "back": "Dealing with things sensibly and realistically, based on practical considerations."
+           },
+           {
+            "front": "Resilient",
+            "back": "Able to recover quickly from difficulties or withstand shock."
+           },
+           {
+            "front": "Ambiguous",
+            "back": "Open to more than one interpretation; not having one obvious meaning."
+           },
+           {
+            "front": "Candid",
+            "back": "Truthful and straightforward; frank."
+           },
+           {
+            "front": "Eloquent",
+            "back": "Fluent or persuasive in speaking or writing."
+           },
+           {
+            "front": "Benevolent",
+            "back": "Well-meaning and kindly; disposed to do good."
+           },
+           {
+            "front": "Tenacious",
+            "back": "Holding firmly to something; persistent and determined."
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "blocks": [
+         {
+          "type": "heading",
+          "text": "Your Progress"
+         },
+         {
+          "type": "progress_ring",
+          "value": "40",
+          "size": "140",
+          "stroke_width": "10",
+          "color": "#4f46e5",
+          "label": "Cards reviewed",
+          "show_value": "true",
+          "unit": "%"
+         },
+         {
+          "type": "progress_bar",
+          "value": 40,
+          "label": "4 of 10 reviewed",
+          "accent": "#4f46e5",
+          "show_percent": "true",
+          "caption": "6 cards remaining in this deck"
+         },
+         {
+          "type": "text_callout",
+          "variant": "info",
+          "title": "Tip",
+          "description": "Say the definition out loud before flipping each card \u2014 active recall makes words stick faster."
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

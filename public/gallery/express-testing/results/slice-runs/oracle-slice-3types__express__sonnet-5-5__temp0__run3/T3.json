@@ -1,0 +1,46 @@
+{
+ "task": "T3",
+ "condition": "CT_sonnet-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-sonnet-5-5",
+ "hints": false,
+ "label": "oracle-slice-3types__express__sonnet-5-5__temp0__run3",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "C-marketing-commerce.json",
+ "atoms_in_catalogue": 23,
+ "prompt_chars": 12467,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 4.9,
+ "usage": {
+  "input_tokens": 4493,
+  "output_tokens": 564
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "gradient_hero",
+  "heading",
+  "feature_grid",
+  "testimonial_card",
+  "cta_button",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.667,
+  "recall": 1.0,
+  "f1": 0.8,
+  "slot_hits": {
+   "hero": true,
+   "feature columns (x3)": true,
+   "testimonial": true,
+   "CTA": true
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"landing-page\")\nhero = gradient_hero(\"Ship faster with Lumen\", \"The all-in-one workspace that helps your team plan, build, and launch products without the busywork.\", \"New: Lumen 2.0\", \"#4f46e5\", \"#8b5cf6\", null, \"center\", \"Get started free\", \"https://example.com/signup\")\nfeaturesHeading = heading(\"Everything your team needs\")\nfeatures = feature_grid(null, \"Powerful tools designed to work together, right out of the box.\", 3, [\n  {icon: \"\u26a1\", title: \"Lightning fast\", description: \"Instant search, real-time sync, and a snappy interface that keeps up with your thinking.\", color: \"#f59e0b\"},\n  {icon: \"\ud83e\udd1d\", title: \"Seamless collaboration\", description: \"Comment, assign, and review together in one shared space, with no more scattered tools.\", color: \"#4f46e5\"},\n  {icon: \"\ud83d\udd12\", title: \"Secure by default\", description: \"Enterprise-grade encryption, SSO, and granular permissions protect your work.\", color: \"#10b981\"}\n])\ntestimonial = testimonial_card(\"Lumen cut our planning time in half. Our team finally has one place where everything lives, and we shipped our last release two weeks early.\", \"Priya Sharma\", \"Head of Product, Northwind\", \"https://i.pravatar.cc/150?img=47\", 5)\ncta = cta_button(\"https://example.com/signup\", \"Start your free trial\", \"#4f46e5\", false)\nroot = columns(2, \"1.5rem\", \"top\", [\n  {blocks: [hero, featuresHeading, features, testimonial, cta]},\n  {blocks: []}\n])\n</a2ui>"
+}

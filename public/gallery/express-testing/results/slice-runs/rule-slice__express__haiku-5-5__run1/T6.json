@@ -1,0 +1,42 @@
+{
+ "task": "T6",
+ "condition": "B_haiku-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "rule-slice__express__haiku-5-5__run1",
+ "agent_type": "Learning",
+ "catalogue": "B-learning.json",
+ "atoms_in_catalogue": 184,
+ "prompt_chars": 88519,
+ "slot_recall": [
+  1,
+  2
+ ],
+ "secs": 10.1,
+ "usage": {
+  "input_tokens": 31440,
+  "output_tokens": 2111
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "heading",
+  "course_progress_card",
+  "flashcard_deck",
+  "color_section"
+ ],
+ "score": {
+  "precision": 0.25,
+  "recall": 0.5,
+  "f1": 0.333,
+  "slot_hits": {
+   "flashcard deck": true,
+   "progress indicator": false
+  }
+ },
+ "reply": "<a2ui>\ntitle = heading(\"Vocabulary Flashcards\")\n\nprogress = course_progress_card(\"Vocabulary Review\", [{title: \"Words reviewed\", lessons_total: 10, lessons_done: 0}], \"#4f46e5\")\n\ndeck = flashcard_deck([{front: \"ephemeral\", back: \"Lasting for a very short time\"}, {front: \"ubiquitous\", back: \"Present or found everywhere\"}, {front: \"meticulous\", back: \"Showing great attention to detail\"}, {front: \"candid\", back: \"Truthful and straightforward\"}, {front: \"resilient\", back: \"Able to recover quickly from difficulty\"}, {front: \"ambiguous\", back: \"Open to more than one interpretation\"}, {front: \"eloquent\", back: \"Fluent and persuasive in speech or writing\"}, {front: \"pragmatic\", back: \"Dealing with things sensibly and realistically\"}, {front: \"benevolent\", back: \"Well-meaning and kindly\"}, {front: \"tenacious\", back: \"Holding firmly to a purpose; persistent\"}], \"#4f46e5\", \"WORD\", \"MEANING\")\n\nroot = color_section(\"#4f46e5\", \"light\", \"24px\", false, \"90%\", [title, progress, deck])\n</a2ui>\n\nThe flip cards and the progress card are in place. The progress card shows 0 of 10 reviewed on load. The catalog's flashcard deck does not emit events, so the count will not advance on its own. To make it live, the host would need to bind the progress card's lessons_done to a data path that the flip interaction updates."
+}

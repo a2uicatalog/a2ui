@@ -1,0 +1,42 @@
+{
+ "task": "T2",
+ "condition": "C_haiku-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "oracle-slice-3types__express__haiku-5-5__run2",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 16421,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 7.6,
+ "usage": {
+  "input_tokens": 6060,
+  "output_tokens": 1556
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "metric_row",
+  "chartjs_bar",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.667,
+  "recall": 0.667,
+  "f1": 0.667,
+  "slot_hits": {
+   "KPI tile (x4)": true,
+   "trend (required only if metric_row was chosen; stat_card's own delta already satisfies it)": false,
+   "comparison chart": true
+  }
+ },
+ "reply": "<a2ui>\nkpi_row = metric_row(cols=4, metrics=[\n  {value: \"$128.4K\", label: \"Revenue\", sub: \"+12.5% vs last month\", trend: \"up\"},\n  {value: \"3,842\", label: \"Active Users\", sub: \"+4.1% vs last month\", trend: \"up\"},\n  {value: \"2.9%\", label: \"Churn Rate\", sub: \"+0.6 pts vs last month\", trend: \"down\"},\n  {value: \"4.6/5\", label: \"CSAT Score\", sub: \"-0.2 vs last month\", trend: \"down\"}\n])\n\ncomparison = chartjs_bar(\n  labels=[\"Jan\", \"Feb\", \"Mar\", \"Apr\", \"May\", \"Jun\"],\n  datasets=[\n    {label: \"This Year\", data: [82, 91, 88, 104, 112, 128]},\n    {label: \"Last Year\", data: [70, 75, 80, 86, 92, 99]}\n  ]\n)\n\nroot = columns(cols=2, gap=\"1.5rem\", align=\"stretch\", items=[\n  {blocks: [kpi_row]},\n  {blocks: [comparison]}\n])\n</a2ui>"
+}

@@ -1,0 +1,127 @@
+{
+ "label": "oracle-slice-3types__express__gemini-3.5-flash-lite__request-only-timing__run1",
+ "task": "T4",
+ "format": "express",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "1.5rem",
+      "items": [
+       {
+        "blocks": [
+         "_inline_1",
+         "_inline_2",
+         "_inline_3",
+         "_inline_4"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "_inline_1",
+      "component": "heading",
+      "text": "System Tasks Overview"
+     },
+     {
+      "id": "_inline_2",
+      "component": "body",
+      "text": "Filter and review current system items and their live operational status."
+     },
+     {
+      "id": "_inline_3",
+      "component": "segmented_control",
+      "name": "status_filter",
+      "selected_value": "all",
+      "options": [
+       {
+        "label": "All Items",
+        "value": "all"
+       },
+       {
+        "label": "Active",
+        "value": "active"
+       },
+       {
+        "label": "Pending",
+        "value": "pending"
+       },
+       {
+        "label": "Completed",
+        "value": "completed"
+       }
+      ]
+     },
+     {
+      "id": "_inline_4",
+      "component": "entity_list",
+      "items": [
+       {
+        "name": "Database Cluster Alpha Sync",
+        "subtitle": "Replicating primary shard nodes across availability zones.",
+        "status": "Active",
+        "meta": "Updated 2m ago"
+       },
+       {
+        "name": "Payment Gateway SSL Renewal",
+        "subtitle": "Certificate expiration in 14 days. Auto-renew queued.",
+        "status": "Pending",
+        "meta": "Due in 3 days"
+       },
+       {
+        "name": "User Analytics Pipeline Migration",
+        "subtitle": "Successfully migrated historical telemetry to data lake.",
+        "status": "Completed",
+        "meta": "Finished today"
+       },
+       {
+        "name": "Cache Layer Memory Optimization",
+        "subtitle": "Eviction policies adjusted for high-traffic endpoints.",
+        "status": "Active",
+        "meta": "Running continuously"
+       },
+       {
+        "name": "API Rate Limiter Refactor",
+        "subtitle": "Token bucket algorithm tuning under review.",
+        "status": "Pending",
+        "meta": "Review pending"
+       },
+       {
+        "name": "CDN Edge Node Provisioning",
+        "subtitle": "Deployed 12 new points of presence in APAC region.",
+        "status": "Completed",
+        "meta": "Finished yesterday"
+       },
+       {
+        "name": "Security Vulnerability Scan",
+        "subtitle": "Weekly dependency audit and container vulnerability check.",
+        "status": "Active",
+        "meta": "In progress (45%)"
+       },
+       {
+        "name": "Backup Snapshot Verification",
+        "subtitle": "Integrity check passed for weekly cold storage archives.",
+        "status": "Completed",
+        "meta": "Verified 5h ago"
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

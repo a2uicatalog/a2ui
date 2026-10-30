@@ -1,0 +1,40 @@
+{
+ "task": "T2",
+ "condition": "CTN",
+ "format": "json",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-4-5-20251001",
+ "label": "oracle-slice-3types__json__haiku-4-5__temp0__run2",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 31546,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 8.1,
+ "usage": {
+  "input_tokens": 9044,
+  "output_tokens": 900
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns",
+  "heading",
+  "chartjs_bar"
+ ],
+ "score": {
+  "precision": 0.333,
+  "recall": 0.333,
+  "f1": 0.333,
+  "slot_hits": {
+   "KPI tile (x4)": false,
+   "trend (required only if metric_row was chosen; stat_card's own delta already satisfies it)": false,
+   "comparison chart": true
+  }
+ },
+ "reply": "I'll create a metrics overview UI with four KPI tiles and a comparison chart.\n\n<a2ui-json>\n{\n  \"version\": \"v0.9.1\",\n  \"createSurface\": {\n    \"surfaceId\": \"metrics-overview\",\n    \"catalogId\": \"https://a2uicatalog.ai/catalog/c-data-display.json\"\n  }\n}\n</a2ui-json>\n\n<a2ui-json>\n{\n  \"version\": \"v0.9.1\",\n  \"updateComponents\": {\n    \"surfaceId\": \"metrics-overview\",\n    \"components\": [\n      {\n        \"id\": \"root\",\n        \"component\": \"columns\",\n        \"cols\": 2,\n        \"gap\": \"1.5rem\",\n        \"items\": [\n          {\n            \"blocks\": [\n              {\n                \"id\": \"kpi-1\",\n                \"component\": \"metric_delta\",\n                \"label\": \"Revenue\",\n                \"current_value\": \"$245,680\",\n                \"delta_value\": \"+12.5%\",\n                \"delta_type\": \"increase\",\n                \"unit\": \"USD\",\n                \"previous_period_label\": \"vs. last month\"\n              },\n              {\n                \"id\": \"kpi-2\",\n                \"component\": \"metric_delta\",\n                \"label\": \"Customer Acquisition\",\n                \"current_value\": \"1,240\",\n                \"delta_value\": \"+8.3%\",\n                \"delta_type\": \"increase\",\n                \"previous_period_label\": \"vs. last month\"\n              }\n            ]\n          },\n          {\n            \"blocks\": [\n              {\n                \"id\": \"kpi-3\",\n                \"component\": \"metric_delta\",\n                \"label\": \"Churn Rate\",\n                \"current_value\": \"2.1%\",\n                \"delta_value\": \"-0.4%\",\n                \"delta_type\": \"decrease\",\n                \"previous_period_label\": \"vs. last month\"\n              },\n              {\n                \"id\": \"kpi-4\",\n                \"component\": \"metric_delta\",\n                \"label\": \"Avg. Session Duration\",\n                \"current_value\": \"8m 32s\",\n                \"delta_value\": \"+1m 15s\",\n                \"delta_type\": \"increase\",\n                \"previous_period_label\": \"vs. last month\"\n              }\n            ]\n          }\n        ]\n      },\n      {\n        \"id\": \"chart-section\",\n        \"component\": \"heading\",\n        \"text\": \"Performance Comparison\"\n      },\n      {\n        \"id\": \"comparison-chart\",\n        \"component\": \"chartjs_bar\",\n        \"labels\": [\"Week 1\", \"Week 2\", \"Week 3\", \"Week 4\"],\n        \"datasets\": [\n          {\n            \"label\": \"Target\",\n            \"data\": [85, 88, 82, 90]\n          },\n          {\n            \"label\": \"Actual\",\n            \"data\": [78, 92, 79, 95]\n          }\n        ]\n      }\n    ]\n  }\n}\n</a2ui-json>\n\nThis metrics overview includes:\n\n- **Four KPI Tiles** arranged in a 2-column layout using `metric_delta` components, each displaying:\n  - A descriptive label (Revenue, Customer Acquisition, Churn Rate, Avg. Session Duration)\n  - Current value\n  - Directional delta with percentage or absolute change\n  - Delta type (increase/decrease) for visual styling\n  - Previous period context\n\n- **Comparison Chart** - A `chartjs_bar` chart showing Target vs. Actual performance across four weeks, providing visual context for the KPIs above."
+}

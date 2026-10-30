@@ -1,0 +1,121 @@
+{
+ "label": "oracle-slice-3types__json__gemini-3.5-flash-lite__request-only-timing__run1",
+ "task": "T2",
+ "format": "json",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "metrics-overview",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display.json",
+    "theme": {
+     "primaryColor": "#2563eb"
+    }
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "metrics-overview",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "items": [
+       {
+        "blocks": [
+         {
+          "id": "heading-main",
+          "component": "heading",
+          "text": "Executive Performance Overview"
+         },
+         {
+          "id": "intro-body",
+          "component": "body",
+          "text": "Real-time overview of core business KPIs and historical performance indicators."
+         },
+         {
+          "id": "kpi-metric-row",
+          "component": "metric_row",
+          "cols": 4,
+          "accent": "#2563eb",
+          "metrics": [
+           {
+            "value": "$124,500",
+            "label": "Total Revenue",
+            "prefix": "$",
+            "trend": "up",
+            "sub": "+12% vs last month"
+           },
+           {
+            "value": "1,429",
+            "label": "Active Users",
+            "trend": "up",
+            "sub": "+5.4% growth"
+           },
+           {
+            "value": "99.8%",
+            "label": "System Uptime",
+            "trend": "up",
+            "sub": "Optimal SLA"
+           },
+           {
+            "value": "2.4%",
+            "label": "Churn Rate",
+            "trend": "down",
+            "sub": "-0.5% improvement"
+           }
+          ]
+         },
+         {
+          "id": "chart-section-heading",
+          "component": "heading",
+          "text": "Monthly Performance Benchmark"
+         },
+         {
+          "id": "performance-chart",
+          "component": "chartjs_bar",
+          "labels": [
+           "Jan",
+           "Feb",
+           "Mar",
+           "Apr",
+           "May",
+           "Jun"
+          ],
+          "datasets": [
+           {
+            "label": "Current Year",
+            "data": [
+             45,
+             59,
+             80,
+             81,
+             56,
+             95
+            ]
+           },
+           {
+            "label": "Previous Year",
+            "data": [
+             28,
+             48,
+             40,
+             19,
+             86,
+             27
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

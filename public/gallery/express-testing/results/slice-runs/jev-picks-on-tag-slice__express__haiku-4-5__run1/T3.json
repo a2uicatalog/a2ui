@@ -1,0 +1,33 @@
+{
+ "task": "T3",
+ "condition": "JG",
+ "label": "jev-picks-on-tag-slice__express__haiku-4-5__run1",
+ "agent_type": "jev-narrowed",
+ "catalogue": "JG-T3.json",
+ "atoms_in_catalogue": 12,
+ "prompt_chars": 8222,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 4.4,
+ "usage": {
+  "input_tokens": 2279,
+  "output_tokens": 413
+ },
+ "valid": false,
+ "error": "A2uiCompilationParseError: Failed to parse expression: Syntax error at line 14:12: mismatched input '=' expecting ':' (line 14) - Line 14, Col 12 - Help: Please correct the syntax error in your Express DSL.",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "hero": false,
+   "feature columns (x3)": false,
+   "testimonial": false,
+   "CTA": false
+  }
+ },
+ "reply": "<a2ui>\nroot = body([\n  article_hero(\n    \"Transform Your Workflow\",\n    \"Experience the power of seamless integration and intelligent automation\",\n    \"https://images.unsplash.com/photo-1552664730-d307ca884978?w=1200&h=400&fit=crop\"\n  ),\n  \n  heading(\"Key Features\"),\n  \n  feature_grid(\n    columns=3,\n    features=[\n      {\n        icon=\"\u26a1\",\n        title=\"Lightning Fast\",\n        description=\"Experience blazing-fast performance with our optimized infrastructure\",\n        color=\"#3b82f6\"\n      },\n      {\n        icon=\"\ud83d\udd12\",\n        title=\"Enterprise Security\",\n        description=\"Bank-grade encryption and compliance with industry standards\",\n        color=\"#8b5cf6\"\n      },\n      {\n        icon=\"\ud83c\udfaf\",\n        title=\"Easy Integration\",\n        description=\"Connect with your existing tools in minutes, not days\",\n        color=\"#ec4899\"\n      }\n    ]\n  ),\n  \n  heading(\"What Our Customers Say\"),\n  \n  testimonial_card(\n    \"This product completely transformed how our team collaborates. We've seen a 40% increase in productivity since implementation.\",\n    \"Sarah Chen\",\n    \"CTO, TechCorp Inc.\",\n    \"https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop\",\n    5\n  ),\n  \n  cta_button(\n    \"https://example.com/get-started\",\n    \"Get Started Today\",\n    \"#4f46e5\"\n  )\n])\n</a2ui>"
+}

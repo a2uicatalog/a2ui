@@ -1,0 +1,44 @@
+{
+ "task": "T4",
+ "condition": "C_gemini-3.8-flash",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 32768,
+ "model_id": "gemini-3.8-flash",
+ "hints": false,
+ "label": "oracle-slice-3types__express__gemini-3.8-flash__thinking-off__run2",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 16421,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 6.7,
+ "usage": {
+  "input_tokens": 4600,
+  "output_tokens": 698
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "segmented_control",
+  "entity_list",
+  "columns",
+  "heading",
+  "body"
+ ],
+ "score": {
+  "precision": 0.4,
+  "recall": 0.667,
+  "f1": 0.5,
+  "slot_hits": {
+   "list": true,
+   "status indicator": false,
+   "filter control": true
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"status-filtered-list\")\n\nfilter_ctrl = segmented_control(\n  options=[\n    {\"label\": \"All (8)\", \"value\": \"all\"},\n    {\"label\": \"Active\", \"value\": \"active\"},\n    {\"label\": \"Pending\", \"value\": \"pending\"},\n    {\"label\": \"Completed\", \"value\": \"completed\"}\n  ],\n  selected_value=\"all\",\n  name=\"status_filter\"\n)\n\nitems_view = entity_list(\n  items=[\n    {\n      \"name\": \"User Authentication Migration\",\n      \"subtitle\": \"Migrating legacy auth tokens to standard OAuth2 / OIDC endpoints.\",\n      \"icon\": \"\ud83d\udd10\",\n      \"status\": \"In Progress\",\n      \"meta\": \"Active\"\n    },\n    {\n      \"name\": \"Database Sharding Setup\",\n      \"subtitle\": \"Partitioning customer clusters across US-East and EU-West regions.\",\n      \"icon\": \"\ud83d\uddc4\ufe0f\",\n      \"status\": \"In Progress\",\n      \"meta\": \"Active\"\n    },\n    {\n      \"name\": \"Real-time Metrics Pipeline\",\n      \"subtitle\": \"Ingesting high-throughput Kafka telemetry into TimescaleDB.\",\n      \"icon\": \"\u26a1\",\n      \"status\": \"In Progress\",\n      \"meta\": \"Active\"\n    },\n    {\n      \"name\": \"Billing Tier Architecture Overhaul\",\n      \"subtitle\": \"Awaiting finance approval on updated multi-currency models.\",\n      \"icon\": \"\ud83d\udcb3\",\n      \"status\": \"Review\",\n      \"meta\": \"Pending\"\n    },\n    {\n      \"name\": \"Third-party Webhook Integration\",\n      \"subtitle\": \"Pending sandbox verification and developer signature testing.\",\n      \"icon\": \"\ud83d\udd17\",\n      \"status\": \"Blocked\",\n      \"meta\": \"Pending\"\n    },\n    {\n      \"name\": \"Dark Mode Color Audit\",\n      \"subtitle\": \"Queued for design review before final design token release.\",\n      \"icon\": \"\ud83c\udfa8\",\n      \"status\": \"Queued\",\n      \"meta\": \"Pending\"\n    },\n    {\n      \"name\": \"API Gateway Rate Limiting\",\n      \"subtitle\": \"Successfully rolled out sliding-window limits to all edge nodes.\",\n      \"icon\": \"\ud83d\udee1\ufe0f\",\n      \"status\": \"Deployed\",\n      \"meta\": \"Completed\"\n    },\n    {\n      \"name\": \"Automated Backup Validation\",\n      \"subtitle\": \"Daily disaster recovery test verified across primary S3 buckets.\",\n      \"icon\": \"\u2705\",\n      \"status\": \"Verified\",\n      \"meta\": \"Completed\"\n    }\n  ]\n)\n\nroot = columns(\n  cols=1,\n  gap=\"1rem\",\n  align=\"top\",\n  items=[\n    {\n      \"blocks\": [\n        heading(\"Operational Deliverables\"),\n        body(\"Overview of system deliverables and rollouts, categorized and filterable by status.\"),\n        filter_ctrl,\n        items_view\n      ]\n    }\n  ]\n)\n</a2ui>"
+}

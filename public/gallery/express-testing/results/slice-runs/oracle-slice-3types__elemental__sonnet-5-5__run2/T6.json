@@ -1,0 +1,39 @@
+{
+ "task": "T6",
+ "condition": "CX_sonnet-5-5",
+ "temperature_applied": false,
+ "format": "elemental",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "claude-sonnet-5-5",
+ "hints": false,
+ "label": "oracle-slice-3types__elemental__sonnet-5-5__run2",
+ "agent_type": "Learning",
+ "catalogue": "C-learning.json",
+ "atoms_in_catalogue": 36,
+ "prompt_chars": 21279,
+ "slot_recall": [
+  2,
+  2
+ ],
+ "secs": 12.4,
+ "usage": {
+  "input_tokens": 8147,
+  "output_tokens": 1609
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns"
+ ],
+ "score": {
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "flashcard deck": false,
+   "progress indicator": false
+  }
+ },
+ "reply": "<a2ui>\n<body>\n<ui-columns id=\"root\" cols=\"{2}\" gap=\"2rem\" align=\"top\">\n<script type=\"application/json\" slot=\"items\">[\n{\"blocks\":[\n{\"type\":\"page_header\",\"title\":\"Vocabulary Flashcards\",\"subtitle\":\"Click a card to flip it and reveal the definition. Work through all ten words.\",\"icon\":\"\ud83d\udcda\",\"tag\":\"10 cards\",\"accent\":\"#4f46e5\"},\n{\"type\":\"progress_bar\",\"label\":\"Cards reviewed (of 10)\",\"value\":0,\"accent\":\"#4f46e5\",\"show_percent\":\"true\",\"caption\":\"0 of 10 reviewed\"},\n{\"type\":\"text_callout\",\"variant\":\"info\",\"title\":\"Tip\",\"description\":\"Say the definition out loud before flipping the card to strengthen recall.\"}\n]},\n{\"blocks\":[\n{\"type\":\"flashcard_deck\",\"accent\":\"#4f46e5\",\"label_front\":\"WORD\",\"label_back\":\"DEFINITION\",\"cards\":[\n{\"front\":\"Ephemeral\",\"back\":\"Lasting for a very short time.\"},\n{\"front\":\"Ubiquitous\",\"back\":\"Present, appearing, or found everywhere.\"},\n{\"front\":\"Pragmatic\",\"back\":\"Dealing with things sensibly and realistically.\"},\n{\"front\":\"Eloquent\",\"back\":\"Fluent and persuasive in speaking or writing.\"},\n{\"front\":\"Meticulous\",\"back\":\"Showing great attention to detail; very careful.\"},\n{\"front\":\"Benevolent\",\"back\":\"Well meaning and kindly.\"},\n{\"front\":\"Resilient\",\"back\":\"Able to recover quickly from difficulties.\"},\n{\"front\":\"Ambiguous\",\"back\":\"Open to more than one interpretation; unclear.\"},\n{\"front\":\"Candid\",\"back\":\"Truthful and straightforward; frank.\"},\n{\"front\":\"Tenacious\",\"back\":\"Holding firmly to a goal or belief; persistent.\"}\n]}\n]}\n]</script>\n</ui-columns>\n</body>\n</a2ui>"
+}

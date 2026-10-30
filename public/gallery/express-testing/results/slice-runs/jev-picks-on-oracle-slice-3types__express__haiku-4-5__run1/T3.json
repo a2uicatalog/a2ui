@@ -1,0 +1,39 @@
+{
+ "task": "T3",
+ "condition": "JC",
+ "label": "jev-picks-on-oracle-slice-3types__express__haiku-4-5__run1",
+ "agent_type": "jev-narrowed",
+ "catalogue": "JC-T3.json",
+ "atoms_in_catalogue": 14,
+ "prompt_chars": 9411,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 4.1,
+ "usage": {
+  "input_tokens": 2669,
+  "output_tokens": 398
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns",
+  "gradient_hero",
+  "feature_grid",
+  "testimonial_card",
+  "cta_button"
+ ],
+ "score": {
+  "precision": 0.8,
+  "recall": 1.0,
+  "f1": 0.889,
+  "slot_hits": {
+   "hero": true,
+   "feature columns (x3)": true,
+   "testimonial": true,
+   "CTA": true
+  }
+ },
+ "reply": "<a2ui>\nroot = columns(3, \"2rem\", \"top\", [\n  {blocks: [\n    gradient_hero(\n      \"Transform Your Workflow\",\n      \"Streamline your process with our intelligent platform\",\n      \"New Release\",\n      \"#4f46e5\",\n      \"#8b5cf6\",\n      null,\n      \"left\",\n      \"Get Started\",\n      \"https://example.com\"\n    )\n  ]},\n  {blocks: [\n    feature_grid(\n      \"Why Choose Us\",\n      \"Powerful features designed for modern teams\",\n      3,\n      [\n        {icon: \"\u26a1\", title: \"Lightning Fast\", description: \"Optimized performance for seamless productivity\", color: \"#4f46e5\"},\n        {icon: \"\ud83d\udd12\", title: \"Secure & Reliable\", description: \"Enterprise-grade security for peace of mind\", color: \"#7c3aed\"},\n        {icon: \"\ud83d\ude80\", title: \"Easy Integration\", description: \"Connect with your favorite tools instantly\", color: \"#a855f7\"}\n      ]\n    )\n  ]},\n  {blocks: [\n    testimonial_card(\n      \"This platform has completely transformed how our team collaborates. The intuitive interface and powerful features have saved us countless hours.\",\n      \"Sarah Chen\",\n      \"Product Manager, TechCorp\",\n      \"https://example.com/avatar.jpg\",\n      5\n    ),\n    cta_button(\n      \"https://example.com/signup\",\n      \"Start Your Free Trial\",\n      \"#4f46e5\",\n      false\n    )\n  ]}\n])\n</a2ui>"
+}

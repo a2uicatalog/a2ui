@@ -1,0 +1,41 @@
+{
+ "task": "T6",
+ "condition": "CX_haiku-5-5",
+ "temperature_applied": false,
+ "format": "elemental",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "oracle-slice-3types__elemental__haiku-5-5__run1",
+ "agent_type": "Learning",
+ "catalogue": "C-learning.json",
+ "atoms_in_catalogue": 36,
+ "prompt_chars": 21279,
+ "slot_recall": [
+  2,
+  2
+ ],
+ "secs": 7.0,
+ "usage": {
+  "input_tokens": 8147,
+  "output_tokens": 1597
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "page_header",
+  "progress_bar",
+  "flashcard_deck"
+ ],
+ "score": {
+  "precision": 0.667,
+  "recall": 1.0,
+  "f1": 0.8,
+  "slot_hits": {
+   "flashcard deck": true,
+   "progress indicator": true
+  }
+ },
+ "reply": "<a2ui>\n<body id=\"root\">\n<ui-page_header id=\"header\" title=\"Vocabulary Flashcards\" subtitle=\"Flip each card to reveal its meaning.\" icon=\"\ud83d\udcda\" tag=\"10 words\" accent=\"#4f46e5\" theme=\"light\" />\n<ui-progress_bar id=\"progress\" value=\"{0}\" label=\"Cards reviewed\" show_percent=\"{true}\" caption=\"0 of 10 cards reviewed\" accent=\"#4f46e5\" />\n<ui-flashcard_deck id=\"deck\" accent=\"#4f46e5\" label_front=\"WORD\" label_back=\"MEANING\">\n<script type=\"application/json\" slot=\"cards\">[\n{\"front\": \"Ephemeral\", \"back\": \"Lasting for a very short time\"},\n{\"front\": \"Meticulous\", \"back\": \"Showing great attention to detail\"},\n{\"front\": \"Ubiquitous\", \"back\": \"Present or found everywhere\"},\n{\"front\": \"Candid\", \"back\": \"Truthful and straightforward; frank\"},\n{\"front\": \"Resilient\", \"back\": \"Able to recover quickly from difficulty\"},\n{\"front\": \"Ambiguous\", \"back\": \"Open to more than one interpretation\"},\n{\"front\": \"Pragmatic\", \"back\": \"Dealing with things in a practical, realistic way\"},\n{\"front\": \"Eloquent\", \"back\": \"Fluent and persuasive in speech or writing\"},\n{\"front\": \"Frugal\", \"back\": \"Careful with money; avoiding waste\"},\n{\"front\": \"Lucid\", \"back\": \"Clear and easy to understand; mentally clear\"}\n]</script>\n</ui-flashcard_deck>\n</body>\n</a2ui>"
+}

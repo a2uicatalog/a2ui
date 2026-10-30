@@ -1,0 +1,36 @@
+{
+ "model": "sonnet-5-5",
+ "cond": "G",
+ "format": "express",
+ "brief": "G4",
+ "repeat": 2,
+ "seq": 12,
+ "model_id": "claude-sonnet-5-5",
+ "utc": "2026-10-29T20:46:26Z",
+ "prompt_chars": 9730,
+ "prompt_sha256": "(removed for publication)",
+ "temperature_requested": null,
+ "temperature_sent": false,
+ "max_tokens": 32768,
+ "request_secs": 12.83,
+ "input_tokens": 3603,
+ "output_tokens": 1612,
+ "stop_reason": "end_turn",
+ "usage": {
+  "input_tokens": 3603,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "cache_creation": {
+   "ephemeral_5m_input_tokens": 0,
+   "ephemeral_1h_input_tokens": 0
+  },
+  "output_tokens": 1612,
+  "output_tokens_details": {
+   "thinking_tokens": 1007
+  },
+  "service_tier": "standard",
+  "inference_geo": "global",
+  "speed": "standard"
+ },
+ "reply": "<a2ui>\nroot = motion_bricks(bricks=[\n{x: 0, y: 0, z: 0, w: 16, d: 1, h: 9, c: \"#333b45\"},\n{x: 0, y: 1, z: 8, w: 16, d: 1, h: 1, c: \"#f2c200\"},\n{x: 1, y: 2, z: 0, w: 2, d: 2, h: 2, c: \"#d01012\"},\n{x: 4, y: 2, z: 0, w: 2, d: 2, h: 4, c: \"#0a6fd0\"},\n{x: 7, y: 2, z: 0, w: 2, d: 2, h: 3, c: \"#2fa84f\"},\n{x: 10, y: 2, z: 0, w: 2, d: 2, h: 6, c: \"#f28a00\"},\n{x: 13, y: 2, z: 0, w: 2, d: 2, h: 5, c: \"#8a3fc0\"},\n{x: 1, y: 1, z: 7, w: 1, d: 1, h: 1, c: \"#d01012\"},\n{x: 4, y: 1, z: 7, w: 1, d: 1, h: 1, c: \"#0a6fd0\"},\n{x: 7, y: 1, z: 7, w: 1, d: 1, h: 1, c: \"#2fa84f\"},\n{x: 10, y: 1, z: 7, w: 1, d: 1, h: 1, c: \"#f28a00\"},\n{x: 13, y: 1, z: 7, w: 1, d: 1, h: 1, c: \"#8a3fc0\"}\n], look=\"studio\", angle=24, elevation=28, turns=1, motion={order: \"base-up\"}, ratio=\"16:9\", label=\"Toy-brick dashboard with a five-bar chart\")\n</a2ui>"
+}

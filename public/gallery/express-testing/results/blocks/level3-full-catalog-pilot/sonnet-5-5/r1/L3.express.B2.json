@@ -1,0 +1,36 @@
+{
+ "model": "sonnet-5-5",
+ "cond": "L3",
+ "format": "express",
+ "brief": "B2",
+ "repeat": 1,
+ "seq": 2,
+ "model_id": "claude-sonnet-5-5",
+ "utc": "2026-10-29T20:49:07Z",
+ "prompt_chars": 336261,
+ "prompt_sha256": "(removed for publication)",
+ "temperature_requested": null,
+ "temperature_sent": false,
+ "max_tokens": 32768,
+ "request_secs": 4.27,
+ "input_tokens": 122833,
+ "output_tokens": 69,
+ "stop_reason": "end_turn",
+ "usage": {
+  "input_tokens": 122833,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "cache_creation": {
+   "ephemeral_5m_input_tokens": 0,
+   "ephemeral_1h_input_tokens": 0
+  },
+  "output_tokens": 69,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "service_tier": "standard",
+  "inference_geo": "global",
+  "speed": "standard"
+ },
+ "reply": "<a2ui>\nsurface(\"toy-rocket\")\nroot = block_rocket(null, 24, 26, 1, \"studio\", null, \"16:9\", false, \"Toy brick rocket\")\n</a2ui>"
+}

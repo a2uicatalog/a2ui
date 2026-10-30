@@ -1,0 +1,41 @@
+{
+ "task": "T6",
+ "condition": "CX_gemini-3.5-flash-l",
+ "temperature_applied": false,
+ "format": "elemental",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash-lite",
+ "hints": false,
+ "label": "oracle-slice-3types__elemental__gemini-3.5-flash-lite__first-run-timing-invalid__run1",
+ "agent_type": "Learning",
+ "catalogue": "C-learning.json",
+ "atoms_in_catalogue": 36,
+ "prompt_chars": 21279,
+ "slot_recall": [
+  2,
+  2
+ ],
+ "secs": 20.2,
+ "usage": {
+  "input_tokens": 6049,
+  "output_tokens": 597
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "page_header",
+  "progress_bar",
+  "flashcard_deck"
+ ],
+ "score": {
+  "precision": 0.667,
+  "recall": 1.0,
+  "f1": 0.8,
+  "slot_hits": {
+   "flashcard deck": true,
+   "progress indicator": true
+  }
+ },
+ "reply": "<a2ui>\n  <body>\n    <script type=\"application/json\">\n      {\n        \"reviewed_count\": 0,\n        \"total_cards\": 10\n      }\n    </script>\n    <ui-page_header\n      id=\"root\"\n      title=\"Vocabulary Flashcards\"\n      subtitle=\"Flip each card to reveal the definition and test your recall.\"\n      icon=\"\ud83d\udcda\"\n      tag=\"SRS Study Deck\"\n      accent=\"#4f46e5\"\n    />\n    <ui-progress_bar\n      id=\"flashcard-progress\"\n      value=\"{40}\"\n      label=\"Cards Reviewed\"\n      show_percent=\"{true}\"\n      caption=\"4 of 10 reviewed\"\n      accent=\"#4f46e5\"\n    />\n    <ui-flashcard_deck\n      id=\"vocabulary-deck\"\n      accent=\"#4f46e5\"\n      label_front=\"TERM\"\n      label_back=\"DEFINITION\"\n    >\n      <script type=\"application/json\" slot=\"cards\">\n        [\n          {\n            \"front\": \"Ephemeral\",\n            \"back\": \"Lasting for a very short time; transient.\"\n          },\n          {\n            \"front\": \"Serendipity\",\n            \"back\": \"The occurrence of events by chance in a happy or beneficial way.\"\n          },\n          {\n            \"front\": \"Pragmatic\",\n            \"back\": \"Dealing with things sensibly and realistically in a way that is based on practical rather than theoretical considerations.\"\n          },\n          {\n            \"front\": \"Mellifluous\",\n            \"back\": \"(Of a voice or words) sweet or musical; pleasant to hear.\"\n          },\n          {\n            \"front\": \"Resilient\",\n            \"back\": \"Able to withstand or recover quickly from difficult conditions.\"\n          },\n          {\n            \"front\": \"Ubiquitous\",\n            \"back\": \"Present, appearing, or found everywhere.\"\n          },\n          {\n            \"front\": \"Cacophony\",\n            \"back\": \"A harsh, discordant mixture of sounds.\"\n          },\n          {\n            \"front\": \"Ineffable\",\n            \"back\": \"Too great or extreme to be expressed or described in words.\"\n          },\n          {\n            \"front\": \"Fastidious\",\n            \"back\": \"Very attentive to and concerned about accuracy and detail.\"\n          },\n          {\n            \"front\": \"Benevolent\",\n            \"back\": \"Well meaning and kindly.\"\n          }\n        ]\n      </script>\n    </ui-flashcard_deck>\n  </body>\n</a2ui>"
+}

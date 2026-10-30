@@ -1,0 +1,103 @@
+{
+ "label": "oracle-slice-3types__json__gemini-3.5-flash__thinking-on_first-run-timing-invalid__run3",
+ "task": "T5",
+ "format": "json",
+ "model_id": "gemini-3.5-flash",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "subscription-pricing-surface",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "subscription-pricing-surface",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "2.5rem",
+      "align": "center",
+      "items": [
+       {
+        "blocks": [
+         {
+          "id": "pricing-heading",
+          "component": "heading",
+          "text": "Simple, transparent pricing plans"
+         },
+         {
+          "id": "pricing-subheading",
+          "component": "body",
+          "text": "Whether you are a solo developer, a scaling startup, or an enterprise powerhouse, we have the right features to accelerate your growth. Choose your plan and start building today."
+         }
+        ]
+       },
+       {
+        "blocks": [
+         {
+          "id": "pricing-tier-group",
+          "component": "pricing_tier_group",
+          "tiers": [
+           {
+            "name": "Hobby",
+            "price": "$0",
+            "billing": "Forever free",
+            "description": "For side projects and personal learning.",
+            "features": [
+             "Up to 3 active projects",
+             "1 GB cloud storage",
+             "Community support access"
+            ],
+            "cta_label": "Get Started",
+            "cta_url": "#hobby",
+            "recommended": false,
+            "popular": false
+           },
+           {
+            "name": "Professional",
+            "price": "$29",
+            "billing": "billed monthly",
+            "description": "For growing products and professional developers.",
+            "features": [
+             "Unlimited active projects",
+             "50 GB secure cloud storage",
+             "24/7 dedicated email support",
+             "Advanced usage analytics dashboard"
+            ],
+            "cta_label": "Start 14-day Free Trial",
+            "cta_url": "#pro",
+            "recommended": true,
+            "popular": true
+           },
+           {
+            "name": "Enterprise",
+            "price": "$149",
+            "billing": "billed monthly",
+            "description": "For scaling teams and high-compliance businesses.",
+            "features": [
+             "Everything in Professional",
+             "Dedicated high-speed servers",
+             "SAML / SSO single sign-on security",
+             "Custom SLA & account manager"
+            ],
+            "cta_label": "Contact Sales",
+            "cta_url": "#enterprise",
+            "recommended": false,
+            "popular": false
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

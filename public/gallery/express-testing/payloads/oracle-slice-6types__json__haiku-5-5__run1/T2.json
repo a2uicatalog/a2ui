@@ -1,0 +1,110 @@
+{
+ "label": "oracle-slice-6types__json__haiku-5-5__run1",
+ "task": "T2",
+ "format": "json",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9",
+   "create_surface": {
+    "surface_id": "metrics-overview",
+    "catalog_id": "https://a2uicatalog.ai/catalog/d-t2.json"
+   }
+  },
+  {
+   "version": "v0.9",
+   "update_components": {
+    "surface_id": "metrics-overview",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         {
+          "id": "heading_title",
+          "component": "heading",
+          "text": "Metrics Overview"
+         },
+         {
+          "id": "kpi_row",
+          "component": "metric_row",
+          "cols": 2,
+          "metrics": [
+           {
+            "value": "1.24",
+            "label": "Revenue",
+            "prefix": "$",
+            "suffix": "M",
+            "sub": "vs. last month",
+            "trend": "up"
+           },
+           {
+            "value": "48,210",
+            "label": "Active Users",
+            "sub": "vs. last month",
+            "trend": "up"
+           },
+           {
+            "value": "2.1",
+            "label": "Churn Rate",
+            "suffix": "%",
+            "sub": "vs. last month",
+            "trend": "down"
+           },
+           {
+            "value": "64.20",
+            "label": "Avg. Order Value",
+            "prefix": "$",
+            "sub": "vs. last month",
+            "trend": "up"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "blocks": [
+         {
+          "id": "comparison_chart",
+          "component": "chartjs_bar",
+          "labels": [
+           "Q1",
+           "Q2",
+           "Q3",
+           "Q4"
+          ],
+          "datasets": [
+           {
+            "label": "This Year",
+            "data": [
+             820,
+             932,
+             901,
+             1240
+            ]
+           },
+           {
+            "label": "Last Year",
+            "data": [
+             740,
+             810,
+             865,
+             990
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

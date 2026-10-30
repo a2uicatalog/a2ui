@@ -1,0 +1,101 @@
+{
+ "label": "oracle-slice-6types__express__sonnet-5-5__temp0__hints-v2__run3",
+ "task": "T3",
+ "format": "express",
+ "model_id": "claude-sonnet-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "product-landing",
+    "catalog_id": "https://a2uicatalog.ai/catalog/d-t3.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "product-landing",
+    "components": [
+     {
+      "id": "hero",
+      "component": "gradient_hero",
+      "title": "Ship your best work, faster",
+      "subtitle": "Flowdesk brings your team's tasks, docs and conversations into one calm workspace so nothing slips through the cracks.",
+      "badge": "New: Flowdesk 2.0",
+      "accent": "#4f46e5",
+      "accent2": "#8b5cf6",
+      "align": "left"
+     },
+     {
+      "id": "features",
+      "component": "feature_grid",
+      "heading": "Why teams choose Flowdesk",
+      "description": "Everything you need to stay aligned, with none of the clutter.",
+      "columns": 3,
+      "features": [
+       {
+        "icon": "\u26a1",
+        "title": "Fast by default",
+        "description": "Instant search and keyboard shortcuts keep your team moving without waiting on the app.",
+        "badge": "Speed",
+        "color": "#4f46e5"
+       },
+       {
+        "icon": "\ud83e\udd1d",
+        "title": "Built for collaboration",
+        "description": "Comment, assign and review in real time, with shared context that stays attached to the work.",
+        "badge": "Teams",
+        "color": "#8b5cf6"
+       },
+       {
+        "icon": "\ud83d\udd12",
+        "title": "Secure and private",
+        "description": "Enterprise-grade encryption and granular permissions keep your data safe and under your control.",
+        "badge": "Security",
+        "color": "#0ea5e9"
+       }
+      ]
+     },
+     {
+      "id": "quote",
+      "component": "testimonial_card",
+      "text": "Flowdesk replaced three separate tools for us. Our planning meetings are half as long and everyone knows what to do next.",
+      "author_name": "Priya Natarajan",
+      "author_title": "Head of Operations, Brightwave",
+      "author_avatar_url": "https://example.com/avatars/priya.jpg",
+      "rating": 5
+     },
+     {
+      "id": "cta",
+      "component": "cta_button",
+      "url": "https://example.com/signup",
+      "label": "Start your free trial",
+      "color": "#4f46e5",
+      "same_tab": false
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "2rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "hero",
+         "features"
+        ]
+       },
+       {
+        "blocks": [
+         "quote",
+         "cta"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

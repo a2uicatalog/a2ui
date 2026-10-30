@@ -1,0 +1,102 @@
+{
+ "label": "rule-slice__express__haiku-5-5__run1",
+ "task": "T2",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/b-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "kpis",
+      "component": "metric_row",
+      "cols": 4,
+      "accent": "#4f46e5",
+      "metrics": [
+       {
+        "value": "$1.28M",
+        "label": "Revenue",
+        "sub": "+8.4% vs last month",
+        "trend": "up"
+       },
+       {
+        "value": "42.7k",
+        "label": "Active users",
+        "sub": "+3.1% vs last month",
+        "trend": "up"
+       },
+       {
+        "value": "2.4%",
+        "label": "Churn rate",
+        "sub": "-0.6 pts vs last month",
+        "trend": "down"
+       },
+       {
+        "value": "182 ms",
+        "label": "Avg. response time",
+        "sub": "-12 ms vs last month",
+        "trend": "down"
+       }
+      ]
+     },
+     {
+      "id": "comparison",
+      "component": "chartjs_bar",
+      "labels": [
+       "Jan",
+       "Feb",
+       "Mar",
+       "Apr",
+       "May",
+       "Jun"
+      ],
+      "datasets": [
+       {
+        "label": "Actual revenue ($k)",
+        "data": [
+         820,
+         875,
+         910,
+         960,
+         1010,
+         1280
+        ]
+       },
+       {
+        "label": "Target revenue ($k)",
+        "data": [
+         800,
+         850,
+         900,
+         950,
+         1000,
+         1050
+        ]
+       }
+      ]
+     },
+     {
+      "id": "root",
+      "component": "color_section",
+      "accent": "#4f46e5",
+      "style": "light",
+      "padding": "24px",
+      "blocks": [
+       "kpis",
+       "comparison"
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

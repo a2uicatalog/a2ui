@@ -1,0 +1,96 @@
+{
+ "label": "full-catalogue__express__haiku-5-5__run1",
+ "task": "T6",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/a-full.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "title",
+      "component": "heading",
+      "text": "Spanish Vocabulary"
+     },
+     {
+      "id": "progress",
+      "component": "progress_bar",
+      "value": 0,
+      "label": "Cards reviewed",
+      "show_percent": true,
+      "caption": "0 of 10 cards reviewed"
+     },
+     {
+      "id": "deck",
+      "component": "flashcard_deck",
+      "cards": [
+       {
+        "front": "casa",
+        "back": "house"
+       },
+       {
+        "front": "perro",
+        "back": "dog"
+       },
+       {
+        "front": "libro",
+        "back": "book"
+       },
+       {
+        "front": "agua",
+        "back": "water"
+       },
+       {
+        "front": "comer",
+        "back": "to eat"
+       },
+       {
+        "front": "amigo",
+        "back": "friend"
+       },
+       {
+        "front": "escuela",
+        "back": "school"
+       },
+       {
+        "front": "ciudad",
+        "back": "city"
+       },
+       {
+        "front": "tiempo",
+        "back": "time / weather"
+       },
+       {
+        "front": "feliz",
+        "back": "happy"
+       }
+      ],
+      "accent": "#4f46e5",
+      "label_front": "SPANISH",
+      "label_back": "ENGLISH"
+     },
+     {
+      "id": "root",
+      "component": "color_section",
+      "accent": "#4f46e5",
+      "style": "light",
+      "blocks": [
+       "title",
+       "progress",
+       "deck"
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

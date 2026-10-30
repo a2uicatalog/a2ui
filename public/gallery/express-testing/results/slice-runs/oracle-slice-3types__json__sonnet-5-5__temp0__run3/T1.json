@@ -1,0 +1,40 @@
+{
+ "task": "T1",
+ "condition": "CTN_sonnet-5-5",
+ "temperature_applied": false,
+ "format": "json",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-sonnet-5-5",
+ "hints": false,
+ "label": "oracle-slice-3types__json__sonnet-5-5__temp0__run3",
+ "agent_type": "Learning",
+ "catalogue": "C-learning.json",
+ "atoms_in_catalogue": 36,
+ "prompt_chars": 37811,
+ "slot_recall": [
+  5,
+  5
+ ],
+ "secs": 21.3,
+ "usage": {
+  "input_tokens": 14392,
+  "output_tokens": 2718
+ },
+ "valid": false,
+ "error": "A2uiIntegrityError: Component 'b-condensation' is not reachable from 'root'",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "title": false,
+   "concept sections (x3)": false,
+   "worked example": false,
+   "3-question quiz": false,
+   "quiz result": false
+  }
+ },
+ "reply": "<a2ui-json>\n[\n  {\n    \"version\": \"v0.9\",\n    \"createSurface\": {\n      \"surfaceId\": \"water-cycle-lesson\",\n      \"catalogId\": \"https://a2uicatalog.ai/catalog/c-learning.json\"\n    }\n  },\n  {\n    \"version\": \"v0.9\",\n    \"updateComponents\": {\n      \"surfaceId\": \"water-cycle-lesson\",\n      \"components\": [\n        {\n          \"id\": \"root\",\n          \"component\": \"page_header\",\n          \"title\": \"The Water Cycle\",\n          \"subtitle\": \"How water moves between the oceans, the air and the land, again and again.\",\n          \"icon\": \"\ud83d\udca7\",\n          \"tag\": \"Earth Science\",\n          \"accent\": \"#0284c7\"\n        },\n        {\n          \"id\": \"h-evaporation\",\n          \"component\": \"heading\",\n          \"text\": \"1. Evaporation\"\n        },\n        {\n          \"id\": \"b-evaporation\",\n          \"component\": \"body\",\n          \"text\": \"The sun heats water in oceans, lakes and rivers. Some of the liquid water gains enough energy to become water vapour, an invisible gas that rises into the atmosphere. Plants add to this through transpiration, releasing vapour from their leaves.\"\n        },\n        {\n          \"id\": \"h-condensation\",\n          \"component\": \"heading\",\n          \"text\": \"2. Condensation\"\n        },\n        {\n          \"id\": \"b-condensation\",\n          \"component\": \"body\",\n          \"text\": \"As water vapour rises, the air gets colder. Cold air holds less vapour, so the vapour turns back into tiny liquid droplets around dust particles. Billions of these droplets together form clouds.\"\n        },\n        {\n          \"id\": \"h-precipitation\",\n          \"component\": \"heading\",\n          \"text\": \"3. Precipitation and Collection\"\n        },\n        {\n          \"id\": \"b-precipitation\",\n          \"component\": \"body\",\n          \"text\": \"When cloud droplets merge and grow too heavy to stay in the air, they fall as rain, snow, sleet or hail. This water runs off into rivers, soaks into the ground, or collects in oceans and lakes. The sun then heats it again, and the cycle restarts.\"\n        },\n        {\n          \"id\": \"worked-example\",\n          \"component\": \"concept_rung\",\n          \"kind\": \"example\",\n          \"badge\": \"EX\",\n          \"title\": \"Worked example: following one water droplet\",\n          \"body\": \"Trace a single droplet that starts in the Pacific Ocean and ends up in a mountain river. At each stage, name the process and say what changes the water's state.\",\n          \"code\": \"1. Ocean surface, sun warms the droplet -> EVAPORATION (liquid -> vapour)\\n2. Vapour rises, air cools with altitude -> CONDENSATION (vapour -> liquid cloud droplet)\\n3. Wind carries the cloud over mountains, droplets merge -> PRECIPITATION (falls as snow)\\n4. Snow melts in spring and flows downhill -> COLLECTION (river runoff)\",\n          \"code_caption\": \"Each arrow is a change of state driven by heat gained or lost.\",\n          \"takeaway\": \"Evaporation takes in heat, condensation releases it, and the water is never used up, only moved.\"\n        },\n        {\n          \"id\": \"h-quiz\",\n          \"component\": \"heading\",\n          \"text\": \"Self-check\"\n        },\n        {\n          \"id\": \"quiz\",\n          \"component\": \"quiz_set\",\n          \"title\": \"Water Cycle Quiz\",\n          \"pass_score\": 67,\n          \"accent\": \"#0284c7\",\n          \"questions\": [\n            {\n              \"question\": \"Which process turns liquid water into water vapour?\",\n              \"options\": [\"Condensation\", \"Evaporation\", \"Precipitation\", \"Collection\"],\n              \"correct\": 1,\n              \"explanation\": \"Evaporation is the change from liquid to gas, powered by heat from the sun.\"\n            },\n            {\n              \"question\": \"Why does water vapour condense into clouds as it rises?\",\n              \"options\": [\n                \"The air gets colder and holds less vapour\",\n                \"The air gets warmer and holds more vapour\",\n                \"Gravity pulls it into droplets\",\n                \"Wind squeezes it together\"\n              ],\n              \"correct\": 0,\n              \"explanation\": \"Cooler air cannot hold as much vapour, so the excess turns into liquid droplets.\"\n            },\n            {\n              \"question\": \"Which of these is NOT a form of precipitation?\",\n              \"options\": [\"Snow\", \"Hail\", \"Fog from evaporation\", \"Rain\"],\n              \"correct\": 2,\n              \"explanation\": \"Precipitation is water falling from clouds. Fog is condensed droplets hanging near the ground.\"\n            }\n          ]\n        }\n      ]\n    }\n  }\n]\n</a2ui-json>\n\nThe catalog has no container component, so the lesson is a flat list. The title is the root and the rest follow in reading order: three concept sections, one worked example, then the three-question quiz."
+}

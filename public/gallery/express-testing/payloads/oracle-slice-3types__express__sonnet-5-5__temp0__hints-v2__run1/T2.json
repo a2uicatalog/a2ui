@@ -1,0 +1,129 @@
+{
+ "label": "oracle-slice-3types__express__sonnet-5-5__temp0__hints-v2__run1",
+ "task": "T2",
+ "format": "express",
+ "model_id": "claude-sonnet-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "metrics-overview",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "metrics-overview",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "_inline_1",
+         "_inline_2",
+         "_inline_3",
+         "_inline_4",
+         "_inline_5"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_6",
+         "_inline_7"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "_inline_1",
+      "component": "heading",
+      "text": "Metrics Overview"
+     },
+     {
+      "id": "_inline_2",
+      "component": "stat_card",
+      "value": "$128.4K",
+      "label": "Monthly Revenue",
+      "delta": "+12.5%",
+      "is_up": true,
+      "accent": "#22c55e"
+     },
+     {
+      "id": "_inline_3",
+      "component": "stat_card",
+      "value": "48,210",
+      "label": "Active Users",
+      "delta": "+8.1%",
+      "is_up": true,
+      "accent": "#3b82f6"
+     },
+     {
+      "id": "_inline_4",
+      "component": "stat_card",
+      "value": "3.9%",
+      "label": "Conversion Rate",
+      "delta": "-0.4%",
+      "is_up": false,
+      "accent": "#f59e0b"
+     },
+     {
+      "id": "_inline_5",
+      "component": "stat_card",
+      "value": "2.1%",
+      "label": "Churn Rate",
+      "delta": "-0.3%",
+      "is_up": false,
+      "accent": "#a855f7"
+     },
+     {
+      "id": "_inline_6",
+      "component": "heading",
+      "text": "Revenue: This Year vs. Last Year ($K)"
+     },
+     {
+      "id": "_inline_7",
+      "component": "chartjs_bar",
+      "labels": [
+       "Jan",
+       "Feb",
+       "Mar",
+       "Apr",
+       "May",
+       "Jun"
+      ],
+      "datasets": [
+       {
+        "label": "This year",
+        "data": [
+         92,
+         101,
+         108,
+         115,
+         121,
+         128
+        ]
+       },
+       {
+        "label": "Last year",
+        "data": [
+         80,
+         85,
+         94,
+         99,
+         106,
+         114
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

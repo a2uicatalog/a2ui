@@ -1,0 +1,44 @@
+{
+ "task": "T4",
+ "condition": "CT_sonnet-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-sonnet-5-5",
+ "hints": false,
+ "label": "oracle-slice-3types__express__sonnet-5-5__temp0__run1",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 16421,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 11.7,
+ "usage": {
+  "input_tokens": 6049,
+  "output_tokens": 1420
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "segmented_control",
+  "heading",
+  "body",
+  "entity_list",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.4,
+  "recall": 0.667,
+  "f1": 0.5,
+  "slot_hits": {
+   "list": true,
+   "status indicator": false,
+   "filter control": true
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"status-list\")\nfilter = segmented_control([{label: \"All\", value: \"all\"}, {label: \"Active\", value: \"active\"}, {label: \"Pending\", value: \"pending\"}, {label: \"Blocked\", value: \"blocked\"}, {label: \"Done\", value: \"done\"}], \"all\", \"status_filter\")\nintro = heading(\"Work Items\")\nnote = body(\"Eight items, each with a status and a one-line detail. Use the control to filter by status.\")\nitems = entity_list([{name: \"Migrate billing database\", subtitle: \"Cutover rehearsal scheduled for Thursday\", status: \"Active\"}, {name: \"Redesign onboarding flow\", subtitle: \"Waiting on final copy from marketing\", status: \"Pending\"}, {name: \"Upgrade API gateway\", subtitle: \"Rollout paused by failed health checks\", status: \"Blocked\"}, {name: \"Publish Q3 report\", subtitle: \"Shared with leadership on Monday\", status: \"Done\"}, {name: \"Audit access permissions\", subtitle: \"12 of 40 service accounts reviewed\", status: \"Active\"}, {name: \"Vendor security review\", subtitle: \"Questionnaire sent, awaiting response\", status: \"Pending\"}, {name: \"Fix mobile checkout bug\", subtitle: \"Blocked on payment provider sandbox access\", status: \"Blocked\"}, {name: \"Retire legacy dashboard\", subtitle: \"Decommissioned and archived last week\", status: \"Done\"}])\nroot = columns(2, \"2rem\", \"top\", [{blocks: [intro, note, filter]}, {blocks: [items]}])\n</a2ui>\n\nThe filter control is display-only, because the segmented control in this catalog has no way to trigger an action or change what the list shows. Choosing a status won't hide any of the eight items. I split the layout into two columns (filter on the left, list on the right) because the `columns` component needs at least two columns and is the only layout container available."
+}

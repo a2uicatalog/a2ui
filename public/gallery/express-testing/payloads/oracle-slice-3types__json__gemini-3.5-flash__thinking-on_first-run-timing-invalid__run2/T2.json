@@ -1,0 +1,117 @@
+{
+ "label": "oracle-slice-3types__json__gemini-3.5-flash__thinking-on_first-run-timing-invalid__run2",
+ "task": "T2",
+ "format": "json",
+ "model_id": "gemini-3.5-flash",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "metrics-overview-dashboard",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "metrics-overview-dashboard",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "2rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         {
+          "id": "kpi-section-heading",
+          "component": "heading",
+          "text": "Key Performance Indicators"
+         },
+         {
+          "id": "kpi-metrics-grid",
+          "component": "metric_row",
+          "cols": 2,
+          "metrics": [
+           {
+            "value": "$124,500",
+            "label": "Monthly Revenue",
+            "trend": "up",
+            "accent": "#10B981"
+           },
+           {
+            "value": "3,240",
+            "label": "New Customers",
+            "trend": "up",
+            "accent": "#10B981"
+           },
+           {
+            "value": "1.8%",
+            "label": "Churn Rate",
+            "trend": "down",
+            "accent": "#EF4444"
+           },
+           {
+            "value": "94.6%",
+            "label": "Support CSAT",
+            "trend": "up",
+            "accent": "#10B981"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "blocks": [
+         {
+          "id": "chart-section-heading",
+          "component": "heading",
+          "text": "Monthly Performance Comparison"
+         },
+         {
+          "id": "revenue-comparison-chart",
+          "component": "chartjs_bar",
+          "labels": [
+           "Jul",
+           "Aug",
+           "Sep",
+           "Oct",
+           "Nov",
+           "Dec"
+          ],
+          "datasets": [
+           {
+            "label": "Target Revenue ($k)",
+            "data": [
+             100,
+             110,
+             115,
+             120,
+             125,
+             130
+            ]
+           },
+           {
+            "label": "Actual Revenue ($k)",
+            "data": [
+             105,
+             112,
+             124,
+             118,
+             128,
+             135
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

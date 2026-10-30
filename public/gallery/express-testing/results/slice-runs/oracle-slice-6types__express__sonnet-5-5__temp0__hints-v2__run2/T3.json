@@ -1,0 +1,45 @@
+{
+ "task": "T3",
+ "condition": "DT_sonnet-5-5H2",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-sonnet-5-5",
+ "hints": true,
+ "label": "oracle-slice-6types__express__sonnet-5-5__temp0__hints-v2__run2",
+ "agent_type": "T3",
+ "catalogue": "D-t3.json",
+ "atoms_in_catalogue": 21,
+ "prompt_chars": 12164,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 13.3,
+ "usage": {
+  "input_tokens": 4708,
+  "output_tokens": 1542
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns",
+  "gradient_hero",
+  "feature_grid",
+  "testimonial_card",
+  "cta_button"
+ ],
+ "score": {
+  "precision": 0.8,
+  "recall": 1.0,
+  "f1": 0.889,
+  "slot_hits": {
+   "hero": true,
+   "feature columns (x3)": true,
+   "testimonial": true,
+   "CTA": true
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"product-landing\")\nroot = columns(2, \"2rem\", \"top\", [\n  {blocks: [\n    gradient_hero(\"Ship your best work, faster\", \"One workspace for planning, building, and launching products your customers will love.\", \"New\", \"#4f46e5\", \"#8b5cf6\", null, \"center\", \"Get started free\", \"https://example.com/signup\"),\n    feature_grid(\"Everything you need\", \"Three tools that work together out of the box.\", 3, [\n      {icon: \"\u26a1\", title: \"Lightning fast\", description: \"Automated workflows cut setup time from days to minutes.\", color: \"#f59e0b\"},\n      {icon: \"\ud83d\udd12\", title: \"Secure by default\", description: \"Enterprise-grade encryption and access controls come standard.\", color: \"#10b981\"},\n      {icon: \"\ud83d\udcc8\", title: \"Actionable insights\", description: \"Real-time dashboards show what is working and what is not.\", color: \"#6366f1\"}\n    ]),\n    testimonial_card(\"This product transformed how our team works. We launched twice as fast with half the stress.\", \"Jordan Lee\", \"Head of Product, Acme Co.\", \"https://example.com/avatars/jordan.jpg\", 5),\n    cta_button(\"https://example.com/signup\", \"Start your free trial\", \"#4f46e5\", false)\n  ]}\n])\n</a2ui>"
+}

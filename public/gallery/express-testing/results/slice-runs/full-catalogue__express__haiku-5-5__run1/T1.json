@@ -1,0 +1,56 @@
+{
+ "task": "T1",
+ "condition": "A_haiku-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "full-catalogue__express__haiku-5-5__run1",
+ "agent_type": "full",
+ "catalogue": "A-full.json",
+ "atoms_in_catalogue": 557,
+ "prompt_chars": 294155,
+ "slot_recall": [
+  5,
+  5
+ ],
+ "secs": 12.5,
+ "usage": {
+  "input_tokens": 107822,
+  "output_tokens": 1954
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "heading",
+  "body",
+  "subheading",
+  "body",
+  "subheading",
+  "body",
+  "subheading",
+  "body",
+  "subheading",
+  "callout",
+  "subheading",
+  "quiz_set",
+  "color_section",
+  "divider",
+  "divider"
+ ],
+ "score": {
+  "precision": 0.467,
+  "recall": 0.8,
+  "f1": 0.589,
+  "slot_hits": {
+   "title": true,
+   "concept sections (x3)": true,
+   "worked example": true,
+   "3-question quiz": true,
+   "quiz result": false
+  }
+ },
+ "reply": "<a2ui>\ntitle = heading(\"The Water Cycle\")\nintro = body(\"Water is always on the move. The sun drives it up from the surface, air carries it across the sky, and gravity brings it back down. This lesson follows that loop through three stages.\")\n\nconcept1_heading = subheading(\"1. Evaporation\")\nconcept1 = body(\"Liquid water at the surface absorbs energy from sunlight and turns into water vapour, an invisible gas. Oceans, lakes and rivers supply most of it. Plants add more through transpiration, releasing water vapour from their leaves.\")\n\nconcept2_heading = subheading(\"2. Condensation\")\nconcept2 = body(\"As warm, moist air rises it cools. Cooler air holds less vapour, so the vapour changes back into tiny liquid droplets around dust particles. These droplets gather into clouds.\")\n\nconcept3_heading = subheading(\"3. Precipitation\")\nconcept3 = body(\"When droplets in a cloud merge into drops heavy enough to fall, precipitation occurs as rain, snow, sleet or hail. Water that lands on land runs off into rivers, seeps into the ground, or is stored as ice, and eventually returns to the sea to repeat the cycle.\")\n\nexample_heading = subheading(\"Worked example\")\nexample = callout(kind=\"info\", title=\"A puddle after the rain\", text=\"A 2 litre puddle sits on the pavement at noon. Sunlight warms it and some water evaporates into the air. By 4 p.m. only 0.5 litres remain, so 1.5 litres have evaporated. That vapour will later condense into clouds and may fall again somewhere else.\")\n\nquiz_heading = subheading(\"Self-check\")\nquiz = quiz_set(title=\"Water cycle check\", pass_score=67, accent=\"#0e7bb8\", questions=[\n  {question: \"What process turns liquid water into water vapour?\", options: [\"Condensation\", \"Precipitation\", \"Evaporation\", \"Infiltration\"], correct: 2, explanation: \"Evaporation is driven by heat energy from the sun, which turns liquid water into vapour.\"},\n  {question: \"Why do clouds form?\", options: [\"Warm air sinks and heats up\", \"Rising air cools and vapour condenses into droplets\", \"Rain falls up into the sky\", \"Ice melts in the atmosphere\"], correct: 1, explanation: \"As moist air rises it cools, and the vapour condenses around dust particles to form droplets.\"},\n  {question: \"In the puddle example, where did the 1.5 litres of water go?\", options: [\"Into the ground only\", \"Into the air as water vapour\", \"Into a drain\", \"It turned into ice\"], correct: 1, explanation: \"The water evaporated into the air as vapour, which can later condense and fall as precipitation.\"}\n])\n\nroot = color_section(style=\"light\", padding=\"24px\", blocks=[title, intro, concept1_heading, concept1, concept2_heading, concept2, concept3_heading, concept3, divider(), example_heading, example, divider(), quiz_heading, quiz])\n</a2ui>"
+}

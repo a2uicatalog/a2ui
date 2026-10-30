@@ -1,0 +1,155 @@
+{
+ "label": "oracle-slice-6types__express__sonnet-5-5__temp0__run3",
+ "task": "T4",
+ "format": "express",
+ "model_id": "claude-sonnet-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "status-list",
+    "catalog_id": "https://a2uicatalog.ai/catalog/d-t4.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "status-list",
+    "components": [
+     {
+      "id": "pageTitle",
+      "component": "heading",
+      "text": "Project Items"
+     },
+     {
+      "id": "filter",
+      "component": "segmented_control",
+      "options": [
+       {
+        "label": "All",
+        "value": "all"
+       },
+       {
+        "label": "Done",
+        "value": "done"
+       },
+       {
+        "label": "In progress",
+        "value": "in_progress"
+       },
+       {
+        "label": "Blocked",
+        "value": "blocked"
+       },
+       {
+        "label": "Queued",
+        "value": "queued"
+       }
+      ],
+      "selected_value": "all",
+      "name": "status_filter"
+     },
+     {
+      "id": "itemList",
+      "component": "entity_list",
+      "items": [
+       {
+        "name": "Provision staging database",
+        "subtitle": "Replica synced and verified",
+        "icon": "\ud83d\uddc4\ufe0f",
+        "status": "Done"
+       },
+       {
+        "name": "Migrate auth service",
+        "subtitle": "Cutover scheduled for Friday",
+        "icon": "\ud83d\udd10",
+        "status": "In progress"
+       },
+       {
+        "name": "Update TLS certificates",
+        "subtitle": "All edge nodes renewed for 12 months",
+        "icon": "\ud83d\udcdc",
+        "status": "Done"
+       },
+       {
+        "name": "Rotate API keys",
+        "subtitle": "Waiting on vendor approval",
+        "icon": "\ud83d\udd11",
+        "status": "Blocked"
+       },
+       {
+        "name": "Enable audit logging",
+        "subtitle": "Pipeline deployed to 3 of 5 regions",
+        "icon": "\ud83d\udcdd",
+        "status": "In progress"
+       },
+       {
+        "name": "Load test checkout",
+        "subtitle": "Test plan drafted, awaiting environment",
+        "icon": "\ud83d\udcc8",
+        "status": "Queued"
+       },
+       {
+        "name": "Retire legacy cron jobs",
+        "subtitle": "Blocked by dependency on billing export",
+        "icon": "\u23f1\ufe0f",
+        "status": "Blocked"
+       },
+       {
+        "name": "Document runbooks",
+        "subtitle": "Starts after migration completes",
+        "icon": "\ud83d\udcda",
+        "status": "Queued"
+       }
+      ]
+     },
+     {
+      "id": "summary",
+      "component": "badge_group",
+      "title": "Summary",
+      "badges": [
+       {
+        "text": "2 Done",
+        "color": "green"
+       },
+       {
+        "text": "2 In progress",
+        "color": "blue",
+        "pulse": true
+       },
+       {
+        "text": "2 Blocked",
+        "color": "red"
+       },
+       {
+        "text": "2 Queued",
+        "color": "grey"
+       }
+      ]
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "pageTitle",
+         "filter",
+         "itemList"
+        ]
+       },
+       {
+        "blocks": [
+         "summary"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

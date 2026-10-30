@@ -1,0 +1,32 @@
+{
+ "task": "T4",
+ "condition": "JD",
+ "label": "jev-picks-on-oracle-slice-6types__express__haiku-4-5__run3",
+ "agent_type": "jev-narrowed",
+ "catalogue": "JD-T4.json",
+ "atoms_in_catalogue": 13,
+ "prompt_chars": 8031,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 5.8,
+ "usage": {
+  "input_tokens": 2275,
+  "output_tokens": 547
+ },
+ "valid": false,
+ "error": "A2uiCompilationParseError: Failed to parse expression: Syntax error at line 20:7: mismatched input 'for' expecting {',', ']'} (line 20) - Line 20, Col 7 - Help: Please correct the syntax error in your Express DSL.",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "list": false,
+   "status indicator": false,
+   "filter control": false
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"main-surface\")\n\n// Initialize filter state\n$/filterStatus = \"all\"\n\n// Initialize sample data\n$/items = [\n  {title: \"Deploy API gateway\", status: \"inprogress\", detail: \"Kubernetes cluster upgrade in progress\"},\n  {title: \"Update documentation\", status: \"completed\", detail: \"All API docs synchronized with v2.0\"},\n  {title: \"Security audit\", status: \"pending\", detail: \"Awaiting compliance team review\"},\n  {title: \"Database migration\", status: \"inprogress\", detail: \"Moving customer data to new schema\"},\n  {title: \"Performance optimization\", status: \"completed\", detail: \"Query times reduced by 40%\"},\n  {title: \"Client notification\", status: \"pending\", detail: \"Scheduled for Monday 9am\"},\n  {title: \"Rollback procedure\", status: \"completed\", detail: \"Tested and documented\"},\n  {title: \"Team training\", status: \"pending\", detail: \"New tools onboarding session\"}\n]\n\n// Filter function to get filtered items\n_filteredItems = [\n  item for item in $/items\n  if $/filterStatus = \"all\" or item.status = $/filterStatus\n]\n\nroot = body([\n  heading(\"Task Management\"),\n  \n  segmented_control(\n    options=[\n      {label: \"All\", value: \"all\"},\n      {label: \"Pending\", value: \"pending\"},\n      {label: \"In Progress\", value: \"inprogress\"},\n      {label: \"Completed\", value: \"completed\"}\n    ],\n    selected_value=$/filterStatus,\n    name=\"statusFilter\"\n  ),\n  \n  _template(\n    _filteredItems,\n    itemRow\n  )\n])\n\nitemRow = columns(\n  cols=1,\n  items=[\n    {blocks: [\n      body([\n        heading($title),\n        badge_group(\n          badges=[\n            {\n              text: $status,\n              color: (\n                $status = \"completed\" ? \"green\" :\n                $status = \"inprogress\" ? \"cyan\" :\n                \"yellow\"\n              )\n            }\n          ]\n        ),\n        body($detail)\n      ]}\n    ]}\n  ]\n)\n</a2ui>"
+}

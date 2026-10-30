@@ -1,0 +1,39 @@
+{
+ "task": "T6",
+ "condition": "CT_sonnet-5-5H2",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-sonnet-5-5",
+ "hints": true,
+ "label": "oracle-slice-3types__express__sonnet-5-5__temp0__hints-v2__run3",
+ "agent_type": "Learning",
+ "catalogue": "C-learning.json",
+ "atoms_in_catalogue": 36,
+ "prompt_chars": 21139,
+ "slot_recall": [
+  2,
+  2
+ ],
+ "secs": 9.7,
+ "usage": {
+  "input_tokens": 7807,
+  "output_tokens": 1266
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns"
+ ],
+ "score": {
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "flashcard deck": false,
+   "progress indicator": false
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"vocab-flashcards\")\nroot = columns(2, \"2rem\", \"top\", [\n  {blocks: [\n    {type: \"heading\", text: \"Vocabulary Flashcards\"},\n    {type: \"body\", text: \"Click a card to flip it and reveal the definition. Work through all ten words.\"},\n    {type: \"flashcard_deck\", accent: \"#4f46e5\", label_front: \"WORD\", label_back: \"DEFINITION\", cards: [\n      {front: \"Ephemeral\", back: \"Lasting for a very short time.\"},\n      {front: \"Ubiquitous\", back: \"Present, appearing, or found everywhere.\"},\n      {front: \"Pragmatic\", back: \"Dealing with things sensibly and realistically.\"},\n      {front: \"Eloquent\", back: \"Fluent and persuasive in speaking or writing.\"},\n      {front: \"Meticulous\", back: \"Showing great attention to detail; very careful.\"},\n      {front: \"Resilient\", back: \"Able to recover quickly from difficulties.\"},\n      {front: \"Ambiguous\", back: \"Open to more than one interpretation; unclear.\"},\n      {front: \"Benevolent\", back: \"Well-meaning and kindly.\"},\n      {front: \"Candid\", back: \"Truthful and straightforward; frank.\"},\n      {front: \"Diligent\", back: \"Showing careful and persistent effort.\"}\n    ]}\n  ]},\n  {blocks: [\n    {type: \"heading\", text: \"Your Progress\"},\n    {type: \"progress_bar\", value: 0, label: \"Cards reviewed\", accent: \"#4f46e5\", show_percent: true, caption: \"0 of 10 cards reviewed\"},\n    {type: \"text_callout\", variant: \"info\", title: \"Tip\", description: \"Try recalling the definition before you flip each card.\"}\n  ]}\n])\n</a2ui>"
+}

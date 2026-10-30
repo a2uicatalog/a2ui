@@ -1,0 +1,42 @@
+{
+ "task": "T6",
+ "condition": "C_haiku-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "oracle-slice-3types__express__haiku-5-5__run2",
+ "agent_type": "Learning",
+ "catalogue": "C-learning.json",
+ "atoms_in_catalogue": 36,
+ "prompt_chars": 21139,
+ "slot_recall": [
+  2,
+  2
+ ],
+ "secs": 9.1,
+ "usage": {
+  "input_tokens": 7488,
+  "output_tokens": 1921
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "heading",
+  "progress_bar",
+  "flashcard_deck",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.5,
+  "recall": 1.0,
+  "f1": 0.667,
+  "slot_hits": {
+   "flashcard deck": true,
+   "progress indicator": true
+  }
+ },
+ "reply": "<a2ui>\nintro = heading(\"Vocabulary Flashcards\")\n\nprogress = progress_bar(0, \"Cards reviewed\", \"#4f46e5\", true, \"0 of 10 cards reviewed\")\n\ndeck = flashcard_deck(\n  cards=[\n    {front: \"Ephemeral\", back: \"Lasting for a very short time\"},\n    {front: \"Lucid\", back: \"Expressed clearly; easy to understand\"},\n    {front: \"Ubiquitous\", back: \"Present or found everywhere\"},\n    {front: \"Meticulous\", back: \"Showing great attention to detail\"},\n    {front: \"Candid\", back: \"Truthful and straightforward\"},\n    {front: \"Resilient\", back: \"Able to recover quickly from difficulties\"},\n    {front: \"Ambiguous\", back: \"Open to more than one interpretation\"},\n    {front: \"Pragmatic\", back: \"Dealing with things sensibly and realistically\"},\n    {front: \"Eloquent\", back: \"Fluent and persuasive in speech or writing\"},\n    {front: \"Tenacious\", back: \"Holding firmly to a goal; persistent\"}\n  ],\n  accent=\"#4f46e5\",\n  label_front=\"WORD\",\n  label_back=\"DEFINITION\"\n)\n\nroot = columns(\n  cols=2,\n  gap=\"2rem\",\n  align=\"top\",\n  items=[\n    {blocks: [intro, progress]},\n    {blocks: [deck]}\n  ]\n)\n</a2ui>\n\nThe deck holds ten word/definition cards, flipped by clicking. The progress bar is set to 0 of 10 because its `value` is a static property and can't be bound to live review state, so it won't advance as cards are flipped unless the host updates it."
+}

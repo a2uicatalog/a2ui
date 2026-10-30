@@ -1,0 +1,116 @@
+{
+ "label": "oracle-slice-3types__json__gemini-3.5-flash-lite__first-run-timing-invalid__run2",
+ "task": "T2",
+ "format": "json",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "metrics-overview",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display.json",
+    "theme": {
+     "primaryColor": "#2563eb"
+    },
+    "send_data_model": false
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "metrics-overview",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "1.5rem",
+      "items": [
+       {
+        "blocks": [
+         {
+          "id": "heading-1",
+          "component": "heading",
+          "text": "Key Performance Indicators"
+         },
+         {
+          "id": "metric-row-1",
+          "component": "metric_row",
+          "cols": 4,
+          "metrics": [
+           {
+            "value": "$45,231",
+            "label": "Total Revenue",
+            "trend": "up",
+            "sub": "+12.3% vs last mo"
+           },
+           {
+            "value": "1,429",
+            "label": "Active Users",
+            "trend": "up",
+            "sub": "+5.4% vs last mo"
+           },
+           {
+            "value": "94.2%",
+            "label": "Conversion Rate",
+            "trend": "down",
+            "sub": "-1.1% vs last mo"
+           },
+           {
+            "value": "12.4s",
+            "label": "Avg Response Time",
+            "trend": "up",
+            "sub": "-0.8s optimization"
+           }
+          ]
+         },
+         {
+          "id": "heading-2",
+          "component": "heading",
+          "text": "Performance Comparison"
+         },
+         {
+          "id": "chart-1",
+          "component": "chartjs_bar",
+          "labels": [
+           "Jan",
+           "Feb",
+           "Mar",
+           "Apr",
+           "May",
+           "Jun"
+          ],
+          "datasets": [
+           {
+            "label": "Current Year",
+            "data": [
+             12,
+             19,
+             3,
+             5,
+             2,
+             3
+            ]
+           },
+           {
+            "label": "Previous Year",
+            "data": [
+             8,
+             11,
+             5,
+             8,
+             3,
+             7
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

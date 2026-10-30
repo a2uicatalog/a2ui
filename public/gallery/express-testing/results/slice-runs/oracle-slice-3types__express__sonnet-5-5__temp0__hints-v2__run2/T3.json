@@ -1,0 +1,45 @@
+{
+ "task": "T3",
+ "condition": "CT_sonnet-5-5H2",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-sonnet-5-5",
+ "hints": true,
+ "label": "oracle-slice-3types__express__sonnet-5-5__temp0__hints-v2__run2",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "C-marketing-commerce.json",
+ "atoms_in_catalogue": 23,
+ "prompt_chars": 12467,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 15.8,
+ "usage": {
+  "input_tokens": 4812,
+  "output_tokens": 1779
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns",
+  "gradient_hero",
+  "feature_grid",
+  "testimonial_card",
+  "cta_button"
+ ],
+ "score": {
+  "precision": 0.8,
+  "recall": 1.0,
+  "f1": 0.889,
+  "slot_hits": {
+   "hero": true,
+   "feature columns (x3)": true,
+   "testimonial": true,
+   "CTA": true
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"product-landing\")\nroot = columns(2, \"2rem\", \"stretch\", [\n  {blocks: [\n    gradient_hero(\"Ship your best work, faster\", \"One workspace for planning, building and launching products your customers love.\", \"New: Version 2.0\", \"#4f46e5\", \"#8b5cf6\", null, \"center\", \"Get started free\", \"https://example.com/signup\"),\n    feature_grid(\"Everything you need\", \"Three reasons teams choose us.\", 3, [\n      {icon: \"\u26a1\", title: \"Lightning fast\", description: \"Instant syncing and sub-second search keep your whole team moving without waiting.\", color: \"#f59e0b\"},\n      {icon: \"\ud83d\udd12\", title: \"Secure by default\", description: \"End-to-end encryption, SSO and granular permissions come built in on every plan.\", color: \"#10b981\"},\n      {icon: \"\ud83e\udd1d\", title: \"Built to collaborate\", description: \"Comment, assign and review together in real time, wherever your teammates are.\", color: \"#6366f1\"}\n    ]),\n    testimonial_card(\"This product cut our launch cycle in half. Our team can't imagine working any other way.\", \"Priya Natarajan\", \"Head of Product, Brightwave\", \"https://example.com/avatars/priya.jpg\", 5),\n    cta_button(\"https://example.com/signup\", \"Start your free trial\", \"#4f46e5\", false)\n  ]}\n])\n</a2ui>"
+}

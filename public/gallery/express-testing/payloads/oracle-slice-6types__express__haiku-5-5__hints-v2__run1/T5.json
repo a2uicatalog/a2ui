@@ -1,0 +1,91 @@
+{
+ "label": "oracle-slice-6types__express__haiku-5-5__hints-v2__run1",
+ "task": "T5",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/d-t5.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "pricing_tier_group",
+      "tiers": [
+       {
+        "name": "Starter",
+        "price": "$9/mo",
+        "description": "For individuals getting started",
+        "recommended": false,
+        "features": [
+         "Up to 3 projects",
+         "5 GB storage",
+         "Email support",
+         "Basic analytics"
+        ],
+        "action": {
+         "event": {
+          "name": "select_tier",
+          "context": {
+           "tier": "starter"
+          }
+         }
+        }
+       },
+       {
+        "name": "Pro",
+        "price": "$29/mo",
+        "description": "For growing teams that need more",
+        "recommended": true,
+        "features": [
+         "Unlimited projects",
+         "100 GB storage",
+         "Priority support",
+         "Advanced analytics",
+         "Team permissions"
+        ],
+        "action": {
+         "event": {
+          "name": "select_tier",
+          "context": {
+           "tier": "pro"
+          }
+         }
+        }
+       },
+       {
+        "name": "Enterprise",
+        "price": "$99/mo",
+        "description": "For organizations with advanced needs",
+        "recommended": false,
+        "features": [
+         "Unlimited everything",
+         "1 TB storage",
+         "24/7 dedicated support",
+         "Custom analytics",
+         "SSO and audit logs"
+        ],
+        "action": {
+         "event": {
+          "name": "select_tier",
+          "context": {
+           "tier": "enterprise"
+          }
+         }
+        }
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

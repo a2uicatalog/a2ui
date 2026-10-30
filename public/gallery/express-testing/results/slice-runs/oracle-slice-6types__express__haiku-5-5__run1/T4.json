@@ -1,0 +1,43 @@
+{
+ "task": "T4",
+ "condition": "D_haiku-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "oracle-slice-6types__express__haiku-5-5__run1",
+ "agent_type": "T4",
+ "catalogue": "D-t4.json",
+ "atoms_in_catalogue": 20,
+ "prompt_chars": 10490,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 8.5,
+ "usage": {
+  "input_tokens": 3799,
+  "output_tokens": 1656
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "segmented_control",
+  "heading",
+  "entity_list",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.5,
+  "recall": 0.667,
+  "f1": 0.571,
+  "slot_hits": {
+   "list": true,
+   "status indicator": false,
+   "filter control": true
+  }
+ },
+ "reply": "<a2ui>\nfilter = segmented_control([{label: \"All\", value: \"all\"}, {label: \"Active\", value: \"active\"}, {label: \"In progress\", value: \"in_progress\"}, {label: \"Blocked\", value: \"blocked\"}, {label: \"New\", value: \"new\"}], \"all\", \"status_filter\")\ntitle = heading(\"Items\")\nitems = entity_list([{name: \"Item 1\", subtitle: \"Initial configuration is complete and running.\", status: \"Active\"}, {name: \"Item 2\", subtitle: \"Waiting on the latest data export to finish.\", status: \"In progress\"}, {name: \"Item 3\", subtitle: \"Connection to the upstream service keeps timing out.\", status: \"Blocked\"}, {name: \"Item 4\", subtitle: \"Newly added and awaiting its first review.\", status: \"New\"}, {name: \"Item 5\", subtitle: \"Scheduled sync ran successfully overnight.\", status: \"Active\"}, {name: \"Item 6\", subtitle: \"Migration to the new schema is underway.\", status: \"In progress\"}, {name: \"Item 7\", subtitle: \"Permission check failed for one of the roles.\", status: \"Blocked\"}, {name: \"Item 8\", subtitle: \"Registered today and queued for setup.\", status: \"New\"}])\nroot = columns(2, \"1.5rem\", \"stretch\", [{blocks: [title, filter]}, {blocks: [items]}])\n</a2ui>"
+}

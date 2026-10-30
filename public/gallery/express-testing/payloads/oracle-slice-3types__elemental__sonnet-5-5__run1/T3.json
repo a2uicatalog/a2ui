@@ -1,0 +1,76 @@
+{
+ "label": "oracle-slice-3types__elemental__sonnet-5-5__run1",
+ "task": "T3",
+ "format": "elemental",
+ "model_id": "claude-sonnet-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce-elemental.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "gradient_hero",
+      "title": "Meet Lumen: Focus Made Effortless",
+      "subtitle": "The smart workspace that organizes your day, silences distractions, and helps your team ship better work, faster.",
+      "Badge": "New in 2025",
+      "accent": "#4f46e5",
+      "accent2": "#8b5cf6",
+      "align": "center"
+     },
+     {
+      "id": "features",
+      "component": "feature_grid",
+      "Heading": "Why teams choose Lumen",
+      "description": "Everything you need to stay in flow.",
+      "Columns": 3,
+      "features": [
+       {
+        "icon": "\u26a1",
+        "title": "Lightning fast",
+        "description": "Capture tasks, notes, and ideas instantly with zero lag, on any device.",
+        "color": "#f59e0b"
+       },
+       {
+        "icon": "\ud83d\udd12",
+        "title": "Private by design",
+        "description": "End-to-end encryption keeps your work yours. No tracking, no compromises.",
+        "color": "#10b981"
+       },
+       {
+        "icon": "\ud83e\udd1d",
+        "title": "Built for teams",
+        "description": "Share boards, assign work, and collaborate in real time without the noise.",
+        "color": "#6366f1"
+       }
+      ]
+     },
+     {
+      "id": "testimonial",
+      "component": "testimonial_card",
+      "text": "Lumen replaced three tools for our team. We're shipping faster and our meetings are half as long.",
+      "author_name": "Priya Raman",
+      "author_title": "Head of Product, Northwind",
+      "author_avatar_url": "https://example.com/avatars/priya.jpg",
+      "rating": 5
+     },
+     {
+      "id": "cta",
+      "component": "cta_button",
+      "label": "Start your free trial",
+      "url": "https://example.com/signup",
+      "color": "#4f46e5"
+     }
+    ]
+   }
+  }
+ ]
+}

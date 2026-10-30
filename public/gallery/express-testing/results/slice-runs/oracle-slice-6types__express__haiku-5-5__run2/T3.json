@@ -1,0 +1,45 @@
+{
+ "task": "T3",
+ "condition": "D_haiku-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "oracle-slice-6types__express__haiku-5-5__run2",
+ "agent_type": "T3",
+ "catalogue": "D-t3.json",
+ "atoms_in_catalogue": 21,
+ "prompt_chars": 12164,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 9.5,
+ "usage": {
+  "input_tokens": 4389,
+  "output_tokens": 1859
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "gradient_hero",
+  "feature_grid",
+  "blockquote_with_avatar",
+  "cta_button",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.8,
+  "recall": 1.0,
+  "f1": 0.889,
+  "slot_hits": {
+   "hero": true,
+   "feature columns (x3)": true,
+   "testimonial": true,
+   "CTA": true
+  }
+ },
+ "reply": "<a2ui>\nhero = gradient_hero(\n  title=\"Ship faster with less overhead\",\n  subtitle=\"A simple toolkit that turns your ideas into production-ready pages in minutes.\",\n  badge=\"New in 2026\",\n  accent=\"#4f46e5\",\n  accent2=\"#8b5cf6\",\n  align=\"center\",\n  cta_label=\"Get started\",\n  cta_url=\"https://example.com/signup\"\n)\n\nfeatures = feature_grid(\n  heading=\"Why teams choose us\",\n  description=\"Everything you need to launch, measure, and iterate.\",\n  columns=3,\n  features=[\n    {icon: \"\u26a1\", title: \"Blazing fast\", description: \"Pages load in under a second on any connection.\", color: \"#4f46e5\"},\n    {icon: \"\ud83d\udd12\", title: \"Secure by default\", description: \"Built-in protections keep your data safe.\", color: \"#8b5cf6\"},\n    {icon: \"\ud83d\udcc8\", title: \"Built to scale\", description: \"From first visitor to first million without re-architecting.\", color: \"#0ea5e9\"}\n  ]\n)\n\ntestimonial = blockquote_with_avatar(\n  quote=\"We cut our launch time in half. The team now ships landing pages in a single afternoon.\",\n  author_name=\"Maya Chen\",\n  author_title=\"Head of Product, Acme Co.\",\n  avatar_url=\"https://example.com/avatars/maya.jpg\"\n)\n\ncta = cta_button(\n  url=\"https://example.com/signup\",\n  label=\"Start your free trial\",\n  color=\"#4f46e5\",\n  same_tab=true\n)\n\nroot = columns(\n  cols=2,\n  gap=\"2rem\",\n  align=\"top\",\n  items=[\n    {blocks: [hero, features]},\n    {blocks: [testimonial, cta]}\n  ]\n)\n</a2ui>"
+}

@@ -1,0 +1,132 @@
+{
+ "label": "oracle-slice-3types__express__gemini-3.5-flash-lite__request-only-timing__run3",
+ "task": "T4",
+ "format": "express",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "1.5rem",
+      "items": [
+       {
+        "blocks": [
+         "_inline_1",
+         "_inline_2",
+         "_inline_3",
+         "_inline_4"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "_inline_1",
+      "component": "heading",
+      "text": "Task Filter and Status Dashboard"
+     },
+     {
+      "id": "_inline_2",
+      "component": "body",
+      "text": "Review and track the current operational tasks and their statuses across all systems."
+     },
+     {
+      "id": "_inline_3",
+      "component": "chip_group",
+      "label": "Filter by Status",
+      "layout": "wrap",
+      "same_tab": true,
+      "chips": [
+       {
+        "label": "All (8)",
+        "color": "#0070f3",
+        "active": true
+       },
+       {
+        "label": "Success",
+        "color": "#10b981",
+        "active": false
+       },
+       {
+        "label": "In Progress",
+        "color": "#f59e0b",
+        "active": false
+       },
+       {
+        "label": "Error",
+        "color": "#ef4444",
+        "active": false
+       }
+      ]
+     },
+     {
+      "id": "_inline_4",
+      "component": "entity_list",
+      "items": [
+       {
+        "name": "Database Migration",
+        "subtitle": "Migrated legacy user tables to primary PostgreSQL cluster.",
+        "status": "Success",
+        "meta": "Completed 2h ago"
+       },
+       {
+        "name": "API Gateway Scaling",
+        "subtitle": "Scaling up replica sets to handle peak traffic load.",
+        "status": "In Progress",
+        "meta": "Active now"
+       },
+       {
+        "name": "SSL Certificate Renewal",
+        "subtitle": "Wildcard cert for *.enterprise.io expired or near expiration.",
+        "status": "Error",
+        "meta": "Failed 1h ago"
+       },
+       {
+        "name": "Cache Cluster Flush",
+        "subtitle": "Cleared Redis instance memory due to stale session keys.",
+        "status": "Success",
+        "meta": "Completed 5h ago"
+       },
+       {
+        "name": "Billing Webhook Sync",
+        "subtitle": "Retrying failed Stripe webhook deliveries for subscription updates.",
+        "status": "In Progress",
+        "meta": "Retrying 3/5"
+       },
+       {
+        "name": "CDN Asset Purge",
+        "subtitle": "Purged edge cache for frontend static bundles after release.",
+        "status": "Success",
+        "meta": "Completed yesterday"
+       },
+       {
+        "name": "Security Vulnerability Scan",
+        "subtitle": "Automated weekly dependency audit completed with 0 high risks.",
+        "status": "Success",
+        "meta": "Completed yesterday"
+       },
+       {
+        "name": "Backup Snapshot Verification",
+        "subtitle": "Integrity check failed on storage volume snapshot #402.",
+        "status": "Error",
+        "meta": "Flagged 3h ago"
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

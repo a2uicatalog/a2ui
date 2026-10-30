@@ -1,0 +1,112 @@
+{
+ "label": "oracle-slice-3types__json__opus-5-5__run3",
+ "task": "T2",
+ "format": "json",
+ "model_id": "claude-opus-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "metrics-overview",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "metrics-overview",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "1.5rem",
+      "align": "stretch",
+      "items": [
+       {
+        "blocks": [
+         {
+          "type": "heading",
+          "component": "heading",
+          "text": "Metrics Overview \u2014 Q3"
+         },
+         {
+          "type": "metric_row",
+          "component": "metric_row",
+          "cols": 4,
+          "accent": "#3b82f6",
+          "metrics": [
+           {
+            "value": "482K",
+            "prefix": "$",
+            "label": "Revenue",
+            "sub": "+12.4% vs Q2",
+            "trend": "up",
+            "accent": "#22c55e"
+           },
+           {
+            "value": "18.4K",
+            "label": "Active Users",
+            "sub": "+8.1% vs Q2",
+            "trend": "up",
+            "accent": "#3b82f6"
+           },
+           {
+            "value": "2.1",
+            "suffix": "%",
+            "label": "Churn Rate",
+            "sub": "-0.6 pts vs Q2",
+            "trend": "down",
+            "accent": "#a855f7"
+           },
+           {
+            "value": "212",
+            "suffix": "ms",
+            "label": "Avg Response Time",
+            "sub": "+18ms vs Q2",
+            "trend": "up",
+            "accent": "#ef4444"
+           }
+          ]
+         },
+         {
+          "type": "heading",
+          "component": "heading",
+          "text": "Monthly Revenue: Q3 vs Q2"
+         },
+         {
+          "type": "chartjs_bar",
+          "component": "chartjs_bar",
+          "labels": [
+           "Month 1",
+           "Month 2",
+           "Month 3"
+          ],
+          "datasets": [
+           {
+            "label": "Q2 Revenue ($K)",
+            "data": [
+             138,
+             142,
+             149
+            ]
+           },
+           {
+            "label": "Q3 Revenue ($K)",
+            "data": [
+             151,
+             160,
+             171
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

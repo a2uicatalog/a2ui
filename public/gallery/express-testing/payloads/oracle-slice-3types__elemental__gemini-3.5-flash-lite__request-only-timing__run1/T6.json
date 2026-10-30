@@ -1,0 +1,146 @@
+{
+ "label": "oracle-slice-3types__elemental__gemini-3.5-flash-lite__request-only-timing__run1",
+ "task": "T6",
+ "format": "elemental",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning-elemental.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "page_header",
+      "title": "Vocabulary Flashcards",
+      "subtitle": "Review your vocabulary list and track your study progress.",
+      "icon": "\ud83d\udcda",
+      "tag": "SRS Study Session",
+      "accent": "#4f46e5"
+     },
+     {
+      "id": "progress",
+      "component": "progress_bar",
+      "value": 40,
+      "label": "Cards Reviewed",
+      "show_percent": true,
+      "caption": "4 of 10 cards completed in this session",
+      "accent": "#4f46e5"
+     },
+     {
+      "id": "deck_heading",
+      "component": "heading",
+      "text": "Interactive Deck"
+     },
+     {
+      "id": "deck",
+      "component": "flashcard_deck",
+      "accent": "#4f46e5",
+      "label_front": "TERM",
+      "label_back": "DEFINITION",
+      "cards": [
+       {
+        "front": "Ephemeral",
+        "back": "Lasting for a very short time."
+       },
+       {
+        "front": "Ubiquitous",
+        "back": "Present, appearing, or found everywhere."
+       },
+       {
+        "front": "Pragmatic",
+        "back": "Dealing with things sensibly and realistically."
+       },
+       {
+        "front": "Meticulous",
+        "back": "Showing great attention to detail; very careful."
+       },
+       {
+        "front": "Ambivalent",
+        "back": "Having mixed feelings or contradictory ideas about something."
+       },
+       {
+        "front": "Gregarious",
+        "back": "Fond of company; sociable."
+       },
+       {
+        "front": "Scrutinize",
+        "back": "Examine or inspect closely and thoroughly."
+       },
+       {
+        "front": "Altruistic",
+        "back": "Showing a disinterested and selfless concern for the well-being of others."
+       },
+       {
+        "front": "Cacophony",
+        "back": "A harsh, discordant mixture of sounds."
+       },
+       {
+        "front": "Venerable",
+        "back": "Accorded a great deal of respect, especially because of age, wisdom, or character."
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_data_model": {
+    "surface_id": "main",
+    "path": "/",
+    "value": {
+     "flashcards": [
+      {
+       "front": "Ephemeral",
+       "back": "Lasting for a very short time."
+      },
+      {
+       "front": "Ubiquitous",
+       "back": "Present, appearing, or found everywhere."
+      },
+      {
+       "front": "Pragmatic",
+       "back": "Dealing with things sensibly and realistically."
+      },
+      {
+       "front": "Meticulous",
+       "back": "Showing great attention to detail; very careful."
+      },
+      {
+       "front": "Ambivalent",
+       "back": "Having mixed feelings or contradictory ideas about something."
+      },
+      {
+       "front": "Gregarious",
+       "back": "Fond of company; sociable."
+      },
+      {
+       "front": "Scrutinize",
+       "back": "Examine or inspect closely and thoroughly."
+      },
+      {
+       "front": "Altruistic",
+       "back": "Showing a disinterested and selfless concern for the well-being of others."
+      },
+      {
+       "front": "Cacophony",
+       "back": "A harsh, discordant mixture of sounds."
+      },
+      {
+       "front": "Venerable",
+       "back": "Accorded a great deal of respect, especially because of age, wisdom, or character."
+      }
+     ]
+    }
+   }
+  }
+ ]
+}

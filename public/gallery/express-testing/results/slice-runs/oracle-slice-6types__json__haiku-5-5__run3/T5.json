@@ -1,0 +1,46 @@
+{
+ "task": "T5",
+ "condition": "DN_haiku-5-5",
+ "temperature_applied": false,
+ "format": "json",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "oracle-slice-6types__json__haiku-5-5__run3",
+ "agent_type": "T5",
+ "catalogue": "D-t5.json",
+ "atoms_in_catalogue": 5,
+ "prompt_chars": 10857,
+ "slot_recall": [
+  1,
+  1
+ ],
+ "secs": 4.6,
+ "usage": {
+  "input_tokens": 4227,
+  "output_tokens": 1062
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "pricing_tier_group"
+ ],
+ "score": {
+  "per_approach": {
+   "tier_cards": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+   },
+   "comparison_table": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": null
+   }
+  },
+  "best_approach": "tier_cards",
+  "f1": 1.0
+ },
+ "reply": "I'll use the `pricing_tier_group` component, which lays out plans side by side. Each tier carries its own feature list, and the Pro tier is marked as recommended.\n\n<a2ui-json>\n[\n  {\n    \"version\": \"v0.9\",\n    \"createSurface\": {\n      \"surfaceId\": \"pricing-surface\",\n      \"catalogId\": \"https://a2uicatalog.ai/catalog/d-t5.json\"\n    }\n  },\n  {\n    \"version\": \"v0.9\",\n    \"updateComponents\": {\n      \"surfaceId\": \"pricing-surface\",\n      \"components\": [\n        {\n          \"id\": \"root\",\n          \"component\": \"pricing_tier_group\",\n          \"tiers\": [\n            {\n              \"name\": \"Starter\",\n              \"price\": \"$9\",\n              \"period\": \"per month\",\n              \"recommended\": false,\n              \"features\": [\n                \"Up to 3 projects\",\n                \"5 GB storage\",\n                \"Email support\",\n                \"Basic analytics\"\n              ]\n            },\n            {\n              \"name\": \"Pro\",\n              \"price\": \"$29\",\n              \"period\": \"per month\",\n              \"recommended\": true,\n              \"features\": [\n                \"Unlimited projects\",\n                \"100 GB storage\",\n                \"Priority chat support\",\n                \"Advanced analytics\",\n                \"Team collaboration\"\n              ]\n            },\n            {\n              \"name\": \"Enterprise\",\n              \"price\": \"$99\",\n              \"period\": \"per month\",\n              \"recommended\": false,\n              \"features\": [\n                \"Everything in Pro\",\n                \"Unlimited storage\",\n                \"24/7 phone support\",\n                \"Custom integrations\",\n                \"SSO and audit logs\"\n              ]\n            }\n          ]\n        }\n      ]\n    }\n  }\n]\n</a2ui-json>"
+}

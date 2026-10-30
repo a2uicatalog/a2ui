@@ -1,0 +1,33 @@
+{
+ "task": "T3",
+ "condition": "F",
+ "label": "random-slice__express__haiku-4-5__run2",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "F-marketing-commerce.json",
+ "atoms_in_catalogue": 189,
+ "prompt_chars": 96246,
+ "slot_recall": [
+  3,
+  4
+ ],
+ "secs": 4.9,
+ "usage": {
+  "input_tokens": 27499,
+  "output_tokens": 453
+ },
+ "valid": false,
+ "error": "A2uiCompilationParseError: Failed to parse expression: Syntax error at line 14:14: mismatched input '=' expecting ':' (line 14) - Line 14, Col 14 - Help: Please correct the syntax error in your Express DSL.",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "hero": false,
+   "feature columns (x3)": false,
+   "testimonial": false,
+   "CTA": false
+  }
+ },
+ "reply": "<a2ui>\nroot = color_section(\n  [\n    page_header(\n      title=\"Transform Your Workflow\",\n      subtitle=\"The all-in-one platform built for modern teams\",\n      accent=\"#4f46e5\"\n    ),\n    spacer(40),\n    feature_grid(\n      heading=\"Why Teams Choose Us\",\n      columns=3,\n      features=[\n        {\n          icon=\"\u26a1\",\n          title=\"Lightning Fast\",\n          description=\"Deploy in seconds, not hours. Our platform handles the heavy lifting so you can focus on what matters.\",\n          color=\"#4f46e5\"\n        },\n        {\n          icon=\"\ud83d\udd12\",\n          title=\"Enterprise Security\",\n          description=\"Bank-grade encryption and compliance certifications give you peace of mind. Your data is always protected.\",\n          color=\"#7c3aed\"\n        },\n        {\n          icon=\"\ud83e\udd1d\",\n          title=\"Seamless Integration\",\n          description=\"Connect with your favorite tools instantly. Works with everything your team already uses.\",\n          color=\"#6366f1\"\n        }\n      ]\n    ),\n    spacer(60),\n    expert_endorsement(\n      quote=\"This platform completely transformed how our team collaborates. We've cut our setup time in half.\",\n      expert_name=\"Sarah Chen\",\n      expert_title=\"VP of Product\",\n      expert_organization=\"TechCorp Inc.\",\n      expert_avatar_url=\"https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop\"\n    ),\n    spacer(60),\n    cta_button(\n      url=\"https://example.com/signup\",\n      label=\"Get Started Free\",\n      color=\"#4f46e5\"\n    )\n  ],\n  background=\"#ffffff\",\n  accent=\"#4f46e5\"\n)\n</a2ui>"
+}

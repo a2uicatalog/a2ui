@@ -1,0 +1,31 @@
+{
+ "task": "T6",
+ "condition": "C",
+ "label": "oracle-slice-3types__express__haiku-4-5__run3",
+ "agent_type": "Learning",
+ "catalogue": "C-learning.json",
+ "atoms_in_catalogue": 36,
+ "prompt_chars": 21139,
+ "slot_recall": [
+  2,
+  2
+ ],
+ "secs": 5.0,
+ "usage": {
+  "input_tokens": 5878,
+  "output_tokens": 443
+ },
+ "valid": false,
+ "error": "A2uiCompilationValidationError: Property 'front' of component 'spaced_repetition_card' does not support dynamic data bindings (paths). - Help: Property 'front' on 'spaced_repetition_card' must be a static literal value, not a dynamic databinding ($path).",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "flashcard deck": false,
+   "progress indicator": false
+  }
+ },
+ "reply": "<a2ui>\n$/progress/reviewed = 0\n$/progress/total = 10\n\ncards_data = [\n  {front: \"Serendipity\", back: \"The occurrence of events by chance in a happy or beneficial way\"},\n  {front: \"Ephemeral\", back: \"Lasting for a very short time; transitory\"},\n  {front: \"Ubiquitous\", back: \"Present, appearing, or found everywhere\"},\n  {front: \"Eloquent\", back: \"Fluent or persuasive in speaking or writing\"},\n  {front: \"Pragmatic\", back: \"Dealing with things in a realistic and practical way based on actual circumstances\"},\n  {front: \"Melancholy\", back: \"A pensive sadness, typically with no obvious cause\"},\n  {front: \"Perspicacious\", back: \"Having a ready insight into and understanding of things\"},\n  {front: \"Obfuscate\", back: \"To deliberately make something obscure, unclear, or unintelligible\"},\n  {front: \"Sanguine\", back: \"Optimistic or positive, especially in an apparently bad or difficult situation\"},\n  {front: \"Laconic\", back: \"Using very few words; concise to the point of seeming rude or indifferent\"}\n]\n\ncard_template = spaced_repetition_card($front, $back, $front)\n\nroot = [\n  page_header(\n    title=\"Vocabulary Flashcards\",\n    subtitle=\"Review these 10 key vocabulary terms\",\n    icon=\"\ud83d\udcda\",\n    accent=\"#8b5cf6\"\n  ),\n  progress_bar(\n    value=$/progress/reviewed,\n    label=\"Cards Reviewed\",\n    accent=\"#8b5cf6\",\n    show_percent=true\n  ),\n  _template(cards_data, card_template)\n]\n</a2ui>"
+}

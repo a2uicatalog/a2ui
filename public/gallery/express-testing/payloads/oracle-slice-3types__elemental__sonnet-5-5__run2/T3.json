@@ -1,0 +1,77 @@
+{
+ "label": "oracle-slice-3types__elemental__sonnet-5-5__run2",
+ "task": "T3",
+ "format": "elemental",
+ "model_id": "claude-sonnet-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce-elemental.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "gradient_hero",
+      "Badge": "New",
+      "title": "Ship faster with Lumen",
+      "subtitle": "The all-in-one workspace that helps your team plan, build, and launch products without the busywork.",
+      "accent": "#4f46e5",
+      "accent2": "#8b5cf6",
+      "align": "center",
+      "cta_label": "Get started free",
+      "cta_url": "https://example.com/signup"
+     },
+     {
+      "id": "features",
+      "component": "feature_grid",
+      "Heading": "Everything you need",
+      "description": "Three tools that work together so your team can focus on what matters.",
+      "Columns": 3,
+      "features": [
+       {
+        "icon": "\u26a1",
+        "title": "Lightning fast",
+        "description": "Instant sync and real-time updates keep everyone on the same page, with no waiting around.",
+        "color": "#f59e0b"
+       },
+       {
+        "icon": "\ud83d\udd12",
+        "title": "Secure by default",
+        "description": "Enterprise-grade encryption and granular permissions protect your work from day one.",
+        "color": "#10b981"
+       },
+       {
+        "icon": "\ud83d\udcc8",
+        "title": "Actionable insights",
+        "description": "Dashboards and reports turn raw data into clear next steps for your team.",
+        "color": "#6366f1"
+       }
+      ]
+     },
+     {
+      "id": "testimonial",
+      "component": "blockquote_with_avatar",
+      "quote": "Lumen cut our planning time in half. We launched our last product two weeks ahead of schedule.",
+      "author_name": "Priya Sharma",
+      "author_title": "VP of Product, Northwind"
+     },
+     {
+      "id": "cta",
+      "component": "cta_button",
+      "label": "Start your free trial",
+      "url": "https://example.com/signup",
+      "color": "#4f46e5",
+      "same_tab": true
+     }
+    ]
+   }
+  }
+ ]
+}

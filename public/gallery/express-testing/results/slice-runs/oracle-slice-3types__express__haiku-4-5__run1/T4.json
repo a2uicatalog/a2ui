@@ -1,0 +1,32 @@
+{
+ "task": "T4",
+ "condition": "C",
+ "label": "oracle-slice-3types__express__haiku-4-5__run1",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 16421,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 7.0,
+ "usage": {
+  "input_tokens": 4758,
+  "output_tokens": 783
+ },
+ "valid": false,
+ "error": "A2uiCompilationParseError: Failed to parse expression: Syntax error at line 40:17: mismatched input '[' expecting {',', '}'} (line 40) - Line 40, Col 17 - Help: Please correct the syntax error in your Express DSL.",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "list": false,
+   "status indicator": false,
+   "filter control": false
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"main-surface\")\n\n// Initialize filter state\n$/filterStatus = \"all\"\n\n// Sample data\n$/items = [\n  {title: \"Quarterly Planning\", status: \"inprogress\", detail: \"Q2 objectives being finalized\"},\n  {title: \"Budget Approval\", status: \"completed\", detail: \"Finance review completed\"},\n  {title: \"Client Onboarding\", status: \"pending\", detail: \"Waiting for documentation\"},\n  {title: \"System Migration\", status: \"inprogress\", detail: \"Database transfer 60% complete\"},\n  {title: \"Security Audit\", status: \"pending\", detail: \"Scheduled for next week\"},\n  {title: \"Team Training\", status: \"completed\", detail: \"All staff certified\"},\n  {title: \"API Integration\", status: \"inprogress\", detail: \"Endpoint testing in progress\"},\n  {title: \"Vendor Contract\", status: \"pending\", detail: \"Legal review required\"}\n]\n\n// Status color mapping\nstatusColors = {\n  \"completed\": \"green\",\n  \"inprogress\": \"blue\",\n  \"pending\": \"yellow\"\n}\n\n// Filter control\nfilterControl = segmented_control(\n  options=[\n    {label: \"All\", value: \"all\"},\n    {label: \"In Progress\", value: \"inprogress\"},\n    {label: \"Completed\", value: \"completed\"},\n    {label: \"Pending\", value: \"pending\"}\n  ],\n  selected_value=$/filterStatus,\n  name=\"statusFilter\"\n)\n\n// Generate filtered items\nfilteredItems = [\n  {\n    name: $/items[0].title,\n    subtitle: $/items[0].detail,\n    status: $/items[0].status\n  },\n  {\n    name: $/items[1].title,\n    subtitle: $/items[1].detail,\n    status: $/items[1].status\n  },\n  {\n    name: $/items[2].title,\n    subtitle: $/items[2].detail,\n    status: $/items[2].status\n  },\n  {\n    name: $/items[3].title,\n    subtitle: $/items[3].detail,\n    status: $/items[3].status\n  },\n  {\n    name: $/items[4].title,\n    subtitle: $/items[4].detail,\n    status: $/items[4].status\n  },\n  {\n    name: $/items[5].title,\n    subtitle: $/items[5].detail,\n    status: $/items[5].status\n  },\n  {\n    name: $/items[6].title,\n    subtitle: $/items[6].detail,\n    status: $/items[6].status\n  },\n  {\n    name: $/items[7].title,\n    subtitle: $/items[7].detail,\n    status: $/items[7].status\n  }\n]\n\nitemList = entity_list(filteredItems)\n\nroot = columns(\n  cols=1,\n  gap=\"2rem\",\n  items=[\n    {blocks: [\n      heading(\"Task List\"),\n      filterControl,\n      itemList\n    ]}\n  ]\n)\n</a2ui>"
+}

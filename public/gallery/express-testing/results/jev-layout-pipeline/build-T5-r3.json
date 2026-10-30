@@ -1,0 +1,29 @@
+{
+ "task": "T5",
+ "repeat": 3,
+ "writer_model": "gemini-3.5-flash-lite",
+ "decisions": "jev",
+ "jev_ms": 182,
+ "jev_usage": {
+  "input_tokens": 592,
+  "output_tokens": 101
+ },
+ "jev_answers": {
+  "layout": "landing",
+  "count": "3",
+  "cta": "no"
+ },
+ "layout": "landing",
+ "count": 3,
+ "cta": false,
+ "writer_secs": 0.9,
+ "writer_tokens": {
+  "in": 171,
+  "out": 154
+ },
+ "build_ms": 0.15,
+ "valid": true,
+ "error": null,
+ "compile_ms": 10.22,
+ "express": "<a2ui>\nhero = gradient_hero(title=\"Choose Your Plan\", subtitle=\"Select the subscription tier that best fits your workflow and scale your productivity.\", cta_label=\"Start Free Trial\", cta_url=\"#start\")\nfeats = feature_grid(heading=\"Compare Our Tiers\", columns=3, features=[{icon:\"\ud83c\udf31\", title:\"Starter Tier\", description:\"Ideal for individuals starting out with essential tools for daily personal projects.\"}, {icon:\"\ud83d\ude80\", title:\"Pro Tier (Recommended)\", description:\"Designed for growing teams needing advanced collaboration features and priority support.\"}, {icon:\"\ud83d\udc51\", title:\"Enterprise Tier\", description:\"Built for large organizations requiring custom security, dedicated infrastructure, and 24/7 assistance.\"}])\nroot = columns(cols=1, gap=\"1.5rem\", align=\"top\", items=[{blocks: [hero, feats]}])\n</a2ui>"
+}

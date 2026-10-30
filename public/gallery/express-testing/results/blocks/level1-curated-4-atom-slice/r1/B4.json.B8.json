@@ -1,0 +1,36 @@
+{
+ "model": "sonnet-5-5",
+ "cond": "B4",
+ "format": "json",
+ "brief": "B8",
+ "repeat": 1,
+ "seq": 16,
+ "model_id": "claude-sonnet-5-5",
+ "utc": "2026-10-29T19:53:20Z",
+ "prompt_chars": 19029,
+ "prompt_sha256": "(removed for publication)",
+ "temperature_requested": null,
+ "temperature_sent": false,
+ "max_tokens": 32768,
+ "request_secs": 13.12,
+ "input_tokens": 7255,
+ "output_tokens": 1766,
+ "stop_reason": "end_turn",
+ "usage": {
+  "input_tokens": 7255,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "cache_creation": {
+   "ephemeral_5m_input_tokens": 0,
+   "ephemeral_1h_input_tokens": 0
+  },
+  "output_tokens": 1766,
+  "output_tokens_details": {
+   "thinking_tokens": 732
+  },
+  "service_tier": "standard",
+  "inference_geo": "global",
+  "speed": "standard"
+ },
+ "reply": "This catalog has only brick-model components. It has no chart, text or layout components. I built the bar chart as a 3D brick model instead. Each bar is a stack of bricks whose height shows sales. A dropdown switches between a monthly view and a regional view.\n\n<a2ui-json>\n[\n  {\n    \"version\": \"v0.9.1\",\n    \"createSurface\": {\n      \"surfaceId\": \"sales_dashboard\",\n      \"catalogId\": \"https://a2uicatalog.ai/catalog/blocks-b4.json\"\n    }\n  },\n  {\n    \"version\": \"v0.9.1\",\n    \"updateComponents\": {\n      \"surfaceId\": \"sales_dashboard\",\n      \"components\": [\n        {\n          \"id\": \"root\",\n          \"component\": \"brick_build_3d\",\n          \"models\": [\n            {\n              \"name\": \"Monthly sales (Jan-Jun)\",\n              \"bricks\": [\n                {\"x\": 0,  \"y\": 0, \"z\": 0, \"w\": 2, \"d\": 2, \"h\": 3,  \"c\": \"#2563eb\"},\n                {\"x\": 3,  \"y\": 0, \"z\": 0, \"w\": 2, \"d\": 2, \"h\": 4,  \"c\": \"#0ea5e9\"},\n                {\"x\": 6,  \"y\": 0, \"z\": 0, \"w\": 2, \"d\": 2, \"h\": 6,  \"c\": \"#14b8a6\"},\n                {\"x\": 9,  \"y\": 0, \"z\": 0, \"w\": 2, \"d\": 2, \"h\": 5,  \"c\": \"#facc15\"},\n                {\"x\": 12, \"y\": 0, \"z\": 0, \"w\": 2, \"d\": 2, \"h\": 8,  \"c\": \"#f97316\"},\n                {\"x\": 15, \"y\": 0, \"z\": 0, \"w\": 2, \"d\": 2, \"h\": 10, \"c\": \"#dc2626\"}\n              ]\n            },\n            {\n              \"name\": \"Sales by region\",\n              \"bricks\": [\n                {\"x\": 0,  \"y\": 0, \"z\": 0, \"w\": 3, \"d\": 3, \"h\": 9, \"c\": \"#2563eb\"},\n                {\"x\": 4,  \"y\": 0, \"z\": 0, \"w\": 3, \"d\": 3, \"h\": 6, \"c\": \"#14b8a6\"},\n                {\"x\": 8,  \"y\": 0, \"z\": 0, \"w\": 3, \"d\": 3, \"h\": 7, \"c\": \"#facc15\"},\n                {\"x\": 12, \"y\": 0, \"z\": 0, \"w\": 3, \"d\": 3, \"h\": 4, \"c\": \"#dc2626\"}\n              ]\n            }\n          ],\n          \"model\": \"Monthly sales (Jan-Jun)\",\n          \"picker\": true,\n          \"mode\": \"animate\",\n          \"look\": \"studio\",\n          \"orbit\": true,\n          \"scrubber\": false,\n          \"checks\": false,\n          \"parts\": false,\n          \"height\": 460,\n          \"base\": \"#e5e7eb\"\n        }\n      ]\n    }\n  }\n]\n</a2ui-json>\n\nThe default view shows monthly sales growing from January (shortest bar) to June (tallest). The \"Sales by region\" option shows four regional bars. You can drag to orbit the chart."
+}

@@ -1,0 +1,129 @@
+{
+ "label": "oracle-slice-3types__express__gemini-3.5-flash__thinking-on_first-run-timing-invalid__run1",
+ "task": "T6",
+ "format": "express",
+ "model_id": "gemini-3.5-flash",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "header",
+      "component": "page_header",
+      "title": "Lexicon Mastery",
+      "subtitle": "Enhance your verbal intelligence with this curated deck of ten high-impact vocabulary words. Use active recall for maximum retention.",
+      "icon": "\ud83c\udf93",
+      "tag": "Deck 01",
+      "accent": "#4f46e5",
+      "theme": "light"
+     },
+     {
+      "id": "deck",
+      "component": "flashcard_deck",
+      "cards": [
+       {
+        "front": "Ephemeral",
+        "back": "Lasting for a very short time; transient, fleeting, or momentary."
+       },
+       {
+        "front": "Obfuscate",
+        "back": "To deliberately make something obscure, unclear, or difficult to understand."
+       },
+       {
+        "front": "Capricious",
+        "back": "Given to sudden and unaccountable changes of mood or behavior; fickle."
+       },
+       {
+        "front": "Taciturn",
+        "back": "Reserved or uncommunicative in speech; saying very little."
+       },
+       {
+        "front": "Loquacious",
+        "back": "Tending to talk a great deal; extremely talkative."
+       },
+       {
+        "front": "Mitigate",
+        "back": "To make less severe, serious, or painful; to alleviate or moderate."
+       },
+       {
+        "front": "Pragmatic",
+        "back": "Dealing with things sensibly and realistically based on practical considerations."
+       },
+       {
+        "front": "Cacophony",
+        "back": "A harsh, discordant, and meaningless mixture of loud sounds."
+       },
+       {
+        "front": "Anomalous",
+        "back": "Deviating from what is standard, normal, or expected; peculiar."
+       },
+       {
+        "front": "Equivocate",
+        "back": "To use ambiguous language so as to conceal the truth or avoid committing oneself."
+       }
+      ],
+      "accent": "#4f46e5",
+      "label_front": "TERM",
+      "label_back": "MEANING & DEFINITION"
+     },
+     {
+      "id": "progress",
+      "component": "progress_bar",
+      "value": 60,
+      "label": "Review Progress",
+      "accent": "#10b981",
+      "show_percent": true,
+      "caption": "6 of 10 vocabulary cards reviewed in this session"
+     },
+     {
+      "id": "xp",
+      "component": "xp_bar",
+      "level_label": "Level 3 \u2014 Lexical Specialist",
+      "xp_current": 350,
+      "xp_next": 500,
+      "accent": "#4f46e5",
+      "show_flash": true
+     },
+     {
+      "id": "tip",
+      "component": "callout",
+      "kind": "tip",
+      "title": "Active Recall Strategy",
+      "text": "Before flipping a card, try to define the term aloud or use it in an original sentence. Passive reading builds recognition, but active generation builds permanent recall."
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "2.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "header",
+         "deck"
+        ]
+       },
+       {
+        "blocks": [
+         "progress",
+         "xp",
+         "tip"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,31 @@
+{
+ "task": "T6",
+ "condition": "G",
+ "label": "tag-slice__express__haiku-4-5__run2",
+ "agent_type": "Learning",
+ "catalogue": "G-learning.json",
+ "atoms_in_catalogue": 236,
+ "prompt_chars": 117248,
+ "slot_recall": [
+  2,
+  2
+ ],
+ "secs": 4.2,
+ "usage": {
+  "input_tokens": 33054,
+  "output_tokens": 356
+ },
+ "valid": false,
+ "error": "A2uiCompilationValidationError: Standalone function calls are not supported in A2UI v0.9.1 - Help: Please correct the syntax error in your Express DSL.",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "flashcard deck": false,
+   "progress indicator": false
+  }
+ },
+ "reply": "<a2ui>\nprogress_bar(value=0, label=\"Cards Reviewed\", accent=\"#4f46e5\", show_percent=true)\n\nspacer(height=\"24px\")\n\nflashcard_deck(\n  cards=[\n    {front: \"Ephemeral\", back: \"Lasting for a very short time; transitory\"},\n    {front: \"Serendipity\", back: \"The occurrence of events by chance in a happy or beneficial way\"},\n    {front: \"Eloquent\", back: \"Fluent or persuasive in speaking or writing\"},\n    {front: \"Ambiguous\", back: \"Open to more than one interpretation; unclear or inexact\"},\n    {front: \"Meticulous\", back: \"Showing great attention to detail; very careful and precise\"},\n    {front: \"Pragmatic\", back: \"Dealing with things in a realistic, practical way based on actual circumstances\"},\n    {front: \"Benevolent\", back: \"Kind and generous; showing goodwill\"},\n    {front: \"Obscure\", back: \"Not clearly expressed or easily understood; vague or unclear\"},\n    {front: \"Resilient\", back: \"Able to recover quickly from difficulties; adaptable\"},\n    {front: \"Diligent\", back: \"Having or showing care in one's work or duties; thorough and attentive\"}\n  ],\n  accent=\"#4f46e5\",\n  label_front=\"WORD\",\n  label_back=\"DEFINITION\"\n)\n</a2ui>"
+}

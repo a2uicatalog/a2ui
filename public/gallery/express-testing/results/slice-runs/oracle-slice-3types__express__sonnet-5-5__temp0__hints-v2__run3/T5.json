@@ -1,0 +1,46 @@
+{
+ "task": "T5",
+ "condition": "CT_sonnet-5-5H2",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-sonnet-5-5",
+ "hints": true,
+ "label": "oracle-slice-3types__express__sonnet-5-5__temp0__hints-v2__run3",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "C-marketing-commerce.json",
+ "atoms_in_catalogue": 23,
+ "prompt_chars": 12467,
+ "slot_recall": [
+  1,
+  1
+ ],
+ "secs": 3.2,
+ "usage": {
+  "input_tokens": 4802,
+  "output_tokens": 357
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "pricing_tier_group"
+ ],
+ "score": {
+  "per_approach": {
+   "tier_cards": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+   },
+   "comparison_table": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": null
+   }
+  },
+  "best_approach": "tier_cards",
+  "f1": 1.0
+ },
+ "reply": "<a2ui>\nroot = pricing_tier_group([{name: \"Starter\", price: \"$9\", period: \"per month\", description: \"For individuals getting started\", features: [\"1 project\", \"Basic analytics\", \"Community support\"], cta_label: \"Choose Starter\", cta_url: \"https://example.com/starter\", recommended: false}, {name: \"Pro\", price: \"$29\", period: \"per month\", description: \"For growing teams that need more\", features: [\"Unlimited projects\", \"Advanced analytics\", \"Priority email support\", \"Team collaboration\"], cta_label: \"Choose Pro\", cta_url: \"https://example.com/pro\", recommended: true, badge: \"Recommended\"}, {name: \"Enterprise\", price: \"$99\", period: \"per month\", description: \"For organizations at scale\", features: [\"Everything in Pro\", \"Single sign-on (SSO)\", \"Dedicated account manager\", \"Custom integrations\", \"99.9% uptime SLA\"], cta_label: \"Choose Enterprise\", cta_url: \"https://example.com/enterprise\", recommended: false}])\n</a2ui>"
+}

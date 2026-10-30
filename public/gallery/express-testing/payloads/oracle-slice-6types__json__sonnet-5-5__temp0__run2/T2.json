@@ -1,0 +1,124 @@
+{
+ "label": "oracle-slice-6types__json__sonnet-5-5__temp0__run2",
+ "task": "T2",
+ "format": "json",
+ "model_id": "claude-sonnet-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "metrics_overview",
+    "catalog_id": "https://a2uicatalog.ai/catalog/d-t2.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "metrics_overview",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "1.5rem",
+      "align": "stretch",
+      "items": [
+       {
+        "blocks": [
+         {
+          "component": "heading",
+          "type": "heading",
+          "id": "kpi_heading",
+          "text": "Key Metrics"
+         },
+         {
+          "component": "metric_row",
+          "type": "metric_row",
+          "id": "kpi_tiles",
+          "cols": 2,
+          "metrics": [
+           {
+            "value": "48.2",
+            "prefix": "$",
+            "suffix": "K",
+            "label": "Monthly Revenue",
+            "sub": "vs. last month",
+            "trend": "up",
+            "accent": "#4CAF50"
+           },
+           {
+            "value": "12.4",
+            "suffix": "K",
+            "label": "Active Users",
+            "sub": "vs. last month",
+            "trend": "up",
+            "accent": "#2196F3"
+           },
+           {
+            "value": "2.1",
+            "suffix": "%",
+            "label": "Churn Rate",
+            "sub": "vs. last month",
+            "trend": "down",
+            "accent": "#FF9800"
+           },
+           {
+            "value": "3.8",
+            "suffix": "%",
+            "label": "Conversion Rate",
+            "sub": "vs. last month",
+            "trend": "down",
+            "accent": "#F44336"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "blocks": [
+         {
+          "component": "heading",
+          "type": "heading",
+          "id": "chart_heading",
+          "text": "Revenue by Region: This vs. Last Quarter"
+         },
+         {
+          "component": "chartjs_bar",
+          "type": "chartjs_bar",
+          "id": "comparison_chart",
+          "labels": [
+           "North America",
+           "Europe",
+           "Asia Pacific",
+           "Latin America"
+          ],
+          "datasets": [
+           {
+            "label": "Last Quarter",
+            "data": [
+             120,
+             95,
+             70,
+             40
+            ]
+           },
+           {
+            "label": "This Quarter",
+            "data": [
+             135,
+             102,
+             88,
+             46
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

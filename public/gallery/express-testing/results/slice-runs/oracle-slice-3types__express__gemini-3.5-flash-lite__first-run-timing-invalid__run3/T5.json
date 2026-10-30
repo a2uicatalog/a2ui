@@ -1,0 +1,46 @@
+{
+ "task": "T5",
+ "condition": "C_gemini-3.5-f",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash-lite",
+ "hints": false,
+ "label": "oracle-slice-3types__express__gemini-3.5-flash-lite__first-run-timing-invalid__run3",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "C-marketing-commerce.json",
+ "atoms_in_catalogue": 23,
+ "prompt_chars": 12467,
+ "slot_recall": [
+  1,
+  1
+ ],
+ "secs": 19.9,
+ "usage": {
+  "input_tokens": 3403,
+  "output_tokens": 253
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "pricing_tier_group"
+ ],
+ "score": {
+  "per_approach": {
+   "tier_cards": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+   },
+   "comparison_table": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": null
+   }
+  },
+  "best_approach": "tier_cards",
+  "f1": 1.0
+ },
+ "reply": "<a2ui>\nsurface(\"pricing-surface\")\n\ntier1 = {\n  name: \"Starter\",\n  price: \"$9\",\n  period: \"per month\",\n  description: \"Essential features for individuals and side projects.\",\n  features: [\"1 Project\", \"Basic Analytics\", \"Community Support\", \"1GB Storage\"]\n}\n\ntier2 = {\n  name: \"Pro\",\n  price: \"$29\",\n  period: \"per month\",\n  description: \"Advanced features for professionals and growing teams.\",\n  recommended: true,\n  features: [\"Unlimited Projects\", \"Advanced Analytics\", \"Priority Support\", \"100GB Storage\", \"Custom Domain\"]\n}\n\ntier3 = {\n  name: \"Enterprise\",\n  price: \"$99\",\n  period: \"per month\",\n  description: \"Maximum power, security, and support for large organizations.\",\n  features: [\"Dedicated Infrastructure\", \"24/7 Phone Support\", \"Custom Integrations\", \"Unlimited Storage\", \"SLA Guarantee\"]\n}\n\nroot = pricing_tier_group(tiers=[tier1, tier2, tier3])\n</a2ui>"
+}

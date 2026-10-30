@@ -1,0 +1,118 @@
+{
+ "label": "oracle-slice-3types__json__opus-5-5__run2",
+ "task": "T3",
+ "format": "json",
+ "model_id": "claude-opus-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "landing-hero",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "landing-hero",
+    "components": [
+     {
+      "id": "root",
+      "component": "gradient_hero",
+      "badge": "New \u00b7 Relay 2.0",
+      "title": "Ship projects faster, without the status meetings",
+      "subtitle": "Relay keeps your team's tasks, docs, and updates in one place, so everyone knows what's next without asking.",
+      "align": "center",
+      "accent": "#4f46e5",
+      "accent2": "#8b5cf6"
+     }
+    ]
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "landing-features",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "landing-features",
+    "components": [
+     {
+      "id": "root",
+      "component": "feature_grid",
+      "heading": "Everything your team needs to stay in sync",
+      "description": "Three core tools that replace a pile of tabs.",
+      "columns": 3,
+      "features": [
+       {
+        "icon": "\u26a1",
+        "title": "Automatic updates",
+        "description": "Progress rolls up from tasks into live summaries, so nobody has to write status reports again."
+       },
+       {
+        "icon": "\ud83e\udded",
+        "title": "Clear priorities",
+        "description": "Smart boards surface what's blocked, what's due, and what matters most this week."
+       },
+       {
+        "icon": "\ud83d\udd17",
+        "title": "Works with your stack",
+        "description": "Connect Slack, GitHub, and Google Drive in minutes. Your tools stay, and the busywork goes."
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "landing-testimonial",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "landing-testimonial",
+    "components": [
+     {
+      "id": "root",
+      "component": "testimonial_card",
+      "text": "We cut our weekly sync from an hour to ten minutes. Relay just tells us where things stand, and the team actually likes using it.",
+      "author_name": "Priya Raman",
+      "author_title": "Head of Engineering, Northwind Labs",
+      "rating": 5
+     }
+    ]
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "landing-cta",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "landing-cta",
+    "components": [
+     {
+      "id": "root",
+      "component": "cta_button",
+      "label": "Start your free 14-day trial",
+      "url": "https://example.com/signup",
+      "color": "#4f46e5",
+      "same_tab": true
+     }
+    ]
+   }
+  }
+ ]
+}

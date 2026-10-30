@@ -1,0 +1,39 @@
+{
+ "task": "T3",
+ "label": "haiku-live3-r3",
+ "secs": 6.9,
+ "usage": {
+  "input_tokens": 85006,
+  "output_tokens": 650
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "color_section",
+  "gradient_hero",
+  "spacer",
+  "color_section",
+  "heading",
+  "spacer",
+  "columns",
+  "highlight_box",
+  "highlight_box",
+  "highlight_box",
+  "spacer",
+  "blockquote_with_avatar",
+  "spacer",
+  "cta_section"
+ ],
+ "score": {
+  "precision": 0.214,
+  "recall": 0.75,
+  "f1": 0.333,
+  "slot_hits": {
+   "hero": true,
+   "feature columns (x3)": false,
+   "testimonial": true,
+   "CTA": true
+  }
+ },
+ "reply": "<a2ui>\nroot = color_section(\n  accent=\"#4f46e5\",\n  style=\"solid\",\n  blocks=[\n    gradient_hero(\n      title=\"Transform Your Workflow\",\n      subtitle=\"The modern solution for teams that want to work smarter\",\n      badge=\"Introducing Our Platform\",\n      accent=\"#4f46e5\",\n      accent2=\"#8b5cf6\",\n      cta_label=\"Get Started Free\",\n      cta_url=\"https://example.com/signup\"\n    ),\n    spacer(height=\"48px\"),\n    color_section(\n      accent=\"#ffffff\",\n      style=\"tint\",\n      padding=\"40px\",\n      blocks=[\n        heading(text=\"Why Teams Choose Us\"),\n        spacer(height=\"24px\"),\n        columns(\n          cols=3,\n          gap=\"2rem\",\n          items=[\n            {blocks: [\n              highlight_box(\n                icon=\"\u26a1\",\n                title=\"Lightning Fast\",\n                text=\"Deploy in minutes, not days. Our streamlined setup gets your team productive immediately.\",\n                accent=\"#4f46e5\"\n              )\n            ]},\n            {blocks: [\n              highlight_box(\n                icon=\"\ud83d\udd12\",\n                title=\"Enterprise Security\",\n                text=\"Bank-grade encryption and compliance. Your data stays secure with industry-leading standards.\",\n                accent=\"#8b5cf6\"\n              )\n            ]},\n            {blocks: [\n              highlight_box(\n                icon=\"\ud83c\udfaf\",\n                title=\"Smart Analytics\",\n                text=\"Real-time insights and reporting. Make data-driven decisions with intuitive dashboards.\",\n                accent=\"#06b6d4\"\n              )\n            ]}\n          ]\n        )\n      ]\n    ),\n    spacer(height=\"48px\"),\n    blockquote_with_avatar(\n      quote=\"This platform completely transformed how our team collaborates. We've cut project timelines in half.\",\n      author_name=\"Sarah Chen\",\n      author_title=\"Product Director at TechFlow\",\n      avatar_url=\"https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop\"\n    ),\n    spacer(height=\"48px\"),\n    cta_section(\n      heading=\"Ready to Get Started?\",\n      body=\"Join thousands of teams already using our platform to streamline their workflow and boost productivity.\",\n      primary_cta={label: \"Start Your Free Trial\", url: \"https://example.com/signup\"},\n      secondary_cta={label: \"View Pricing\", url: \"https://example.com/pricing\"},\n      background=\"#4f46e5\"\n    )\n  ]\n)\n</a2ui>"
+}

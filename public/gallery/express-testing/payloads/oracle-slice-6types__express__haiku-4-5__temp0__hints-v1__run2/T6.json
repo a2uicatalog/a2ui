@@ -1,0 +1,146 @@
+{
+ "label": "oracle-slice-6types__express__haiku-4-5__temp0__hints-v1__run2",
+ "task": "T6",
+ "format": "express",
+ "model_id": "claude-haiku-4-5-20251001",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/d-t6.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "card_1",
+      "component": "flip_card",
+      "front_content": "Serendipity",
+      "back_content": "The occurrence of events by chance in a happy or beneficial way",
+      "trigger_on_hover": true
+     },
+     {
+      "id": "card_2",
+      "component": "flip_card",
+      "front_content": "Ephemeral",
+      "back_content": "Lasting for a very short time; transitory",
+      "trigger_on_hover": true
+     },
+     {
+      "id": "card_3",
+      "component": "flip_card",
+      "front_content": "Eloquent",
+      "back_content": "Fluent or persuasive in speaking or writing",
+      "trigger_on_hover": true
+     },
+     {
+      "id": "card_4",
+      "component": "flip_card",
+      "front_content": "Ubiquitous",
+      "back_content": "Present, appearing, or found everywhere",
+      "trigger_on_hover": true
+     },
+     {
+      "id": "card_5",
+      "component": "flip_card",
+      "front_content": "Pragmatic",
+      "back_content": "Dealing with things in a practical, realistic way based on actual circumstances",
+      "trigger_on_hover": true
+     },
+     {
+      "id": "card_6",
+      "component": "flip_card",
+      "front_content": "Melancholy",
+      "back_content": "A feeling of pensive sadness, typically with no obvious cause",
+      "trigger_on_hover": true
+     },
+     {
+      "id": "card_7",
+      "component": "flip_card",
+      "front_content": "Benevolent",
+      "back_content": "Kind, generous, and charitable in nature",
+      "trigger_on_hover": true
+     },
+     {
+      "id": "card_8",
+      "component": "flip_card",
+      "front_content": "Cacophony",
+      "back_content": "A harsh, discordant mixture of sounds",
+      "trigger_on_hover": true
+     },
+     {
+      "id": "card_9",
+      "component": "flip_card",
+      "front_content": "Diligent",
+      "back_content": "Having or showing care in one's work or duties",
+      "trigger_on_hover": true
+     },
+     {
+      "id": "card_10",
+      "component": "flip_card",
+      "front_content": "Nostalgia",
+      "back_content": "A sentimental longing for the past, typically for a period or place with happy associations",
+      "trigger_on_hover": true
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "2rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "_inline_1",
+         "_inline_2"
+        ]
+       },
+       {
+        "blocks": [
+         "card_1",
+         "card_2",
+         "card_3",
+         "card_4",
+         "card_5",
+         "card_6",
+         "card_7",
+         "card_8",
+         "card_9",
+         "card_10"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "_inline_1",
+      "component": "heading",
+      "text": "Vocabulary Review"
+     },
+     {
+      "id": "_inline_2",
+      "component": "progress_bar",
+      "value": 50,
+      "label": "Cards Reviewed",
+      "accent": "#4f46e5",
+      "show_percent": true,
+      "caption": "5 of 10 cards flipped"
+     }
+    ]
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_data_model": {
+    "surface_id": "main",
+    "path": "/",
+    "value": {
+     "reviewed_count": 0
+    }
+   }
+  }
+ ]
+}

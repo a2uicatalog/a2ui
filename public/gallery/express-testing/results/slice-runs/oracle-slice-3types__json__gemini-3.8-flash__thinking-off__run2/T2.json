@@ -1,0 +1,40 @@
+{
+ "task": "T2",
+ "condition": "CN_gemini-3.8-flash",
+ "temperature_applied": false,
+ "format": "json",
+ "temperature": null,
+ "max_tokens": 32768,
+ "model_id": "gemini-3.8-flash",
+ "hints": false,
+ "label": "oracle-slice-3types__json__gemini-3.8-flash__thinking-off__run2",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 31546,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 6.6,
+ "usage": {
+  "input_tokens": 7914,
+  "output_tokens": 654
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns"
+ ],
+ "score": {
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "KPI tile (x4)": false,
+   "trend (required only if metric_row was chosen; stat_card's own delta already satisfies it)": false,
+   "comparison chart": false
+  }
+ },
+ "reply": "Here is the metrics overview interface featuring four key performance indicator tiles with trend directions and a comparative benchmark chart.\n\n<a2ui-json>\n[\n  {\n    \"version\": \"v0.9.1\",\n    \"createSurface\": {\n      \"surfaceId\": \"metrics-overview-surface\",\n      \"catalogId\": \"https://a2uicatalog.ai/catalog/c-data-display.json\"\n    }\n  },\n  {\n    \"version\": \"v0.9.1\",\n    \"updateComponents\": {\n      \"surfaceId\": \"metrics-overview-surface\",\n      \"components\": [\n        {\n          \"id\": \"root\",\n          \"component\": \"columns\",\n          \"cols\": 1,\n          \"items\": [\n            {\n              \"blocks\": [\n                {\n                  \"id\": \"overview-heading\",\n                  \"component\": \"heading\",\n                  \"text\": \"Executive Performance Overview\"\n                },\n                {\n                  \"id\": \"overview-kpis\",\n                  \"component\": \"metric_row\",\n                  \"cols\": 4,\n                  \"metrics\": [\n                    {\n                      \"label\": \"Total Revenue\",\n                      \"value\": \"248.5K\",\n                      \"prefix\": \"$\",\n                      \"trend\": \"up\",\n                      \"sub\": \"+12.4% vs last mo\"\n                    },\n                    {\n                      \"label\": \"Active Users\",\n                      \"value\": \"18.2K\",\n                      \"trend\": \"up\",\n                      \"sub\": \"+5.8% vs last mo\"\n                    },\n                    {\n                      \"label\": \"Conversion Rate\",\n                      \"value\": \"3.42\",\n                      \"suffix\": \"%\",\n                      \"trend\": \"down\",\n                      \"sub\": \"-0.3% vs last mo\"\n                    },\n                    {\n                      \"label\": \"Avg Response Time\",\n                      \"value\": \"185\",\n                      \"suffix\": \"ms\",\n                      \"trend\": \"up\",\n                      \"sub\": \"-15ms improvement\"\n                    }\n                  ]\n                },\n                {\n                  \"id\": \"benchmark-section-heading\",\n                  \"component\": \"heading\",\n                  \"text\": \"Quarterly Target Benchmarks\"\n                },\n                {\n                  \"id\": \"performance-benchmark\",\n                  \"component\": \"benchmark_comparison\",\n                  \"items\": [\n                    { \"label\": \"Enterprise Sales\", \"value\": 118 },\n                    { \"label\": \"Self-Serve Revenue\", \"value\": 94 },\n                    { \"label\": \"Customer Retention\", \"value\": 102 },\n                    { \"label\": \"New Pipeline Generated\", \"value\": 87 }\n                  ]\n                }\n              ]\n            }\n          ]\n        }\n      ]\n    }\n  }\n]\n</a2ui-json>"
+}

@@ -1,0 +1,110 @@
+{
+ "label": "oracle-slice-6types__json__haiku-4-5__temp0__run2",
+ "task": "T4",
+ "format": "json",
+ "model_id": "claude-haiku-4-5-20251001",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "filterable-list",
+    "catalog_id": "https://a2uicatalog.ai/catalog/d-t4.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "filterable-list",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "items": [
+       {
+        "blocks": [
+         {
+          "id": "title",
+          "component": "heading",
+          "text": "Items"
+         },
+         {
+          "id": "filter-control",
+          "component": "segmented_control",
+          "name": "status-filter",
+          "options": "[{\"label\": \"All\", \"value\": \"all\"}, {\"label\": \"Active\", \"value\": \"active\"}, {\"label\": \"Pending\", \"value\": \"pending\"}, {\"label\": \"Completed\", \"value\": \"completed\"}]",
+          "selected_value": "all"
+         },
+         {
+          "id": "items-list",
+          "component": "entity_list",
+          "items": {
+           "path": "/items"
+          }
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_data_model": {
+    "surface_id": "filterable-list",
+    "path": "/items",
+    "value": [
+     {
+      "name": "Project Alpha",
+      "subtitle": "Q4 Planning",
+      "status": "active",
+      "meta": "Due: Dec 15"
+     },
+     {
+      "name": "Client Presentation",
+      "subtitle": "Design Review",
+      "status": "pending",
+      "meta": "Due: Dec 8"
+     },
+     {
+      "name": "Database Migration",
+      "subtitle": "Infrastructure",
+      "status": "completed",
+      "meta": "Completed: Dec 1"
+     },
+     {
+      "name": "API Documentation",
+      "subtitle": "Technical Docs",
+      "status": "active",
+      "meta": "Due: Dec 20"
+     },
+     {
+      "name": "Security Audit",
+      "subtitle": "Compliance",
+      "status": "pending",
+      "meta": "Due: Dec 10"
+     },
+     {
+      "name": "Team Onboarding",
+      "subtitle": "HR Process",
+      "status": "completed",
+      "meta": "Completed: Nov 28"
+     },
+     {
+      "name": "Performance Optimization",
+      "subtitle": "Backend",
+      "status": "active",
+      "meta": "Due: Dec 25"
+     },
+     {
+      "name": "User Testing",
+      "subtitle": "UX Research",
+      "status": "pending",
+      "meta": "Due: Dec 12"
+     }
+    ]
+   }
+  }
+ ]
+}

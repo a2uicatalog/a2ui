@@ -1,0 +1,36 @@
+{
+ "model": "sonnet-5-5",
+ "cond": "B4",
+ "format": "express",
+ "brief": "B3",
+ "repeat": 3,
+ "seq": 37,
+ "model_id": "claude-sonnet-5-5",
+ "utc": "2026-10-29T19:55:59Z",
+ "prompt_chars": 12629,
+ "prompt_sha256": "(removed for publication)",
+ "temperature_requested": null,
+ "temperature_sent": false,
+ "max_tokens": 32768,
+ "request_secs": 9.34,
+ "input_tokens": 4673,
+ "output_tokens": 1265,
+ "stop_reason": "end_turn",
+ "usage": {
+  "input_tokens": 4673,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "cache_creation": {
+   "ephemeral_5m_input_tokens": 0,
+   "ephemeral_1h_input_tokens": 0
+  },
+  "output_tokens": 1265,
+  "output_tokens_details": {
+   "thinking_tokens": 673
+  },
+  "service_tier": "standard",
+  "inference_geo": "global",
+  "speed": "standard"
+ },
+ "reply": "<a2ui>\nsurface(\"robot-surface\")\nroot = motion_bricks(\n  bricks=[\n    {x: 1, y: 0, z: 0, w: 2, d: 2, h: 2, c: \"#1e3a8a\"},\n    {x: 5, y: 0, z: 0, w: 2, d: 2, h: 2, c: \"#1e3a8a\"},\n    {x: 1, y: 2, z: 0, w: 6, d: 2, h: 2, c: \"#9ca3af\"},\n    {x: -1, y: 2, z: 0, w: 2, d: 2, h: 2, c: \"#6b7280\"},\n    {x: 7, y: 2, z: 0, w: 2, d: 2, h: 2, c: \"#6b7280\"},\n    {x: 2, y: 4, z: 0, w: 4, d: 2, h: 2, c: \"#dc2626\"},\n    {x: 3, y: 5, z: 2, w: 1, d: 1, h: 1, c: \"#ffffff\"},\n    {x: 4, y: 5, z: 2, w: 1, d: 1, h: 1, c: \"#ffffff\"},\n    {x: 3, y: 5, z: -1, w: 1, d: 1, h: 1, c: \"#ffffff\"},\n    {x: 4, y: 5, z: -1, w: 1, d: 1, h: 1, c: \"#ffffff\"},\n    {x: 3, y: 6, z: 0, w: 1, d: 1, h: 1, c: \"#facc15\"}\n  ],\n  look=\"studio\",\n  elevation=24,\n  angle=24,\n  turns=1,\n  motion={order: \"base-up\"},\n  ratio=\"1:1\",\n  label=\"Small brick robot with a red head\"\n)\n</a2ui>"
+}

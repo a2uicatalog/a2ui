@@ -1,0 +1,43 @@
+{
+ "task": "T5",
+ "condition": "F",
+ "label": "random-slice__express__haiku-4-5__run3",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "F-marketing-commerce.json",
+ "atoms_in_catalogue": 189,
+ "prompt_chars": 96246,
+ "slot_recall": [
+  1,
+  1
+ ],
+ "secs": 3.6,
+ "usage": {
+  "input_tokens": 27489,
+  "output_tokens": 351
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "pricing_tier_group",
+  "pricing_tier_card",
+  "pricing_tier_card",
+  "pricing_tier_card"
+ ],
+ "score": {
+  "per_approach": {
+   "tier_cards": {
+    "precision": 0.25,
+    "recall": 1.0,
+    "f1": 0.4
+   },
+   "comparison_table": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": null
+   }
+  },
+  "best_approach": "tier_cards",
+  "f1": 0.4
+ },
+ "reply": "<a2ui>\nroot = pricing_tier_group(tiers=[\n  pricing_tier_card(\n    plan_name=\"Starter\",\n    price=\"29\",\n    currency=\"$\",\n    frequency=\"per month\",\n    features=[\"Up to 10 projects\", \"Basic analytics\", \"Community support\", \"1 GB storage\"],\n    call_to_action_label=\"Get Started\",\n    call_to_action_url=\"https://example.com/signup\",\n    is_highlighted=false\n  ),\n  pricing_tier_card(\n    plan_name=\"Professional\",\n    price=\"79\",\n    currency=\"$\",\n    frequency=\"per month\",\n    features=[\"Unlimited projects\", \"Advanced analytics\", \"Priority support\", \"100 GB storage\", \"Custom integrations\", \"Team collaboration\"],\n    call_to_action_label=\"Start Free Trial\",\n    call_to_action_url=\"https://example.com/signup\",\n    is_highlighted=true\n  ),\n  pricing_tier_card(\n    plan_name=\"Enterprise\",\n    price=\"199\",\n    currency=\"$\",\n    frequency=\"per month\",\n    features=[\"Everything in Professional\", \"Dedicated account manager\", \"Custom SLA\", \"Unlimited storage\", \"Advanced security\", \"On-premise deployment\"],\n    call_to_action_label=\"Contact Sales\",\n    call_to_action_url=\"https://example.com/contact\",\n    is_highlighted=false\n  )\n])\n</a2ui>"
+}

@@ -1,0 +1,177 @@
+{
+ "task": "T3",
+ "condition": "G",
+ "slice_atoms_in_options": 259,
+ "picks": [
+  {
+   "slot": "Headline area at the top of the page that states the main value proposition in l #1",
+   "decomposer_line": "Headline area at the top of the page that states the main value proposition in large, bold text",
+   "atom": "page_header",
+   "confidence": 0.56,
+   "top3": [
+    [
+     "page_header",
+     0.78
+    ],
+    [
+     "article_hero",
+     0.22
+    ]
+   ],
+   "finalists": [
+    "article_hero",
+    "page_header"
+   ]
+  },
+  {
+   "slot": "Subheadline text directly beneath the headline that expands on the value proposi #2",
+   "decomposer_line": "Subheadline text directly beneath the headline that expands on the value proposition in smaller supporting copy",
+   "atom": "text_block",
+   "confidence": 0.74,
+   "top3": [
+    [
+     "text_block",
+     0.87
+    ],
+    [
+     "body",
+     0.13
+    ]
+   ],
+   "finalists": [
+    "body",
+    "text_block"
+   ]
+  },
+  {
+   "slot": "First feature column showing a small icon or image with a short title and brief  #3",
+   "decomposer_line": "First feature column showing a small icon or image with a short title and brief description of one product benefit",
+   "atom": "feature_grid",
+   "confidence": 0.96,
+   "top3": [
+    [
+     "feature_grid",
+     0.98
+    ],
+    [
+     "product_thumbnail",
+     0.02
+    ]
+   ],
+   "finalists": [
+    "product_thumbnail",
+    "feature_grid"
+   ]
+  },
+  {
+   "slot": "Second feature column showing a small icon or image with a short title and brief #4",
+   "decomposer_line": "Second feature column showing a small icon or image with a short title and brief description of another product benefit",
+   "atom": "feature_grid",
+   "confidence": 0.98,
+   "top3": [
+    [
+     "feature_grid",
+     0.99
+    ],
+    [
+     "product_thumbnail",
+     0.01
+    ]
+   ],
+   "finalists": [
+    "product_thumbnail",
+    "feature_grid"
+   ]
+  },
+  {
+   "slot": "Third feature column showing a small icon or image with a short title and brief  #5",
+   "decomposer_line": "Third feature column showing a small icon or image with a short title and brief description of a third product benefit",
+   "atom": "feature_grid",
+   "confidence": 1.0,
+   "top3": [
+    [
+     "feature_grid",
+     1.0
+    ],
+    [
+     "product_thumbnail",
+     0.0
+    ]
+   ],
+   "finalists": [
+    "product_thumbnail",
+    "feature_grid"
+   ]
+  },
+  {
+   "slot": "Testimonial block showing a customer quote, the customer's name, and their role  #6",
+   "decomposer_line": "Testimonial block showing a customer quote, the customer's name, and their role or company",
+   "atom": "testimonial_card",
+   "confidence": 1.0,
+   "top3": [
+    [
+     "testimonial_card",
+     1.0
+    ],
+    [
+     "blockquote",
+     0.0
+    ]
+   ],
+   "finalists": [
+    "testimonial_card",
+    "blockquote"
+   ]
+  },
+  {
+   "slot": "Call-to-action button that prompts the visitor to take a primary action, such as #7",
+   "decomposer_line": "Call-to-action button that prompts the visitor to take a primary action, such as signing up or starting a trial, and responds to clicks",
+   "atom": "cta_button",
+   "confidence": 1.0,
+   "top3": [
+    [
+     "cta_button",
+     1.0
+    ],
+    [
+     "follow_button",
+     0.0
+    ]
+   ],
+   "finalists": [
+    "follow_button",
+    "cta_button"
+   ]
+  }
+ ],
+ "cost": {
+  "decomposer_input_tokens": 3244,
+  "decomposer_output_tokens": 220,
+  "decomposer_thinking_tokens": 0,
+  "jev_input_tokens": 72051,
+  "jev_output_tokens": 16518,
+  "jev_calls": 7
+ },
+ "error": null,
+ "atoms": [
+  "page_header",
+  "text_block",
+  "feature_grid",
+  "feature_grid",
+  "feature_grid",
+  "testimonial_card",
+  "cta_button"
+ ],
+ "score": {
+  "precision": 0.714,
+  "recall": 0.75,
+  "f1": 0.732,
+  "slot_hits": {
+   "hero": false,
+   "feature columns (x3)": true,
+   "testimonial": true,
+   "CTA": true
+  }
+ },
+ "secs": 7.3
+}

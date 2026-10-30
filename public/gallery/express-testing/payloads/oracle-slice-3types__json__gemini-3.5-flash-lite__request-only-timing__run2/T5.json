@@ -1,0 +1,84 @@
+{
+ "label": "oracle-slice-3types__json__gemini-3.5-flash-lite__request-only-timing__run2",
+ "task": "T5",
+ "format": "json",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "pricing-surface",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "pricing-surface",
+    "components": [
+     {
+      "id": "root",
+      "component": "gradient_hero",
+      "title": "Find the right plan for your team",
+      "subtitle": "Simple, transparent pricing that grows with you. Choose the plan that best fits your needs.",
+      "badge": "PRICING PLANS",
+      "align": "center",
+      "cta_label": "Get Started",
+      "cta_url": "#signup"
+     },
+     {
+      "id": "pricing_plans",
+      "component": "pricing_tier_group",
+      "tiers": [
+       {
+        "name": "Starter",
+        "price": "$15",
+        "cadence": "per user / month",
+        "description": "Essential features for individuals and small teams getting started.",
+        "features": [
+         "Up to 5 team members",
+         "10 GB secure storage",
+         "Basic analytics",
+         "Community support"
+        ],
+        "cta_label": "Start Free Trial",
+        "cta_url": "#starter"
+       },
+       {
+        "name": "Professional",
+        "price": "$49",
+        "cadence": "per user / month",
+        "description": "Advanced features and priority support for growing teams.",
+        "features": [
+         "Up to 25 team members",
+         "100 GB secure storage",
+         "Advanced analytics & reporting",
+         "Priority email support",
+         "Custom integrations"
+        ],
+        "recommended": true,
+        "cta_label": "Get Started Pro",
+        "cta_url": "#pro"
+       },
+       {
+        "name": "Enterprise",
+        "price": "$99",
+        "cadence": "per user / month",
+        "description": "Maximum security, dedicated support, and unlimited scale.",
+        "features": [
+         "Unlimited team members",
+         "1 TB secure storage",
+         "Enterprise-grade analytics",
+         "24/7 dedicated support",
+         "Custom SLAs & security controls"
+        ],
+        "cta_label": "Contact Sales",
+        "cta_url": "#enterprise"
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,130 @@
+{
+ "label": "oracle-slice-3types__express__haiku-5-5__run1",
+ "task": "T4",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "statusFilter",
+      "component": "segmented_control",
+      "options": [
+       {
+        "label": "All",
+        "value": "all"
+       },
+       {
+        "label": "Open",
+        "value": "open"
+       },
+       {
+        "label": "In progress",
+        "value": "in_progress"
+       },
+       {
+        "label": "Blocked",
+        "value": "blocked"
+       },
+       {
+        "label": "Done",
+        "value": "done"
+       }
+      ],
+      "selected_value": "all",
+      "name": "statusFilter"
+     },
+     {
+      "id": "heading_main",
+      "component": "heading",
+      "text": "Work Items"
+     },
+     {
+      "id": "items_list",
+      "component": "entity_list",
+      "items": [
+       {
+        "name": "Auth token refresh",
+        "subtitle": "Refresh flow needs a retry policy on 401 responses",
+        "status": "Open",
+        "meta": "Platform"
+       },
+       {
+        "name": "Billing export job",
+        "subtitle": "Nightly CSV export times out above 50k rows",
+        "status": "In progress",
+        "meta": "Finance"
+       },
+       {
+        "name": "Onboarding email copy",
+        "subtitle": "Final legal review of welcome sequence pending",
+        "status": "Blocked",
+        "meta": "Growth"
+       },
+       {
+        "name": "Search index rebuild",
+        "subtitle": "Reindex completed for all production shards",
+        "status": "Done",
+        "meta": "Search"
+       },
+       {
+        "name": "Mobile push permissions",
+        "subtitle": "Prompt timing tested on iOS 18 and Android 15",
+        "status": "In progress",
+        "meta": "Mobile"
+       },
+       {
+        "name": "Rate limit dashboard",
+        "subtitle": "Per-tenant graphs need label cleanup before release",
+        "status": "Open",
+        "meta": "Infra"
+       },
+       {
+        "name": "Invoice PDF layout",
+        "subtitle": "Tax line items render correctly across locales",
+        "status": "Done",
+        "meta": "Finance"
+       },
+       {
+        "name": "Audit log retention",
+        "subtitle": "Waiting on storage team to confirm 400-day policy",
+        "status": "Blocked",
+        "meta": "Security"
+       }
+      ]
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "heading_main",
+         "statusFilter"
+        ]
+       },
+       {
+        "blocks": [
+         "items_list"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

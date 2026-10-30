@@ -1,0 +1,93 @@
+{
+ "label": "oracle-slice-3types__json__haiku-5-5__run2",
+ "task": "T3",
+ "format": "json",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "landing-page",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "landing-page",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "0",
+      "align": "stretch",
+      "items": [
+       {
+        "blocks": [
+         {
+          "id": "hero",
+          "component": "gradient_hero",
+          "badge": "New: now shipping",
+          "title": "Ship faster with a workspace your team will love",
+          "subtitle": "Plan, build, and launch in one place. Less switching, more shipping.",
+          "align": "center",
+          "cta_label": "Start free trial",
+          "cta_url": "https://example.com/signup"
+         },
+         {
+          "id": "features",
+          "component": "feature_grid",
+          "heading": "Everything you need",
+          "description": "Three tools that work together out of the box.",
+          "columns": 3,
+          "features": [
+           {
+            "icon": "\u26a1",
+            "title": "Lightning fast",
+            "description": "Sub-second loads and instant search across every project.",
+            "color": "#4f46e5"
+           },
+           {
+            "icon": "\ud83d\udd12",
+            "title": "Secure by default",
+            "description": "SSO, role-based access, and encryption at rest and in transit.",
+            "color": "#0891b2"
+           },
+           {
+            "icon": "\ud83e\udd1d",
+            "title": "Built for teams",
+            "description": "Real-time collaboration with comments, reviews, and shared views.",
+            "color": "#16a34a"
+           }
+          ]
+         },
+         {
+          "id": "testimonial",
+          "component": "testimonial_card",
+          "text": "We cut our launch cycle in half. It's the first tool our whole team actually opens every morning.",
+          "author_name": "Maya Chen",
+          "author_title": "Head of Product, Northwind",
+          "author_avatar_url": "https://example.com/avatars/maya.jpg",
+          "rating": 5
+         },
+         {
+          "id": "cta",
+          "component": "cta_section",
+          "heading": "Ready to ship your next launch?",
+          "body": "Start your free 14-day trial. No credit card required.",
+          "primary_cta": {
+           "label": "Get started free",
+           "url": "https://example.com/signup"
+          },
+          "background": "#4f46e5"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

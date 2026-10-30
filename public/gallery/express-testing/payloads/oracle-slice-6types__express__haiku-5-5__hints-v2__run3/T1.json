@@ -1,0 +1,137 @@
+{
+ "label": "oracle-slice-6types__express__haiku-5-5__hints-v2__run3",
+ "task": "T1",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/d-t1.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "intro",
+      "component": "page_header",
+      "title": "The Water Cycle",
+      "subtitle": "How water moves between the oceans, atmosphere and land",
+      "icon": "\ud83d\udca7",
+      "tag": "Earth Science",
+      "accent": "#0284c7"
+     },
+     {
+      "id": "evaporation",
+      "component": "concept_rung",
+      "badge": "1",
+      "kind": "depth",
+      "label": "DEPTH 1",
+      "title": "Evaporation",
+      "body": "Heat from the sun warms liquid water at the surface of oceans, lakes and rivers. The water turns into water vapour and rises into the air.",
+      "takeaway": "Sun energy drives evaporation."
+     },
+     {
+      "id": "condensation",
+      "component": "concept_rung",
+      "badge": "2",
+      "kind": "depth",
+      "label": "DEPTH 2",
+      "title": "Condensation",
+      "body": "As water vapour rises, it cools. The vapour condenses around tiny dust and salt particles, forming droplets that gather into clouds.",
+      "takeaway": "Cooling turns vapour into clouds."
+     },
+     {
+      "id": "precipitation",
+      "component": "concept_rung",
+      "badge": "3",
+      "kind": "depth",
+      "label": "DEPTH 3",
+      "title": "Precipitation and collection",
+      "body": "When droplets in a cloud grow heavy enough, they fall as rain, snow or hail. Water then runs off into rivers or soaks into the ground, and the cycle begins again.",
+      "takeaway": "Precipitation returns water to the land and seas."
+     },
+     {
+      "id": "example",
+      "component": "concept_rung",
+      "badge": "EX",
+      "kind": "example",
+      "label": "WORKED EXAMPLE",
+      "title": "Following one raindrop",
+      "body": "A water molecule evaporates from a lake on a warm afternoon. It rises, cools high in the atmosphere, and joins a cloud as part of a droplet. The droplet merges with others and falls as rain on a hillside. It soaks into the soil, seeps into a stream, and flows back to the lake.",
+      "takeaway": "One molecule can complete the whole cycle many times."
+     },
+     {
+      "id": "quiz",
+      "component": "quiz_set",
+      "title": "Self-check",
+      "questions": [
+       {
+        "question": "What process turns liquid water into water vapour?",
+        "options": [
+         "Condensation",
+         "Precipitation",
+         "Evaporation",
+         "Collection"
+        ],
+        "correct": 2,
+        "explanation": "Evaporation happens when heat from the sun turns liquid water into vapour."
+       },
+       {
+        "question": "Why does water vapour form clouds?",
+        "options": [
+         "It heats up and sinks",
+         "It cools and condenses around particles",
+         "It freezes into ice at ground level",
+         "It is pushed out by wind"
+        ],
+        "correct": 1,
+        "explanation": "Cooling vapour condenses around dust and salt particles to form droplets."
+       },
+       {
+        "question": "Which stage returns water to the land and seas?",
+        "options": [
+         "Evaporation",
+         "Condensation",
+         "Transpiration",
+         "Precipitation"
+        ],
+        "correct": 3,
+        "explanation": "Precipitation falls as rain, snow or hail, and collection moves it back to bodies of water."
+       }
+      ],
+      "pass_score": 70,
+      "accent": "#0284c7"
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "intro",
+         "evaporation",
+         "condensation"
+        ]
+       },
+       {
+        "blocks": [
+         "precipitation",
+         "example",
+         "quiz"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

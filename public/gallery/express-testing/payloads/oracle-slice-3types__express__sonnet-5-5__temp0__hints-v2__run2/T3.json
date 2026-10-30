@@ -1,0 +1,96 @@
+{
+ "label": "oracle-slice-3types__express__sonnet-5-5__temp0__hints-v2__run2",
+ "task": "T3",
+ "format": "express",
+ "model_id": "claude-sonnet-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "product-landing",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "product-landing",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "2rem",
+      "align": "stretch",
+      "items": [
+       {
+        "blocks": [
+         "_inline_1",
+         "_inline_2",
+         "_inline_3",
+         "_inline_4"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "_inline_1",
+      "component": "gradient_hero",
+      "title": "Ship your best work, faster",
+      "subtitle": "One workspace for planning, building and launching products your customers love.",
+      "badge": "New: Version 2.0",
+      "accent": "#4f46e5",
+      "accent2": "#8b5cf6",
+      "align": "center",
+      "cta_label": "Get started free",
+      "cta_url": "https://example.com/signup"
+     },
+     {
+      "id": "_inline_2",
+      "component": "feature_grid",
+      "heading": "Everything you need",
+      "description": "Three reasons teams choose us.",
+      "columns": 3,
+      "features": [
+       {
+        "icon": "\u26a1",
+        "title": "Lightning fast",
+        "description": "Instant syncing and sub-second search keep your whole team moving without waiting.",
+        "color": "#f59e0b"
+       },
+       {
+        "icon": "\ud83d\udd12",
+        "title": "Secure by default",
+        "description": "End-to-end encryption, SSO and granular permissions come built in on every plan.",
+        "color": "#10b981"
+       },
+       {
+        "icon": "\ud83e\udd1d",
+        "title": "Built to collaborate",
+        "description": "Comment, assign and review together in real time, wherever your teammates are.",
+        "color": "#6366f1"
+       }
+      ]
+     },
+     {
+      "id": "_inline_3",
+      "component": "testimonial_card",
+      "text": "This product cut our launch cycle in half. Our team can't imagine working any other way.",
+      "author_name": "Priya Natarajan",
+      "author_title": "Head of Product, Brightwave",
+      "author_avatar_url": "https://example.com/avatars/priya.jpg",
+      "rating": 5
+     },
+     {
+      "id": "_inline_4",
+      "component": "cta_button",
+      "url": "https://example.com/signup",
+      "label": "Start your free trial",
+      "color": "#4f46e5",
+      "same_tab": false
+     }
+    ]
+   }
+  }
+ ]
+}

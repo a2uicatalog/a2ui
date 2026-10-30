@@ -1,0 +1,46 @@
+{
+ "task": "T5",
+ "condition": "CN_haiku-5-5",
+ "temperature_applied": false,
+ "format": "json",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "oracle-slice-3types__json__haiku-5-5__run3",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "C-marketing-commerce.json",
+ "atoms_in_catalogue": 23,
+ "prompt_chars": 24557,
+ "slot_recall": [
+  1,
+  1
+ ],
+ "secs": 6.1,
+ "usage": {
+  "input_tokens": 9454,
+  "output_tokens": 1264
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "pricing_tier_group"
+ ],
+ "score": {
+  "per_approach": {
+   "tier_cards": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+   },
+   "comparison_table": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": null
+   }
+  },
+  "best_approach": "tier_cards",
+  "f1": 1.0
+ },
+ "reply": "I'll use a single `pricing_tier_group` component, which lays out the three plans side by side. Each tier carries its own feature list, and the middle plan is marked as recommended.\n\n<a2ui-json>\n[\n  {\n    \"version\": \"v0.9.1\",\n    \"createSurface\": {\n      \"surfaceId\": \"subscription_pricing\",\n      \"catalogId\": \"https://a2uicatalog.ai/catalog/c-marketing-commerce.json\"\n    }\n  },\n  {\n    \"version\": \"v0.9.1\",\n    \"updateComponents\": {\n      \"surfaceId\": \"subscription_pricing\",\n      \"components\": [\n        {\n          \"id\": \"root\",\n          \"component\": \"pricing_tier_group\",\n          \"tiers\": [\n            {\n              \"name\": \"Starter\",\n              \"price\": \"$9\",\n              \"period\": \"per month\",\n              \"description\": \"For individuals getting started.\",\n              \"recommended\": false,\n              \"features\": [\n                \"Up to 3 projects\",\n                \"5 GB of storage\",\n                \"Community support\",\n                \"Basic analytics\"\n              ],\n              \"cta_label\": \"Choose Starter\",\n              \"cta_url\": \"https://example.com/subscribe/starter\"\n            },\n            {\n              \"name\": \"Professional\",\n              \"price\": \"$29\",\n              \"period\": \"per month\",\n              \"description\": \"For growing teams that need more power.\",\n              \"recommended\": true,\n              \"badge\": \"Recommended\",\n              \"features\": [\n                \"Unlimited projects\",\n                \"100 GB of storage\",\n                \"Priority email support\",\n                \"Advanced analytics\",\n                \"Team collaboration for up to 10 members\",\n                \"Custom integrations\"\n              ],\n              \"cta_label\": \"Choose Professional\",\n              \"cta_url\": \"https://example.com/subscribe/professional\"\n            },\n            {\n              \"name\": \"Enterprise\",\n              \"price\": \"$99\",\n              \"period\": \"per month\",\n              \"description\": \"For organizations with advanced needs.\",\n              \"recommended\": false,\n              \"features\": [\n                \"Everything in Professional\",\n                \"Unlimited storage\",\n                \"24/7 phone and chat support\",\n                \"Single sign-on (SSO)\",\n                \"Dedicated account manager\",\n                \"Custom SLA\"\n              ],\n              \"cta_label\": \"Contact Sales\",\n              \"cta_url\": \"https://example.com/contact-sales\"\n            }\n          ]\n        }\n      ]\n    }\n  }\n]\n</a2ui-json>\n\nThe Professional plan is marked as recommended and highlighted with a badge. Each tier has its own feature list and call-to-action button."
+}

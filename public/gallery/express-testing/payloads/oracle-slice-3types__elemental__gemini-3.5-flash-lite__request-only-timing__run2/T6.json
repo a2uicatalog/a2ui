@@ -1,0 +1,107 @@
+{
+ "label": "oracle-slice-3types__elemental__gemini-3.5-flash-lite__request-only-timing__run2",
+ "task": "T6",
+ "format": "elemental",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning-elemental.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "page_header",
+      "title": "Vocabulary Flashcards",
+      "subtitle": "Review ten essential terms with flip interactions.",
+      "icon": "\ud83d\udcda",
+      "tag": "Learning",
+      "accent": "#4f46e5"
+     },
+     {
+      "id": "vocab_progress",
+      "component": "progress_bar",
+      "value": 30,
+      "label": "Reviewed Progress",
+      "show_percent": true,
+      "caption": "3 of 10 cards reviewed",
+      "accent": "#4f46e5"
+     },
+     {
+      "id": "intro_text",
+      "component": "body",
+      "text": "Click or hover over the cards below to reveal their definitions."
+     },
+     {
+      "id": "vocab_deck",
+      "component": "flashcard_deck",
+      "cards": {
+       "path": "/flashcards"
+      },
+      "accent": "#4f46e5",
+      "label_front": "TERM",
+      "label_back": "DEFINITION"
+     }
+    ]
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_data_model": {
+    "surface_id": "main",
+    "path": "/",
+    "value": {
+     "flashcards": [
+      {
+       "front": "Ephemeral",
+       "back": "Lasting for a very short time."
+      },
+      {
+       "front": "Ubiquitous",
+       "back": "Present, appearing, or found everywhere."
+      },
+      {
+       "front": "Serendipity",
+       "back": "The occurrence of events by chance in a happy or beneficial way."
+      },
+      {
+       "front": "Mellifluous",
+       "back": "Sweet or musical; pleasant to hear."
+      },
+      {
+       "front": "Petrichor",
+       "back": "A pleasant smell that frequently accompanies the first rain after a long period of warm, dry weather."
+      },
+      {
+       "front": "Ineffable",
+       "back": "Too great or extreme to be expressed or described in words."
+      },
+      {
+       "front": "Luminous",
+       "back": "Full of or shedding light; bright or shining."
+      },
+      {
+       "front": "Halcyon",
+       "back": "Denoting a period of time in the past that was idyllically happy and peaceful."
+      },
+      {
+       "front": "Aurora",
+       "back": "The dawn or northern/southern lights."
+      },
+      {
+       "front": "Solitude",
+       "back": "The state or situation of being alone."
+      }
+     ]
+    }
+   }
+  }
+ ]
+}

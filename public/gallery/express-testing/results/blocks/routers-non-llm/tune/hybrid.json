@@ -1,0 +1,338 @@
+[
+ {
+  "model": "hybrid",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "TU1",
+  "reply": "{\"catalogue\": \"a2ui-effects-v1\"}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 0.0009676823351765051,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-effects-v1",
+    1.525
+   ],
+   [
+    "a2ui-bricks-v1",
+    1.0
+   ],
+   [
+    "a2ui-embeds-v1",
+    0.7771
+   ]
+  ],
+  "threshold": 0.0
+ },
+ {
+  "model": "hybrid",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "TU2",
+  "reply": "{\"catalogue\": \"a2ui-charts-v1\"}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 0.0007809237251058221,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-charts-v1",
+    2.0
+   ],
+   [
+    "a2ui-aviation-v1",
+    0.7404
+   ],
+   [
+    "a2ui-ops-v1",
+    0.6506
+   ]
+  ],
+  "threshold": 0.0
+ },
+ {
+  "model": "hybrid",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "TU3",
+  "reply": "{\"catalogue\": \"a2ui-learning-v1\"}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 0.0007531868753721938,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-learning-v1",
+    2.0
+   ],
+   [
+    "a2ui-atoms-v1",
+    0.4619
+   ],
+   [
+    "a2ui-aviation-v1",
+    0.4348
+   ]
+  ],
+  "threshold": 0.0
+ },
+ {
+  "model": "hybrid",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "TU4",
+  "reply": "{\"catalogue\": \"a2ui-google-workspace-live-v1\"}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 0.0007831731950864195,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-google-workspace-live-v1",
+    2.0
+   ],
+   [
+    "a2ui-ops-v1",
+    0.5688
+   ],
+   [
+    "a2ui-aviation-v1",
+    0.4714
+   ]
+  ],
+  "threshold": 0.0
+ },
+ {
+  "model": "hybrid",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "TU5",
+  "reply": "{\"catalogue\": \"a2ui-editorial-v1\"}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 0.0010960640199482441,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-editorial-v1",
+    1.3486
+   ],
+   [
+    "a2ui-presentation-v1",
+    1.0
+   ],
+   [
+    "a2ui-atoms-v1",
+    0.6495
+   ]
+  ],
+  "threshold": 0.0
+ },
+ {
+  "model": "hybrid",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "TU6",
+  "reply": "{\"catalogue\": \"a2ui-embeds-v1\"}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 0.0011035541648743675,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-embeds-v1",
+    2.0
+   ],
+   [
+    "a2ui-display-v1",
+    0.6376
+   ],
+   [
+    "a2ui-learning-v1",
+    0.6181
+   ]
+  ],
+  "threshold": 0.0
+ },
+ {
+  "model": "hybrid",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "TU7",
+  "reply": "{\"catalogue\": \"a2ui-marketing-v1\"}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 0.0010825978399952873,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-marketing-v1",
+    2.0
+   ],
+   [
+    "a2ui-atoms-v1",
+    0.5518
+   ],
+   [
+    "a2ui-editorial-v1",
+    0.5129
+   ]
+  ],
+  "threshold": 0.0
+ },
+ {
+  "model": "hybrid",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "TU8",
+  "reply": "{\"catalogue\": \"a2ui-google-workspace-live-v1\"}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 0.001047418675152585,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-google-workspace-live-v1",
+    1.4345
+   ],
+   [
+    "a2ui-ops-v1",
+    1.4225
+   ],
+   [
+    "a2ui-learning-v1",
+    0.717
+   ]
+  ],
+  "threshold": 0.0
+ },
+ {
+  "model": "hybrid",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "TU9",
+  "reply": "{\"catalogue\": \"a2ui-effects-v1\"}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 0.001140048544621095,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-effects-v1",
+    2.0
+   ],
+   [
+    "a2ui-aviation-v1",
+    1.4972
+   ],
+   [
+    "a2ui-presentation-v1",
+    0.7685
+   ]
+  ],
+  "threshold": 0.0
+ },
+ {
+  "model": "hybrid",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "TU10",
+  "reply": "{\"catalogue\": null}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 0.0006343142851255834,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-atoms-v1",
+    0.0
+   ],
+   [
+    "a2ui-aviation-v1",
+    0.0
+   ],
+   [
+    "a2ui-bricks-v1",
+    0.0
+   ]
+  ],
+  "threshold": 0.0
+ },
+ {
+  "model": "hybrid",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "TU11",
+  "reply": "{\"catalogue\": \"a2ui-charts-v1\"}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 0.0006770180648891255,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-charts-v1",
+    2.0
+   ],
+   [
+    "a2ui-aviation-v1",
+    1.3472
+   ],
+   [
+    "a2ui-effects-v1",
+    0.6263
+   ]
+  ],
+  "threshold": 0.0
+ },
+ {
+  "model": "hybrid",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "TU12",
+  "reply": "{\"catalogue\": \"a2ui-atoms-v1\"}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 0.0007811312400735914,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-atoms-v1",
+    2.0
+   ],
+   [
+    "a2ui-display-v1",
+    1.1851
+   ],
+   [
+    "a2ui-marketing-v1",
+    0.782
+   ]
+  ],
+  "threshold": 0.0
+ }
+]

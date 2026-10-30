@@ -1,0 +1,111 @@
+{
+ "label": "oracle-slice-3types__elemental__sonnet-5-5__run3",
+ "task": "T2",
+ "format": "elemental",
+ "model_id": "claude-sonnet-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display-elemental.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "kpis",
+      "component": "metric_row",
+      "cols": 2,
+      "metrics": [
+       {
+        "value": "128.4",
+        "prefix": "$",
+        "suffix": "K",
+        "label": "Revenue",
+        "sub": "+12.5% vs last month",
+        "trend": "up",
+        "accent": "#16a34a"
+       },
+       {
+        "value": "42.1",
+        "suffix": "K",
+        "label": "Active Users",
+        "sub": "+8.2% vs last month",
+        "trend": "up",
+        "accent": "#2563eb"
+       },
+       {
+        "value": "6.8",
+        "suffix": "K",
+        "label": "Orders",
+        "sub": "-3.1% vs last month",
+        "trend": "down",
+        "accent": "#d97706"
+       },
+       {
+        "value": "312",
+        "label": "Support Tickets",
+        "sub": "-14.0% vs last month",
+        "trend": "down",
+        "accent": "#7c3aed"
+       }
+      ]
+     },
+     {
+      "id": "comparison",
+      "component": "chartjs_bar",
+      "labels": [
+       "Revenue ($K)",
+       "Active Users (K)",
+       "Orders (K)",
+       "Tickets (x100)"
+      ],
+      "datasets": [
+       {
+        "label": "Last month",
+        "data": [
+         114.1,
+         38.9,
+         7.0,
+         3.6
+        ]
+       },
+       {
+        "label": "This month",
+        "data": [
+         128.4,
+         42.1,
+         6.8,
+         3.1
+        ]
+       }
+      ]
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "1.5rem",
+      "align": "stretch",
+      "items": [
+       {
+        "blocks": [
+         "kpis"
+        ]
+       },
+       {
+        "blocks": [
+         "comparison"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

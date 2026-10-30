@@ -1,0 +1,128 @@
+{
+ "label": "oracle-slice-3types__express__sonnet-5-5__temp0__run1",
+ "task": "T4",
+ "format": "express",
+ "model_id": "claude-sonnet-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "status-list",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "status-list",
+    "components": [
+     {
+      "id": "filter",
+      "component": "segmented_control",
+      "options": [
+       {
+        "label": "All",
+        "value": "all"
+       },
+       {
+        "label": "Active",
+        "value": "active"
+       },
+       {
+        "label": "Pending",
+        "value": "pending"
+       },
+       {
+        "label": "Blocked",
+        "value": "blocked"
+       },
+       {
+        "label": "Done",
+        "value": "done"
+       }
+      ],
+      "selected_value": "all",
+      "name": "status_filter"
+     },
+     {
+      "id": "intro",
+      "component": "heading",
+      "text": "Work Items"
+     },
+     {
+      "id": "note",
+      "component": "body",
+      "text": "Eight items, each with a status and a one-line detail. Use the control to filter by status."
+     },
+     {
+      "id": "items",
+      "component": "entity_list",
+      "items": [
+       {
+        "name": "Migrate billing database",
+        "subtitle": "Cutover rehearsal scheduled for Thursday",
+        "status": "Active"
+       },
+       {
+        "name": "Redesign onboarding flow",
+        "subtitle": "Waiting on final copy from marketing",
+        "status": "Pending"
+       },
+       {
+        "name": "Upgrade API gateway",
+        "subtitle": "Rollout paused by failed health checks",
+        "status": "Blocked"
+       },
+       {
+        "name": "Publish Q3 report",
+        "subtitle": "Shared with leadership on Monday",
+        "status": "Done"
+       },
+       {
+        "name": "Audit access permissions",
+        "subtitle": "12 of 40 service accounts reviewed",
+        "status": "Active"
+       },
+       {
+        "name": "Vendor security review",
+        "subtitle": "Questionnaire sent, awaiting response",
+        "status": "Pending"
+       },
+       {
+        "name": "Fix mobile checkout bug",
+        "subtitle": "Blocked on payment provider sandbox access",
+        "status": "Blocked"
+       },
+       {
+        "name": "Retire legacy dashboard",
+        "subtitle": "Decommissioned and archived last week",
+        "status": "Done"
+       }
+      ]
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "2rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "intro",
+         "note",
+         "filter"
+        ]
+       },
+       {
+        "blocks": [
+         "items"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

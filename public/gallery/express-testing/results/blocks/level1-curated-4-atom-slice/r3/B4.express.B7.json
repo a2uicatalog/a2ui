@@ -1,0 +1,36 @@
+{
+ "model": "sonnet-5-5",
+ "cond": "B4",
+ "format": "express",
+ "brief": "B7",
+ "repeat": 3,
+ "seq": 45,
+ "model_id": "claude-sonnet-5-5",
+ "utc": "2026-10-29T19:57:50Z",
+ "prompt_chars": 12626,
+ "prompt_sha256": "(removed for publication)",
+ "temperature_requested": null,
+ "temperature_sent": false,
+ "max_tokens": 32768,
+ "request_secs": 14.17,
+ "input_tokens": 4674,
+ "output_tokens": 1664,
+ "stop_reason": "end_turn",
+ "usage": {
+  "input_tokens": 4674,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "cache_creation": {
+   "ephemeral_5m_input_tokens": 0,
+   "ephemeral_1h_input_tokens": 0
+  },
+  "output_tokens": 1664,
+  "output_tokens_details": {
+   "thinking_tokens": 1200
+  },
+  "service_tier": "standard",
+  "inference_geo": "global",
+  "speed": "standard"
+ },
+ "reply": "<a2ui>\nsurface(\"small-table\")\nroot = brick_build_3d(\n  partsModel=[\n    [\"3005\", -50, -24, -30, 0, 15],\n    [\"3005\", -50, -48, -30, 0, 15],\n    [\"3005\", 50, -24, -30, 0, 15],\n    [\"3005\", 50, -48, -30, 0, 15],\n    [\"3005\", -50, -24, 30, 0, 15],\n    [\"3005\", -50, -48, 30, 0, 15],\n    [\"3005\", 50, -24, 30, 0, 15],\n    [\"3005\", 50, -48, 30, 0, 15],\n    [\"3032\", 0, -56, 0, 0, 4]\n  ],\n  look=\"studio\",\n  height=420,\n  parts=true,\n  checks=true,\n  scrubber=true,\n  orbit=true\n)\n</a2ui>\n\nThis is a small table made from real LDraw parts: a red 4\u00d76 plate (3032) for the top, resting on four legs. Each leg is two white 1\u00d71 bricks (3005) stacked. I assumed LDraw's native coordinates, where negative y points up and each part's origin sits at its top face, and that the 4\u00d76 plate's long side runs along x. I haven't confirmed how the viewer interprets either, so the table may render upside down or turned 90\u00b0 if it follows a different convention. The parts list is switched on so you can see the cost estimate."
+}

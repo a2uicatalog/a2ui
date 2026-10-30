@@ -1,0 +1,32 @@
+{
+ "task": "T2",
+ "condition": "F",
+ "label": "random-slice__express__haiku-4-5__run2",
+ "agent_type": "Data display",
+ "catalogue": "F-data-display.json",
+ "atoms_in_catalogue": 248,
+ "prompt_chars": 130958,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 3.0,
+ "usage": {
+  "input_tokens": 37601,
+  "output_tokens": 223
+ },
+ "valid": false,
+ "error": "A2uiCompilationParseError: Failed to parse expression: Syntax error at line 6:12: mismatched input '=' expecting ':' (line 6) - Line 6, Col 12 - Help: Please correct the syntax error in your Express DSL.",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "KPI tile (x4)": false,
+   "trend (required only if metric_row was chosen; stat_card's own delta already satisfies it)": false,
+   "comparison chart": false
+  }
+ },
+ "reply": "<a2ui>\nroot = columns(\n  cols=2,\n  gap=\"2rem\",\n  items=[\n    {\n      blocks=[\n        stat_card(value=\"$12.5M\", label=\"Total Revenue\", delta=\"+8.2%\", is_up=true, accent=\"#10b981\"),\n        stat_card(value=\"4,287\", label=\"Active Users\", delta=\"+12.1%\", is_up=true, accent=\"#10b981\"),\n      ]\n    },\n    {\n      blocks=[\n        stat_card(value=\"$2,940\", label=\"Avg. Order Value\", delta=\"-2.3%\", is_up=false, accent=\"#ef4444\"),\n        stat_card(value=\"92.3%\", label=\"Customer Retention\", delta=\"+1.5%\", is_up=true, accent=\"#10b981\"),\n      ]\n    }\n  ]\n)\n</a2ui>"
+}

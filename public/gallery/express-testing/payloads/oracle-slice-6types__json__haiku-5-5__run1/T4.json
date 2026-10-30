@@ -1,0 +1,127 @@
+{
+ "label": "oracle-slice-6types__json__haiku-5-5__run1",
+ "task": "T4",
+ "format": "json",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9",
+   "create_surface": {
+    "surface_id": "status-list",
+    "catalog_id": "https://a2uicatalog.ai/catalog/d-t4.json"
+   }
+  },
+  {
+   "version": "v0.9",
+   "update_components": {
+    "surface_id": "status-list",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "2rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         {
+          "id": "list-title",
+          "component": "heading",
+          "text": "Work Items"
+         },
+         {
+          "id": "status-filter",
+          "component": "segmented_control",
+          "name": "status",
+          "selected_value": "all",
+          "options": [
+           {
+            "label": "All",
+            "value": "all"
+           },
+           {
+            "label": "In progress",
+            "value": "in_progress"
+           },
+           {
+            "label": "Pending",
+            "value": "pending"
+           },
+           {
+            "label": "Blocked",
+            "value": "blocked"
+           },
+           {
+            "label": "Done",
+            "value": "done"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "blocks": [
+         {
+          "id": "item-list",
+          "component": "entity_list",
+          "items": [
+           {
+            "name": "Checkout flow audit",
+            "subtitle": "All 14 checks passed.",
+            "status": "Done",
+            "meta": "Closed Mon"
+           },
+           {
+            "name": "API rate limiting",
+            "subtitle": "Token bucket implemented; tests running.",
+            "status": "In progress",
+            "meta": "Due Thu"
+           },
+           {
+            "name": "Mobile onboarding copy",
+            "subtitle": "Waiting on legal review.",
+            "status": "Pending",
+            "meta": "Due Fri"
+           },
+           {
+            "name": "Search indexing job",
+            "subtitle": "Waiting on infra quota increase.",
+            "status": "Blocked",
+            "meta": "Due Wed"
+           },
+           {
+            "name": "Invoice export",
+            "subtitle": "CSV done; PDF export underway.",
+            "status": "In progress",
+            "meta": "Due Fri"
+           },
+           {
+            "name": "Dark mode tokens",
+            "subtitle": "Merged into design system v2.",
+            "status": "Done",
+            "meta": "Closed Tue"
+           },
+           {
+            "name": "Analytics dashboard",
+            "subtitle": "Scoped; not yet started.",
+            "status": "Pending",
+            "meta": "Due next week"
+           },
+           {
+            "name": "Password reset emails",
+            "subtitle": "Email provider credentials expired.",
+            "status": "Blocked",
+            "meta": "Due Wed"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

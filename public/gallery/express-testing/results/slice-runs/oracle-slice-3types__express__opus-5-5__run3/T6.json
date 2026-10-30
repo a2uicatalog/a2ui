@@ -1,0 +1,48 @@
+{
+ "task": "T6",
+ "condition": "C_opus-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-opus-5-5",
+ "hints": false,
+ "label": "oracle-slice-3types__express__opus-5-5__run3",
+ "agent_type": "Learning",
+ "catalogue": "C-learning.json",
+ "atoms_in_catalogue": 36,
+ "prompt_chars": 21139,
+ "slot_recall": [
+  2,
+  2
+ ],
+ "secs": 11.4,
+ "usage": {
+  "input_tokens": 7488,
+  "output_tokens": 1345
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "page_header",
+  "progress_bar",
+  "flashcard_deck",
+  "text_callout",
+  "columns",
+  "page_header",
+  "progress_bar",
+  "flashcard_deck",
+  "text_callout",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.4,
+  "recall": 1.0,
+  "f1": 0.571,
+  "slot_hits": {
+   "flashcard deck": true,
+   "progress indicator": true
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"vocab-flashcards\")\nheader = page_header(\"Vocabulary Review\", \"Flip each card to reveal the definition. Work through all ten words.\", \"\ud83d\udcda\", \"10 cards\", \"#4f46e5\")\nprogress = progress_bar(40, \"Cards reviewed\", \"#4f46e5\", true, \"4 of 10 cards reviewed\")\ndeck = flashcard_deck([{front: \"Ephemeral\", back: \"Lasting for a very short time.\"}, {front: \"Ubiquitous\", back: \"Present, appearing, or found everywhere.\"}, {front: \"Serendipity\", back: \"The occurrence of fortunate events by chance.\"}, {front: \"Eloquent\", back: \"Fluent or persuasive in speaking or writing.\"}, {front: \"Meticulous\", back: \"Showing great attention to detail; very careful and precise.\"}, {front: \"Resilient\", back: \"Able to recover quickly from difficulties.\"}, {front: \"Ambiguous\", back: \"Open to more than one interpretation; unclear.\"}, {front: \"Pragmatic\", back: \"Dealing with things sensibly and realistically.\"}, {front: \"Benevolent\", back: \"Well-meaning and kindly.\"}, {front: \"Candid\", back: \"Truthful and straightforward; frank.\"}], \"#4f46e5\", \"WORD\", \"DEFINITION\")\ntip = text_callout(\"info\", \"Tip\", \"Try to recall the definition out loud before flipping the card.\")\nroot = columns(2, \"1.5rem\", \"top\", [{blocks: [header, progress, deck, tip]}, {blocks: []}])\n</a2ui>\n\nWait \u2014 a two-column layout with an empty column wastes space. Corrected version:\n\n<a2ui>\nsurface(\"vocab-flashcards\")\nheader = page_header(\"Vocabulary Review\", \"Flip each card to reveal the definition. Work through all ten words.\", \"\ud83d\udcda\", \"10 cards\", \"#4f46e5\")\nprogress = progress_bar(40, \"Cards reviewed\", \"#4f46e5\", true, \"4 of 10 cards reviewed\")\ndeck = flashcard_deck([{front: \"Ephemeral\", back: \"Lasting for a very short time.\"}, {front: \"Ubiquitous\", back: \"Present, appearing, or found everywhere.\"}, {front: \"Serendipity\", back: \"The occurrence of fortunate events by chance.\"}, {front: \"Eloquent\", back: \"Fluent or persuasive in speaking or writing.\"}, {front: \"Meticulous\", back: \"Showing great attention to detail; very careful and precise.\"}, {front: \"Resilient\", back: \"Able to recover quickly from difficulties.\"}, {front: \"Ambiguous\", back: \"Open to more than one interpretation; unclear.\"}, {front: \"Pragmatic\", back: \"Dealing with things sensibly and realistically.\"}, {front: \"Benevolent\", back: \"Well-meaning and kindly.\"}, {front: \"Candid\", back: \"Truthful and straightforward; frank.\"}], \"#4f46e5\", \"WORD\", \"DEFINITION\")\ntip = text_callout(\"info\", \"Tip\", \"Try to recall the definition out loud before flipping the card.\")\nroot = columns(2, \"1.5rem\", \"top\", [{blocks: [header, deck]}, {blocks: [progress, tip]}])\n</a2ui>"
+}

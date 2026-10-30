@@ -1,0 +1,112 @@
+{
+ "label": "oracle-slice-3types__express__gemini-3.5-flash-lite__first-run-timing-invalid__run3",
+ "task": "T6",
+ "format": "express",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "vocab-flashcards",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "vocab-flashcards",
+    "components": [
+     {
+      "id": "header",
+      "component": "page_header",
+      "title": "Vocabulary Flashcards",
+      "subtitle": "Review key terms and flip cards to test your retention.",
+      "icon": "\ud83d\udcda",
+      "tag": "Study Mode",
+      "accent": "#4f46e5"
+     },
+     {
+      "id": "xp",
+      "component": "xp_bar",
+      "level_label": "Level 1 \u2014 Reviewer",
+      "xp_current": 4,
+      "xp_next": 10,
+      "accent": "#4f46e5"
+     },
+     {
+      "id": "deck",
+      "component": "flashcard_deck",
+      "cards": [
+       {
+        "front": "Ephemeral",
+        "back": "Lasting for a very short time; transient."
+       },
+       {
+        "front": "Pragmatic",
+        "back": "Dealing with things sensibly and realistically."
+       },
+       {
+        "front": "Synergy",
+        "back": "The interaction of elements that produce a combined effect greater than the sum."
+       },
+       {
+        "front": "Ambivalent",
+        "back": "Having mixed feelings or contradictory ideas about something."
+       },
+       {
+        "front": "Cacophony",
+        "back": "A harsh, discordant mixture of sounds."
+       },
+       {
+        "front": "Mundane",
+        "back": "Lacking interest or excitement; dull; routine."
+       },
+       {
+        "front": "Fastidious",
+        "back": "Very attentive to and concerned about accuracy and detail."
+       },
+       {
+        "front": "Obfuscate",
+        "back": "Render obscure, unclear, or unintelligible."
+       },
+       {
+        "front": "Pernicious",
+        "back": "Having a harmful effect, especially in a gradual or subtle way."
+       },
+       {
+        "front": "Resilient",
+        "back": "Able to withstand or recover quickly from difficult conditions."
+       }
+      ],
+      "accent": "#4f46e5",
+      "label_front": "TERM",
+      "label_back": "DEFINITION"
+     },
+     {
+      "id": "tip",
+      "component": "text_callout",
+      "variant": "info",
+      "title": "Study Tip",
+      "description": "Flip each card to check your understanding. Keep reviewing until you are confident with all ten terms."
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "1.5rem",
+      "items": [
+       {
+        "blocks": [
+         "header",
+         "xp",
+         "deck",
+         "tip"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

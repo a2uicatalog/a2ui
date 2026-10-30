@@ -1,0 +1,95 @@
+{
+ "label": "rule-slice__express__haiku-5-5__run2",
+ "task": "T3",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/b-marketing-commerce.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "hero",
+      "component": "gradient_hero",
+      "title": "Ship faster with less overhead",
+      "subtitle": "Acme gives your team one place to plan, build, and launch, without the tool sprawl.",
+      "badge": "Now in public beta",
+      "accent": "#4f46e5",
+      "accent2": "#8b5cf6",
+      "align": "center",
+      "cta_label": "Get started free",
+      "cta_url": "https://example.com/signup"
+     },
+     {
+      "id": "features",
+      "component": "feature_grid",
+      "heading": "Everything you need to launch",
+      "description": "Three core capabilities that keep your team moving.",
+      "columns": 3,
+      "features": [
+       {
+        "icon": "\u26a1",
+        "title": "Lightning fast",
+        "description": "Builds and deploys in seconds, so every change reaches users sooner."
+       },
+       {
+        "icon": "\ud83d\udd12",
+        "title": "Secure by default",
+        "description": "Role-based access, audit logs, and encryption at rest and in transit."
+       },
+       {
+        "icon": "\ud83d\udd17",
+        "title": "Works with your stack",
+        "description": "Connects to the tools you already use through native integrations and a open API."
+       }
+      ]
+     },
+     {
+      "id": "testimonial",
+      "component": "testimonial_card",
+      "text": "We cut our release cycle in half in the first month. The workflow just makes sense.",
+      "author_name": "Jordan Lee",
+      "author_title": "VP of Engineering, Northwind",
+      "rating": 5
+     },
+     {
+      "id": "cta",
+      "component": "cta_section",
+      "heading": "Ready to launch your next release?",
+      "body": "Start free today. No credit card required, and you can invite your whole team in minutes.",
+      "primary_cta": {
+       "label": "Start your free trial",
+       "url": "https://example.com/signup"
+      },
+      "background": "#4f46e5"
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "2.5rem",
+      "align": "stretch",
+      "items": [
+       {
+        "blocks": [
+         "hero",
+         "features",
+         "testimonial",
+         "cta"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

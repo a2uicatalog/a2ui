@@ -1,0 +1,48 @@
+{
+ "task": "T6",
+ "condition": "E",
+ "label": "wrong-domain-slice__express__haiku-4-5__run3",
+ "agent_type": "Data display",
+ "catalogue": "B-data-display.json",
+ "atoms_in_catalogue": 248,
+ "prompt_chars": 125436,
+ "slot_recall": [
+  2,
+  2
+ ],
+ "secs": 8.1,
+ "usage": {
+  "input_tokens": 36023,
+  "output_tokens": 917
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns",
+  "heading",
+  "body",
+  "progress_bar",
+  "spacer",
+  "flip_card",
+  "flip_card",
+  "flip_card",
+  "flip_card",
+  "flip_card",
+  "flip_card",
+  "flip_card",
+  "flip_card",
+  "flip_card",
+  "flip_card",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.688,
+  "recall": 1.0,
+  "f1": 0.815,
+  "slot_hits": {
+   "flashcard deck": true,
+   "progress indicator": true
+  }
+ },
+ "reply": "<a2ui>\nroot = columns(cols=2, items=[\n  {blocks: [\n    heading(\"Vocabulary Flashcards\"),\n    progress_bar(value=0, label=\"Progress\", show_percent=true),\n    spacer(height=\"1.5rem\")\n  ]},\n  {blocks: []}\n])\n\ncard1 = flip_card(\n  front_content=\"**English**\\n\\nPersevere\",\n  back_content=\"**Spanish**\\n\\nPerseverar\\n\\n*To persist despite difficulty*\",\n  trigger_on_hover=true\n)\n\ncard2 = flip_card(\n  front_content=\"**English**\\n\\nPlacate\",\n  back_content=\"**Latin**\\n\\nPlacare\\n\\n*To appease or calm*\",\n  trigger_on_hover=true\n)\n\ncard3 = flip_card(\n  front_content=\"**English**\\n\\nEphemeral\",\n  back_content=\"**Greek**\\n\\nEphemeros\\n\\n*Lasting a very short time*\",\n  trigger_on_hover=true\n)\n\ncard4 = flip_card(\n  front_content=\"**English**\\n\\nPedantic\",\n  back_content=\"**Italian**\\n\\nPedante\\n\\n*Overly concerned with rules*\",\n  trigger_on_hover=true\n)\n\ncard5 = flip_card(\n  front_content=\"**English**\\n\\nSerendipity\",\n  back_content=\"**Persian**\\n\\nSerendip\\n\\n*Happy accident; fortunate discovery*\",\n  trigger_on_hover=true\n)\n\ncard6 = flip_card(\n  front_content=\"**English**\\n\\nMellifluous\",\n  back_content=\"**Latin**\\n\\nMel + fluere\\n\\n*Sweet-sounding; musical*\",\n  trigger_on_hover=true\n)\n\ncard7 = flip_card(\n  front_content=\"**English**\\n\\nObfuscate\",\n  back_content=\"**Latin**\\n\\nObfuscare\\n\\n*To make unclear or obscure*\",\n  trigger_on_hover=true\n)\n\ncard8 = flip_card(\n  front_content=\"**English**\\n\\nSanguine\",\n  back_content=\"**Latin**\\n\\nSanguinis\\n\\n*Optimistic; blood-red*\",\n  trigger_on_hover=true\n)\n\ncard9 = flip_card(\n  front_content=\"**English**\\n\\nAmbivalent\",\n  back_content=\"**Latin**\\n\\nAmbi + valens\\n\\n*Having mixed feelings*\",\n  trigger_on_hover=true\n)\n\ncard10 = flip_card(\n  front_content=\"**English**\\n\\nSerendipitous\",\n  back_content=\"**Derived**\\n\\nFrom Serendip\\n\\n*Occurring by happy chance*\",\n  trigger_on_hover=true\n)\n\nflashcard_grid = columns(cols=2, gap=\"1.25rem\", items=[\n  {blocks: [card1, card2, card3, card4, card5]},\n  {blocks: [card6, card7, card8, card9, card10]}\n])\n\nroot = columns(cols=1, items=[\n  {blocks: [\n    heading(\"Vocabulary Flashcards\"),\n    body(\"Hover over each card to reveal the definition and origin.\"),\n    progress_bar(value=0, label=\"Cards Reviewed\", show_percent=true),\n    spacer(height=\"1.5rem\"),\n    flashcard_grid\n  ]}\n])\n</a2ui>"
+}

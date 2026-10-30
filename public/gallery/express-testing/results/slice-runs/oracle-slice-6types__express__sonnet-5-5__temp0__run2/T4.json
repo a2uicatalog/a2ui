@@ -1,0 +1,43 @@
+{
+ "task": "T4",
+ "condition": "DT_sonnet-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-sonnet-5-5",
+ "hints": false,
+ "label": "oracle-slice-6types__express__sonnet-5-5__temp0__run2",
+ "agent_type": "T4",
+ "catalogue": "D-t4.json",
+ "atoms_in_catalogue": 20,
+ "prompt_chars": 10490,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 12.0,
+ "usage": {
+  "input_tokens": 3799,
+  "output_tokens": 1417
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "segmented_control",
+  "heading",
+  "entity_list",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.5,
+  "recall": 0.667,
+  "f1": 0.571,
+  "slot_hits": {
+   "list": true,
+   "status indicator": false,
+   "filter control": true
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"status-list\")\nfilter = segmented_control([{label: \"All\", value: \"all\"}, {label: \"Active\", value: \"active\"}, {label: \"Pending\", value: \"pending\"}, {label: \"Blocked\", value: \"blocked\"}, {label: \"Done\", value: \"done\"}], \"all\", \"status_filter\")\ntitle = heading(\"Project Items\")\nlist = entity_list([\n  {name: \"Design system audit\", subtitle: \"Review spacing and colour tokens across all components\", status: \"Active\", icon: \"\ud83c\udfa8\"},\n  {name: \"API rate limiting\", subtitle: \"Waiting on infrastructure sign-off for new thresholds\", status: \"Pending\", icon: \"\u23f3\"},\n  {name: \"Checkout redesign\", subtitle: \"Prototype is in user testing with ten participants\", status: \"Active\", icon: \"\ud83d\uded2\"},\n  {name: \"Database migration\", subtitle: \"Completed and verified in production last Friday\", status: \"Done\", icon: \"\ud83d\uddc4\ufe0f\"},\n  {name: \"SSO integration\", subtitle: \"Blocked by missing identity provider credentials\", status: \"Blocked\", icon: \"\ud83d\udd12\"},\n  {name: \"Onboarding emails\", subtitle: \"Copy drafted, awaiting legal review before scheduling\", status: \"Pending\", icon: \"\u2709\ufe0f\"},\n  {name: \"Mobile push alerts\", subtitle: \"Shipped to all users with delivery rate at 98%\", status: \"Done\", icon: \"\ud83d\udcf1\"},\n  {name: \"Analytics dashboard\", subtitle: \"Building weekly retention charts from the new events\", status: \"Active\", icon: \"\ud83d\udcca\"}\n])\nroot = columns(2, \"1.5rem\", \"top\", [{blocks: [title, filter]}, {blocks: [list]}])\n</a2ui>\n\nThe catalog has no way to bind a filter to a list, so the status control is not wired to the list. The segmented control shows the filter options (All, Active, Pending, Blocked, Done), but selecting one will not hide any of the eight items yet. All eight rows always show, each with a title, a status badge and a one-line detail.\n\nThe catalog also has no single-column container, so I used a two-column layout. The heading and filter sit on the left and the list sits on the right."
+}

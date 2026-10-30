@@ -1,0 +1,79 @@
+{
+ "label": "oracle-slice-3types__json__sonnet-5-5__temp0__run1",
+ "task": "T5",
+ "format": "json",
+ "model_id": "claude-sonnet-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "pricing",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "pricing",
+    "components": [
+     {
+      "id": "root",
+      "component": "pricing_tier_group",
+      "tiers": [
+       {
+        "name": "Starter",
+        "price": "$9",
+        "period": "per month",
+        "description": "For individuals getting started.",
+        "features": [
+         "1 project",
+         "5 GB storage",
+         "Basic analytics",
+         "Community support"
+        ],
+        "recommended": false,
+        "cta_label": "Start with Starter",
+        "cta_url": "#starter"
+       },
+       {
+        "name": "Pro",
+        "price": "$29",
+        "period": "per month",
+        "description": "For growing teams that need more power.",
+        "badge": "Recommended",
+        "features": [
+         "Unlimited projects",
+         "100 GB storage",
+         "Advanced analytics",
+         "Priority email support",
+         "Team collaboration tools"
+        ],
+        "recommended": true,
+        "highlighted": true,
+        "cta_label": "Choose Pro",
+        "cta_url": "#pro"
+       },
+       {
+        "name": "Enterprise",
+        "price": "$99",
+        "period": "per month",
+        "description": "For organizations with advanced needs.",
+        "features": [
+         "Unlimited everything",
+         "1 TB storage",
+         "Custom reporting",
+         "24/7 dedicated support",
+         "SSO and audit logs",
+         "Custom integrations"
+        ],
+        "recommended": false,
+        "cta_label": "Contact Sales",
+        "cta_url": "#enterprise"
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

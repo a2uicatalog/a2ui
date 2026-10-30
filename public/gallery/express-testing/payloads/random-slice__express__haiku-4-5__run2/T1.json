@@ -1,0 +1,367 @@
+{
+ "label": "random-slice__express__haiku-4-5__run2",
+ "task": "T1",
+ "format": "express",
+ "model_id": null,
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/f-learning.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "content_tabs",
+      "accent": "#4f46e5",
+      "default_index": 0,
+      "tabs": [
+       {
+        "label": "Lesson",
+        "blocks": [
+         "_inline_1",
+         "_inline_2",
+         "_inline_3",
+         "_inline_4",
+         "_inline_5",
+         "_inline_6",
+         "_inline_7",
+         "_inline_8",
+         "_inline_9"
+        ]
+       },
+       {
+        "label": "Worked Example",
+        "blocks": [
+         "_inline_10",
+         "_inline_11",
+         "_inline_12",
+         "_inline_13",
+         "_inline_14"
+        ]
+       },
+       {
+        "label": "Self-Check Quiz",
+        "blocks": [
+         "_inline_15",
+         "_inline_16",
+         "_inline_17",
+         "_inline_18",
+         "_inline_19",
+         "_inline_20",
+         "_inline_21"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "_inline_1",
+      "component": "gradient_heading",
+      "text": "The Water Cycle",
+      "gradient": "linear-gradient(135deg, #4f46e5, #06b6d4)",
+      "size": "clamp(2rem, 5vw, 3.5rem)",
+      "weight": 900
+     },
+     {
+      "id": "_inline_2",
+      "component": "spacer",
+      "height": 24
+     },
+     {
+      "id": "_inline_3",
+      "component": "annotation_highlight",
+      "text": "The water cycle is the continuous process by which water moves between the Earth's oceans, atmosphere, and land through evaporation, condensation, and precipitation.",
+      "notes": [
+       {
+        "term": "evaporation",
+        "explanation": "The process where water from oceans, lakes, and rivers turns into water vapor and rises into the atmosphere due to heat from the sun."
+       },
+       {
+        "term": "condensation",
+        "explanation": "The process where water vapor cools and transforms into liquid water droplets, forming clouds in the atmosphere."
+       },
+       {
+        "term": "precipitation",
+        "explanation": "Water falling from clouds to Earth's surface in forms such as rain, snow, sleet, or hail."
+       }
+      ]
+     },
+     {
+      "id": "_inline_4",
+      "component": "spacer",
+      "height": 32
+     },
+     {
+      "id": "_inline_5",
+      "component": "feature_grid",
+      "heading": "Key Stages of the Water Cycle",
+      "columns": 3,
+      "features": [
+       {
+        "icon": "\u2600\ufe0f",
+        "title": "Evaporation",
+        "description": "Solar energy heats water in oceans, lakes, and rivers, converting it to water vapor that rises into the atmosphere.",
+        "color": "#f97316"
+       },
+       {
+        "icon": "\u2601\ufe0f",
+        "title": "Condensation",
+        "description": "As water vapor rises and cools in the upper atmosphere, it condenses into tiny water droplets that form clouds.",
+        "color": "#06b6d4"
+       },
+       {
+        "icon": "\ud83c\udf27\ufe0f",
+        "title": "Precipitation",
+        "description": "Water droplets in clouds combine and become heavy enough to fall as rain, snow, or other forms of precipitation."
+       }
+      ]
+     },
+     {
+      "id": "_inline_6",
+      "component": "spacer",
+      "height": 32
+     },
+     {
+      "id": "_inline_7",
+      "component": "bento_grid",
+      "heading": "The Complete Cycle",
+      "columns": 2,
+      "tiles": [
+       {
+        "title": "Collection & Runoff",
+        "subtitle": "Precipitation reaches Earth's surface",
+        "icon": "\ud83d\udca7",
+        "span": 1,
+        "color": "#3b82f6"
+       },
+       {
+        "title": "Infiltration",
+        "subtitle": "Water seeps into soil and groundwater",
+        "icon": "\u2b07\ufe0f",
+        "span": 1,
+        "color": "#8b5cf6"
+       },
+       {
+        "title": "Transpiration",
+        "subtitle": "Plants release water vapor through leaves",
+        "icon": "\ud83c\udf31",
+        "span": 2,
+        "color": "#10b981"
+       }
+      ]
+     },
+     {
+      "id": "_inline_8",
+      "component": "spacer",
+      "height": 32
+     },
+     {
+      "id": "_inline_9",
+      "component": "learning_objectives",
+      "objectives": [
+       "Explain the role of the sun in driving the water cycle",
+       "Describe the three main stages: evaporation, condensation, and precipitation",
+       "Identify how water moves between oceans, atmosphere, and land",
+       "Understand the importance of the water cycle to Earth's climate and life"
+      ]
+     },
+     {
+      "id": "_inline_10",
+      "component": "gradient_heading",
+      "text": "Tracking a Water Droplet",
+      "size": "clamp(1.5rem, 4vw, 2.5rem)",
+      "weight": 800
+     },
+     {
+      "id": "_inline_11",
+      "component": "spacer",
+      "height": 24
+     },
+     {
+      "id": "_inline_12",
+      "component": "stepper",
+      "active_index": 0,
+      "color": "#4f46e5",
+      "label": "Journey Through the Water Cycle",
+      "steps": [
+       {
+        "label": "Ocean Evaporation",
+        "description": "A water droplet begins in the Pacific Ocean where the sun's heat causes it to evaporate into water vapor."
+       },
+       {
+        "label": "Atmospheric Rise",
+        "description": "The vapor rises through the troposphere, carried by air currents and wind patterns toward cooler regions."
+       },
+       {
+        "label": "Cloud Formation",
+        "description": "As the vapor cools at higher altitudes, it condenses around microscopic dust particles, forming a cumulus cloud."
+       },
+       {
+        "label": "Precipitation",
+        "description": "The water droplet combines with others, becomes heavy, and falls as rain over a mountain range."
+       },
+       {
+        "label": "Runoff",
+        "description": "The rainwater flows downhill, merging with streams and rivers that carry it back toward the ocean."
+       }
+      ]
+     },
+     {
+      "id": "_inline_13",
+      "component": "spacer",
+      "height": 32
+     },
+     {
+      "id": "_inline_14",
+      "component": "case_study_card",
+      "title": "Monsoon Rains: A Water Cycle in Action",
+      "situation": "During monsoon season in South Asia, warm ocean currents heat water in the Indian Ocean. This causes rapid evaporation and the formation of massive rain clouds. These clouds are pushed inland by wind patterns, bringing heavy precipitation to coastal and inland regions.",
+      "data_points": [
+       {
+        "label": "Ocean Temperature",
+        "value": "28-30\u00b0C",
+        "note": "Drives evaporation"
+       },
+       {
+        "label": "Annual Rainfall",
+        "value": "2-6 meters",
+        "note": "Concentrated in 3-4 months"
+       },
+       {
+        "label": "Water Vapor Rise",
+        "value": "2-3 km altitude",
+        "note": "Condensation zone"
+       }
+      ],
+      "questions": [
+       "Why does monsoon season produce more rainfall than other seasons?",
+       "How does ocean temperature affect the intensity of monsoons?"
+      ],
+      "model_answer": "Monsoon season produces more rainfall because warmer ocean temperatures increase evaporation rates significantly. This creates more water vapor in the atmosphere, leading to denser clouds and heavier precipitation when conditions favor condensation over land."
+     },
+     {
+      "id": "_inline_15",
+      "component": "gradient_heading",
+      "text": "Water Cycle Knowledge Check",
+      "size": "clamp(1.5rem, 4vw, 2.5rem)",
+      "weight": 800
+     },
+     {
+      "id": "_inline_16",
+      "component": "spacer",
+      "height": 24
+     },
+     {
+      "id": "_inline_17",
+      "component": "choicebox_group",
+      "label": "Question 1: What is the primary energy source for the water cycle?",
+      "name": "q1",
+      "multiple": false,
+      "items": [
+       {
+        "value": "sun",
+        "title": "The Sun \u2600\ufe0f",
+        "description": "Solar radiation heats water and drives evaporation",
+        "icon": "\u2713"
+       },
+       {
+        "value": "earth_core",
+        "title": "Earth's Core",
+        "description": "Geothermal energy powers the water cycle"
+       },
+       {
+        "value": "wind",
+        "title": "Wind Energy",
+        "description": "Wind currents evaporate water from oceans"
+       },
+       {
+        "value": "gravity",
+        "title": "Gravity",
+        "description": "Gravitational pull moves water between locations"
+       }
+      ]
+     },
+     {
+      "id": "_inline_18",
+      "component": "spacer",
+      "height": 24
+     },
+     {
+      "id": "_inline_19",
+      "component": "choicebox_group",
+      "label": "Question 2: Which process turns water vapor into liquid droplets?",
+      "name": "q2",
+      "multiple": false,
+      "items": [
+       {
+        "value": "evaporation",
+        "title": "Evaporation",
+        "description": "Water turning into vapor"
+       },
+       {
+        "value": "condensation",
+        "title": "Condensation \u2601\ufe0f",
+        "description": "Water vapor cooling and forming liquid droplets",
+        "icon": "\u2713"
+       },
+       {
+        "value": "precipitation",
+        "title": "Precipitation",
+        "description": "Water falling as rain or snow"
+       },
+       {
+        "value": "transpiration",
+        "title": "Transpiration",
+        "description": "Plants releasing water vapor"
+       }
+      ]
+     },
+     {
+      "id": "_inline_20",
+      "component": "spacer",
+      "height": 24
+     },
+     {
+      "id": "_inline_21",
+      "component": "choicebox_group",
+      "label": "Question 3: Why is the water cycle important for life on Earth?",
+      "name": "q3",
+      "multiple": true,
+      "submit_label": "Submit Quiz",
+      "items": [
+       {
+        "value": "fresh_water",
+        "title": "Provides Fresh Water",
+        "description": "Precipitation brings fresh water to land for drinking",
+        "icon": "\u2713"
+       },
+       {
+        "value": "climate_regulation",
+        "title": "Regulates Climate",
+        "description": "Water vapor and clouds control temperature",
+        "icon": "\u2713"
+       },
+       {
+        "value": "nutrient_transport",
+        "title": "Transports Nutrients",
+        "description": "Water carries minerals and nutrients",
+        "icon": "\u2713"
+       },
+       {
+        "value": "oxygen_production",
+        "title": "Produces Oxygen",
+        "description": "Evaporation creates atmospheric oxygen"
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

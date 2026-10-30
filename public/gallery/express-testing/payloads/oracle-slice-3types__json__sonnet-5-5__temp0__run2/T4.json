@@ -1,0 +1,123 @@
+{
+ "label": "oracle-slice-3types__json__sonnet-5-5__temp0__run2",
+ "task": "T4",
+ "format": "json",
+ "model_id": "claude-sonnet-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "status_list",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "status_list",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "1rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         {
+          "component": "heading",
+          "id": "title",
+          "text": "Work Items"
+         },
+         {
+          "component": "segmented_control",
+          "id": "status_filter",
+          "name": "status_filter",
+          "selected_value": "all",
+          "options": [
+           {
+            "label": "All",
+            "value": "all"
+           },
+           {
+            "label": "Active",
+            "value": "active"
+           },
+           {
+            "label": "Pending",
+            "value": "pending"
+           },
+           {
+            "label": "Blocked",
+            "value": "blocked"
+           },
+           {
+            "label": "Done",
+            "value": "done"
+           }
+          ]
+         },
+         {
+          "component": "entity_list",
+          "id": "items_list",
+          "items": [
+           {
+            "name": "Migrate billing database",
+            "subtitle": "Cutover scheduled for Friday night",
+            "icon": "\ud83d\uddc4\ufe0f",
+            "status": "Active"
+           },
+           {
+            "name": "Redesign onboarding flow",
+            "subtitle": "Waiting on final copy from marketing",
+            "icon": "\ud83c\udfa8",
+            "status": "Pending"
+           },
+           {
+            "name": "Upgrade payment SDK",
+            "subtitle": "Blocked by vendor certification review",
+            "icon": "\ud83d\udcb3",
+            "status": "Blocked"
+           },
+           {
+            "name": "Publish API v2 docs",
+            "subtitle": "Released and announced to partners",
+            "icon": "\ud83d\udcd8",
+            "status": "Done"
+           },
+           {
+            "name": "Fix mobile login timeout",
+            "subtitle": "Patch in QA on iOS and Android",
+            "icon": "\ud83d\udcf1",
+            "status": "Active"
+           },
+           {
+            "name": "Security audit follow-ups",
+            "subtitle": "Three findings awaiting owner assignment",
+            "icon": "\ud83d\udd12",
+            "status": "Pending"
+           },
+           {
+            "name": "Provision EU data region",
+            "subtitle": "Blocked on legal approval of data terms",
+            "icon": "\ud83c\udf0d",
+            "status": "Blocked"
+           },
+           {
+            "name": "Retire legacy cron jobs",
+            "subtitle": "All jobs migrated and decommissioned",
+            "icon": "\u23f1\ufe0f",
+            "status": "Done"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

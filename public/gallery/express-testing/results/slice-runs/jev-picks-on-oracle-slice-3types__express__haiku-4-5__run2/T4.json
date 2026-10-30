@@ -1,0 +1,32 @@
+{
+ "task": "T4",
+ "condition": "JC",
+ "label": "jev-picks-on-oracle-slice-3types__express__haiku-4-5__run2",
+ "agent_type": "jev-narrowed",
+ "catalogue": "JC-T4.json",
+ "atoms_in_catalogue": 12,
+ "prompt_chars": 8500,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 5.7,
+ "usage": {
+  "input_tokens": 2351,
+  "output_tokens": 590
+ },
+ "valid": false,
+ "error": "A2uiCompilationValidationError: Property 'text' of component 'body' does not support dynamic data bindings (paths). - Help: Property 'text' on 'body' must be a static literal value, not a dynamic databinding ($path).",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "list": false,
+   "status indicator": false,
+   "filter control": false
+  }
+ },
+ "reply": "<a2ui>\n// Initialize filter state\n$/filterStatus = \"all\"\n\n// Sample data\n$/items = [\n  {id: 1, title: \"Project Alpha\", status: \"inprogress\", detail: \"Development phase ongoing\"},\n  {id: 2, title: \"Project Beta\", status: \"success\", detail: \"Completed ahead of schedule\"},\n  {id: 3, title: \"Project Gamma\", status: \"inprogress\", detail: \"Awaiting client feedback\"},\n  {id: 4, title: \"Project Delta\", status: \"removed\", detail: \"Cancelled due to scope change\"},\n  {id: 5, title: \"Project Epsilon\", status: \"new\", detail: \"Kickoff meeting scheduled\"},\n  {id: 6, title: \"Project Zeta\", status: \"success\", detail: \"All deliverables signed off\"},\n  {id: 7, title: \"Project Eta\", status: \"inprogress\", detail: \"Testing phase in progress\"},\n  {id: 8, title: \"Project Theta\", status: \"moved\", detail: \"Reassigned to Q3 timeline\"}\n]\n\n// Filter chip options\nfilterChips = chip_group(\n  label=\"Filter by Status\",\n  layout=\"wrap\",\n  same_tab=true,\n  chips=[\n    {label: \"All\", value: \"all\", active: true},\n    {label: \"In Progress\", value: \"inprogress\"},\n    {label: \"Success\", value: \"success\"},\n    {label: \"Removed\", value: \"removed\"},\n    {label: \"New\", value: \"new\"},\n    {label: \"Moved\", value: \"moved\"}\n  ]\n)\n\n// Item template for filtered list\nitemTemplate = columns(\n  cols=1,\n  items=[\n    {blocks: [\n      body(\n        text=$title\n      ),\n      columns(\n        cols=2,\n        gap=\"1rem\",\n        items=[\n          {blocks: [\n            lozenge(text=$status, appearance=$status)\n          ]},\n          {blocks: [\n            body(text=$detail)\n          ]}\n        ]\n      )\n    ]}\n  ]\n)\n\n// Root UI\nroot = columns(\n  cols=1,\n  items=[\n    {blocks: [\n      heading(text=\"Items\"),\n      filterChips,\n      _template($/items, itemTemplate)\n    ]}\n  ]\n)\n</a2ui>"
+}

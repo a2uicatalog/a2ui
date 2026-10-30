@@ -1,0 +1,35 @@
+{
+ "task": "T4",
+ "condition": "CT",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-4-5-20251001",
+ "label": "oracle-slice-3types__express__haiku-4-5__temp0__run2",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 16421,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 4.4,
+ "usage": {
+  "input_tokens": 4758,
+  "output_tokens": 402
+ },
+ "valid": false,
+ "error": "A2uiCompilationValidationError: Property 'selected_value' of component 'segmented_control' does not support dynamic data bindings (paths). - Help: Property 'selected_value' on 'segmented_control' must be a static literal value, not a dynamic databinding ($path).",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "list": false,
+   "status indicator": false,
+   "filter control": false
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"main-surface\")\n\n// Initialize filter state\n$/filterStatus = \"all\"\n\n// Sample data\n$/items = [\n  {title: \"Project Alpha\", status: \"active\", detail: \"Q4 deliverables on track\"},\n  {title: \"Project Beta\", status: \"completed\", detail: \"Launched successfully last week\"},\n  {title: \"Project Gamma\", status: \"active\", detail: \"Awaiting client feedback\"},\n  {title: \"Project Delta\", status: \"on_hold\", detail: \"Waiting for budget approval\"},\n  {title: \"Project Epsilon\", status: \"active\", detail: \"Team expanded to 8 members\"},\n  {title: \"Project Zeta\", status: \"completed\", detail: \"Post-launch monitoring active\"},\n  {title: \"Project Eta\", status: \"on_hold\", detail: \"Resource conflict resolution pending\"},\n  {title: \"Project Theta\", status: \"active\", detail: \"Sprint 3 begins next Monday\"}\n]\n\nroot = body([\n  heading(\"Items\"),\n  segmented_control(\n    options=[\n      {label: \"All\", value: \"all\"},\n      {label: \"Active\", value: \"active\"},\n      {label: \"Completed\", value: \"completed\"},\n      {label: \"On Hold\", value: \"on_hold\"}\n    ],\n    selected_value=$/filterStatus,\n    name=\"statusFilter\"\n  ),\n  entity_list(\n    items=_template($/items, itemRow)\n  )\n])\n\nitemRow = entity_list([{\n  name: $title,\n  status: $status,\n  meta: $detail\n}])\n</a2ui>"
+}

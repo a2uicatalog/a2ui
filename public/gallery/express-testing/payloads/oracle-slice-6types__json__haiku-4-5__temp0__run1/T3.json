@@ -1,0 +1,85 @@
+{
+ "label": "oracle-slice-6types__json__haiku-4-5__temp0__run1",
+ "task": "T3",
+ "format": "json",
+ "model_id": "claude-haiku-4-5-20251001",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "product-landing-page",
+    "catalog_id": "https://a2uicatalog.ai/catalog/d-t3.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "product-landing-page",
+    "components": [
+     {
+      "id": "root",
+      "component": "gradient_hero",
+      "title": "Transform Your Workflow",
+      "subtitle": "Streamline your productivity with our intelligent platform designed for modern teams",
+      "badge": "New Release",
+      "accent": "#4f46e5",
+      "accent2": "#8b5cf6",
+      "align": "center",
+      "cta_label": "Get Started Free",
+      "cta_url": "https://example.com/signup"
+     },
+     {
+      "id": "features-section",
+      "component": "feature_grid",
+      "heading": "Powerful Features",
+      "description": "Everything you need to succeed",
+      "columns": 3,
+      "features": [
+       {
+        "icon": "\u26a1",
+        "title": "Lightning Fast",
+        "description": "Experience blazing-fast performance with our optimized infrastructure",
+        "color": "#fbbf24"
+       },
+       {
+        "icon": "\ud83d\udd12",
+        "title": "Enterprise Security",
+        "description": "Bank-level encryption and compliance with industry standards",
+        "color": "#34d399"
+       },
+       {
+        "icon": "\ud83e\udd1d",
+        "title": "Easy Collaboration",
+        "description": "Work seamlessly with your team in real-time",
+        "color": "#60a5fa"
+       }
+      ]
+     },
+     {
+      "id": "testimonial-section",
+      "component": "testimonial_card",
+      "text": "This platform has completely transformed how our team works. We've cut our project timelines in half and our team couldn't be happier.",
+      "author_name": "Sarah Chen",
+      "author_title": "Product Manager at TechCorp",
+      "author_avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah",
+      "rating": 5
+     },
+     {
+      "id": "cta-final",
+      "component": "cta_section",
+      "heading": "Ready to Get Started?",
+      "body": "Join thousands of teams already using our platform to transform their workflow.",
+      "primary_cta": {
+       "label": "Start Free Trial",
+       "url": "https://example.com/trial"
+      },
+      "secondary_cta": {
+       "label": "View Pricing",
+       "url": "https://example.com/pricing"
+      }
+     }
+    ]
+   }
+  }
+ ]
+}

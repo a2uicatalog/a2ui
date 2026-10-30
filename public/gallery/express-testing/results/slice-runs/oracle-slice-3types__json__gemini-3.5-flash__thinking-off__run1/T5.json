@@ -1,0 +1,46 @@
+{
+ "task": "T5",
+ "condition": "CN_gemini-3.5-flash",
+ "temperature_applied": false,
+ "format": "json",
+ "temperature": null,
+ "max_tokens": 32768,
+ "model_id": "gemini-3.5-flash",
+ "hints": false,
+ "label": "oracle-slice-3types__json__gemini-3.5-flash__thinking-off__run1",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "C-marketing-commerce.json",
+ "atoms_in_catalogue": 23,
+ "prompt_chars": 24557,
+ "slot_recall": [
+  1,
+  1
+ ],
+ "secs": 3.2,
+ "usage": {
+  "input_tokens": 5990,
+  "output_tokens": 613
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "pricing_tier_group"
+ ],
+ "score": {
+  "per_approach": {
+   "tier_cards": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+   },
+   "comparison_table": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": null
+   }
+  },
+  "best_approach": "tier_cards",
+  "f1": 1.0
+ },
+ "reply": "Here is a side-by-side pricing plan comparison showcasing three subscription tiers with distinct feature lists and a highlighted recommended option.\n\n<a2ui-json>\n{\n  \"version\": \"v0.9.1\",\n  \"createSurface\": {\n    \"surfaceId\": \"pricing-comparison-surface\",\n    \"catalogId\": \"https://a2uicatalog.ai/catalog/c-marketing-commerce.json\"\n  }\n}\n</a2ui-json>\n\n<a2ui-json>\n{\n  \"version\": \"v0.9.1\",\n  \"updateComponents\": {\n    \"surfaceId\": \"pricing-comparison-surface\",\n    \"components\": [\n      {\n        \"id\": \"root\",\n        \"component\": \"pricing_tier_group\",\n        \"tiers\": [\n          {\n            \"name\": \"Starter\",\n            \"price\": \"$19\",\n            \"frequency\": \"/mo\",\n            \"description\": \"Essential tools for freelancers and small projects.\",\n            \"features\": [\n              \"Up to 3 active projects\",\n              \"Basic performance analytics\",\n              \"Community support forum\",\n              \"Standard API access (10k requests)\"\n            ],\n            \"cta_label\": \"Get Started\",\n            \"cta_url\": \"https://example.com/signup/starter\",\n            \"popular\": false\n          },\n          {\n            \"name\": \"Professional\",\n            \"price\": \"$49\",\n            \"frequency\": \"/mo\",\n            \"description\": \"Advanced automation and insights for growing businesses.\",\n            \"features\": [\n              \"Unlimited active projects\",\n              \"Real-time advanced analytics\",\n              \"24/7 Priority email & chat support\",\n              \"Premium API access (100k requests)\",\n              \"Custom domain integrations\"\n            ],\n            \"cta_label\": \"Start Free Trial\",\n            \"cta_url\": \"https://example.com/signup/pro\",\n            \"popular\": true\n          },\n          {\n            \"name\": \"Enterprise\",\n            \"price\": \"$149\",\n            \"frequency\": \"/mo\",\n            \"description\": \"Customized scalability, security, and dedicated infrastructure.\",\n            \"features\": [\n              \"Unlimited active projects\",\n              \"Dedicated account manager\",\n              \"Guaranteed 99.9% uptime SLA\",\n              \"Unlimited custom API endpoints\",\n              \"Single Sign-On (SSO) security\"\n            ],\n            \"cta_label\": \"Contact Sales\",\n            \"cta_url\": \"https://example.com/contact-sales\",\n            \"popular\": false\n          }\n        ]\n      }\n    ]\n  }\n}\n</a2ui-json>"
+}

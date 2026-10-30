@@ -1,0 +1,45 @@
+{
+ "task": "T3",
+ "condition": "C_haiku-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "oracle-slice-3types__express__haiku-5-5__run1",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "C-marketing-commerce.json",
+ "atoms_in_catalogue": 23,
+ "prompt_chars": 12467,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 7.7,
+ "usage": {
+  "input_tokens": 4493,
+  "output_tokens": 1537
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "gradient_hero",
+  "feature_grid",
+  "blockquote_with_avatar",
+  "cta_button",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.8,
+  "recall": 1.0,
+  "f1": 0.889,
+  "slot_hits": {
+   "hero": true,
+   "feature columns (x3)": true,
+   "testimonial": true,
+   "CTA": true
+  }
+ },
+ "reply": "<a2ui>\nhero = gradient_hero(title=\"Ship landing pages in minutes, not weeks\", subtitle=\"Acme gives your team drag-and-drop building blocks, live previews, and one-click publishing, so every launch looks polished from day one.\", badge=\"New in 2.0\", accent=\"#4f46e5\", accent2=\"#8b5cf6\", align=\"center\", cta_label=\"Get started free\", cta_url=\"https://example.com/signup\")\n\nfeatures = feature_grid(heading=\"Everything you need to launch\", description=\"Built for product marketers and developers who want to move fast without cutting corners.\", columns=3, features=[{icon:\"\u26a1\", title:\"Lightning fast\", description:\"Pages load in under a second on any device, with automatic image optimization.\", badge:\"Performance\", color:\"#4f46e5\"}, {icon:\"\ud83c\udfa8\", title:\"Brand-ready themes\", description:\"Start from a template and customize colors, fonts, and spacing to match your brand.\", badge:\"Design\", color:\"#8b5cf6\"}, {icon:\"\ud83d\udcca\", title:\"Built-in analytics\", description:\"See visitors, conversions, and drop-off points in real time without extra scripts.\", badge:\"Insights\", color:\"#0ea5e9\"}])\n\nquote = blockquote_with_avatar(quote=\"We went from idea to a live launch page in an afternoon. Our signup rate doubled in the first week.\", author_name=\"Jordan Lee\", author_title=\"Head of Growth, Northwind\", avatar_url=\"https://example.com/avatars/jordan-lee.jpg\")\n\ncta = cta_button(url=\"https://example.com/signup\", label=\"Start your free trial\", color=\"#4f46e5\", same_tab=true)\n\nroot = columns(cols=1, gap=\"2rem\", align=\"center\", items=[{blocks: [hero, features, quote, cta]}])\n</a2ui>"
+}

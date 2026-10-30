@@ -1,0 +1,29 @@
+{
+ "task": "T2",
+ "repeat": 3,
+ "writer_model": "gemini-3.5-flash-lite",
+ "decisions": "jev",
+ "jev_ms": 188,
+ "jev_usage": {
+  "input_tokens": 600,
+  "output_tokens": 101
+ },
+ "jev_answers": {
+  "layout": "dashboard",
+  "count": "4",
+  "cta": "no"
+ },
+ "layout": "dashboard",
+ "count": 4,
+ "cta": false,
+ "writer_secs": 1.04,
+ "writer_tokens": {
+  "in": 252,
+  "out": 220
+ },
+ "build_ms": 0.17,
+ "valid": true,
+ "error": null,
+ "compile_ms": 14.0,
+ "express": "<a2ui>\nttl = heading(text=\"Performance Metrics Overview\")\nkpis = metric_row(cols=4, metrics=[{value:\"$48,250\", label:\"Total Revenue\", sub:\"+12.4% vs last period\", trend:\"up\"}, {value:\"1,429\", label:\"Active Users\", sub:\"+5.1% vs last period\", trend:\"up\"}, {value:\"3.2%\", label:\"Churn Rate\", sub:\"-0.8% vs last period\", trend:\"down\"}, {value:\"$34.10\", label:\"Avg Order Value\", sub:\"-1.5% vs last period\", trend:\"down\"}])\nchart = chartjs_bar(labels=[\"Week 1\", \"Week 2\", \"Week 3\", \"Week 4\"], datasets=[{label:\"Revenue ($)\", data:[11200, 12500, 11900, 12650]}])\nroot = columns(cols=1, gap=\"1.5rem\", align=\"top\", items=[{blocks: [ttl, kpis, chart]}])\n</a2ui>"
+}

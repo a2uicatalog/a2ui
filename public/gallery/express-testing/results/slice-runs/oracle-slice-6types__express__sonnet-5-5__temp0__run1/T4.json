@@ -1,0 +1,44 @@
+{
+ "task": "T4",
+ "condition": "DT_sonnet-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-sonnet-5-5",
+ "hints": false,
+ "label": "oracle-slice-6types__express__sonnet-5-5__temp0__run1",
+ "agent_type": "T4",
+ "catalogue": "D-t4.json",
+ "atoms_in_catalogue": 20,
+ "prompt_chars": 10490,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 12.8,
+ "usage": {
+  "input_tokens": 3799,
+  "output_tokens": 1529
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "heading",
+  "segmented_control",
+  "heading",
+  "entity_list",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.4,
+  "recall": 0.667,
+  "f1": 0.5,
+  "slot_hits": {
+   "list": true,
+   "status indicator": false,
+   "filter control": true
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"status-list\")\n\nfilterHeading = heading(\"Filter by status\")\nfilter = segmented_control([{label: \"All\", value: \"all\"}, {label: \"Active\", value: \"active\"}, {label: \"Pending\", value: \"pending\"}, {label: \"Blocked\", value: \"blocked\"}, {label: \"Done\", value: \"done\"}], \"all\", \"status_filter\")\n\nlistHeading = heading(\"Items (8)\")\nlist = entity_list([\n  {name: \"Design system audit\", subtitle: \"Review component usage across all product surfaces\", icon: \"\ud83c\udfa8\", status: \"Active\", meta: \"Due Fri\"},\n  {name: \"Payment API migration\", subtitle: \"Waiting on vendor credentials before cutover\", icon: \"\ud83d\udcb3\", status: \"Blocked\", meta: \"Due Mar 3\"},\n  {name: \"Onboarding copy refresh\", subtitle: \"Draft of new welcome emails ready for review\", icon: \"\u2709\ufe0f\", status: \"Pending\", meta: \"Due Mar 6\"},\n  {name: \"Accessibility fixes\", subtitle: \"All critical contrast issues resolved and verified\", icon: \"\u267f\", status: \"Done\", meta: \"Closed Feb 20\"},\n  {name: \"Search relevance tuning\", subtitle: \"Testing new ranking weights on 10% of traffic\", icon: \"\ud83d\udd0e\", status: \"Active\", meta: \"Due Mar 10\"},\n  {name: \"Q2 roadmap planning\", subtitle: \"Needs stakeholder sign-off on priorities\", icon: \"\ud83d\uddfa\ufe0f\", status: \"Pending\", meta: \"Due Mar 12\"},\n  {name: \"Data retention policy\", subtitle: \"Legal review is holding up the final draft\", icon: \"\ud83d\uddc4\ufe0f\", status: \"Blocked\", meta: \"Due Mar 15\"},\n  {name: \"Mobile release 4.2\", subtitle: \"Shipped to both app stores without incidents\", icon: \"\ud83d\udcf1\", status: \"Done\", meta: \"Closed Feb 28\"}\n])\n\nroot = columns(2, \"1.5rem\", \"top\", [{blocks: [filterHeading, filter]}, {blocks: [listHeading, list]}])\n</a2ui>\n\nThe status filter is a segmented control beside the list of eight items. The catalog's list and filter components are static and can't be wired to each other, so choosing a status won't hide rows. Making it filter would need a data-bound list."
+}

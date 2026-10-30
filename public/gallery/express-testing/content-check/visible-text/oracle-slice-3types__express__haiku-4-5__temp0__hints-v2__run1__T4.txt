@@ -1,0 +1,2 @@
+Did not compile.
+ A2uiCompilationValidationError: Property 'selected_value' of component 'segmented_control' does not support dynamic data bindings (paths). - Help: Property 'selected_value' on 'segmented_control' must be a static literal value, not a dynamic databinding ($path

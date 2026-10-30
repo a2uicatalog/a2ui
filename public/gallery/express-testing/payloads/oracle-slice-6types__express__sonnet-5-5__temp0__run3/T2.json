@@ -1,0 +1,114 @@
+{
+ "label": "oracle-slice-6types__express__sonnet-5-5__temp0__run3",
+ "task": "T2",
+ "format": "express",
+ "model_id": "claude-sonnet-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "metrics-overview",
+    "catalog_id": "https://a2uicatalog.ai/catalog/d-t2.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "metrics-overview",
+    "components": [
+     {
+      "id": "heading1",
+      "component": "heading",
+      "text": "Metrics Overview"
+     },
+     {
+      "id": "kpis",
+      "component": "metric_row",
+      "cols": 4,
+      "accent": "#4F8EF7",
+      "metrics": [
+       {
+        "value": "$128.4K",
+        "label": "Revenue",
+        "trend": "up",
+        "sub": "+12.5% vs. last month"
+       },
+       {
+        "value": "8,942",
+        "label": "Active Users",
+        "trend": "up",
+        "sub": "+6.2% vs. last month"
+       },
+       {
+        "value": "3.8",
+        "label": "Churn Rate",
+        "suffix": "%",
+        "trend": "down",
+        "sub": "-0.4 pts vs. last month"
+       },
+       {
+        "value": "212",
+        "label": "Avg. Response Time",
+        "suffix": "ms",
+        "trend": "down",
+        "sub": "-18 ms vs. last month"
+       }
+      ]
+     },
+     {
+      "id": "chartHeading",
+      "component": "heading",
+      "text": "Current vs. Previous Quarter"
+     },
+     {
+      "id": "chart",
+      "component": "chartjs_bar",
+      "labels": [
+       "Revenue ($K)",
+       "Active Users (100s)",
+       "Churn (%)",
+       "Response (10ms)"
+      ],
+      "datasets": [
+       {
+        "label": "Previous Quarter",
+        "data": [
+         114,
+         84,
+         4.2,
+         23
+        ]
+       },
+       {
+        "label": "Current Quarter",
+        "data": [
+         128,
+         89,
+         3.8,
+         21
+        ]
+       }
+      ]
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "1.5rem",
+      "align": "stretch",
+      "items": [
+       {
+        "blocks": [
+         "heading1",
+         "kpis",
+         "chartHeading",
+         "chart"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

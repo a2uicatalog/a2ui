@@ -1,0 +1,139 @@
+{
+ "task": "T6",
+ "condition": "G",
+ "chooser": "clef",
+ "slice_atoms_in_options": 235,
+ "picks": [
+  {
+   "slot": "A stack of ten vocabulary cards, each showing a single word on its front face, w #1",
+   "decomposer_line": "A stack of ten vocabulary cards, each showing a single word on its front face, where the user sees one card at a time with the word clearly displayed.",
+   "atom": "flashcard_deck",
+   "confidence": 0.6589,
+   "top3": [
+    [
+     "flashcard_deck",
+     0.8117
+    ],
+    [
+     "spaced_repetition_card",
+     0.0302
+    ],
+    [
+     "flip_card",
+     0.0208
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "A card flip action where tapping or clicking the current card turns it over to r #2",
+   "decomposer_line": "A card flip action where tapping or clicking the current card turns it over to reveal its meaning or translation on the back, and tapping again returns it to the word side.",
+   "atom": "spaced_repetition_card",
+   "confidence": 0.2489,
+   "top3": [
+    [
+     "spaced_repetition_card",
+     0.3512
+    ],
+    [
+     "flip_card",
+     0.3225
+    ],
+    [
+     "flashcard_deck",
+     0.157
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "Navigation controls that let the user move forward and backward through the ten  #3",
+   "decomposer_line": "Navigation controls that let the user move forward and backward through the ten cards, one at a time.",
+   "atom": "flashcard_deck",
+   "confidence": 0.2328,
+   "top3": [
+    [
+     "flashcard_deck",
+     0.462
+    ],
+    [
+     "playbook",
+     0.1199
+    ],
+    [
+     "hub",
+     0.0599
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "A progress indicator that shows how many of the ten cards have been reviewed so  #4",
+   "decomposer_line": "A progress indicator that shows how many of the ten cards have been reviewed so far, such as a count or a filled bar that grows as cards are reviewed.",
+   "atom": "flashcard_deck",
+   "confidence": 0.0915,
+   "top3": [
+    [
+     "flashcard_deck",
+     0.2205
+    ],
+    [
+     "step_progress",
+     0.1408
+    ],
+    [
+     "course_progress_card",
+     0.0855
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "A marker that tracks which cards have already been reviewed, so the progress dis #5",
+   "decomposer_line": "A marker that tracks which cards have already been reviewed, so the progress display reflects the user's actual review history during the session.",
+   "atom": "progress_store",
+   "confidence": 0.0652,
+   "top3": [
+    [
+     "progress_store",
+     0.1681
+    ],
+    [
+     "spaced_repetition_card",
+     0.1188
+    ],
+    [
+     "module_map",
+     0.1024
+    ]
+   ],
+   "finalists": null
+  }
+ ],
+ "cost": {
+  "decomposer_input_tokens": 0,
+  "decomposer_output_tokens": 0,
+  "decomposer_thinking_tokens": 0,
+  "jev_input_tokens": 50504,
+  "jev_output_tokens": 0,
+  "jev_calls": 5
+ },
+ "error": null,
+ "atoms": [
+  "flashcard_deck",
+  "spaced_repetition_card",
+  "flashcard_deck",
+  "flashcard_deck",
+  "progress_store"
+ ],
+ "score": {
+  "precision": 0.8,
+  "recall": 0.5,
+  "f1": 0.615,
+  "slot_hits": {
+   "flashcard deck": true,
+   "progress indicator": false
+  }
+ },
+ "secs": 5.3
+}

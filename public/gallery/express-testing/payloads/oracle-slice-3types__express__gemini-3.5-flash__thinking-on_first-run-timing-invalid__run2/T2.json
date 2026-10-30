@@ -1,0 +1,165 @@
+{
+ "label": "oracle-slice-3types__express__gemini-3.5-flash__thinking-on_first-run-timing-invalid__run2",
+ "task": "T2",
+ "format": "express",
+ "model_id": "gemini-3.5-flash",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "card1",
+      "component": "stat_card",
+      "value": "12.5k",
+      "label": "Weekly Active Users",
+      "delta": "+12.3%",
+      "is_up": true,
+      "accent": "#10B981"
+     },
+     {
+      "id": "card2",
+      "component": "stat_card",
+      "value": "$45,200",
+      "label": "Monthly Recurring Revenue",
+      "delta": "+8.4%",
+      "is_up": true,
+      "accent": "#10B981"
+     },
+     {
+      "id": "card3",
+      "component": "stat_card",
+      "value": "99.95%",
+      "label": "System Uptime SLA",
+      "delta": "+0.02%",
+      "is_up": true,
+      "accent": "#10B981"
+     },
+     {
+      "id": "card4",
+      "component": "stat_card",
+      "value": "340ms",
+      "label": "Avg API Response Time",
+      "delta": "-45ms",
+      "is_up": false,
+      "accent": "#EF4444"
+     },
+     {
+      "id": "kpi_row1",
+      "component": "columns",
+      "cols": 2,
+      "gap": "1rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "card1"
+        ]
+       },
+       {
+        "blocks": [
+         "card2"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "kpi_row2",
+      "component": "columns",
+      "cols": 2,
+      "gap": "1rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "card3"
+        ]
+       },
+       {
+        "blocks": [
+         "card4"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "comparison_chart",
+      "component": "chartjs_bar",
+      "labels": [
+       "Jan",
+       "Feb",
+       "Mar",
+       "Apr",
+       "May",
+       "Jun"
+      ],
+      "datasets": [
+       {
+        "label": "Current Period",
+        "data": [
+         31000,
+         35000,
+         39000,
+         41000,
+         43000,
+         45200
+        ]
+       },
+       {
+        "label": "Previous Period",
+        "data": [
+         28000,
+         30000,
+         33000,
+         36000,
+         39000,
+         41000
+        ]
+       }
+      ]
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "2rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "_inline_1",
+         "kpi_row1",
+         "kpi_row2"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_2",
+         "comparison_chart"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "_inline_1",
+      "component": "heading",
+      "text": "Performance Metrics"
+     },
+     {
+      "id": "_inline_2",
+      "component": "heading",
+      "text": "Revenue Comparison"
+     }
+    ]
+   }
+  }
+ ]
+}

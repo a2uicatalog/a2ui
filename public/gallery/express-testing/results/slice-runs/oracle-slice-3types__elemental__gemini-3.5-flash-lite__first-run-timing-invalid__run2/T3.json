@@ -1,0 +1,44 @@
+{
+ "task": "T3",
+ "condition": "CX_gemini-3.5-flash-l",
+ "temperature_applied": false,
+ "format": "elemental",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash-lite",
+ "hints": false,
+ "label": "oracle-slice-3types__elemental__gemini-3.5-flash-lite__first-run-timing-invalid__run2",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "C-marketing-commerce.json",
+ "atoms_in_catalogue": 23,
+ "prompt_chars": 12539,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 20.6,
+ "usage": {
+  "input_tokens": 3621,
+  "output_tokens": 638
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "gradient_hero",
+  "feature_grid",
+  "testimonial_card",
+  "cta_section"
+ ],
+ "score": {
+  "precision": 1.0,
+  "recall": 1.0,
+  "f1": 1.0,
+  "slot_hits": {
+   "hero": true,
+   "feature columns (x3)": true,
+   "testimonial": true,
+   "CTA": true
+  }
+ },
+ "reply": "<a2ui>\n  <body>\n    <script type=\"application/json\">\n      {\n        \"hero_title\": \"Build the future of digital commerce\",\n        \"hero_subtitle\": \"Empower your business with our cutting-edge marketing and commerce elemental tools, designed for lightning-fast deployment.\",\n        \"feature_heading\": \"Why choose our platform?\",\n        \"feature_1_title\": \"Lightning Fast\",\n        \"feature_1_desc\": \"Optimized performance ensures your customers never wait.\",\n        \"feature_2_title\": \"Secure by Default\",\n        \"feature_2_desc\": \"Enterprise-grade security protecting every transaction.\",\n        \"feature_3_title\": \"Scalable Growth\",\n        \"feature_3_desc\": \"Grow from startup to global enterprise seamlessly.\",\n        \"testimonial_text\": \"This platform completely transformed how we handle our online storefront. Conversions are up 40%!\",\n        \"testimonial_author\": \"Sarah Jenkins\",\n        \"testimonial_title\": \"Head of E-Commerce, RetailCorp\"\n      }\n    </script>\n\n    <ui-gradient_hero id=\"root\" title=\"{$/hero_title}\" subtitle=\"{$/hero_subtitle}\" badge=\"NEW RELEASE\" cta-label=\"Get Started\" cta-url=\"#get-started\" align=\"center\" />\n\n    <ui-feature_grid id=\"features\" heading=\"{$/feature_heading}\" description=\"Everything you need to succeed in the digital marketplace.\" columns=\"{3}\">\n      <script type=\"application/json\" slot=\"features\">[\n        {\n          \"icon\": \"\u26a1\",\n          \"title\": \"Lightning Fast\",\n          \"description\": \"Optimized performance ensures your customers never wait.\"\n        },\n        {\n          \"icon\": \"\ud83d\udd12\",\n          \"title\": \"Secure by Default\",\n          \"description\": \"Enterprise-grade security protecting every transaction.\"\n        },\n        {\n          \"icon\": \"\ud83d\udcc8\",\n          \"title\": \"Scalable Growth\",\n          \"description\": \"Grow from startup to global enterprise seamlessly.\"\n        }\n      ]</script>\n    </ui-feature_grid>\n\n    <ui-testimonial_card id=\"testimonial\" text=\"{$/testimonial_text}\" author-name=\"{$/testimonial_author}\" author-title=\"{$/testimonial_title}\" rating=\"{5}\" />\n\n    <ui-cta_section id=\"cta-section\" heading=\"Ready to accelerate your growth?\" body=\"Join thousands of businesses already scaling with our platform today.\" background=\"#1e1b4b\">\n      <script type=\"application/json\" slot=\"primary_cta\">{\"label\": \"Start Free Trial\", \"url\": \"#signup\"}</script>\n      <script type=\"application/json\" slot=\"secondary_cta\">{\"label\": \"Contact Sales\", \"url\": \"#contact\"}</script>\n    </ui-cta_section>\n  </body>\n</a2ui>"
+}

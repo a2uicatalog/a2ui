@@ -1,0 +1,185 @@
+{
+ "task": "T3",
+ "condition": "C",
+ "chooser": "clef",
+ "slice_atoms_in_options": 23,
+ "picks": [
+  {
+   "slot": "Hero headline: a bold, prominent main message at the top of the page that states #1",
+   "decomposer_line": "Hero headline: a bold, prominent main message at the top of the page that states the product's core promise",
+   "atom": "dark_hero",
+   "confidence": 0.2936,
+   "top3": [
+    [
+     "dark_hero",
+     0.4036
+    ],
+    [
+     "gradient_hero",
+     0.3928
+    ],
+    [
+     "cta_section",
+     0.0706
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "Hero subhead: a smaller supporting line of text beneath the headline that expand #2",
+   "decomposer_line": "Hero subhead: a smaller supporting line of text beneath the headline that expands on the message",
+   "atom": "gradient_hero",
+   "confidence": 0.3104,
+   "top3": [
+    [
+     "gradient_hero",
+     0.5473
+    ],
+    [
+     "dark_hero",
+     0.1499
+    ],
+    [
+     "body",
+     0.1236
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "First feature column: a block showing one product benefit with a short title and #3",
+   "decomposer_line": "First feature column: a block showing one product benefit with a short title and brief description",
+   "atom": "bento_grid",
+   "confidence": 0.1874,
+   "top3": [
+    [
+     "bento_grid",
+     0.323
+    ],
+    [
+     "feature_grid",
+     0.2732
+    ],
+    [
+     "dark_feature_grid",
+     0.1621
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "Second feature column: a block showing a second product benefit with a short tit #4",
+   "decomposer_line": "Second feature column: a block showing a second product benefit with a short title and brief description",
+   "atom": "bento_grid",
+   "confidence": 0.1983,
+   "top3": [
+    [
+     "bento_grid",
+     0.3377
+    ],
+    [
+     "columns",
+     0.2536
+    ],
+    [
+     "feature_grid",
+     0.212
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "Third feature column: a block showing a third product benefit with a short title #5",
+   "decomposer_line": "Third feature column: a block showing a third product benefit with a short title and brief description",
+   "atom": "bento_grid",
+   "confidence": 0.1803,
+   "top3": [
+    [
+     "bento_grid",
+     0.301
+    ],
+    [
+     "feature_grid",
+     0.2567
+    ],
+    [
+     "columns",
+     0.1906
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "Testimonial: a quote from a customer shown with their name or identity, presente #6",
+   "decomposer_line": "Testimonial: a quote from a customer shown with their name or identity, presented as social proof",
+   "atom": "testimonial_card",
+   "confidence": 0.5526,
+   "top3": [
+    [
+     "testimonial_card",
+     0.7443
+    ],
+    [
+     "blockquote_with_avatar",
+     0.0871
+    ],
+    [
+     "review_callout",
+     0.08
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "Call-to-action button: a clickable button inviting the visitor to take the next  #7",
+   "decomposer_line": "Call-to-action button: a clickable button inviting the visitor to take the next step, such as signing up or buying",
+   "atom": "cta_button",
+   "confidence": 0.1912,
+   "top3": [
+    [
+     "cta_button",
+     0.3179
+    ],
+    [
+     "cta_section",
+     0.2762
+    ],
+    [
+     "ripple_button",
+     0.157
+    ]
+   ],
+   "finalists": null
+  }
+ ],
+ "cost": {
+  "decomposer_input_tokens": 0,
+  "decomposer_output_tokens": 0,
+  "decomposer_thinking_tokens": 0,
+  "jev_input_tokens": 6631,
+  "jev_output_tokens": 0,
+  "jev_calls": 7
+ },
+ "error": null,
+ "atoms": [
+  "dark_hero",
+  "gradient_hero",
+  "bento_grid",
+  "bento_grid",
+  "bento_grid",
+  "testimonial_card",
+  "cta_button"
+ ],
+ "score": {
+  "precision": 1.0,
+  "recall": 1.0,
+  "f1": 1.0,
+  "slot_hits": {
+   "hero": true,
+   "feature columns (x3)": true,
+   "testimonial": true,
+   "CTA": true
+  }
+ },
+ "secs": 2.0
+}

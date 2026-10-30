@@ -1,0 +1,163 @@
+{
+ "label": "oracle-slice-3types__elemental__gemini-3.5-flash-lite__first-run-timing-invalid__run1",
+ "task": "T4",
+ "format": "elemental",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display-elemental.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "heading",
+      "text": "System Tasks Overview"
+     },
+     {
+      "id": "comp_1",
+      "component": "body",
+      "text": "Filter items by their current operational status:"
+     },
+     {
+      "id": "status-filter",
+      "component": "segmented_control",
+      "name": "filter",
+      "selected_value": "all",
+      "options": [
+       {
+        "label": "All",
+        "value": "all"
+       },
+       {
+        "label": "In Progress",
+        "value": "inprogress"
+       },
+       {
+        "label": "Success",
+        "value": "success"
+       },
+       {
+        "label": "New",
+        "value": "new"
+       },
+       {
+        "label": "Moved",
+        "value": "moved"
+       },
+       {
+        "label": "Removed",
+        "value": "removed"
+       }
+      ]
+     },
+     {
+      "id": "task-list",
+      "component": "entity_list",
+      "items": [
+       {
+        "name": "Database Migration",
+        "subtitle": "Migrating user records to AWS RDS cluster.",
+        "status": "inprogress"
+       },
+       {
+        "name": "API Gateway v2",
+        "subtitle": "Deployment completed successfully with zero downtime.",
+        "status": "success"
+       },
+       {
+        "name": "SSL Certificate Renewal",
+        "subtitle": "Wildcard certificate due for expiration in 14 days.",
+        "status": "new"
+       },
+       {
+        "name": "Cache Layer Optimization",
+        "subtitle": "Evaluating Redis vs Memcached for session store.",
+        "status": "inprogress"
+       },
+       {
+        "name": "Billing Service Bug",
+        "subtitle": "Resolved race condition in Stripe webhook handler.",
+        "status": "removed"
+       },
+       {
+        "name": "Analytics Pipeline",
+        "subtitle": "Moved from legacy Redshift to Snowflake data warehouse.",
+        "status": "moved"
+       },
+       {
+        "name": "Security Audit",
+        "subtitle": "Penetration testing in progress by external partner.",
+        "status": "inprogress"
+       },
+       {
+        "name": "CDN Configuration",
+        "subtitle": "Edge caching rules updated for static assets.",
+        "status": "success"
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_data_model": {
+    "surface_id": "main",
+    "path": "/",
+    "value": {
+     "filter": "all",
+     "items": [
+      {
+       "title": "Database Migration",
+       "status": "inprogress",
+       "detail": "Migrating user records to AWS RDS cluster."
+      },
+      {
+       "title": "API Gateway v2",
+       "status": "success",
+       "detail": "Deployment completed successfully with zero downtime."
+      },
+      {
+       "title": "SSL Certificate Renewal",
+       "status": "new",
+       "detail": "Wildcard certificate due for expiration in 14 days."
+      },
+      {
+       "title": "Cache Layer Optimization",
+       "status": "inprogress",
+       "detail": "Evaluating Redis vs Memcached for session store."
+      },
+      {
+       "title": "Billing Service Bug",
+       "status": "removed",
+       "detail": "Resolved race condition in Stripe webhook handler."
+      },
+      {
+       "title": "Analytics Pipeline",
+       "status": "moved",
+       "detail": "Moved from legacy Redshift to Snowflake data warehouse."
+      },
+      {
+       "title": "Security Audit",
+       "status": "inprogress",
+       "detail": "Penetration testing in progress by external partner."
+      },
+      {
+       "title": "CDN Configuration",
+       "status": "success",
+       "detail": "Edge caching rules updated for static assets."
+      }
+     ]
+    }
+   }
+  }
+ ]
+}

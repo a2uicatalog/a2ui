@@ -1,0 +1,40 @@
+{
+ "task": "T2",
+ "condition": "CN_gemini-3.5-flash",
+ "temperature_applied": false,
+ "format": "json",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash",
+ "hints": false,
+ "label": "oracle-slice-3types__json__gemini-3.5-flash__thinking-on_request-only-timing__run2",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 31546,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 21.0,
+ "usage": {
+  "input_tokens": 7914,
+  "output_tokens": 5769
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns"
+ ],
+ "score": {
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "KPI tile (x4)": false,
+   "trend (required only if metric_row was chosen; stat_card's own delta already satisfies it)": false,
+   "comparison chart": false
+  }
+ },
+ "reply": "Here is the dynamic dashboard UI to present your metrics overview. \n\nIt is split into a clean two-column layout:\n- **Left Column**: Contains your four KPI tiles using a compact metric row, featuring active users, revenue, uptime SLA, and latency trends.\n- **Right Column**: Contains a quarterly performance bar chart to compare current-year vs. previous-year data.\n\n### 1. Create the Surface\nFirst, we request the creation of a new rendering surface for our metrics overview:\n\n<a2ui-json>\n{\n  \"version\": \"v0.9.1\",\n  \"createSurface\": {\n    \"surfaceId\": \"metrics-overview-dashboard\",\n    \"catalogId\": \"https://a2uicatalog.ai/catalog/c-data-display.json\"\n  }\n}\n</a2ui-json>\n\n### 2. Update the Components\nNext, we populate the surface with our layout, headers, the four KPI tiles, and the comparison chart:\n\n<a2ui-json>\n{\n  \"version\": \"v0.9.1\",\n  \"updateComponents\": {\n    \"surfaceId\": \"metrics-overview-dashboard\",\n    \"components\": [\n      {\n        \"id\": \"root\",\n        \"component\": \"columns\",\n        \"cols\": 2,\n        \"gap\": \"2rem\",\n        \"items\": [\n          {\n            \"blocks\": [\n              {\n                \"id\": \"kpi_header\",\n                \"component\": \"heading\",\n                \"text\": \"Key Performance Indicators\"\n              },\n              {\n                \"id\": \"kpis_row\",\n                \"component\": \"metric_row\",\n                \"cols\": 2,\n                \"metrics\": [\n                  {\n                    \"value\": \"45.2k\",\n                    \"label\": \"Active Users\",\n                    \"trend\": \"up\",\n                    \"sub\": \"+12.3% vs last month\"\n                  },\n                  {\n                    \"value\": \"$128,500\",\n                    \"label\": \"Monthly Revenue\",\n                    \"trend\": \"up\",\n                    \"sub\": \"+8.4% vs last month\"\n                  },\n                  {\n                    \"value\": \"99.95%\",\n                    \"label\": \"Platform Uptime\",\n                    \"trend\": \"up\",\n                    \"sub\": \"SLA target: 99.9%\"\n                  },\n                  {\n                    \"value\": \"180 ms\",\n                    \"label\": \"Avg Latency\",\n                    \"trend\": \"down\",\n                    \"sub\": \"-15ms vs last week\"\n                  }\n                ]\n              }\n            ]\n          },\n          {\n            \"blocks\": [\n              {\n                \"id\": \"chart_header\",\n                \"component\": \"heading\",\n                \"text\": \"Quarterly Comparison\"\n              },\n              {\n                \"id\": \"performance_chart\",\n                \"component\": \"chartjs_bar\",\n                \"labels\": [\"Q1\", \"Q2\", \"Q3\", \"Q4\"],\n                \"datasets\": [\n                  {\n                    \"label\": \"Current Year\",\n                    \"data\": [12000, 15000, 18000, 24000]\n                  },\n                  {\n                    \"label\": \"Previous Year\",\n                    \"data\": [10000, 11500, 13000, 16000]\n                  }\n                ]\n              }\n            ]\n          }\n        ]\n      }\n    ]\n  }\n}\n</a2ui-json>"
+}

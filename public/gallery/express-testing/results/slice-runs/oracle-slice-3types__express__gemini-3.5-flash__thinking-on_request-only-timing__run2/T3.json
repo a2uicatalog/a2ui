@@ -1,0 +1,45 @@
+{
+ "task": "T3",
+ "condition": "C_gemini-3.5-flash",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash",
+ "hints": false,
+ "label": "oracle-slice-3types__express__gemini-3.5-flash__thinking-on_request-only-timing__run2",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "C-marketing-commerce.json",
+ "atoms_in_catalogue": 23,
+ "prompt_chars": 12467,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 23.2,
+ "usage": {
+  "input_tokens": 3412,
+  "output_tokens": 6130
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "gradient_hero",
+  "feature_grid",
+  "testimonial_card",
+  "shimmer_button",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.8,
+  "recall": 1.0,
+  "f1": 0.889,
+  "slot_hits": {
+   "hero": true,
+   "feature columns (x3)": true,
+   "testimonial": true,
+   "CTA": true
+  }
+ },
+ "reply": "<a2ui>\nhero = gradient_hero(\n    \"Supercharge Your Workflow\",\n    \"The all-in-one platform for modern product teams to design, build, and ship exceptional digital experiences faster.\",\n    \"Introducing Version 2.0\"\n)\n\nfeatures_data = [\n    {\n        \"icon\": \"\u26a1\", \n        \"title\": \"Blazing Fast\", \n        \"description\": \"Experience lightning-fast loading speeds with our globally distributed edge delivery network.\"\n    },\n    {\n        \"icon\": \"\ud83d\udee1\ufe0f\", \n        \"title\": \"Secure by Default\", \n        \"description\": \"Your data is fully encrypted at rest and in transit with enterprise-grade compliance.\"\n    },\n    {\n        \"icon\": \"\ud83d\udd04\", \n        \"title\": \"Seamless Integrations\", \n        \"description\": \"Connect with all your favorite development and design tools instantly in one click.\"\n    }\n]\n\nfeatures_section = feature_grid(\n    \"Powerful Features\",\n    \"Everything you need to launch your next big idea without the hassle.\",\n    3,\n    features_data\n)\n\ntestimonial = testimonial_card(\n    \"This platform has completely transformed how our team operates. We shipped our enterprise MVP two weeks ahead of schedule!\",\n    \"Alex Rivera\",\n    \"Head of Product at LinearFlow\",\n    \"https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d\",\n    5\n)\n\ncta = shimmer_button(\n    \"Get Started Free\",\n    \"https://example.com/signup\",\n    \"lg\",\n    \"#4f46e5\",\n    \"#111827\",\n    \"normal\",\n    \"No credit card required. Cancel anytime.\"\n)\n\ncol1 = {\n    \"blocks\": [hero, testimonial]\n}\n\ncol2 = {\n    \"blocks\": [features_section, cta]\n}\n\nroot = columns(2, \"3rem\", \"top\", [col1, col2])\n</a2ui>"
+}

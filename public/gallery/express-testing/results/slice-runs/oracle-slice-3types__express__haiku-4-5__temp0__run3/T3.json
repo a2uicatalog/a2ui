@@ -1,0 +1,42 @@
+{
+ "task": "T3",
+ "condition": "CT",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-4-5-20251001",
+ "label": "oracle-slice-3types__express__haiku-4-5__temp0__run3",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "C-marketing-commerce.json",
+ "atoms_in_catalogue": 23,
+ "prompt_chars": 12467,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 4.4,
+ "usage": {
+  "input_tokens": 3519,
+  "output_tokens": 450
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns",
+  "gradient_hero",
+  "feature_grid",
+  "testimonial_card",
+  "cta_section"
+ ],
+ "score": {
+  "precision": 0.8,
+  "recall": 1.0,
+  "f1": 0.889,
+  "slot_hits": {
+   "hero": true,
+   "feature columns (x3)": true,
+   "testimonial": true,
+   "CTA": true
+  }
+ },
+ "reply": "<a2ui>\nroot = columns(cols=1, items=[\n  {blocks: [\n    gradient_hero(\n      title=\"Transform Your Workflow\",\n      subtitle=\"Streamline your process with our powerful platform designed for modern teams\",\n      cta_label=\"Get Started\",\n      cta_url=\"https://example.com/signup\"\n    )\n  ]},\n  {blocks: [\n    feature_grid(\n      heading=\"Why Choose Us\",\n      description=\"Powerful features built for your success\",\n      columns=3,\n      features=[\n        {icon: \"\u26a1\", title: \"Lightning Fast\", description: \"Experience blazing-fast performance that keeps your team productive\"},\n        {icon: \"\ud83d\udd12\", title: \"Secure & Reliable\", description: \"Enterprise-grade security with 99.9% uptime guarantee\"},\n        {icon: \"\ud83c\udfaf\", title: \"Easy Integration\", description: \"Seamlessly connect with your favorite tools and workflows\"}\n      ]\n    )\n  ]},\n  {blocks: [\n    testimonial_card(\n      text=\"This platform completely transformed how our team collaborates. We've seen a 40% increase in productivity since switching.\",\n      author_name=\"Sarah Chen\",\n      author_title=\"Product Manager at TechCorp\",\n      author_avatar_url=\"https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah\",\n      rating=5\n    )\n  ]},\n  {blocks: [\n    cta_section(\n      heading=\"Ready to Get Started?\",\n      body=\"Join thousands of teams already using our platform to transform their workflow.\",\n      primary_cta={label: \"Start Free Trial\", url: \"https://example.com/trial\"},\n      secondary_cta={label: \"Learn More\", url: \"https://example.com/features\"}\n    )\n  ]}\n])\n</a2ui>"
+}

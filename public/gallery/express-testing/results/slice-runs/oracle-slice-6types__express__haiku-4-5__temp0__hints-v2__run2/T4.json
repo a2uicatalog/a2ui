@@ -1,0 +1,39 @@
+{
+ "task": "T4",
+ "condition": "DTH2",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-4-5-20251001",
+ "label": "oracle-slice-6types__express__haiku-4-5__temp0__hints-v2__run2",
+ "agent_type": "T4",
+ "catalogue": "D-t4.json",
+ "atoms_in_catalogue": 20,
+ "prompt_chars": 10490,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 3.1,
+ "usage": {
+  "input_tokens": 3204,
+  "output_tokens": 324
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "segmented_control",
+  "entity_list",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.667,
+  "recall": 0.667,
+  "f1": 0.667,
+  "slot_hits": {
+   "list": true,
+   "status indicator": false,
+   "filter control": true
+  }
+ },
+ "reply": "<a2ui>\nstatus_options = [\n  {label: \"All\", value: \"all\"},\n  {label: \"Active\", value: \"active\"},\n  {label: \"Inactive\", value: \"inactive\"},\n  {label: \"Pending\", value: \"pending\"}\n]\n\nitems = [\n  {name: \"Item One\", status: \"active\", meta: \"Detail line for item one\"},\n  {name: \"Item Two\", status: \"inactive\", meta: \"Detail line for item two\"},\n  {name: \"Item Three\", status: \"pending\", meta: \"Detail line for item three\"},\n  {name: \"Item Four\", status: \"active\", meta: \"Detail line for item four\"},\n  {name: \"Item Five\", status: \"inactive\", meta: \"Detail line for item five\"},\n  {name: \"Item Six\", status: \"pending\", meta: \"Detail line for item six\"},\n  {name: \"Item Seven\", status: \"active\", meta: \"Detail line for item seven\"},\n  {name: \"Item Eight\", status: \"inactive\", meta: \"Detail line for item eight\"}\n]\n\nfilter_control = segmented_control(status_options, \"all\", \"status_filter\")\n\nlist_display = entity_list(items)\n\nroot = columns(1, items=[\n  {blocks: [filter_control, list_display]}\n])\n</a2ui>"
+}

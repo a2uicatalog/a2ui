@@ -1,0 +1,104 @@
+{
+ "label": "rule-slice__express__haiku-4-5__temp0__run2",
+ "task": "T3",
+ "format": "express",
+ "model_id": "claude-haiku-4-5-20251001",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/b-marketing-commerce.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "items": [
+       {
+        "blocks": [
+         "_inline_1"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_2"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_3"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_4"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "_inline_1",
+      "component": "gradient_hero",
+      "title": "Transform Your Workflow",
+      "subtitle": "Streamline your process with our powerful platform designed for modern teams",
+      "cta_label": "Get Started",
+      "cta_url": "/signup"
+     },
+     {
+      "id": "_inline_2",
+      "component": "feature_grid",
+      "heading": "Why Choose Us",
+      "columns": 3,
+      "features": [
+       {
+        "icon": "\u26a1",
+        "title": "Lightning Fast",
+        "description": "Experience blazing-fast performance that keeps your team productive"
+       },
+       {
+        "icon": "\ud83d\udd12",
+        "title": "Secure & Reliable",
+        "description": "Enterprise-grade security with 99.9% uptime guarantee"
+       },
+       {
+        "icon": "\ud83c\udfaf",
+        "title": "Easy to Use",
+        "description": "Intuitive interface that requires minimal training"
+       }
+      ]
+     },
+     {
+      "id": "_inline_3",
+      "component": "testimonial_card",
+      "text": "This platform completely transformed how our team collaborates. We've cut our project timelines in half.",
+      "author_name": "Sarah Chen",
+      "author_title": "Product Manager at TechCorp",
+      "author_avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah",
+      "rating": 5
+     },
+     {
+      "id": "_inline_4",
+      "component": "cta_section",
+      "heading": "Ready to Get Started?",
+      "body": "Join thousands of teams already using our platform to streamline their workflow.",
+      "primary_cta": {
+       "label": "Start Free Trial",
+       "url": "/trial"
+      },
+      "secondary_cta": {
+       "label": "Learn More",
+       "url": "/features"
+      }
+     }
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,141 @@
+{
+ "task": "T3",
+ "condition": "B",
+ "chooser": "clef-flash",
+ "slice_atoms_in_options": 183,
+ "picks": [
+  {
+   "slot": "Hero area at the top showing a large headline that states the main value proposi #1",
+   "decomposer_line": "Hero area at the top showing a large headline that states the main value proposition",
+   "atom": "gradient_hero",
+   "confidence": 0.1928,
+   "top3": [
+    [
+     "gradient_hero",
+     0.3276
+    ],
+    [
+     "dark_hero",
+     0.2936
+    ],
+    [
+     "article_hero",
+     0.0373
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "Subhead text directly under the headline that expands on the offer in a sentence #2",
+   "decomposer_line": "Subhead text directly under the headline that expands on the offer in a sentence or two",
+   "atom": "gradient_hero",
+   "confidence": 0.1312,
+   "top3": [
+    [
+     "gradient_hero",
+     0.356
+    ],
+    [
+     "page_header",
+     0.0672
+    ],
+    [
+     "text_callout",
+     0.0239
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "Three feature columns side by side, each presenting one feature with a short tit #3",
+   "decomposer_line": "Three feature columns side by side, each presenting one feature with a short title and brief description",
+   "atom": "feature_grid",
+   "confidence": 0.3253,
+   "top3": [
+    [
+     "feature_grid",
+     0.5422
+    ],
+    [
+     "dark_feature_grid",
+     0.1803
+    ],
+    [
+     "bento_grid",
+     0.0384
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "Customer testimonial section showing a quote from a satisfied user along with th #4",
+   "decomposer_line": "Customer testimonial section showing a quote from a satisfied user along with their name and role",
+   "atom": "testimonial_card",
+   "confidence": 0.3572,
+   "top3": [
+    [
+     "testimonial_card",
+     0.5896
+    ],
+    [
+     "review_callout",
+     0.0836
+    ],
+    [
+     "blockquote",
+     0.0527
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "Call-to-action button prompting the visitor to take the primary next step #5",
+   "decomposer_line": "Call-to-action button prompting the visitor to take the primary next step",
+   "atom": "cta_section",
+   "confidence": 0.4426,
+   "top3": [
+    [
+     "cta_section",
+     0.6662
+    ],
+    [
+     "dark_hero",
+     0.0298
+    ],
+    [
+     "gradient_hero",
+     0.0181
+    ]
+   ],
+   "finalists": null
+  }
+ ],
+ "cost": {
+  "decomposer_input_tokens": 0,
+  "decomposer_output_tokens": 0,
+  "decomposer_thinking_tokens": 0,
+  "jev_input_tokens": 37455,
+  "jev_output_tokens": 0,
+  "jev_calls": 5
+ },
+ "error": null,
+ "atoms": [
+  "gradient_hero",
+  "gradient_hero",
+  "feature_grid",
+  "testimonial_card",
+  "cta_section"
+ ],
+ "score": {
+  "precision": 1.0,
+  "recall": 1.0,
+  "f1": 1.0,
+  "slot_hits": {
+   "hero": true,
+   "feature columns (x3)": true,
+   "testimonial": true,
+   "CTA": true
+  }
+ },
+ "secs": 9.4
+}

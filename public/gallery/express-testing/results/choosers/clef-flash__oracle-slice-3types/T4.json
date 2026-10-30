@@ -1,0 +1,184 @@
+{
+ "task": "T4",
+ "condition": "C",
+ "chooser": "clef-flash",
+ "slice_atoms_in_options": 33,
+ "picks": [
+  {
+   "slot": "A vertical list showing eight stacked rows, one per item, each row displaying th #1",
+   "decomposer_line": "A vertical list showing eight stacked rows, one per item, each row displaying the item's title in bold at the top-left.",
+   "atom": "entity_list",
+   "confidence": 0.2877,
+   "top3": [
+    [
+     "entity_list",
+     0.4854
+    ],
+    [
+     "bullet_list",
+     0.2443
+    ],
+    [
+     "icon_list",
+     0.1117
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "On each row, a small status indicator or label showing the item's current status #2",
+   "decomposer_line": "On each row, a small status indicator or label showing the item's current status, placed beside the title so status is scannable at a glance.",
+   "atom": "status_pill",
+   "confidence": 0.2924,
+   "top3": [
+    [
+     "status_pill",
+     0.4505
+    ],
+    [
+     "entity_list",
+     0.3278
+    ],
+    [
+     "lozenge",
+     0.0321
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "On each row, a single short line of detail text beneath the title giving a brief #3",
+   "decomposer_line": "On each row, a single short line of detail text beneath the title giving a brief description of the item.",
+   "atom": "entity_list",
+   "confidence": 0.454,
+   "top3": [
+    [
+     "entity_list",
+     0.6814
+    ],
+    [
+     "icon_list",
+     0.0495
+    ],
+    [
+     "data_table_sortable",
+     0.0309
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "A row of filter controls above the list, offering the status options so the user #4",
+   "decomposer_line": "A row of filter controls above the list, offering the status options so the user can choose which status to show.",
+   "atom": "chip_group",
+   "confidence": 0.6831,
+   "top3": [
+    [
+     "chip_group",
+     0.8304
+    ],
+    [
+     "segmented_control",
+     0.0466
+    ],
+    [
+     "badge_group",
+     0.0169
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "Behavior that, when a status filter is selected, hides rows whose status does no #5",
+   "decomposer_line": "Behavior that, when a status filter is selected, hides rows whose status does not match and shows only the matching items, updating the list immediately.",
+   "atom": "data_table_sortable",
+   "confidence": 0.2256,
+   "top3": [
+    [
+     "data_table_sortable",
+     0.4187
+    ],
+    [
+     "entity_list",
+     0.2419
+    ],
+    [
+     "chip_group",
+     0.0968
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "A visible state for the active filter, so the user can tell which status is curr #6",
+   "decomposer_line": "A visible state for the active filter, so the user can tell which status is currently selected, plus a way to clear the filter and show all eight items again.",
+   "atom": "chip_group",
+   "confidence": 0.7153,
+   "top3": [
+    [
+     "chip_group",
+     0.8499
+    ],
+    [
+     "segmented_control",
+     0.0276
+    ],
+    [
+     "badge_group",
+     0.0141
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "An empty-state message that appears when the selected filter matches no items, s #7",
+   "decomposer_line": "An empty-state message that appears when the selected filter matches no items, so the list area is never blank without explanation.",
+   "atom": "body",
+   "confidence": 0.1361,
+   "top3": [
+    [
+     "body",
+     0.3594
+    ],
+    [
+     "entity_list",
+     0.1267
+    ],
+    [
+     "chip_group",
+     0.0617
+    ]
+   ],
+   "finalists": null
+  }
+ ],
+ "cost": {
+  "decomposer_input_tokens": 0,
+  "decomposer_output_tokens": 0,
+  "decomposer_thinking_tokens": 0,
+  "jev_input_tokens": 8917,
+  "jev_output_tokens": 0,
+  "jev_calls": 7
+ },
+ "error": null,
+ "atoms": [
+  "entity_list",
+  "status_pill",
+  "entity_list",
+  "chip_group",
+  "data_table_sortable",
+  "chip_group",
+  "body"
+ ],
+ "score": {
+  "precision": 0.857,
+  "recall": 1.0,
+  "f1": 0.923,
+  "slot_hits": {
+   "list": true,
+   "status indicator": true,
+   "filter control": true
+  }
+ },
+ "secs": 3.9
+}

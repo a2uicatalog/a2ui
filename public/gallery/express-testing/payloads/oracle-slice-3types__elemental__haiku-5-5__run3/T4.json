@@ -1,0 +1,117 @@
+{
+ "label": "oracle-slice-3types__elemental__haiku-5-5__run3",
+ "task": "T4",
+ "format": "elemental",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "root",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display-elemental.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "root",
+    "components": [
+     {
+      "id": "list-title",
+      "component": "heading",
+      "text": "Items"
+     },
+     {
+      "id": "status-filter",
+      "component": "segmented_control",
+      "name": "status",
+      "selected_value": {
+       "path": "/filter"
+      },
+      "options": [
+       {
+        "label": "All",
+        "value": "All"
+       },
+       {
+        "label": "Active",
+        "value": "Active"
+       },
+       {
+        "label": "Pending",
+        "value": "Pending"
+       },
+       {
+        "label": "Blocked",
+        "value": "Blocked"
+       },
+       {
+        "label": "Done",
+        "value": "Done"
+       }
+      ]
+     },
+     {
+      "id": "item-list",
+      "component": "entity_list",
+      "items": {
+       "path": "/items"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_data_model": {
+    "surface_id": "root",
+    "path": "/",
+    "value": {
+     "filter": "All",
+     "items": [
+      {
+       "name": "API gateway migration",
+       "subtitle": "Moving routing rules to the new edge proxy.",
+       "status": "Active"
+      },
+      {
+       "name": "Billing webhook retries",
+       "subtitle": "Add exponential backoff to failed deliveries.",
+       "status": "Pending"
+      },
+      {
+       "name": "Search index rebuild",
+       "subtitle": "Nightly reindex is exceeding its time window.",
+       "status": "Blocked"
+      },
+      {
+       "name": "SSO certificate rotation",
+       "subtitle": "Rotate signing keys before the March expiry.",
+       "status": "Done"
+      },
+      {
+       "name": "Mobile onboarding flow",
+       "subtitle": "Usability fixes from the latest round of testing.",
+       "status": "Active"
+      },
+      {
+       "name": "Log retention policy",
+       "subtitle": "Confirm 90-day retention with the compliance team.",
+       "status": "Pending"
+      },
+      {
+       "name": "Payment provider upgrade",
+       "subtitle": "Waiting on sandbox access from the vendor.",
+       "status": "Blocked"
+      },
+      {
+       "name": "Dashboard caching layer",
+       "subtitle": "Cache hit rate reached target in staging.",
+       "status": "Done"
+      }
+     ]
+    }
+   }
+  }
+ ]
+}

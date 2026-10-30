@@ -1,0 +1,32 @@
+{
+ "task": "T4",
+ "condition": "F",
+ "label": "random-slice__express__haiku-4-5__run1",
+ "agent_type": "Data display",
+ "catalogue": "F-data-display.json",
+ "atoms_in_catalogue": 248,
+ "prompt_chars": 130958,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 4.6,
+ "usage": {
+  "input_tokens": 37598,
+  "output_tokens": 480
+ },
+ "valid": false,
+ "error": "A2uiCompilationValidationError: Standalone function calls are not supported in A2UI v0.9.1 - Help: Please correct the syntax error in your Express DSL.",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "list": false,
+   "status indicator": false,
+   "filter control": false
+  }
+ },
+ "reply": "<a2ui>\nfilterable_list(\n  title=\"Tasks\",\n  items=[\n    {title: \"Design system updates\", detail: \"Complete component library\", status: \"In Progress\"},\n    {title: \"API documentation\", detail: \"Write endpoint specifications\", status: \"Completed\"},\n    {title: \"User research interviews\", detail: \"Conduct 5 stakeholder sessions\", status: \"Pending\"},\n    {title: \"Performance optimization\", detail: \"Reduce bundle size by 40%\", status: \"In Progress\"},\n    {title: \"Security audit\", detail: \"Review authentication flows\", status: \"Pending\"},\n    {title: \"Database migration\", detail: \"Move to PostgreSQL v15\", status: \"Completed\"},\n    {title: \"Mobile app testing\", detail: \"Test on iOS and Android\", status: \"In Progress\"},\n    {title: \"Client feedback integration\", detail: \"Implement review comments\", status: \"Pending\"}\n  ],\n  filter_field=\"status\",\n  show_counts=true\n)\n\nroot = filterable_list(\n  title=\"Tasks\",\n  items=[\n    {title: \"Design system updates\", detail: \"Complete component library\", status: \"In Progress\"},\n    {title: \"API documentation\", detail: \"Write endpoint specifications\", status: \"Completed\"},\n    {title: \"User research interviews\", detail: \"Conduct 5 stakeholder sessions\", status: \"Pending\"},\n    {title: \"Performance optimization\", detail: \"Reduce bundle size by 40%\", status: \"In Progress\"},\n    {title: \"Security audit\", detail: \"Review authentication flows\", status: \"Pending\"},\n    {title: \"Database migration\", detail: \"Move to PostgreSQL v15\", status: \"Completed\"},\n    {title: \"Mobile app testing\", detail: \"Test on iOS and Android\", status: \"In Progress\"},\n    {title: \"Client feedback integration\", detail: \"Implement review comments\", status: \"Pending\"}\n  ],\n  filter_field=\"status\",\n  show_counts=true\n)\n</a2ui>"
+}

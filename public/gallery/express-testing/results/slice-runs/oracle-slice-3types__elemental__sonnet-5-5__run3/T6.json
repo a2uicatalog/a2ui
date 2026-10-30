@@ -1,0 +1,41 @@
+{
+ "task": "T6",
+ "condition": "CX_sonnet-5-5",
+ "temperature_applied": false,
+ "format": "elemental",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "claude-sonnet-5-5",
+ "hints": false,
+ "label": "oracle-slice-3types__elemental__sonnet-5-5__run3",
+ "agent_type": "Learning",
+ "catalogue": "C-learning.json",
+ "atoms_in_catalogue": 36,
+ "prompt_chars": 21279,
+ "slot_recall": [
+  2,
+  2
+ ],
+ "secs": 12.0,
+ "usage": {
+  "input_tokens": 8147,
+  "output_tokens": 1562
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "page_header",
+  "progress_bar",
+  "flashcard_deck"
+ ],
+ "score": {
+  "precision": 0.667,
+  "recall": 1.0,
+  "f1": 0.8,
+  "slot_hits": {
+   "flashcard deck": true,
+   "progress indicator": true
+  }
+ },
+ "reply": "<a2ui>\n<body>\n<script type=\"application/json\">{\"reviewed\": 0, \"total\": 10}</script>\n<ui-page_header id=\"root\" title=\"Vocabulary Flashcards\" subtitle=\"Click a card to flip it and reveal the definition. Work through all ten words.\" icon=\"\ud83d\udcda\" tag=\"10 words\" accent=\"#4f46e5\" theme=\"light\"></ui-page_header>\n<ui-progress_bar id=\"review-progress\" label=\"Cards reviewed\" value=\"{$/reviewed}\" accent=\"#4f46e5\" show_percent=\"true\" caption=\"Reviewed 0 of 10 cards\"></ui-progress_bar>\n<ui-flashcard_deck id=\"vocab-deck\" accent=\"#4f46e5\" label_front=\"WORD\" label_back=\"DEFINITION\">\n<script type=\"application/json\" slot=\"cards\">[\n{\"front\": \"Ephemeral\", \"back\": \"Lasting for a very short time.\"},\n{\"front\": \"Ubiquitous\", \"back\": \"Present, appearing, or found everywhere.\"},\n{\"front\": \"Pragmatic\", \"back\": \"Dealing with things sensibly and realistically, based on practical rather than theoretical considerations.\"},\n{\"front\": \"Eloquent\", \"back\": \"Fluent or persuasive in speaking or writing.\"},\n{\"front\": \"Ambiguous\", \"back\": \"Open to more than one interpretation; unclear.\"},\n{\"front\": \"Resilient\", \"back\": \"Able to recover quickly from difficulties; tough.\"},\n{\"front\": \"Meticulous\", \"back\": \"Showing great attention to detail; very careful and precise.\"},\n{\"front\": \"Benevolent\", \"back\": \"Well-meaning and kindly.\"},\n{\"front\": \"Candid\", \"back\": \"Truthful and straightforward; frank.\"},\n{\"front\": \"Tenacious\", \"back\": \"Holding firmly to something; persistent and determined.\"}\n]</script>\n</ui-flashcard_deck>\n</body>\n</a2ui>"
+}

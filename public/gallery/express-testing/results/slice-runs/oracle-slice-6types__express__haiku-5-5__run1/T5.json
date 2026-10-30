@@ -1,0 +1,46 @@
+{
+ "task": "T5",
+ "condition": "D_haiku-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "oracle-slice-6types__express__haiku-5-5__run1",
+ "agent_type": "T5",
+ "catalogue": "D-t5.json",
+ "atoms_in_catalogue": 5,
+ "prompt_chars": 4922,
+ "slot_recall": [
+  1,
+  1
+ ],
+ "secs": 3.6,
+ "usage": {
+  "input_tokens": 1824,
+  "output_tokens": 560
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "pricing_tier_group"
+ ],
+ "score": {
+  "per_approach": {
+   "tier_cards": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+   },
+   "comparison_table": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": null
+   }
+  },
+  "best_approach": "tier_cards",
+  "f1": 1.0
+ },
+ "reply": "<a2ui>\nroot = pricing_tier_group([\n  {name: \"Starter\", price: \"$9/mo\", recommended: false, features: [\"Up to 3 projects\", \"5 GB storage\", \"Email support\", \"Basic analytics\"]},\n  {name: \"Pro\", price: \"$29/mo\", recommended: true, features: [\"Unlimited projects\", \"100 GB storage\", \"Priority support\", \"Advanced analytics\", \"Team collaboration\"]},\n  {name: \"Enterprise\", price: \"$99/mo\", recommended: false, features: [\"Everything in Pro\", \"Unlimited storage\", \"24/7 dedicated support\", \"Custom integrations\", \"SSO and audit logs\"]}\n])\n</a2ui>"
+}

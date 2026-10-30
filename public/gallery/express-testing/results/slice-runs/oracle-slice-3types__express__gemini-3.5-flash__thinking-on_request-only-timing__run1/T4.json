@@ -1,0 +1,47 @@
+{
+ "task": "T4",
+ "condition": "C_gemini-3.5-flash",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash",
+ "hints": false,
+ "label": "oracle-slice-3types__express__gemini-3.5-flash__thinking-on_request-only-timing__run1",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 16421,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 29.1,
+ "usage": {
+  "input_tokens": 4600,
+  "output_tokens": 5472
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "segmented_control",
+  "metric_row",
+  "entity_list",
+  "columns",
+  "heading",
+  "body",
+  "body",
+  "heading"
+ ],
+ "score": {
+  "precision": 0.25,
+  "recall": 0.667,
+  "f1": 0.364,
+  "slot_hits": {
+   "list": true,
+   "status indicator": false,
+   "filter control": true
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"project-registry-surface\")\n\n# Define the status filter control\nstatus_filter = segmented_control([\n    {\"label\": \"All (8)\", \"value\": \"all\"},\n    {\"label\": \"Active (3)\", \"value\": \"active\"},\n    {\"label\": \"Pending (2)\", \"value\": \"pending\"},\n    {\"label\": \"Completed (2)\", \"value\": \"completed\"},\n    {\"label\": \"Archived (1)\", \"value\": \"archived\"}\n], \"all\", \"filter_status\")\n\n# Distribution metrics for visual reference\nstats = metric_row(4, \"#3B82F6\", [\n    {\"value\": \"3\", \"label\": \"Active\", \"accent\": \"#3B82F6\"},\n    {\"value\": \"2\", \"label\": \"Pending\", \"accent\": \"#F59E0B\"},\n    {\"value\": \"2\", \"label\": \"Completed\", \"accent\": \"#10B981\"},\n    {\"value\": \"1\", \"label\": \"Archived\", \"accent\": \"#6B7280\"}\n])\n\n# The list of eight items matching the brief\nitem_list = entity_list([\n    {\n        \"name\": \"Authentication Flow\",\n        \"subtitle\": \"Implement OAuth2 social login for Google and GitHub accounts.\",\n        \"icon\": \"\ud83d\udd10\",\n        \"status\": \"Active\",\n        \"meta\": \"High Priority\"\n    },\n    {\n        \"name\": \"Database Migration\",\n        \"subtitle\": \"Upgrade core Postgres clusters to v16 with zero-downtime.\",\n        \"icon\": \"\ud83d\uddc4\ufe0f\",\n        \"status\": \"Completed\",\n        \"meta\": \"Completed Yesterday\"\n    },\n    {\n        \"name\": \"Billing Dashboard\",\n        \"subtitle\": \"Design and prototype stripe customer portal integration.\",\n        \"icon\": \"\ud83d\udcb3\",\n        \"status\": \"Pending\",\n        \"meta\": \"Awaiting UX\"\n    },\n    {\n        \"name\": \"API Rate Limiting\",\n        \"subtitle\": \"Configure Redis token bucket rate limiters for public endpoints.\",\n        \"icon\": \"\ud83d\ude80\",\n        \"status\": \"Active\",\n        \"meta\": \"Sprint 4\"\n    },\n    {\n        \"name\": \"Security Audit\",\n        \"subtitle\": \"Conduct external pen testing on banking gateway endpoints.\",\n        \"icon\": \"\ud83d\udee1\ufe0f\",\n        \"status\": \"Pending\",\n        \"meta\": \"Oct 15\"\n    },\n    {\n        \"name\": \"Analytics Pipeline\",\n        \"subtitle\": \"Aggregate clickstream events into BigQuery storage.\",\n        \"icon\": \"\ud83d\udcca\",\n        \"status\": \"Completed\",\n        \"meta\": \"Operational\"\n    },\n    {\n        \"name\": \"Deprecated Webhooks\",\n        \"subtitle\": \"Deprecate legacy XML payload hooks in favor of JSON v2.\",\n        \"icon\": \"\ud83d\udcc1\",\n        \"status\": \"Archived\",\n        \"meta\": \"Archived\"\n    },\n    {\n        \"name\": \"Mobile Push Alerts\",\n        \"subtitle\": \"Setup Expo notification router for Android and iOS clients.\",\n        \"icon\": \"\ud83d\udcf1\",\n        \"status\": \"Active\",\n        \"meta\": \"In Progress\"\n    }\n])\n\n# Organize into a sleek dashboard layout using two columns\ncol1_blocks = [\n    heading(\"Registry Overview\"),\n    body(\"Filter and monitor our global work queue. Select a lifecycle status to update your current view context.\"),\n    status_filter,\n    body(\"Current Queue Distribution:\"),\n    stats\n]\n\ncol2_blocks = [\n    heading(\"Work Items\"),\n    item_list\n]\n\nroot = columns(2, \"2.5rem\", \"top\", [\n    {\"blocks\": col1_blocks},\n    {\"blocks\": col2_blocks}\n])\n</a2ui>"
+}

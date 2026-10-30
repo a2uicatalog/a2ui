@@ -1,0 +1,114 @@
+{
+ "label": "oracle-slice-3types__json__gemini-3.5-flash-lite__request-only-timing__run3",
+ "task": "T1",
+ "format": "json",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "water-cycle-lesson",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning.json",
+    "theme": {
+     "primaryColor": "#0284c7"
+    }
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "water-cycle-lesson",
+    "components": [
+     {
+      "id": "root",
+      "component": "page_header",
+      "title": "The Water Cycle",
+      "subtitle": "Journey of water through Earth's atmosphere, land, and oceans.",
+      "icon": "\ud83d\udca7",
+      "tag": "Earth Science",
+      "accent": "#0284c7"
+     },
+     {
+      "id": "concept-1",
+      "component": "concept_rung",
+      "badge": "1",
+      "kind": "depth",
+      "title": "Evaporation and Transpiration",
+      "body": "The sun heats water in oceans, lakes, and rivers, causing it to change from a liquid to a gas called water vapor. Plants also release water from their leaves in a process called transpiration."
+     },
+     {
+      "id": "concept-2",
+      "component": "concept_rung",
+      "badge": "2",
+      "kind": "depth",
+      "title": "Condensation",
+      "body": "As warm water vapor rises high into the atmosphere, the cooler air causes it to cool down and turn back into tiny liquid water droplets or ice crystals, forming clouds."
+     },
+     {
+      "id": "concept-3",
+      "component": "concept_rung",
+      "badge": "3",
+      "kind": "depth",
+      "title": "Precipitation and Collection",
+      "body": "When too much water has condensed, the water droplets in clouds become too heavy to stay in the air. They fall back to Earth as rain, snow, sleet, or hail, and collect in oceans and rivers."
+     },
+     {
+      "id": "example-rung",
+      "component": "concept_rung",
+      "badge": "EX",
+      "kind": "example",
+      "title": "Worked Example: A Puddle on a Sunny Day",
+      "body": "Imagine a rain puddle sitting on a warm asphalt road:\n1. Heat from the sun increases evaporation.\n2. The water disappears, turning invisible.\n3. It travels upward as vapor, ready to form clouds.",
+      "takeaway": "Water is constantly recycling; the water in your glass today might have been used by dinosaurs millions of years ago!"
+     },
+     {
+      "id": "quiz-heading",
+      "component": "heading",
+      "text": "Self-Check Quiz"
+     },
+     {
+      "id": "quiz",
+      "component": "quiz_set",
+      "title": "Test Your Knowledge",
+      "pass_score": 66,
+      "questions": [
+       {
+        "question": "What process turns liquid water into water vapor using heat from the sun?",
+        "options": [
+         "Condensation",
+         "Evaporation",
+         "Precipitation",
+         "Collection"
+        ],
+        "correct": 1,
+        "explanation": "Evaporation is the process where liquid water absorbs heat and transforms into gas."
+       },
+       {
+        "question": "How do plants contribute to the water cycle?",
+        "options": [
+         "Transpiration",
+         "Freezing",
+         "Absorption of clouds",
+         "Melting"
+        ],
+        "correct": 0,
+        "explanation": "Plants release water vapor through tiny pores in their leaves via transpiration."
+       },
+       {
+        "question": "Which of the following is NOT a form of precipitation?",
+        "options": [
+         "Rain",
+         "Snow",
+         "Evaporation",
+         "Hail"
+        ],
+        "correct": 2,
+        "explanation": "Evaporation is an upward movement of water vapor, whereas precipitation falls down to Earth."
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

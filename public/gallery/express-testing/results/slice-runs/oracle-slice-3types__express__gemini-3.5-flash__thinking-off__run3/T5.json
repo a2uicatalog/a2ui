@@ -1,0 +1,46 @@
+{
+ "task": "T5",
+ "condition": "C_gemini-3.5-flash",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 32768,
+ "model_id": "gemini-3.5-flash",
+ "hints": false,
+ "label": "oracle-slice-3types__express__gemini-3.5-flash__thinking-off__run3",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "C-marketing-commerce.json",
+ "atoms_in_catalogue": 23,
+ "prompt_chars": 12467,
+ "slot_recall": [
+  1,
+  1
+ ],
+ "secs": 2.5,
+ "usage": {
+  "input_tokens": 3402,
+  "output_tokens": 432
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "pricing_tier_group"
+ ],
+ "score": {
+  "per_approach": {
+   "tier_cards": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+   },
+   "comparison_table": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": null
+   }
+  },
+  "best_approach": "tier_cards",
+  "f1": 1.0
+ },
+ "reply": "```python\n<a2ui>\nsurface(\"subscription-plans\")\n\nroot = pricing_tier_group(\n    tiers=[\n        {\n            \"name\": \"Starter\",\n            \"price\": \"$9\",\n            \"frequency\": \"month\",\n            \"description\": \"Essential tools for individuals and freelancers.\",\n            \"features\": [\n                \"1 User License\",\n                \"Up to 5 Active Projects\",\n                \"Basic Analytics Dashboard\",\n                \"Standard Email Support\"\n            ],\n            \"cta_label\": \"Get Started\",\n            \"cta_url\": \"https://example.com/signup/starter\",\n            \"recommended\": false\n        },\n        {\n            \"name\": \"Professional\",\n            \"price\": \"$29\",\n            \"frequency\": \"month\",\n            \"description\": \"Advanced collaboration tools for growing teams.\",\n            \"features\": [\n                \"Up to 10 User Licenses\",\n                \"Unlimited Active Projects\",\n                \"Advanced Real-time Analytics\",\n                \"Priority 24/7 Support\",\n                \"Custom Integration API Access\"\n            ],\n            \"cta_label\": \"Start Free Trial\",\n            \"cta_url\": \"https://example.com/signup/pro\",\n            \"recommended\": true\n        },\n        {\n            \"name\": \"Enterprise\",\n            \"price\": \"$99\",\n            \"frequency\": \"month\",\n            \"description\": \"Customizable, highly secure workflows for organizations.\",\n            \"features\": [\n                \"Unlimited User Licenses\",\n                \"Unlimited Projects & Templates\",\n                \"Enterprise SLA & Dedicated Support\",\n                \"Single Sign-On (SSO) & SAML\",\n                \"Custom Audit Logging & Reports\"\n            ],\n            \"cta_label\": \"Contact Sales\",\n            \"cta_url\": \"https://example.com/contact-sales\",\n            \"recommended\": false\n        }\n    ]\n)\n</a2ui>\n```"
+}

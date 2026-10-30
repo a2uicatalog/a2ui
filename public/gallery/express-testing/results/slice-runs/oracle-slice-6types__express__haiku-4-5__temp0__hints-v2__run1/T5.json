@@ -1,0 +1,43 @@
+{
+ "task": "T5",
+ "condition": "DTH2",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-4-5-20251001",
+ "label": "oracle-slice-6types__express__haiku-4-5__temp0__hints-v2__run1",
+ "agent_type": "T5",
+ "catalogue": "D-t5.json",
+ "atoms_in_catalogue": 5,
+ "prompt_chars": 4922,
+ "slot_recall": [
+  1,
+  1
+ ],
+ "secs": 3.0,
+ "usage": {
+  "input_tokens": 1606,
+  "output_tokens": 295
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "pricing_tier_group"
+ ],
+ "score": {
+  "per_approach": {
+   "tier_cards": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+   },
+   "comparison_table": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": null
+   }
+  },
+  "best_approach": "tier_cards",
+  "f1": 1.0
+ },
+ "reply": "<a2ui>\nroot = pricing_tier_group([\n  {\n    name: \"Starter\",\n    price: \"$29\",\n    description: \"Perfect for getting started\",\n    features: [\"Up to 10 projects\", \"Basic analytics\", \"Community support\", \"1 GB storage\"],\n    cta: \"Get Started\",\n    action: Event(\"select_tier\", {tier: \"starter\"})\n  },\n  {\n    name: \"Professional\",\n    price: \"$79\",\n    description: \"Most popular for growing teams\",\n    features: [\"Unlimited projects\", \"Advanced analytics\", \"Priority support\", \"100 GB storage\", \"Custom integrations\", \"Team collaboration\"],\n    cta: \"Start Free Trial\",\n    action: Event(\"select_tier\", {tier: \"professional\"}),\n    recommended: true\n  },\n  {\n    name: \"Enterprise\",\n    price: \"Custom\",\n    description: \"For large-scale operations\",\n    features: [\"Everything in Professional\", \"Dedicated account manager\", \"Custom SLA\", \"Unlimited storage\", \"Advanced security\", \"On-premise option\"],\n    cta: \"Contact Sales\",\n    action: Event(\"select_tier\", {tier: \"enterprise\"})\n  }\n])\n</a2ui>"
+}

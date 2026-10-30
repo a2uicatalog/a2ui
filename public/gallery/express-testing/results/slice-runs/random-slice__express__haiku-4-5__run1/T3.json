@@ -1,0 +1,33 @@
+{
+ "task": "T3",
+ "condition": "F",
+ "label": "random-slice__express__haiku-4-5__run1",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "F-marketing-commerce.json",
+ "atoms_in_catalogue": 189,
+ "prompt_chars": 96246,
+ "slot_recall": [
+  3,
+  4
+ ],
+ "secs": 4.1,
+ "usage": {
+  "input_tokens": 27499,
+  "output_tokens": 368
+ },
+ "valid": false,
+ "error": "A2uiCompilationParseError: Failed to parse expression: Syntax error at line 14:12: mismatched input '=' expecting ':' (line 14) - Line 14, Col 12 - Help: Please correct the syntax error in your Express DSL.",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "hero": false,
+   "feature columns (x3)": false,
+   "testimonial": false,
+   "CTA": false
+  }
+ },
+ "reply": "<a2ui>\nroot = div([\n  page_header(\n    title=\"Transform Your Workflow\",\n    subtitle=\"The all-in-one platform for modern teams\",\n    accent=\"#4f46e5\"\n  ),\n  spacer(height=40),\n  feature_grid(\n    heading=\"Why Choose Us\",\n    description=\"Everything you need to succeed\",\n    columns=3,\n    features=[\n      {\n        icon=\"\u26a1\",\n        title=\"Lightning Fast\",\n        description=\"Optimized performance that keeps up with your pace\"\n      },\n      {\n        icon=\"\ud83d\udd12\",\n        title=\"Enterprise Security\",\n        description=\"Bank-level encryption and compliance built-in\"\n      },\n      {\n        icon=\"\ud83e\udd1d\",\n        title=\"Team Collaboration\",\n        description=\"Real-time sync across all your projects\"\n      }\n    ]\n  ),\n  spacer(height=40),\n  expert_endorsement(\n    quote=\"This platform completely changed how our team works together. Highly recommended!\",\n    expert_name=\"Sarah Chen\",\n    expert_title=\"Product Manager\",\n    expert_organization=\"TechCorp Inc\",\n    expert_avatar_url=\"https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah\"\n  ),\n  spacer(height=40),\n  cta_button(\n    label=\"Get Started Free\",\n    url=\"https://example.com/signup\",\n    color=\"#4f46e5\"\n  )\n])\n</a2ui>"
+}

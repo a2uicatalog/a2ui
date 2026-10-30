@@ -1,0 +1,18 @@
+{
+ "label": "oracle-slice-6types__express__haiku-4-5__temp0__hints-v1__run1",
+ "task": "T4",
+ "format": "express",
+ "model_id": "claude-haiku-4-5-20251001",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "update_data_model": {
+    "surface_id": "main",
+    "path": "/",
+    "value": {
+     "statusFilter": "all"
+    }
+   }
+  }
+ ]
+}

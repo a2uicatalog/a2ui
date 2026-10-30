@@ -1,0 +1,107 @@
+{
+ "label": "oracle-slice-3types__express__gemini-3.5-flash-lite__request-only-timing__run3",
+ "task": "T3",
+ "format": "express",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "landing-page",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "landing-page",
+    "components": [
+     {
+      "id": "hero",
+      "component": "gradient_hero",
+      "title": "Build Better Products, Faster",
+      "subtitle": "Empower your team with next-generation workflows, real-time collaboration, and powerful analytics built for modern creators.",
+      "badge": "New v2.0 Release",
+      "cta_label": "Get Started Free",
+      "cta_url": "https://example.com/signup"
+     },
+     {
+      "id": "features",
+      "component": "feature_grid",
+      "heading": "Everything you need to succeed",
+      "description": "Our comprehensive suite of tools helps you ship faster and scale effortlessly.",
+      "columns": 3,
+      "features": [
+       {
+        "icon": "\u26a1",
+        "title": "Lightning Fast",
+        "description": "Optimized performance ensures your projects render and deploy instantly."
+       },
+       {
+        "icon": "\ud83d\udd12",
+        "title": "Enterprise Security",
+        "description": "State-of-the-art encryption keeps your sensitive data completely secure."
+       },
+       {
+        "icon": "\ud83d\udcca",
+        "title": "Advanced Analytics",
+        "description": "Gain deep, actionable insights into user behavior and system performance."
+       }
+      ]
+     },
+     {
+      "id": "testimonial",
+      "component": "testimonial_card",
+      "text": "This platform has completely transformed how our engineering team operates. We've cut our deployment times in half!",
+      "author_name": "Sarah Jenkins",
+      "author_title": "VP of Engineering at TechCorp",
+      "author_avatar_url": "https://images.unsplash.com/photo-1494790108377-be9c29b29330",
+      "rating": 5
+     },
+     {
+      "id": "cta",
+      "component": "cta_section",
+      "heading": "Ready to accelerate your workflow?",
+      "body": "Join thousands of satisfied teams building the future today. No credit card required.",
+      "primary_cta": {
+       "label": "Start Free Trial",
+       "url": "https://example.com/trial"
+      },
+      "secondary_cta": {
+       "label": "Contact Sales",
+       "url": "https://example.com/contact"
+      }
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "2rem",
+      "items": [
+       {
+        "blocks": [
+         "hero"
+        ]
+       },
+       {
+        "blocks": [
+         "features"
+        ]
+       },
+       {
+        "blocks": [
+         "testimonial"
+        ]
+       },
+       {
+        "blocks": [
+         "cta"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

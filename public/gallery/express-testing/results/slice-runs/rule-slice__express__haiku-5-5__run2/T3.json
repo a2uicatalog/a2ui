@@ -1,0 +1,45 @@
+{
+ "task": "T3",
+ "condition": "B_haiku-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "rule-slice__express__haiku-5-5__run2",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "B-marketing-commerce.json",
+ "atoms_in_catalogue": 189,
+ "prompt_chars": 80817,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 8.4,
+ "usage": {
+  "input_tokens": 29190,
+  "output_tokens": 1628
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "gradient_hero",
+  "feature_grid",
+  "testimonial_card",
+  "cta_section",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.8,
+  "recall": 1.0,
+  "f1": 0.889,
+  "slot_hits": {
+   "hero": true,
+   "feature columns (x3)": true,
+   "testimonial": true,
+   "CTA": true
+  }
+ },
+ "reply": "<a2ui>\nhero = gradient_hero(title=\"Ship faster with less overhead\", subtitle=\"Acme gives your team one place to plan, build, and launch, without the tool sprawl.\", badge=\"Now in public beta\", accent=\"#4f46e5\", accent2=\"#8b5cf6\", align=\"center\", cta_label=\"Get started free\", cta_url=\"https://example.com/signup\")\n\nfeatures = feature_grid(heading=\"Everything you need to launch\", description=\"Three core capabilities that keep your team moving.\", columns=3, features=[{icon: \"\u26a1\", title: \"Lightning fast\", description: \"Builds and deploys in seconds, so every change reaches users sooner.\"}, {icon: \"\ud83d\udd12\", title: \"Secure by default\", description: \"Role-based access, audit logs, and encryption at rest and in transit.\"}, {icon: \"\ud83d\udd17\", title: \"Works with your stack\", description: \"Connects to the tools you already use through native integrations and a open API.\"}])\n\ntestimonial = testimonial_card(text=\"We cut our release cycle in half in the first month. The workflow just makes sense.\", author_name=\"Jordan Lee\", author_title=\"VP of Engineering, Northwind\", rating=5)\n\ncta = cta_section(heading=\"Ready to launch your next release?\", body=\"Start free today. No credit card required, and you can invite your whole team in minutes.\", primary_cta={label: \"Start your free trial\", url: \"https://example.com/signup\"}, background=\"#4f46e5\")\n\nroot = columns(cols=1, gap=\"2.5rem\", align=\"stretch\", items=[{blocks: [hero, features, testimonial, cta]}])\n</a2ui>"
+}

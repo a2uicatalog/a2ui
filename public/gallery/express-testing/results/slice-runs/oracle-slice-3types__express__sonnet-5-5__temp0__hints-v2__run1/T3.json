@@ -1,0 +1,45 @@
+{
+ "task": "T3",
+ "condition": "CT_sonnet-5-5H2",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-sonnet-5-5",
+ "hints": true,
+ "label": "oracle-slice-3types__express__sonnet-5-5__temp0__hints-v2__run1",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "C-marketing-commerce.json",
+ "atoms_in_catalogue": 23,
+ "prompt_chars": 12467,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 20.0,
+ "usage": {
+  "input_tokens": 4812,
+  "output_tokens": 1503
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "gradient_hero",
+  "feature_grid",
+  "testimonial_card",
+  "cta_button",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.8,
+  "recall": 1.0,
+  "f1": 0.889,
+  "slot_hits": {
+   "hero": true,
+   "feature columns (x3)": true,
+   "testimonial": true,
+   "CTA": true
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"product-landing\")\nhero = gradient_hero(\"Ship faster with Launchpad\", \"The all-in-one workspace that helps your team plan, build, and release products without the busywork.\", \"New: Launchpad 2.0\", \"#4f46e5\", \"#8b5cf6\", null, \"left\", \"Get started free\", \"https://example.com/signup\")\nfeatures = feature_grid(\"Everything you need\", \"Three reasons teams choose Launchpad.\", 3, [{icon: \"\u26a1\", title: \"Fast setup\", description: \"Go from sign-up to your first project in under five minutes.\"}, {icon: \"\ud83e\udd1d\", title: \"Real-time collaboration\", description: \"Work together on plans, docs, and tasks, with live updates for everyone.\"}, {icon: \"\ud83d\udd12\", title: \"Secure by default\", description: \"Enterprise-grade encryption and granular permissions come built in.\"}])\nquote = testimonial_card(\"Launchpad cut our release cycle in half. We can't imagine working without it.\", \"Dana Whitfield\", \"VP of Engineering, Brightside\", \"https://example.com/avatars/dana.jpg\", 5)\ncta = cta_button(\"https://example.com/signup\", \"Start your free trial\", \"#4f46e5\", false)\nroot = columns(2, \"2rem\", \"top\", [{blocks: [hero, features]}, {blocks: [quote, cta]}])\n</a2ui>"
+}

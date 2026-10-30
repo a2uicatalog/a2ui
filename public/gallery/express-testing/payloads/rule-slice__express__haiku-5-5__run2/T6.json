@@ -1,0 +1,100 @@
+{
+ "label": "rule-slice__express__haiku-5-5__run2",
+ "task": "T6",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/b-learning.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "heading",
+      "component": "heading",
+      "text": "Spanish Vocabulary Flashcards"
+     },
+     {
+      "id": "intro",
+      "component": "body",
+      "text": "Click a card to flip it and reveal the English meaning."
+     },
+     {
+      "id": "progress",
+      "component": "pull_stat",
+      "value": "0 of 10",
+      "label": "cards reviewed",
+      "color": "#4f46e5"
+     },
+     {
+      "id": "deck",
+      "component": "flashcard_deck",
+      "cards": [
+       {
+        "front": "hola",
+        "back": "hello"
+       },
+       {
+        "front": "gracias",
+        "back": "thank you"
+       },
+       {
+        "front": "adi\u00f3s",
+        "back": "goodbye"
+       },
+       {
+        "front": "por favor",
+        "back": "please"
+       },
+       {
+        "front": "s\u00ed",
+        "back": "yes"
+       },
+       {
+        "front": "no",
+        "back": "no"
+       },
+       {
+        "front": "agua",
+        "back": "water"
+       },
+       {
+        "front": "comida",
+        "back": "food"
+       },
+       {
+        "front": "casa",
+        "back": "house"
+       },
+       {
+        "front": "amigo",
+        "back": "friend"
+       }
+      ],
+      "accent": "#4f46e5",
+      "label_front": "SPANISH",
+      "label_back": "ENGLISH"
+     },
+     {
+      "id": "root",
+      "component": "color_section",
+      "style": "light",
+      "blocks": [
+       "heading",
+       "intro",
+       "progress",
+       "deck"
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

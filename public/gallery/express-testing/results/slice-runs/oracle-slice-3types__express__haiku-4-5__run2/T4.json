@@ -1,0 +1,32 @@
+{
+ "task": "T4",
+ "condition": "C",
+ "label": "oracle-slice-3types__express__haiku-4-5__run2",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 16421,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 5.5,
+ "usage": {
+  "input_tokens": 4758,
+  "output_tokens": 518
+ },
+ "valid": false,
+ "error": "A2uiCompilationParseError: Failed to parse expression: Syntax error at line 37:39: mismatched input '=' expecting {',', ')'} (line 37) - Line 37, Col 39 - Help: Please correct the syntax error in your Express DSL.",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "list": false,
+   "status indicator": false,
+   "filter control": false
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"main-surface\")\n\nroot = columns(cols=1, items=[\n  {blocks: [\n    heading(\"Items\"),\n    filter_control\n  ]},\n  {blocks: [\n    entity_list(items=$/filteredItems)\n  ]}\n])\n\nfilter_control = segmented_control(\n  options=[\n    {label: \"All\", value: \"all\"},\n    {label: \"Active\", value: \"active\"},\n    {label: \"Completed\", value: \"completed\"},\n    {label: \"Pending\", value: \"pending\"}\n  ],\n  selected_value=$/selectedFilter,\n  name=\"statusFilter\"\n)\n\n$/items = [\n  {name: \"Setup authentication\", subtitle: \"Configure OAuth2 integration\", icon: \"\ud83d\udd10\", status: \"active\", meta: \"In Progress\"},\n  {name: \"Database migration\", subtitle: \"Migrate legacy data to PostgreSQL\", icon: \"\ud83d\uddc4\ufe0f\", status: \"active\", meta: \"In Progress\"},\n  {name: \"API documentation\", subtitle: \"Write OpenAPI specification\", icon: \"\ud83d\udcda\", status: \"completed\", meta: \"Completed\"},\n  {name: \"Performance testing\", subtitle: \"Load test with 10k concurrent users\", icon: \"\u26a1\", status: \"pending\", meta: \"Pending\"},\n  {name: \"Security audit\", subtitle: \"Third-party penetration testing\", icon: \"\ud83d\udee1\ufe0f\", status: \"completed\", meta: \"Completed\"},\n  {name: \"User onboarding flow\", subtitle: \"Design and implement signup wizard\", icon: \"\ud83d\udc64\", status: \"active\", meta: \"In Progress\"},\n  {name: \"Mobile app release\", subtitle: \"Publish iOS and Android versions\", icon: \"\ud83d\udcf1\", status: \"pending\", meta: \"Pending\"},\n  {name: \"Analytics dashboard\", subtitle: \"Integrate Mixpanel and create dashboards\", icon: \"\ud83d\udcca\", status: \"completed\", meta: \"Completed\"}\n]\n\n$/selectedFilter = \"all\"\n\n$/filteredItems = ?if($/selectedFilter == \"all\", $/items, ?filter($/items, $status == $/selectedFilter))\n</a2ui>"
+}

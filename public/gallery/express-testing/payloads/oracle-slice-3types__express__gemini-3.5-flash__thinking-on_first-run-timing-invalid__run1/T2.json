@@ -1,0 +1,123 @@
+{
+ "label": "oracle-slice-3types__express__gemini-3.5-flash__thinking-on_first-run-timing-invalid__run1",
+ "task": "T2",
+ "format": "express",
+ "model_id": "gemini-3.5-flash",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "metrics-overview-dashboard",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "metrics-overview-dashboard",
+    "components": [
+     {
+      "id": "kpi1",
+      "component": "stat_card",
+      "value": "$124,500",
+      "label": "Monthly Revenue",
+      "delta": "+14.2% vs last month",
+      "is_up": true,
+      "accent": "#10B981"
+     },
+     {
+      "id": "kpi2",
+      "component": "stat_card",
+      "value": "3,240",
+      "label": "Active Users",
+      "delta": "+8.3% vs last week",
+      "is_up": true,
+      "accent": "#10B981"
+     },
+     {
+      "id": "kpi3",
+      "component": "stat_card",
+      "value": "98.2%",
+      "label": "SLA Adherence",
+      "delta": "-0.5% vs target",
+      "is_up": false,
+      "accent": "#EF4444"
+     },
+     {
+      "id": "kpi4",
+      "component": "stat_card",
+      "value": "$42.50",
+      "label": "Average Order Value",
+      "delta": "+3.1% vs last month",
+      "is_up": true,
+      "accent": "#10B981"
+     },
+     {
+      "id": "comparison_chart",
+      "component": "chartjs_bar",
+      "labels": [
+       "Q1",
+       "Q2",
+       "Q3",
+       "Q4"
+      ],
+      "datasets": [
+       {
+        "label": "Current Year",
+        "data": [
+         120,
+         155,
+         182,
+         224
+        ]
+       },
+       {
+        "label": "Previous Year",
+        "data": [
+         105,
+         115,
+         130,
+         168
+        ]
+       }
+      ]
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "2rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "_inline_1",
+         "kpi1",
+         "kpi2",
+         "kpi3",
+         "kpi4"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_2",
+         "comparison_chart"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "_inline_1",
+      "component": "heading",
+      "text": "Key Metrics"
+     },
+     {
+      "id": "_inline_2",
+      "component": "heading",
+      "text": "Quarterly Performance"
+     }
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,40 @@
+{
+ "task": "T1",
+ "condition": "DN_haiku-5-5",
+ "temperature_applied": false,
+ "format": "json",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "oracle-slice-6types__json__haiku-5-5__run3",
+ "agent_type": "T1",
+ "catalogue": "D-t1.json",
+ "atoms_in_catalogue": 28,
+ "prompt_chars": 31739,
+ "slot_recall": [
+  5,
+  5
+ ],
+ "secs": 11.4,
+ "usage": {
+  "input_tokens": 12049,
+  "output_tokens": 2549
+ },
+ "valid": false,
+ "error": "A2uiIntegrityError: Component 'concept-condensation-body' is not reachable from 'root'",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "title": false,
+   "concept sections (x3)": false,
+   "worked example": false,
+   "3-question quiz": false,
+   "quiz result": false
+  }
+ },
+ "reply": "The lesson is below as an A2UI surface: a page header, three concept sections, a worked example, and a three-question self-check.\n\n<a2ui-json>\n[\n  {\n    \"version\": \"v0.9\",\n    \"createSurface\": {\n      \"surfaceId\": \"water-cycle-lesson\",\n      \"catalogId\": \"https://a2uicatalog.ai/catalog/d-t1.json\"\n    }\n  },\n  {\n    \"version\": \"v0.9\",\n    \"updateComponents\": {\n      \"surfaceId\": \"water-cycle-lesson\",\n      \"components\": [\n        {\n          \"id\": \"root\",\n          \"component\": \"page_header\",\n          \"title\": \"The Water Cycle\",\n          \"subtitle\": \"How water moves continuously between the oceans, atmosphere, and land.\",\n          \"icon\": \"\ud83d\udca7\",\n          \"tag\": \"Lesson\",\n          \"accent\": \"#0284c7\",\n          \"theme\": \"light\",\n          \"meta\": [\n            {\"label\": \"Level\", \"value\": \"Introductory\"},\n            {\"label\": \"Sections\", \"value\": \"3 concepts + example\"},\n            {\"label\": \"Check\", \"value\": \"3 questions\"}\n          ]\n        },\n        {\n          \"id\": \"concept-evaporation-heading\",\n          \"component\": \"heading\",\n          \"text\": \"1. Evaporation\"\n        },\n        {\n          \"id\": \"concept-evaporation-body\",\n          \"component\": \"body\",\n          \"text\": \"The sun heats water in oceans, lakes, and rivers. As the water warms, molecules at the surface gain enough energy to escape as water vapour into the air. Plants also release water vapour through their leaves in a process called transpiration.\"\n        },\n        {\n          \"id\": \"concept-condensation-heading\",\n          \"component\": \"heading\",\n          \"text\": \"2. Condensation\"\n        },\n        {\n          \"id\": \"concept-condensation-body\",\n          \"component\": \"body\",\n          \"text\": \"As water vapour rises, it cools. Cooler air holds less moisture, so the vapour changes back into tiny liquid droplets. These droplets gather around particles such as dust and salt, forming clouds.\"\n        },\n        {\n          \"id\": \"concept-precipitation-heading\",\n          \"component\": \"heading\",\n          \"text\": \"3. Precipitation\"\n        },\n        {\n          \"id\": \"concept-precipitation-body\",\n          \"component\": \"body\",\n          \"text\": \"When droplets in a cloud merge and grow heavy enough, they fall as rain, snow, sleet, or hail. Some of this water soaks into the ground, some runs off into streams and rivers, and some returns to the ocean, where the cycle begins again.\"\n        },\n        {\n          \"id\": \"worked-example\",\n          \"component\": \"concept_rung\",\n          \"kind\": \"example\",\n          \"badge\": \"EX\",\n          \"title\": \"Tracing one raindrop\",\n          \"body\": \"A puddle on a warm afternoon evaporates into the air. That vapour rises, cools at higher altitude, and condenses onto dust particles to form a cloud. Later, the droplets merge and fall as rain onto a hillside. Part of the rain soaks into the soil, part flows downhill into a river, and the river carries it back toward the sea.\",\n          \"takeaway\": \"Evaporation \u2192 Condensation \u2192 Precipitation \u2192 Collection \u2192 repeat.\"\n        },\n        {\n          \"id\": \"self-check-heading\",\n          \"component\": \"heading\",\n          \"text\": \"Self-Check\"\n        },\n        {\n          \"id\": \"self-check-quiz\",\n          \"component\": \"quiz_set\",\n          \"title\": \"Water Cycle Self-Check\",\n          \"pass_score\": 70,\n          \"accent\": \"#0284c7\",\n          \"questions\": [\n            {\n              \"question\": \"What process turns liquid water into water vapour?\",\n              \"options\": [\"Condensation\", \"Precipitation\", \"Evaporation\", \"Infiltration\"],\n              \"correct\": 2,\n              \"explanation\": \"Evaporation occurs when heat energy lets water molecules escape into the air as vapour.\"\n            },\n            {\n              \"question\": \"Why does water vapour form clouds as it rises?\",\n              \"options\": [\n                \"It becomes heavier and sinks\",\n                \"It cools and condenses into droplets\",\n                \"It is absorbed by the sun\",\n                \"It freezes into ice immediately\"\n              ],\n              \"correct\": 1,\n              \"explanation\": \"As air rises, it cools. Cooler air can hold less vapour, so the vapour condenses into droplets around particles.\"\n            },\n            {\n              \"question\": \"Which of the following is an example of precipitation?\",\n              \"options\": [\"Rain falling from a cloud\", \"Water rising from a lake\", \"Plants releasing moisture\", \"Dew forming on grass\"],\n              \"correct\": 0,\n              \"explanation\": \"Precipitation is any water that falls from clouds to the surface, such as rain, snow, sleet, or hail.\"\n            }\n          ]\n        }\n      ]\n    }\n  }\n]\n</a2ui-json>"
+}

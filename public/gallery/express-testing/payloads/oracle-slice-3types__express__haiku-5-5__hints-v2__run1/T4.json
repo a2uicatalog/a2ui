@@ -1,0 +1,122 @@
+{
+ "label": "oracle-slice-3types__express__haiku-5-5__hints-v2__run1",
+ "task": "T4",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "heading_title",
+      "component": "heading",
+      "text": "Work Items"
+     },
+     {
+      "id": "status_filter",
+      "component": "segmented_control",
+      "options": [
+       {
+        "label": "All",
+        "value": "all"
+       },
+       {
+        "label": "Active",
+        "value": "active"
+       },
+       {
+        "label": "Pending",
+        "value": "pending"
+       },
+       {
+        "label": "Blocked",
+        "value": "blocked"
+       },
+       {
+        "label": "Done",
+        "value": "done"
+       }
+      ],
+      "selected_value": "all",
+      "name": "status"
+     },
+     {
+      "id": "item_list",
+      "component": "entity_list",
+      "items": [
+       {
+        "name": "Migrate billing database",
+        "subtitle": "Move customer invoices to the new schema",
+        "status": "Active"
+       },
+       {
+        "name": "Update onboarding emails",
+        "subtitle": "Rewrite welcome sequence for trial users",
+        "status": "Pending"
+       },
+       {
+        "name": "Fix checkout timeout",
+        "subtitle": "Payment step times out under heavy load",
+        "status": "Blocked"
+       },
+       {
+        "name": "Publish API v2 docs",
+        "subtitle": "Reference pages are complete and reviewed",
+        "status": "Done"
+       },
+       {
+        "name": "Rotate service credentials",
+        "subtitle": "Replace keys for the reporting service",
+        "status": "Active"
+       },
+       {
+        "name": "Audit access permissions",
+        "subtitle": "Review admin roles across all workspaces",
+        "status": "Pending"
+       },
+       {
+        "name": "Resolve search indexing lag",
+        "subtitle": "Index updates trail by about 40 minutes",
+        "status": "Blocked"
+       },
+       {
+        "name": "Archive legacy reports",
+        "subtitle": "Export and remove reports older than two years",
+        "status": "Done"
+       }
+      ]
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "heading_title",
+         "status_filter"
+        ]
+       },
+       {
+        "blocks": [
+         "item_list"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

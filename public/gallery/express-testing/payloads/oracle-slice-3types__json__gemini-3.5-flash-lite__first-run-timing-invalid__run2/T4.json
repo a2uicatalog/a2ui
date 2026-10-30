@@ -1,0 +1,89 @@
+{
+ "label": "oracle-slice-3types__json__gemini-3.5-flash-lite__first-run-timing-invalid__run2",
+ "task": "T4",
+ "format": "json",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "item-list-surface",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display.json",
+    "theme": {
+     "primaryColor": "#2563eb"
+    }
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "item-list-surface",
+    "components": [
+     {
+      "id": "root",
+      "component": "heading",
+      "text": "Project Task Management"
+     },
+     {
+      "id": "filter-segment",
+      "component": "segmented_control",
+      "name": "status_filter",
+      "selected_value": "all",
+      "options": "[{\"label\": \"All (8)\", \"value\": \"all\"}, {\"label\": \"In Progress\", \"value\": \"inprogress\"}, {\"label\": \"Success\", \"value\": \"success\"}, {\"label\": \"Removed\", \"value\": \"removed\"}]"
+     },
+     {
+      "id": "item-table",
+      "component": "data_table_sortable",
+      "headers": [
+       "Item",
+       "Status",
+       "Detail"
+      ],
+      "rows": [
+       [
+        "Database Migration",
+        "InProgress",
+        "Migrating legacy user tables to PostgreSQL cluster."
+       ],
+       [
+        "API Rate Limiting",
+        "Success",
+        "Implemented token bucket algorithm for endpoint security."
+       ],
+       [
+        "Legacy Auth Deprecation",
+        "Removed",
+        "Successfully decommissioned v1 OAuth endpoints."
+       ],
+       [
+        "SSL Certificate Renewal",
+        "Success",
+        "Automated wildcard cert deployment via Let's Encrypt."
+       ],
+       [
+        "Memory Leak Profiling",
+        "InProgress",
+        "Investigating heap allocations in the notification worker."
+       ],
+       [
+        "CDN Edge Caching",
+        "Success",
+        "Configured stale-while-revalidate headers globally."
+       ],
+       [
+        "Billing Webhook Retry",
+        "Removed",
+        "Replaced custom retry logic with managed queue service."
+       ],
+       [
+        "Audit Log Exporter",
+        "InProgress",
+        "Streaming compliance logs to S3 cold storage."
+       ]
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

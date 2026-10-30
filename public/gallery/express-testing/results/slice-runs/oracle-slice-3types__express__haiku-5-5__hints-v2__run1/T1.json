@@ -1,0 +1,51 @@
+{
+ "task": "T1",
+ "condition": "C_haiku-5-5H2",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": true,
+ "label": "oracle-slice-3types__express__haiku-5-5__hints-v2__run1",
+ "agent_type": "Learning",
+ "catalogue": "C-learning.json",
+ "atoms_in_catalogue": 36,
+ "prompt_chars": 21139,
+ "slot_recall": [
+  5,
+  5
+ ],
+ "secs": 13.2,
+ "usage": {
+  "input_tokens": 7808,
+  "output_tokens": 2842
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "page_header",
+  "heading",
+  "body",
+  "heading",
+  "body",
+  "heading",
+  "body",
+  "concept_rung",
+  "quiz_set",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.9,
+  "recall": 0.8,
+  "f1": 0.847,
+  "slot_hits": {
+   "title": true,
+   "concept sections (x3)": true,
+   "worked example": true,
+   "3-question quiz": true,
+   "quiz result": false
+  }
+ },
+ "reply": "<a2ui>\nheader = page_header(\"The Water Cycle\", \"How water moves between the ocean, air, and land\", \"\ud83d\udca7\", \"Lesson\", \"#0ea5e9\")\ns1h = heading(\"1. Evaporation\")\ns1b = body(\"The sun heats water at the surface of oceans, lakes and rivers. It turns into water vapour, a gas that rises into the air.\")\ns2h = heading(\"2. Condensation\")\ns2b = body(\"As warm vapour rises, it cools and gathers around tiny dust particles. These droplets form clouds.\")\ns3h = heading(\"3. Precipitation and Runoff\")\ns3b = body(\"When droplets grow heavy, they fall as rain, snow or hail. The water then runs off into rivers or soaks into the ground, eventually returning to the sea.\")\nex = concept_rung(\"1\", \"example\", \"WORKED EXAMPLE\", \"A puddle disappears\", \"A 2 mm puddle sits on warm pavement on a dry afternoon. By evening it is gone.\\n\\nThe water evaporated into the air. It did not soak away or drain, because the pavement is not porous.\", \"\", \"\", \"Evaporation is driven by heat, so warm, sunny conditions speed up the water cycle.\")\nq1 = {question: \"Which process turns liquid water into water vapour?\", options: [\"Condensation\", \"Evaporation\", \"Precipitation\", \"Runoff\"], correct: 1, explanation: \"Evaporation is caused by heat, which turns liquid water into vapour.\"}\nq2 = {question: \"What causes water vapour to form clouds?\", options: [\"Cooling and condensing around particles\", \"Freezing in the ground\", \"Heating by sunlight\", \"Wind blowing over oceans\"], correct: 0, explanation: \"Vapour cools, then condenses around dust particles to form droplets.\"}\nq3 = {question: \"Where does runoff usually end up?\", options: [\"In the atmosphere\", \"Back in rivers and eventually the sea\", \"Inside clouds only\", \"On land forever\"], correct: 1, explanation: \"Runoff flows into rivers, which carry the water back to the sea.\"}\nquiz = quiz_set(\"Self-check\", [q1, q2, q3], 70, \"#0ea5e9\")\nroot = columns(2, \"1.5rem\", \"top\", [{blocks: [header, s1h, s1b, s2h, s2b, s3h, s3b]}, {blocks: [ex, quiz]}])\n</a2ui>"
+}

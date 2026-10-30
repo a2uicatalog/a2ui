@@ -1,0 +1,40 @@
+{
+ "task": "T1",
+ "condition": "CTN_sonnet-5-5",
+ "temperature_applied": false,
+ "format": "json",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-sonnet-5-5",
+ "hints": false,
+ "label": "oracle-slice-3types__json__sonnet-5-5__temp0__run1",
+ "agent_type": "Learning",
+ "catalogue": "C-learning.json",
+ "atoms_in_catalogue": 36,
+ "prompt_chars": 37811,
+ "slot_recall": [
+  5,
+  5
+ ],
+ "secs": 20.4,
+ "usage": {
+  "input_tokens": 14392,
+  "output_tokens": 2902
+ },
+ "valid": false,
+ "error": "A2uiIntegrityError: Component 'b-condensation' is not reachable from 'root'",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "title": false,
+   "concept sections (x3)": false,
+   "worked example": false,
+   "3-question quiz": false,
+   "quiz result": false
+  }
+ },
+ "reply": "This catalog has no container component, so the lesson is a flat, ordered list of blocks, with the `page_header` as `root`.\n\n<a2ui-json>\n[\n  {\n    \"version\": \"v0.9.1\",\n    \"createSurface\": {\n      \"surfaceId\": \"water-cycle-lesson\",\n      \"catalogId\": \"https://a2uicatalog.ai/catalog/c-learning.json\"\n    }\n  },\n  {\n    \"version\": \"v0.9.1\",\n    \"updateComponents\": {\n      \"surfaceId\": \"water-cycle-lesson\",\n      \"components\": [\n        {\n          \"id\": \"root\",\n          \"component\": \"page_header\",\n          \"title\": \"The Water Cycle\",\n          \"subtitle\": \"How water moves between the oceans, the air and the land, again and again.\",\n          \"icon\": \"\ud83d\udca7\",\n          \"tag\": \"Earth Science\",\n          \"accent\": \"#0284c7\",\n          \"meta\": [\n            { \"label\": \"Concepts\", \"value\": \"3\" },\n            { \"label\": \"Worked example\", \"value\": \"1\" },\n            { \"label\": \"Self-check\", \"value\": \"3 questions\" }\n          ]\n        },\n        {\n          \"id\": \"intro\",\n          \"component\": \"body\",\n          \"text\": \"Water on Earth is constantly on the move. The sun's energy lifts it into the atmosphere, the atmosphere returns it as rain or snow, and gravity carries it back to rivers, lakes and oceans. In this lesson you will learn the three key processes that drive the cycle, work through a calculation, and then check your understanding.\"\n        },\n        {\n          \"id\": \"h-evaporation\",\n          \"component\": \"heading\",\n          \"text\": \"1. Evaporation\"\n        },\n        {\n          \"id\": \"b-evaporation\",\n          \"component\": \"body\",\n          \"text\": \"Heat from the sun turns liquid water from oceans, lakes, rivers and soil into invisible water vapour that rises into the air. Plants add to this through transpiration, releasing vapour from their leaves. Together the two are often called evapotranspiration.\"\n        },\n        {\n          \"id\": \"c-evaporation\",\n          \"component\": \"callout\",\n          \"kind\": \"tip\",\n          \"title\": \"Remember\",\n          \"text\": \"Warmer temperatures, wind and dry air all speed up evaporation.\"\n        },\n        {\n          \"id\": \"h-condensation\",\n          \"component\": \"heading\",\n          \"text\": \"2. Condensation\"\n        },\n        {\n          \"id\": \"b-condensation\",\n          \"component\": \"body\",\n          \"text\": \"As water vapour rises, it meets cooler air and loses energy. The vapour changes back into tiny liquid droplets, which gather around dust particles and form clouds. You can see the same process when water beads on the outside of a cold glass.\"\n        },\n        {\n          \"id\": \"h-precipitation\",\n          \"component\": \"heading\",\n          \"text\": \"3. Precipitation and Collection\"\n        },\n        {\n          \"id\": \"b-precipitation\",\n          \"component\": \"body\",\n          \"text\": \"When cloud droplets grow heavy enough, they fall as rain, snow, sleet or hail. This water then collects in oceans, lakes and rivers, soaks into the ground as groundwater, or runs off across the surface. From there it is ready to evaporate again, and the cycle repeats.\"\n        },\n        {\n          \"id\": \"c-precipitation\",\n          \"component\": \"callout\",\n          \"kind\": \"info\",\n          \"title\": \"No water is lost\",\n          \"text\": \"The water cycle is a closed loop. The water you drink today has been recycled through the cycle for millions of years.\"\n        },\n        {\n          \"id\": \"h-example\",\n          \"component\": \"heading\",\n          \"text\": \"Worked Example\"\n        },\n        {\n          \"id\": \"example-rung\",\n          \"component\": \"concept_rung\",\n          \"badge\": \"EX\",\n          \"kind\": \"example\",\n          \"title\": \"How long does a puddle take to evaporate?\",\n          \"body\": \"A puddle covers 1 m\u00b2 and is 2 cm deep. On a warm, breezy day, water evaporates at about 4 mm per day. Estimate how many days the puddle will last.\\n\\nStep 1: convert the depth to the same unit as the rate. Step 2: divide the depth by the daily loss.\",\n          \"code\": \"depth        = 2 cm = 20 mm\\nrate         = 4 mm / day\\ntime         = depth / rate\\n             = 20 mm / 4 mm per day\\n             = 5 days\\n\\n(check: 1 m\u00b2 x 0.02 m = 0.02 m\u00b3 = 20 litres; 4 mm/day = 4 litres/day)\",\n          \"code_caption\": \"Both unit routes give the same answer: 20 litres at 4 litres per day.\",\n          \"takeaway\": \"Evaporation rate x time = depth of water lost. Always match your units first.\"\n        },\n        {\n          \"id\": \"h-quiz\",\n          \"component\": \"heading\",\n          \"text\": \"Self-Check\"\n        },\n        {\n          \"id\": \"quiz\",\n          \"component\": \"quiz_set\",\n          \"title\": \"Water Cycle Self-Check\",\n          \"accent\": \"#0284c7\",\n          \"pass_score\": 70,\n          \"questions\": [\n            {\n              \"question\": \"Which process turns liquid water into water vapour?\",\n              \"options\": [\"Condensation\", \"Evaporation\", \"Precipitation\", \"Collection\"],\n              \"correct\": 1,\n              \"explanation\": \"Evaporation is the change from liquid to gas, driven mainly by heat from the sun.\"\n            },\n            {\n              \"question\": \"What causes clouds to form?\",\n              \"options\": [\n                \"Water vapour cooling and condensing into droplets\",\n                \"Rain evaporating from the ground\",\n                \"Snow melting in rivers\",\n                \"Plants absorbing water through their roots\"\n              ],\n              \"correct\": 0,\n              \"explanation\": \"Rising vapour cools, condenses onto tiny particles and forms visible cloud droplets.\"\n            },\n            {\n              \"question\": \"A puddle is 30 mm deep and evaporates at 6 mm per day. How many days until it is gone?\",\n              \"options\": [\"3 days\", \"4 days\", \"5 days\", \"6 days\"],\n              \"correct\": 2,\n              \"explanation\": \"30 mm divided by 6 mm per day equals 5 days.\"\n            }\n          ]\n        }\n      ]\n    }\n  }\n]\n</a2ui-json>\n\nThe lesson runs in this order: header, intro, three concept sections (evaporation, condensation, precipitation and collection), a worked puddle-evaporation example, and a three-question quiz."
+}

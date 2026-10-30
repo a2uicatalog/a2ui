@@ -1,0 +1,107 @@
+{
+ "label": "oracle-slice-3types__elemental__gemini-3.5-flash-lite__request-only-timing__run2",
+ "task": "T5",
+ "format": "elemental",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce-elemental.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "hero",
+      "component": "gradient_hero",
+      "title": "Simple, transparent pricing",
+      "subtitle": "Choose the plan that's right for you. Upgrade or downgrade at any time.",
+      "align": "center"
+     },
+     {
+      "id": "tiers_group",
+      "component": "pricing_tier_group",
+      "tiers": {
+       "path": "/tiers"
+      }
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "2rem",
+      "items": [
+       {
+        "blocks": [
+         "hero",
+         "tiers_group"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_data_model": {
+    "surface_id": "main",
+    "path": "/",
+    "value": {
+     "tiers": [
+      {
+       "name": "Starter",
+       "price": "$9",
+       "period": "/month",
+       "description": "Essential features for individuals and small projects.",
+       "features": [
+        "1 User",
+        "5GB Storage",
+        "Basic Support",
+        "Community Access"
+       ],
+       "cta_label": "Get Started",
+       "cta_url": "#"
+      },
+      {
+       "name": "Pro",
+       "price": "$29",
+       "period": "/month",
+       "description": "Advanced features for growing teams and businesses.",
+       "features": [
+        "5 Users",
+        "50GB Storage",
+        "Priority Support",
+        "Advanced Analytics",
+        "Custom Domain"
+       ],
+       "cta_label": "Start Free Trial",
+       "cta_url": "#",
+       "recommended": true
+      },
+      {
+       "name": "Enterprise",
+       "price": "$99",
+       "period": "/month",
+       "description": "Dedicated support and infinite scale for large organizations.",
+       "features": [
+        "Unlimited Users",
+        "500GB Storage",
+        "24/7 Phone Support",
+        "Custom Integrations",
+        "SLA Guarantee"
+       ],
+       "cta_label": "Contact Sales",
+       "cta_url": "#"
+      }
+     ]
+    }
+   }
+  }
+ ]
+}

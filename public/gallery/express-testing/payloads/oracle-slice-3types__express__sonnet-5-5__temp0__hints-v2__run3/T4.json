@@ -1,0 +1,122 @@
+{
+ "label": "oracle-slice-3types__express__sonnet-5-5__temp0__hints-v2__run3",
+ "task": "T4",
+ "format": "express",
+ "model_id": "claude-sonnet-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "status-list",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "status-list",
+    "components": [
+     {
+      "id": "title",
+      "component": "heading",
+      "text": "Project Tasks"
+     },
+     {
+      "id": "filter",
+      "component": "segmented_control",
+      "options": [
+       {
+        "label": "All",
+        "value": "all"
+       },
+       {
+        "label": "Active",
+        "value": "active"
+       },
+       {
+        "label": "Pending",
+        "value": "pending"
+       },
+       {
+        "label": "Blocked",
+        "value": "blocked"
+       },
+       {
+        "label": "Done",
+        "value": "done"
+       }
+      ],
+      "selected_value": "all",
+      "name": "status_filter"
+     },
+     {
+      "id": "tasks",
+      "component": "entity_list",
+      "items": [
+       {
+        "name": "Design system audit",
+        "subtitle": "Review all components for accessibility gaps",
+        "status": "Active"
+       },
+       {
+        "name": "API rate limiting",
+        "subtitle": "Add per-key throttling to public endpoints",
+        "status": "Active"
+       },
+       {
+        "name": "Billing migration",
+        "subtitle": "Waiting on finance sign-off for the new plan tiers",
+        "status": "Pending"
+       },
+       {
+        "name": "Mobile onboarding",
+        "subtitle": "Draft copy is ready for legal review",
+        "status": "Pending"
+       },
+       {
+        "name": "Search indexing",
+        "subtitle": "Blocked by the upstream vendor outage",
+        "status": "Blocked"
+       },
+       {
+        "name": "SSO integration",
+        "subtitle": "Needs credentials from the customer IT team",
+        "status": "Blocked"
+       },
+       {
+        "name": "Dashboard redesign",
+        "subtitle": "Shipped to all users on Monday",
+        "status": "Done"
+       },
+       {
+        "name": "Release notes v2.4",
+        "subtitle": "Published to the changelog",
+        "status": "Done"
+       }
+      ]
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "title",
+         "filter"
+        ]
+       },
+       {
+        "blocks": [
+         "tasks"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

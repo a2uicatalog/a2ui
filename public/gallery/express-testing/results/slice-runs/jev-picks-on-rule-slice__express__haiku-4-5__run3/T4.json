@@ -1,0 +1,32 @@
+{
+ "task": "T4",
+ "condition": "JB",
+ "label": "jev-picks-on-rule-slice__express__haiku-4-5__run3",
+ "agent_type": "jev-narrowed",
+ "catalogue": "JB-T4.json",
+ "atoms_in_catalogue": 20,
+ "prompt_chars": 10018,
+ "slot_recall": [
+  2,
+  3
+ ],
+ "secs": 3.9,
+ "usage": {
+  "input_tokens": 2823,
+  "output_tokens": 384
+ },
+ "valid": false,
+ "error": "A2uiCompilationValidationError: Unknown component 'ValueStore' not defined in catalog 'https://a2uicatalog.ai/catalog/jb-t4.json'. - Help: Please correct the syntax error in your Express DSL.",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "list": false,
+   "status indicator": false,
+   "filter control": false
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"dashboard-surface-1\")\n\n_statusFilter = ValueStore(\"all\")\n\nstatusOptions = [\n  {value: \"all\", label: \"All\", selected: true},\n  {value: \"active\", label: \"Active\"},\n  {value: \"pending\", label: \"Pending\"},\n  {value: \"completed\", label: \"Completed\"}\n]\n\nitems = [\n  {name: \"Item 1\", status: \"active\", meta: \"Setup configuration complete\"},\n  {name: \"Item 2\", status: \"pending\", meta: \"Awaiting approval from manager\"},\n  {name: \"Item 3\", status: \"completed\", meta: \"Delivered on 2026-03-10\"},\n  {name: \"Item 4\", status: \"active\", meta: \"In progress - 75% complete\"},\n  {name: \"Item 5\", status: \"pending\", meta: \"Scheduled for review next week\"},\n  {name: \"Item 6\", status: \"completed\", meta: \"Closed and archived\"},\n  {name: \"Item 7\", status: \"active\", meta: \"Live and monitoring\"},\n  {name: \"Item 8\", status: \"pending\", meta: \"Waiting for final sign-off\"}\n]\n\nroot = [\n  heading(\"Items\"),\n  tab_group(\n    target=_statusFilter,\n    options=statusOptions,\n    panels={\"all\": \"panel-all\", \"active\": \"panel-active\", \"pending\": \"panel-pending\", \"completed\": \"panel-completed\"}\n  ),\n  entity_list(items=items)\n]\n\n</a2ui>"
+}

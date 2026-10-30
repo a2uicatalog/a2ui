@@ -1,0 +1,103 @@
+{
+ "label": "oracle-slice-6types__json__haiku-5-5__run2",
+ "task": "T4",
+ "format": "json",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9",
+   "create_surface": {
+    "surface_id": "work_items",
+    "catalog_id": "https://a2uicatalog.ai/catalog/d-t4.json"
+   }
+  },
+  {
+   "version": "v0.9",
+   "update_components": {
+    "surface_id": "work_items",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         {
+          "id": "items_heading",
+          "component": "heading",
+          "text": "Work items"
+         },
+         {
+          "id": "status_filter",
+          "component": "segmented_control",
+          "name": "status_filter",
+          "selected_value": "all",
+          "options": "[{\"label\":\"All\",\"value\":\"all\"},{\"label\":\"Open\",\"value\":\"open\"},{\"label\":\"In progress\",\"value\":\"in_progress\"},{\"label\":\"Blocked\",\"value\":\"blocked\"},{\"label\":\"Done\",\"value\":\"done\"}]"
+         }
+        ]
+       },
+       {
+        "blocks": [
+         {
+          "id": "items_table",
+          "component": "data_table_sortable",
+          "headers": [
+           "Title",
+           "Status",
+           "Detail"
+          ],
+          "rows": [
+           [
+            "Login API migration",
+            "In progress",
+            "Token refresh endpoints moved to new auth service"
+           ],
+           [
+            "Invoice export",
+            "Done",
+            "CSV export verified against finance sample"
+           ],
+           [
+            "Mobile push alerts",
+            "Blocked",
+            "Waiting on APNs certificate renewal"
+           ],
+           [
+            "Search indexing",
+            "Open",
+            "Reindex job scheduled for nightly run"
+           ],
+           [
+            "Billing webhook retries",
+            "In progress",
+            "Exponential backoff added, tests pending"
+           ],
+           [
+            "Onboarding copy review",
+            "Open",
+            "Draft copy sent to legal for sign-off"
+           ],
+           [
+            "Dashboard charts",
+            "Done",
+            "Chart library upgraded and visual QA passed"
+           ],
+           [
+            "Audit log retention",
+            "Blocked",
+            "Storage policy decision needed from security"
+           ]
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

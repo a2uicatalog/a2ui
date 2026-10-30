@@ -1,0 +1,37 @@
+{
+ "task": "T4",
+ "condition": "BTH2",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-4-5-20251001",
+ "label": "rule-slice__express__haiku-4-5__temp0__hints-v2__run1",
+ "agent_type": "Data display",
+ "catalogue": "B-data-display.json",
+ "atoms_in_catalogue": 248,
+ "prompt_chars": 125436,
+ "slot_recall": [
+  2,
+  3
+ ],
+ "secs": 3.3,
+ "usage": {
+  "input_tokens": 36274,
+  "output_tokens": 243
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "filterable_list"
+ ],
+ "score": {
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "list": false,
+   "status indicator": false,
+   "filter control": false
+  }
+ },
+ "reply": "<a2ui>\nitems = [\n  {title: \"Design System\", detail: \"Complete component library\", status: \"done\"},\n  {title: \"API Documentation\", detail: \"REST endpoints documented\", status: \"done\"},\n  {title: \"User Authentication\", detail: \"OAuth2 integration in progress\", status: \"in-progress\"},\n  {title: \"Payment Processing\", detail: \"Stripe integration pending\", status: \"planned\"},\n  {title: \"Email Notifications\", detail: \"SMTP service configured\", status: \"done\"},\n  {title: \"Analytics Dashboard\", detail: \"Data pipeline setup underway\", status: \"in-progress\"},\n  {title: \"Mobile App\", detail: \"iOS and Android builds planned\", status: \"planned\"},\n  {title: \"Performance Optimization\", detail: \"CDN caching implemented\", status: \"done\"}\n]\n\nroot = filterable_list(\n  title=\"Project Tasks\",\n  items=items,\n  filter_field=\"status\",\n  show_counts=true\n)\n</a2ui>"
+}

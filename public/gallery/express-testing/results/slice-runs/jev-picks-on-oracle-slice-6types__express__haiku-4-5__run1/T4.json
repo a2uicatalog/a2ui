@@ -1,0 +1,32 @@
+{
+ "task": "T4",
+ "condition": "JD",
+ "label": "jev-picks-on-oracle-slice-6types__express__haiku-4-5__run1",
+ "agent_type": "jev-narrowed",
+ "catalogue": "JD-T4.json",
+ "atoms_in_catalogue": 13,
+ "prompt_chars": 8031,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 4.7,
+ "usage": {
+  "input_tokens": 2275,
+  "output_tokens": 497
+ },
+ "valid": false,
+ "error": "A2uiCompilationParseError: Failed to parse expression: Syntax error at line 43:21: extraneous input '=' expecting {<EOF>, '[', '{', '_', 'null', RAW_TRIPLE_STRING, TRIPLE_STRING, RAW_STRING, STANDARD_STRING, PATH, CHECK, NUMBER, BOOLEAN, IDENTIFIER} (line 43) - Line 43, Col 21 - Help: Please correct the syntax error in your E",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "list": false,
+   "status indicator": false,
+   "filter control": false
+  }
+ },
+ "reply": "<a2ui>\n// Initialize data model with sample items\n$/items = [\n  {title: \"Project Alpha\", status: \"in_progress\", detail: \"Currently in development phase\"},\n  {title: \"Project Beta\", status: \"completed\", detail: \"Launched successfully last month\"},\n  {title: \"Project Gamma\", status: \"pending\", detail: \"Awaiting stakeholder approval\"},\n  {title: \"Project Delta\", status: \"in_progress\", detail: \"Testing phase underway\"},\n  {title: \"Project Epsilon\", status: \"completed\", detail: \"Archived after successful delivery\"},\n  {title: \"Project Zeta\", status: \"pending\", detail: \"Scheduled to start next quarter\"},\n  {title: \"Project Eta\", status: \"in_progress\", detail: \"Final refinements in progress\"},\n  {title: \"Project Theta\", status: \"completed\", detail: \"Maintenance mode active\"}\n]\n\n$/selected_status = \"all\"\n\nroot = body([\n  heading(\"Items\"),\n  segmented_control(\n    options=[\n      {label: \"All\", value: \"all\"},\n      {label: \"In Progress\", value: \"in_progress\"},\n      {label: \"Completed\", value: \"completed\"},\n      {label: \"Pending\", value: \"pending\"}\n    ],\n    selected_value=$/selected_status,\n    name=\"status_filter\"\n  ),\n  _template(\n    $/items,\n    itemRow\n  )\n])\n\nitemRow = entity_list(\n  items=[\n    {\n      name: $title,\n      subtitle: $detail,\n      status: _statusBadge($status)\n    }\n  ]\n)\n\n_statusBadge(status) = lozenge(\n  text=status,\n  appearance=_statusAppearance(status)\n)\n\n_statusAppearance(status) = \n  status == \"completed\" ? \"success\" :\n  status == \"in_progress\" ? \"inprogress\" :\n  status == \"pending\" ? \"moved\" :\n  \"default\"\n</a2ui>"
+}

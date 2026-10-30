@@ -1,0 +1,40 @@
+{
+ "task": "T4",
+ "condition": "CN_gemini-3.5-f",
+ "temperature_applied": false,
+ "format": "json",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash-lite",
+ "hints": false,
+ "label": "oracle-slice-3types__json__gemini-3.5-flash-lite__first-run-timing-invalid__run3",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 31546,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 20.3,
+ "usage": {
+  "input_tokens": 7913,
+  "output_tokens": 650
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns"
+ ],
+ "score": {
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "list": false,
+   "status indicator": false,
+   "filter control": false
+  }
+ },
+ "reply": "<a2ui-json>\n{\n  \"version\": \"v0.9.1\",\n  \"createSurface\": {\n    \"surfaceId\": \"filtered-item-list\",\n    \"catalogId\": \"https://a2uicatalog.ai/catalog/c-data-display.json\",\n    \"theme\": {\n      \"primaryColor\": \"#3b82f6\"\n    }\n  }\n}\n</a2ui-json>\n\n<a2ui-json>\n{\n  \"version\": \"v0.9.1\",\n  \"updateComponents\": {\n    \"surfaceId\": \"filtered-item-list\",\n    \"components\": [\n      {\n        \"id\": \"root\",\n        \"component\": \"columns\",\n        \"cols\": 1,\n        \"items\": [\n          {\n            \"blocks\": [\n              {\n                \"id\": \"title_heading\",\n                \"component\": \"heading\",\n                \"text\": \"System Operations & Items\"\n              },\n              {\n                \"id\": \"intro_body\",\n                \"component\": \"body\",\n                \"text\": \"Review and monitor the status of the eight core system resources.\"\n              },\n              {\n                \"id\": \"filter_segment\",\n                \"component\": \"segmented_control\",\n                \"name\": \"status_filter\",\n                \"selected_value\": \"all\",\n                \"options\": \"[{\\\"label\\\": \\\"All Items\\\", \\\"value\\\": \\\"all\\\"}, {\\\"label\\\": \\\"Active\\\", \\\"value\\\": \\\"active\\\"}, {\\\"label\\\": \\\"Pending\\\", \\\"value\\\": \\\"pending\\\"}, {\\\"label\\\": \\\"Failed\\\", \\\"value\\\": \\\"failed\\\"}]\"\n              },\n              {\n                \"id\": \"items_table\",\n                \"component\": \"data_table_sortable\",\n                \"headers\": [\"Resource\", \"Status\", \"Detail\"],\n                \"rows\": [\n                  [\"Primary Database Cluster\", \"Active\", \"Replication lag under 2ms across all read replicas.\"],\n                  [\"Auth Service Node A\", \"Active\", \"Handling 1,400 requests/sec with nominal CPU usage.\"],\n                  [\"Background Worker Pool\", \"Pending\", \"Awaiting scaling policy evaluation for upcoming batch jobs.\"],\n                  [\"CDN Edge Cache (EU)\", \"Active\", \"Hit ratio steady at 98.4% over the last 24 hours.\"],\n                  [\"Billing Webhook Queue\", \"Failed\", \"Dead-letter queue threshold exceeded due to upstream timeout.\"],\n                  [\"Analytics Ingestion Pipeline\", \"Active\", \"Processing stream cleanly with zero dropped events.\"],\n                  [\"Backup Verification Job\", \"Pending\", \"Scheduled to run during the next maintenance window.\"],\n                  [\"Legacy API Gateway\", \"Failed\", \"Elevated 5xx error rates detected on legacy endpoints.\"]\n                ]\n              }\n            ]\n          }\n        ]\n      }\n    ]\n  }\n}\n</a2ui-json>"
+}

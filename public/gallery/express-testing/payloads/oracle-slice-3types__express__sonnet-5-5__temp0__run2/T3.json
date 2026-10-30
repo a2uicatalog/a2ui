@@ -1,0 +1,225 @@
+{
+ "label": "oracle-slice-3types__express__sonnet-5-5__temp0__run2",
+ "task": "T3",
+ "format": "express",
+ "model_id": "claude-sonnet-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "landing-page",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "landing-page",
+    "components": [
+     {
+      "id": "hero",
+      "component": "gradient_hero",
+      "title": "Ship faster with Launchpad",
+      "subtitle": "The all-in-one workspace that helps your team plan, build, and release products without the busywork.",
+      "badge": "New: Launchpad 2.0",
+      "accent": "#4f46e5",
+      "accent2": "#8b5cf6",
+      "align": "center",
+      "cta_label": "Get started free",
+      "cta_url": "https://example.com/signup"
+     },
+     {
+      "id": "features",
+      "component": "feature_grid",
+      "heading": "Everything your team needs",
+      "description": "Powerful tools designed to work together.",
+      "columns": 3,
+      "features": [
+       {
+        "icon": "\u26a1",
+        "title": "Lightning fast",
+        "description": "Automate repetitive tasks and move from idea to launch in record time.",
+        "color": "#f59e0b"
+       },
+       {
+        "icon": "\ud83e\udd1d",
+        "title": "Seamless collaboration",
+        "description": "Keep everyone aligned with shared boards, comments, and real-time updates.",
+        "color": "#4f46e5"
+       },
+       {
+        "icon": "\ud83d\udcca",
+        "title": "Actionable insights",
+        "description": "Track progress and performance with dashboards that show what matters.",
+        "color": "#10b981"
+       }
+      ]
+     },
+     {
+      "id": "testimonial",
+      "component": "testimonial_card",
+      "text": "Launchpad cut our release cycle in half. Our team has never been more in sync, and we can't imagine working without it.",
+      "author_name": "Priya Sharma",
+      "author_title": "VP of Product, Brightwave",
+      "author_avatar_url": "https://example.com/avatars/priya.jpg",
+      "rating": 5
+     },
+     {
+      "id": "cta",
+      "component": "cta_button",
+      "url": "https://example.com/signup",
+      "label": "Start your free trial",
+      "color": "#4f46e5",
+      "same_tab": false
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "1.5rem",
+      "align": "center",
+      "items": [
+       {
+        "blocks": [
+         "hero"
+        ]
+       },
+       {
+        "blocks": [
+         "features"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "landing-page",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "landing-page",
+    "components": [
+     {
+      "id": "hero",
+      "component": "gradient_hero",
+      "title": "Ship faster with Launchpad",
+      "subtitle": "The all-in-one workspace that helps your team plan, build, and release products without the busywork.",
+      "badge": "New: Launchpad 2.0",
+      "accent": "#4f46e5",
+      "accent2": "#8b5cf6",
+      "align": "center",
+      "cta_label": "Get started free",
+      "cta_url": "https://example.com/signup"
+     },
+     {
+      "id": "featuresHeading",
+      "component": "heading",
+      "text": "Everything your team needs"
+     },
+     {
+      "id": "featureCols",
+      "component": "columns",
+      "cols": 3,
+      "gap": "1.5rem",
+      "align": "stretch",
+      "items": [
+       {
+        "blocks": [
+         "_inline_1",
+         "_inline_2"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_3",
+         "_inline_4"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_5",
+         "_inline_6"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "_inline_1",
+      "component": "heading",
+      "text": "\u26a1 Lightning fast"
+     },
+     {
+      "id": "_inline_2",
+      "component": "body",
+      "text": "Automate repetitive tasks and move from idea to launch in record time."
+     },
+     {
+      "id": "_inline_3",
+      "component": "heading",
+      "text": "\ud83e\udd1d Seamless collaboration"
+     },
+     {
+      "id": "_inline_4",
+      "component": "body",
+      "text": "Keep everyone aligned with shared boards, comments, and real-time updates."
+     },
+     {
+      "id": "_inline_5",
+      "component": "heading",
+      "text": "\ud83d\udcca Actionable insights"
+     },
+     {
+      "id": "_inline_6",
+      "component": "body",
+      "text": "Track progress and performance with dashboards that show what matters."
+     },
+     {
+      "id": "testimonial",
+      "component": "testimonial_card",
+      "text": "Launchpad cut our release cycle in half. Our team has never been more in sync, and we can't imagine working without it.",
+      "author_name": "Priya Sharma",
+      "author_title": "VP of Product, Brightwave",
+      "author_avatar_url": "https://example.com/avatars/priya.jpg",
+      "rating": 5
+     },
+     {
+      "id": "cta",
+      "component": "cta_button",
+      "url": "https://example.com/signup",
+      "label": "Start your free trial",
+      "color": "#4f46e5",
+      "same_tab": false
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "2rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "hero",
+         "featuresHeading",
+         "featureCols",
+         "testimonial",
+         "cta"
+        ]
+       },
+       {
+        "blocks": []
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

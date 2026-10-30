@@ -1,0 +1,36 @@
+{
+ "model": "sonnet-5-5",
+ "cond": "R",
+ "format": "express",
+ "brief": "B4",
+ "repeat": 2,
+ "seq": 20,
+ "model_id": "claude-sonnet-5-5",
+ "utc": "2026-10-29T20:43:53Z",
+ "prompt_chars": 4059,
+ "prompt_sha256": "(removed for publication)",
+ "temperature_requested": null,
+ "temperature_sent": false,
+ "max_tokens": 256,
+ "request_secs": 1.91,
+ "input_tokens": 1766,
+ "output_tokens": 101,
+ "stop_reason": "end_turn",
+ "usage": {
+  "input_tokens": 1766,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "cache_creation": {
+   "ephemeral_5m_input_tokens": 0,
+   "ephemeral_1h_input_tokens": 0
+  },
+  "output_tokens": 101,
+  "output_tokens_details": {
+   "thinking_tokens": 78
+  },
+  "service_tier": "standard",
+  "inference_geo": "global",
+  "speed": "standard"
+ },
+ "reply": "{\"catalogue\": \"a2ui-bricks-v1\"}"
+}

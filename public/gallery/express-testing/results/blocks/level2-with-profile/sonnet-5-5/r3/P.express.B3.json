@@ -1,0 +1,36 @@
+{
+ "model": "sonnet-5-5",
+ "cond": "P",
+ "format": "express",
+ "brief": "B3",
+ "repeat": 3,
+ "seq": 19,
+ "model_id": "claude-sonnet-5-5",
+ "utc": "2026-10-29T20:08:10Z",
+ "prompt_chars": 9756,
+ "prompt_sha256": "(removed for publication)",
+ "temperature_requested": null,
+ "temperature_sent": false,
+ "max_tokens": 32768,
+ "request_secs": 10.02,
+ "input_tokens": 3606,
+ "output_tokens": 1178,
+ "stop_reason": "end_turn",
+ "usage": {
+  "input_tokens": 3606,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "cache_creation": {
+   "ephemeral_5m_input_tokens": 0,
+   "ephemeral_1h_input_tokens": 0
+  },
+  "output_tokens": 1178,
+  "output_tokens_details": {
+   "thinking_tokens": 913
+  },
+  "service_tier": "standard",
+  "inference_geo": "global",
+  "speed": "standard"
+ },
+ "reply": "<a2ui>\nroot = motion_bricks(null, [[1,2,0,2,2,2,\"#1e3a8a\"],[5,2,0,2,2,2,\"#1e3a8a\"],[1,1,2,6,4,3,\"#9ca3af\"],[-1,2,2,2,2,3,\"#facc15\"],[7,2,2,2,2,3,\"#facc15\"],[2,1,5,4,4,3,\"#dc2626\"],[3,0,6,1,1,1,\"#ffffff\"],[5,0,6,1,1,1,\"#ffffff\"],[4,2,8,1,1,2,\"#facc15\"]], null, null, null, null, null, \"studio\", 24, 26, 1, null, \"16:9\", false, \"Small brick robot with a red head\")\n</a2ui>"
+}

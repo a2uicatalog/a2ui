@@ -1,0 +1,44 @@
+{
+ "task": "T2",
+ "condition": "DT_sonnet-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-sonnet-5-5",
+ "hints": false,
+ "label": "oracle-slice-6types__express__sonnet-5-5__temp0__run2",
+ "agent_type": "T2",
+ "catalogue": "D-t2.json",
+ "atoms_in_catalogue": 16,
+ "prompt_chars": 10550,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 4.2,
+ "usage": {
+  "input_tokens": 3982,
+  "output_tokens": 402
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "heading",
+  "metric_row",
+  "heading",
+  "chartjs_bar",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.4,
+  "recall": 0.667,
+  "f1": 0.5,
+  "slot_hits": {
+   "KPI tile (x4)": true,
+   "trend (required only if metric_row was chosen; stat_card's own delta already satisfies it)": false,
+   "comparison chart": true
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"metrics-overview\")\ntitle = heading(\"Metrics Overview\")\nkpis = metric_row(4, \"#4F8EF7\", [{value: \"$128.4K\", label: \"Revenue\", trend: \"up\", sub: \"+12.5% vs last month\"}, {value: \"8,942\", label: \"Active Users\", trend: \"up\", sub: \"+6.2% vs last month\"}, {value: \"3.4%\", label: \"Churn Rate\", trend: \"down\", sub: \"-0.8% vs last month\"}, {value: \"212ms\", label: \"Avg Response Time\", trend: \"down\", sub: \"-18ms vs last month\"}])\nchartTitle = heading(\"Current vs Previous Quarter\")\nchart = chartjs_bar([\"Revenue ($K)\", \"Active Users (100s)\", \"Churn (0.1%)\", \"Response (10ms)\"], [{label: \"Previous Quarter\", data: [114, 84, 42, 23]}, {label: \"Current Quarter\", data: [128, 89, 34, 21]}])\nroot = columns(2, \"1.5rem\", \"top\", [{blocks: [title, kpis]}, {blocks: [chartTitle, chart]}])\n</a2ui>"
+}

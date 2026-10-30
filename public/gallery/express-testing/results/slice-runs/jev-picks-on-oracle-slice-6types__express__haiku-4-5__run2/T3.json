@@ -1,0 +1,33 @@
+{
+ "task": "T3",
+ "condition": "JD",
+ "label": "jev-picks-on-oracle-slice-6types__express__haiku-4-5__run2",
+ "agent_type": "jev-narrowed",
+ "catalogue": "JD-T3.json",
+ "atoms_in_catalogue": 14,
+ "prompt_chars": 9482,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 4.0,
+ "usage": {
+  "input_tokens": 2687,
+  "output_tokens": 395
+ },
+ "valid": false,
+ "error": "A2uiCompilationParseError: Failed to parse expression: Syntax error at line 14:12: mismatched input '=' expecting ':' (line 14) - Line 14, Col 12 - Help: Please correct the syntax error in your Express DSL.",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "hero": false,
+   "feature columns (x3)": false,
+   "testimonial": false,
+   "CTA": false
+  }
+ },
+ "reply": "<a2ui>\nroot = Column([\n  gradient_hero(\n    title=\"Unlock Your Potential\",\n    subtitle=\"Experience the power of innovation designed for you\",\n    cta_label=\"Get Started\",\n    cta_url=\"https://example.com/signup\"\n  ),\n  feature_grid(\n    heading=\"Why Choose Us\",\n    description=\"Discover the features that set us apart\",\n    columns=3,\n    features=[\n      {\n        icon=\"\u26a1\",\n        title=\"Lightning Fast\",\n        description=\"Optimized performance that keeps up with your pace\"\n      },\n      {\n        icon=\"\ud83d\udd12\",\n        title=\"Secure & Reliable\",\n        description=\"Enterprise-grade security to protect what matters\"\n      },\n      {\n        icon=\"\ud83c\udfaf\",\n        title=\"Laser Focused\",\n        description=\"Precisely engineered solutions for your goals\"\n      }\n    ]\n  ),\n  testimonial_card(\n    text=\"This product completely transformed how I work. The experience is seamless and intuitive.\",\n    author_name=\"Sarah Johnson\",\n    author_title=\"Product Manager at TechCorp\",\n    author_avatar_url=\"https://api.placeholder.com/avatar/sarah.jpg\",\n    rating=5\n  ),\n  cta_section(\n    heading=\"Ready to Transform Your Workflow?\",\n    body=\"Join thousands of users already experiencing the difference\",\n    primary_cta={label: \"Start Free Trial\", url: \"https://example.com/trial\"},\n    secondary_cta={label: \"Learn More\", url: \"https://example.com/about\"}\n  )\n])\n</a2ui>"
+}

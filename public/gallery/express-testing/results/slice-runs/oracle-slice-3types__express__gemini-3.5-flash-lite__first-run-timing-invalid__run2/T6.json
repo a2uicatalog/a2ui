@@ -1,0 +1,52 @@
+{
+ "task": "T6",
+ "condition": "C_gemini-3.5-f",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash-lite",
+ "hints": false,
+ "label": "oracle-slice-3types__express__gemini-3.5-flash-lite__first-run-timing-invalid__run2",
+ "agent_type": "Learning",
+ "catalogue": "C-learning.json",
+ "atoms_in_catalogue": 36,
+ "prompt_chars": 21139,
+ "slot_recall": [
+  2,
+  2
+ ],
+ "secs": 13.7,
+ "usage": {
+  "input_tokens": 5727,
+  "output_tokens": 764
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "page_header",
+  "xp_bar",
+  "spaced_repetition_card",
+  "spaced_repetition_card",
+  "spaced_repetition_card",
+  "spaced_repetition_card",
+  "spaced_repetition_card",
+  "spaced_repetition_card",
+  "spaced_repetition_card",
+  "spaced_repetition_card",
+  "spaced_repetition_card",
+  "spaced_repetition_card",
+  "columns",
+  "body"
+ ],
+ "score": {
+  "precision": 0.786,
+  "recall": 1.0,
+  "f1": 0.88,
+  "slot_hits": {
+   "flashcard deck": true,
+   "progress indicator": true
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"vocabulary-flashcards\")\n\nheader = page_header(\n    title=\"Vocabulary Flashcards\",\n    subtitle=\"Review key terms and flip cards to check your understanding.\",\n    icon=\"\ud83d\udcda\",\n    tag=\"Study Mode\",\n    accent=\"#4f46e5\"\n)\n\nxp = xp_bar(\n    level_label=\"Review Session \u2014 10 Cards\",\n    xp_current=0,\n    xp_next=10,\n    accent=\"#4f46e5\",\n    show_flash=false\n)\n\ncard1 = spaced_repetition_card(\n    front=\"Ephemeral\",\n    back=\"Lasting for a very short time.\",\n    card_id=\"vocab_1\",\n    accent=\"#4f46e5\"\n)\n\ncard2 = spaced_repetition_card(\n    front=\"Benevolent\",\n    back=\"Well meaning and kindly.\",\n    card_id=\"vocab_2\",\n    accent=\"#4f46e5\"\n)\n\ncard3 = spaced_repetition_card(\n    front=\"Pragmatic\",\n    back=\"Dealing with things sensibly and realistically.\",\n    card_id=\"vocab_3\",\n    accent=\"#4f46e5\"\n)\n\ncard4 = spaced_repetition_card(\n    front=\"Cacophony\",\n    back=\"A harsh, discordant mixture of sounds.\",\n    card_id=\"vocab_4\",\n    accent=\"#4f46e5\"\n)\n\ncard5 = spaced_repetition_card(\n    front=\"Mundane\",\n    back=\"Lacking interest or excitement; ordinary.\",\n    card_id=\"vocab_5\",\n    accent=\"#4f46e5\"\n)\n\ncard6 = spaced_repetition_card(\n    front=\"Ambivalent\",\n    back=\"Having mixed feelings or contradictory ideas about something.\",\n    card_id=\"vocab_6\",\n    accent=\"#4f46e5\"\n)\n\ncard7 = spaced_repetition_card(\n    front=\"Garrulous\",\n    back=\"Excessively talkative, especially on trivial matters.\",\n    card_id=\"vocab_7\",\n    accent=\"#4f46e5\"\n)\n\ncard8 = spaced_repetition_card(\n    front=\"Innovative\",\n    back=\"Featuring new methods; advanced and original.\",\n    card_id=\"vocab_8\",\n    accent=\"#4f46e5\"\n)\n\ncard9 = spaced_repetition_card(\n    front=\"Resilient\",\n    back=\"Able to withstand or recover quickly from difficult conditions.\",\n    card_id=\"vocab_9\",\n    accent=\"#4f46e5\"\n)\n\ncard10 = spaced_repetition_card(\n    front=\"Ubiquitous\",\n    back=\"Present, appearing, or found everywhere.\",\n    card_id=\"vocab_10\",\n    accent=\"#4f46e5\"\n)\n\ndeck_cols = columns(\n    cols=2,\n    gap=\"1.5rem\",\n    items=[\n        {blocks: [card1, card3, card5, card7, card9]},\n        {blocks: [card2, card4, card6, card8, card10]}\n    ]\n)\n\nroot = body([\n    header,\n    xp,\n    deck_cols\n])\n</a2ui>"
+}

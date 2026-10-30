@@ -1,0 +1,130 @@
+{
+ "label": "oracle-slice-6types__express__sonnet-5-5__temp0__run2",
+ "task": "T4",
+ "format": "express",
+ "model_id": "claude-sonnet-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "status-list",
+    "catalog_id": "https://a2uicatalog.ai/catalog/d-t4.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "status-list",
+    "components": [
+     {
+      "id": "filter",
+      "component": "segmented_control",
+      "options": [
+       {
+        "label": "All",
+        "value": "all"
+       },
+       {
+        "label": "Active",
+        "value": "active"
+       },
+       {
+        "label": "Pending",
+        "value": "pending"
+       },
+       {
+        "label": "Blocked",
+        "value": "blocked"
+       },
+       {
+        "label": "Done",
+        "value": "done"
+       }
+      ],
+      "selected_value": "all",
+      "name": "status_filter"
+     },
+     {
+      "id": "title",
+      "component": "heading",
+      "text": "Project Items"
+     },
+     {
+      "id": "list",
+      "component": "entity_list",
+      "items": [
+       {
+        "name": "Design system audit",
+        "subtitle": "Review spacing and colour tokens across all components",
+        "status": "Active",
+        "icon": "\ud83c\udfa8"
+       },
+       {
+        "name": "API rate limiting",
+        "subtitle": "Waiting on infrastructure sign-off for new thresholds",
+        "status": "Pending",
+        "icon": "\u23f3"
+       },
+       {
+        "name": "Checkout redesign",
+        "subtitle": "Prototype is in user testing with ten participants",
+        "status": "Active",
+        "icon": "\ud83d\uded2"
+       },
+       {
+        "name": "Database migration",
+        "subtitle": "Completed and verified in production last Friday",
+        "status": "Done",
+        "icon": "\ud83d\uddc4\ufe0f"
+       },
+       {
+        "name": "SSO integration",
+        "subtitle": "Blocked by missing identity provider credentials",
+        "status": "Blocked",
+        "icon": "\ud83d\udd12"
+       },
+       {
+        "name": "Onboarding emails",
+        "subtitle": "Copy drafted, awaiting legal review before scheduling",
+        "status": "Pending",
+        "icon": "\u2709\ufe0f"
+       },
+       {
+        "name": "Mobile push alerts",
+        "subtitle": "Shipped to all users with delivery rate at 98%",
+        "status": "Done",
+        "icon": "\ud83d\udcf1"
+       },
+       {
+        "name": "Analytics dashboard",
+        "subtitle": "Building weekly retention charts from the new events",
+        "status": "Active",
+        "icon": "\ud83d\udcca"
+       }
+      ]
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "title",
+         "filter"
+        ]
+       },
+       {
+        "blocks": [
+         "list"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

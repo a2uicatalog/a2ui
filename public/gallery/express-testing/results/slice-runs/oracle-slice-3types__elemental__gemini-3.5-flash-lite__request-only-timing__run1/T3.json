@@ -1,0 +1,44 @@
+{
+ "task": "T3",
+ "condition": "CX_gemini-3.5-flash-l",
+ "temperature_applied": false,
+ "format": "elemental",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash-lite",
+ "hints": false,
+ "label": "oracle-slice-3types__elemental__gemini-3.5-flash-lite__request-only-timing__run1",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "C-marketing-commerce.json",
+ "atoms_in_catalogue": 23,
+ "prompt_chars": 12612,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 3.4,
+ "usage": {
+  "input_tokens": 3640,
+  "output_tokens": 654
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "gradient_hero",
+  "feature_grid",
+  "testimonial_card",
+  "cta_section"
+ ],
+ "score": {
+  "precision": 1.0,
+  "recall": 1.0,
+  "f1": 1.0,
+  "slot_hits": {
+   "hero": true,
+   "feature columns (x3)": true,
+   "testimonial": true,
+   "CTA": true
+  }
+ },
+ "reply": "<a2ui>\n  <body>\n    <script type=\"application/json\">\n      {\n        \"hero_title\": \"Build Better Software Faster\",\n        \"hero_subtitle\": \"Empower your engineering teams with unified deployment pipelines and real-time observability.\",\n        \"cta_label\": \"Start Free Trial\",\n        \"cta_url\": \"/signup\"\n      }\n    </script>\n\n    <ui-gradient_hero \n      id=\"root\"\n      title=\"Build Better Software Faster\"\n      subtitle=\"Empower your engineering teams with unified deployment pipelines and real-time observability.\"\n      badge=\"New Release v2.0\"\n      cta-label=\"Start Free Trial\"\n      cta-url=\"/signup\"\n      align=\"center\"\n    />\n\n    <ui-feature_grid\n      id=\"features-section\"\n      heading=\"Everything you need to scale\"\n      description=\"Powerful features designed to streamline your development lifecycle from commit to production.\"\n      columns=\"{3}\">\n      <script type=\"application/json\" slot=\"features\">[\n        {\n          \"icon\": \"\u26a1\",\n          \"title\": \"Lightning Fast\",\n          \"description\": \"Optimized build caches and parallel execution cut your CI/CD times by up to 70%.\"\n        },\n        {\n          \"icon\": \"\ud83d\udee1\ufe0f\",\n          \"title\": \"Enterprise Security\",\n          \"description\": \"Built-in vulnerability scanning and compliance checks keep your codebase secure at scale.\"\n        },\n        {\n          \"icon\": \"\ud83d\udcca\",\n          \"title\": \"Deep Observability\",\n          \"description\": \"Real-time metrics, tracing, and logs give you complete visibility into production services.\"\n        }\n      ]</script>\n    </ui-feature_grid>\n\n    <ui-testimonial_card\n      id=\"main-testimonial\"\n      text=\"This platform completely transformed how our engineering organization ships code. Deployment frequency is up 3x and incidents are down.\"\n      author-name=\"Sarah Jenkins\"\n      author-title=\"VP of Engineering at TechCorp\"\n      author-avatar-url=\"https://images.unsplash.com/photo-1494790108377-be9c29b29330\"\n      rating=\"{5}\"\n    />\n\n    <ui-cta_section\n      id=\"bottom-cta\"\n      heading=\"Ready to accelerate your workflow?\"\n      body=\"Join thousands of high-performing engineering teams shipping better software today.\"\n      background=\"#1e1b4b\">\n      <script type=\"application/json\" slot=\"primary_cta\">{\n        \"label\": \"Get Started Now\",\n        \"url\": \"/signup\"\n      }</script>\n      <script type=\"application/json\" slot=\"secondary_cta\">{\n        \"label\": \"Contact Sales\",\n        \"url\": \"/contact\"\n      }</script>\n    </ui-cta_section>\n  </body>\n</a2ui>"
+}

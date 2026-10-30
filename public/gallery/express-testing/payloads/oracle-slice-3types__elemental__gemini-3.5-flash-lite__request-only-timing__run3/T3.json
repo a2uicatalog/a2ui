@@ -1,0 +1,97 @@
+{
+ "label": "oracle-slice-3types__elemental__gemini-3.5-flash-lite__request-only-timing__run3",
+ "task": "T3",
+ "format": "elemental",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce-elemental.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "gradient_hero",
+      "title": {
+       "path": "/hero_data/title"
+      },
+      "subtitle": {
+       "path": "/hero_data/subtitle"
+      },
+      "Badge": "New Release"
+     },
+     {
+      "id": "features",
+      "component": "feature_grid",
+      "Heading": "Everything you need to succeed",
+      "description": "Powerful features designed to help your team scale effortlessly.",
+      "Columns": 3,
+      "features": {
+       "path": "/features_data"
+      }
+     },
+     {
+      "id": "testimonial",
+      "component": "testimonial_card",
+      "text": {
+       "path": "/testimonial_data/text"
+      },
+      "rating": {
+       "path": "/testimonial_data/rating"
+      }
+     },
+     {
+      "id": "cta",
+      "component": "cta_section",
+      "Heading": "Ready to accelerate your workflow?",
+      "Body": "Join thousands of teams building the future today."
+     }
+    ]
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_data_model": {
+    "surface_id": "main",
+    "path": "/",
+    "value": {
+     "hero_data": {
+      "title": "Build Better Products, Faster",
+      "subtitle": "Streamline your workflow, collaborate in real-time, and ship high-quality apps with our all-in-one platform."
+     },
+     "features_data": [
+      {
+       "icon": "\u26a1",
+       "title": "Lightning Fast",
+       "description": "Optimized performance ensures your applications run smoothly and load instantly."
+      },
+      {
+       "icon": "\ud83d\udd12",
+       "title": "Enterprise Security",
+       "description": "State-of-the-art encryption and compliance standards to keep your data safe."
+      },
+      {
+       "icon": "\ud83d\udcc8",
+       "title": "Advanced Analytics",
+       "description": "Gain deep insights into user behavior with real-time metrics and reporting."
+      }
+     ],
+     "testimonial_data": {
+      "text": "This platform has completely transformed how our team builds and ships products. We've cut our deployment time in half!",
+      "author_name": "Sarah Jenkins",
+      "author_title": "Head of Product at TechCorp",
+      "author_avatar_url": "https://images.unsplash.com/photo-1494790108377-be9c29b29330",
+      "rating": 5
+     }
+    }
+   }
+  }
+ ]
+}

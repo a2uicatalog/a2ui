@@ -1,0 +1,78 @@
+{
+ "label": "jev-picks-on-rule-slice__express__haiku-4-5__temp0__hints-v2__run1",
+ "task": "T5",
+ "format": "express",
+ "model_id": null,
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/jb-t5.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "pricing_tier_group",
+      "tiers": [
+       {
+        "plan_name": "Starter",
+        "price": "29",
+        "currency": "$",
+        "frequency": "/month",
+        "features": [
+         "Up to 10 projects",
+         "Basic analytics",
+         "Community support",
+         "1 GB storage"
+        ],
+        "call_to_action_label": "Get Started",
+        "call_to_action_url": "/signup/starter",
+        "is_highlighted": false
+       },
+       {
+        "plan_name": "Professional",
+        "price": "79",
+        "currency": "$",
+        "frequency": "/month",
+        "features": [
+         "Unlimited projects",
+         "Advanced analytics",
+         "Priority email support",
+         "100 GB storage",
+         "Custom integrations",
+         "Team collaboration"
+        ],
+        "call_to_action_label": "Start Free Trial",
+        "call_to_action_url": "/signup/professional",
+        "is_highlighted": true
+       },
+       {
+        "plan_name": "Enterprise",
+        "price": "299",
+        "currency": "$",
+        "frequency": "/month",
+        "features": [
+         "Everything in Professional",
+         "Dedicated account manager",
+         "24/7 phone support",
+         "Unlimited storage",
+         "Custom SLA",
+         "Advanced security"
+        ],
+        "call_to_action_label": "Contact Sales",
+        "call_to_action_url": "/contact/enterprise",
+        "is_highlighted": false
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

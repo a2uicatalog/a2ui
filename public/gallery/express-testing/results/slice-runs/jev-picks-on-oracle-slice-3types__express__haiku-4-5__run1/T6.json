@@ -1,0 +1,36 @@
+{
+ "task": "T6",
+ "condition": "JC",
+ "label": "jev-picks-on-oracle-slice-3types__express__haiku-4-5__run1",
+ "agent_type": "jev-narrowed",
+ "catalogue": "JC-T6.json",
+ "atoms_in_catalogue": 10,
+ "prompt_chars": 7860,
+ "slot_recall": [
+  2,
+  2
+ ],
+ "secs": 4.0,
+ "usage": {
+  "input_tokens": 2197,
+  "output_tokens": 375
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns",
+  "heading",
+  "progress_bar",
+  "flashcard_deck"
+ ],
+ "score": {
+  "precision": 0.5,
+  "recall": 1.0,
+  "f1": 0.667,
+  "slot_hits": {
+   "flashcard deck": true,
+   "progress indicator": true
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"vocabulary-flashcards\")\n\nroot = columns(1, gap=\"2rem\", items=[\n  {blocks: [\n    heading(\"Vocabulary Review\"),\n    progress_bar(value=0, label=\"Cards Reviewed\", show_percent=true, accent=\"#4f46e5\")\n  ]},\n  {blocks: [\n    flashcard_deck(\n      cards=[\n        {front: \"Ameliorate\", back: \"To make better or improve\"},\n        {front: \"Ephemeral\", back: \"Lasting for a very short time\"},\n        {front: \"Ubiquitous\", back: \"Present everywhere; constantly encountered\"},\n        {front: \"Serendipity\", back: \"The occurrence of events by chance in a happy or beneficial way\"},\n        {front: \"Eloquent\", back: \"Fluent, persuasive, and expressive in speaking or writing\"},\n        {front: \"Pragmatic\", back: \"Dealing with things in a practical, realistic way\"},\n        {front: \"Meticulous\", back: \"Showing great attention to detail; precise\"},\n        {front: \"Benevolent\", back: \"Kind and generous; showing goodwill\"},\n        {front: \"Verbose\", back: \"Using more words than necessary; wordy\"},\n        {front: \"Candid\", back: \"Truthful and straightforward; frank\"}\n      ],\n      accent=\"#4f46e5\",\n      label_front=\"WORD\",\n      label_back=\"DEFINITION\"\n    )\n  ]}\n])\n\n</a2ui>"
+}

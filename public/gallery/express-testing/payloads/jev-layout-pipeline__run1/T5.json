@@ -1,0 +1,68 @@
+{
+ "label": "jev-layout-pipeline__run1",
+ "task": "T5",
+ "format": "express",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "hero",
+      "component": "gradient_hero",
+      "title": "Choose Your Plan",
+      "subtitle": "Select the subscription that fits your needs and start growing today.",
+      "cta_label": "Start Free Trial",
+      "cta_url": "#start"
+     },
+     {
+      "id": "feats",
+      "component": "feature_grid",
+      "heading": "Compare Our Tiers",
+      "columns": 3,
+      "features": [
+       {
+        "icon": "\ud83c\udf31",
+        "title": "Starter",
+        "description": "Essential tools for individuals taking their first steps."
+       },
+       {
+        "icon": "\u2b50",
+        "title": "Pro",
+        "description": "Advanced features and priority support for growing teams."
+       },
+       {
+        "icon": "\ud83d\ude80",
+        "title": "Enterprise",
+        "description": "Maximum power, custom security, and dedicated account management."
+       }
+      ]
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "hero",
+         "feats"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

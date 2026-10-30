@@ -1,0 +1,124 @@
+{
+ "label": "oracle-slice-6types__express__sonnet-5-5__temp0__hints-v2__run2",
+ "task": "T4",
+ "format": "express",
+ "model_id": "claude-sonnet-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "status-list",
+    "catalog_id": "https://a2uicatalog.ai/catalog/d-t4.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "status-list",
+    "components": [
+     {
+      "id": "title",
+      "component": "heading",
+      "text": "Project tasks"
+     },
+     {
+      "id": "hint",
+      "component": "body",
+      "text": "Pick a status to narrow the list. Showing all 8 items."
+     },
+     {
+      "id": "filter",
+      "component": "segmented_control",
+      "options": [
+       {
+        "label": "All",
+        "value": "all"
+       },
+       {
+        "label": "Done",
+        "value": "done"
+       },
+       {
+        "label": "In progress",
+        "value": "in_progress"
+       },
+       {
+        "label": "Blocked",
+        "value": "blocked"
+       }
+      ],
+      "selected_value": "all",
+      "name": "status_filter"
+     },
+     {
+      "id": "list",
+      "component": "entity_list",
+      "items": [
+       {
+        "name": "Set up CI pipeline",
+        "subtitle": "Automated builds run on every push to main.",
+        "status": "Done"
+       },
+       {
+        "name": "Design login screen",
+        "subtitle": "Final mockups approved by the product team.",
+        "status": "Done"
+       },
+       {
+        "name": "Write API documentation",
+        "subtitle": "Endpoints for users and billing are drafted.",
+        "status": "In progress"
+       },
+       {
+        "name": "Migrate user database",
+        "subtitle": "Schema changes are running on the staging server.",
+        "status": "In progress"
+       },
+       {
+        "name": "Implement search",
+        "subtitle": "Query indexing is half complete.",
+        "status": "In progress"
+       },
+       {
+        "name": "Integrate payment gateway",
+        "subtitle": "Waiting on vendor API credentials.",
+        "status": "Blocked"
+       },
+       {
+        "name": "Security audit",
+        "subtitle": "Third-party auditor has not yet been scheduled.",
+        "status": "Blocked"
+       },
+       {
+        "name": "Release notes",
+        "subtitle": "Draft completed and reviewed by the team.",
+        "status": "Done"
+       }
+      ]
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "2rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "title",
+         "hint",
+         "filter"
+        ]
+       },
+       {
+        "blocks": [
+         "list"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

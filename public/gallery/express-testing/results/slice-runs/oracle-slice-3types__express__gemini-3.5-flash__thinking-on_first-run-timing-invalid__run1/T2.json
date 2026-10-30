@@ -1,0 +1,47 @@
+{
+ "task": "T2",
+ "condition": "C_gemini-3.5-flash",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash",
+ "hints": false,
+ "label": "oracle-slice-3types__express__gemini-3.5-flash__thinking-on_first-run-timing-invalid__run1",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 16421,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 13.3,
+ "usage": {
+  "input_tokens": 4602,
+  "output_tokens": 3714
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "stat_card",
+  "stat_card",
+  "stat_card",
+  "stat_card",
+  "chartjs_bar",
+  "columns",
+  "heading",
+  "heading"
+ ],
+ "score": {
+  "precision": 0.625,
+  "recall": 1.0,
+  "f1": 0.769,
+  "slot_hits": {
+   "KPI tile (x4)": true,
+   "trend (required only if metric_row was chosen; stat_card's own delta already satisfies it)": true,
+   "comparison chart": true
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"metrics-overview-dashboard\")\n\n# Define the four KPI tiles (stat cards) with values, labels, and trends\nkpi1 = stat_card(\"$124,500\", \"Monthly Revenue\", \"+14.2% vs last month\", true, \"#10B981\")\nkpi2 = stat_card(\"3,240\", \"Active Users\", \"+8.3% vs last week\", true, \"#10B981\")\nkpi3 = stat_card(\"98.2%\", \"SLA Adherence\", \"-0.5% vs target\", false, \"#EF4444\")\nkpi4 = stat_card(\"$42.50\", \"Average Order Value\", \"+3.1% vs last month\", true, \"#10B981\")\n\n# Left Column containing the KPI tiles\nleft_column = {\n    blocks: [\n        heading(\"Key Metrics\"),\n        kpi1,\n        kpi2,\n        kpi3,\n        kpi4\n    ]\n}\n\n# Comparison Chart showing side-by-side performance data\ncomparison_chart = chartjs_bar(\n    [\"Q1\", \"Q2\", \"Q3\", \"Q4\"],\n    [\n        {label: \"Current Year\", data: [120, 155, 182, 224]},\n        {label: \"Previous Year\", data: [105, 115, 130, 168]}\n    ]\n)\n\n# Right Column containing the comparison chart\nright_column = {\n    blocks: [\n        heading(\"Quarterly Performance\"),\n        comparison_chart\n    ]\n}\n\n# Root layout combining both columns into a responsive side-by-side dashboard\nroot = columns(2, \"2rem\", \"top\", [left_column, right_column])\n</a2ui>"
+}

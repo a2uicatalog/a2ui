@@ -1,0 +1,139 @@
+{
+ "task": "T2",
+ "condition": "B",
+ "slice_atoms_in_options": 231,
+ "picks": [
+  {
+   "slot": "First KPI tile: a headline figure, a short caption naming the metric, and an up  #1",
+   "decomposer_line": "First KPI tile: a headline figure, a short caption naming the metric, and an up or down arrow with its percentage change",
+   "atom": "metric_delta",
+   "confidence": 0.52,
+   "top3": [
+    [
+     "metric_delta",
+     0.52
+    ],
+    [
+     "stat_card",
+     0.33
+    ],
+    [
+     "metric_comparison_card",
+     0.09
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "Second KPI tile: a headline figure, a short caption naming the metric, and an up #2",
+   "decomposer_line": "Second KPI tile: a headline figure, a short caption naming the metric, and an up or down arrow with its percentage change",
+   "atom": "metric_delta",
+   "confidence": 0.54,
+   "top3": [
+    [
+     "metric_delta",
+     0.54
+    ],
+    [
+     "stat_card",
+     0.27
+    ],
+    [
+     "metric_comparison_card",
+     0.11
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "Third KPI tile: a headline figure, a short caption naming the metric, and an up  #3",
+   "decomposer_line": "Third KPI tile: a headline figure, a short caption naming the metric, and an up or down arrow with its percentage change",
+   "atom": "metric_delta",
+   "confidence": 0.5,
+   "top3": [
+    [
+     "metric_delta",
+     0.5
+    ],
+    [
+     "stat_card",
+     0.3
+    ],
+    [
+     "metric_comparison_card",
+     0.1
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "Fourth KPI tile: a headline figure, a short caption naming the metric, and an up #4",
+   "decomposer_line": "Fourth KPI tile: a headline figure, a short caption naming the metric, and an up or down arrow with its percentage change",
+   "atom": "metric_delta",
+   "confidence": 0.51,
+   "top3": [
+    [
+     "metric_delta",
+     0.51
+    ],
+    [
+     "stat_card",
+     0.33
+    ],
+    [
+     "metric_comparison_card",
+     0.09
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "Comparison chart: a visual plot that sets the metrics side by side so the values #5",
+   "decomposer_line": "Comparison chart: a visual plot that sets the metrics side by side so the values can be compared",
+   "atom": "comparison_grid",
+   "confidence": 0.51,
+   "top3": [
+    [
+     "comparison_grid",
+     0.51
+    ],
+    [
+     "benchmark_comparison",
+     0.25
+    ],
+    [
+     "table",
+     0.09
+    ]
+   ],
+   "finalists": null
+  }
+ ],
+ "cost": {
+  "decomposer_input_tokens": 3246,
+  "decomposer_output_tokens": 384,
+  "decomposer_thinking_tokens": 0,
+  "jev_input_tokens": 44274,
+  "jev_output_tokens": 10220,
+  "jev_calls": 5
+ },
+ "error": null,
+ "atoms": [
+  "metric_delta",
+  "metric_delta",
+  "metric_delta",
+  "metric_delta",
+  "comparison_grid"
+ ],
+ "score": {
+  "precision": 0.8,
+  "recall": 0.0,
+  "f1": 0.0,
+  "slot_hits": {
+   "KPI tile (x4)": false,
+   "trend (required only if metric_row was chosen; stat_card's own delta already satisfies it)": false,
+   "comparison chart": false
+  }
+ },
+ "secs": 6.1
+}

@@ -1,0 +1,164 @@
+{
+ "task": "T1",
+ "condition": "D",
+ "chooser": "clef",
+ "slice_atoms_in_options": 28,
+ "picks": [
+  {
+   "slot": "A header at the top showing the lesson title, \"The Water Cycle\", with a short su #1",
+   "decomposer_line": "A header at the top showing the lesson title, \"The Water Cycle\", with a short subtitle line.",
+   "atom": "page_header",
+   "confidence": 0.3401,
+   "top3": [
+    [
+     "page_header",
+     0.5515
+    ],
+    [
+     "gradient_hero",
+     0.1811
+    ],
+    [
+     "article_hero",
+     0.1573
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "A first concept section explaining evaporation: a short text description beside  #2",
+   "decomposer_line": "A first concept section explaining evaporation: a short text description beside a simple illustration of water rising from oceans and lakes into the air as vapor.",
+   "atom": "columns",
+   "confidence": 0.1095,
+   "top3": [
+    [
+     "columns",
+     0.2584
+    ],
+    [
+     "concept_rung",
+     0.2048
+    ],
+    [
+     "heading",
+     0.1167
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "A second concept section explaining condensation: a short text description besid #3",
+   "decomposer_line": "A second concept section explaining condensation: a short text description beside an illustration of water vapor cooling and gathering into clouds.",
+   "atom": "columns",
+   "confidence": 0.3688,
+   "top3": [
+    [
+     "columns",
+     0.6109
+    ],
+    [
+     "concept_rung",
+     0.0855
+    ],
+    [
+     "heading",
+     0.0618
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "A third concept section explaining precipitation and collection: a short text de #4",
+   "decomposer_line": "A third concept section explaining precipitation and collection: a short text description beside an illustration of rain or snow falling to the ground and flowing into rivers and groundwater.",
+   "atom": "columns",
+   "confidence": 0.2009,
+   "top3": [
+    [
+     "columns",
+     0.4395
+    ],
+    [
+     "body",
+     0.1247
+    ],
+    [
+     "concept_rung",
+     0.086
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "A worked example walkthrough that follows one drop of water through the cycle st #5",
+   "decomposer_line": "A worked example walkthrough that follows one drop of water through the cycle step by step, with numbered steps that each pair a sentence with a matching small picture.",
+   "atom": "numbered_list",
+   "confidence": 0.2239,
+   "top3": [
+    [
+     "numbered_list",
+     0.3636
+    ],
+    [
+     "steps",
+     0.2635
+    ],
+    [
+     "stepper",
+     0.2163
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "An interactive three-question self-check quiz where each question shows multiple #6",
+   "decomposer_line": "An interactive three-question self-check quiz where each question shows multiple-choice answers, the learner selects one, and immediate feedback indicates whether the choice is correct, with a final score shown at the end.",
+   "atom": "quiz_set",
+   "confidence": 0.6112,
+   "top3": [
+    [
+     "quiz_set",
+     0.7816
+    ],
+    [
+     "quiz_result_summary",
+     0.1115
+    ],
+    [
+     "quiz_question",
+     0.0299
+    ]
+   ],
+   "finalists": null
+  }
+ ],
+ "cost": {
+  "decomposer_input_tokens": 0,
+  "decomposer_output_tokens": 0,
+  "decomposer_thinking_tokens": 0,
+  "jev_input_tokens": 7999,
+  "jev_output_tokens": 0,
+  "jev_calls": 6
+ },
+ "error": null,
+ "atoms": [
+  "page_header",
+  "columns",
+  "columns",
+  "columns",
+  "numbered_list",
+  "quiz_set"
+ ],
+ "score": {
+  "precision": 0.5,
+  "recall": 0.6,
+  "f1": 0.545,
+  "slot_hits": {
+   "title": true,
+   "concept sections (x3)": false,
+   "worked example": true,
+   "3-question quiz": true,
+   "quiz result": false
+  }
+ },
+ "secs": 1.9
+}

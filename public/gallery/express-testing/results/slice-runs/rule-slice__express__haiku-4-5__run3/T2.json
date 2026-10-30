@@ -1,0 +1,37 @@
+{
+ "task": "T2",
+ "condition": "B",
+ "label": "rule-slice__express__haiku-4-5__run3",
+ "agent_type": "Data display",
+ "catalogue": "B-data-display.json",
+ "atoms_in_catalogue": 248,
+ "prompt_chars": 125436,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 3.1,
+ "usage": {
+  "input_tokens": 36032,
+  "output_tokens": 265
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns",
+  "icon_stat_row",
+  "icon_stat_row",
+  "metric_comparison_card"
+ ],
+ "score": {
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "KPI tile (x4)": false,
+   "trend (required only if metric_row was chosen; stat_card's own delta already satisfies it)": false,
+   "comparison chart": false
+  }
+ },
+ "reply": "<a2ui>\nroot = columns(cols=2, items=[\n  {blocks: [\n    icon_stat_row(cols=2, stats=[\n      {icon: \"\ud83d\udcca\", value: \"2,847\", label: \"Total Revenue\", prefix: \"$\", accent: \"#10b981\"},\n      {icon: \"\ud83d\udc65\", value: \"1,204\", label: \"Active Users\", suffix: \"k\", accent: \"#3b82f6\"}\n    ]),\n    icon_stat_row(cols=2, stats=[\n      {icon: \"\ud83d\udcc8\", value: \"34.2\", label: \"Growth Rate\", suffix: \"%\", accent: \"#f59e0b\"},\n      {icon: \"\u26a1\", value: \"98.5\", label: \"System Uptime\", suffix: \"%\", accent: \"#8b5cf6\"}\n    ])\n  ]},\n  {blocks: [\n    metric_comparison_card(\n      label=\"Monthly Revenue\",\n      value=45230,\n      previous=38950,\n      lower_is_better=false\n    )\n  ]}\n])\n</a2ui>"
+}

@@ -1,0 +1,93 @@
+{
+ "label": "oracle-slice-3types__json__gemini-3.5-flash-lite__first-run-timing-invalid__run3",
+ "task": "T6",
+ "format": "json",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "vocab-flashcards",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning.json",
+    "theme": {
+     "primaryColor": "#4f46e5"
+    }
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "vocab-flashcards",
+    "components": [
+     {
+      "id": "root",
+      "component": "page_header",
+      "title": "Vocabulary Builder",
+      "subtitle": "Review essential terms and track your progress.",
+      "icon": "\ud83d\udcda",
+      "tag": "Interactive",
+      "accent": "#4f46e5"
+     },
+     {
+      "id": "deck_progress",
+      "component": "progress_bar",
+      "value": 20,
+      "label": "Review Progress",
+      "caption": "2 of 10 cards reviewed",
+      "accent": "#4f46e5",
+      "show_percent": "true"
+     },
+     {
+      "id": "flashcards",
+      "component": "flashcard_deck",
+      "accent": "#4f46e5",
+      "label_front": "TERM",
+      "label_back": "DEFINITION",
+      "cards": [
+       {
+        "front": "Ephemeral",
+        "back": "Lasting for a very short time."
+       },
+       {
+        "front": "Serendipity",
+        "back": "The occurrence of events by chance in a happy or beneficial way."
+       },
+       {
+        "front": "Ubiquitous",
+        "back": "Present, appearing, or found everywhere."
+       },
+       {
+        "front": "Pragmatic",
+        "back": "Dealing with things sensibly and realistically."
+       },
+       {
+        "front": "Mellifluous",
+        "back": "(Of a voice or words) sweet or musical; pleasant to hear."
+       },
+       {
+        "front": "Resilient",
+        "back": "Able to withstand or recover quickly from difficult conditions."
+       },
+       {
+        "front": "Benevolent",
+        "back": "Well meaning and kindly."
+       },
+       {
+        "front": "Cacophony",
+        "back": "A harsh, discordant mixture of sounds."
+       },
+       {
+        "front": "Enigma",
+        "back": "A person or thing that is mysterious, puzzling, or difficult to understand."
+       },
+       {
+        "front": "Zealot",
+        "back": "A person who is fanatical and uncompromising in pursuit of their religious, political, or other ideals."
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

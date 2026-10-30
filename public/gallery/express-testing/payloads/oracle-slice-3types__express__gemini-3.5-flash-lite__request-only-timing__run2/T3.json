@@ -1,0 +1,112 @@
+{
+ "label": "oracle-slice-3types__express__gemini-3.5-flash-lite__request-only-timing__run2",
+ "task": "T3",
+ "format": "express",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "product-landing",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "product-landing",
+    "components": [
+     {
+      "id": "hero",
+      "component": "gradient_hero",
+      "title": "Transform Your Workflow Today",
+      "subtitle": "Experience seamless productivity and powerful automation designed for modern teams.",
+      "badge": "New Release",
+      "accent": "#4f46e5",
+      "accent2": "#8b5cf6",
+      "align": "center",
+      "cta_label": "Get Started",
+      "cta_url": "https://example.com/get-started"
+     },
+     {
+      "id": "features",
+      "component": "feature_grid",
+      "heading": "Why Choose Us",
+      "description": "Everything you need to scale your operations efficiently.",
+      "columns": 3,
+      "features": [
+       {
+        "icon": "\u26a1",
+        "title": "Lightning Fast",
+        "description": "Optimized performance ensures zero lag across all your daily operations."
+       },
+       {
+        "icon": "\ud83d\udd12",
+        "title": "Enterprise Security",
+        "description": "Bank-grade encryption keeps your sensitive data protected 24/7."
+       },
+       {
+        "icon": "\ud83d\udcc8",
+        "title": "Advanced Analytics",
+        "description": "Gain deep insights into your team's productivity with custom reports."
+       }
+      ]
+     },
+     {
+      "id": "testimonial",
+      "component": "testimonial_card",
+      "text": "This platform completely transformed how our engineering team collaborates. We shipped our product twice as fast!",
+      "author_name": "Sarah Jenkins",
+      "author_title": "VP of Engineering at TechCorp",
+      "author_avatar_url": "https://example.com/avatar.jpg",
+      "rating": 5
+     },
+     {
+      "id": "cta",
+      "component": "cta_section",
+      "heading": "Ready to boost your productivity?",
+      "body": "Join thousands of teams already using our platform to achieve their goals.",
+      "primary_cta": {
+       "label": "Start Free Trial",
+       "url": "https://example.com/trial"
+      },
+      "secondary_cta": {
+       "label": "Contact Sales",
+       "url": "https://example.com/contact"
+      },
+      "background": "#f8fafc"
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "2.5rem",
+      "align": "center",
+      "items": [
+       {
+        "blocks": [
+         "hero"
+        ]
+       },
+       {
+        "blocks": [
+         "features"
+        ]
+       },
+       {
+        "blocks": [
+         "testimonial"
+        ]
+       },
+       {
+        "blocks": [
+         "cta"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

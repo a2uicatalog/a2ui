@@ -1,0 +1,45 @@
+{
+ "task": "T3",
+ "condition": "A_haiku-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "full-catalogue__express__haiku-5-5__run2",
+ "agent_type": "full",
+ "catalogue": "A-full.json",
+ "atoms_in_catalogue": 557,
+ "prompt_chars": 294155,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 7.6,
+ "usage": {
+  "input_tokens": 107823,
+  "output_tokens": 1423
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "gradient_hero",
+  "feature_grid",
+  "testimonial_card",
+  "cta_button",
+  "color_section"
+ ],
+ "score": {
+  "precision": 0.8,
+  "recall": 1.0,
+  "f1": 0.889,
+  "slot_hits": {
+   "hero": true,
+   "feature columns (x3)": true,
+   "testimonial": true,
+   "CTA": true
+  }
+ },
+ "reply": "<a2ui>\nhero = gradient_hero(badge=\"Now in beta\", title=\"Ship interfaces your users will love\", subtitle=\"A2UI turns a simple brief into a polished, interactive product page in seconds.\", accent=\"#4f46e5\", accent2=\"#8b5cf6\", align=\"center\", cta_label=\"Get started free\", cta_url=\"https://example.com/signup\")\n\nfeatures = feature_grid(heading=\"Why teams choose us\", description=\"Everything you need to launch, nothing you don't.\", columns=3, features=[{icon: \"\u26a1\", title: \"Blazing fast\", description: \"Pages render in milliseconds and stay responsive on every device.\", color: \"#4f46e5\"}, {icon: \"\ud83e\udde9\", title: \"Composable\", description: \"Mix and match ready-made building blocks to fit your brand and content.\", color: \"#8b5cf6\"}, {icon: \"\ud83d\udd12\", title: \"Secure by default\", description: \"Built-in safeguards keep your data and your users protected.\", color: \"#0e7bb8\"}])\n\ntestimonial = testimonial_card(text=\"We went from idea to a live landing page in an afternoon. Our sign-up rate doubled in the first month.\", author_name=\"Maya Chen\", author_title=\"Head of Growth, Lumen Labs\", rating=5)\n\ncta = cta_button(url=\"https://example.com/signup\", label=\"Start your free trial\", color=\"#4f46e5\")\n\nroot = color_section(accent=\"#4f46e5\", style=\"light\", padding=\"48px 24px\", blocks=[hero, features, testimonial, cta])\n</a2ui>"
+}

@@ -1,0 +1,40 @@
+{
+ "task": "T2",
+ "condition": "DTN_sonnet-5-5",
+ "temperature_applied": false,
+ "format": "json",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-sonnet-5-5",
+ "hints": false,
+ "label": "oracle-slice-6types__json__sonnet-5-5__temp0__run3",
+ "agent_type": "T2",
+ "catalogue": "D-t2.json",
+ "atoms_in_catalogue": 16,
+ "prompt_chars": 20191,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 13.2,
+ "usage": {
+  "input_tokens": 7963,
+  "output_tokens": 1741
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns"
+ ],
+ "score": {
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "KPI tile (x4)": false,
+   "trend (required only if metric_row was chosen; stat_card's own delta already satisfies it)": false,
+   "comparison chart": false
+  }
+ },
+ "reply": "<a2ui-json>\n[\n  {\n    \"version\": \"v0.9.1\",\n    \"createSurface\": {\n      \"surfaceId\": \"metrics_overview\",\n      \"catalogId\": \"https://a2uicatalog.ai/catalog/d-t2.json\"\n    }\n  },\n  {\n    \"version\": \"v0.9.1\",\n    \"updateComponents\": {\n      \"surfaceId\": \"metrics_overview\",\n      \"components\": [\n        {\n          \"id\": \"root\",\n          \"component\": \"columns\",\n          \"cols\": 2,\n          \"gap\": \"1.5rem\",\n          \"align\": \"top\",\n          \"items\": [\n            {\n              \"blocks\": [\n                {\n                  \"id\": \"kpi_heading\",\n                  \"component\": \"heading\",\n                  \"text\": \"Metrics Overview\"\n                },\n                {\n                  \"id\": \"kpi_intro\",\n                  \"component\": \"body\",\n                  \"text\": \"Key performance indicators for the current period, with direction of change versus the previous period.\"\n                },\n                {\n                  \"id\": \"kpi_row\",\n                  \"component\": \"metric_row\",\n                  \"cols\": 2,\n                  \"accent\": \"#4F8EF7\",\n                  \"metrics\": [\n                    { \"value\": \"48.2\", \"prefix\": \"$\", \"suffix\": \"K\", \"label\": \"Monthly Revenue\", \"sub\": \"+8.4% vs last month\", \"trend\": \"up\", \"accent\": \"#2EB67D\" },\n                    { \"value\": \"12.4\", \"suffix\": \"K\", \"label\": \"Active Users\", \"sub\": \"+5.1% vs last month\", \"trend\": \"up\", \"accent\": \"#2EB67D\" },\n                    { \"value\": \"2.1\", \"suffix\": \"%\", \"label\": \"Churn Rate\", \"sub\": \"-0.4 pts vs last month\", \"trend\": \"down\", \"accent\": \"#4F8EF7\" },\n                    { \"value\": \"320\", \"suffix\": \"ms\", \"label\": \"Avg Response Time\", \"sub\": \"-12% vs last month\", \"trend\": \"down\", \"accent\": \"#E8A33D\" }\n                  ]\n                }\n              ]\n            },\n            {\n              \"blocks\": [\n                {\n                  \"id\": \"chart_heading\",\n                  \"component\": \"heading\",\n                  \"text\": \"Revenue: This Period vs Previous\"\n                },\n                {\n                  \"id\": \"comparison_chart\",\n                  \"component\": \"chartjs_bar\",\n                  \"labels\": [\"Week 1\", \"Week 2\", \"Week 3\", \"Week 4\"],\n                  \"datasets\": [\n                    { \"label\": \"Current period ($K)\", \"data\": [10.8, 11.6, 12.4, 13.4] },\n                    { \"label\": \"Previous period ($K)\", \"data\": [10.1, 10.9, 11.2, 11.9] }\n                  ]\n                }\n              ]\n            }\n          ]\n        }\n      ]\n    }\n  }\n]\n</a2ui-json>\n\nThe overview has two columns. The left column holds a heading and a 2\u00d72 grid of four KPI tiles: revenue, active users, churn and response time. Each tile shows a value, a label and an up or down trend. The right column holds a bar chart comparing weekly revenue for the current period against the previous one.\n\nThe catalog has no vertical container, so I used `columns` as the root to lay everything out."
+}

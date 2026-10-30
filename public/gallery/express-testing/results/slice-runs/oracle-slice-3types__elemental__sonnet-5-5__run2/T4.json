@@ -1,0 +1,43 @@
+{
+ "task": "T4",
+ "condition": "CX_sonnet-5-5",
+ "temperature_applied": false,
+ "format": "elemental",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "claude-sonnet-5-5",
+ "hints": false,
+ "label": "oracle-slice-3types__elemental__sonnet-5-5__run2",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 16829,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 10.6,
+ "usage": {
+  "input_tokens": 6734,
+  "output_tokens": 1389
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns",
+  "heading",
+  "segmented_control",
+  "entity_list"
+ ],
+ "score": {
+  "precision": 0.5,
+  "recall": 0.667,
+  "f1": 0.571,
+  "slot_hits": {
+   "list": true,
+   "status indicator": false,
+   "filter control": true
+  }
+ },
+ "reply": "<a2ui>\n<body>\n<script type=\"application/json\">\n{\n  \"filter\": \"all\",\n  \"visibleItems\": [\n    {\"name\": \"Migrate billing service\", \"subtitle\": \"Cutover completed and verified in production\", \"status\": \"Done\"},\n    {\"name\": \"Upgrade auth gateway\", \"subtitle\": \"Rolling out to 60% of traffic\", \"status\": \"Active\"},\n    {\"name\": \"Rotate API credentials\", \"subtitle\": \"Waiting on security team approval\", \"status\": \"Pending\"},\n    {\"name\": \"Refactor search indexer\", \"subtitle\": \"Blocked by upstream schema change\", \"status\": \"Blocked\"},\n    {\"name\": \"Launch onboarding flow\", \"subtitle\": \"A/B test running with 2 variants\", \"status\": \"Active\"},\n    {\"name\": \"Update privacy policy\", \"subtitle\": \"Legal review scheduled for Friday\", \"status\": \"Pending\"},\n    {\"name\": \"Decommission legacy cluster\", \"subtitle\": \"All workloads drained and shut down\", \"status\": \"Done\"},\n    {\"name\": \"Integrate payment provider\", \"subtitle\": \"Sandbox credentials not yet issued\", \"status\": \"Blocked\"}\n  ]\n}\n</script>\n<ui-columns id=\"root\" cols=\"{1}\" gap=\"1rem\">\n  <ui-heading id=\"title\" text=\"Project Items\" />\n  <ui-segmented_control id=\"status-filter\" name=\"status_filter\" selected_value=\"{$/filter}\" on-change=\"{Event('filter_changed', {status: $/filter})}\">\n    <script type=\"application/json\" slot=\"options\">[{\"label\": \"All\", \"value\": \"all\"}, {\"label\": \"Active\", \"value\": \"Active\"}, {\"label\": \"Pending\", \"value\": \"Pending\"}, {\"label\": \"Blocked\", \"value\": \"Blocked\"}, {\"label\": \"Done\", \"value\": \"Done\"}]</script>\n  </ui-segmented_control>\n  <ui-entity_list id=\"item-list\" items=\"{$/visibleItems}\" />\n</ui-columns>\n</body>\n</a2ui>"
+}

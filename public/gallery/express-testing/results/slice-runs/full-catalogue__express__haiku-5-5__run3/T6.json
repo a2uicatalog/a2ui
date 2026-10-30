@@ -1,0 +1,42 @@
+{
+ "task": "T6",
+ "condition": "A_haiku-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "full-catalogue__express__haiku-5-5__run3",
+ "agent_type": "full",
+ "catalogue": "A-full.json",
+ "atoms_in_catalogue": 557,
+ "prompt_chars": 294155,
+ "slot_recall": [
+  2,
+  2
+ ],
+ "secs": 5.4,
+ "usage": {
+  "input_tokens": 107821,
+  "output_tokens": 1148
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "heading",
+  "progress_bar",
+  "flashcard_deck",
+  "color_section"
+ ],
+ "score": {
+  "precision": 0.5,
+  "recall": 1.0,
+  "f1": 0.667,
+  "slot_hits": {
+   "flashcard deck": true,
+   "progress indicator": true
+  }
+ },
+ "reply": "<a2ui>\nheading_block = heading(text=\"French Vocabulary\")\n\nprogress = progress_bar(value=0, label=\"Cards reviewed\", caption=\"0 of 10 reviewed\", accent=\"#4f46e5\", show_percent=true)\n\ndeck = flashcard_deck(cards=[{front: \"bonjour\", back: \"hello\"}, {front: \"merci\", back: \"thank you\"}, {front: \"au revoir\", back: \"goodbye\"}, {front: \"s'il vous pla\u00eet\", back: \"please\"}, {front: \"maison\", back: \"house\"}, {front: \"eau\", back: \"water\"}, {front: \"livre\", back: \"book\"}, {front: \"chat\", back: \"cat\"}, {front: \"manger\", back: \"to eat\"}, {front: \"heureux\", back: \"happy\"}], accent=\"#4f46e5\", label_front=\"FRENCH\", label_back=\"ENGLISH\")\n\nroot = color_section(accent=\"#4f46e5\", style=\"light\", padding=\"24px\", blocks=[heading_block, progress, deck])\n</a2ui>"
+}

@@ -1,0 +1,47 @@
+{
+ "task": "T2",
+ "condition": "C_gemini-3.5-flash",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash",
+ "hints": false,
+ "label": "oracle-slice-3types__express__gemini-3.5-flash__thinking-on_request-only-timing__run1",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 16421,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 17.8,
+ "usage": {
+  "input_tokens": 4602,
+  "output_tokens": 4796
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "stat_card",
+  "stat_card",
+  "stat_card",
+  "stat_card",
+  "chartjs_bar",
+  "columns",
+  "heading",
+  "heading"
+ ],
+ "score": {
+  "precision": 0.625,
+  "recall": 1.0,
+  "f1": 0.769,
+  "slot_hits": {
+   "KPI tile (x4)": true,
+   "trend (required only if metric_row was chosen; stat_card's own delta already satisfies it)": true,
+   "comparison chart": true
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"metrics-overview\")\n\ncard1 = stat_card(\"12,450\", \"Active Users\", \"+14.2%\", true, \"#10B981\")\ncard2 = stat_card(\"$45,200\", \"Monthly Revenue\", \"+8.4%\", true, \"#10B981\")\ncard3 = stat_card(\"99.95%\", \"SLA Compliance\", \"+0.05%\", true, \"#10B981\")\ncard4 = stat_card(\"4.2 days\", \"Avg Onboarding Time\", \"-1.2 days\", false, \"#EF4444\")\n\nchart = chartjs_bar(\n    [\"Product A\", \"Product B\", \"Product C\", \"Product D\"],\n    [\n        {\"label\": \"Target Sales\", \"data\": [80, 120, 95, 110]},\n        {\"label\": \"Actual Sales\", \"data\": [95, 115, 110, 130]}\n    ]\n)\n\nkpis_column = {\"blocks\": [heading(\"Key Performance Indicators\"), card1, card2, card3, card4]}\nchart_column = {\"blocks\": [heading(\"Performance Comparison\"), chart]}\n\nroot = columns(2, \"2rem\", \"top\", [kpis_column, chart_column])\n</a2ui>"
+}

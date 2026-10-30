@@ -1,0 +1,156 @@
+{
+ "task": "T4",
+ "condition": "G",
+ "chooser": "clef-flash",
+ "slice_atoms_in_options": 338,
+ "picks": [
+  {
+   "slot": "A stacked sequence of eight entries, one after another, each occupying its own r #1",
+   "decomposer_line": "A stacked sequence of eight entries, one after another, each occupying its own row",
+   "atom": "entity_list",
+   "confidence": 0.2259,
+   "top3": [
+    [
+     "entity_list",
+     0.7376
+    ],
+    [
+     "numbered_list",
+     0.2624
+    ]
+   ],
+   "finalists": [
+    "entity_list",
+    "numbered_list"
+   ]
+  },
+  {
+   "slot": "Each entry's title shown prominently at the top of its row #2",
+   "decomposer_line": "Each entry's title shown prominently at the top of its row",
+   "atom": "entity_list",
+   "confidence": 0.7296,
+   "top3": [
+    [
+     "entity_list",
+     0.9271
+    ],
+    [
+     "numbered_list",
+     0.0729
+    ]
+   ],
+   "finalists": [
+    "entity_list",
+    "numbered_list"
+   ]
+  },
+  {
+   "slot": "Each entry's status shown as a short written label beside its title #3",
+   "decomposer_line": "Each entry's status shown as a short written label beside its title",
+   "atom": "entity_list",
+   "confidence": 0.6129,
+   "top3": [
+    [
+     "entity_list",
+     0.8915
+    ],
+    [
+     "module_map",
+     0.1085
+    ]
+   ],
+   "finalists": [
+    "entity_list",
+    "module_map"
+   ]
+  },
+  {
+   "slot": "Each entry's one-line detail shown in smaller text beneath its title #4",
+   "decomposer_line": "Each entry's one-line detail shown in smaller text beneath its title",
+   "atom": "entity_list",
+   "confidence": 0.5345,
+   "top3": [
+    [
+     "entity_list",
+     0.8655
+    ],
+    [
+     "module_map",
+     0.1345
+    ]
+   ],
+   "finalists": [
+    "entity_list",
+    "module_map"
+   ]
+  },
+  {
+   "slot": "A row of selectable status options above the entries for narrowing what is visib #5",
+   "decomposer_line": "A row of selectable status options above the entries for narrowing what is visible",
+   "atom": "chip_group",
+   "confidence": 0.6767,
+   "top3": [
+    [
+     "chip_group",
+     0.9113
+    ],
+    [
+     "tab_bar",
+     0.0887
+    ]
+   ],
+   "finalists": [
+    "tab_bar",
+    "chip_group"
+   ]
+  },
+  {
+   "slot": "Behavior that hides every entry whose status does not match the chosen option, a #6",
+   "decomposer_line": "Behavior that hides every entry whose status does not match the chosen option, and restores all eight when the all-statuses option is chosen",
+   "atom": "entity_list",
+   "confidence": 0.212,
+   "top3": [
+    [
+     "entity_list",
+     0.7302
+    ],
+    [
+     "module_map",
+     0.2698
+    ]
+   ],
+   "finalists": [
+    "entity_list",
+    "module_map"
+   ]
+  }
+ ],
+ "cost": {
+  "decomposer_input_tokens": 0,
+  "decomposer_output_tokens": 0,
+  "decomposer_thinking_tokens": 0,
+  "jev_input_tokens": 88362,
+  "jev_output_tokens": 0,
+  "jev_calls": 6
+ },
+ "error": null,
+ "atoms": [
+  "entity_list",
+  "entity_list",
+  "entity_list",
+  "entity_list",
+  "chip_group",
+  "entity_list"
+ ],
+ "score": {
+  "precision": 1.0,
+  "recall": 0.667,
+  "f1": 0.8,
+  "slot_hits": {
+   "list": true,
+   "status indicator": false,
+   "filter control": true
+  }
+ },
+ "secs": 22.8
+}

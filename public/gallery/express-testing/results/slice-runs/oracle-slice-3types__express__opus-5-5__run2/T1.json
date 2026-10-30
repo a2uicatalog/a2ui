@@ -1,0 +1,48 @@
+{
+ "task": "T1",
+ "condition": "C_opus-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-opus-5-5",
+ "hints": false,
+ "label": "oracle-slice-3types__express__opus-5-5__run2",
+ "agent_type": "Learning",
+ "catalogue": "C-learning.json",
+ "atoms_in_catalogue": 36,
+ "prompt_chars": 21139,
+ "slot_recall": [
+  5,
+  5
+ ],
+ "secs": 19.8,
+ "usage": {
+  "input_tokens": 7489,
+  "output_tokens": 1972
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "page_header",
+  "concept_rung",
+  "concept_rung",
+  "concept_rung",
+  "concept_rung",
+  "quiz_set",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.857,
+  "recall": 0.6,
+  "f1": 0.706,
+  "slot_hits": {
+   "title": true,
+   "concept sections (x3)": false,
+   "worked example": true,
+   "3-question quiz": true,
+   "quiz result": false
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"water-cycle-lesson\")\n\nheader = page_header(title=\"The Water Cycle\", subtitle=\"How water moves between the oceans, the sky, and the land, again and again.\", icon=\"\ud83d\udca7\", tag=\"Earth Science\", accent=\"#0284c7\")\n\nconcept1 = concept_rung(badge=\"1\", kind=\"depth\", title=\"Evaporation & Transpiration\", body=\"The sun heats water in oceans, lakes and rivers, turning it from liquid into invisible water vapour that rises into the air. This is **evaporation**.\\n\\nPlants also release water vapour through tiny pores in their leaves. This is **transpiration**. Together, the two processes are often called *evapotranspiration*.\", takeaway=\"Heat energy lifts water into the atmosphere as vapour.\")\n\nconcept2 = concept_rung(badge=\"2\", kind=\"depth\", title=\"Condensation\", body=\"As water vapour rises, it cools. Cooler air cannot hold as much vapour, so the vapour condenses into tiny liquid droplets around specks of dust. Billions of these droplets form **clouds**.\\n\\nThe same process makes dew on grass and fog on a cold window.\", takeaway=\"Cooling turns vapour back into liquid droplets, which form clouds.\")\n\nconcept3 = concept_rung(badge=\"3\", kind=\"depth\", title=\"Precipitation & Collection\", body=\"When cloud droplets join together and grow too heavy to stay in the air, they fall as **precipitation**: rain, snow, sleet or hail.\\n\\nThe water then **collects** in oceans, lakes, rivers, ice caps and underground aquifers. Some runs off the land's surface and some soaks into the ground. From there, the cycle begins again.\", takeaway=\"Water returns to Earth and gathers, ready to evaporate once more.\")\n\nexample = concept_rung(badge=\"EX\", kind=\"example\", title=\"Following one raindrop\", body=\"Imagine a droplet of water in the Pacific Ocean on a hot afternoon. Here is how it moves through the whole cycle.\", code=\"1. Ocean surface warms   \u2192 droplet EVAPORATES into vapour\\n2. Vapour rises ~2 km    \u2192 air cools, vapour CONDENSES into a cloud\\n3. Cloud drifts inland   \u2192 droplets merge, fall as rain (PRECIPITATION)\\n4. Rain lands on a hill  \u2192 runs into a river (COLLECTION / runoff)\\n5. River reaches the sea \u2192 back where it started, the cycle repeats\", code_caption=\"One complete loop can take days. Water stored in deep groundwater or glaciers may wait thousands of years.\", takeaway=\"Every stage is driven by the sun's heat and by gravity.\")\n\nquiz = quiz_set(title=\"Self-check: The Water Cycle\", pass_score=67, accent=\"#0284c7\", questions=[{question: \"What process turns liquid water into water vapour?\", options: [\"Condensation\", \"Evaporation\", \"Precipitation\", \"Collection\"], correct: 1, explanation: \"Evaporation happens when the sun's heat changes liquid water into vapour.\"}, {question: \"Why do clouds form as water vapour rises?\", options: [\"The vapour warms up and expands\", \"The vapour cools and condenses into droplets\", \"Wind pushes the vapour together\", \"Plants release droplets into the sky\"], correct: 1, explanation: \"Rising air cools. The cooler vapour condenses into tiny droplets that make up clouds.\"}, {question: \"Which of these is NOT a form of precipitation?\", options: [\"Snow\", \"Hail\", \"Dew\", \"Sleet\"], correct: 2, explanation: \"Dew forms by condensation directly on surfaces. It does not fall from clouds.\"}], on_pass={type: \"callout\", kind: \"tip\", title: \"Great work!\", text: \"You've got the water cycle down. Try tracing a snowflake's journey on your own.\"}, on_fail={type: \"callout\", kind: \"info\", title: \"Keep going\", text: \"Review the three concept sections and the worked example, then try again.\"})\n\nroot = columns(cols=2, gap=\"2rem\", align=\"top\", items=[{blocks: [header, concept1, concept2, concept3]}, {blocks: [example, quiz]}])\n</a2ui>"
+}

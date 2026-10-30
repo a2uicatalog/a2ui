@@ -1,0 +1,89 @@
+{
+ "label": "jev-picks-on-oracle-slice-6types__express__haiku-4-5__run1",
+ "task": "T5",
+ "format": "express",
+ "model_id": null,
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/jd-t5.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "pricing_tier_group",
+      "tiers": [
+       {
+        "name": "Starter",
+        "price": "$29",
+        "period": "per month",
+        "description": "Perfect for individuals",
+        "features": [
+         "Up to 10 projects",
+         "1 GB storage",
+         "Email support",
+         "Basic analytics"
+        ],
+        "cta": "Get Started",
+        "action": {
+         "event": {
+          "name": "select_starter"
+         }
+        }
+       },
+       {
+        "name": "Professional",
+        "price": "$79",
+        "period": "per month",
+        "description": "Best for growing teams",
+        "features": [
+         "Unlimited projects",
+         "100 GB storage",
+         "Priority email & chat support",
+         "Advanced analytics",
+         "Team collaboration tools",
+         "Custom integrations"
+        ],
+        "cta": "Get Started",
+        "action": {
+         "event": {
+          "name": "select_professional"
+         }
+        },
+        "recommended": true
+       },
+       {
+        "name": "Enterprise",
+        "price": "Custom",
+        "period": "contact us",
+        "description": "For large organizations",
+        "features": [
+         "Unlimited everything",
+         "Dedicated account manager",
+         "24/7 phone & email support",
+         "Custom analytics & reporting",
+         "Advanced security features",
+         "SLA guarantee",
+         "On-premise deployment"
+        ],
+        "cta": "Contact Sales",
+        "action": {
+         "event": {
+          "name": "contact_enterprise"
+         }
+        }
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,150 @@
+{
+ "label": "oracle-slice-3types__json__haiku-5-5__run2",
+ "task": "T1",
+ "format": "json",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9",
+   "create_surface": {
+    "surface_id": "water-cycle-lesson",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning.json"
+   }
+  },
+  {
+   "version": "v0.9",
+   "update_components": {
+    "surface_id": "water-cycle-lesson",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "2rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         {
+          "id": "lesson-header",
+          "component": "page_header",
+          "title": "The Water Cycle",
+          "subtitle": "How water moves continuously between the sky, land, and oceans.",
+          "tag": "Earth Science",
+          "icon": "\ud83d\udca7"
+         },
+         {
+          "id": "h-concepts",
+          "component": "heading",
+          "text": "Three core processes"
+         },
+         {
+          "id": "h-evap",
+          "component": "heading",
+          "text": "1. Evaporation"
+         },
+         {
+          "id": "b-evap",
+          "component": "body",
+          "text": "Heat from the sun warms water in oceans, lakes, and rivers. Molecules at the surface gain enough energy to escape as water vapor. Plants also release vapor through transpiration."
+         },
+         {
+          "id": "h-cond",
+          "component": "heading",
+          "text": "2. Condensation"
+         },
+         {
+          "id": "b-cond",
+          "component": "body",
+          "text": "As water vapor rises, it cools. Cooler air holds less vapor, so the vapor turns back into tiny liquid droplets that cluster together to form clouds."
+         },
+         {
+          "id": "h-precip",
+          "component": "heading",
+          "text": "3. Precipitation and collection"
+         },
+         {
+          "id": "b-precip",
+          "component": "body",
+          "text": "When droplets grow heavy, they fall as rain, snow, sleet, or hail. The water then flows as runoff into rivers, soaks into the ground, or is stored as ice, completing the loop."
+         },
+         {
+          "id": "tip-cycle",
+          "component": "callout",
+          "kind": "tip",
+          "title": "Remember",
+          "text": "The water cycle has no true start or end. The same water is recycled over and over."
+         }
+        ]
+       },
+       {
+        "blocks": [
+         {
+          "id": "h-example",
+          "component": "heading",
+          "text": "Worked example"
+         },
+         {
+          "id": "example-rung",
+          "component": "concept_rung",
+          "kind": "example",
+          "title": "Tracing one puddle",
+          "body": "A puddle forms after morning rain. By midday the sun heats it and water evaporates (1). The vapor rises, cools, and condenses into a cloud (2). That cloud later drops rain on a hillside (3), and the water runs downhill into a river that reaches the sea, where evaporation begins the cycle again.",
+          "takeaway": "Every drop is part of a loop, not a one-way trip."
+         },
+         {
+          "id": "h-check",
+          "component": "heading",
+          "text": "Self-check"
+         },
+         {
+          "id": "self-check-quiz",
+          "component": "quiz_set",
+          "title": "Self-check: 3 questions",
+          "pass_score": 70,
+          "accent": "#4f46e5",
+          "questions": [
+           {
+            "question": "What process turns liquid water into water vapor?",
+            "options": [
+             "Condensation",
+             "Evaporation",
+             "Precipitation",
+             "Infiltration"
+            ],
+            "correct": 1,
+            "explanation": "Evaporation is driven by heat energy, such as heat from the sun."
+           },
+           {
+            "question": "Which process forms clouds?",
+            "options": [
+             "Transpiration",
+             "Runoff",
+             "Condensation",
+             "Sublimation"
+            ],
+            "correct": 2,
+            "explanation": "Water vapor cools and condenses into droplets, which gather to form clouds."
+           },
+           {
+            "question": "What is the role of precipitation in the water cycle?",
+            "options": [
+             "It returns water from clouds to land and water bodies",
+             "It removes salt from the oceans",
+             "It heats the atmosphere",
+             "It turns ice directly into water vapor"
+            ],
+            "correct": 0,
+            "explanation": "Precipitation moves water from the atmosphere back to the surface, where it can collect and be recycled."
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,192 @@
+{
+ "label": "oracle-slice-6types__express__haiku-5-5__hints-v2__run2",
+ "task": "T1",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/d-t1.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "header",
+      "component": "page_header",
+      "title": "The Water Cycle",
+      "subtitle": "How water moves between the oceans, the sky and the land",
+      "icon": "\ud83d\udca7",
+      "tag": "Lesson",
+      "accent": "#0284c7",
+      "theme": "light"
+     },
+     {
+      "id": "h1",
+      "component": "heading",
+      "text": "Three Core Concepts"
+     },
+     {
+      "id": "c1",
+      "component": "concept_rung",
+      "badge": "1",
+      "kind": "depth",
+      "label": "DEPTH 1",
+      "title": "Evaporation",
+      "body": "Solar energy warms water in oceans, lakes and rivers. The warmed water changes into water vapour, a gas that rises into the air.",
+      "code": "",
+      "code_caption": "",
+      "takeaway": "Heat drives water into the air."
+     },
+     {
+      "id": "c2",
+      "component": "concept_rung",
+      "badge": "2",
+      "kind": "depth",
+      "label": "DEPTH 2",
+      "title": "Condensation",
+      "body": "As water vapour rises, it cools. The cooler vapour turns back into tiny liquid droplets around dust and salt particles. Huge numbers of these droplets gather into clouds.",
+      "code": "",
+      "code_caption": "",
+      "takeaway": "Cooling turns vapour into clouds."
+     },
+     {
+      "id": "c3",
+      "component": "concept_rung",
+      "badge": "3",
+      "kind": "depth",
+      "label": "DEPTH 3",
+      "title": "Precipitation and Collection",
+      "body": "When droplets grow heavy enough, they fall as rain, snow, sleet or hail. Water then soaks into the ground, flows over it as runoff, or collects in rivers and oceans, ready to evaporate again.",
+      "code": "",
+      "code_caption": "",
+      "takeaway": "Water falls, flows and returns to the sea."
+     },
+     {
+      "id": "ex",
+      "component": "concept_rung",
+      "badge": "EX",
+      "kind": "example",
+      "label": "WORKED EXAMPLE",
+      "title": "Tracing One Raindrop",
+      "body": "A puddle on a sunny road evaporates in the afternoon. The vapour rises, cools high above the town and condenses onto a dust particle to form a cloud droplet. The droplet joins others until it falls as rain onto a hillside. It soaks into the soil, seeps into a stream and flows back to the sea.",
+      "code": "",
+      "code_caption": "",
+      "takeaway": "One drop passes through every stage of the cycle."
+     },
+     {
+      "id": "left",
+      "component": "columns",
+      "cols": 1,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "header",
+         "h1",
+         "c1",
+         "c2",
+         "c3",
+         "ex"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "quiz_title",
+      "component": "heading",
+      "text": "Self-Check"
+     },
+     {
+      "id": "q",
+      "component": "quiz_set",
+      "title": "Check Your Understanding",
+      "questions": [
+       {
+        "question": "What drives evaporation?",
+        "options": [
+         "Wind only",
+         "Solar energy heating water",
+         "Gravity pulling water upward",
+         "Plants releasing water"
+        ],
+        "correct": 1,
+        "explanation": "The sun's energy warms water until it turns into vapour."
+       },
+       {
+        "question": "What is condensation?",
+        "options": [
+         "Vapour cooling into droplets",
+         "Water freezing into ice",
+         "Rain falling to the ground",
+         "Water soaking into soil"
+        ],
+        "correct": 0,
+        "explanation": "Condensation happens when water vapour cools and forms droplets, which build clouds."
+       },
+       {
+        "question": "Which of these is NOT a form of precipitation?",
+        "options": [
+         "Rain",
+         "Snow",
+         "Hail",
+         "Evaporation"
+        ],
+        "correct": 3,
+        "explanation": "Evaporation is the process where water turns into vapour. Precipitation is water falling from clouds."
+       }
+      ],
+      "pass_score": 70,
+      "accent": "#0284c7"
+     },
+     {
+      "id": "right",
+      "component": "columns",
+      "cols": 1,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "quiz_title",
+         "q"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "2.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "header",
+         "h1",
+         "c1",
+         "c2",
+         "c3",
+         "ex"
+        ]
+       },
+       {
+        "blocks": [
+         "quiz_title",
+         "q"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

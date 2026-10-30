@@ -1,0 +1,31 @@
+{
+ "task": "T6",
+ "condition": "JG",
+ "label": "jev-picks-on-tag-slice__express__haiku-4-5__run1",
+ "agent_type": "jev-narrowed",
+ "catalogue": "JG-T6.json",
+ "atoms_in_catalogue": 13,
+ "prompt_chars": 8746,
+ "slot_recall": [
+  2,
+  2
+ ],
+ "secs": 4.2,
+ "usage": {
+  "input_tokens": 2428,
+  "output_tokens": 388
+ },
+ "valid": false,
+ "error": "A2uiCompilationValidationError: Standalone function calls are not supported in A2UI v0.9.1 - Help: Please correct the syntax error in your Express DSL.",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "flashcard deck": false,
+   "progress indicator": false
+  }
+ },
+ "reply": "<a2ui>\nprogress_store(course_id=\"vocabulary_review\")\n\nroot = columns(1, gap=\"2rem\", items=[\n  {blocks: [\n    heading(\"Vocabulary Review\"),\n    progress_bar(value=0, label=\"Cards Reviewed\", show_percent=true, caption=\"Complete all 10 cards to finish\")\n  ]},\n  {blocks: [\n    flashcard_deck(\n      cards=[\n        {front: \"Ubiquitous\", back: \"Present, appearing, or found everywhere\"},\n        {front: \"Eloquent\", back: \"Fluent or persuasive in speaking or writing\"},\n        {front: \"Ephemeral\", back: \"Lasting for a very short time\"},\n        {front: \"Pragmatic\", back: \"Dealing with things in a practical, realistic way\"},\n        {front: \"Meticulous\", back: \"Showing great attention to detail; very careful and precise\"},\n        {front: \"Benevolent\", back: \"Kind, generous, and charitable\"},\n        {front: \"Ambiguous\", back: \"Open to more than one interpretation; unclear\"},\n        {front: \"Catalyst\", back: \"A person or thing that precipitates change or action\"},\n        {front: \"Nostalgia\", back: \"Sentimental longing for the past\"},\n        {front: \"Serendipity\", back: \"The occurrence of events by chance in a happy or beneficial way\"}\n      ],\n      accent=\"#4f46e5\",\n      label_front=\"WORD\",\n      label_back=\"DEFINITION\"\n    )\n  ]}\n])\n</a2ui>"
+}

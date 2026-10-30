@@ -1,0 +1,140 @@
+{
+ "label": "oracle-slice-3types__express__haiku-5-5__run3",
+ "task": "T1",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "header",
+      "component": "page_header",
+      "title": "The Water Cycle",
+      "subtitle": "How water moves between the oceans, atmosphere, and land",
+      "icon": "\ud83d\udca7",
+      "tag": "SCIENCE 101",
+      "accent": "#0284c7"
+     },
+     {
+      "id": "sec1_h",
+      "component": "heading",
+      "text": "1. Evaporation and transpiration"
+     },
+     {
+      "id": "sec1_b",
+      "component": "body",
+      "text": "The sun heats water in oceans, lakes, and rivers, turning it into water vapour that rises into the air. Plants also release water vapour through their leaves in a process called transpiration."
+     },
+     {
+      "id": "sec2_h",
+      "component": "heading",
+      "text": "2. Condensation"
+     },
+     {
+      "id": "sec2_b",
+      "component": "body",
+      "text": "As warm, moist air rises, it cools. Cooler air holds less vapour, so the vapour condenses onto tiny particles of dust and salt, forming droplets that gather into clouds."
+     },
+     {
+      "id": "sec3_h",
+      "component": "heading",
+      "text": "3. Precipitation and collection"
+     },
+     {
+      "id": "sec3_b",
+      "component": "body",
+      "text": "When cloud droplets grow heavy enough, they fall as rain, snow, sleet, or hail. The water then collects in oceans, lakes, rivers, and groundwater, and the cycle begins again."
+     },
+     {
+      "id": "example",
+      "component": "concept_rung",
+      "badge": "1",
+      "kind": "example",
+      "label": "WORKED EXAMPLE",
+      "title": "A puddle disappears",
+      "body": "A 2-litre puddle sits on a sunny pavement. By afternoon it is gone. The sun heated the water, so it evaporated into the air as vapour.\n\nLater, that vapour cools high in the atmosphere, condenses into a cloud, and may return as rain.",
+      "takeaway": "Heat drives evaporation; vapour eventually returns to the ground as precipitation."
+     },
+     {
+      "id": "quiz",
+      "component": "quiz_set",
+      "title": "Self-check",
+      "questions": [
+       {
+        "question": "What process turns liquid water into water vapour?",
+        "options": [
+         "Condensation",
+         "Evaporation",
+         "Precipitation",
+         "Infiltration"
+        ],
+        "correct": 1,
+        "explanation": "Evaporation is caused by heat turning liquid water into vapour."
+       },
+       {
+        "question": "What causes water vapour to form clouds?",
+        "options": [
+         "Cooling air causing condensation",
+         "Rising sea levels",
+         "Increased wind speed",
+         "Rivers freezing"
+        ],
+        "correct": 0,
+        "explanation": "As air cools, it can hold less vapour, so the vapour condenses into droplets."
+       },
+       {
+        "question": "Which of these is a form of precipitation?",
+        "options": [
+         "Transpiration",
+         "Snow",
+         "Evaporation",
+         "Runoff"
+        ],
+        "correct": 1,
+        "explanation": "Snow is water falling from clouds, which makes it precipitation."
+       }
+      ],
+      "pass_score": 70,
+      "accent": "#0284c7"
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "2rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "header",
+         "sec1_h",
+         "sec1_b",
+         "sec2_h",
+         "sec2_b",
+         "sec3_h",
+         "sec3_b"
+        ]
+       },
+       {
+        "blocks": [
+         "example",
+         "quiz"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

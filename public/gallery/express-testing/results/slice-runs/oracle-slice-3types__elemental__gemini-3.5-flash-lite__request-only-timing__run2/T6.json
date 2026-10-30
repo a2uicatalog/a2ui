@@ -1,0 +1,42 @@
+{
+ "task": "T6",
+ "condition": "CX_gemini-3.5-flash-l",
+ "temperature_applied": false,
+ "format": "elemental",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash-lite",
+ "hints": false,
+ "label": "oracle-slice-3types__elemental__gemini-3.5-flash-lite__request-only-timing__run2",
+ "agent_type": "Learning",
+ "catalogue": "C-learning.json",
+ "atoms_in_catalogue": 36,
+ "prompt_chars": 21352,
+ "slot_recall": [
+  2,
+  2
+ ],
+ "secs": 1.9,
+ "usage": {
+  "input_tokens": 6068,
+  "output_tokens": 547
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "page_header",
+  "progress_bar",
+  "body",
+  "flashcard_deck"
+ ],
+ "score": {
+  "precision": 0.5,
+  "recall": 1.0,
+  "f1": 0.667,
+  "slot_hits": {
+   "flashcard deck": true,
+   "progress indicator": true
+  }
+ },
+ "reply": "<a2ui>\n<body>\n  <script type=\"application/json\">\n    {\n      \"flashcards\": [\n        { \"front\": \"Ephemeral\", \"back\": \"Lasting for a very short time.\" },\n        { \"front\": \"Ubiquitous\", \"back\": \"Present, appearing, or found everywhere.\" },\n        { \"front\": \"Serendipity\", \"back\": \"The occurrence of events by chance in a happy or beneficial way.\" },\n        { \"front\": \"Mellifluous\", \"back\": \"Sweet or musical; pleasant to hear.\" },\n        { \"front\": \"Petrichor\", \"back\": \"A pleasant smell that frequently accompanies the first rain after a long period of warm, dry weather.\" },\n        { \"front\": \"Ineffable\", \"back\": \"Too great or extreme to be expressed or described in words.\" },\n        { \"front\": \"Luminous\", \"back\": \"Full of or shedding light; bright or shining.\" },\n        { \"front\": \"Halcyon\", \"back\": \"Denoting a period of time in the past that was idyllically happy and peaceful.\" },\n        { \"front\": \"Aurora\", \"back\": \"The dawn or northern/southern lights.\" },\n        { \"front\": \"Solitude\", \"back\": \"The state or situation of being alone.\" }\n      ]\n    }\n  </script>\n\n  <ui-page_header \n    id=\"root\" \n    title=\"Vocabulary Flashcards\" \n    subtitle=\"Review ten essential terms with flip interactions.\" \n    icon=\"\ud83d\udcda\" \n    tag=\"Learning\" \n    accent=\"#4f46e5\" \n  />\n\n  <ui-progress_bar \n    id=\"vocab_progress\" \n    value=\"{30}\" \n    label=\"Reviewed Progress\" \n    show_percent=\"{true}\" \n    caption=\"3 of 10 cards reviewed\" \n    accent=\"#4f46e5\" \n  />\n\n  <ui-body \n    id=\"intro_text\" \n    text=\"Click or hover over the cards below to reveal their definitions.\" \n  />\n\n  <ui-flashcard_deck \n    id=\"vocab_deck\" \n    cards=\"{$/flashcards}\" \n    accent=\"#4f46e5\" \n    label_front=\"TERM\" \n    label_back=\"DEFINITION\" \n  />\n</body>\n</a2ui>"
+}

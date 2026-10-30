@@ -1,0 +1,128 @@
+{
+ "label": "oracle-slice-6types__express__sonnet-5-5__temp0__hints-v2__run3",
+ "task": "T4",
+ "format": "express",
+ "model_id": "claude-sonnet-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "status-list",
+    "catalog_id": "https://a2uicatalog.ai/catalog/d-t4.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "status-list",
+    "components": [
+     {
+      "id": "filter",
+      "component": "segmented_control",
+      "options": [
+       {
+        "label": "All",
+        "value": "all"
+       },
+       {
+        "label": "Active",
+        "value": "active"
+       },
+       {
+        "label": "Pending",
+        "value": "pending"
+       },
+       {
+        "label": "Blocked",
+        "value": "blocked"
+       },
+       {
+        "label": "Done",
+        "value": "done"
+       }
+      ],
+      "selected_value": "all",
+      "name": "status_filter"
+     },
+     {
+      "id": "list",
+      "component": "entity_list",
+      "items": [
+       {
+        "name": "Migrate billing service",
+        "subtitle": "Moving invoices to the new ledger API",
+        "status": "Active"
+       },
+       {
+        "name": "Update onboarding copy",
+        "subtitle": "Waiting on legal review of the new terms",
+        "status": "Pending"
+       },
+       {
+        "name": "Fix login timeout",
+        "subtitle": "Blocked by the identity provider outage",
+        "status": "Blocked"
+       },
+       {
+        "name": "Launch referral program",
+        "subtitle": "Shipped to all regions last Friday",
+        "status": "Done"
+       },
+       {
+        "name": "Redesign settings page",
+        "subtitle": "Prototype in review with design",
+        "status": "Active"
+       },
+       {
+        "name": "Audit access permissions",
+        "subtitle": "Scheduled to start next sprint",
+        "status": "Pending"
+       },
+       {
+        "name": "Upgrade database cluster",
+        "subtitle": "Needs budget approval before scheduling",
+        "status": "Blocked"
+       },
+       {
+        "name": "Archive legacy reports",
+        "subtitle": "Completed and verified by the data team",
+        "status": "Done"
+       }
+      ]
+     },
+     {
+      "id": "title",
+      "component": "heading",
+      "text": "Work items"
+     },
+     {
+      "id": "hint",
+      "component": "body",
+      "text": "Filter by status"
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "title",
+         "hint",
+         "filter"
+        ]
+       },
+       {
+        "blocks": [
+         "list"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

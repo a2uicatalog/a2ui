@@ -1,0 +1,46 @@
+{
+ "task": "T5",
+ "condition": "CTN_sonnet-5-5",
+ "temperature_applied": false,
+ "format": "json",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-sonnet-5-5",
+ "hints": false,
+ "label": "oracle-slice-3types__json__sonnet-5-5__temp0__run1",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "C-marketing-commerce.json",
+ "atoms_in_catalogue": 23,
+ "prompt_chars": 24557,
+ "slot_recall": [
+  1,
+  1
+ ],
+ "secs": 8.5,
+ "usage": {
+  "input_tokens": 9454,
+  "output_tokens": 1193
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "pricing_tier_group"
+ ],
+ "score": {
+  "per_approach": {
+   "tier_cards": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+   },
+   "comparison_table": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": null
+   }
+  },
+  "best_approach": "tier_cards",
+  "f1": 1.0
+ },
+ "reply": "<a2ui-json>\n[\n  {\n    \"version\": \"v0.9.1\",\n    \"createSurface\": {\n      \"surfaceId\": \"pricing\",\n      \"catalogId\": \"https://a2uicatalog.ai/catalog/c-marketing-commerce.json\"\n    }\n  },\n  {\n    \"version\": \"v0.9.1\",\n    \"updateComponents\": {\n      \"surfaceId\": \"pricing\",\n      \"components\": [\n        {\n          \"id\": \"root\",\n          \"component\": \"pricing_tier_group\",\n          \"tiers\": [\n            {\n              \"name\": \"Starter\",\n              \"price\": \"$9\",\n              \"period\": \"per month\",\n              \"description\": \"For individuals getting started.\",\n              \"features\": [\n                \"1 project\",\n                \"5 GB storage\",\n                \"Basic analytics\",\n                \"Community support\"\n              ],\n              \"recommended\": false,\n              \"cta_label\": \"Start with Starter\",\n              \"cta_url\": \"#starter\"\n            },\n            {\n              \"name\": \"Pro\",\n              \"price\": \"$29\",\n              \"period\": \"per month\",\n              \"description\": \"For growing teams that need more power.\",\n              \"badge\": \"Recommended\",\n              \"features\": [\n                \"Unlimited projects\",\n                \"100 GB storage\",\n                \"Advanced analytics\",\n                \"Priority email support\",\n                \"Team collaboration tools\"\n              ],\n              \"recommended\": true,\n              \"highlighted\": true,\n              \"cta_label\": \"Choose Pro\",\n              \"cta_url\": \"#pro\"\n            },\n            {\n              \"name\": \"Enterprise\",\n              \"price\": \"$99\",\n              \"period\": \"per month\",\n              \"description\": \"For organizations with advanced needs.\",\n              \"features\": [\n                \"Unlimited everything\",\n                \"1 TB storage\",\n                \"Custom reporting\",\n                \"24/7 dedicated support\",\n                \"SSO and audit logs\",\n                \"Custom integrations\"\n              ],\n              \"recommended\": false,\n              \"cta_label\": \"Contact Sales\",\n              \"cta_url\": \"#enterprise\"\n            }\n          ]\n        }\n      ]\n    }\n  }\n]\n</a2ui-json>\n\nThis is a single `pricing_tier_group` showing Starter, Pro and Enterprise side by side. Each tier has its own feature list. Pro is flagged as recommended and carries a \"Recommended\" badge. The catalog doesn't define the tier object's fields, so I guessed names such as `name`, `price`, `features` and `recommended`. The renderer may ignore any it doesn't recognise."
+}

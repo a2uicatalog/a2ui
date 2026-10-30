@@ -1,0 +1,163 @@
+{
+ "task": "T1",
+ "condition": "C",
+ "slice_atoms_in_options": 36,
+ "picks": [
+  {
+   "slot": "A title banner at the top naming the lesson on the water cycle. #1",
+   "decomposer_line": "A title banner at the top naming the lesson on the water cycle.",
+   "atom": "page_header",
+   "confidence": 0.55,
+   "top3": [
+    [
+     "page_header",
+     0.56
+    ],
+    [
+     "heading",
+     0.2
+    ],
+    [
+     "article_hero",
+     0.16
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "First concept section explaining evaporation: a short text description of how th #2",
+   "decomposer_line": "First concept section explaining evaporation: a short text description of how the sun heats water in oceans, lakes, and rivers so it rises as vapor, paired with a simple illustration of that process.",
+   "atom": "columns",
+   "confidence": 0.42,
+   "top3": [
+    [
+     "columns",
+     0.44
+    ],
+    [
+     "concept_rung",
+     0.28
+    ],
+    [
+     "highlight_box",
+     0.08
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "Second concept section explaining condensation: a short text description of how  #3",
+   "decomposer_line": "Second concept section explaining condensation: a short text description of how cooled water vapor gathers into tiny droplets that form clouds, paired with a simple illustration of that process.",
+   "atom": "columns",
+   "confidence": 0.39,
+   "top3": [
+    [
+     "columns",
+     0.41000000000000003
+    ],
+    [
+     "concept_rung",
+     0.28
+    ],
+    [
+     "highlight_box",
+     0.09
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "Third concept section explaining precipitation: a short text description of how  #4",
+   "decomposer_line": "Third concept section explaining precipitation: a short text description of how droplets in clouds grow heavy enough to fall as rain, snow, sleet, or hail, paired with a simple illustration of that process.",
+   "atom": "columns",
+   "confidence": 0.37,
+   "top3": [
+    [
+     "columns",
+     0.39
+    ],
+    [
+     "concept_rung",
+     0.19
+    ],
+    [
+     "body",
+     0.09999999999999999
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "A worked example walking through one water droplet's journey step by step, showi #5",
+   "decomposer_line": "A worked example walking through one water droplet's journey step by step, showing each stage of the cycle with its explanation in order.",
+   "atom": "concept_rung",
+   "confidence": 0.44,
+   "top3": [
+    [
+     "concept_rung",
+     0.46
+    ],
+    [
+     "steps",
+     0.4
+    ],
+    [
+     "stepper",
+     0.07
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "A self-check quiz of three multiple-choice questions about the water cycle, wher #6",
+   "decomposer_line": "A self-check quiz of three multiple-choice questions about the water cycle, where the learner selects an answer for each question and receives immediate feedback on whether it is correct.",
+   "atom": "quiz_set",
+   "confidence": 0.9,
+   "top3": [
+    [
+     "quiz_set",
+     0.9
+    ],
+    [
+     "quiz_question",
+     0.06
+    ],
+    [
+     "knowledge_check",
+     0.04
+    ]
+   ],
+   "finalists": null
+  }
+ ],
+ "cost": {
+  "decomposer_input_tokens": 3243,
+  "decomposer_output_tokens": 466,
+  "decomposer_thinking_tokens": 0,
+  "jev_input_tokens": 10612,
+  "jev_output_tokens": 1942,
+  "jev_calls": 6
+ },
+ "error": null,
+ "atoms": [
+  "page_header",
+  "columns",
+  "columns",
+  "columns",
+  "concept_rung",
+  "quiz_set"
+ ],
+ "score": {
+  "precision": 0.5,
+  "recall": 0.6,
+  "f1": 0.545,
+  "slot_hits": {
+   "title": true,
+   "concept sections (x3)": false,
+   "worked example": true,
+   "3-question quiz": true,
+   "quiz result": false
+  }
+ },
+ "secs": 6.4
+}

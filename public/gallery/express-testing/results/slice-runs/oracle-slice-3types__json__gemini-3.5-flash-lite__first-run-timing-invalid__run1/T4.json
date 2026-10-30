@@ -1,0 +1,40 @@
+{
+ "task": "T4",
+ "condition": "CN_gemini-3.5-f",
+ "temperature_applied": false,
+ "format": "json",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash-lite",
+ "hints": false,
+ "label": "oracle-slice-3types__json__gemini-3.5-flash-lite__first-run-timing-invalid__run1",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 31546,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 25.5,
+ "usage": {
+  "input_tokens": 7913,
+  "output_tokens": 598
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns"
+ ],
+ "score": {
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "list": false,
+   "status indicator": false,
+   "filter control": false
+  }
+ },
+ "reply": "<a2ui-json>\n{\n  \"version\": \"v0.9.1\",\n  \"createSurface\": {\n    \"surfaceId\": \"filtered-item-list\",\n    \"catalogId\": \"https://a2uicatalog.ai/catalog/c-data-display.json\",\n    \"theme\": {\n      \"primaryColor\": \"#3b82f6\"\n    }\n  }\n}\n</a2ui-json>\n\n<a2ui-json>\n{\n  \"version\": \"v0.9.1\",\n  \"updateComponents\": {\n    \"surfaceId\": \"filtered-item-list\",\n    \"components\": [\n      {\n        \"id\": \"root\",\n        \"component\": \"columns\",\n        \"cols\": 1,\n        \"gap\": \"1rem\",\n        \"items\": [\n          {\n            \"blocks\": [\n              {\n                \"id\": \"page_heading\",\n                \"component\": \"heading\",\n                \"text\": \"Item Management Dashboard\"\n              },\n              {\n                \"id\": \"intro_body\",\n                \"component\": \"body\",\n                \"text\": \"Review and filter system items and their operational statuses.\"\n              },\n              {\n                \"id\": \"filter_segment\",\n                \"component\": \"segmented_control\",\n                \"name\": \"status_filter\",\n                \"selected_value\": \"all\",\n                \"options\": \"[{\\\"label\\\": \\\"All\\\", \\\"value\\\": \\\"all\\\"}, {\\\"label\\\": \\\"Active\\\", \\\"value\\\": \\\"active\\\"}, {\\\"label\\\": \\\"Pending\\\", \\\"value\\\": \\\"pending\\\"}, {\\\"label\\\": \\\"Archived\\\", \\\"value\\\": \\\"archived\\\"}]\"\n              },\n              {\n                \"id\": \"items_table\",\n                \"component\": \"data_table_sortable\",\n                \"headers\": [\"Title\", \"Status\", \"Detail\"],\n                \"rows\": [\n                  [\"Alpha Gateway\", \"Active\", \"Primary traffic routing node in US-East.\"],\n                  [\"Beta Cluster\", \"Pending\", \"Provisioning compute instances.\"],\n                  [\"Gamma Service\", \"Active\", \"Authentication endpoint operating normally.\"],\n                  [\"Delta Pipeline\", \"Archived\", \"Deprecated legacy ETL job.\"],\n                  [\"Epsilon Store\", \"Active\", \"Distributed cache cluster replica.\"],\n                  [\"Zeta Worker\", \"Pending\", \"Awaiting security compliance clearance.\"],\n                  [\"Eta Monitor\", \"Active\", \"Infrastructure metrics collection agent.\"],\n                  [\"Theta Backup\", \"Archived\", \"Cold storage snapshot archive.\"]\n                ]\n              }\n            ]\n          }\n        ]\n      }\n    ]\n  }\n}\n</a2ui-json>"
+}

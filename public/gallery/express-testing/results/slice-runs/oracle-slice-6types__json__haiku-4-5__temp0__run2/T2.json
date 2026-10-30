@@ -1,0 +1,40 @@
+{
+ "task": "T2",
+ "condition": "DTN",
+ "format": "json",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-4-5-20251001",
+ "label": "oracle-slice-6types__json__haiku-4-5__temp0__run2",
+ "agent_type": "T2",
+ "catalogue": "D-t2.json",
+ "atoms_in_catalogue": 16,
+ "prompt_chars": 20191,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 7.9,
+ "usage": {
+  "input_tokens": 5795,
+  "output_tokens": 906
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns",
+  "heading",
+  "chartjs_bar"
+ ],
+ "score": {
+  "precision": 0.333,
+  "recall": 0.333,
+  "f1": 0.333,
+  "slot_hits": {
+   "KPI tile (x4)": false,
+   "trend (required only if metric_row was chosen; stat_card's own delta already satisfies it)": false,
+   "comparison chart": true
+  }
+ },
+ "reply": "I'll create a metrics overview UI with four KPI tiles and a comparison chart.\n\n<a2ui-json>\n{\n  \"version\": \"v0.9.1\",\n  \"createSurface\": {\n    \"surfaceId\": \"metrics-overview\",\n    \"catalogId\": \"https://a2uicatalog.ai/catalog/d-t2.json\"\n  }\n}\n</a2ui-json>\n\n<a2ui-json>\n{\n  \"version\": \"v0.9.1\",\n  \"updateComponents\": {\n    \"surfaceId\": \"metrics-overview\",\n    \"components\": [\n      {\n        \"id\": \"root\",\n        \"component\": \"columns\",\n        \"cols\": 4,\n        \"gap\": \"1.5rem\",\n        \"items\": [\n          {\n            \"blocks\": [\n              {\n                \"id\": \"kpi-revenue\",\n                \"component\": \"metric_delta\",\n                \"label\": \"Revenue\",\n                \"current_value\": \"$125,430\",\n                \"delta_value\": \"+12.5%\",\n                \"delta_type\": \"increase\",\n                \"unit\": \"USD\",\n                \"previous_period_label\": \"vs. last month\"\n              }\n            ]\n          },\n          {\n            \"blocks\": [\n              {\n                \"id\": \"kpi-users\",\n                \"component\": \"metric_delta\",\n                \"label\": \"Active Users\",\n                \"current_value\": \"8,942\",\n                \"delta_value\": \"+5.2%\",\n                \"delta_type\": \"increase\",\n                \"previous_period_label\": \"vs. last month\"\n              }\n            ]\n          },\n          {\n            \"blocks\": [\n              {\n                \"id\": \"kpi-conversion\",\n                \"component\": \"metric_delta\",\n                \"label\": \"Conversion Rate\",\n                \"current_value\": \"3.24%\",\n                \"delta_value\": \"-0.8%\",\n                \"delta_type\": \"decrease\",\n                \"previous_period_label\": \"vs. last month\"\n              }\n            ]\n          },\n          {\n            \"blocks\": [\n              {\n                \"id\": \"kpi-churn\",\n                \"component\": \"metric_delta\",\n                \"label\": \"Churn Rate\",\n                \"current_value\": \"2.1%\",\n                \"delta_value\": \"-0.3%\",\n                \"delta_type\": \"decrease\",\n                \"previous_period_label\": \"vs. last month\"\n              }\n            ]\n          }\n        ]\n      },\n      {\n        \"id\": \"chart-section\",\n        \"component\": \"heading\",\n        \"text\": \"Performance Comparison\"\n      },\n      {\n        \"id\": \"comparison-chart\",\n        \"component\": \"chartjs_bar\",\n        \"labels\": [\"Jan\", \"Feb\", \"Mar\", \"Apr\", \"May\", \"Jun\"],\n        \"datasets\": [\n          {\n            \"label\": \"Target\",\n            \"data\": [85, 88, 90, 92, 94, 96]\n          },\n          {\n            \"label\": \"Actual\",\n            \"data\": [78, 82, 88, 91, 93, 95]\n          }\n        ]\n      }\n    ]\n  }\n}\n</a2ui-json>\n\nThis metrics overview includes:\n\n- **Four KPI Tiles** arranged in a 4-column layout, each displaying:\n  - A metric label (Revenue, Active Users, Conversion Rate, Churn Rate)\n  - Current value\n  - Delta value with directional change\n  - Previous period comparison context\n\n- **Comparison Chart** showing performance trends with two datasets (Target vs. Actual) across six months, allowing stakeholders to quickly assess performance against goals."
+}

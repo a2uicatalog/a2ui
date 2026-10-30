@@ -1,0 +1,109 @@
+{
+ "label": "oracle-slice-3types__json__gemini-3.5-flash__thinking-on_first-run-timing-invalid__run1",
+ "task": "T6",
+ "format": "json",
+ "model_id": "gemini-3.5-flash",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "vocabulary-learning-surface",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "2rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         {
+          "id": "header",
+          "component": "page_header",
+          "title": "## SAT/GRE Vocabulary Deck",
+          "subtitle": "Expand your lexicon with high-frequency academic words.",
+          "icon": "\ud83e\udde0",
+          "tag": "Daily Practice",
+          "accent": "#4f46e5"
+         },
+         {
+          "id": "progress-gauge",
+          "component": "progress_ring",
+          "value": "40",
+          "size": "130",
+          "stroke_width": "10",
+          "color": "#4f46e5",
+          "label": "Current Session Progress (4/10 Reviewed)",
+          "show_value": "true",
+          "unit": "%"
+         },
+         {
+          "id": "study-tip",
+          "component": "text_callout",
+          "variant": "info",
+          "title": "Active Recall Tip",
+          "description": "Force yourself to mentally define the word or say it aloud before flipping the card. This active retrieval strengthens neural connections far better than passive reading."
+         }
+        ]
+       },
+       {
+        "blocks": [
+         {
+          "id": "vocab-deck",
+          "component": "flashcard_deck",
+          "accent": "#4f46e5",
+          "label_front": "WORD",
+          "label_back": "DEFINITION",
+          "cards": [
+           {
+            "front": "Ephemeral",
+            "back": "Lasting for a very short time; transient or fleeting."
+           },
+           {
+            "front": "Ubiquitous",
+            "back": "Present, appearing, or found everywhere; omnipresent."
+           },
+           {
+            "front": "Nefarious",
+            "back": "Wicked, impious, or villainous; extremely criminal in nature."
+           },
+           {
+            "front": "Sycophant",
+            "back": "A person who acts obsequiously toward someone important in order to gain advantage; a flatterer."
+           },
+           {
+            "front": "Ameliorate",
+            "back": "To make something bad or unsatisfactory better; to improve."
+           },
+           {
+            "front": "Capricious",
+            "back": "Given to sudden and unaccountable changes of mood or behavior; unpredictable."
+           },
+           {
+            "front": "Pernicious",
+            "back": "Having a harmful effect, especially in a gradual or subtle way; highly destructive."
+           },
+           {
+            "front": "Taciturn",
+            "back": "Reserved or uncommunicative in speech; saying little by habit."
+           },
+           {
+            "front": "Equivocal",
+            "back": "Open to more than one interpretation; ambiguous or deliberately misleading."
+           },
+           {
+            "front": "Garrulous",
+            "back": "Excessively talkative, especially on trivial matters; wordy."
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

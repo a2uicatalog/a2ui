@@ -1,0 +1,48 @@
+{
+ "task": "T5",
+ "condition": "C_gemini-3.5-f",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash-lite",
+ "hints": false,
+ "label": "oracle-slice-3types__express__gemini-3.5-flash-lite__first-run-timing-invalid__run2",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "C-marketing-commerce.json",
+ "atoms_in_catalogue": 23,
+ "prompt_chars": 12467,
+ "slot_recall": [
+  1,
+  1
+ ],
+ "secs": 20.3,
+ "usage": {
+  "input_tokens": 3403,
+  "output_tokens": 566
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns",
+  "gradient_hero",
+  "pricing_tier_group"
+ ],
+ "score": {
+  "per_approach": {
+   "tier_cards": {
+    "precision": 0.333,
+    "recall": 1.0,
+    "f1": 0.5
+   },
+   "comparison_table": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": null
+   }
+  },
+  "best_approach": "tier_cards",
+  "f1": 0.5
+ },
+ "reply": "<a2ui>\nsurface(\"pricing-surface\")\n\ntier1_features = [\n  \"Up to 5 team members\",\n  \"Basic analytics dashboard\",\n  \"24/7 email support\",\n  \"10GB cloud storage\"\n]\n\ntier2_features = [\n  \"Unlimited team members\",\n  \"Advanced real-time analytics\",\n  \"Priority 24/7 support & chat\",\n  \"500GB cloud storage\",\n  \"Custom domain integration\"\n]\n\ntier3_features = [\n  \"Dedicated enterprise support\",\n  \"Custom AI model training\",\n  \"Unlimited cloud storage\",\n  \"99.99% uptime SLA\",\n  \"Advanced security & audit logs\"\n]\n\ntiers_data = [\n  {\n    \"name\": \"Starter\",\n    \"price\": \"$15\",\n    \"cadence\": \"/month\",\n    \"description\": \"Perfect for individuals and small side projects.\",\n    \"features\": tier1_features,\n    \"recommended\": false,\n    \"cta_label\": \"Get Started\",\n    \"cta_url\": \"#starter\"\n  },\n  {\n    \"name\": \"Pro\",\n    \"price\": \"$49\",\n    \"cadence\": \"/month\",\n    \"description\": \"Best for growing teams and scaling businesses.\",\n    \"features\": tier2_features,\n    \"recommended\": true,\n    \"cta_label\": \"Start Free Trial\",\n    \"cta_url\": \"#pro\"\n  },\n  {\n    \"name\": \"Enterprise\",\n    \"price\": \"$199\",\n    \"cadence\": \"/month\",\n    \"description\": \"Maximum power, security, and dedicated support for large organizations.\",\n    \"features\": tier3_features,\n    \"recommended\": false,\n    \"cta_label\": \"Contact Sales\",\n    \"cta_url\": \"#enterprise\"\n  }\n]\n\nroot = columns(\n  cols=1,\n  gap=\"2rem\",\n  items=[\n    {\n      \"blocks\": [\n        gradient_hero(\n          title=\"Flexible Plans for Every Team\",\n          subtitle=\"Choose the perfect plan to scale your workflow. Upgrade or downgrade at any time.\",\n          badge=\"PRICING\",\n          align=\"center\",\n          cta_label=\"View Comparison\",\n          cta_url=\"#compare\"\n        ),\n        pricing_tier_group(\n          tiers=tiers_data\n        )\n      ]\n    }\n  ]\n)\n</a2ui>"
+}

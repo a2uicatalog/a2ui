@@ -1,0 +1,50 @@
+{
+ "task": "T3",
+ "condition": "DT_sonnet-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-sonnet-5-5",
+ "hints": false,
+ "label": "oracle-slice-6types__express__sonnet-5-5__temp0__run2",
+ "agent_type": "T3",
+ "catalogue": "D-t3.json",
+ "atoms_in_catalogue": 21,
+ "prompt_chars": 12164,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 7.5,
+ "usage": {
+  "input_tokens": 4389,
+  "output_tokens": 1090
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "gradient_hero",
+  "feature_grid",
+  "testimonial_card",
+  "cta_section",
+  "columns",
+  "gradient_hero",
+  "feature_grid",
+  "testimonial_card",
+  "cta_button",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.8,
+  "recall": 1.0,
+  "f1": 0.889,
+  "slot_hits": {
+   "hero": true,
+   "feature columns (x3)": true,
+   "testimonial": true,
+   "CTA": true
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"landing-page\")\nhero = gradient_hero(\"Ship faster with Launchpad\", \"The all-in-one platform that helps your team plan, build, and release products with confidence.\", \"New: Version 2.0\", \"#4f46e5\", \"#8b5cf6\", null, \"center\", \"Get started free\", \"https://example.com/signup\")\nfeatures = feature_grid(\"Everything you need\", \"Powerful tools designed to keep your whole team in sync.\", 3, [{icon: \"\u26a1\", title: \"Lightning fast\", description: \"Automated pipelines cut release times from hours to minutes.\", color: \"#f59e0b\"}, {icon: \"\ud83d\udd12\", title: \"Secure by default\", description: \"Enterprise-grade encryption and granular access controls protect your data.\", color: \"#10b981\"}, {icon: \"\ud83d\udcc8\", title: \"Actionable insights\", description: \"Real-time dashboards show what is working and where to improve.\", color: \"#4f46e5\"}])\ntestimonial = testimonial_card(\"Launchpad transformed how our team ships. We cut our release cycle in half and our customers noticed right away.\", \"Priya Sharma\", \"VP of Engineering, Northwind\", \"https://example.com/avatars/priya.jpg\", 5)\ncta = cta_section(\"Ready to launch your next idea?\", \"Join thousands of teams already building better products with Launchpad. Start your free trial today.\", {label: \"Start free trial\", url: \"https://example.com/signup\"}, {label: \"Talk to sales\", url: \"https://example.com/contact\"}, \"#1e1b4b\")\nroot = columns(2, \"1rem\", \"top\", [{blocks: [hero]}, {blocks: [features]}])\n</a2ui>\n\nWait \u2014 the layout above isn't right for a single-column landing page. Here is the corrected version:\n\n<a2ui>\nsurface(\"landing-page\")\nhero = gradient_hero(\"Ship faster with Launchpad\", \"The all-in-one platform that helps your team plan, build, and release products with confidence.\", \"New: Version 2.0\", \"#4f46e5\", \"#8b5cf6\", null, \"center\", \"Get started free\", \"https://example.com/signup\")\nfeatures = feature_grid(\"Everything you need\", \"Powerful tools designed to keep your whole team in sync.\", 3, [{icon: \"\u26a1\", title: \"Lightning fast\", description: \"Automated pipelines cut release times from hours to minutes.\", color: \"#f59e0b\"}, {icon: \"\ud83d\udd12\", title: \"Secure by default\", description: \"Enterprise-grade encryption and granular access controls protect your data.\", color: \"#10b981\"}, {icon: \"\ud83d\udcc8\", title: \"Actionable insights\", description: \"Real-time dashboards show what is working and where to improve.\", color: \"#4f46e5\"}])\ntestimonial = testimonial_card(\"Launchpad transformed how our team ships. We cut our release cycle in half and our customers noticed right away.\", \"Priya Sharma\", \"VP of Engineering, Northwind\", \"https://example.com/avatars/priya.jpg\", 5)\ncta = cta_button(\"https://example.com/signup\", \"Start your free trial\", \"#4f46e5\", false)\nroot = columns(2, \"1.5rem\", \"top\", [{blocks: [hero, features, testimonial, cta]}, {blocks: []}])\n</a2ui>"
+}

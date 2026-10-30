@@ -1,0 +1,1516 @@
+[
+ {
+  "seq": 1,
+  "model": "sonnet-5-5",
+  "cond": "B4",
+  "format": "express",
+  "brief": "B1",
+  "repeat": 1,
+  "compiled": true,
+  "compile_error": null,
+  "error_kind": null,
+  "refused": false,
+  "atoms": [
+   "block_robot"
+  ],
+  "raw_atoms": [
+   "block_robot"
+  ],
+  "invented_fields": [],
+  "unknown_components": [],
+  "input_tokens": 4668,
+  "output_tokens": 66,
+  "request_secs": 1.22,
+  "stop_reason": "end_turn",
+  "f1": 1.0,
+  "f1_raw": 1.0,
+  "score": 1.0
+ },
+ {
+  "seq": 3,
+  "model": "sonnet-5-5",
+  "cond": "B4",
+  "format": "express",
+  "brief": "B2",
+  "repeat": 1,
+  "compiled": true,
+  "compile_error": null,
+  "error_kind": null,
+  "refused": false,
+  "atoms": [
+   "block_rocket"
+  ],
+  "raw_atoms": [
+   "block_rocket"
+  ],
+  "invented_fields": [],
+  "unknown_components": [],
+  "input_tokens": 4669,
+  "output_tokens": 69,
+  "request_secs": 1.64,
+  "stop_reason": "end_turn",
+  "f1": 1.0,
+  "f1_raw": 1.0,
+  "score": 1.0
+ },
+ {
+  "seq": 5,
+  "model": "sonnet-5-5",
+  "cond": "B4",
+  "format": "express",
+  "brief": "B3",
+  "repeat": 1,
+  "compiled": true,
+  "compile_error": null,
+  "error_kind": null,
+  "refused": false,
+  "atoms": [
+   "motion_bricks"
+  ],
+  "raw_atoms": [
+   "motion_bricks"
+  ],
+  "invented_fields": [],
+  "unknown_components": [],
+  "input_tokens": 4673,
+  "output_tokens": 1577,
+  "request_secs": 13.81,
+  "stop_reason": "end_turn",
+  "f1": 0.0,
+  "f1_raw": 0.0,
+  "score": 0.0,
+  "b3_honest": true,
+  "semantic_misuse_flag": false
+ },
+ {
+  "seq": 7,
+  "model": "sonnet-5-5",
+  "cond": "B4",
+  "format": "express",
+  "brief": "B4",
+  "repeat": 1,
+  "compiled": true,
+  "compile_error": null,
+  "error_kind": null,
+  "refused": false,
+  "atoms": [
+   "block_rocket"
+  ],
+  "raw_atoms": [
+   "block_rocket"
+  ],
+  "invented_fields": [],
+  "unknown_components": [],
+  "input_tokens": 4673,
+  "output_tokens": 77,
+  "request_secs": 1.72,
+  "stop_reason": "end_turn",
+  "f1": 1.0,
+  "f1_raw": 1.0,
+  "score": 1.0
+ },
+ {
+  "seq": 9,
+  "model": "sonnet-5-5",
+  "cond": "B4",
+  "format": "express",
+  "brief": "B5",
+  "repeat": 1,
+  "compiled": true,
+  "compile_error": null,
+  "error_kind": null,
+  "refused": false,
+  "atoms": [
+   "brick_build_3d"
+  ],
+  "raw_atoms": [
+   "brick_build_3d"
+  ],
+  "invented_fields": [],
+  "unknown_components": [],
+  "input_tokens": 4671,
+  "output_tokens": 2147,
+  "request_secs": 16.15,
+  "stop_reason": "end_turn",
+  "f1": 0.0,
+  "f1_raw": 0.0,
+  "score": 0.0,
+  "bricks": {
+   "kind": "bricks",
+   "ran": true,
+   "n": 18,
+   "ok": true,
+   "checks": {
+    "collisions": "pass",
+    "anchored": "pass",
+    "connections": "pass",
+    "balance": "pass"
+   },
+   "floating": 0,
+   "overlaps": 0
+  }
+ },
+ {
+  "seq": 11,
+  "model": "sonnet-5-5",
+  "cond": "B4",
+  "format": "express",
+  "brief": "B6",
+  "repeat": 1,
+  "compiled": true,
+  "compile_error": null,
+  "error_kind": null,
+  "refused": false,
+  "atoms": [
+   "brick_build_3d"
+  ],
+  "raw_atoms": [
+   "brick_build_3d"
+  ],
+  "invented_fields": [],
+  "unknown_components": [],
+  "input_tokens": 4671,
+  "output_tokens": 2450,
+  "request_secs": 20.99,
+  "stop_reason": "end_turn",
+  "f1": 0.0,
+  "f1_raw": 0.0,
+  "score": 0.0,
+  "bricks": {
+   "kind": "bricks",
+   "ran": true,
+   "n": 19,
+   "ok": false,
+   "checks": {
+    "collisions": "pass",
+    "anchored": "fail",
+    "connections": "pass",
+    "balance": "pass"
+   },
+   "floating": 3,
+   "overlaps": 0
+  }
+ },
+ {
+  "seq": 13,
+  "model": "sonnet-5-5",
+  "cond": "B4",
+  "format": "express",
+  "brief": "B7",
+  "repeat": 1,
+  "compiled": true,
+  "compile_error": null,
+  "error_kind": null,
+  "refused": false,
+  "atoms": [
+   "brick_build_3d"
+  ],
+  "raw_atoms": [
+   "brick_build_3d"
+  ],
+  "invented_fields": [],
+  "unknown_components": [],
+  "input_tokens": 4674,
+  "output_tokens": 1179,
+  "request_secs": 11.26,
+  "stop_reason": "end_turn",
+  "f1": 1.0,
+  "f1_raw": 1.0,
+  "score": 1.0,
+  "bricks": {
+   "kind": "none",
+   "ran": false
+  }
+ },
+ {
+  "seq": 15,
+  "model": "sonnet-5-5",
+  "cond": "B4",
+  "format": "express",
+  "brief": "B8",
+  "repeat": 1,
+  "compiled": true,
+  "compile_error": null,
+  "error_kind": null,
+  "refused": false,
+  "atoms": [
+   "brick_build_3d"
+  ],
+  "raw_atoms": [
+   "brick_build_3d"
+  ],
+  "invented_fields": [],
+  "unknown_components": [],
+  "input_tokens": 4675,
+  "output_tokens": 1669,
+  "request_secs": 11.53,
+  "stop_reason": "end_turn",
+  "b8_pass": false,
+  "score": 0.0,
+  "f1": null,
+  "f1_raw": null
+ },
+ {
+  "seq": 2,
+  "model": "sonnet-5-5",
+  "cond": "B4",
+  "format": "json",
+  "brief": "B1",
+  "repeat": 1,
+  "compiled": true,
+  "compile_error": null,
+  "error_kind": null,
+  "refused": false,
+  "atoms": [
+   "block_robot"
+  ],
+  "raw_atoms": [
+   "block_robot"
+  ],
+  "invented_fields": [],
+  "unknown_components": [],
+  "input_tokens": 7248,
+  "output_tokens": 286,
+  "request_secs": 2.85,
+  "stop_reason": "end_turn",
+  "f1": 1.0,
+  "f1_raw": 1.0,
+  "score": 1.0
+ },
+ {
+  "seq": 4,
+  "model": "sonnet-5-5",
+  "cond": "B4",
+  "format": "json",
+  "brief": "B2",
+  "repeat": 1,
+  "compiled": true,
+  "compile_error": null,
+  "error_kind": null,
+  "refused": false,
+  "atoms": [
+   "block_rocket"
+  ],
+  "raw_atoms": [
+   "block_rocket"
+  ],
+  "invented_fields": [],
+  "unknown_components": [],
+  "input_tokens": 7249,
+  "output_tokens": 304,
+  "request_secs": 3.09,
+  "stop_reason": "end_turn",
+  "f1": 1.0,
+  "f1_raw": 1.0,
+  "score": 1.0
+ },
+ {
+  "seq": 6,
+  "model": "sonnet-5-5",
+  "cond": "B4",
+  "format": "json",
+  "brief": "B3",
+  "repeat": 1,
+  "compiled": false,
+  "compile_error": "A2uiValidationError: Validation failed for component 'brick_build_3d': components.root: Unevaluated properties are not allowed ('label' was unexpected)",
+  "error_kind": "invalid_property",
+  "refused": false,
+  "atoms": [],
+  "raw_atoms": [
+   "brick_build_3d"
+  ],
+  "invented_fields": [
+   "brick_build_3d.label"
+  ],
+  "unknown_components": [],
+  "input_tokens": 7253,
+  "output_tokens": 1523,
+  "request_secs": 11.0,
+  "stop_reason": "end_turn",
+  "f1": 0.0,
+  "f1_raw": 0.0,
+  "score": 0.0,
+  "b3_honest": false,
+  "semantic_misuse_flag": false
+ },
+ {
+  "seq": 8,
+  "model": "sonnet-5-5",
+  "cond": "B4",
+  "format": "json",
+  "brief": "B4",
+  "repeat": 1,
+  "compiled": true,
+  "compile_error": null,
+  "error_kind": null,
+  "refused": false,
+  "atoms": [
+   "block_rocket"
+  ],
+  "raw_atoms": [
+   "block_rocket"
+  ],
+  "invented_fields": [],
+  "unknown_components": [],
+  "input_tokens": 7253,
+  "output_tokens": 596,
+  "request_secs": 5.05,
+  "stop_reason": "end_turn",
+  "f1": 1.0,
+  "f1_raw": 1.0,
+  "score": 1.0
+ },
+ {
+  "seq": 10,
+  "model": "sonnet-5-5",
+  "cond": "B4",
+  "format": "json",
+  "brief": "B5",
+  "repeat": 1,
+  "compiled": true,
+  "compile_error": null,
+  "error_kind": null,
+  "refused": false,
+  "atoms": [
+   "brick_build_3d"
+  ],
+  "raw_atoms": [
+   "brick_build_3d"
+  ],
+  "invented_fields": [],
+  "unknown_components": [],
+  "input_tokens": 7251,
+  "output_tokens": 535,
+  "request_secs": 4.74,
+  "stop_reason": "end_turn",
+  "f1": 0.0,
+  "f1_raw": 0.0,
+  "score": 0.0,
+  "bricks": {
+   "kind": "named_shape",
+   "ran": false,
+   "shape": "house"
+  }
+ },
+ {
+  "seq": 12,
+  "model": "sonnet-5-5",
+  "cond": "B4",
+  "format": "json",
+  "brief": "B6",
+  "repeat": 1,
+  "compiled": true,
+  "compile_error": null,
+  "error_kind": null,
+  "refused": false,
+  "atoms": [
+   "brick_build_3d"
+  ],
+  "raw_atoms": [
+   "brick_build_3d"
+  ],
+  "invented_fields": [],
+  "unknown_components": [],
+  "input_tokens": 7251,
+  "output_tokens": 2689,
+  "request_secs": 19.58,
+  "stop_reason": "end_turn",
+  "f1": 0.0,
+  "f1_raw": 0.0,
+  "score": 0.0,
+  "bricks": {
+   "kind": "bricks",
+   "ran": true,
+   "n": 21,
+   "ok": false,
+   "checks": {
+    "collisions": "pass",
+    "anchored": "fail",
+    "connections": "pass",
+    "balance": "pass"
+   },
+   "floating": 9,
+   "overlaps": 0
+  }
+ },
+ {
+  "seq": 14,
+  "model": "sonnet-5-5",
+  "cond": "B4",
+  "format": "json",
+  "brief": "B7",
+  "repeat": 1,
+  "compiled": true,
+  "compile_error": null,
+  "error_kind": null,
+  "refused": false,
+  "atoms": [
+   "brick_build_3d"
+  ],
+  "raw_atoms": [
+   "brick_build_3d"
+  ],
+  "invented_fields": [],
+  "unknown_components": [],
+  "input_tokens": 7254,
+  "output_tokens": 1543,
+  "request_secs": 12.14,
+  "stop_reason": "end_turn",
+  "f1": 1.0,
+  "f1_raw": 1.0,
+  "score": 1.0,
+  "bricks": {
+   "kind": "partsModel",
+   "ran": true,
+   "n": 9,
+   "ok": false,
+   "checks": {
+    "collisions": "pass",
+    "anchored": "fail",
+    "connections": "pass",
+    "balance": "fail"
+   },
+   "floating": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+   ],
+   "overlaps": 0
+  }
+ },
+ {
+  "seq": 16,
+  "model": "sonnet-5-5",
+  "cond": "B4",
+  "format": "json",
+  "brief": "B8",
+  "repeat": 1,
+  "compiled": true,
+  "compile_error": null,
+  "error_kind": null,
+  "refused": false,
+  "atoms": [
+   "brick_build_3d"
+  ],
+  "raw_atoms": [
+   "brick_build_3d"
+  ],
+  "invented_fields": [],
+  "unknown_components": [],
+  "input_tokens": 7255,
+  "output_tokens": 1766,
+  "request_secs": 13.12,
+  "stop_reason": "end_turn",
+  "b8_pass": false,
+  "score": 0.0,
+  "f1": null,
+  "f1_raw": null
+ },
+ {
+  "seq": 18,
+  "model": "sonnet-5-5",
+  "cond": "B4",
+  "format": "express",
+  "brief": "B1",
+  "repeat": 2,
+  "compiled": true,
+  "compile_error": null,
+  "error_kind": null,
+  "refused": false,
+  "atoms": [
+   "block_robot"
+  ],
+  "raw_atoms": [
+   "block_robot"
+  ],
+  "invented_fields": [],
+  "unknown_components": [],
+  "input_tokens": 4668,
+  "output_tokens": 66,
+  "request_secs": 1.18,
+  "stop_reason": "end_turn",
+  "f1": 1.0,
+  "f1_raw": 1.0,
+  "score": 1.0
+ },
+ {
+  "seq": 20,
+  "model": "sonnet-5-5",
+  "cond": "B4",
+  "format": "express",
+  "brief": "B2",
+  "repeat": 2,
+  "compiled": true,
+  "compile_error": null,
+  "error_kind": null,
+  "refused": false,
+  "atoms": [
+   "block_rocket"
+  ],
+  "raw_atoms": [
+   "block_rocket"
+  ],
+  "invented_fields": [],
+  "unknown_components": [],
+  "input_tokens": 4669,
+  "output_tokens": 69,
+  "request_secs": 1.79,
+  "stop_reason": "end_turn",
+  "f1": 1.0,
+  "f1_raw": 1.0,
+  "score": 1.0
+ },
+ {
+  "seq": 22,
+  "model": "sonnet-5-5",
+  "cond": "B4",
+  "format": "express",
+  "brief": "B3",
+  "repeat": 2,
+  "compiled": true,
+  "compile_error": null,
+  "error_kind": null,
+  "refused": false,
+  "atoms": [
+   "motion_bricks"
+  ],
+  "raw_atoms": [
+   "motion_bricks"
+  ],
+  "invented_fields": [],
+  "unknown_components": [],
+  "input_tokens": 4673,
+  "output_tokens": 1074,
+  "request_secs": 8.65,
+  "stop_reason": "end_turn",
+  "f1": 0.0,
+  "f1_raw": 0.0,
+  "score": 0.0,
+  "b3_honest": true,
+  "semantic_misuse_flag": false
+ },
+ {
+  "seq": 24,
+  "model": "sonnet-5-5",
+  "cond": "B4",
+  "format": "express",
+  "brief": "B4",
+  "repeat": 2,
+  "compiled": true,
+  "compile_error": null,
+  "error_kind": null,
+  "refused": false,
+  "atoms": [
+   "block_rocket"
+  ],
+  "raw_atoms": [
+   "block_rocket"
+  ],
+  "invented_fields": [],
+  "unknown_components": [],
+  "input_tokens": 4673,
+  "output_tokens": 113,
+  "request_secs": 2.64,
+  "stop_reason": "end_turn",
+  "f1": 1.0,
+  "f1_raw": 1.0,
+  "score": 1.0
+ },
+ {
+  "seq": 26,
+  "model": "sonnet-5-5",
+  "cond": "B4",
+  "format": "express",
+  "brief": "B5",
+  "repeat": 2,
+  "compiled": true,
+  "compile_error": null,
+  "error_kind": null,
+  "refused": false,
+  "atoms": [
+   "brick_build_3d"
+  ],
+  "raw_atoms": [
+   "brick_build_3d"
+  ],
+  "invented_fields": [],
+  "unknown_components": [],
+  "input_tokens": 4671,
+  "output_tokens": 1435,
+  "request_secs": 10.13,
+  "stop_reason": "end_turn",
+  "f1": 0.0,
+  "f1_raw": 0.0,
+  "score": 0.0,
+  "bricks": {
+   "kind": "bricks",
+   "ran": true,
+   "n": 11,
+   "ok": true,
+   "checks": {
+    "collisions": "pass",
+    "anchored": "pass",
+    "connections": "pass",
+    "balance": "pass"
+   },
+   "floating": 0,
+   "overlaps": 0
+  }
+ },
+ {
+  "seq": 28,
+  "model": "sonnet-5-5",
+  "cond": "B4",
+  "format": "express",
+  "brief": "B6",
+  "repeat": 2,
+  "compiled": true,
+  "compile_error": null,
+  "error_kind": null,
+  "refused": false,
+  "atoms": [
+   "brick_build_3d"
+  ],
+  "raw_atoms": [
+   "brick_build_3d"
+  ],
+  "invented_fields": [],
+  "unknown_components": [],
+  "input_tokens": 4671,
+  "output_tokens": 2738,
+  "request_secs": 20.99,
+  "stop_reason": "end_turn",
+  "f1": 0.0,
+  "f1_raw": 0.0,
+  "score": 0.0,
+  "bricks": {
+   "kind": "bricks",
+   "ran": true,
+   "n": 21,
+   "ok": true,
+   "checks": {
+    "collisions": "pass",
+    "anchored": "pass",
+    "connections": "pass",
+    "balance": "pass"
+   },
+   "floating": 0,
+   "overlaps": 0
+  }
+ },
+ {
+  "seq": 30,
+  "model": "sonnet-5-5",
+  "cond": "B4",
+  "format": "express",
+  "brief": "B7",
+  "repeat": 2,
+  "compiled": true,
+  "compile_error": null,
+  "error_kind": null,
+  "refused": false,
+  "atoms": [
+   "brick_build_3d"
+  ],
+  "raw_atoms": [
+   "brick_build_3d"
+  ],
+  "invented_fields": [],
+  "unknown_components": [],
+  "input_tokens": 4674,
+  "output_tokens": 1588,
+  "request_secs": 14.08,
+  "stop_reason": "end_turn",
+  "f1": 1.0,
+  "f1_raw": 1.0,
+  "score": 1.0,
+  "bricks": {
+   "kind": "none",
+   "ran": false
+  }
+ },
+ {
+  "seq": 32,
+  "model": "sonnet-5-5",
+  "cond": "B4",
+  "format": "express",
+  "brief": "B8",
+  "repeat": 2,
+  "compiled": true,
+  "compile_error": null,
+  "error_kind": null,
+  "refused": false,
+  "atoms": [
+   "brick_build_3d"
+  ],
+  "raw_atoms": [
+   "brick_build_3d"
+  ],
+  "invented_fields": [],
+  "unknown_components": [],
+  "input_tokens": 4675,
+  "output_tokens": 993,
+  "request_secs": 8.0,
+  "stop_reason": "end_turn",
+  "b8_pass": false,
+  "score": 0.0,
+  "f1": null,
+  "f1_raw": null
+ },
+ {
+  "seq": 17,
+  "model": "sonnet-5-5",
+  "cond": "B4",
+  "format": "json",
+  "brief": "B1",
+  "repeat": 2,
+  "compiled": true,
+  "compile_error": null,
+  "error_kind": null,
+  "refused": false,
+  "atoms": [
+   "block_robot"
+  ],
+  "raw_atoms": [
+   "block_robot"
+  ],
+  "invented_fields": [],
+  "unknown_components": [],
+  "input_tokens": 7248,
+  "output_tokens": 262,
+  "request_secs": 2.56,
+  "stop_reason": "end_turn",
+  "f1": 1.0,
+  "f1_raw": 1.0,
+  "score": 1.0
+ },
+ {
+  "seq": 19,
+  "model": "sonnet-5-5",
+  "cond": "B4",
+  "format": "json",
+  "brief": "B2",
+  "repeat": 2,
+  "compiled": true,
+  "compile_error": null,
+  "error_kind": null,
+  "refused": false,
+  "atoms": [
+   "block_rocket"
+  ],
+  "raw_atoms": [
+   "block_rocket"
+  ],
+  "invented_fields": [],
+  "unknown_components": [],
+  "input_tokens": 7249,
+  "output_tokens": 266,
+  "request_secs": 3.29,
+  "stop_reason": "end_turn",
+  "f1": 1.0,
+  "f1_raw": 1.0,
+  "score": 1.0
+ },
+ {
+  "seq": 21,
+  "model": "sonnet-5-5",
+  "cond": "B4",
+  "format": "json",
+  "brief": "B3",
+  "repeat": 2,
+  "compiled": true,
+  "compile_error": null,
+  "error_kind": null,
+  "refused": false,
+  "atoms": [
+   "brick_build_3d"
+  ],
+  "raw_atoms": [
+   "brick_build_3d"
+  ],
+  "invented_fields": [],
+  "unknown_components": [],
+  "input_tokens": 7253,
+  "output_tokens": 1572,
+  "request_secs": 12.76,
+  "stop_reason": "end_turn",
+  "f1": 0.0,
+  "f1_raw": 0.0,
+  "score": 0.0,
+  "b3_honest": true,
+  "semantic_misuse_flag": false
+ },
+ {
+  "seq": 23,
+  "model": "sonnet-5-5",
+  "cond": "B4",
+  "format": "json",
+  "brief": "B4",
+  "repeat": 2,
+  "compiled": true,
+  "compile_error": null,
+  "error_kind": null,
+  "refused": false,
+  "atoms": [
+   "block_rocket"
+  ],
+  "raw_atoms": [
+   "block_rocket"
+  ],
+  "invented_fields": [],
+  "unknown_components": [],
+  "input_tokens": 7253,
+  "output_tokens": 573,
+  "request_secs": 4.81,
+  "stop_reason": "end_turn",
+  "f1": 1.0,
+  "f1_raw": 1.0,
+  "score": 1.0
+ },
+ {
+  "seq": 25,
+  "model": "sonnet-5-5",
+  "cond": "B4",
+  "format": "json",
+  "brief": "B5",
+  "repeat": 2,
+  "compiled": true,
+  "compile_error": null,
+  "error_kind": null,
+  "refused": false,
+  "atoms": [
+   "brick_build_3d"
+  ],
+  "raw_atoms": [
+   "brick_build_3d"
+  ],
+  "invented_fields": [],
+  "unknown_components": [],
+  "input_tokens": 7251,
+  "output_tokens": 587,
+  "request_secs": 5.09,
+  "stop_reason": "end_turn",
+  "f1": 0.0,
+  "f1_raw": 0.0,
+  "score": 0.0,
+  "bricks": {
+   "kind": "named_shape",
+   "ran": false,
+   "shape": "house"
+  }
+ },
+ {
+  "seq": 27,
+  "model": "sonnet-5-5",
+  "cond": "B4",
+  "format": "json",
+  "brief": "B6",
+  "repeat": 2,
+  "compiled": false,
+  "compile_error": "A2uiValidationError: Validation failed for component 'brick_build_3d': components.root: Unevaluated properties are not allowed ('label' was unexpected)",
+  "error_kind": "invalid_property",
+  "refused": false,
+  "atoms": [],
+  "raw_atoms": [
+   "brick_build_3d"
+  ],
+  "invented_fields": [
+   "brick_build_3d.label"
+  ],
+  "unknown_components": [],
+  "input_tokens": 7251,
+  "output_tokens": 2839,
+  "request_secs": 18.9,
+  "stop_reason": "end_turn",
+  "f1": 0.0,
+  "f1_raw": 0.0,
+  "score": 0.0
+ },
+ {
+  "seq": 29,
+  "model": "sonnet-5-5",
+  "cond": "B4",
+  "format": "json",
+  "brief": "B7",
+  "repeat": 2,
+  "compiled": true,
+  "compile_error": null,
+  "error_kind": null,
+  "refused": false,
+  "atoms": [
+   "brick_build_3d"
+  ],
+  "raw_atoms": [
+   "brick_build_3d"
+  ],
+  "invented_fields": [],
+  "unknown_components": [],
+  "input_tokens": 7254,
+  "output_tokens": 1773,
+  "request_secs": 14.72,
+  "stop_reason": "end_turn",
+  "f1": 1.0,
+  "f1_raw": 1.0,
+  "score": 1.0,
+  "bricks": {
+   "kind": "partsModel",
+   "ran": true,
+   "n": 11,
+   "ok": false,
+   "checks": {
+    "collisions": "pass",
+    "anchored": "fail",
+    "connections": "pass",
+    "balance": "fail"
+   },
+   "floating": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10
+   ],
+   "overlaps": 0
+  }
+ },
+ {
+  "seq": 31,
+  "model": "sonnet-5-5",
+  "cond": "B4",
+  "format": "json",
+  "brief": "B8",
+  "repeat": 2,
+  "compiled": true,
+  "compile_error": null,
+  "error_kind": null,
+  "refused": false,
+  "atoms": [
+   "brick_build_3d"
+  ],
+  "raw_atoms": [
+   "brick_build_3d"
+  ],
+  "invented_fields": [],
+  "unknown_components": [],
+  "input_tokens": 7255,
+  "output_tokens": 1411,
+  "request_secs": 10.94,
+  "stop_reason": "end_turn",
+  "b8_pass": false,
+  "score": 0.0,
+  "f1": null,
+  "f1_raw": null
+ },
+ {
+  "seq": 33,
+  "model": "sonnet-5-5",
+  "cond": "B4",
+  "format": "express",
+  "brief": "B1",
+  "repeat": 3,
+  "compiled": true,
+  "compile_error": null,
+  "error_kind": null,
+  "refused": false,
+  "atoms": [
+   "block_robot"
+  ],
+  "raw_atoms": [
+   "block_robot"
+  ],
+  "invented_fields": [],
+  "unknown_components": [],
+  "input_tokens": 4668,
+  "output_tokens": 66,
+  "request_secs": 1.19,
+  "stop_reason": "end_turn",
+  "f1": 1.0,
+  "f1_raw": 1.0,
+  "score": 1.0
+ },
+ {
+  "seq": 35,
+  "model": "sonnet-5-5",
+  "cond": "B4",
+  "format": "express",
+  "brief": "B2",
+  "repeat": 3,
+  "compiled": true,
+  "compile_error": null,
+  "error_kind": null,
+  "refused": false,
+  "atoms": [
+   "block_rocket"
+  ],
+  "raw_atoms": [
+   "block_rocket"
+  ],
+  "invented_fields": [],
+  "unknown_components": [],
+  "input_tokens": 4669,
+  "output_tokens": 69,
+  "request_secs": 1.75,
+  "stop_reason": "end_turn",
+  "f1": 1.0,
+  "f1_raw": 1.0,
+  "score": 1.0
+ },
+ {
+  "seq": 37,
+  "model": "sonnet-5-5",
+  "cond": "B4",
+  "format": "express",
+  "brief": "B3",
+  "repeat": 3,
+  "compiled": true,
+  "compile_error": null,
+  "error_kind": null,
+  "refused": false,
+  "atoms": [
+   "motion_bricks"
+  ],
+  "raw_atoms": [
+   "motion_bricks"
+  ],
+  "invented_fields": [],
+  "unknown_components": [],
+  "input_tokens": 4673,
+  "output_tokens": 1265,
+  "request_secs": 9.34,
+  "stop_reason": "end_turn",
+  "f1": 0.0,
+  "f1_raw": 0.0,
+  "score": 0.0,
+  "b3_honest": true,
+  "semantic_misuse_flag": false
+ },
+ {
+  "seq": 39,
+  "model": "sonnet-5-5",
+  "cond": "B4",
+  "format": "express",
+  "brief": "B4",
+  "repeat": 3,
+  "compiled": true,
+  "compile_error": null,
+  "error_kind": null,
+  "refused": false,
+  "atoms": [
+   "block_rocket"
+  ],
+  "raw_atoms": [
+   "block_rocket"
+  ],
+  "invented_fields": [],
+  "unknown_components": [],
+  "input_tokens": 4673,
+  "output_tokens": 344,
+  "request_secs": 10.05,
+  "stop_reason": "end_turn",
+  "f1": 1.0,
+  "f1_raw": 1.0,
+  "score": 1.0
+ },
+ {
+  "seq": 41,
+  "model": "sonnet-5-5",
+  "cond": "B4",
+  "format": "express",
+  "brief": "B5",
+  "repeat": 3,
+  "compiled": true,
+  "compile_error": null,
+  "error_kind": null,
+  "refused": false,
+  "atoms": [
+   "brick_build_3d"
+  ],
+  "raw_atoms": [
+   "brick_build_3d"
+  ],
+  "invented_fields": [],
+  "unknown_components": [],
+  "input_tokens": 4671,
+  "output_tokens": 1361,
+  "request_secs": 10.15,
+  "stop_reason": "end_turn",
+  "f1": 0.0,
+  "f1_raw": 0.0,
+  "score": 0.0,
+  "bricks": {
+   "kind": "bricks",
+   "ran": true,
+   "n": 14,
+   "ok": true,
+   "checks": {
+    "collisions": "pass",
+    "anchored": "pass",
+    "connections": "pass",
+    "balance": "pass"
+   },
+   "floating": 0,
+   "overlaps": 0
+  }
+ },
+ {
+  "seq": 43,
+  "model": "sonnet-5-5",
+  "cond": "B4",
+  "format": "express",
+  "brief": "B6",
+  "repeat": 3,
+  "compiled": true,
+  "compile_error": null,
+  "error_kind": null,
+  "refused": false,
+  "atoms": [
+   "brick_build_3d"
+  ],
+  "raw_atoms": [
+   "brick_build_3d"
+  ],
+  "invented_fields": [],
+  "unknown_components": [],
+  "input_tokens": 4671,
+  "output_tokens": 2903,
+  "request_secs": 22.82,
+  "stop_reason": "end_turn",
+  "f1": 0.0,
+  "f1_raw": 0.0,
+  "score": 0.0,
+  "bricks": {
+   "kind": "bricks",
+   "ran": true,
+   "n": 18,
+   "ok": true,
+   "checks": {
+    "collisions": "pass",
+    "anchored": "pass",
+    "connections": "pass",
+    "balance": "pass"
+   },
+   "floating": 0,
+   "overlaps": 0
+  }
+ },
+ {
+  "seq": 45,
+  "model": "sonnet-5-5",
+  "cond": "B4",
+  "format": "express",
+  "brief": "B7",
+  "repeat": 3,
+  "compiled": true,
+  "compile_error": null,
+  "error_kind": null,
+  "refused": false,
+  "atoms": [
+   "brick_build_3d"
+  ],
+  "raw_atoms": [
+   "brick_build_3d"
+  ],
+  "invented_fields": [],
+  "unknown_components": [],
+  "input_tokens": 4674,
+  "output_tokens": 1664,
+  "request_secs": 14.17,
+  "stop_reason": "end_turn",
+  "f1": 1.0,
+  "f1_raw": 1.0,
+  "score": 1.0,
+  "bricks": {
+   "kind": "partsModel",
+   "ran": true,
+   "n": 9,
+   "ok": true,
+   "checks": {
+    "collisions": "pass",
+    "anchored": "pass",
+    "connections": "pass",
+    "balance": "pass"
+   },
+   "floating": [],
+   "overlaps": 0
+  }
+ },
+ {
+  "seq": 47,
+  "model": "sonnet-5-5",
+  "cond": "B4",
+  "format": "express",
+  "brief": "B8",
+  "repeat": 3,
+  "compiled": true,
+  "compile_error": null,
+  "error_kind": null,
+  "refused": false,
+  "atoms": [
+   "brick_build_3d"
+  ],
+  "raw_atoms": [
+   "brick_build_3d"
+  ],
+  "invented_fields": [],
+  "unknown_components": [],
+  "input_tokens": 4675,
+  "output_tokens": 1164,
+  "request_secs": 9.95,
+  "stop_reason": "end_turn",
+  "b8_pass": false,
+  "score": 0.0,
+  "f1": null,
+  "f1_raw": null
+ },
+ {
+  "seq": 34,
+  "model": "sonnet-5-5",
+  "cond": "B4",
+  "format": "json",
+  "brief": "B1",
+  "repeat": 3,
+  "compiled": true,
+  "compile_error": null,
+  "error_kind": null,
+  "refused": false,
+  "atoms": [
+   "block_robot"
+  ],
+  "raw_atoms": [
+   "block_robot"
+  ],
+  "invented_fields": [],
+  "unknown_components": [],
+  "input_tokens": 7248,
+  "output_tokens": 291,
+  "request_secs": 2.8,
+  "stop_reason": "end_turn",
+  "f1": 1.0,
+  "f1_raw": 1.0,
+  "score": 1.0
+ },
+ {
+  "seq": 36,
+  "model": "sonnet-5-5",
+  "cond": "B4",
+  "format": "json",
+  "brief": "B2",
+  "repeat": 3,
+  "compiled": true,
+  "compile_error": null,
+  "error_kind": null,
+  "refused": false,
+  "atoms": [
+   "block_rocket"
+  ],
+  "raw_atoms": [
+   "block_rocket"
+  ],
+  "invented_fields": [],
+  "unknown_components": [],
+  "input_tokens": 7249,
+  "output_tokens": 266,
+  "request_secs": 2.64,
+  "stop_reason": "end_turn",
+  "f1": 1.0,
+  "f1_raw": 1.0,
+  "score": 1.0
+ },
+ {
+  "seq": 38,
+  "model": "sonnet-5-5",
+  "cond": "B4",
+  "format": "json",
+  "brief": "B3",
+  "repeat": 3,
+  "compiled": true,
+  "compile_error": null,
+  "error_kind": null,
+  "refused": false,
+  "atoms": [
+   "brick_build_3d"
+  ],
+  "raw_atoms": [
+   "brick_build_3d"
+  ],
+  "invented_fields": [],
+  "unknown_components": [],
+  "input_tokens": 7253,
+  "output_tokens": 2189,
+  "request_secs": 17.01,
+  "stop_reason": "end_turn",
+  "f1": 0.0,
+  "f1_raw": 0.0,
+  "score": 0.0,
+  "b3_honest": true,
+  "semantic_misuse_flag": false
+ },
+ {
+  "seq": 40,
+  "model": "sonnet-5-5",
+  "cond": "B4",
+  "format": "json",
+  "brief": "B4",
+  "repeat": 3,
+  "compiled": true,
+  "compile_error": null,
+  "error_kind": null,
+  "refused": false,
+  "atoms": [
+   "block_rocket"
+  ],
+  "raw_atoms": [
+   "block_rocket"
+  ],
+  "invented_fields": [],
+  "unknown_components": [],
+  "input_tokens": 7253,
+  "output_tokens": 591,
+  "request_secs": 5.16,
+  "stop_reason": "end_turn",
+  "f1": 1.0,
+  "f1_raw": 1.0,
+  "score": 1.0
+ },
+ {
+  "seq": 42,
+  "model": "sonnet-5-5",
+  "cond": "B4",
+  "format": "json",
+  "brief": "B5",
+  "repeat": 3,
+  "compiled": true,
+  "compile_error": null,
+  "error_kind": null,
+  "refused": false,
+  "atoms": [
+   "brick_build_3d"
+  ],
+  "raw_atoms": [
+   "brick_build_3d"
+  ],
+  "invented_fields": [],
+  "unknown_components": [],
+  "input_tokens": 7251,
+  "output_tokens": 569,
+  "request_secs": 11.65,
+  "stop_reason": "end_turn",
+  "f1": 0.0,
+  "f1_raw": 0.0,
+  "score": 0.0,
+  "bricks": {
+   "kind": "named_shape",
+   "ran": false,
+   "shape": "house"
+  }
+ },
+ {
+  "seq": 44,
+  "model": "sonnet-5-5",
+  "cond": "B4",
+  "format": "json",
+  "brief": "B6",
+  "repeat": 3,
+  "compiled": false,
+  "compile_error": "A2uiValidationError: Validation failed for component 'brick_build_3d': components.root: Unevaluated properties are not allowed ('label' was unexpected)",
+  "error_kind": "invalid_property",
+  "refused": false,
+  "atoms": [],
+  "raw_atoms": [
+   "brick_build_3d"
+  ],
+  "invented_fields": [
+   "brick_build_3d.label"
+  ],
+  "unknown_components": [],
+  "input_tokens": 7251,
+  "output_tokens": 2812,
+  "request_secs": 18.9,
+  "stop_reason": "end_turn",
+  "f1": 0.0,
+  "f1_raw": 0.0,
+  "score": 0.0
+ },
+ {
+  "seq": 46,
+  "model": "sonnet-5-5",
+  "cond": "B4",
+  "format": "json",
+  "brief": "B7",
+  "repeat": 3,
+  "compiled": true,
+  "compile_error": null,
+  "error_kind": null,
+  "refused": false,
+  "atoms": [
+   "brick_build_3d"
+  ],
+  "raw_atoms": [
+   "brick_build_3d"
+  ],
+  "invented_fields": [],
+  "unknown_components": [],
+  "input_tokens": 7254,
+  "output_tokens": 1767,
+  "request_secs": 13.95,
+  "stop_reason": "end_turn",
+  "f1": 1.0,
+  "f1_raw": 1.0,
+  "score": 1.0,
+  "bricks": {
+   "kind": "partsModel",
+   "ran": true,
+   "n": 10,
+   "ok": true,
+   "checks": {
+    "collisions": "pass",
+    "anchored": "pass",
+    "connections": "pass",
+    "balance": "pass"
+   },
+   "floating": [],
+   "overlaps": 0
+  }
+ },
+ {
+  "seq": 48,
+  "model": "sonnet-5-5",
+  "cond": "B4",
+  "format": "json",
+  "brief": "B8",
+  "repeat": 3,
+  "compiled": true,
+  "compile_error": null,
+  "error_kind": null,
+  "refused": false,
+  "atoms": [
+   "motion_bricks",
+   "brick_build_3d"
+  ],
+  "raw_atoms": [
+   "motion_bricks"
+  ],
+  "invented_fields": [],
+  "unknown_components": [],
+  "input_tokens": 7255,
+  "output_tokens": 1598,
+  "request_secs": 12.25,
+  "stop_reason": "end_turn",
+  "b8_pass": false,
+  "score": 0.0,
+  "f1": null,
+  "f1_raw": null
+ }
+]

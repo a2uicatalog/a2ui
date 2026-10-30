@@ -1,0 +1,19 @@
+{
+ "task": "T5",
+ "repeat": 2,
+ "ms": 170,
+ "answers": {
+  "layout": "landing",
+  "count": "3",
+  "cta": "no"
+ },
+ "confidence": {
+  "layout": 1.0,
+  "count": 0.97,
+  "cta": 1.0
+ },
+ "usage": {
+  "input_tokens": 592,
+  "output_tokens": 101
+ }
+}

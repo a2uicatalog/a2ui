@@ -1,0 +1,80 @@
+{
+ "label": "jev-layout-pipeline__run2",
+ "task": "T3",
+ "format": "express",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "hero",
+      "component": "gradient_hero",
+      "title": "Build Faster, Scale Smarter",
+      "subtitle": "The ultimate platform to streamline your workflow and boost team productivity in minutes.",
+      "cta_label": "Start Free Trial",
+      "cta_url": "#start"
+     },
+     {
+      "id": "feats",
+      "component": "feature_grid",
+      "heading": "Everything you need to succeed",
+      "columns": 4,
+      "features": [
+       {
+        "icon": "\u26a1",
+        "title": "Lightning Fast",
+        "description": "Experience blazing-fast performance optimized for modern development teams."
+       },
+       {
+        "icon": "\ud83d\udd12",
+        "title": "Bank-Grade Security",
+        "description": "Keep your sensitive data protected with enterprise-level encryption."
+       },
+       {
+        "icon": "\ud83d\udcc8",
+        "title": "Advanced Analytics",
+        "description": "Gain actionable insights with real-time reporting and custom dashboards."
+       },
+       {
+        "icon": "\ud83d\udcac",
+        "title": "24/7 Support",
+        "description": "Get expert help whenever you need it with our dedicated support team."
+       }
+      ]
+     },
+     {
+      "id": "cta",
+      "component": "cta_button",
+      "url": "#start",
+      "label": "Get Started Today"
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "hero",
+         "feats",
+         "cta"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

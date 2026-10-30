@@ -1,0 +1,145 @@
+{
+ "task": "T5",
+ "condition": "D",
+ "slice_atoms_in_options": 5,
+ "picks": [
+  {
+   "slot": "Three subscription tier cards arranged side by side in a horizontal row, each wi #1",
+   "decomposer_line": "Three subscription tier cards arranged side by side in a horizontal row, each with equal width and visual weight",
+   "atom": "pricing_tier_group",
+   "confidence": 0.97,
+   "top3": [
+    [
+     "pricing_tier_group",
+     0.98
+    ],
+    [
+     "columns",
+     0.02
+    ],
+    [
+     "body",
+     0.0
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "A tier name and price shown prominently at the top of each card #2",
+   "decomposer_line": "A tier name and price shown prominently at the top of each card",
+   "atom": "pricing_tier_group",
+   "confidence": 0.8,
+   "top3": [
+    [
+     "pricing_tier_group",
+     0.84
+    ],
+    [
+     "heading",
+     0.15
+    ],
+    [
+     "columns",
+     0.01
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "A distinct feature list inside each card, with its own items for that tier #3",
+   "decomposer_line": "A distinct feature list inside each card, with its own items for that tier",
+   "atom": "pricing_tier_group",
+   "confidence": 0.79,
+   "top3": [
+    [
+     "pricing_tier_group",
+     0.83
+    ],
+    [
+     "feature_matrix",
+     0.07
+    ],
+    [
+     "columns",
+     0.07
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "A visible highlight or badge on the one recommended tier that sets it apart from #4",
+   "decomposer_line": "A visible highlight or badge on the one recommended tier that sets it apart from the other two",
+   "atom": "pricing_tier_group",
+   "confidence": 1.0,
+   "top3": [
+    [
+     "pricing_tier_group",
+     1.0
+    ],
+    [
+     "body",
+     0.0
+    ],
+    [
+     "heading",
+     0.0
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "A call-to-action button at the bottom of each card to choose that tier #5",
+   "decomposer_line": "A call-to-action button at the bottom of each card to choose that tier",
+   "atom": "pricing_tier_group",
+   "confidence": 0.99,
+   "top3": [
+    [
+     "pricing_tier_group",
+     0.99
+    ],
+    [
+     "columns",
+     0.01
+    ],
+    [
+     "body",
+     0.0
+    ]
+   ],
+   "finalists": null
+  }
+ ],
+ "cost": {
+  "decomposer_input_tokens": 3234,
+  "decomposer_output_tokens": 133,
+  "decomposer_thinking_tokens": 0,
+  "jev_input_tokens": 2166,
+  "jev_output_tokens": 295,
+  "jev_calls": 5
+ },
+ "error": null,
+ "atoms": [
+  "pricing_tier_group",
+  "pricing_tier_group",
+  "pricing_tier_group",
+  "pricing_tier_group",
+  "pricing_tier_group"
+ ],
+ "score": {
+  "per_approach": {
+   "tier_cards": {
+    "precision": 0.2,
+    "recall": 1.0,
+    "f1": 0.333
+   },
+   "comparison_table": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": null
+   }
+  },
+  "best_approach": "tier_cards",
+  "f1": 0.333
+ },
+ "secs": 6.8
+}

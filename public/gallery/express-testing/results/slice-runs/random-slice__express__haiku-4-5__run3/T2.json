@@ -1,0 +1,39 @@
+{
+ "task": "T2",
+ "condition": "F",
+ "label": "random-slice__express__haiku-4-5__run3",
+ "agent_type": "Data display",
+ "catalogue": "F-data-display.json",
+ "atoms_in_catalogue": 248,
+ "prompt_chars": 130958,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 3.8,
+ "usage": {
+  "input_tokens": 37601,
+  "output_tokens": 334
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns",
+  "stat_card",
+  "stat_card",
+  "stat_card",
+  "stat_card",
+  "chartjs_pie"
+ ],
+ "score": {
+  "precision": 0.667,
+  "recall": 0.667,
+  "f1": 0.667,
+  "slot_hits": {
+   "KPI tile (x4)": true,
+   "trend (required only if metric_row was chosen; stat_card's own delta already satisfies it)": true,
+   "comparison chart": false
+  }
+ },
+ "reply": "<a2ui>\nroot = columns(\n  cols=2,\n  gap=\"1.5rem\",\n  items=[\n    {blocks: [\n      stat_card(value=\"$124.5K\", label=\"Revenue\", delta=\"+12%\", is_up=true, accent=\"#10b981\"),\n      stat_card(value=\"8,420\", label=\"Users\", delta=\"+5%\", is_up=true, accent=\"#3b82f6\"),\n    ]},\n    {blocks: [\n      stat_card(value=\"92%\", label=\"Conversion\", delta=\"-2%\", is_up=false, accent=\"#f59e0b\"),\n      stat_card(value=\"4.2s\", label=\"Avg. Load Time\", delta=\"-8%\", is_up=true, accent=\"#10b981\"),\n    ]},\n    {blocks: [\n      chartjs_pie(\n        title=\"Revenue Distribution\",\n        variant=\"donut\",\n        data=[\n          {label: \"Product Sales\", value: 65000},\n          {label: \"Services\", value: 35000},\n          {label: \"Partnerships\", value: 24500}\n        ],\n        colors=[\"#3b82f6\", \"#8b5cf6\", \"#10b981\"],\n        show_legend=true,\n        show_labels=true\n      )\n    ]},\n  ]\n)\n</a2ui>"
+}

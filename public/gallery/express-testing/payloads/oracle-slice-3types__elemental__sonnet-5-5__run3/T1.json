@@ -1,0 +1,165 @@
+{
+ "label": "oracle-slice-3types__elemental__sonnet-5-5__run3",
+ "task": "T1",
+ "format": "elemental",
+ "model_id": "claude-sonnet-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning-elemental.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "page_header",
+      "title": "The Water Cycle",
+      "subtitle": "How water moves between the oceans, the air and the land",
+      "icon": "\ud83d\udca7",
+      "tag": "Earth Science",
+      "accent": "#0284c7"
+     },
+     {
+      "id": "h-intro",
+      "component": "heading",
+      "text": "Concept 1: Evaporation"
+     },
+     {
+      "id": "b-evap",
+      "component": "body",
+      "text": "The sun heats water in oceans, lakes and rivers. Some of the liquid turns into invisible water vapour and rises into the air. Plants add to this through transpiration, releasing vapour from their leaves."
+     },
+     {
+      "id": "tc-evap",
+      "component": "text_callout",
+      "variant": "info",
+      "title": "Key idea",
+      "description": "Evaporation is driven by solar energy. Warmer temperatures mean faster evaporation."
+     },
+     {
+      "id": "h-cond",
+      "component": "heading",
+      "text": "Concept 2: Condensation"
+     },
+     {
+      "id": "b-cond",
+      "component": "body",
+      "text": "As water vapour rises, it meets cooler air and loses energy. It condenses into tiny liquid droplets around dust particles, and these droplets gather to form clouds."
+     },
+     {
+      "id": "tc-cond",
+      "component": "text_callout",
+      "variant": "info",
+      "title": "Key idea",
+      "description": "Condensation is the reverse of evaporation. Vapour cools and becomes liquid."
+     },
+     {
+      "id": "h-precip",
+      "component": "heading",
+      "text": "Concept 3: Precipitation and Collection"
+     },
+     {
+      "id": "b-precip",
+      "component": "body",
+      "text": "When cloud droplets grow heavy enough, they fall as rain, snow, sleet or hail. The water then runs off into rivers, soaks into the ground as groundwater, or returns to the oceans. From there the cycle starts again."
+     },
+     {
+      "id": "co-precip",
+      "component": "callout",
+      "kind": "tip",
+      "title": "Remember",
+      "text": "The water cycle has no start or end. The same water has been recycled for billions of years."
+     },
+     {
+      "id": "h-example",
+      "component": "heading",
+      "text": "Worked Example"
+     },
+     {
+      "id": "cs-lake",
+      "component": "case_study_card",
+      "title": "A Summer Day at a Mountain Lake",
+      "situation": "On a hot July afternoon, a mountain lake loses water to the air. By evening, clouds build over the peaks and a thunderstorm drops rain on the slopes above the lake. Trace the path of one water molecule through the cycle.",
+      "accent": "#0284c7",
+      "model_answer": "1. Evaporation: the molecule absorbs solar energy at the lake surface and becomes vapour. 2. Condensation: it rises, cools at altitude and joins a cloud droplet. 3. Precipitation: the droplet grows and falls as rain on the slope. 4. Collection: runoff carries it down a stream and back into the lake.",
+      "data_points": [
+       {
+        "label": "Surface water temperature",
+        "value": "24 \u00b0C",
+        "note": "Warm enough for strong evaporation"
+       },
+       {
+        "label": "Cloud-top air temperature",
+        "value": "-5 \u00b0C",
+        "note": "Cold enough for vapour to condense"
+       },
+       {
+        "label": "Rainfall",
+        "value": "12 mm",
+        "note": "Returns water to the lake catchment"
+       }
+      ],
+      "questions": [
+       "Which stage turns liquid water into vapour, and what energy source drives it?",
+       "Why do clouds form at higher altitudes?",
+       "Name two routes the rain might take after it lands."
+      ]
+     },
+     {
+      "id": "h-quiz",
+      "component": "heading",
+      "text": "Self-Check Quiz"
+     },
+     {
+      "id": "quiz-water",
+      "component": "quiz_set",
+      "title": "Check Your Understanding",
+      "pass_score": 70,
+      "accent": "#0284c7",
+      "questions": [
+       {
+        "question": "What primarily drives evaporation in the water cycle?",
+        "options": [
+         "Wind",
+         "Energy from the sun",
+         "The moon's gravity",
+         "Ocean currents"
+        ],
+        "correct": 1,
+        "explanation": "Solar energy heats surface water and turns it into vapour."
+       },
+       {
+        "question": "What happens during condensation?",
+        "options": [
+         "Liquid water turns into vapour",
+         "Water falls as rain",
+         "Water vapour cools and turns into liquid droplets",
+         "Water soaks into the ground"
+        ],
+        "correct": 2,
+        "explanation": "Cooling vapour loses energy and forms droplets, which gather into clouds."
+       },
+       {
+        "question": "Which of these is a form of precipitation?",
+        "options": [
+         "Transpiration",
+         "Evaporation",
+         "Hail",
+         "Condensation"
+        ],
+        "correct": 2,
+        "explanation": "Precipitation includes rain, snow, sleet and hail."
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

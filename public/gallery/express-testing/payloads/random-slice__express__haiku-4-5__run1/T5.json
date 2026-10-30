@@ -1,0 +1,87 @@
+{
+ "label": "random-slice__express__haiku-4-5__run1",
+ "task": "T5",
+ "format": "express",
+ "model_id": null,
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/f-marketing-commerce.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "pricing_tier_group",
+      "tiers": [
+       "root_tiers_0",
+       "root_tiers_1",
+       "root_tiers_2"
+      ]
+     },
+     {
+      "id": "root_tiers_0",
+      "component": "pricing_tier_card",
+      "plan_name": "Starter",
+      "price": "29",
+      "currency": "$",
+      "frequency": "per month",
+      "features": [
+       "Up to 10 projects",
+       "5 GB storage",
+       "Email support",
+       "Basic analytics"
+      ],
+      "call_to_action_label": "Get Started",
+      "call_to_action_url": "#",
+      "is_highlighted": false
+     },
+     {
+      "id": "root_tiers_1",
+      "component": "pricing_tier_card",
+      "plan_name": "Professional",
+      "price": "79",
+      "currency": "$",
+      "frequency": "per month",
+      "features": [
+       "Unlimited projects",
+       "500 GB storage",
+       "Priority email & chat support",
+       "Advanced analytics",
+       "Custom integrations",
+       "Team collaboration"
+      ],
+      "call_to_action_label": "Start Free Trial",
+      "call_to_action_url": "#",
+      "is_highlighted": true
+     },
+     {
+      "id": "root_tiers_2",
+      "component": "pricing_tier_card",
+      "plan_name": "Enterprise",
+      "price": "Custom",
+      "currency": "",
+      "frequency": "contact sales",
+      "features": [
+       "Everything in Professional",
+       "Unlimited storage",
+       "24/7 phone & dedicated support",
+       "Custom workflows",
+       "SSO & advanced security",
+       "SLA guarantee"
+      ],
+      "call_to_action_label": "Contact Sales",
+      "call_to_action_url": "#",
+      "is_highlighted": false
+     }
+    ]
+   }
+  }
+ ]
+}

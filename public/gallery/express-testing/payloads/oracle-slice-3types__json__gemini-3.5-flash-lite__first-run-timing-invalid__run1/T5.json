@@ -1,0 +1,87 @@
+{
+ "label": "oracle-slice-3types__json__gemini-3.5-flash-lite__first-run-timing-invalid__run1",
+ "task": "T5",
+ "format": "json",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "pricing-surface",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "pricing-surface",
+    "components": [
+     {
+      "id": "root",
+      "component": "gradient_hero",
+      "title": "Flexible Pricing Plans",
+      "subtitle": "Choose the right plan for your team. Scale up or down as needed.",
+      "badge": "Pricing",
+      "align": "center",
+      "cta_label": "Start Free Trial",
+      "cta_url": "#signup"
+     },
+     {
+      "id": "pricing-tiers",
+      "component": "pricing_tier_group",
+      "tiers": [
+       {
+        "name": "Starter",
+        "price": "$15",
+        "cadence": "month",
+        "description": "Essential features for individuals and small projects.",
+        "features": [
+         "Up to 5 team members",
+         "Basic analytics",
+         "24/7 community support",
+         "1GB cloud storage"
+        ],
+        "cta_label": "Get Started",
+        "cta_url": "#starter",
+        "recommended": false
+       },
+       {
+        "name": "Pro",
+        "price": "$49",
+        "cadence": "month",
+        "description": "Advanced tools and performance for growing teams.",
+        "features": [
+         "Up to 20 team members",
+         "Advanced analytics & reporting",
+         "Priority email support",
+         "50GB cloud storage",
+         "Custom integrations"
+        ],
+        "cta_label": "Start Free Trial",
+        "cta_url": "#pro",
+        "recommended": true
+       },
+       {
+        "name": "Enterprise",
+        "price": "$199",
+        "cadence": "month",
+        "description": "Maximum security, support, and scale for large organizations.",
+        "features": [
+         "Unlimited team members",
+         "Enterprise analytics",
+         "Dedicated 24/7 phone support",
+         "Unlimited cloud storage",
+         "Custom security controls",
+         "Dedicated account manager"
+        ],
+        "cta_label": "Contact Sales",
+        "cta_url": "#enterprise",
+        "recommended": false
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,183 @@
+{
+ "task": "T6",
+ "condition": "B",
+ "chooser": "clef-flash",
+ "slice_atoms_in_options": 179,
+ "picks": [
+  {
+   "slot": "A card showing a single vocabulary word on its front face, large and centered, t #1",
+   "decomposer_line": "A card showing a single vocabulary word on its front face, large and centered, that the learner sees first.",
+   "atom": "spaced_repetition_card",
+   "confidence": 0.0936,
+   "top3": [
+    [
+     "spaced_repetition_card",
+     0.2747
+    ],
+    [
+     "flip_card",
+     0.0997
+    ],
+    [
+     "big_reveal",
+     0.0698
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "The reverse side of each card revealing the word's definition or translation, ap #2",
+   "decomposer_line": "The reverse side of each card revealing the word's definition or translation, appearing when the card is flipped.",
+   "atom": "flip_card",
+   "confidence": 0.4254,
+   "top3": [
+    [
+     "flip_card",
+     0.624
+    ],
+    [
+     "flashcard_deck",
+     0.1918
+    ],
+    [
+     "spaced_repetition_card",
+     0.0486
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "A flip action that turns the card over to reveal its other side, triggered by ta #3",
+   "decomposer_line": "A flip action that turns the card over to reveal its other side, triggered by tapping or clicking the card.",
+   "atom": "flip_card",
+   "confidence": 0.5125,
+   "top3": [
+    [
+     "flip_card",
+     0.7036
+    ],
+    [
+     "flashcard_deck",
+     0.1338
+    ],
+    [
+     "spaced_repetition_card",
+     0.0468
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "Controls to move to the next or previous card in the set of ten. #4",
+   "decomposer_line": "Controls to move to the next or previous card in the set of ten.",
+   "atom": "flashcard_deck",
+   "confidence": 0.0943,
+   "top3": [
+    [
+     "flashcard_deck",
+     0.2903
+    ],
+    [
+     "card_stack",
+     0.0934
+    ],
+    [
+     "spaced_repetition_card",
+     0.0546
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "A progress display showing how many of the ten cards have been reviewed out of t #5",
+   "decomposer_line": "A progress display showing how many of the ten cards have been reviewed out of the total.",
+   "atom": "course_progress_card",
+   "confidence": 0.1327,
+   "top3": [
+    [
+     "course_progress_card",
+     0.3461
+    ],
+    [
+     "module_map",
+     0.0973
+    ],
+    [
+     "flashcard_deck",
+     0.0386
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "A visual bar or indicator that fills as more cards are reviewed, giving an at-a- #6",
+   "decomposer_line": "A visual bar or indicator that fills as more cards are reviewed, giving an at-a-glance sense of progress.",
+   "atom": "course_progress_card",
+   "confidence": 0.1722,
+   "top3": [
+    [
+     "course_progress_card",
+     0.4089
+    ],
+    [
+     "module_map",
+     0.0617
+    ],
+    [
+     "stance",
+     0.0478
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "A way to mark or track which cards have been reviewed so the count stays accurat #7",
+   "decomposer_line": "A way to mark or track which cards have been reviewed so the count stays accurate as the learner moves around the set.",
+   "atom": "spaced_repetition_card",
+   "confidence": 0.1867,
+   "top3": [
+    [
+     "spaced_repetition_card",
+     0.4283
+    ],
+    [
+     "flashcard_deck",
+     0.0548
+    ],
+    [
+     "flip_card",
+     0.0278
+    ]
+   ],
+   "finalists": null
+  }
+ ],
+ "cost": {
+  "decomposer_input_tokens": 0,
+  "decomposer_output_tokens": 0,
+  "decomposer_thinking_tokens": 0,
+  "jev_input_tokens": 55235,
+  "jev_output_tokens": 0,
+  "jev_calls": 7
+ },
+ "error": null,
+ "atoms": [
+  "spaced_repetition_card",
+  "flip_card",
+  "flip_card",
+  "flashcard_deck",
+  "course_progress_card",
+  "course_progress_card",
+  "spaced_repetition_card"
+ ],
+ "score": {
+  "precision": 0.714,
+  "recall": 0.5,
+  "f1": 0.588,
+  "slot_hits": {
+   "flashcard deck": true,
+   "progress indicator": false
+  }
+ },
+ "secs": 14.5
+}

@@ -1,0 +1,41 @@
+{
+ "task": "T4",
+ "condition": "JBTH2",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "label": "jev-picks-on-rule-slice__express__haiku-4-5__temp0__hints-v2__run3",
+ "agent_type": "jev-narrowed",
+ "catalogue": "JB-T4.json",
+ "atoms_in_catalogue": 20,
+ "prompt_chars": 10018,
+ "slot_recall": [
+  2,
+  3
+ ],
+ "secs": 5.8,
+ "usage": {
+  "input_tokens": 3068,
+  "output_tokens": 702
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "tab_group",
+  "entity_list",
+  "entity_list",
+  "entity_list",
+  "entity_list",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.667,
+  "recall": 0.333,
+  "f1": 0.444,
+  "slot_hits": {
+   "list": true,
+   "status indicator": false,
+   "filter control": false
+  }
+ },
+ "reply": "<a2ui>\nstatusFilter = tab_group(\n  target=\"selectedStatus\",\n  options=[\n    {value: \"all\", label: \"All\", selected: true},\n    {value: \"active\", label: \"Active\"},\n    {value: \"completed\", label: \"Completed\"},\n    {value: \"pending\", label: \"Pending\"}\n  ],\n  panels={\n    all: \"items-all\",\n    active: \"items-active\",\n    completed: \"items-completed\",\n    pending: \"items-pending\"\n  }\n)\n\nitemsAll = entity_list(\n  items=[\n    {name: \"Item One\", subtitle: \"Setup initial configuration\", status: \"active\", icon: \"circle\"},\n    {name: \"Item Two\", subtitle: \"Review documentation\", status: \"completed\", icon: \"check\"},\n    {name: \"Item Three\", subtitle: \"Deploy to staging\", status: \"pending\", icon: \"clock\"},\n    {name: \"Item Four\", subtitle: \"Run integration tests\", status: \"active\", icon: \"circle\"},\n    {name: \"Item Five\", subtitle: \"Prepare release notes\", status: \"completed\", icon: \"check\"},\n    {name: \"Item Six\", subtitle: \"Schedule team meeting\", status: \"pending\", icon: \"clock\"},\n    {name: \"Item Seven\", subtitle: \"Update API documentation\", status: \"active\", icon: \"circle\"},\n    {name: \"Item Eight\", subtitle: \"Archive old records\", status: \"completed\", icon: \"check\"}\n  ]\n)\n\nitemsActive = entity_list(\n  items=[\n    {name: \"Item One\", subtitle: \"Setup initial configuration\", status: \"active\", icon: \"circle\"},\n    {name: \"Item Four\", subtitle: \"Run integration tests\", status: \"active\", icon: \"circle\"},\n    {name: \"Item Seven\", subtitle: \"Update API documentation\", status: \"active\", icon: \"circle\"}\n  ]\n)\n\nitemsCompleted = entity_list(\n  items=[\n    {name: \"Item Two\", subtitle: \"Review documentation\", status: \"completed\", icon: \"check\"},\n    {name: \"Item Five\", subtitle: \"Prepare release notes\", status: \"completed\", icon: \"check\"},\n    {name: \"Item Eight\", subtitle: \"Archive old records\", status: \"completed\", icon: \"check\"}\n  ]\n)\n\nitemsPending = entity_list(\n  items=[\n    {name: \"Item Three\", subtitle: \"Deploy to staging\", status: \"pending\", icon: \"clock\"},\n    {name: \"Item Six\", subtitle: \"Schedule team meeting\", status: \"pending\", icon: \"clock\"}\n  ]\n)\n\nroot = columns(\n  cols=1,\n  items=[\n    {blocks: [statusFilter]},\n    {blocks: [itemsAll]},\n    {blocks: [itemsActive]},\n    {blocks: [itemsCompleted]},\n    {blocks: [itemsPending]}\n  ]\n)\n</a2ui>"
+}

@@ -1,0 +1,68 @@
+{
+ "label": "jev-layout-pipeline__run2",
+ "task": "T5",
+ "format": "express",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "hero",
+      "component": "gradient_hero",
+      "title": "Choose Your Plan",
+      "subtitle": "Select the perfect tier for your workflow with flexible pricing options.",
+      "cta_label": "Get Started",
+      "cta_url": "#start"
+     },
+     {
+      "id": "feats",
+      "component": "feature_grid",
+      "heading": "Compare Tiers",
+      "columns": 3,
+      "features": [
+       {
+        "icon": "\ud83c\udf31",
+        "title": "Starter",
+        "description": "Essential tools for individuals and hobbyists starting out."
+       },
+       {
+        "icon": "\u2b50",
+        "title": "Professional",
+        "description": "Advanced features and priority support for growing teams."
+       },
+       {
+        "icon": "\ud83d\ude80",
+        "title": "Enterprise",
+        "description": "Maximum power, custom security, and dedicated infrastructure."
+       }
+      ]
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "hero",
+         "feats"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

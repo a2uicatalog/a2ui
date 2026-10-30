@@ -1,0 +1,97 @@
+{
+ "label": "oracle-slice-3types__elemental__sonnet-5-5__run1",
+ "task": "T6",
+ "format": "elemental",
+ "model_id": "claude-sonnet-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning-elemental.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "page_header",
+      "title": "Vocabulary Flashcards",
+      "subtitle": "Click a card to flip it and reveal the definition.",
+      "icon": "\ud83d\udcda",
+      "tag": "10 words",
+      "accent": "#4f46e5"
+     },
+     {
+      "id": "review_progress",
+      "component": "progress_bar",
+      "label": "Cards reviewed",
+      "value": 0,
+      "accent": "#4f46e5",
+      "show_percent": "true",
+      "caption": "0 of 10 reviewed"
+     },
+     {
+      "id": "vocab_deck",
+      "component": "flashcard_deck",
+      "accent": "#4f46e5",
+      "label_front": "WORD",
+      "label_back": "DEFINITION",
+      "cards": [
+       {
+        "front": "Ephemeral",
+        "back": "Lasting for a very short time."
+       },
+       {
+        "front": "Ubiquitous",
+        "back": "Present, appearing, or found everywhere."
+       },
+       {
+        "front": "Pragmatic",
+        "back": "Dealing with things sensibly and realistically, based on practical rather than theoretical considerations."
+       },
+       {
+        "front": "Eloquent",
+        "back": "Fluent or persuasive in speaking or writing."
+       },
+       {
+        "front": "Meticulous",
+        "back": "Showing great attention to detail; very careful and precise."
+       },
+       {
+        "front": "Resilient",
+        "back": "Able to recover quickly from difficulties; able to withstand stress."
+       },
+       {
+        "front": "Ambiguous",
+        "back": "Open to more than one interpretation; unclear."
+       },
+       {
+        "front": "Benevolent",
+        "back": "Well-meaning and kindly."
+       },
+       {
+        "front": "Candid",
+        "back": "Truthful and straightforward; frank."
+       },
+       {
+        "front": "Diligent",
+        "back": "Having or showing care and effort in one's work or duties."
+       }
+      ]
+     },
+     {
+      "id": "tip",
+      "component": "text_callout",
+      "variant": "info",
+      "title": "Tip",
+      "description": "Try to recall the definition before flipping each card. Review all ten to reach 100%."
+     }
+    ]
+   }
+  }
+ ]
+}

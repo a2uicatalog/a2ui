@@ -1,0 +1,45 @@
+{
+ "task": "T3",
+ "condition": "C_gemini-3.8-flash",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 32768,
+ "model_id": "gemini-3.8-flash",
+ "hints": false,
+ "label": "oracle-slice-3types__express__gemini-3.8-flash__thinking-off__run2",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "C-marketing-commerce.json",
+ "atoms_in_catalogue": 23,
+ "prompt_chars": 12467,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 6.6,
+ "usage": {
+  "input_tokens": 3412,
+  "output_tokens": 550
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "gradient_hero",
+  "feature_grid",
+  "testimonial_card",
+  "cta_section",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.8,
+  "recall": 1.0,
+  "f1": 0.889,
+  "slot_hits": {
+   "hero": true,
+   "feature columns (x3)": true,
+   "testimonial": true,
+   "CTA": true
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"landing_page\")\n\nhero_sec = gradient_hero(\n  title=\"Transform Your Workflow with Pulse\",\n  subtitle=\"The all-in-one platform built to streamline team collaboration, automate tasks, and supercharge productivity.\",\n  badge=\"Introducing Pulse 2.0\",\n  cta_label=\"Get Started Free\",\n  cta_url=\"#cta\",\n  align=\"center\"\n)\n\nfeatures_sec = feature_grid(\n  heading=\"Built for Modern Teams\",\n  description=\"Everything you need to deliver high-quality work faster, without the busywork.\",\n  columns=3,\n  features=[\n    {icon: \"\u26a1\", title: \"Real-Time Sync\", description: \"Collaborate instantly with zero latency across your entire distributed team.\"},\n    {icon: \"\ud83d\udee1\ufe0f\", title: \"Enterprise Security\", description: \"Bank-grade encryption, SOC 2 Type II compliance, and robust data controls.\"},\n    {icon: \"\ud83d\udcc8\", title: \"Smart Analytics\", description: \"Gain actionable visibility into project velocity and team output with automated reports.\"}\n  ]\n)\n\ntestimonial_sec = testimonial_card(\n  text=\"Pulse completely transformed how our engineering and design teams collaborate. We cut our sprint cycle times by nearly 40% within the first month.\",\n  author_name=\"Sarah Jenkins\",\n  author_title=\"VP of Product at Horizon Labs\",\n  author_avatar_url=\"https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80\",\n  rating=5\n)\n\ncta_sec = cta_section(\n  heading=\"Ready to elevate your team's output?\",\n  body=\"Join over 10,000 teams who build better and ship faster with Pulse. Start your 14-day free trial today.\",\n  primary_cta={label: \"Start Free Trial\", url: \"/signup\"},\n  secondary_cta={label: \"Book a Demo\", url: \"/demo\"}\n)\n\nroot = columns(\n  cols=1,\n  gap=\"3rem\",\n  align=\"stretch\",\n  items=[\n    {blocks: [hero_sec]},\n    {blocks: [features_sec]},\n    {blocks: [testimonial_sec]},\n    {blocks: [cta_sec]}\n  ]\n)\n</a2ui>"
+}

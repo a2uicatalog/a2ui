@@ -1,0 +1,45 @@
+{
+ "task": "T3",
+ "condition": "C_haiku-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "oracle-slice-3types__express__haiku-5-5__run2",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "C-marketing-commerce.json",
+ "atoms_in_catalogue": 23,
+ "prompt_chars": 12467,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 10.7,
+ "usage": {
+  "input_tokens": 4493,
+  "output_tokens": 1997
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "gradient_hero",
+  "feature_grid",
+  "testimonial_card",
+  "cta_button",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.8,
+  "recall": 1.0,
+  "f1": 0.889,
+  "slot_hits": {
+   "hero": true,
+   "feature columns (x3)": true,
+   "testimonial": true,
+   "CTA": true
+  }
+ },
+ "reply": "<a2ui>\nhero = gradient_hero(\"Ship faster with Launchpad\", \"The all-in-one platform that helps your team plan, build, and launch products without the busywork.\", \"New\", _, _, _, \"center\", \"Get started free\", \"https://example.com/signup\")\n\nfeatures = feature_grid(\"Why teams choose us\", \"Everything you need to go from idea to launch.\", 3, [{icon: \"\u26a1\", title: \"Lightning fast\", description: \"Deploy in seconds with zero-config pipelines.\"}, {icon: \"\ud83d\udd12\", title: \"Secure by default\", description: \"Built-in encryption, SSO, and audit logs.\"}, {icon: \"\ud83d\udcc8\", title: \"Scales with you\", description: \"From first user to millions without re-architecting.\"}])\n\ntestimonial = testimonial_card(\"Launchpad cut our release cycle in half. The team finally spends time building instead of configuring.\", \"Jane Doe\", \"CTO, Acme Corp\", \"https://example.com/avatars/jane-doe.jpg\", 5)\n\ncta = cta_button(\"https://example.com/signup\", \"Start your free trial\", \"#4f46e5\", false)\n\nroot = columns(1, \"2rem\", \"stretch\", [{blocks: [hero, features, testimonial, cta]}])\n</a2ui>\n\nThe landing page uses a `gradient_hero` for the headline and subhead, a three-column `feature_grid`, a `testimonial_card`, and a `cta_button`. The catalog has no generic section container, so I wrapped the sections in a single-column `columns` layout. The avatar URL is a placeholder, so swap in a real image and update the links to your own signup page."
+}

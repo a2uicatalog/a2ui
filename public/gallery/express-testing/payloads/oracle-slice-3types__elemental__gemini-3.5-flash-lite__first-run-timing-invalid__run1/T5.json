@@ -1,0 +1,90 @@
+{
+ "label": "oracle-slice-3types__elemental__gemini-3.5-flash-lite__first-run-timing-invalid__run1",
+ "task": "T5",
+ "format": "elemental",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce-elemental.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "heading",
+      "text": "Choose Your Plan"
+     },
+     {
+      "id": "tier-group",
+      "component": "pricing_tier_group",
+      "tiers": {
+       "path": "/pricing/tiers"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_data_model": {
+    "surface_id": "main",
+    "path": "/",
+    "value": {
+     "pricing": {
+      "tiers": [
+       {
+        "name": "Starter",
+        "price": "$9",
+        "period": "/month",
+        "description": "Essential features for individuals and small projects.",
+        "cta_label": "Get Started",
+        "cta_url": "/starter",
+        "features": [
+         "1 User",
+         "5GB Storage",
+         "Community Support"
+        ]
+       },
+       {
+        "name": "Pro",
+        "price": "$29",
+        "period": "/month",
+        "description": "Advanced features for professionals and growing teams.",
+        "cta_label": "Go Pro",
+        "cta_url": "/pro",
+        "recommended": true,
+        "features": [
+         "Unlimited Users",
+         "100GB Storage",
+         "Priority Support",
+         "Advanced Analytics"
+        ]
+       },
+       {
+        "name": "Enterprise",
+        "price": "$99",
+        "period": "/month",
+        "description": "Maximum power and security for large-scale operations.",
+        "cta_label": "Contact Sales",
+        "cta_url": "/enterprise",
+        "features": [
+         "Dedicated Infrastructure",
+         "Unlimited Storage",
+         "24/7 Phone Support",
+         "Custom Integrations"
+        ]
+       }
+      ]
+     }
+    }
+   }
+  }
+ ]
+}

@@ -1,0 +1,48 @@
+{
+ "task": "T3",
+ "condition": "B_haiku-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "rule-slice__express__haiku-5-5__run3",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "B-marketing-commerce.json",
+ "atoms_in_catalogue": 189,
+ "prompt_chars": 80817,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 9.9,
+ "usage": {
+  "input_tokens": 29190,
+  "output_tokens": 2026
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "gradient_hero",
+  "info_card",
+  "info_card",
+  "info_card",
+  "columns",
+  "blockquote_with_avatar",
+  "cta_section",
+  "color_section"
+ ],
+ "score": {
+  "precision": 0.375,
+  "recall": 0.75,
+  "f1": 0.5,
+  "slot_hits": {
+   "hero": true,
+   "feature columns (x3)": false,
+   "testimonial": true,
+   "CTA": true
+  }
+ },
+ "reply": "<a2ui>\nhero = gradient_hero(\"Ship faster with Lumen\", \"The all-in-one workspace that keeps your team, tools, and releases in sync.\", \"NEW IN 2026\", \"#4f46e5\", \"#8b5cf6\", _, \"center\", \"Start free trial\", \"https://example.com/signup\")\n\nfeat1 = info_card(\"Instant setup\", \"Connect your existing tools in minutes, with no migration project required.\")\nfeat2 = info_card(\"Real-time sync\", \"Every change reaches your whole team the moment it is saved.\")\nfeat3 = info_card(\"Enterprise security\", \"SSO, audit logs, and granular roles are included on every plan.\")\n\nfeatures = columns(3, \"1.5rem\", \"top\", [{blocks: [feat1]}, {blocks: [feat2]}, {blocks: [feat3]}])\n\ntestimonial = blockquote_with_avatar(\"Lumen cut our release cycle in half. We stopped losing hours to status meetings.\", \"Priya Raman\", \"VP of Engineering, Northwind\", \"https://example.com/avatars/priya.jpg\")\n\ncta = cta_section(\"Ready to ship with confidence?\", \"Start your 14-day free trial today. No credit card required.\", {label: \"Get started free\", url: \"https://example.com/signup\"}, _, \"#0f172a\")\n\nroot = color_section(\"#ffffff\", \"light\", \"0px\", false, _, [hero, features, testimonial, cta])\n</a2ui>"
+}

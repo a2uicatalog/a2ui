@@ -1,0 +1,116 @@
+{
+ "label": "oracle-slice-3types__elemental__haiku-5-5__run3",
+ "task": "T1",
+ "format": "elemental",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "root",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning-elemental.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "root",
+    "components": [
+     {
+      "id": "header",
+      "component": "page_header",
+      "title": "The Water Cycle",
+      "subtitle": "How water moves continuously between Earth's surface and atmosphere",
+      "icon": "\ud83d\udca7",
+      "tag": "Earth Science",
+      "accent": "#0ea5e9",
+      "theme": "light"
+     },
+     {
+      "id": "depth-1",
+      "component": "concept_rung",
+      "badge": "1",
+      "kind": "depth",
+      "title": "Evaporation",
+      "Body": "Heat from the Sun warms water in oceans, lakes, and rivers. The water changes from liquid to water vapour and rises into the air.",
+      "takeaway": "Sunlight turns liquid water into invisible vapour."
+     },
+     {
+      "id": "depth-2",
+      "component": "concept_rung",
+      "badge": "2",
+      "kind": "depth",
+      "title": "Condensation",
+      "Body": "As water vapour rises, it cools and gathers around tiny particles such as dust. This forms the droplets that make up clouds.",
+      "takeaway": "Cooling vapour gathers into clouds."
+     },
+     {
+      "id": "depth-3",
+      "component": "concept_rung",
+      "badge": "3",
+      "kind": "depth",
+      "title": "Precipitation",
+      "Body": "When cloud droplets grow heavy enough, they fall as rain, snow, sleet, or hail. Some of this water soaks into the ground and some runs back into rivers and oceans.",
+      "takeaway": "Heavy droplets fall back to Earth as precipitation."
+     },
+     {
+      "id": "example-1",
+      "component": "concept_rung",
+      "kind": "example",
+      "title": "Worked Example: Tracing a Raindrop",
+      "Body": "A drop of water evaporates from a lake on a warm morning. It rises, cools high in the sky, and condenses onto a dust particle to form part of a cumulus cloud. Later, the droplet merges with others and falls as rain onto a hillside. It soaks into the soil, flows into a stream, and eventually returns to the lake, where the cycle begins again.",
+      "code_caption": "Stages in order: evaporation, condensation, precipitation, collection.",
+      "takeaway": "The same water can cycle through every stage repeatedly."
+     },
+     {
+      "id": "check-heading",
+      "component": "heading",
+      "text": "Self-Check"
+     },
+     {
+      "id": "self-check",
+      "component": "quiz_set",
+      "title": "Water Cycle Self-Check",
+      "pass_score": 70,
+      "accent": "#0ea5e9",
+      "questions": [
+       {
+        "question": "What process turns liquid water into water vapour?",
+        "options": [
+         "Condensation",
+         "Precipitation",
+         "Evaporation",
+         "Collection"
+        ],
+        "correct": 2,
+        "explanation": "Evaporation happens when heat from the Sun turns liquid water into vapour."
+       },
+       {
+        "question": "What forms when water vapour cools and gathers around dust particles?",
+        "options": [
+         "Clouds",
+         "Rain",
+         "Groundwater",
+         "Glaciers"
+        ],
+        "correct": 0,
+        "explanation": "Condensation forms the droplets that make up clouds."
+       },
+       {
+        "question": "Which of these is a form of precipitation?",
+        "options": [
+         "Snow",
+         "Evaporation",
+         "Condensation",
+         "Transpiration"
+        ],
+        "correct": 0,
+        "explanation": "Snow, rain, sleet, and hail are all forms of precipitation."
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

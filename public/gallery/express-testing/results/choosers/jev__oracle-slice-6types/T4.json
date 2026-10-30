@@ -1,0 +1,183 @@
+{
+ "task": "T4",
+ "condition": "D",
+ "slice_atoms_in_options": 20,
+ "picks": [
+  {
+   "slot": "A vertical sequence of eight rows, one per item, in the order given #1",
+   "decomposer_line": "A vertical sequence of eight rows, one per item, in the order given",
+   "atom": "entity_list",
+   "confidence": 0.43,
+   "top3": [
+    [
+     "entity_list",
+     0.46
+    ],
+    [
+     "bullet_list",
+     0.42
+    ],
+    [
+     "icon_list",
+     0.11
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "Each row's title, shown as the most prominent text in that row #2",
+   "decomposer_line": "Each row's title, shown as the most prominent text in that row",
+   "atom": "entity_list",
+   "confidence": 0.86,
+   "top3": [
+    [
+     "entity_list",
+     0.87
+    ],
+    [
+     "heading",
+     0.06
+    ],
+    [
+     "table",
+     0.03
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "A visual status marker on each row that shows the item's current status #3",
+   "decomposer_line": "A visual status marker on each row that shows the item's current status",
+   "atom": "status_pill",
+   "confidence": 0.73,
+   "top3": [
+    [
+     "status_pill",
+     0.74
+    ],
+    [
+     "lozenge",
+     0.09
+    ],
+    [
+     "entity_list",
+     0.08
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "Each row's one-line detail, shown as secondary text beneath or beside the title #4",
+   "decomposer_line": "Each row's one-line detail, shown as secondary text beneath or beside the title",
+   "atom": "entity_list",
+   "confidence": 0.96,
+   "top3": [
+    [
+     "entity_list",
+     0.96
+    ],
+    [
+     "body",
+     0.04
+    ],
+    [
+     "heading",
+     0.0
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "A set of filter controls, one per status, that narrows the rows to items with th #5",
+   "decomposer_line": "A set of filter controls, one per status, that narrows the rows to items with the chosen status",
+   "atom": "chip_group",
+   "confidence": 0.72,
+   "top3": [
+    [
+     "chip_group",
+     0.73
+    ],
+    [
+     "segmented_control",
+     0.25
+    ],
+    [
+     "badge_group",
+     0.01
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "A visible indication of which status filter is active, plus a count of items cur #6",
+   "decomposer_line": "A visible indication of which status filter is active, plus a count of items currently shown",
+   "atom": "chip_group",
+   "confidence": 0.72,
+   "top3": [
+    [
+     "chip_group",
+     0.73
+    ],
+    [
+     "segmented_control",
+     0.13
+    ],
+    [
+     "badge",
+     0.04
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "A message shown when the active filter matches no items #7",
+   "decomposer_line": "A message shown when the active filter matches no items",
+   "atom": "body",
+   "confidence": 0.86,
+   "top3": [
+    [
+     "body",
+     0.87
+    ],
+    [
+     "status_pill",
+     0.08
+    ],
+    [
+     "lozenge",
+     0.02
+    ]
+   ],
+   "finalists": null
+  }
+ ],
+ "cost": {
+  "decomposer_input_tokens": 3235,
+  "decomposer_output_tokens": 362,
+  "decomposer_thinking_tokens": 0,
+  "jev_input_tokens": 6393,
+  "jev_output_tokens": 1274,
+  "jev_calls": 7
+ },
+ "error": null,
+ "atoms": [
+  "entity_list",
+  "entity_list",
+  "status_pill",
+  "entity_list",
+  "chip_group",
+  "chip_group",
+  "body"
+ ],
+ "score": {
+  "precision": 0.857,
+  "recall": 1.0,
+  "f1": 0.923,
+  "slot_hits": {
+   "list": true,
+   "status indicator": true,
+   "filter control": true
+  }
+ },
+ "secs": 6.5
+}

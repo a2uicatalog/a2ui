@@ -1,0 +1,29 @@
+{
+ "task": "T4",
+ "repeat": 1,
+ "writer_model": "gemini-3.5-flash-lite",
+ "decisions": "jev",
+ "jev_ms": 165,
+ "jev_usage": {
+  "input_tokens": 599,
+  "output_tokens": 101
+ },
+ "jev_answers": {
+  "layout": "dashboard",
+  "count": "4",
+  "cta": "no"
+ },
+ "layout": "dashboard",
+ "count": 4,
+ "cta": false,
+ "writer_secs": 4.28,
+ "writer_tokens": {
+  "in": 250,
+  "out": 202
+ },
+ "build_ms": 0.2,
+ "valid": true,
+ "error": null,
+ "compile_ms": 15.67,
+ "express": "<a2ui>\nttl = heading(text=\"System Diagnostics\")\nkpis = metric_row(cols=4, metrics=[{value:\"99.9%\", label:\"Uptime\", sub:\"+0.1% vs last period\", trend:\"up\"}, {value:\"24ms\", label:\"Latency\", sub:\"-4ms vs last period\", trend:\"down\"}, {value:\"1,042\", label:\"Active Nodes\", sub:\"+12 vs last period\", trend:\"up\"}, {value:\"0.02%\", label:\"Error Rate\", sub:\"-0.01% vs last period\", trend:\"down\"}])\nchart = chartjs_bar(labels=[\"Mon\", \"Tue\", \"Wed\", \"Thu\"], datasets=[{label:\"Active Requests\", data:[12500, 14200, 13800, 15600]}])\nroot = columns(cols=1, gap=\"1.5rem\", align=\"top\", items=[{blocks: [ttl, kpis, chart]}])\n</a2ui>"
+}

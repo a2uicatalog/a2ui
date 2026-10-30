@@ -1,0 +1,46 @@
+{
+ "task": "T3",
+ "condition": "C_gemini-3.5-f",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash-lite",
+ "hints": false,
+ "label": "oracle-slice-3types__express__gemini-3.5-flash-lite__first-run-timing-invalid__run3",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "C-marketing-commerce.json",
+ "atoms_in_catalogue": 23,
+ "prompt_chars": 12467,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 24.9,
+ "usage": {
+  "input_tokens": 3413,
+  "output_tokens": 679
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "gradient_hero",
+  "heading",
+  "feature_grid",
+  "testimonial_card",
+  "cta_section",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.667,
+  "recall": 1.0,
+  "f1": 0.8,
+  "slot_hits": {
+   "hero": true,
+   "feature columns (x3)": true,
+   "testimonial": true,
+   "CTA": true
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"product-landing-page\")\n\nhero = gradient_hero(\n    \"Supercharge Your Workflow\",\n    \"Discover the next-generation productivity platform designed to help teams achieve more, faster and with less friction.\",\n    \"New Release v2.0\",\n    \"#3b82f6\",\n    \"#1d4ed8\",\n    \"linear-gradient(135deg, #eff6ff, #dbeafe)\",\n    \"center\",\n    \"Get Started Free\",\n    \"https://example.com/signup\"\n)\n\nsec_heading = heading(\"Why Choose Our Platform\")\n\nfeaturesCol1 = [\n    r\"\u26a1\",\n    \"Lightning Fast\",\n    \"Optimized performance ensures your tasks load instantly, keeping your team in the flow state.\",\n    \"Boost\",\n    \"#3b82f6\"\n]\n\nfeaturesCol2 = [\n    r\"\ud83d\udd12\",\n    \"Enterprise Security\",\n    \"State-of-the-art encryption and compliance tools protect your sensitive data at every layer.\",\n    \"Secure\",\n    \"#10b981\"\n]\n\nfeaturesCol3 = [\n    r\"\ud83d\udcc8\",\n    \"Advanced Analytics\",\n    \"Gain actionable insights with real-time dashboards and comprehensive reporting tools.\",\n    \"Insights\",\n    \"#8b5cf6\"\n]\n\nfeatures = feature_grid(\n    \"Core Capabilities\",\n    \"Everything you need to scale your operations smoothly.\",\n    3,\n    [\n        {icon: \"\u26a1\", title: \"Lightning Fast\", description: \"Optimized performance ensures your tasks load instantly, keeping your team in the flow state.\"},\n        {icon: \"\ud83d\udd12\", title: \"Enterprise Security\", description: \"State-of-the-art encryption and compliance tools protect your sensitive data at every layer.\"},\n        {icon: \"\ud83d\udcc8\", title: \"Advanced Analytics\", description: \"Gain actionable insights with real-time dashboards and comprehensive reporting tools.\"}\n    ]\n)\n\ntestimonial = testimonial_card(\n    \"This platform has completely transformed how our engineering and product teams collaborate. We've cut our release cycles in half!\",\n    \"Sarah Jenkins\",\n    \"VP of Engineering at TechCorp\",\n    \"https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150\",\n    5\n)\n\ncta = cta_section(\n    \"Ready to dive in?\",\n    \"Start your 14-day free trial today. No credit card required.\",\n    {label: \"Start Free Trial\", url: \"https://example.com/signup\"},\n    {label: \"Contact Sales\", url: \"https://example.com/sales\"}\n)\n\nroot = columns(\n    1,\n    \"2rem\",\n    \"stretch\",\n    [\n        {blocks: [hero, features, testimonial, cta]}\n    ]\n)\n</a2ui>"
+}

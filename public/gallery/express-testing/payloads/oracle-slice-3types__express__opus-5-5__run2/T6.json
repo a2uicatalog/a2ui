@@ -1,0 +1,118 @@
+{
+ "label": "oracle-slice-3types__express__opus-5-5__run2",
+ "task": "T6",
+ "format": "express",
+ "model_id": "claude-opus-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "vocab-flashcards",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "vocab-flashcards",
+    "components": [
+     {
+      "id": "header",
+      "component": "page_header",
+      "title": "Vocabulary Review",
+      "subtitle": "Flip each card to reveal the definition, then move on to the next word.",
+      "icon": "\ud83d\udcda",
+      "tag": "10 words",
+      "accent": "#4f46e5"
+     },
+     {
+      "id": "progress",
+      "component": "progress_bar",
+      "value": 30,
+      "label": "Cards reviewed",
+      "accent": "#4f46e5",
+      "show_percent": true,
+      "caption": "3 of 10 cards reviewed"
+     },
+     {
+      "id": "tip",
+      "component": "text_callout",
+      "variant": "info",
+      "title": "Tip",
+      "description": "Try to recall the meaning before flipping. Saying the word out loud can help it stick."
+     },
+     {
+      "id": "deck",
+      "component": "flashcard_deck",
+      "cards": [
+       {
+        "front": "Ephemeral",
+        "back": "Lasting for a very short time. e.g. \"The beauty of the sunset was ephemeral.\""
+       },
+       {
+        "front": "Ubiquitous",
+        "back": "Present, appearing, or found everywhere. e.g. \"Smartphones are now ubiquitous.\""
+       },
+       {
+        "front": "Candid",
+        "back": "Truthful and straightforward; frank. e.g. \"She gave a candid account of events.\""
+       },
+       {
+        "front": "Meticulous",
+        "back": "Showing great attention to detail; very careful and precise."
+       },
+       {
+        "front": "Resilient",
+        "back": "Able to recover quickly from difficulties; tough."
+       },
+       {
+        "front": "Eloquent",
+        "back": "Fluent or persuasive in speaking or writing."
+       },
+       {
+        "front": "Pragmatic",
+        "back": "Dealing with things sensibly and realistically, based on practical considerations."
+       },
+       {
+        "front": "Benevolent",
+        "back": "Well-meaning and kindly; generous in helping others."
+       },
+       {
+        "front": "Ambiguous",
+        "back": "Open to more than one interpretation; not having one obvious meaning."
+       },
+       {
+        "front": "Tenacious",
+        "back": "Holding firmly to something; persistent and determined."
+       }
+      ],
+      "accent": "#4f46e5",
+      "label_front": "WORD",
+      "label_back": "DEFINITION"
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "header",
+         "progress",
+         "tip"
+        ]
+       },
+       {
+        "blocks": [
+         "deck"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,22 @@
+Choose Your Plan
+ Select the perfect subscription tier for your needs. Upgrade or downgrade at any time.
+ Starter
+ $9
+ 1 Workspace
+ Basic Analytics
+ Community Support
+ 1GB Storage
+ Pro
+ $29
+ Unlimited Workspaces
+ Advanced Analytics
+ Priority Support
+ 50GB Storage
+ Custom Integrations
+ Enterprise
+ $99
+ Everything in Pro
+ Dedicated Account Manager
+ 99.9% Uptime SLA
+ Unlimited Storage
+ Custom Security Controls

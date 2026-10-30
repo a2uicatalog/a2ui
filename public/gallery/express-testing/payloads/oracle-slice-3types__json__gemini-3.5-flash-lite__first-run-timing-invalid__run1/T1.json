@@ -1,0 +1,127 @@
+{
+ "label": "oracle-slice-3types__json__gemini-3.5-flash-lite__first-run-timing-invalid__run1",
+ "task": "T1",
+ "format": "json",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "water-cycle-lesson",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning.json",
+    "theme": {
+     "primaryColor": "#0284c7"
+    }
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "water-cycle-lesson",
+    "components": [
+     {
+      "id": "root",
+      "component": "page_header",
+      "title": "The Water Cycle",
+      "subtitle": "Journey of Earth's continuous water movement through evaporation, condensation, and precipitation.",
+      "icon": "\ud83d\udca7",
+      "tag": "Earth Science",
+      "accent": "#0284c7"
+     },
+     {
+      "id": "intro_callout",
+      "component": "text_callout",
+      "variant": "info",
+      "title": "Overview",
+      "description": "Water on Earth is constantly moving and changing states. The total amount of water remains largely constant, recycling through the atmosphere, land, and oceans."
+     },
+     {
+      "id": "section_1",
+      "component": "concept_rung",
+      "badge": "1",
+      "kind": "depth",
+      "title": "Evaporation and Transpiration",
+      "body": "Solar energy heats water in oceans, lakes, and rivers, causing it to change from a liquid to a gas called water vapor. Plants also release water vapor from their leaves through a process called transpiration.",
+      "takeaway": "Heat from the sun powers the upward movement of water into the atmosphere."
+     },
+     {
+      "id": "section_2",
+      "component": "concept_rung",
+      "badge": "2",
+      "kind": "depth",
+      "title": "Condensation",
+      "body": "As water vapor rises into the cooler upper atmosphere, it cools down and changes back into tiny liquid water droplets or ice crystals. These droplets cluster around microscopic particles in the air to form clouds and fog.",
+      "takeaway": "Cooling temperatures aloft cause water vapor to condense into visible clouds."
+     },
+     {
+      "id": "section_3",
+      "component": "concept_rung",
+      "badge": "3",
+      "kind": "depth",
+      "title": "Precipitation and Collection",
+      "body": "When condensed water droplets in clouds grow too heavy to stay suspended by upward air currents, they fall back to Earth as precipitation (rain, snow, sleet, or hail). This water collects in oceans, rivers, and aquifers, or forms runoff over land.",
+      "takeaway": "Gravity brings water back to the surface, completing the cycle and feeding Earth's water bodies."
+     },
+     {
+      "id": "example_rung",
+      "component": "concept_rung",
+      "badge": "EX",
+      "kind": "example",
+      "title": "Worked Example: Morning Dew and Puddles",
+      "body": "Consider a puddle after a rainstorm. Over a few hours, the water seems to disappear\u2014this is evaporation. On a chilly morning, you might notice droplets on grass leaves that didn't come from rain\u2014that is condensation (dew) formed as moisture in the immediate air cooled against the grass.",
+      "code": "Rainfall -> Puddle -> Evaporation (gas) -> Cooling aloft -> Condensation (cloud) -> Precipitation",
+      "code_caption": "Path of a single water molecule through the cycle",
+      "takeaway": "Every drop of water you see is participating in a cycle millions of years old."
+     },
+     {
+      "id": "quiz_heading",
+      "component": "heading",
+      "text": "Self-Check Quiz"
+     },
+     {
+      "id": "quiz",
+      "component": "quiz_set",
+      "title": "Test Your Knowledge",
+      "pass_score": 66,
+      "accent": "#0284c7",
+      "questions": [
+       {
+        "question": "What primary energy source drives the entire water cycle?",
+        "options": [
+         "The Moon's gravity",
+         "The Sun",
+         "Earth's core heat",
+         "Wind currents"
+        ],
+        "correct": 1,
+        "explanation": "Solar energy provides the heat required for evaporation and atmospheric circulation."
+       },
+       {
+        "question": "What process turns water vapor into clouds?",
+        "options": [
+         "Evaporation",
+         "Transpiration",
+         "Condensation",
+         "Precipitation"
+        ],
+        "correct": 2,
+        "explanation": "Condensation occurs when rising water vapor cools and turns back into liquid droplets."
+       },
+       {
+        "question": "Plants release water vapor into the air through which process?",
+        "options": [
+         "Transpiration",
+         "Sublimation",
+         "Infiltration",
+         "Melting"
+        ],
+        "correct": 0,
+        "explanation": "Transpiration is the release of water vapor from plant leaves into the atmosphere."
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

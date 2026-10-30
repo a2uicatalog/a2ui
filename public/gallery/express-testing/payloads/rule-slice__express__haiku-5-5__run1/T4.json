@@ -1,0 +1,79 @@
+{
+ "label": "rule-slice__express__haiku-5-5__run1",
+ "task": "T4",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/b-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "filterable_list",
+      "title": "Project checklist",
+      "items": [
+       {
+        "title": "Set up CI pipeline",
+        "status": "Done",
+        "detail": "Build and test jobs run on every push."
+       },
+       {
+        "title": "Migrate user database",
+        "status": "In progress",
+        "detail": "Schema migration is running on staging."
+       },
+       {
+        "title": "Update API docs",
+        "status": "Not started",
+        "detail": "Endpoints added in v2 are still undocumented."
+       },
+       {
+        "title": "Rotate service credentials",
+        "status": "Blocked",
+        "detail": "Waiting on security sign-off."
+       },
+       {
+        "title": "Load test checkout flow",
+        "status": "In progress",
+        "detail": "Target is 500 requests per second."
+       },
+       {
+        "title": "Enable audit logging",
+        "status": "Done",
+        "detail": "Logs ship to the central store."
+       },
+       {
+        "title": "Write rollback runbook",
+        "status": "Not started",
+        "detail": "Owner to be assigned this week."
+       },
+       {
+        "title": "Verify SSO integration",
+        "status": "Blocked",
+        "detail": "The identity provider returns a 403 for one tenant."
+       }
+      ],
+      "filter_field": "status",
+      "colors": {
+       "Done": "#10b981",
+       "In progress": "#3b82f6",
+       "Not started": "#64748b",
+       "Blocked": "#ef4444"
+      },
+      "show_counts": true,
+      "empty_text": "No items match this status."
+     }
+    ]
+   }
+  }
+ ]
+}

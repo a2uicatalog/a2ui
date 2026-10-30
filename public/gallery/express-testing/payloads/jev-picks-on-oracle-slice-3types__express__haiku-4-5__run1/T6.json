@@ -1,0 +1,104 @@
+{
+ "label": "jev-picks-on-oracle-slice-3types__express__haiku-4-5__run1",
+ "task": "T6",
+ "format": "express",
+ "model_id": null,
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "vocabulary-flashcards",
+    "catalog_id": "https://a2uicatalog.ai/catalog/jc-t6.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "vocabulary-flashcards",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "2rem",
+      "items": [
+       {
+        "blocks": [
+         "_inline_1",
+         "_inline_2"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_3"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "_inline_1",
+      "component": "heading",
+      "text": "Vocabulary Review"
+     },
+     {
+      "id": "_inline_2",
+      "component": "progress_bar",
+      "value": 0,
+      "label": "Cards Reviewed",
+      "show_percent": true,
+      "accent": "#4f46e5"
+     },
+     {
+      "id": "_inline_3",
+      "component": "flashcard_deck",
+      "cards": [
+       {
+        "front": "Ameliorate",
+        "back": "To make better or improve"
+       },
+       {
+        "front": "Ephemeral",
+        "back": "Lasting for a very short time"
+       },
+       {
+        "front": "Ubiquitous",
+        "back": "Present everywhere; constantly encountered"
+       },
+       {
+        "front": "Serendipity",
+        "back": "The occurrence of events by chance in a happy or beneficial way"
+       },
+       {
+        "front": "Eloquent",
+        "back": "Fluent, persuasive, and expressive in speaking or writing"
+       },
+       {
+        "front": "Pragmatic",
+        "back": "Dealing with things in a practical, realistic way"
+       },
+       {
+        "front": "Meticulous",
+        "back": "Showing great attention to detail; precise"
+       },
+       {
+        "front": "Benevolent",
+        "back": "Kind and generous; showing goodwill"
+       },
+       {
+        "front": "Verbose",
+        "back": "Using more words than necessary; wordy"
+       },
+       {
+        "front": "Candid",
+        "back": "Truthful and straightforward; frank"
+       }
+      ],
+      "accent": "#4f46e5",
+      "label_front": "WORD",
+      "label_back": "DEFINITION"
+     }
+    ]
+   }
+  }
+ ]
+}

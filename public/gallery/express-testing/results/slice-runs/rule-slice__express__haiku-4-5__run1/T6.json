@@ -1,0 +1,42 @@
+{
+ "task": "T6",
+ "condition": "B",
+ "label": "rule-slice__express__haiku-4-5__run1",
+ "agent_type": "Learning",
+ "catalogue": "B-learning.json",
+ "atoms_in_catalogue": 184,
+ "prompt_chars": 88519,
+ "slot_recall": [
+  1,
+  2
+ ],
+ "secs": 7.1,
+ "usage": {
+  "input_tokens": 24756,
+  "output_tokens": 664
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns",
+  "page_header",
+  "spacer",
+  "color_section",
+  "body",
+  "columns",
+  "flashcard_deck",
+  "highlight_box",
+  "spacer",
+  "key_takeaways"
+ ],
+ "score": {
+  "precision": 0.1,
+  "recall": 0.5,
+  "f1": 0.167,
+  "slot_hits": {
+   "flashcard deck": true,
+   "progress indicator": false
+  }
+ },
+ "reply": "<a2ui>\nroot = columns(\n  cols=1,\n  items=[\n    {blocks: [\n      page_header(\n        title=\"Vocabulary Builder\",\n        subtitle=\"Master these 10 essential terms\",\n        icon=\"\ud83d\udcda\"\n      ),\n      progress_indicator,\n      spacer(height=\"1.5rem\"),\n      flashcard_section\n    ]}\n  ]\n)\n\nprogress_indicator = progress_bar_simple\n\nprogress_bar_simple = color_section(\n  accent=\"#4f46e5\",\n  style=\"tint\",\n  padding=\"16px\",\n  blocks=[\n    body(text=\"**Progress: 0 / 10 cards reviewed**\")\n  ]\n)\n\nflashcard_section = columns(\n  cols=2,\n  gap=\"1.5rem\",\n  items=[\n    {blocks: [flashcard_deck(\n      cards=[\n        {front: \"Serendipity\", back: \"The occurrence of events by chance in a happy or beneficial way\"},\n        {front: \"Ephemeral\", back: \"Lasting for a very short time\"},\n        {front: \"Ubiquitous\", back: \"Present, appearing, or found everywhere\"},\n        {front: \"Ameliorate\", back: \"To make something better or improve it\"},\n        {front: \"Juxtapose\", back: \"To place two things side by side for contrasting effect\"},\n        {front: \"Obfuscate\", back: \"To deliberately make something unclear or obscure\"},\n        {front: \"Pellucid\", back: \"Translucently clear in style or meaning\"},\n        {front: \"Visceral\", back: \"Relating to deep feelings rather than intellect\"},\n        {front: \"Propitious\", back: \"Giving or indicating a good chance of success\"},\n        {front: \"Perspicacious\", back: \"Having keen insight or discernment\"}\n      ],\n      accent=\"#4f46e5\",\n      label_front=\"TERM\",\n      label_back=\"DEFINITION\"\n    )]},\n    {blocks: [\n      highlight_box(\n        title=\"Tips for Success\",\n        text=\"\u2022 Review each card carefully before flipping\\n\u2022 Say the definition aloud to reinforce learning\\n\u2022 Focus on cards you find most challenging\\n\u2022 Return to this deck daily for spaced repetition\",\n        icon=\"\ud83d\udca1\",\n        accent=\"#8b5cf6\",\n        style=\"gradient\"\n      ),\n      spacer(height=\"1rem\"),\n      key_takeaways(points=[\n        \"Consistent vocabulary building strengthens comprehension and expression\",\n        \"Spaced repetition is key to long-term retention\",\n        \"Active recall (testing yourself) beats passive reading\"\n      ])\n    ]}\n  ]\n)\n</a2ui>"
+}

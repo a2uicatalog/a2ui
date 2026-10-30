@@ -1,0 +1,77 @@
+{
+ "label": "oracle-slice-3types__json__gemini-3.5-flash__thinking-on_first-run-timing-invalid__run2",
+ "task": "T5",
+ "format": "json",
+ "model_id": "gemini-3.5-flash",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "subscription-pricing-surface",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "subscription-pricing-surface",
+    "components": [
+     {
+      "id": "root",
+      "component": "pricing_tier_group",
+      "tiers": [
+       {
+        "name": "Starter",
+        "price": "$9",
+        "interval": "month",
+        "description": "Essential features for individuals and hobbyists looking to get started.",
+        "features": [
+         "1 User Seat",
+         "Standard analytics suite",
+         "5 GB Cloud Storage",
+         "Email support (next business day response)"
+        ],
+        "cta_label": "Start Starter Trial",
+        "cta_url": "https://example.com/signup/starter",
+        "recommended": false
+       },
+       {
+        "name": "Professional",
+        "price": "$29",
+        "interval": "month",
+        "description": "Perfect for growing teams, creators, and power users who need more throughput.",
+        "features": [
+         "Up to 5 User Seats",
+         "Advanced analytics with custom reports",
+         "50 GB Cloud Storage",
+         "Priority email & live chat support (2hr response)",
+         "Full API access and standard webhooks"
+        ],
+        "cta_label": "Upgrade to Pro",
+        "cta_url": "https://example.com/signup/pro",
+        "recommended": true
+       },
+       {
+        "name": "Enterprise",
+        "price": "$99",
+        "interval": "month",
+        "description": "Bespoke controls, massive storage scale, and dedicated support for organizations.",
+        "features": [
+         "Unlimited User Seats",
+         "Real-time analytics engine & database export",
+         "500 GB Cloud Storage",
+         "Dedicated account manager & 24/7 phone support",
+         "SAML Single Sign-On (SSO)",
+         "99.9% Uptime SLA guarantee"
+        ],
+        "cta_label": "Contact Sales",
+        "cta_url": "https://example.com/contact/enterprise",
+        "recommended": false
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

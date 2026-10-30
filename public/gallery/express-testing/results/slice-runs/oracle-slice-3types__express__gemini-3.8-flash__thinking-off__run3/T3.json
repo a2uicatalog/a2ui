@@ -1,0 +1,45 @@
+{
+ "task": "T3",
+ "condition": "C_gemini-3.8-flash",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 32768,
+ "model_id": "gemini-3.8-flash",
+ "hints": false,
+ "label": "oracle-slice-3types__express__gemini-3.8-flash__thinking-off__run3",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "C-marketing-commerce.json",
+ "atoms_in_catalogue": 23,
+ "prompt_chars": 12467,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 27.3,
+ "usage": {
+  "input_tokens": 3412,
+  "output_tokens": 632
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "gradient_hero",
+  "feature_grid",
+  "testimonial_card",
+  "cta_section",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.8,
+  "recall": 1.0,
+  "f1": 0.889,
+  "slot_hits": {
+   "hero": true,
+   "feature columns (x3)": true,
+   "testimonial": true,
+   "CTA": true
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"landing_page\")\nhero = gradient_hero(\n  title=\"Supercharge Your Daily Workflow\",\n  subtitle=\"The all-in-one platform built to streamline team execution, automate repetitive tasks, and scale results effortlessly.\",\n  badge=\"New Launch v2.0\",\n  accent=\"#4f46e5\",\n  accent2=\"#8b5cf6\",\n  align=\"center\",\n  cta_label=\"Get Started Free\",\n  cta_url=\"https://example.com/signup\"\n)\n\nfeatures = feature_grid(\n  heading=\"Built for Modern High-Growth Teams\",\n  description=\"Everything you need to ship faster, eliminate friction, and focus on high-impact work.\",\n  columns=3,\n  features=[\n    {\n      icon: \"\u26a1\",\n      title: \"Real-time Sync\",\n      description: \"Instant updates across all devices ensure your team stays aligned without refresh lag.\",\n      badge: \"Fast\"\n    },\n    {\n      icon: \"\ud83d\udee1\ufe0f\",\n      title: \"Enterprise Security\",\n      description: \"End-to-end encryption with advanced role-based access control and strict compliance.\",\n      badge: \"Secure\"\n    },\n    {\n      icon: \"\ud83e\udd16\",\n      title: \"Automated Workflows\",\n      description: \"Trigger powerful custom pipelines automatically with integrated webhooks and rules.\",\n      badge: \"AI Powered\"\n    }\n  ]\n)\n\ntestimonial = testimonial_card(\n  text=\"Switching to this tool reduced our weekly planning and execution overhead by more than 40%. It has become essential to how our team operates.\",\n  author_name=\"Sarah Jenkins\",\n  author_title=\"VP of Product, Apex Digital\",\n  author_avatar_url=\"https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150\",\n  rating=5\n)\n\ncta = cta_section(\n  heading=\"Ready to transform your productivity?\",\n  body=\"Join over 10,000 teams who build, automate, and grow faster. Start your 14-day free trial today.\",\n  primary_cta={\n    label: \"Start Free Trial\",\n    url: \"https://example.com/signup\"\n  },\n  secondary_cta={\n    label: \"Book a Demo\",\n    url: \"https://example.com/demo\"\n  }\n)\n\nroot = columns(\n  cols=1,\n  gap=\"2.5rem\",\n  align=\"stretch\",\n  items=[\n    {blocks: [hero]},\n    {blocks: [features]},\n    {blocks: [testimonial]},\n    {blocks: [cta]}\n  ]\n)\n</a2ui>"
+}

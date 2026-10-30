@@ -1,0 +1,34 @@
+Work Items
+ All Open In progress Blocked Done 
+ A
+ Auth token refresh
+ Open Refresh flow needs a retry policy on 401 responses
+ Platform
+ B
+ Billing export job
+ In progress Nightly CSV export times out above 50k rows
+ Finance
+ O
+ Onboarding email copy
+ Blocked Final legal review of welcome sequence pending
+ Growth
+ S
+ Search index rebuild
+ Done Reindex completed for all production shards
+ Search
+ M
+ Mobile push permissions
+ In progress Prompt timing tested on iOS 18 and Android 15
+ Mobile
+ R
+ Rate limit dashboard
+ Open Per-tenant graphs need label cleanup before release
+ Infra
+ I
+ Invoice PDF layout
+ Done Tax line items render correctly across locales
+ Finance
+ A
+ Audit log retention
+ Blocked Waiting on storage team to confirm 400-day policy
+ Security

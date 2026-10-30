@@ -1,0 +1,40 @@
+{
+ "task": "T1",
+ "condition": "DTN_sonnet-5-5",
+ "temperature_applied": false,
+ "format": "json",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-sonnet-5-5",
+ "hints": false,
+ "label": "oracle-slice-6types__json__sonnet-5-5__temp0__run1",
+ "agent_type": "T1",
+ "catalogue": "D-t1.json",
+ "atoms_in_catalogue": 28,
+ "prompt_chars": 31739,
+ "slot_recall": [
+  5,
+  5
+ ],
+ "secs": 17.4,
+ "usage": {
+  "input_tokens": 12049,
+  "output_tokens": 2429
+ },
+ "valid": false,
+ "error": "A2uiIntegrityError: Component 'concept1_body' is not reachable from 'root'",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "title": false,
+   "concept sections (x3)": false,
+   "worked example": false,
+   "3-question quiz": false,
+   "quiz result": false
+  }
+ },
+ "reply": "<a2ui-json>\n[\n  {\n    \"version\": \"v0.9.1\",\n    \"createSurface\": {\n      \"surfaceId\": \"water_cycle_lesson\",\n      \"catalogId\": \"https://a2uicatalog.ai/catalog/d-t1.json\"\n    }\n  },\n  {\n    \"version\": \"v0.9.1\",\n    \"updateComponents\": {\n      \"surfaceId\": \"water_cycle_lesson\",\n      \"components\": [\n        {\n          \"id\": \"root\",\n          \"component\": \"page_header\",\n          \"title\": \"The Water Cycle\",\n          \"subtitle\": \"How water moves between the oceans, the air, and the land, over and over again.\",\n          \"icon\": \"\ud83d\udca7\",\n          \"tag\": \"Earth Science\",\n          \"accent\": \"#0284c7\"\n        },\n        {\n          \"id\": \"concept1_heading\",\n          \"component\": \"heading\",\n          \"text\": \"1. Evaporation: water rises\"\n        },\n        {\n          \"id\": \"concept1_body\",\n          \"component\": \"body\",\n          \"text\": \"The Sun warms water in oceans, lakes, and rivers. Some of the liquid water gains enough energy to become water vapour, an invisible gas that rises into the atmosphere. Plants add to this through transpiration, releasing water vapour from their leaves.\"\n        },\n        {\n          \"id\": \"concept2_heading\",\n          \"component\": \"heading\",\n          \"text\": \"2. Condensation: clouds form\"\n        },\n        {\n          \"id\": \"concept2_body\",\n          \"component\": \"body\",\n          \"text\": \"As water vapour rises, the air gets colder. Cool air cannot hold as much vapour, so the vapour turns back into tiny liquid droplets around specks of dust. Billions of these droplets gather to form clouds.\"\n        },\n        {\n          \"id\": \"concept3_heading\",\n          \"component\": \"heading\",\n          \"text\": \"3. Precipitation and collection: water returns\"\n        },\n        {\n          \"id\": \"concept3_body\",\n          \"component\": \"body\",\n          \"text\": \"When cloud droplets merge and grow heavy, they fall as rain, snow, sleet, or hail. This water runs off into rivers, soaks into the ground, or collects in oceans and lakes. From there the cycle starts again.\"\n        },\n        {\n          \"id\": \"concept_tip\",\n          \"component\": \"text_callout\",\n          \"variant\": \"info\",\n          \"title\": \"Remember\",\n          \"description\": \"The cycle has no real start or end. The same water is constantly being recycled, and the total amount on Earth stays roughly the same.\"\n        },\n        {\n          \"id\": \"worked_example\",\n          \"component\": \"concept_rung\",\n          \"kind\": \"example\",\n          \"title\": \"How much water does a lake lose to evaporation?\",\n          \"body\": \"A lake has a surface area of 10 km\u00b2. On a warm day it loses 5 mm of water depth to evaporation. Estimate the volume of water that moves into the air.\\n\\nConvert everything to metres first, then multiply area by depth. Finally, convert cubic metres to litres (1 m\u00b3 = 1,000 L).\",\n          \"code\": \"Area   = 10 km\u00b2 = 10,000,000 m\u00b2\\nDepth  = 5 mm   = 0.005 m\\n\\nVolume = 10,000,000 m\u00b2 \u00d7 0.005 m\\n       = 50,000 m\u00b3\\n\\nLitres = 50,000 \u00d7 1,000\\n       = 50,000,000 L\",\n          \"code_caption\": \"Step-by-step calculation for one warm day.\",\n          \"takeaway\": \"A single lake can send about 50 million litres of water into the atmosphere in one day.\"\n        },\n        {\n          \"id\": \"self_check\",\n          \"component\": \"quiz_set\",\n          \"title\": \"Self-check: the water cycle\",\n          \"pass_score\": 67,\n          \"accent\": \"#0284c7\",\n          \"questions\": [\n            {\n              \"question\": \"Which process turns liquid water into water vapour?\",\n              \"options\": [\"Condensation\", \"Evaporation\", \"Precipitation\", \"Collection\"],\n              \"correct\": 1,\n              \"explanation\": \"Evaporation is when heat from the Sun turns liquid water into vapour.\"\n            },\n            {\n              \"question\": \"Why do clouds form as water vapour rises?\",\n              \"options\": [\n                \"The vapour freezes into solid rock\",\n                \"The air gets colder, so the vapour condenses into droplets\",\n                \"The Sun pushes the vapour back down\",\n                \"Wind removes all of the vapour\"\n              ],\n              \"correct\": 1,\n              \"explanation\": \"Cooler air holds less vapour, so the vapour condenses into tiny droplets that make up clouds.\"\n            },\n            {\n              \"question\": \"Which of these is a form of precipitation?\",\n              \"options\": [\"Fog on a mirror\", \"Transpiration from leaves\", \"Snow\", \"Water vapour\"],\n              \"correct\": 2,\n              \"explanation\": \"Precipitation is water falling from clouds as rain, snow, sleet, or hail.\"\n            }\n          ]\n        }\n      ]\n    }\n  }\n]\n</a2ui-json>\n\nThe lesson opens with a title header, then three concept sections (evaporation, condensation, precipitation and collection). A worked example on lake evaporation follows, and a three-question self-check quiz closes it out. The catalog has no container component, so the sections are laid out as a flat sequence under the header."
+}

@@ -1,0 +1,102 @@
+{
+ "label": "oracle-slice-6types__express__haiku-5-5__hints-v2__run3",
+ "task": "T3",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/d-t3.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "hero",
+      "component": "gradient_hero",
+      "title": "Ship faster with Flowline",
+      "subtitle": "The workflow platform that turns scattered tasks into one clear pipeline, so your team spends less time coordinating and more time building.",
+      "badge": "New in 2026",
+      "accent": "#4f46e5",
+      "accent2": "#8b5cf6",
+      "align": "center",
+      "cta_label": "Start free trial",
+      "cta_url": "https://flowline.example.com/signup"
+     },
+     {
+      "id": "features",
+      "component": "feature_grid",
+      "heading": "Everything your team needs",
+      "description": "Three core capabilities that keep projects moving from idea to launch.",
+      "columns": 3,
+      "features": [
+       {
+        "icon": "\u26a1",
+        "title": "Real-time sync",
+        "description": "Every change appears instantly for everyone on the team, with no manual refresh.",
+        "badge": "Fast",
+        "color": "#4f46e5"
+       },
+       {
+        "icon": "\ud83d\udd17",
+        "title": "Integrations",
+        "description": "Connect the tools you already use, including Git, Slack, and your CI pipeline.",
+        "badge": "Connected",
+        "color": "#8b5cf6"
+       },
+       {
+        "icon": "\ud83d\udcca",
+        "title": "Clear reporting",
+        "description": "See progress, bottlenecks, and delivery forecasts without building spreadsheets.",
+        "badge": "Insight",
+        "color": "#0ea5e9"
+       }
+      ]
+     },
+     {
+      "id": "testimonial",
+      "component": "blockquote_with_avatar",
+      "quote": "Flowline cut our release coordination time in half. We finally know what is blocked and who owns it.",
+      "author_name": "Maya Chen",
+      "author_title": "VP of Engineering, Northwind",
+      "avatar_url": "https://flowline.example.com/avatars/maya-chen.jpg"
+     },
+     {
+      "id": "cta",
+      "component": "cta_button",
+      "url": "https://flowline.example.com/signup",
+      "label": "Get started free",
+      "color": "#4f46e5",
+      "same_tab": true
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "2rem",
+      "align": "stretch",
+      "items": [
+       {
+        "blocks": [
+         "hero",
+         "features"
+        ]
+       },
+       {
+        "blocks": [
+         "testimonial",
+         "cta"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

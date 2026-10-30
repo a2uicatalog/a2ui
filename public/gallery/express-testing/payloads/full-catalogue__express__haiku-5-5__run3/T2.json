@@ -1,0 +1,103 @@
+{
+ "label": "full-catalogue__express__haiku-5-5__run3",
+ "task": "T2",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/a-full.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "kpis",
+      "component": "metric_row",
+      "cols": 4,
+      "accent": "#4f46e5",
+      "metrics": [
+       {
+        "value": "12,480",
+        "label": "Active users",
+        "trend": "up"
+       },
+       {
+        "prefix": "$",
+        "value": "84.2",
+        "suffix": "k",
+        "label": "Revenue",
+        "trend": "up"
+       },
+       {
+        "value": "3.1",
+        "suffix": "%",
+        "label": "Churn",
+        "trend": "down"
+       },
+       {
+        "value": "62",
+        "label": "NPS",
+        "trend": "up"
+       }
+      ]
+     },
+     {
+      "id": "chart",
+      "component": "chartjs_bar",
+      "labels": [
+       "Q1",
+       "Q2",
+       "Q3",
+       "Q4"
+      ],
+      "datasets": [
+       {
+        "label": "Signups 2025",
+        "data": [
+         820,
+         940,
+         1010,
+         1180
+        ]
+       },
+       {
+        "label": "Signups 2026",
+        "data": [
+         1040,
+         1150,
+         1290,
+         1284
+        ]
+       }
+      ]
+     },
+     {
+      "id": "root",
+      "component": "color_section",
+      "accent": "#4f46e5",
+      "style": "light",
+      "padding": "24px",
+      "grid": false,
+      "max_width": "100%",
+      "blocks": [
+       "root_blocks_0",
+       "kpis",
+       "chart"
+      ]
+     },
+     {
+      "id": "root_blocks_0",
+      "component": "heading",
+      "text": "Metrics overview"
+     }
+    ]
+   }
+  }
+ ]
+}

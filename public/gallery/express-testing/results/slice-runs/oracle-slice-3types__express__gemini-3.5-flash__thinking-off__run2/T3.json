@@ -1,0 +1,51 @@
+{
+ "task": "T3",
+ "condition": "C_gemini-3.5-flash",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 32768,
+ "model_id": "gemini-3.5-flash",
+ "hints": false,
+ "label": "oracle-slice-3types__express__gemini-3.5-flash__thinking-off__run2",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "C-marketing-commerce.json",
+ "atoms_in_catalogue": 23,
+ "prompt_chars": 12467,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 3.7,
+ "usage": {
+  "input_tokens": 3412,
+  "output_tokens": 648
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "gradient_hero",
+  "columns",
+  "heading",
+  "body",
+  "heading",
+  "body",
+  "heading",
+  "body",
+  "testimonial_card",
+  "shimmer_button",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.273,
+  "recall": 0.75,
+  "f1": 0.4,
+  "slot_hits": {
+   "hero": true,
+   "feature columns (x3)": false,
+   "testimonial": true,
+   "CTA": true
+  }
+ },
+ "reply": "<a2ui>\n# Surface definition\nsurface(\"product-landing\")\n\n# 1. Gradient Hero Section\nhero = gradient_hero(\n    \"Supercharge Your Daily Workflow\",\n    \"The ultimate productivity hub that integrates your tasks, calendars, and documents into one seamless, AI-powered workspace.\",\n    \"INTRODUCING FLOWOS\",\n    \"#4f46e5\",\n    \"#06b6d4\",\n    \"linear-gradient(135deg, #e0e7ff, #ccfbf1)\",\n    \"center\",\n    \"Get Started Free\",\n    \"https://flowos.app/signup\"\n)\n\n# 2. Three Feature Columns (using columns component with 3 items)\nfeatures_cols = columns(\n    3,\n    \"2rem\",\n    \"top\",\n    [\n        {\n            \"blocks\": [\n                heading(\"Lightning Fast Sync\"),\n                body(\"Keep your teams aligned with real-time state synchronization that updates across all desktop and mobile devices in milliseconds.\")\n            ]\n        },\n        {\n            \"blocks\": [\n                heading(\"AI Assistant Integration\"),\n                body(\"Query your workspace documents, draft replies, and automate repetitive tasks directly from your built-in command palette.\")\n            ]\n        },\n        {\n            \"blocks\": [\n                heading(\"Privacy First Architecture\"),\n                body(\"Your data is secure with end-to-end encryption. You hold the keys, meaning your private business records stay completely confidential.\")\n            ]\n        }\n    ]\n)\n\n# 3. Testimonial Card Section\ntestimonial = testimonial_card(\n    \"FlowOS completely transformed how our engineering and marketing teams collaborate. We saved over 10 hours a week on sync meetings alone in the first month.\",\n    \"Sarah Jenkins\",\n    \"VP of Product at ScaleTech\",\n    \"https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&h=150&q=80\",\n    5\n)\n\n# 4. Final Call-To-Action Button (using shimmer_button for high engagement)\ncta = shimmer_button(\n    \"Experience FlowOS Now\",\n    \"https://flowos.app/signup\",\n    \"lg\",\n    \"#38bdf8\",\n    \"#0f172a\",\n    \"normal\",\n    \"No credit card required. 14-day free trial.\"\n)\n\n# Root Composition wrapping the landing page workflow\nroot = columns(\n    1,\n    \"3rem\",\n    \"stretch\",\n    [\n        {\"blocks\": [hero]},\n        {\"blocks\": [features_cols]},\n        {\"blocks\": [testimonial]},\n        {\"blocks\": [cta]}\n    ]\n)\n</a2ui>"
+}

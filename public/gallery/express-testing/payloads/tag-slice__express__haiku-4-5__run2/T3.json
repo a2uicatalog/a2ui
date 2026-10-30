@@ -1,0 +1,134 @@
+{
+ "label": "tag-slice__express__haiku-4-5__run2",
+ "task": "T3",
+ "format": "express",
+ "model_id": null,
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/g-marketing-commerce.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "color_section",
+      "accent": "#4f46e5",
+      "style": "tint",
+      "blocks": [
+       "root_blocks_0",
+       "root_blocks_1",
+       "root_blocks_2",
+       "root_blocks_3",
+       "root_blocks_4",
+       "root_blocks_5",
+       "root_blocks_6"
+      ]
+     },
+     {
+      "id": "root_blocks_0",
+      "component": "gradient_hero",
+      "title": "Transform Your Workflow",
+      "subtitle": "Experience the power of seamless integration and intelligent automation",
+      "badge": "New Release",
+      "cta_label": "Get Started",
+      "cta_url": "https://example.com/signup"
+     },
+     {
+      "id": "root_blocks_1",
+      "component": "spacer",
+      "height": "40px"
+     },
+     {
+      "id": "root_blocks_2",
+      "component": "columns",
+      "cols": 3,
+      "gap": "2rem",
+      "items": [
+       {
+        "blocks": [
+         "_inline_1"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_2"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_3"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "_inline_1",
+      "component": "feature_grid",
+      "features": [
+       {
+        "icon": "\u26a1",
+        "title": "Lightning Fast",
+        "description": "Process data at unprecedented speeds with our optimized engine"
+       }
+      ]
+     },
+     {
+      "id": "_inline_2",
+      "component": "feature_grid",
+      "features": [
+       {
+        "icon": "\ud83d\udd12",
+        "title": "Enterprise Secure",
+        "description": "Bank-grade encryption and compliance with industry standards"
+       }
+      ]
+     },
+     {
+      "id": "_inline_3",
+      "component": "feature_grid",
+      "features": [
+       {
+        "icon": "\ud83c\udfaf",
+        "title": "Precision Analytics",
+        "description": "Get actionable insights with our advanced reporting tools"
+       }
+      ]
+     },
+     {
+      "id": "root_blocks_3",
+      "component": "spacer",
+      "height": "60px"
+     },
+     {
+      "id": "root_blocks_4",
+      "component": "testimonial_card",
+      "text": "This product has completely transformed how we manage our operations. The efficiency gains are remarkable.",
+      "author_name": "Sarah Chen",
+      "author_title": "Product Director",
+      "author_avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah",
+      "rating": 5
+     },
+     {
+      "id": "root_blocks_5",
+      "component": "spacer",
+      "height": "40px"
+     },
+     {
+      "id": "root_blocks_6",
+      "component": "cta_button",
+      "label": "Start Your Free Trial",
+      "url": "https://example.com/trial",
+      "color": "#4f46e5"
+     }
+    ]
+   }
+  }
+ ]
+}

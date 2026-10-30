@@ -1,0 +1,44 @@
+{
+ "task": "T2",
+ "condition": "DT_sonnet-5-5H2",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-sonnet-5-5",
+ "hints": true,
+ "label": "oracle-slice-6types__express__sonnet-5-5__temp0__hints-v2__run1",
+ "agent_type": "T2",
+ "catalogue": "D-t2.json",
+ "atoms_in_catalogue": 16,
+ "prompt_chars": 10550,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 10.6,
+ "usage": {
+  "input_tokens": 4301,
+  "output_tokens": 1243
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "heading",
+  "metric_row",
+  "heading",
+  "chartjs_bar",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.4,
+  "recall": 0.667,
+  "f1": 0.5,
+  "slot_hits": {
+   "KPI tile (x4)": true,
+   "trend (required only if metric_row was chosen; stat_card's own delta already satisfies it)": false,
+   "comparison chart": true
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"metrics-overview\")\nh1 = heading(\"Key Metrics\")\nkpis = metric_row(2, \"#4f8cff\", [{value: \"48.2\", label: \"Revenue\", prefix: \"$\", suffix: \"K\", sub: \"+12% vs last month\", trend: \"up\"}, {value: \"12.4\", label: \"Active Users\", suffix: \"K\", sub: \"+6% vs last month\", trend: \"up\"}, {value: \"3.8\", label: \"Conversion Rate\", suffix: \"%\", sub: \"+9% vs last month\", trend: \"up\"}, {value: \"2.1\", label: \"Churn Rate\", suffix: \"%\", sub: \"-4% vs last month\", trend: \"down\"}])\nh2 = heading(\"Last Month vs This Month (Index, Last Month = 100)\")\nchart = chartjs_bar([\"Revenue\", \"Active Users\", \"Conversion\", \"Churn\"], [{label: \"Last Month\", data: [100, 100, 100, 100]}, {label: \"This Month\", data: [112, 106, 109, 96]}])\nroot = columns(2, \"1.5rem\", \"top\", [{blocks: [h1, kpis]}, {blocks: [h2, chart]}])\n</a2ui>"
+}

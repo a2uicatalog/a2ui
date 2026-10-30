@@ -1,0 +1,104 @@
+{
+ "label": "wrong-domain-slice__express__haiku-4-5__run3",
+ "task": "T3",
+ "format": "express",
+ "model_id": null,
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/b-learning.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "0",
+      "items": [
+       {
+        "blocks": [
+         "_inline_1"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_2"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_3"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_4"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "_inline_1",
+      "component": "gradient_hero",
+      "title": "Transform Your Workflow",
+      "subtitle": "Streamline your processes, boost productivity, and achieve more with our cutting-edge solution.",
+      "cta_label": "Get Started",
+      "cta_url": "/signup"
+     },
+     {
+      "id": "_inline_2",
+      "component": "feature_grid",
+      "heading": "Why Choose Us",
+      "columns": 3,
+      "features": [
+       {
+        "icon": "\u26a1",
+        "title": "Lightning Fast",
+        "description": "Experience blazing-fast performance that keeps up with your ambitions."
+       },
+       {
+        "icon": "\ud83d\udd12",
+        "title": "Secure & Reliable",
+        "description": "Enterprise-grade security ensures your data stays protected 24/7."
+       },
+       {
+        "icon": "\ud83c\udfaf",
+        "title": "Easy Integration",
+        "description": "Seamlessly integrate with your existing tools in minutes, not days."
+       }
+      ]
+     },
+     {
+      "id": "_inline_3",
+      "component": "blockquote_with_avatar",
+      "quote": "This product completely transformed how we work. It's intuitive, powerful, and the support team is exceptional.",
+      "author_name": "Sarah Mitchell",
+      "author_title": "CEO at TechCorp",
+      "avatar_url": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop"
+     },
+     {
+      "id": "_inline_4",
+      "component": "cta_section",
+      "heading": "Ready to Get Started?",
+      "body": "Join thousands of teams already transforming their workflow. Start your free trial today\u2014no credit card required.",
+      "primary_cta": {
+       "label": "Start Free Trial",
+       "url": "/trial"
+      },
+      "secondary_cta": {
+       "label": "Learn More",
+       "url": "/docs"
+      }
+     }
+    ]
+   }
+  }
+ ]
+}

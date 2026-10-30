@@ -1,0 +1,115 @@
+{
+ "label": "oracle-slice-3types__json__gemini-3.5-flash__thinking-on_first-run-timing-invalid__run3",
+ "task": "T6",
+ "format": "json",
+ "model_id": "gemini-3.5-flash",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "vocab-study-deck",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "vocab-study-deck",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "2.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         {
+          "id": "header",
+          "component": "page_header",
+          "title": "# Advanced Vocabulary Builder",
+          "subtitle": "Master high-frequency academic vocabulary with interactive flashcards. Click on any card in the deck to flip and reveal its definition and usage.",
+          "icon": "\ud83d\udcda",
+          "accent": "#4f46e5"
+         },
+         {
+          "id": "progress",
+          "component": "progress_ring",
+          "value": "70",
+          "size": "140",
+          "stroke_width": "10",
+          "color": "#4f46e5",
+          "label": "Review Progress",
+          "show_value": "true",
+          "unit": "%"
+         },
+         {
+          "id": "motivation-banner",
+          "component": "text_callout",
+          "variant": "success",
+          "title": "Daily Goal: 70% Completed",
+          "description": "Awesome job! You have successfully reviewed 7 out of 10 vocabulary cards. Only 3 more left to secure your streak for today!"
+         }
+        ]
+       },
+       {
+        "blocks": [
+         {
+          "id": "vocabulary-deck",
+          "component": "flashcard_deck",
+          "accent": "#4f46e5",
+          "label_front": "TERM",
+          "label_back": "DEFINITION & EXAMPLE",
+          "cards": [
+           {
+            "front": "Anachronism",
+            "back": "Something located as most associated with a time other than that in which it exists.\n\n*Example*: \"The digital watch worn by the actor in the medieval drama was a glaring anachronism.\""
+           },
+           {
+            "front": "Ephemeral",
+            "back": "Lasting for a very short time; transient or fleeting.\n\n*Example*: \"The vibrant colors of the sunset were beautiful but ephemeral.\""
+           },
+           {
+            "front": "Capricious",
+            "back": "Given to sudden and unaccountable changes of mood or behavior.\n\n*Example*: \"With the region's capricious weather, we could experience rain, snow, and sunshine all in one afternoon.\""
+           },
+           {
+            "front": "Loquacious",
+            "back": "Tending to talk a great deal; extremely talkative.\n\n*Example*: \"The normally loquacious host was uncharacteristically quiet during the debate.\""
+           },
+           {
+            "front": "Taciturn",
+            "back": "Reserved or uncommunicative in speech; saying little.\n\n*Example*: \"A taciturn man by nature, he preferred observing the room rather than participating in gossip.\""
+           },
+           {
+            "front": "Pernicious",
+            "back": "Having a harmful effect, especially in a gradual or subtle way.\n\n*Example*: \"The pernicious rumors quietly eroded the team's trust in their leadership.\""
+           },
+           {
+            "front": "Assiduous",
+            "back": "Showing great care, attention, and effort; highly diligent.\n\n*Example*: \"Through assiduous research, the scientists finally identified the source of the outbreak.\""
+           },
+           {
+            "front": "Obsequious",
+            "back": "Obedient or attentive to an excessive, fawning, or servile degree.\n\n*Example*: \"The manager was surrounded by obsequious assistants who agreed with his every word.\""
+           },
+           {
+            "front": "Pragmatic",
+            "back": "Dealing with things sensibly and realistically based on practical rather than theoretical considerations.\n\n*Example*: \"Rather than dreaming of perfect scenarios, they took a pragmatic approach to solve the budget deficit.\""
+           },
+           {
+            "front": "Cacophony",
+            "back": "A harsh, discordant mixture of sounds.\n\n*Example*: \"A loud cacophony of car horns, construction drills, and shouting pedestrians filled the morning air.\""
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

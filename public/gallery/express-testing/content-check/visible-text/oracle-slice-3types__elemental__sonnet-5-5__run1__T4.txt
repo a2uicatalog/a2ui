@@ -1,0 +1,25 @@
+All Done In progress Blocked Not started 
+ D
+ Design system audit
+ Done Inventory of components across all product surfaces
+ C
+ Checkout redesign
+ In progress New payment step is in review with the UX team
+ A
+ API rate limiting
+ Blocked Waiting on infrastructure quota approval
+ O
+ Onboarding emails
+ In progress Copy drafted for the first three messages
+ A
+ Accessibility fixes
+ Done All critical contrast issues have been resolved
+ D
+ Data export tool
+ Not started Scoping not yet started for CSV and JSON formats
+ M
+ Mobile push alerts
+ Blocked Blocked by the vendor SDK upgrade
+ A
+ Analytics dashboard
+ Not started Backlog item, planned for next quarter

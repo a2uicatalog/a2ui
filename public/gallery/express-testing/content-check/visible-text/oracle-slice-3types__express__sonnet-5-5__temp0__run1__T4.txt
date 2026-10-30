@@ -1,0 +1,27 @@
+Work Items
+ Eight items, each with a status and a one-line detail. Use the control to filter by status.
+ All Active Pending Blocked Done 
+ M
+ Migrate billing database
+ Active Cutover rehearsal scheduled for Thursday
+ R
+ Redesign onboarding flow
+ Pending Waiting on final copy from marketing
+ U
+ Upgrade API gateway
+ Blocked Rollout paused by failed health checks
+ P
+ Publish Q3 report
+ Done Shared with leadership on Monday
+ A
+ Audit access permissions
+ Active 12 of 40 service accounts reviewed
+ V
+ Vendor security review
+ Pending Questionnaire sent, awaiting response
+ F
+ Fix mobile checkout bug
+ Blocked Blocked on payment provider sandbox access
+ R
+ Retire legacy dashboard
+ Done Decommissioned and archived last week

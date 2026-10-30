@@ -1,0 +1,33 @@
+{
+ "task": "T3",
+ "condition": "G",
+ "label": "tag-slice__express__haiku-4-5__run3",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "G-marketing-commerce.json",
+ "atoms_in_catalogue": 263,
+ "prompt_chars": 119490,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 5.3,
+ "usage": {
+  "input_tokens": 34144,
+  "output_tokens": 464
+ },
+ "valid": false,
+ "error": "A2uiCompilationParseError: Failed to parse expression: Syntax error at line 19:14: mismatched input '=' expecting ':' (line 19) - Line 19, Col 14 - Help: Please correct the syntax error in your Express DSL.",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "hero": false,
+   "feature columns (x3)": false,
+   "testimonial": false,
+   "CTA": false
+  }
+ },
+ "reply": "<a2ui>\nroot = color_section(\n  accent=\"#4f46e5\",\n  style=\"tint\",\n  blocks=[\n    gradient_hero(\n      title=\"Transform Your Workflow\",\n      subtitle=\"Streamline your process with intelligent automation and seamless integration\",\n      badge=\"New Release\",\n      accent=\"#4f46e5\",\n      cta_label=\"Get Started\",\n      cta_url=\"https://example.com/signup\"\n    ),\n    divider(),\n    feature_grid(\n      heading=\"Why Choose Us\",\n      columns=3,\n      features=[\n        {\n          icon=\"\u26a1\",\n          title=\"Lightning Fast\",\n          description=\"Process tasks 10x faster with our optimized engine\"\n        },\n        {\n          icon=\"\ud83d\udd12\",\n          title=\"Enterprise Security\",\n          description=\"Bank-level encryption keeps your data safe and secure\"\n        },\n        {\n          icon=\"\ud83e\udd1d\",\n          title=\"Easy Integration\",\n          description=\"Connect with your favorite tools in minutes, not days\"\n        }\n      ]\n    ),\n    divider(),\n    testimonial_card(\n      text=\"This product completely transformed how our team works. We've cut our workflow time in half and couldn't imagine going back.\",\n      author_name=\"Sarah Chen\",\n      author_title=\"Product Lead at TechCorp\",\n      author_avatar_url=\"https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah\",\n      rating=5\n    ),\n    divider(),\n    cta_section(\n      heading=\"Ready to Transform Your Workflow?\",\n      body=\"Join thousands of teams already using our platform to work smarter.\",\n      primary_cta={label: \"Start Free Trial\", url: \"https://example.com/trial\"},\n      secondary_cta={label: \"Learn More\", url: \"https://example.com/docs\"}\n    )\n  ]\n)\n</a2ui>"
+}

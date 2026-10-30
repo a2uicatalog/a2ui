@@ -1,0 +1,150 @@
+{
+ "label": "oracle-slice-3types__express__gemini-3.5-flash__thinking-on_first-run-timing-invalid__run1",
+ "task": "T4",
+ "format": "express",
+ "model_id": "gemini-3.5-flash",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "task-tracker-surface",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "task-tracker-surface",
+    "components": [
+     {
+      "id": "left_title",
+      "component": "heading",
+      "text": "Filter & Summary"
+     },
+     {
+      "id": "filter_control",
+      "component": "segmented_control",
+      "options": [
+       {
+        "label": "All Tasks",
+        "value": "all"
+       },
+       {
+        "label": "Pending",
+        "value": "pending"
+       },
+       {
+        "label": "In Progress",
+        "value": "inprogress"
+       },
+       {
+        "label": "Completed",
+        "value": "completed"
+       }
+      ],
+      "selected_value": "all",
+      "name": "filter_status"
+     },
+     {
+      "id": "summary_card",
+      "component": "stat_card",
+      "value": "8 Active",
+      "label": "Total Tickets Queue",
+      "delta": "Live Sync",
+      "is_up": true,
+      "accent": "#0052CC"
+     },
+     {
+      "id": "right_title",
+      "component": "heading",
+      "text": "Service Request Queue"
+     },
+     {
+      "id": "tasks",
+      "component": "entity_list",
+      "items": [
+       {
+        "name": "Server Database Migration",
+        "subtitle": "Migrating legacy Postgres instance to AWS RDS.",
+        "status": "In Progress",
+        "meta": "High Priority",
+        "icon": "\u2699\ufe0f"
+       },
+       {
+        "name": "User Access Provisioning",
+        "subtitle": "Grant access to GitHub & Slack for 3 new hires.",
+        "status": "Completed",
+        "meta": "Low Priority",
+        "icon": "\ud83d\udc64"
+       },
+       {
+        "name": "SSL Certificate Renewal",
+        "subtitle": "Renew expiring SSL certificates for production domains.",
+        "status": "Urgent",
+        "meta": "Due Today",
+        "icon": "\ud83d\udd12"
+       },
+       {
+        "name": "API Gateway Rate Limiting",
+        "subtitle": "Implement rate limiting policies to prevent abuse.",
+        "status": "Pending",
+        "meta": "Medium Priority",
+        "icon": "\ud83c\udf10"
+       },
+       {
+        "name": "Weekly System Backup",
+        "subtitle": "Verify integrity of automated weekly snapshots.",
+        "status": "Completed",
+        "meta": "Routine",
+        "icon": "\ud83d\udcbe"
+       },
+       {
+        "name": "Billing Dashboard Bug",
+        "subtitle": "Investigate negative total calculations on invoice export.",
+        "status": "In Progress",
+        "meta": "Medium Priority",
+        "icon": "\ud83d\udc1b"
+       },
+       {
+        "name": "Security Compliance Audit",
+        "subtitle": "Prepare evidence checklist for upcoming SOC2 audit.",
+        "status": "Pending",
+        "meta": "High Priority",
+        "icon": "\ud83d\udcdd"
+       },
+       {
+        "name": "DNS Record Cleanup",
+        "subtitle": "Remove orphaned TXT and CNAME entries.",
+        "status": "Completed",
+        "meta": "Routine",
+        "icon": "\ud83c\udff7\ufe0f"
+       }
+      ]
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "2rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "left_title",
+         "filter_control",
+         "summary_card"
+        ]
+       },
+       {
+        "blocks": [
+         "right_title",
+         "tasks"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

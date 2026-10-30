@@ -1,0 +1,90 @@
+{
+ "label": "jev-layout-pipeline__run2",
+ "task": "T6",
+ "format": "express",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "hdr",
+      "component": "page_header",
+      "title": "Vocabulary Flashcards",
+      "subtitle": "Reviewed: 0 of 10 cards"
+     },
+     {
+      "id": "h1",
+      "component": "heading",
+      "text": "Card 1: Ephemeral"
+     },
+     {
+      "id": "b1",
+      "component": "body",
+      "text": "Tap to flip and reveal the definition: lasting for a very short time. Rate your memory to advance."
+     },
+     {
+      "id": "h2",
+      "component": "heading",
+      "text": "Card 2: Serendipity"
+     },
+     {
+      "id": "b2",
+      "component": "body",
+      "text": "Tap to flip and reveal the definition: finding valuable things by chance. Rate your memory to advance."
+     },
+     {
+      "id": "h3",
+      "component": "heading",
+      "text": "Card 3: Pragmatic"
+     },
+     {
+      "id": "b3",
+      "component": "body",
+      "text": "Tap to flip and reveal the definition: dealing with things sensibly and realistically. Rate your memory to advance."
+     },
+     {
+      "id": "h4",
+      "component": "heading",
+      "text": "Card 4: Benevolent"
+     },
+     {
+      "id": "b4",
+      "component": "body",
+      "text": "Tap to flip and reveal the definition: well meaning and kindly. Rate your memory to advance."
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "hdr",
+         "h1",
+         "b1",
+         "h2",
+         "b2",
+         "h3",
+         "b3",
+         "h4",
+         "b4"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

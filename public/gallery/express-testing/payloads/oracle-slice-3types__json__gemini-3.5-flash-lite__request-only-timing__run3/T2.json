@@ -1,0 +1,121 @@
+{
+ "label": "oracle-slice-3types__json__gemini-3.5-flash-lite__request-only-timing__run3",
+ "task": "T2",
+ "format": "json",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "metrics-overview",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display.json",
+    "theme": {
+     "primaryColor": "#2563eb"
+    }
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "metrics-overview",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "1.5rem",
+      "items": [
+       {
+        "blocks": [
+         {
+          "id": "heading-1",
+          "component": "heading",
+          "text": "Executive Dashboard"
+         },
+         {
+          "id": "body-1",
+          "component": "body",
+          "text": "Key performance indicators and monthly traffic trends overview."
+         },
+         {
+          "id": "metrics-strip",
+          "component": "metric_row",
+          "cols": 4,
+          "metrics": [
+           {
+            "value": "$48,250",
+            "label": "Monthly Revenue",
+            "prefix": "$",
+            "trend": "up",
+            "sub": "+12% vs last month"
+           },
+           {
+            "value": "1,429",
+            "label": "Active Subscriptions",
+            "trend": "up",
+            "sub": "+8% growth"
+           },
+           {
+            "value": "99.9%",
+            "label": "System Uptime",
+            "trend": "up",
+            "sub": "Optimal SLA"
+           },
+           {
+            "value": "2.4%",
+            "label": "Churn Rate",
+            "trend": "down",
+            "sub": "-0.5% improvement"
+           }
+          ]
+         },
+         {
+          "id": "chart-heading",
+          "component": "heading",
+          "text": "Performance Comparison"
+         },
+         {
+          "id": "comparison-chart",
+          "component": "chartjs_bar",
+          "labels": [
+           "Jan",
+           "Feb",
+           "Mar",
+           "Apr",
+           "May",
+           "Jun"
+          ],
+          "datasets": [
+           {
+            "label": "Current Year",
+            "data": [
+             12000,
+             19000,
+             15000,
+             22000,
+             30000,
+             48250
+            ]
+           },
+           {
+            "label": "Previous Year",
+            "data": [
+             10000,
+             15000,
+             13000,
+             18000,
+             25000,
+             38000
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

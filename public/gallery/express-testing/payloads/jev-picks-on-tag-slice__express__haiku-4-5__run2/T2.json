@@ -1,0 +1,107 @@
+{
+ "label": "jev-picks-on-tag-slice__express__haiku-4-5__run2",
+ "task": "T2",
+ "format": "express",
+ "model_id": null,
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/jg-t2.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 4,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "_inline_1"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_2"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_3"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_4"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "_inline_1",
+      "component": "metric_row",
+      "cols": 1,
+      "accent": "#0066cc",
+      "metrics": [
+       {
+        "value": "156",
+        "label": "Total Revenue",
+        "prefix": "$",
+        "trend": "up"
+       }
+      ]
+     },
+     {
+      "id": "_inline_2",
+      "component": "metric_row",
+      "cols": 1,
+      "accent": "#00aa44",
+      "metrics": [
+       {
+        "value": "12.5",
+        "label": "Growth Rate",
+        "suffix": "%",
+        "trend": "up"
+       }
+      ]
+     },
+     {
+      "id": "_inline_3",
+      "component": "metric_row",
+      "cols": 1,
+      "accent": "#ff9900",
+      "metrics": [
+       {
+        "value": "892",
+        "label": "Active Users",
+        "trend": "down"
+       }
+      ]
+     },
+     {
+      "id": "_inline_4",
+      "component": "metric_row",
+      "cols": 1,
+      "accent": "#cc0033",
+      "metrics": [
+       {
+        "value": "3.2",
+        "label": "Avg. Session",
+        "suffix": " min",
+        "trend": "up"
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

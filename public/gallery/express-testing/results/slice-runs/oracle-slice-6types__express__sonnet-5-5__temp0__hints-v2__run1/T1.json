@@ -1,0 +1,42 @@
+{
+ "task": "T1",
+ "condition": "DT_sonnet-5-5H2",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-sonnet-5-5",
+ "hints": true,
+ "label": "oracle-slice-6types__express__sonnet-5-5__temp0__hints-v2__run1",
+ "agent_type": "T1",
+ "catalogue": "D-t1.json",
+ "atoms_in_catalogue": 28,
+ "prompt_chars": 17769,
+ "slot_recall": [
+  5,
+  5
+ ],
+ "secs": 14.9,
+ "usage": {
+  "input_tokens": 6606,
+  "output_tokens": 1925
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns"
+ ],
+ "score": {
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "title": false,
+   "concept sections (x3)": false,
+   "worked example": false,
+   "3-question quiz": false,
+   "quiz result": false
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"water-cycle-lesson\")\nroot = columns(cols=2, gap=\"2rem\", align=\"top\", items=[\n  {blocks: [\n    {type: \"page_header\", title: \"The Water Cycle\", subtitle: \"How water moves between the oceans, the air and the land\", icon: \"\ud83d\udca7\", tag: \"Earth Science\", accent: \"#0284c7\"},\n    {type: \"heading\", text: \"1. Evaporation\"},\n    {type: \"body\", text: \"The Sun heats water in oceans, lakes and rivers. Liquid water turns into water vapor, an invisible gas that rises into the atmosphere. Plants also release vapor through their leaves, which is called transpiration.\"},\n    {type: \"heading\", text: \"2. Condensation\"},\n    {type: \"body\", text: \"As water vapor rises it cools. The cooled vapor turns back into tiny liquid droplets around dust particles. Billions of these droplets gather to form clouds.\"},\n    {type: \"heading\", text: \"3. Precipitation and Collection\"},\n    {type: \"body\", text: \"When cloud droplets grow heavy enough, they fall as rain, snow, sleet or hail. The water runs off into rivers, soaks into the ground or collects in oceans and lakes, and the cycle begins again.\"},\n    {type: \"concept_rung\", kind: \"example\", badge: \"EX\", title: \"Worked example: a puddle on a warm day\", body: \"A puddle forms after a rainstorm. By afternoon it has disappeared. Where did the water go?\", code: \"1. Sunlight warms the puddle        -> evaporation\\n2. Vapor rises and cools aloft       -> condensation\\n3. Droplets gather into clouds       -> cloud formation\\n4. Heavy clouds release water        -> precipitation\", code_caption: \"Tracing one puddle through the cycle\", takeaway: \"The puddle did not vanish. Its water changed state and will return as rain.\"}\n  ]},\n  {blocks: [\n    {type: \"heading\", text: \"Self-check quiz\"},\n    {type: \"quiz_set\", title: \"Check your understanding\", pass_score: 70, accent: \"#0284c7\", questions: [\n      {question: \"Which process turns liquid water into water vapor?\", options: [\"Condensation\", \"Evaporation\", \"Precipitation\", \"Collection\"], correct: 1, explanation: \"Evaporation happens when heat from the Sun changes liquid water into a gas.\"},\n      {question: \"What forms when water vapor cools and turns back into droplets?\", options: [\"Clouds\", \"Groundwater\", \"Glaciers\", \"Wind\"], correct: 0, explanation: \"Condensation of vapor into droplets is how clouds form.\"},\n      {question: \"Which of these is NOT a form of precipitation?\", options: [\"Rain\", \"Snow\", \"Hail\", \"Transpiration\"], correct: 3, explanation: \"Transpiration is water vapor released by plants. It is part of evaporation, not precipitation.\"}\n    ]}\n  ]}\n])\n</a2ui>"
+}

@@ -1,0 +1,74 @@
+{
+ "label": "oracle-slice-3types__express__haiku-4-5__run2",
+ "task": "T5",
+ "format": "express",
+ "model_id": null,
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "pricing_tier_group",
+      "tiers": [
+       {
+        "name": "Starter",
+        "price": "$29",
+        "description": "Perfect for individuals",
+        "features": [
+         "Up to 10 projects",
+         "Basic analytics",
+         "Community support",
+         "1 GB storage"
+        ],
+        "cta_label": "Get Started",
+        "cta_url": "https://example.com/starter"
+       },
+       {
+        "name": "Professional",
+        "price": "$79",
+        "description": "Ideal for growing teams",
+        "features": [
+         "Unlimited projects",
+         "Advanced analytics",
+         "Priority email support",
+         "100 GB storage",
+         "Custom integrations",
+         "Team collaboration"
+        ],
+        "cta_label": "Get Started",
+        "cta_url": "https://example.com/professional",
+        "recommended": true
+       },
+       {
+        "name": "Enterprise",
+        "price": "Custom",
+        "description": "For large organizations",
+        "features": [
+         "Unlimited everything",
+         "Real-time analytics",
+         "24/7 phone & email support",
+         "Unlimited storage",
+         "Custom integrations",
+         "Dedicated account manager",
+         "SLA guarantee"
+        ],
+        "cta_label": "Contact Sales",
+        "cta_url": "https://example.com/enterprise"
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,47 @@
+{
+ "task": "T5",
+ "condition": "CX_gemini-3.5-flash-l",
+ "temperature_applied": false,
+ "format": "elemental",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash-lite",
+ "hints": false,
+ "label": "oracle-slice-3types__elemental__gemini-3.5-flash-lite__first-run-timing-invalid__run1",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "C-marketing-commerce.json",
+ "atoms_in_catalogue": 23,
+ "prompt_chars": 12539,
+ "slot_recall": [
+  1,
+  1
+ ],
+ "secs": 19.3,
+ "usage": {
+  "input_tokens": 3611,
+  "output_tokens": 371
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "heading",
+  "pricing_tier_group"
+ ],
+ "score": {
+  "per_approach": {
+   "tier_cards": {
+    "precision": 0.5,
+    "recall": 1.0,
+    "f1": 0.667
+   },
+   "comparison_table": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": null
+   }
+  },
+  "best_approach": "tier_cards",
+  "f1": 0.667
+ },
+ "reply": "<a2ui>\n  <body>\n    <script type=\"application/json\">\n      {\n        \"pricing\": {\n          \"tiers\": [\n            {\n              \"name\": \"Starter\",\n              \"price\": \"$9\",\n              \"period\": \"/month\",\n              \"description\": \"Essential features for individuals and small projects.\",\n              \"cta_label\": \"Get Started\",\n              \"cta_url\": \"/starter\",\n              \"features\": [\"1 User\", \"5GB Storage\", \"Community Support\"]\n            },\n            {\n              \"name\": \"Pro\",\n              \"price\": \"$29\",\n              \"period\": \"/month\",\n              \"description\": \"Advanced features for professionals and growing teams.\",\n              \"cta_label\": \"Go Pro\",\n              \"cta_url\": \"/pro\",\n              \"recommended\": true,\n              \"features\": [\"Unlimited Users\", \"100GB Storage\", \"Priority Support\", \"Advanced Analytics\"]\n            },\n            {\n              \"name\": \"Enterprise\",\n              \"price\": \"$99\",\n              \"period\": \"/month\",\n              \"description\": \"Maximum power and security for large-scale operations.\",\n              \"cta_label\": \"Contact Sales\",\n              \"cta_url\": \"/enterprise\",\n              \"features\": [\"Dedicated Infrastructure\", \"Unlimited Storage\", \"24/7 Phone Support\", \"Custom Integrations\"]\n            }\n          ]\n        }\n      }\n    </script>\n\n    <ui-heading id=\"root\" text=\"Choose Your Plan\" />\n    <ui-pricing_tier_group id=\"tier-group\" tiers=\"{$/pricing/tiers}\" />\n  </body>\n</a2ui>"
+}

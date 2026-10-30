@@ -1,0 +1,39 @@
+{
+ "task": "T2",
+ "condition": "JB",
+ "label": "jev-picks-on-rule-slice__express__haiku-4-5__run3",
+ "agent_type": "jev-narrowed",
+ "catalogue": "JB-T2.json",
+ "atoms_in_catalogue": 9,
+ "prompt_chars": 6944,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 2.6,
+ "usage": {
+  "input_tokens": 1953,
+  "output_tokens": 223
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns",
+  "stat_card",
+  "stat_card",
+  "stat_card",
+  "stat_card",
+  "benchmark_comparison"
+ ],
+ "score": {
+  "precision": 0.833,
+  "recall": 1.0,
+  "f1": 0.909,
+  "slot_hits": {
+   "KPI tile (x4)": true,
+   "trend (required only if metric_row was chosen; stat_card's own delta already satisfies it)": true,
+   "comparison chart": true
+  }
+ },
+ "reply": "<a2ui>\nroot = columns(4, \"1.5rem\", \"top\", [\n  {blocks: [stat_card(\"$1.2M\", \"Revenue\", \"+12%\", true, \"green\")]},\n  {blocks: [stat_card(\"8,432\", \"Active Users\", \"+5%\", true, \"blue\")]},\n  {blocks: [stat_card(\"2.3s\", \"Avg Response Time\", \"-8%\", false, \"green\")]},\n  {blocks: [stat_card(\"94.2%\", \"Uptime\", \"+0.5%\", true, \"purple\")]},\n  {blocks: [benchmark_comparison([\n    {label: \"Product A\", value: 85},\n    {label: \"Product B\", value: 72},\n    {label: \"Product C\", value: 91},\n    {label: \"Product D\", value: 68}\n  ])]}\n])\n</a2ui>"
+}

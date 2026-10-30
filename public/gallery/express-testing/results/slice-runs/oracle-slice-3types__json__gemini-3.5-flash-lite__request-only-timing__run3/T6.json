@@ -1,0 +1,42 @@
+{
+ "task": "T6",
+ "condition": "CN_gemini-3.5-flash-l",
+ "temperature_applied": false,
+ "format": "json",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash-lite",
+ "hints": false,
+ "label": "oracle-slice-3types__json__gemini-3.5-flash-lite__request-only-timing__run3",
+ "agent_type": "Learning",
+ "catalogue": "C-learning.json",
+ "atoms_in_catalogue": 36,
+ "prompt_chars": 37811,
+ "slot_recall": [
+  2,
+  2
+ ],
+ "secs": 2.7,
+ "usage": {
+  "input_tokens": 9248,
+  "output_tokens": 829
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "page_header",
+  "xp_bar",
+  "text_callout",
+  "flashcard_deck"
+ ],
+ "score": {
+  "precision": 0.5,
+  "recall": 1.0,
+  "f1": 0.667,
+  "slot_hits": {
+   "flashcard deck": true,
+   "progress indicator": true
+  }
+ },
+ "reply": "<a2ui-json>\n{\n  \"version\": \"v0.9.1\",\n  \"createSurface\": {\n    \"surfaceId\": \"vocab-flashcards\",\n    \"catalogId\": \"https://a2uicatalog.ai/catalog/c-learning.json\",\n    \"theme\": {\n      \"primaryColor\": \"#4f46e5\"\n    },\n    \"sendDataModel\": false\n  }\n}\n</a2ui-json>\n\n<a2ui-json>\n{\n  \"version\": \"v0.9.1\",\n  \"updateComponents\": {\n    \"surfaceId\": \"vocab-flashcards\",\n    \"components\": [\n      {\n        \"id\": \"root\",\n        \"component\": \"page_header\",\n        \"title\": \"Vocabulary Builder\",\n        \"subtitle\": \"Review your daily terms with interactive flashcards and track your progress.\",\n        \"icon\": \"\ud83d\udcda\",\n        \"tag\": \"Daily Practice\",\n        \"accent\": \"#4f46e5\"\n      },\n      {\n        \"id\": \"xp-progress\",\n        \"component\": \"xp_bar\",\n        \"level_label\": \"Session Progress \u2014 10 Words\",\n        \"xp_current\": 10,\n        \"xp_next\": 10,\n        \"accent\": \"#4f46e5\",\n        \"show_flash\": true\n      },\n      {\n        \"id\": \"deck-intro\",\n        \"component\": \"text_callout\",\n        \"variant\": \"info\",\n        \"title\": \"Instructions\",\n        \"description\": \"Click or hover over any card in the deck below to reveal its definition and test your retention.\"\n      },\n      {\n        \"id\": \"vocabulary-deck\",\n        \"component\": \"flashcard_deck\",\n        \"accent\": \"#4f46e5\",\n        \"label_front\": \"TERM\",\n        \"label_back\": \"DEFINITION\",\n        \"cards\": [\n          {\n            \"front\": \"Ephemeral\",\n            \"back\": \"Lasting for a very short time.\"\n          },\n          {\n            \"front\": \"Serendipity\",\n            \"back\": \"The occurrence of events by chance in a happy or beneficial way.\"\n          },\n          {\n            \"front\": \"Pragmatic\",\n            \"back\": \"Dealing with things sensibly and realistically in a way that is based on practical rather than theoretical considerations.\"\n          },\n          {\n            \"front\": \"Mellifluous\",\n            \"back\": \"(Of a voice or words) sweet or musical; pleasant to hear.\"\n          },\n          {\n            \"front\": \"Ineffable\",\n            \"back\": \"Too great or extreme to be expressed or described in words.\"\n          },\n          {\n            \"front\": \"Petrichor\",\n            \"back\": \"A pleasant smell that frequently accompanies the first rain after a long period of warm, dry weather.\"\n          },\n          {\n            \"front\": \"Luminous\",\n            \"back\": \"Full of or shedding light; bright or shining, especially in the dark.\"\n          },\n          {\n            \"front\": \"Resilience\",\n            \"back\": \"The capacity to recover quickly from difficulties; toughness.\"\n          },\n          {\n            \"front\": \"Halcyon\",\n            \"back\": \"Denoting a period of time in the past that was idyllically happy and peaceful.\"\n          },\n          {\n            \"front\": \"Solitude\",\n            \"back\": \"The state or situation of being alone.\"\n          }\n        ]\n      }\n    ]\n  }\n}\n</a2ui-json>"
+}

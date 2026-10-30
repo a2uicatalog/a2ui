@@ -1,0 +1,88 @@
+{
+ "label": "oracle-slice-3types__express__haiku-5-5__run2",
+ "task": "T5",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "pricing_tier_group",
+      "tiers": [
+       {
+        "name": "Starter",
+        "price": "$9/mo",
+        "features": [
+         "Up to 3 projects",
+         "Basic analytics",
+         "Email support"
+        ],
+        "recommended": false,
+        "cta_label": "Choose Starter",
+        "action": {
+         "event": {
+          "name": "select_plan",
+          "context": {
+           "plan": "starter"
+          }
+         }
+        }
+       },
+       {
+        "name": "Pro",
+        "price": "$29/mo",
+        "features": [
+         "Unlimited projects",
+         "Advanced analytics",
+         "Priority support",
+         "Team collaboration"
+        ],
+        "recommended": true,
+        "cta_label": "Choose Pro",
+        "action": {
+         "event": {
+          "name": "select_plan",
+          "context": {
+           "plan": "pro"
+          }
+         }
+        }
+       },
+       {
+        "name": "Business",
+        "price": "$99/mo",
+        "features": [
+         "Everything in Pro",
+         "SSO and audit logs",
+         "Dedicated account manager",
+         "Custom integrations"
+        ],
+        "recommended": false,
+        "cta_label": "Choose Business",
+        "action": {
+         "event": {
+          "name": "select_plan",
+          "context": {
+           "plan": "business"
+          }
+         }
+        }
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

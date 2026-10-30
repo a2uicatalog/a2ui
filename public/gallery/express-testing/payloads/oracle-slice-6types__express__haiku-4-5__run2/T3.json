@@ -1,0 +1,115 @@
+{
+ "label": "oracle-slice-6types__express__haiku-4-5__run2",
+ "task": "T3",
+ "format": "express",
+ "model_id": null,
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/d-t3.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "items": [
+       {
+        "blocks": [
+         "_inline_1"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_2",
+         "_inline_3"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_4",
+         "_inline_5"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_6"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "_inline_1",
+      "component": "gradient_hero",
+      "title": "Discover Amazing Products",
+      "subtitle": "Experience innovation and quality like never before",
+      "cta_label": "Get Started",
+      "cta_url": "https://example.com/signup"
+     },
+     {
+      "id": "_inline_2",
+      "component": "heading",
+      "text": "Why Choose Us"
+     },
+     {
+      "id": "_inline_3",
+      "component": "feature_grid",
+      "columns": 3,
+      "features": [
+       {
+        "icon": "\u26a1",
+        "title": "Lightning Fast",
+        "description": "Experience blazing-fast performance and seamless interactions"
+       },
+       {
+        "icon": "\ud83d\udd12",
+        "title": "Secure & Reliable",
+        "description": "Enterprise-grade security to protect your data"
+       },
+       {
+        "icon": "\ud83c\udfaf",
+        "title": "Easy to Use",
+        "description": "Intuitive interface designed for everyone"
+       }
+      ]
+     },
+     {
+      "id": "_inline_4",
+      "component": "heading",
+      "text": "What Our Customers Say"
+     },
+     {
+      "id": "_inline_5",
+      "component": "testimonial_card",
+      "text": "This product transformed how we work. The quality and support are exceptional.",
+      "author_name": "Sarah Johnson",
+      "author_title": "Product Manager at TechCorp",
+      "author_avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah",
+      "rating": 5
+     },
+     {
+      "id": "_inline_6",
+      "component": "cta_section",
+      "heading": "Ready to Get Started?",
+      "body": "Join thousands of satisfied customers and transform your experience today.",
+      "primary_cta": {
+       "label": "Start Free Trial",
+       "url": "https://example.com/trial"
+      },
+      "secondary_cta": {
+       "label": "Learn More",
+       "url": "https://example.com/features"
+      }
+     }
+    ]
+   }
+  }
+ ]
+}

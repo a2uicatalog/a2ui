@@ -1,0 +1,172 @@
+{
+ "label": "tag-slice__express__haiku-5-5__run1",
+ "task": "T1",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "water-cycle-lesson",
+    "catalog_id": "https://a2uicatalog.ai/catalog/g-learning.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "water-cycle-lesson",
+    "components": [
+     {
+      "id": "header",
+      "component": "page_header",
+      "title": "The Water Cycle",
+      "subtitle": "How water moves through air, land and sea",
+      "icon": "\ud83d\udca7",
+      "tag": "Lesson 1",
+      "accent": "#0e7bb8",
+      "theme": "light"
+     },
+     {
+      "id": "evap_h",
+      "component": "heading",
+      "text": "1. Evaporation"
+     },
+     {
+      "id": "evap_b",
+      "component": "body",
+      "text": "Heat from the sun warms water in oceans, lakes and rivers. Molecules at the surface gain enough energy to break free and rise into the air as water vapour."
+     },
+     {
+      "id": "cond_h",
+      "component": "heading",
+      "text": "2. Condensation"
+     },
+     {
+      "id": "cond_b",
+      "component": "body",
+      "text": "As water vapour rises, it cools and turns back into tiny liquid droplets. These droplets cluster around dust particles and gather into clouds."
+     },
+     {
+      "id": "prec_h",
+      "component": "heading",
+      "text": "3. Precipitation and Collection"
+     },
+     {
+      "id": "prec_b",
+      "component": "body",
+      "text": "When droplets grow heavy enough, they fall as rain, snow, sleet or hail. The water then soaks into the ground or runs off into rivers and lakes, eventually returning to the oceans to begin the cycle again."
+     },
+     {
+      "id": "ex_h",
+      "component": "heading",
+      "text": "Worked Example: A Puddle Disappears"
+     },
+     {
+      "id": "ex_b",
+      "component": "body",
+      "text": "A puddle left on a sunny pavement is gone by evening. Trace where the water goes:"
+     },
+     {
+      "id": "ex_steps",
+      "component": "steps",
+      "items": [
+       {
+        "label": "Heating",
+        "text": "The sun warms the pavement and the puddle's surface water."
+       },
+       {
+        "label": "Evaporation",
+        "text": "Warm water molecules escape into the air as vapour, so the puddle shrinks."
+       },
+       {
+        "label": "Condensation",
+        "text": "Some vapour cools above the street and forms a tiny cloud, if the air is cool enough."
+       },
+       {
+        "label": "Precipitation",
+        "text": "On a cooler day, that water could fall again as rain."
+       }
+      ]
+     },
+     {
+      "id": "ex_tip",
+      "component": "callout",
+      "kind": "tip",
+      "title": "Key idea",
+      "text": "Evaporation needs energy, and sunlight is the main energy source driving the whole water cycle."
+     },
+     {
+      "id": "check_h",
+      "component": "heading",
+      "text": "Self-Check"
+     },
+     {
+      "id": "quiz",
+      "component": "quiz_set",
+      "title": "Check Your Understanding",
+      "questions": [
+       {
+        "question": "What process turns liquid water into water vapour?",
+        "options": [
+         "Condensation",
+         "Evaporation",
+         "Precipitation",
+         "Runoff"
+        ],
+        "correct": 1,
+        "explanation": "Evaporation is driven by heat, which lets surface molecules escape as vapour."
+       },
+       {
+        "question": "What causes water vapour to form droplets in clouds?",
+        "options": [
+         "Cooling",
+         "Heating",
+         "Freezing",
+         "Compression of the ground"
+        ],
+        "correct": 0,
+        "explanation": "When vapour cools, it condenses into droplets that gather into clouds."
+       },
+       {
+        "question": "Which step returns water from the land to the oceans?",
+        "options": [
+         "Evaporation",
+         "Transpiration",
+         "Precipitation and runoff",
+         "Condensation"
+        ],
+        "correct": 2,
+        "explanation": "Precipitation brings water down, and runoff carries it over land into rivers and eventually the sea."
+       }
+      ],
+      "pass_score": 70,
+      "accent": "#0e7bb8"
+     },
+     {
+      "id": "root",
+      "component": "reveal",
+      "animation": "stagger",
+      "duration": 500,
+      "delay": 0,
+      "stagger_delay": 120,
+      "blocks": [
+       "header",
+       "evap_h",
+       "evap_b",
+       "cond_h",
+       "cond_b",
+       "prec_h",
+       "prec_b",
+       "ex_h",
+       "ex_b",
+       "ex_steps",
+       "ex_tip",
+       "check_h",
+       "quiz"
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

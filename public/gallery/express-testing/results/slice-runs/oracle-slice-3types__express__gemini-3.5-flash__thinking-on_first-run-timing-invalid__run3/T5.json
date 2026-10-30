@@ -1,0 +1,46 @@
+{
+ "task": "T5",
+ "condition": "C_gemini-3.5-flash",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash",
+ "hints": false,
+ "label": "oracle-slice-3types__express__gemini-3.5-flash__thinking-on_first-run-timing-invalid__run3",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "C-marketing-commerce.json",
+ "atoms_in_catalogue": 23,
+ "prompt_chars": 12467,
+ "slot_recall": [
+  1,
+  1
+ ],
+ "secs": 13.3,
+ "usage": {
+  "input_tokens": 3402,
+  "output_tokens": 3165
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "pricing_tier_group"
+ ],
+ "score": {
+  "per_approach": {
+   "tier_cards": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+   },
+   "comparison_table": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": null
+   }
+  },
+  "best_approach": "tier_cards",
+  "f1": 1.0
+ },
+ "reply": "<a2ui>\ntiers_data = [\n  {\n    \"title\": \"Starter\",\n    \"name\": \"Starter\",\n    \"price\": \"$19\",\n    \"frequency\": \"/mo\",\n    \"interval\": \"month\",\n    \"description\": \"Essential features for individuals and small projects.\",\n    \"features\": [\n      \"Access to basic templates\",\n      \"Up to 5 active projects\",\n      \"Community support\",\n      \"10GB secure storage\"\n    ],\n    \"cta_label\": \"Start Free Trial\",\n    \"button_label\": \"Start Free Trial\",\n    \"button_text\": \"Start Free Trial\",\n    \"cta_url\": \"https://example.com/signup?plan=starter\",\n    \"button_url\": \"https://example.com/signup?plan=starter\",\n    \"url\": \"https://example.com/signup?plan=starter\",\n    \"popular\": false,\n    \"recommended\": false,\n    \"most_popular\": false\n  },\n  {\n    \"title\": \"Professional\",\n    \"name\": \"Professional\",\n    \"price\": \"$49\",\n    \"frequency\": \"/mo\",\n    \"interval\": \"month\",\n    \"description\": \"Perfect for growing teams and professional creators.\",\n    \"features\": [\n      \"Everything in Starter\",\n      \"Unlimited active projects\",\n      \"Priority 24/7 support\",\n      \"100GB secure storage\",\n      \"Advanced analytics dashboard\",\n      \"Custom domain integration\"\n    ],\n    \"cta_label\": \"Upgrade to Pro\",\n    \"button_label\": \"Upgrade to Pro\",\n    \"button_text\": \"Upgrade to Pro\",\n    \"cta_url\": \"https://example.com/signup?plan=pro\",\n    \"button_url\": \"https://example.com/signup?plan=pro\",\n    \"url\": \"https://example.com/signup?plan=pro\",\n    \"popular\": true,\n    \"recommended\": true,\n    \"most_popular\": true\n  },\n  {\n    \"title\": \"Enterprise\",\n    \"name\": \"Enterprise\",\n    \"price\": \"$149\",\n    \"frequency\": \"/mo\",\n    \"interval\": \"month\",\n    \"description\": \"Dedicated power and custom security for large scales.\",\n    \"features\": [\n      \"Everything in Professional\",\n      \"Dedicated account manager\",\n      \"SLA guaranteed uptime\",\n      \"Unlimited secure storage\",\n      \"SSO & advanced security\",\n      \"Custom API access\"\n    ],\n    \"cta_label\": \"Contact Sales\",\n    \"button_label\": \"Contact Sales\",\n    \"button_text\": \"Contact Sales\",\n    \"cta_url\": \"https://example.com/contact\",\n    \"button_url\": \"https://example.com/contact\",\n    \"url\": \"https://example.com/contact\",\n    \"popular\": false,\n    \"recommended\": false,\n    \"most_popular\": false\n  }\n]\n\nroot = pricing_tier_group(tiers=tiers_data)\n</a2ui>"
+}

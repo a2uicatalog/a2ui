@@ -1,0 +1,40 @@
+{
+ "task": "T4",
+ "condition": "DTN_sonnet-5-5",
+ "temperature_applied": false,
+ "format": "json",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-sonnet-5-5",
+ "hints": false,
+ "label": "oracle-slice-6types__json__sonnet-5-5__temp0__run2",
+ "agent_type": "T4",
+ "catalogue": "D-t4.json",
+ "atoms_in_catalogue": 20,
+ "prompt_chars": 21258,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 15.1,
+ "usage": {
+  "input_tokens": 8261,
+  "output_tokens": 1958
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns"
+ ],
+ "score": {
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "list": false,
+   "status indicator": false,
+   "filter control": false
+  }
+ },
+ "reply": "<a2ui-json>\n[\n  {\n    \"version\": \"v0.9.1\",\n    \"createSurface\": {\n      \"surfaceId\": \"status_list\",\n      \"catalogId\": \"https://a2uicatalog.ai/catalog/d-t4.json\"\n    }\n  },\n  {\n    \"version\": \"v0.9.1\",\n    \"updateComponents\": {\n      \"surfaceId\": \"status_list\",\n      \"components\": [\n        {\n          \"id\": \"root\",\n          \"component\": \"columns\",\n          \"cols\": 1,\n          \"gap\": \"1rem\",\n          \"align\": \"top\",\n          \"items\": [\n            {\n              \"blocks\": [\n                {\n                  \"id\": \"list_heading\",\n                  \"component\": \"heading\",\n                  \"text\": \"Work items\"\n                },\n                {\n                  \"id\": \"status_filter\",\n                  \"component\": \"segmented_control\",\n                  \"name\": \"status_filter\",\n                  \"selected_value\": \"all\",\n                  \"options\": [\n                    { \"label\": \"All\", \"value\": \"all\" },\n                    { \"label\": \"Active\", \"value\": \"active\" },\n                    { \"label\": \"Pending\", \"value\": \"pending\" },\n                    { \"label\": \"Blocked\", \"value\": \"blocked\" },\n                    { \"label\": \"Done\", \"value\": \"done\" }\n                  ]\n                },\n                {\n                  \"id\": \"items_list\",\n                  \"component\": \"entity_list\",\n                  \"items\": [\n                    { \"name\": \"Migrate billing service\", \"subtitle\": \"Moving invoices to the new payments API.\", \"icon\": \"\ud83d\udcb3\", \"status\": \"Active\" },\n                    { \"name\": \"Update onboarding copy\", \"subtitle\": \"Waiting on legal review of the revised terms.\", \"icon\": \"\ud83d\udcdd\", \"status\": \"Pending\" },\n                    { \"name\": \"Fix login redirect loop\", \"subtitle\": \"Blocked by an upstream SSO provider outage.\", \"icon\": \"\ud83d\udd10\", \"status\": \"Blocked\" },\n                    { \"name\": \"Quarterly security audit\", \"subtitle\": \"All findings resolved and report signed off.\", \"icon\": \"\ud83d\udee1\ufe0f\", \"status\": \"Done\" },\n                    { \"name\": \"Redesign dashboard charts\", \"subtitle\": \"Second round of mockups in progress.\", \"icon\": \"\ud83d\udcca\", \"status\": \"Active\" },\n                    { \"name\": \"Provision staging database\", \"subtitle\": \"Queued until the infrastructure budget is approved.\", \"icon\": \"\ud83d\uddc4\ufe0f\", \"status\": \"Pending\" },\n                    { \"name\": \"Integrate partner webhook\", \"subtitle\": \"Blocked pending API credentials from the partner.\", \"icon\": \"\ud83d\udd17\", \"status\": \"Blocked\" },\n                    { \"name\": \"Publish release notes\", \"subtitle\": \"Shipped with version 2.4 on Monday.\", \"icon\": \"\ud83d\udce3\", \"status\": \"Done\" }\n                  ]\n                }\n              ]\n            }\n          ]\n        }\n      ]\n    }\n  }\n]\n</a2ui-json>\n\nThe UI has a segmented filter (All, Active, Pending, Blocked, Done) above a list of eight items. Each item shows a title, a status and a one-line detail.\n\nThe catalog has no way to wire the filter to the list. The filter control is in place, but the client has to do the filtering. Also, the catalog has no single-column container, so I used a one-column `columns` layout as the root."
+}

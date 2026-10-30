@@ -1,0 +1,33 @@
+{
+ "task": "T3",
+ "condition": "E",
+ "label": "wrong-domain-slice__express__haiku-4-5__run1",
+ "agent_type": "Learning",
+ "catalogue": "B-learning.json",
+ "atoms_in_catalogue": 184,
+ "prompt_chars": 88519,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 5.3,
+ "usage": {
+  "input_tokens": 24766,
+  "output_tokens": 501
+ },
+ "valid": false,
+ "error": "A2uiCompilationParseError: Failed to parse expression: Syntax error at line 18:14: mismatched input '=' expecting ':' (line 18) - Line 18, Col 14 - Help: Please correct the syntax error in your Express DSL.",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "hero": false,
+   "feature columns (x3)": false,
+   "testimonial": false,
+   "CTA": false
+  }
+ },
+ "reply": "<a2ui>\nroot = columns(cols=1, items=[\n  {blocks: [\n    gradient_hero(\n      title=\"Transform Your Business Today\",\n      subtitle=\"Unlock powerful tools designed to help you achieve more, faster\",\n      badge=\"Welcome\",\n      accent=\"#4f46e5\",\n      cta_label=\"Get Started\",\n      cta_url=\"#pricing\"\n    )\n  ]},\n  {blocks: [\n    heading(text=\"Why Choose Us\"),\n    feature_grid(\n      columns=3,\n      features=[\n        {\n          icon=\"\u26a1\",\n          title=\"Lightning Fast\",\n          description=\"Experience blazing-fast performance that keeps your team productive\"\n        },\n        {\n          icon=\"\ud83d\udd12\",\n          title=\"Secure & Reliable\",\n          description=\"Enterprise-grade security with 99.9% uptime guarantee\"\n        },\n        {\n          icon=\"\ud83c\udfaf\",\n          title=\"Easy Integration\",\n          description=\"Seamlessly connect with your existing tools and workflows\"\n        }\n      ]\n    )\n  ]},\n  {blocks: [\n    spacer(height=\"2rem\"),\n    heading(text=\"What Our Customers Say\"),\n    blockquote_with_avatar(\n      quote=\"This platform completely transformed how we work. We've cut our project timelines in half and our team has never been happier.\",\n      author_name=\"Sarah Chen\",\n      author_title=\"Product Manager at TechCorp\",\n      avatar_url=\"https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop\"\n    )\n  ]},\n  {blocks: [\n    spacer(height=\"2rem\"),\n    cta_section(\n      heading=\"Ready to Get Started?\",\n      body=\"Join thousands of teams already using our platform to transform their workflows\",\n      primary_cta={label: \"Start Free Trial\", url: \"#signup\"},\n      secondary_cta={label: \"View Pricing\", url: \"#pricing\"}\n    )\n  ]}\n])\n</a2ui>"
+}

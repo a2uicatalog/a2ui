@@ -1,0 +1,43 @@
+{
+ "task": "T4",
+ "condition": "CX_gemini-3.5-flash-l",
+ "temperature_applied": false,
+ "format": "elemental",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash-lite",
+ "hints": false,
+ "label": "oracle-slice-3types__elemental__gemini-3.5-flash-lite__request-only-timing__run1",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 16902,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 1.9,
+ "usage": {
+  "input_tokens": 4993,
+  "output_tokens": 548
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "heading",
+  "segmented_control",
+  "entity_list",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.5,
+  "recall": 0.667,
+  "f1": 0.571,
+  "slot_hits": {
+   "list": true,
+   "status indicator": false,
+   "filter control": true
+  }
+ },
+ "reply": "<a2ui>\n  <body>\n    <script type=\"application/json\">{\n      \"filter\": \"all\",\n      \"items\": [\n        {\"title\": \"Database Migration\", \"status\": \"inprogress\", \"detail\": \"Migrating user records to AWS RDS cluster\", \"status_label\": \"In Progress\"},\n        {\"title\": \"API Gateway v2\", \"status\": \"success\", \"detail\": \"Deployed rate limiting and new auth endpoints\", \"status_label\": \"Success\"},\n        {\"title\": \"SSL Certificate Renewal\", \"status\": \"removed\", \"detail\": \"Wildcard certificate expired on *.internal.net\", \"status_label\": \"Removed\"},\n        {\"title\": \"Security Audit\", \"status\": \"inprogress\", \"detail\": \"Penetration testing ongoing by external firm\", \"status_label\": \"In Progress\"},\n        {\"title\": \"Cache Layer Upgrade\", \"status\": \"new\", \"detail\": \"Evaluate Redis Cluster vs Memcached for session store\", \"status_label\": \"New\"},\n        {\"title\": \"Billing Service Patch\", \"status\": \"success\", \"detail\": \"Fixed invoice rounding bug for international currencies\", \"status_label\": \"Success\"},\n        {\"title\": \"CI/CD Pipeline Speedup\", \"status\": \"moved\", \"detail\": \"Migrated heavy test suites to GPU runners\", \"status_label\": \"Moved\"},\n        {\"title\": \"Compliance Check\", \"status\": \"default\", \"detail\": \"Annual SOC2 Type II documentation review\", \"status_label\": \"Default\"}\n      ]\n    }</script>\n\n    <ui-columns id=\"root\" cols=\"{1}\" gap=\"1.5rem\">\n      <ui-heading id=\"h1\" text=\"Task Operations & Status\" slot=\"children\" />\n      \n      <ui-segmented_control \n        id=\"status-filter\" \n        name=\"filter\"\n        selected_value=\"{$/filter}\"\n        slot=\"children\">\n        <script type=\"application/json\" slot=\"options\">[\n          {\"label\": \"All\", \"value\": \"all\"},\n          {\"label\": \"In Progress\", \"value\": \"inprogress\"},\n          {\"label\": \"Success\", \"value\": \"success\"},\n          {\"label\": \"New\", \"value\": \"new\"}\n        ]</script>\n      </ui-segmented_control>\n\n      <ui-entity_list id=\"task-list\" slot=\"children\" items=\"{$/items}\" />\n    </ui-columns>\n  </body>\n</a2ui>"
+}

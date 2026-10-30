@@ -1,0 +1,41 @@
+{
+ "task": "T6",
+ "condition": "C_haiku-5-5H2",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": true,
+ "label": "oracle-slice-3types__express__haiku-5-5__hints-v2__run2",
+ "agent_type": "Learning",
+ "catalogue": "C-learning.json",
+ "atoms_in_catalogue": 36,
+ "prompt_chars": 21139,
+ "slot_recall": [
+  2,
+  2
+ ],
+ "secs": 5.3,
+ "usage": {
+  "input_tokens": 7807,
+  "output_tokens": 1212
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "progress_bar",
+  "flashcard_deck",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.667,
+  "recall": 1.0,
+  "f1": 0.8,
+  "slot_hits": {
+   "flashcard deck": true,
+   "progress indicator": true
+  }
+ },
+ "reply": "<a2ui>\npb = progress_bar(0, \"Reviewed\", \"#4f46e5\", true, \"0 of 10 cards reviewed\")\ndeck = flashcard_deck([{front: \"bonjour\", back: \"hello\"}, {front: \"merci\", back: \"thank you\"}, {front: \"au revoir\", back: \"goodbye\"}, {front: \"s'il vous pla\u00eet\", back: \"please\"}, {front: \"oui\", back: \"yes\"}, {front: \"non\", back: \"no\"}, {front: \"eau\", back: \"water\"}, {front: \"pain\", back: \"bread\"}, {front: \"maison\", back: \"house\"}, {front: \"chat\", back: \"cat\"}], \"#4f46e5\", \"WORD\", \"MEANING\")\nroot = columns(2, \"1.5rem\", \"top\", [{blocks: [pb]}, {blocks: [deck]}])\n</a2ui>"
+}

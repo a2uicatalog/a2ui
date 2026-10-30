@@ -1,0 +1,95 @@
+{
+ "label": "jev-picks-on-oracle-slice-6types__express__haiku-4-5__run3",
+ "task": "T5",
+ "format": "express",
+ "model_id": null,
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/jd-t5.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "pricing_tier_group",
+      "tiers": [
+       {
+        "name": "Starter",
+        "price": "$29",
+        "description": "Perfect for getting started",
+        "features": [
+         "Up to 10 projects",
+         "Basic analytics",
+         "Community support",
+         "1 GB storage"
+        ],
+        "cta": "Get Started",
+        "action": {
+         "event": {
+          "name": "select_tier",
+          "context": {
+           "tier": "starter"
+          }
+         }
+        }
+       },
+       {
+        "name": "Professional",
+        "price": "$79",
+        "description": "Best for growing teams",
+        "features": [
+         "Unlimited projects",
+         "Advanced analytics",
+         "Priority support",
+         "100 GB storage",
+         "Custom integrations",
+         "Team collaboration"
+        ],
+        "cta": "Subscribe Now",
+        "action": {
+         "event": {
+          "name": "select_tier",
+          "context": {
+           "tier": "professional"
+          }
+         }
+        },
+        "recommended": true
+       },
+       {
+        "name": "Enterprise",
+        "price": "Custom",
+        "description": "For large-scale operations",
+        "features": [
+         "Unlimited everything",
+         "Dedicated account manager",
+         "24/7 phone support",
+         "Unlimited storage",
+         "Custom integrations",
+         "Advanced security",
+         "SLA guarantee"
+        ],
+        "cta": "Contact Sales",
+        "action": {
+         "event": {
+          "name": "select_tier",
+          "context": {
+           "tier": "enterprise"
+          }
+         }
+        }
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

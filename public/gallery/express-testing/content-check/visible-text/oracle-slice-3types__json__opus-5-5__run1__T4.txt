@@ -1,0 +1,2 @@
+Did not compile.
+ A2uiRecursionError: Self-reference detected: Component 'status_filter' references itself in field 'name'

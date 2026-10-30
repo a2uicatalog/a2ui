@@ -1,0 +1,42 @@
+{
+ "task": "T4",
+ "condition": "CN_gemini-3.5-f",
+ "temperature_applied": false,
+ "format": "json",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash-lite",
+ "hints": false,
+ "label": "oracle-slice-3types__json__gemini-3.5-flash-lite__first-run-timing-invalid__run2",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 31546,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 18.6,
+ "usage": {
+  "input_tokens": 7913,
+  "output_tokens": 562
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "heading",
+  "segmented_control",
+  "data_table_sortable"
+ ],
+ "score": {
+  "precision": 0.667,
+  "recall": 0.667,
+  "f1": 0.667,
+  "slot_hits": {
+   "list": true,
+   "status indicator": false,
+   "filter control": true
+  }
+ },
+ "reply": "Here is the UI matching your brief for a list of eight items with a status and a one-line detail, featuring status filters.\n\n<a2ui-json>\n{\n  \"version\": \"v0.9.1\",\n  \"createSurface\": {\n    \"surfaceId\": \"item-list-surface\",\n    \"catalogId\": \"https://a2uicatalog.ai/catalog/c-data-display.json\",\n    \"theme\": {\n      \"primaryColor\": \"#2563eb\"\n    }\n  }\n}\n</a2ui-json>\n\n<a2ui-json>\n{\n  \"version\": \"v0.9.1\",\n  \"updateComponents\": {\n    \"surfaceId\": \"item-list-surface\",\n    \"components\": [\n      {\n        \"id\": \"root\",\n        \"component\": \"heading\",\n        \"text\": \"Project Task Management\"\n      },\n      {\n        \"id\": \"filter-segment\",\n        \"component\": \"segmented_control\",\n        \"name\": \"status_filter\",\n        \"selected_value\": \"all\",\n        \"options\": \"[{\\\"label\\\": \\\"All (8)\\\", \\\"value\\\": \\\"all\\\"}, {\\\"label\\\": \\\"In Progress\\\", \\\"value\\\": \\\"inprogress\\\"}, {\\\"label\\\": \\\"Success\\\", \\\"value\\\": \\\"success\\\"}, {\\\"label\\\": \\\"Removed\\\", \\\"value\\\": \\\"removed\\\"}]\"\n      },\n      {\n        \"id\": \"item-table\",\n        \"component\": \"data_table_sortable\",\n        \"headers\": [\"Item\", \"Status\", \"Detail\"],\n        \"rows\": [\n          [\"Database Migration\", \"InProgress\", \"Migrating legacy user tables to PostgreSQL cluster.\"],\n          [\"API Rate Limiting\", \"Success\", \"Implemented token bucket algorithm for endpoint security.\"],\n          [\"Legacy Auth Deprecation\", \"Removed\", \"Successfully decommissioned v1 OAuth endpoints.\"],\n          [\"SSL Certificate Renewal\", \"Success\", \"Automated wildcard cert deployment via Let's Encrypt.\"],\n          [\"Memory Leak Profiling\", \"InProgress\", \"Investigating heap allocations in the notification worker.\"],\n          [\"CDN Edge Caching\", \"Success\", \"Configured stale-while-revalidate headers globally.\"],\n          [\"Billing Webhook Retry\", \"Removed\", \"Replaced custom retry logic with managed queue service.\"],\n          [\"Audit Log Exporter\", \"InProgress\", \"Streaming compliance logs to S3 cold storage.\"]\n        ]\n      }\n    ]\n  }\n}\n</a2ui-json>"
+}

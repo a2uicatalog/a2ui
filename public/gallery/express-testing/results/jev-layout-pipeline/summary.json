@@ -1,0 +1,94 @@
+{
+ "quality": {
+  "pipeline_f1_v2_by_brief": {
+   "T1": 0.55,
+   "T2": 0.57,
+   "T3": 0.75,
+   "T4": 0,
+   "T5": 0,
+   "T6": 0
+  },
+  "pipeline_f1_v2_mean": 0.31,
+  "whole_screen_flashlite_express_f1_v2": 0.67
+ },
+ "time_to_layout_s": 0.18394166666666667,
+ "time_to_layout_speedups": [
+  [
+   "Flash-Lite, whole screen, Express",
+   12.3
+  ],
+  [
+   "Flash-Lite, whole screen, Direct JSON",
+   16.0
+  ],
+  [
+   "Flash-Lite, whole screen, Elemental",
+   12.8
+  ],
+  [
+   "Haiku 4.5, whole screen, Direct JSON",
+   58.7
+  ],
+  [
+   "Sonnet 5.5, whole screen, Express",
+   41.2
+  ],
+  [
+   "Sonnet 5.5, whole screen, Direct JSON",
+   82.3
+  ],
+  [
+   "Opus 5.5, whole screen, Direct JSON",
+   95.8
+  ]
+ ],
+ "pipeline": {
+  "n": 18,
+  "jev_s": 0.1837777777777778,
+  "writer_s": 1.3894444444444445,
+  "build_s": 0.0001638888888888889,
+  "compile_s": 0.020090555555555556,
+  "total_mean_s": 1.5733861111111112,
+  "writer_out_tokens": 200.55555555555554,
+  "writer_in_tokens": 200.5,
+  "jev_in_tokens": 597.5,
+  "jev_out_tokens": 101
+ },
+ "baselines": [
+  [
+   "Flash-Lite, whole screen, Express",
+   2.26,
+   1.44
+  ],
+  [
+   "Flash-Lite, whole screen, Direct JSON",
+   2.94,
+   1.87
+  ],
+  [
+   "Flash-Lite, whole screen, Elemental",
+   2.36,
+   1.5
+  ],
+  [
+   "Haiku 4.5, whole screen, Direct JSON",
+   10.79,
+   6.86
+  ],
+  [
+   "Sonnet 5.5, whole screen, Express",
+   7.58,
+   4.82
+  ],
+  [
+   "Sonnet 5.5, whole screen, Direct JSON",
+   15.14,
+   9.62
+  ],
+  [
+   "Opus 5.5, whole screen, Direct JSON",
+   17.62,
+   11.2
+  ]
+ ]
+}

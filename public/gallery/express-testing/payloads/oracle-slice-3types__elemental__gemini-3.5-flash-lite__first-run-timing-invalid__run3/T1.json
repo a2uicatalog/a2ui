@@ -1,0 +1,161 @@
+{
+ "label": "oracle-slice-3types__elemental__gemini-3.5-flash-lite__first-run-timing-invalid__run3",
+ "task": "T1",
+ "format": "elemental",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning-elemental.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "page_header",
+      "title": "The Water Cycle",
+      "subtitle": "Journey of water through Earth's atmosphere, land, and oceans",
+      "icon": "\ud83d\udca7",
+      "tag": "Lesson 1",
+      "accent": "#0284c7"
+     },
+     {
+      "id": "hero",
+      "component": "article_hero",
+      "title": "The Endless Cycle of Life",
+      "subtitle": "Discover how every drop of water on Earth has been here for billions of years, moving in a continuous loop.",
+      "image_url": "https://images.unsplash.com/photo-1428592953211-077101b2021b"
+     },
+     {
+      "id": "sec1-title",
+      "component": "heading",
+      "text": "Core Concepts"
+     },
+     {
+      "id": "concept_columns",
+      "component": "columns",
+      "cols": 3,
+      "gap": "1.5rem",
+      "items": [
+       {
+        "blocks": [
+         {
+          "type": "ui-callout",
+          "id": "c1",
+          "kind": "info",
+          "title": "1. Evaporation",
+          "text": "The Sun heats up water in rivers, lakes, and oceans, causing it to change from a liquid into water vapor and rise into the sky."
+         }
+        ]
+       },
+       {
+        "blocks": [
+         {
+          "type": "ui-callout",
+          "id": "c2",
+          "kind": "tip",
+          "title": "2. Condensation",
+          "text": "As water vapor rises high into the cooler air, it cools down and turns back into tiny liquid water droplets, forming clouds."
+         }
+        ]
+       },
+       {
+        "blocks": [
+         {
+          "type": "ui-callout",
+          "id": "c3",
+          "kind": "warning",
+          "title": "3. Precipitation",
+          "text": "When the water droplets in clouds become too heavy, they fall back to the Earth as rain, snow, sleet, or hail."
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "id": "sec2-title",
+      "component": "heading",
+      "text": "Worked Example"
+     },
+     {
+      "id": "worked_example",
+      "component": "concept_rung",
+      "badge": "EX",
+      "kind": "example",
+      "label": "WORKED EXAMPLE",
+      "title": "Tracing a Single Raindrop",
+      "Body": "Let's trace a molecule of water starting from the Pacific Ocean. It absorbs solar heat (`Evaporation`), floats up into the atmosphere where it cools and joins a cumulus cloud (`Condensation`), and eventually drops onto a mountain peak as fresh snow (`Precipitation`).",
+      "code": "Ocean (Liquid) -> Vapor -> Cloud Droplet -> Snow Crystal",
+      "code_caption": "Phase transitions during a single atmospheric journey.",
+      "takeaway": "Water never leaves the Earth; it only changes its physical state and location."
+     },
+     {
+      "id": "sec3-title",
+      "component": "heading",
+      "text": "Self-Check Quiz"
+     },
+     {
+      "id": "water_quiz",
+      "component": "quiz_set",
+      "title": "Test Your Knowledge",
+      "pass_score": 70,
+      "accent": "#0284c7",
+      "questions": {
+       "path": "/quiz_data"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_data_model": {
+    "surface_id": "main",
+    "path": "/",
+    "value": {
+     "quiz_data": [
+      {
+       "question": "What process turns liquid water into water vapor?",
+       "options": [
+        "Condensation",
+        "Evaporation",
+        "Precipitation",
+        "Collection"
+       ],
+       "correct": 1,
+       "explanation": "Evaporation is the process where liquid water absorbs heat and turns into gas or vapor."
+      },
+      {
+       "question": "Which phase comes right before precipitation in clouds?",
+       "options": [
+        "Evaporation",
+        "Transpiration",
+        "Condensation",
+        "Runoff"
+       ],
+       "correct": 2,
+       "explanation": "Condensation happens when water vapor cools down and turns back into liquid droplets, forming clouds."
+      },
+      {
+       "question": "Where does most of the precipitated water eventually end up?",
+       "options": [
+        "Oceans and lakes",
+        "Glaciers only",
+        "Atmosphere",
+        "Plant roots"
+       ],
+       "correct": 0,
+       "explanation": "Oceans and major water bodies collect the vast majority of surface runoff and precipitation."
+      }
+     ]
+    }
+   }
+  }
+ ]
+}

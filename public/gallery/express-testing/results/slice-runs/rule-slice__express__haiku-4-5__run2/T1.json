@@ -1,0 +1,49 @@
+{
+ "task": "T1",
+ "condition": "B",
+ "label": "rule-slice__express__haiku-4-5__run2",
+ "agent_type": "Learning",
+ "catalogue": "B-learning.json",
+ "atoms_in_catalogue": 184,
+ "prompt_chars": 88519,
+ "slot_recall": [
+  5,
+  5
+ ],
+ "secs": 12.1,
+ "usage": {
+  "input_tokens": 24764,
+  "output_tokens": 1154
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "color_section",
+  "heading",
+  "body",
+  "spacer",
+  "concept_ladder",
+  "concept_rung",
+  "concept_rung",
+  "concept_rung",
+  "concept_rung",
+  "spacer",
+  "heading",
+  "quiz_set",
+  "spacer",
+  "learning_objectives"
+ ],
+ "score": {
+  "precision": 0.571,
+  "recall": 0.8,
+  "f1": 0.667,
+  "slot_hits": {
+   "title": true,
+   "concept sections (x3)": true,
+   "worked example": true,
+   "3-question quiz": true,
+   "quiz result": false
+  }
+ },
+ "reply": "<a2ui>\nroot = color_section(\n  accent=\"#4f46e5\",\n  style=\"tint\",\n  blocks=[\n    heading(\"The Water Cycle\"),\n    body(\"Water constantly moves between Earth's surface and the atmosphere in an endless cycle. Understanding this process is key to comprehending weather, climate, and environmental systems.\"),\n    \n    spacer(24),\n    \n    concept_ladder(\n      title=\"Understanding the Water Cycle\",\n      eyebrow=\"CORE CONCEPT\",\n      dek=\"How water transforms and travels through our planet\",\n      hook=\"Water doesn't stay in one place\u2014it's constantly evaporating, condensing, and falling as precipitation in a continuous planetary process.\",\n      model=\"Think of it as nature's recycling system, where water changes form but never disappears.\",\n      model_note=\"This cycle has been running for billions of years.\",\n      rungs=[\n        concept_rung(\n          badge=\"1\",\n          kind=\"depth\",\n          title=\"Evaporation\",\n          body=\"Water from oceans, lakes, and rivers is heated by the sun and transforms into water vapor, rising into the atmosphere. This is the cycle's starting point.\",\n          takeaway=\"Heat + water = water vapor in the air\"\n        ),\n        concept_rung(\n          badge=\"2\",\n          kind=\"depth\",\n          title=\"Condensation\",\n          body=\"As water vapor rises and cools in the upper atmosphere, it condenses into tiny water droplets. These droplets cluster together to form clouds.\",\n          takeaway=\"Cool air + water vapor = liquid water droplets\"\n        ),\n        concept_rung(\n          badge=\"3\",\n          kind=\"depth\",\n          title=\"Precipitation\",\n          body=\"When water droplets in clouds become heavy enough, they fall back to Earth as rain, snow, sleet, or hail. This returns water to the surface.\",\n          takeaway=\"Heavy clouds + gravity = water returns to Earth\"\n        ),\n        concept_rung(\n          badge=\"EX\",\n          kind=\"example\",\n          title=\"The Complete Cycle in Action\",\n          body=\"Imagine a raindrop that falls on a mountain lake. Solar radiation heats it until it becomes water vapor and rises into the sky. As it climbs higher and encounters cooler air at 10,000 feet, it condenses into a cloud droplet. More droplets join it, and eventually the cloud becomes so saturated that the droplet falls as rain on a forest far away. It soaks into the soil, is absorbed by tree roots, and transpired back into the air through leaves. The cycle continues endlessly.\",\n          code=\"Solar Input \u2192 Evaporation \u2192 Rising Vapor \u2192 Cooling\\n     \u2192 Condensation \u2192 Cloud Formation \u2192 Precipitation\\n     \u2192 Collection \u2192 Transpiration \u2192 Back to Start\",\n          code_caption=\"The water cycle continuously repeats this sequence.\"\n        )\n      ],\n      closing_note=\"Every water molecule on Earth has cycled through this process countless times over billions of years.\"\n    ),\n    \n    spacer(32),\n    \n    heading(\"Check Your Understanding\"),\n    \n    quiz_set(\n      title=\"Water Cycle Self-Check\",\n      questions=[\n        {\n          question: \"What is the primary energy source that drives the water cycle?\",\n          options: [\"Gravity\", \"The sun's heat\", \"Wind patterns\", \"Ocean currents\"],\n          correct: 1,\n          explanation: \"The sun's heat is the primary driver\u2014it provides the energy needed to evaporate water from Earth's surface into the atmosphere.\"\n        },\n        {\n          question: \"Which process describes water vapor turning into liquid water droplets?\",\n          options: [\"Evaporation\", \"Condensation\", \"Precipitation\", \"Sublimation\"],\n          correct: 1,\n          explanation: \"Condensation is the phase change from gas (water vapor) to liquid. This occurs when water vapor cools in the upper atmosphere.\"\n        },\n        {\n          question: \"What happens to water after it falls as precipitation?\",\n          options: [\"It immediately evaporates\", \"It flows to the ocean, infiltrates soil, or is absorbed by plants\", \"It remains frozen on land\", \"It escapes to space\"],\n          correct: 1,\n          explanation: \"Precipitation can follow multiple pathways: it may run off into rivers and oceans, soak into groundwater, or be absorbed by plants and eventually transpired back to the atmosphere.\"\n        }\n      ],\n      pass_score=70,\n      accent=\"#4f46e5\"\n    ),\n    \n    spacer(24),\n    \n    learning_objectives([\n      \"Explain the three main stages of the water cycle: evaporation, condensation, and precipitation\",\n      \"Identify the sun's role as the primary energy source driving the water cycle\",\n      \"Describe the pathways water takes after precipitation falls to Earth\",\n      \"Understand how water continuously cycles through different forms and locations\"\n    ])\n  ]\n)\n</a2ui>"
+}

@@ -1,0 +1,100 @@
+{
+ "label": "oracle-slice-3types__json__haiku-5-5__run3",
+ "task": "T6",
+ "format": "json",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "vocab-flashcards",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "vocab-flashcards",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         {
+          "component": "heading",
+          "text": "Spanish Vocabulary Flashcards"
+         },
+         {
+          "component": "progress_bar",
+          "value": 0,
+          "label": "Cards reviewed",
+          "accent": "#4f46e5",
+          "show_percent": "true",
+          "caption": "0 of 10 cards reviewed"
+         }
+        ]
+       },
+       {
+        "blocks": [
+         {
+          "component": "flashcard_deck",
+          "accent": "#4f46e5",
+          "label_front": "SPANISH",
+          "label_back": "ENGLISH",
+          "cards": [
+           {
+            "front": "hola",
+            "back": "hello"
+           },
+           {
+            "front": "gracias",
+            "back": "thank you"
+           },
+           {
+            "front": "por favor",
+            "back": "please"
+           },
+           {
+            "front": "agua",
+            "back": "water"
+           },
+           {
+            "front": "casa",
+            "back": "house"
+           },
+           {
+            "front": "libro",
+            "back": "book"
+           },
+           {
+            "front": "comer",
+            "back": "to eat"
+           },
+           {
+            "front": "amigo",
+            "back": "friend"
+           },
+           {
+            "front": "grande",
+            "back": "big"
+           },
+           {
+            "front": "tiempo",
+            "back": "time / weather"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

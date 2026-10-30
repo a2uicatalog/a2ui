@@ -1,0 +1,52 @@
+{
+ "task": "T1",
+ "condition": "CX_sonnet-5-5",
+ "temperature_applied": false,
+ "format": "elemental",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "claude-sonnet-5-5",
+ "hints": false,
+ "label": "oracle-slice-3types__elemental__sonnet-5-5__run2",
+ "agent_type": "Learning",
+ "catalogue": "C-learning.json",
+ "atoms_in_catalogue": 36,
+ "prompt_chars": 21279,
+ "slot_recall": [
+  5,
+  5
+ ],
+ "secs": 18.7,
+ "usage": {
+  "input_tokens": 8148,
+  "output_tokens": 2528
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "page_header",
+  "body",
+  "heading",
+  "concept_rung",
+  "concept_rung",
+  "concept_rung",
+  "callout",
+  "heading",
+  "concept_rung",
+  "heading",
+  "quiz_set"
+ ],
+ "score": {
+  "precision": 1.0,
+  "recall": 0.8,
+  "f1": 0.889,
+  "slot_hits": {
+   "title": true,
+   "concept sections (x3)": true,
+   "worked example": true,
+   "3-question quiz": true,
+   "quiz result": false
+  }
+ },
+ "reply": "<a2ui>\n<body>\n<ui-page_header id=\"root\" title=\"The Water Cycle\" subtitle=\"How water moves between oceans, air, and land\" icon=\"\ud83d\udca7\" tag=\"Earth Science\" accent=\"#0284c7\">\n<script type=\"application/json\" slot=\"meta\">[{\"label\":\"Sections\",\"value\":\"3 concepts\"},{\"label\":\"Example\",\"value\":\"1 worked\"},{\"label\":\"Self-check\",\"value\":\"3 questions\"}]</script>\n</ui-page_header>\n\n<ui-body id=\"intro\" text=\"Water is never used up. It is constantly recycled between the surface and the atmosphere. This lesson covers the three main stages of the cycle, works through a calculation, and ends with a short self-check.\" />\n\n<ui-heading id=\"concepts-heading\" text=\"Three Core Concepts\" />\n\n<ui-concept_rung id=\"concept-evaporation\" badge=\"1\" kind=\"depth\" title=\"Evaporation\" body=\"The Sun heats water in oceans, lakes, and rivers. Liquid water gains enough energy to become water vapour, an invisible gas that rises into the air.\n\nPlants add to this through transpiration, releasing vapour from their leaves. Together the two processes are called evapotranspiration.\" takeaway=\"Heat energy turns liquid water into vapour.\" />\n\n<ui-concept_rung id=\"concept-condensation\" badge=\"2\" kind=\"depth\" title=\"Condensation\" body=\"As water vapour rises, the air cools. Cool air holds less vapour, so the vapour turns back into tiny liquid droplets around dust and salt particles.\n\nBillions of these droplets gather to form clouds. The same process puts dew on grass and fog near the ground.\" takeaway=\"Cooling turns vapour back into liquid droplets.\" />\n\n<ui-concept_rung id=\"concept-precipitation\" badge=\"3\" kind=\"depth\" title=\"Precipitation and Collection\" body=\"When cloud droplets merge and grow too heavy to stay airborne, they fall as rain, snow, sleet, or hail.\n\nThe water then collects in oceans, lakes, and rivers, soaks into the ground as groundwater, or runs off across the surface. From there the cycle starts again.\" takeaway=\"Gravity returns water to the surface, and the cycle restarts.\" />\n\n<ui-callout id=\"cycle-callout\" kind=\"tip\" title=\"Remember the order\" text=\"Evaporation, then condensation, then precipitation, then collection. The cycle has no true start or end.\" />\n\n<ui-heading id=\"example-heading\" text=\"Worked Example\" />\n\n<ui-concept_rung id=\"worked-example\" badge=\"EX\" kind=\"example\" title=\"How much energy does it take to dry a puddle?\" body=\"A puddle covers 1 m\u00b2 and is 5 mm deep. Find the mass of water, then the heat energy the Sun must supply to evaporate it. Use a latent heat of vaporisation of about 2.26 MJ per kg.\" code=\"Volume = 1 m\u00b2 \u00d7 0.005 m = 0.005 m\u00b3\nMass   = 0.005 m\u00b3 \u00d7 1000 kg/m\u00b3 = 5 kg\nEnergy = 5 kg \u00d7 2.26 MJ/kg = 11.3 MJ\" code_caption=\"Evaporating one small puddle takes about 11 megajoules of solar energy.\" takeaway=\"Evaporation moves a huge amount of energy as well as water.\" />\n\n<ui-heading id=\"quiz-heading\" text=\"Self-Check\" />\n\n<ui-quiz_set id=\"water-cycle-quiz\" title=\"Water Cycle Quiz\" pass_score=\"{67}\" accent=\"#0284c7\">\n<script type=\"application/json\" slot=\"questions\">[\n{\"question\":\"Which process turns liquid water into water vapour?\",\"options\":[\"Condensation\",\"Evaporation\",\"Precipitation\",\"Collection\"],\"correct\":1,\"explanation\":\"Evaporation happens when heat energy lets liquid water escape as a gas.\"},\n{\"question\":\"Why do clouds form as water vapour rises?\",\"options\":[\"The vapour is heated and expands\",\"The vapour freezes into ice instantly\",\"The air cools and the vapour condenses into droplets\",\"Wind pushes the vapour together\"],\"correct\":2,\"explanation\":\"Cooler air holds less vapour, so the vapour condenses into tiny droplets that form clouds.\"},\n{\"question\":\"Which of these is a form of precipitation?\",\"options\":[\"Dew\",\"Fog\",\"Snow\",\"Transpiration\"],\"correct\":2,\"explanation\":\"Snow falls from clouds, which makes it precipitation. Dew and fog form by condensation near the ground.\"}\n]</script>\n</ui-quiz_set>\n</body>\n</a2ui>"
+}

@@ -1,0 +1,43 @@
+{
+ "task": "T6",
+ "condition": "C_gemini-3.5-flash",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash",
+ "hints": false,
+ "label": "oracle-slice-3types__express__gemini-3.5-flash__thinking-on_request-only-timing__run1",
+ "agent_type": "Learning",
+ "catalogue": "C-learning.json",
+ "atoms_in_catalogue": 36,
+ "prompt_chars": 21139,
+ "slot_recall": [
+  2,
+  2
+ ],
+ "secs": 17.3,
+ "usage": {
+  "input_tokens": 5726,
+  "output_tokens": 4377
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "page_header",
+  "progress_ring",
+  "callout",
+  "flashcard_deck",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.4,
+  "recall": 1.0,
+  "f1": 0.571,
+  "slot_hits": {
+   "flashcard deck": true,
+   "progress indicator": true
+  }
+ },
+ "reply": "<a2ui>\ncards_data = [\n    {\"front\": \"Benevolent\", \"back\": \"Well-meaning and kindly. (Root: bene = good)\"},\n    {\"front\": \"Anachronism\", \"back\": \"Something belonging to a period other than that in which it exists. (Root: chron = time)\"},\n    {\"front\": \"Magnanimous\", \"back\": \"Generous or forgiving, especially toward a rival. (Root: magn = great)\"},\n    {\"front\": \"Pugnacious\", \"back\": \"Eager or quick to argue, quarrel, or fight. (Root: pugn = fight)\"},\n    {\"front\": \"Loquacious\", \"back\": \"Tending to talk a great deal; talkative. (Root: loqu = speak)\"},\n    {\"front\": \"Voracious\", \"back\": \"Wanting or devouring great quantities of food or info. (Root: vor = eat)\"},\n    {\"front\": \"Equivocate\", \"back\": \"Use ambiguous language to conceal the truth. (Root: equi = equal, voc = call)\"},\n    {\"front\": \"Ambidextrous\", \"back\": \"Able to use the right and left hands equally well. (Root: ambi = both)\"},\n    {\"front\": \"Misanthrope\", \"back\": \"A person who dislikes humankind and avoids society. (Root: mis = hate)\"},\n    {\"front\": \"Somnambulist\", \"back\": \"A person who sleepwalks. (Root: somn = sleep, ambul = walk)\"}\n]\n\nheader_block = page_header(\n    title=\"Latin & Greek Roots\",\n    subtitle=\"Master 10 high-yield vocabulary terms for advanced comprehension.\",\n    icon=\"\ud83e\udde0\",\n    tag=\"Vocabulary Study\",\n    accent=\"#4f46e5\"\n)\n\nprog_indicator = progress_ring(\n    value=70,\n    size=120,\n    stroke_width=10,\n    color=\"#4f46e5\",\n    label=\"7 of 10 Cards Reviewed\",\n    show_value=true,\n    unit=\"%\"\n)\n\nstudy_tip = callout(\n    kind=\"tip\",\n    title=\"Active Recall\",\n    text=\"Try to define the word aloud before flipping the card. Active retrieval strengthens neural connections significantly faster than passive reading!\"\n)\n\ndeck_block = flashcard_deck(\n    cards=cards_data,\n    accent=\"#4f46e5\",\n    label_front=\"VOCABULARY WORD\",\n    label_back=\"DEFINITION & ROOT ORIGIN\"\n)\n\nroot = columns(\n    cols=2,\n    gap=\"2rem\",\n    align=\"top\",\n    items=[\n        {\"blocks\": [header_block, prog_indicator, study_tip]},\n        {\"blocks\": [deck_block]}\n    ]\n)\n</a2ui>"
+}

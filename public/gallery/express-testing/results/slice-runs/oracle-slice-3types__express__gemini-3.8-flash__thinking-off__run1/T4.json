@@ -1,0 +1,44 @@
+{
+ "task": "T4",
+ "condition": "C_gemini-3.8-flash",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 32768,
+ "model_id": "gemini-3.8-flash",
+ "hints": false,
+ "label": "oracle-slice-3types__express__gemini-3.8-flash__thinking-off__run1",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 16421,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 7.6,
+ "usage": {
+  "input_tokens": 4600,
+  "output_tokens": 768
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "heading",
+  "body",
+  "segmented_control",
+  "entity_list",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.4,
+  "recall": 0.667,
+  "f1": 0.5,
+  "slot_hits": {
+   "list": true,
+   "status indicator": false,
+   "filter control": true
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"status-filtered-items-surface\")\n\nheader_block = heading(\"Resource & Task Directory\")\ndesc_block = body(\"Track, review, and filter current operations and deliverables across team domains.\")\n\nfilter_control = segmented_control(\n  options=[\n    {label: \"All (8)\", value: \"all\"},\n    {label: \"Active\", value: \"active\"},\n    {label: \"Pending\", value: \"pending\"},\n    {label: \"Completed\", value: \"completed\"},\n    {label: \"On Hold\", value: \"hold\"}\n  ],\n  selected_value=\"all\",\n  name=\"status_filter\"\n)\n\nitems_view = entity_list(\n  items=[\n    {\n      name: \"Authentication Service Redesign\",\n      subtitle: \"Migrating legacy OAuth 1.0 providers to modern OIDC flows with MFA support.\",\n      icon: \"\ud83d\udd10\",\n      status: \"Active\",\n      meta: \"Sprint 14 \u2022 85% complete\"\n    },\n    {\n      name: \"Global CDN Asset Caching\",\n      subtitle: \"Edge routing policy updates rolled out to all North American and European POPs.\",\n      icon: \"\ud83c\udf10\",\n      status: \"Completed\",\n      meta: \"Deployed yesterday \u2022 Latency -42ms\"\n    },\n    {\n      name: \"PostgreSQL 16 Cluster Upgrade\",\n      subtitle: \"Maintenance window scheduled for staging validation before production cutover.\",\n      icon: \"\ud83d\uddc4\ufe0f\",\n      status: \"Pending\",\n      meta: \"Scheduled for Friday 02:00 UTC\"\n    },\n    {\n      name: \"Billing Webhook Ingestion Engine\",\n      subtitle: \"Re-architecting event queue consumer to gracefully absorb Stripe payment spikes.\",\n      icon: \"\ud83d\udcb3\",\n      status: \"Active\",\n      meta: \"In review \u2022 PR #412\"\n    },\n    {\n      name: \"Customer Data Warehouse Export\",\n      subtitle: \"Paused pending clarification from legal on GDPR data retention compliance rules.\",\n      icon: \"\u2696\ufe0f\",\n      status: \"On Hold\",\n      meta: \"Blocked by Legal \u2022 Ticket SEC-104\"\n    },\n    {\n      name: \"Mobile Push Notification Dispatcher\",\n      subtitle: \"Unified APNs and FCM payload pipeline fully tested and merged to main.\",\n      icon: \"\ud83d\udcf1\",\n      status: \"Completed\",\n      meta: \"Shipped in v2.4.0\"\n    },\n    {\n      name: \"Elasticsearch Index Sharding Strategy\",\n      subtitle: \"Analyzing cluster disk utilization and shard count rebalancing thresholds.\",\n      icon: \"\ud83d\udd0d\",\n      status: \"Active\",\n      meta: \"Under evaluation \u2022 Cluster Green\"\n    },\n    {\n      name: \"Automated Regression Test Suite\",\n      subtitle: \"Awaiting provisioning of dedicated high-concurrency CI runner instances.\",\n      icon: \"\ud83e\uddea\",\n      status: \"Pending\",\n      meta: \"Queued \u2022 Awaiting Infra Approval\"\n    }\n  ]\n)\n\nroot = columns(\n  cols=1,\n  gap=\"1.25rem\",\n  align=\"top\",\n  items=[\n    {\n      blocks: [\n        header_block,\n        desc_block,\n        filter_control,\n        items_view\n      ]\n    }\n  ]\n)\n</a2ui>"
+}

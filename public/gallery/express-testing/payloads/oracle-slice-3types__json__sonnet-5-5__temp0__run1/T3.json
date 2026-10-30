@@ -1,0 +1,86 @@
+{
+ "label": "oracle-slice-3types__json__sonnet-5-5__temp0__run1",
+ "task": "T3",
+ "format": "json",
+ "model_id": "claude-sonnet-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "landing",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "landing",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "3rem",
+      "align": "stretch",
+      "items": [
+       {
+        "blocks": [
+         {
+          "component": "gradient_hero",
+          "id": "hero",
+          "badge": "New \u00b7 Lumen 2.0",
+          "title": "See your whole business in one clear view",
+          "subtitle": "Lumen brings your sales, customers and campaigns together so your team can spot opportunities sooner and act on them faster.",
+          "align": "center"
+         },
+         {
+          "component": "feature_grid",
+          "id": "features",
+          "heading": "Everything you need to move faster",
+          "description": "Three tools that work together, so you spend less time switching tabs.",
+          "columns": 3,
+          "features": [
+           {
+            "icon": "\ud83d\udcca",
+            "title": "Live dashboards",
+            "description": "Real-time metrics update as your data changes, with no refreshing or exporting.",
+            "color": "#4f46e5"
+           },
+           {
+            "icon": "\ud83e\udd1d",
+            "title": "Team collaboration",
+            "description": "Share views, leave comments and assign follow-ups right next to the numbers.",
+            "color": "#8b5cf6"
+           },
+           {
+            "icon": "\u26a1",
+            "title": "Instant integrations",
+            "description": "Connect your existing tools in minutes with one-click setup.",
+            "color": "#0ea5e9"
+           }
+          ]
+         },
+         {
+          "component": "testimonial_card",
+          "id": "testimonial",
+          "text": "Lumen replaced three separate tools for us. We now catch problems in minutes instead of at the end of the month.",
+          "author_name": "Priya Raman",
+          "author_title": "Head of Operations, Northwind Co.",
+          "rating": 5
+         },
+         {
+          "component": "cta_button",
+          "id": "cta",
+          "label": "Start your free trial",
+          "url": "https://example.com/signup",
+          "color": "#4f46e5"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

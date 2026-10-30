@@ -1,0 +1,154 @@
+{
+ "label": "oracle-slice-3types__express__gemini-3.5-flash-lite__first-run-timing-invalid__run1",
+ "task": "T2",
+ "format": "express",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "metric1",
+      "component": "stat_card",
+      "value": "12,480",
+      "label": "Active Users",
+      "delta": "+12.3%",
+      "is_up": true,
+      "accent": "#4CAF50"
+     },
+     {
+      "id": "metric2",
+      "component": "stat_card",
+      "value": "$48,290",
+      "label": "Monthly Revenue",
+      "delta": "+8.1%",
+      "is_up": true,
+      "accent": "#2196F3"
+     },
+     {
+      "id": "metric3",
+      "component": "stat_card",
+      "value": "99.98%",
+      "label": "System Uptime",
+      "delta": "-0.01%",
+      "is_up": false,
+      "accent": "#FF9800"
+     },
+     {
+      "id": "metric4",
+      "component": "stat_card",
+      "value": "142 ms",
+      "label": "Avg Latency",
+      "delta": "-4.5%",
+      "is_up": true,
+      "accent": "#9C27B0"
+     },
+     {
+      "id": "kpiRow",
+      "component": "columns",
+      "cols": 4,
+      "gap": "1.0rem",
+      "align": "stretch",
+      "items": [
+       {
+        "blocks": [
+         "metric1"
+        ]
+       },
+       {
+        "blocks": [
+         "metric2"
+        ]
+       },
+       {
+        "blocks": [
+         "metric3"
+        ]
+       },
+       {
+        "blocks": [
+         "metric4"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "chart",
+      "component": "chartjs_bar",
+      "labels": [
+       "Mon",
+       "Tue",
+       "Wed",
+       "Thu",
+       "Fri",
+       "Sat",
+       "Sun"
+      ],
+      "datasets": [
+       {
+        "label": "Current Week",
+        "data": [
+         1200,
+         1900,
+         1500,
+         2200,
+         3000,
+         2500,
+         2100
+        ]
+       },
+       {
+        "label": "Previous Week",
+        "data": [
+         1000,
+         1500,
+         1300,
+         1800,
+         2500,
+         2200,
+         1900
+        ]
+       }
+      ]
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "_inline_1",
+         "kpiRow",
+         "_inline_2",
+         "chart"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "_inline_1",
+      "component": "heading",
+      "text": "Performance Overview"
+     },
+     {
+      "id": "_inline_2",
+      "component": "heading",
+      "text": "Weekly Comparison"
+     }
+    ]
+   }
+  }
+ ]
+}

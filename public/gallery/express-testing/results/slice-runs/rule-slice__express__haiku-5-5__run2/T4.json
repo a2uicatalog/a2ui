@@ -1,0 +1,40 @@
+{
+ "task": "T4",
+ "condition": "B_haiku-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "rule-slice__express__haiku-5-5__run2",
+ "agent_type": "Data display",
+ "catalogue": "B-data-display.json",
+ "atoms_in_catalogue": 248,
+ "prompt_chars": 125436,
+ "slot_recall": [
+  2,
+  3
+ ],
+ "secs": 4.7,
+ "usage": {
+  "input_tokens": 45608,
+  "output_tokens": 890
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "filterable_list"
+ ],
+ "score": {
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "list": false,
+   "status indicator": false,
+   "filter control": false
+  }
+ },
+ "reply": "<a2ui>\nroot = filterable_list(\n  title=\"Project checklist\",\n  items=[\n    {title: \"Set up CI pipeline\", detail: \"Builds and tests run on every push.\", status: \"done\"},\n    {title: \"Write API reference\", detail: \"Endpoints documented for v2, pending review.\", status: \"in progress\"},\n    {title: \"Migrate user database\", detail: \"Blocked until the staging schema is frozen.\", status: \"blocked\"},\n    {title: \"Add rate limiting\", detail: \"Design agreed; implementation not yet started.\", status: \"not started\"},\n    {title: \"Upgrade logging library\", detail: \"Replacement merged and running in staging.\", status: \"done\"},\n    {title: \"Load test checkout flow\", detail: \"Scripts written; waiting on test environment.\", status: \"in progress\"},\n    {title: \"Rotate API credentials\", detail: \"Waiting on security sign-off before rotation.\", status: \"blocked\"},\n    {title: \"Update onboarding emails\", detail: \"Copy drafted; design not yet started.\", status: \"not started\"}\n  ],\n  filter_field=\"status\",\n  show_counts=true,\n  empty_text=\"No items match this status.\"\n)\n</a2ui>"
+}

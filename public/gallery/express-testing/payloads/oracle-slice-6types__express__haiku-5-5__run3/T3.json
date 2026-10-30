@@ -1,0 +1,93 @@
+{
+ "label": "oracle-slice-6types__express__haiku-5-5__run3",
+ "task": "T3",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/d-t3.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "hero",
+      "component": "gradient_hero",
+      "title": "Ship faster with less overhead",
+      "subtitle": "Everything your team needs to plan, build, and launch in one place.",
+      "badge": "New in 2026",
+      "accent": "#4f46e5",
+      "accent2": "#8b5cf6",
+      "align": "center",
+      "cta_label": "Start free trial",
+      "cta_url": "https://example.com/signup"
+     },
+     {
+      "id": "features",
+      "component": "feature_grid",
+      "heading": "Why teams choose us",
+      "description": "Built for speed, clarity, and collaboration.",
+      "columns": 3,
+      "features": [
+       {
+        "icon": "\u26a1",
+        "title": "Lightning fast",
+        "description": "Deploy in seconds with zero-config pipelines."
+       },
+       {
+        "icon": "\ud83d\udd12",
+        "title": "Secure by default",
+        "description": "Role-based access and encryption at rest and in transit."
+       },
+       {
+        "icon": "\ud83d\udcc8",
+        "title": "Scales with you",
+        "description": "From a single project to thousands of services."
+       }
+      ]
+     },
+     {
+      "id": "testimonial",
+      "component": "testimonial_card",
+      "text": "We cut our release time in half in the first month. The team actually enjoys shipping now.",
+      "author_name": "Maya Chen",
+      "author_title": "VP Engineering, Northwind",
+      "author_avatar_url": "https://example.com/avatars/maya.jpg",
+      "rating": 5
+     },
+     {
+      "id": "cta",
+      "component": "cta_button",
+      "url": "https://example.com/signup",
+      "label": "Get started today",
+      "color": "#4f46e5",
+      "same_tab": false
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "2rem",
+      "align": "stretch",
+      "items": [
+       {
+        "blocks": [
+         "hero",
+         "features",
+         "testimonial",
+         "cta"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

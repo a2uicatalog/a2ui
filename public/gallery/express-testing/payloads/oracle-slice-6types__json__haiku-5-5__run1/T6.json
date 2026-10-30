@@ -1,0 +1,108 @@
+{
+ "label": "oracle-slice-6types__json__haiku-5-5__run1",
+ "task": "T6",
+ "format": "json",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9",
+   "create_surface": {
+    "surface_id": "vocab-flashcards",
+    "catalog_id": "https://a2uicatalog.ai/catalog/d-t6.json"
+   }
+  },
+  {
+   "version": "v0.9",
+   "update_components": {
+    "surface_id": "vocab-flashcards",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         {
+          "id": "vocab-heading",
+          "component": "heading",
+          "text": "Spanish Vocabulary Review"
+         },
+         {
+          "id": "vocab-intro",
+          "component": "body",
+          "text": "Flip each card to check its meaning. Track how many of the 10 words you have reviewed."
+         },
+         {
+          "id": "review-progress",
+          "component": "progress_bar",
+          "value": 0,
+          "label": "Cards reviewed",
+          "accent": "#4f46e5",
+          "show_percent": "true",
+          "caption": "0 of 10 cards reviewed"
+         }
+        ]
+       },
+       {
+        "blocks": [
+         {
+          "id": "vocab-deck",
+          "component": "flashcard_deck",
+          "accent": "#4f46e5",
+          "label_front": "SPANISH",
+          "label_back": "ENGLISH",
+          "cards": [
+           {
+            "front": "casa",
+            "back": "house"
+           },
+           {
+            "front": "perro",
+            "back": "dog"
+           },
+           {
+            "front": "agua",
+            "back": "water"
+           },
+           {
+            "front": "libro",
+            "back": "book"
+           },
+           {
+            "front": "comer",
+            "back": "to eat"
+           },
+           {
+            "front": "feliz",
+            "back": "happy"
+           },
+           {
+            "front": "amigo",
+            "back": "friend"
+           },
+           {
+            "front": "escuela",
+            "back": "school"
+           },
+           {
+            "front": "ciudad",
+            "back": "city"
+           },
+           {
+            "front": "tiempo",
+            "back": "time / weather"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

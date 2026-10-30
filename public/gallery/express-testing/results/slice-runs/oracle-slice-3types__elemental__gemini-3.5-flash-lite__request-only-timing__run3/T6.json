@@ -1,0 +1,41 @@
+{
+ "task": "T6",
+ "condition": "CX_gemini-3.5-flash-l",
+ "temperature_applied": false,
+ "format": "elemental",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash-lite",
+ "hints": false,
+ "label": "oracle-slice-3types__elemental__gemini-3.5-flash-lite__request-only-timing__run3",
+ "agent_type": "Learning",
+ "catalogue": "C-learning.json",
+ "atoms_in_catalogue": 36,
+ "prompt_chars": 21352,
+ "slot_recall": [
+  2,
+  2
+ ],
+ "secs": 4.1,
+ "usage": {
+  "input_tokens": 6068,
+  "output_tokens": 502
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "page_header",
+  "xp_bar",
+  "flashcard_deck"
+ ],
+ "score": {
+  "precision": 0.667,
+  "recall": 1.0,
+  "f1": 0.8,
+  "slot_hits": {
+   "flashcard deck": true,
+   "progress indicator": true
+  }
+ },
+ "reply": "<a2ui>\n  <body>\n    <script type=\"application/json\">\n      {\n        \"reviewed_count\": 0,\n        \"total_cards\": 10\n      }\n    </script>\n    <ui-page_header\n      id=\"root\"\n      title=\"Vocabulary Flashcards\"\n      subtitle=\"Flip each card to reveal the definition and track your review progress.\"\n      icon=\"\ud83d\udcda\"\n      tag=\"SRS\"\n      accent=\"#4f46e5\"\n    />\n    <ui-xp_bar\n      id=\"progress-bar\"\n      level_label=\"Review Session\"\n      xp_current=\"{$/reviewed_count}\"\n      xp_next=\"{$/total_cards}\"\n      accent=\"#4f46e5\"\n    />\n    <ui-flashcard_deck\n      id=\"vocab-deck\"\n      accent=\"#4f46e5\"\n      label_front=\"TERM\"\n      label_back=\"DEFINITION\"\n    >\n      <script type=\"application/json\" slot=\"cards\">[\n        {\"front\": \"Ephemeral\", \"back\": \"Lasting for a very short time.\"},\n        {\"front\": \"Serendipity\", \"back\": \"The occurrence of events by chance in a happy or beneficial way.\"},\n        {\"front\": \"Ubiquitous\", \"back\": \"Present, appearing, or found everywhere.\"},\n        {\"front\": \"Pragmatic\", \"back\": \"Dealing with things sensibly and realistically.\"},\n        {\"front\": \"Mellifluous\", \"back\": \"Sweet or musical; pleasant to hear.\"},\n        {\"front\": \"Ineffable\", \"back\": \"Too great or extreme to be expressed in words.\"},\n        {\"front\": \"Resilient\", \"back\": \"Able to withstand or recover quickly from difficult conditions.\"},\n        {\"front\": \"Halcyon\", \"back\": \"Denoting a period of time in the past that was idyllically happy and peaceful.\"},\n        {\"front\": \"Cacophony\", \"back\": \"A harsh, discordant mixture of sounds.\"},\n        {\"front\": \"Labyrinthine\", \"back\": \"(Of a network) like a labyrinth; irregular and twisting.\"}\n      ]</script>\n    </ui-flashcard_deck>\n  </body>\n</a2ui>"
+}

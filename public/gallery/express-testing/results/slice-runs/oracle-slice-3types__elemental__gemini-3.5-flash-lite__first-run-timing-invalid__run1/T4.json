@@ -1,0 +1,43 @@
+{
+ "task": "T4",
+ "condition": "CX_gemini-3.5-flash-l",
+ "temperature_applied": false,
+ "format": "elemental",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash-lite",
+ "hints": false,
+ "label": "oracle-slice-3types__elemental__gemini-3.5-flash-lite__first-run-timing-invalid__run1",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 16829,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 20.2,
+ "usage": {
+  "input_tokens": 4974,
+  "output_tokens": 841
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "heading",
+  "body",
+  "segmented_control",
+  "entity_list"
+ ],
+ "score": {
+  "precision": 0.5,
+  "recall": 0.667,
+  "f1": 0.571,
+  "slot_hits": {
+   "list": true,
+   "status indicator": false,
+   "filter control": true
+  }
+ },
+ "reply": "<a2ui>\n  <body>\n    <script type=\"application/json\">{\n      \"filter\": \"all\",\n      \"items\": [\n        { \"title\": \"Database Migration\", \"status\": \"inprogress\", \"detail\": \"Migrating user records to AWS RDS cluster.\" },\n        { \"title\": \"API Gateway v2\", \"status\": \"success\", \"detail\": \"Deployment completed successfully with zero downtime.\" },\n        { \"title\": \"SSL Certificate Renewal\", \"status\": \"new\", \"detail\": \"Wildcard certificate due for expiration in 14 days.\" },\n        { \"title\": \"Cache Layer Optimization\", \"status\": \"inprogress\", \"detail\": \"Evaluating Redis vs Memcached for session store.\" },\n        { \"title\": \"Billing Service Bug\", \"status\": \"removed\", \"detail\": \"Resolved race condition in Stripe webhook handler.\" },\n        { \"title\": \"Analytics Pipeline\", \"status\": \"moved\", \"detail\": \"Moved from legacy Redshift to Snowflake data warehouse.\" },\n        { \"title\": \"Security Audit\", \"status\": \"inprogress\", \"detail\": \"Penetration testing in progress by external partner.\" },\n        { \"title\": \"CDN Configuration\", \"status\": \"success\", \"detail\": \"Edge caching rules updated for static assets.\" }\n      ]\n    }</script>\n\n    <ui-heading id=\"root\" text=\"System Tasks Overview\" />\n    \n    <ui-body text=\"Filter items by their current operational status:\" />\n\n    <ui-segmented_control \n      id=\"status-filter\" \n      name=\"filter\" \n      selected_value=\"all\">\n      <script type=\"application/json\" slot=\"options\">[\n        { \"label\": \"All\", \"value\": \"all\" },\n        { \"label\": \"In Progress\", \"value\": \"inprogress\" },\n        { \"label\": \"Success\", \"value\": \"success\" },\n        { \"label\": \"New\", \"value\": \"new\" },\n        { \"label\": \"Moved\", \"value\": \"moved\" },\n        { \"label\": \"Removed\", \"value\": \"removed\" }\n      ]</script>\n    </ui-segmented_control>\n\n    <ui-entity_list id=\"task-list\">\n      <script type=\"application/json\" slot=\"items\">[\n        {\n          \"name\": \"Database Migration\",\n          \"subtitle\": \"Migrating user records to AWS RDS cluster.\",\n          \"status\": \"inprogress\"\n        },\n        {\n          \"name\": \"API Gateway v2\",\n          \"subtitle\": \"Deployment completed successfully with zero downtime.\",\n          \"status\": \"success\"\n        },\n        {\n          \"name\": \"SSL Certificate Renewal\",\n          \"subtitle\": \"Wildcard certificate due for expiration in 14 days.\",\n          \"status\": \"new\"\n        },\n        {\n          \"name\": \"Cache Layer Optimization\",\n          \"subtitle\": \"Evaluating Redis vs Memcached for session store.\",\n          \"status\": \"inprogress\"\n        },\n        {\n          \"name\": \"Billing Service Bug\",\n          \"subtitle\": \"Resolved race condition in Stripe webhook handler.\",\n          \"status\": \"removed\"\n        },\n        {\n          \"name\": \"Analytics Pipeline\",\n          \"subtitle\": \"Moved from legacy Redshift to Snowflake data warehouse.\",\n          \"status\": \"moved\"\n        },\n        {\n          \"name\": \"Security Audit\",\n          \"subtitle\": \"Penetration testing in progress by external partner.\",\n          \"status\": \"inprogress\"\n        },\n        {\n          \"name\": \"CDN Configuration\",\n          \"subtitle\": \"Edge caching rules updated for static assets.\",\n          \"status\": \"success\"\n        }\n      ]</script>\n    </ui-entity_list>\n  </body>\n</a2ui>"
+}

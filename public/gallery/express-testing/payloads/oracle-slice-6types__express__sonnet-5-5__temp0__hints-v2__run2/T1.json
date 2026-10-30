@@ -1,0 +1,131 @@
+{
+ "label": "oracle-slice-6types__express__sonnet-5-5__temp0__hints-v2__run2",
+ "task": "T1",
+ "format": "express",
+ "model_id": "claude-sonnet-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "water-cycle-lesson",
+    "catalog_id": "https://a2uicatalog.ai/catalog/d-t1.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "water-cycle-lesson",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "2rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         {
+          "type": "page_header",
+          "title": "The Water Cycle",
+          "subtitle": "How water moves between the oceans, the air, and the land",
+          "icon": "\ud83d\udca7",
+          "tag": "Earth Science",
+          "accent": "#0284c7"
+         },
+         {
+          "type": "heading",
+          "text": "1. Evaporation"
+         },
+         {
+          "type": "body",
+          "text": "The Sun warms water in oceans, lakes, and rivers. Some of the liquid gains enough energy to become water vapor, an invisible gas that rises into the atmosphere. Plants add to this through transpiration, releasing water vapor from their leaves."
+         },
+         {
+          "type": "heading",
+          "text": "2. Condensation"
+         },
+         {
+          "type": "body",
+          "text": "As water vapor rises, it meets cooler air and loses energy. The vapor turns back into tiny liquid droplets that cling to dust particles. Millions of these droplets gather to form clouds."
+         },
+         {
+          "type": "heading",
+          "text": "3. Precipitation and Collection"
+         },
+         {
+          "type": "body",
+          "text": "When cloud droplets merge and grow heavy, they fall as rain, snow, sleet, or hail. This water runs over the land into streams, soaks into the ground, or returns to the oceans. From there, the cycle begins again."
+         }
+        ]
+       },
+       {
+        "blocks": [
+         {
+          "type": "heading",
+          "text": "Worked Example: Following One Water Molecule"
+         },
+         {
+          "type": "concept_rung",
+          "badge": "EX",
+          "kind": "example",
+          "title": "A raindrop's journey",
+          "body": "Trace a single water molecule through one full loop of the cycle.\n\nIt starts in the ocean on a sunny day, rises as vapor, forms part of a cloud, and falls on a mountain as snow. In spring the snow melts and the water flows back to the sea.",
+          "code": "1. Ocean surface   -> evaporation    -> water vapor\n2. Upper air       -> condensation   -> cloud droplet\n3. Mountain        -> precipitation  -> snow\n4. River           -> collection     -> ocean",
+          "code_caption": "One loop of the cycle can take days, or thousands of years if the water is frozen in a glacier.",
+          "takeaway": "Water is never used up. It only changes state and location."
+         },
+         {
+          "type": "heading",
+          "text": "Self-Check Quiz"
+         },
+         {
+          "type": "quiz_set",
+          "title": "Check your understanding",
+          "pass_score": 66,
+          "accent": "#0284c7",
+          "questions": [
+           {
+            "question": "Which process turns liquid water into water vapor?",
+            "options": [
+             "Condensation",
+             "Evaporation",
+             "Precipitation",
+             "Collection"
+            ],
+            "correct": 1,
+            "explanation": "Evaporation happens when the Sun's heat gives liquid water enough energy to become a gas."
+           },
+           {
+            "question": "What forms when water vapor cools and turns into tiny droplets?",
+            "options": [
+             "Clouds",
+             "Groundwater",
+             "Glaciers",
+             "Rivers"
+            ],
+            "correct": 0,
+            "explanation": "Condensation of vapor onto dust particles creates the droplets that make up clouds."
+           },
+           {
+            "question": "Which of these is NOT a form of precipitation?",
+            "options": [
+             "Rain",
+             "Snow",
+             "Hail",
+             "Transpiration"
+            ],
+            "correct": 3,
+            "explanation": "Transpiration is water vapor released by plants. It is part of evaporation, not precipitation."
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

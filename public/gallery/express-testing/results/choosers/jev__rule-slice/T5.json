@@ -1,0 +1,145 @@
+{
+ "task": "T5",
+ "condition": "B",
+ "slice_atoms_in_options": 183,
+ "picks": [
+  {
+   "slot": "A row of three side-by-side panels, one per subscription tier, arranged so they  #1",
+   "decomposer_line": "A row of three side-by-side panels, one per subscription tier, arranged so they can be compared at a glance",
+   "atom": "pricing_tier_group",
+   "confidence": 0.96,
+   "top3": [
+    [
+     "pricing_tier_group",
+     0.96
+    ],
+    [
+     "columns",
+     0.03
+    ],
+    [
+     "pricing_tier_card",
+     0.01
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "A tier header area in each panel showing the tier's name and price #2",
+   "decomposer_line": "A tier header area in each panel showing the tier's name and price",
+   "atom": "pricing_tier_card",
+   "confidence": 0.61,
+   "top3": [
+    [
+     "pricing_tier_card",
+     0.61
+    ],
+    [
+     "two_tone_card",
+     0.21000000000000002
+    ],
+    [
+     "heading",
+     0.04
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "A list of features inside each panel that differs per tier, with checkmarks or m #3",
+   "decomposer_line": "A list of features inside each panel that differs per tier, with checkmarks or markers showing what is included",
+   "atom": "capability_checklist",
+   "confidence": 0.76,
+   "top3": [
+    [
+     "capability_checklist",
+     0.76
+    ],
+    [
+     "feature_matrix",
+     0.09
+    ],
+    [
+     "pricing_tier_group",
+     0.08
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "A visual highlight or badge on the one tier marked as recommended, set apart fro #4",
+   "decomposer_line": "A visual highlight or badge on the one tier marked as recommended, set apart from the other two",
+   "atom": "badge",
+   "confidence": 0.73,
+   "top3": [
+    [
+     "badge",
+     0.73
+    ],
+    [
+     "pricing_tier_group",
+     0.09
+    ],
+    [
+     "highlight_box",
+     0.06999999999999999
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "A call-to-action button at the bottom of each panel for choosing that tier #5",
+   "decomposer_line": "A call-to-action button at the bottom of each panel for choosing that tier",
+   "atom": "cta_section",
+   "confidence": 0.75,
+   "top3": [
+    [
+     "cta_section",
+     0.75
+    ],
+    [
+     "pricing_tier_card",
+     0.23
+    ],
+    [
+     "pricing_tier_group",
+     0.02
+    ]
+   ],
+   "finalists": null
+  }
+ ],
+ "cost": {
+  "decomposer_input_tokens": 3234,
+  "decomposer_output_tokens": 147,
+  "decomposer_thinking_tokens": 0,
+  "jev_input_tokens": 34618,
+  "jev_output_tokens": 8017,
+  "jev_calls": 5
+ },
+ "error": null,
+ "atoms": [
+  "pricing_tier_group",
+  "pricing_tier_card",
+  "capability_checklist",
+  "badge",
+  "cta_section"
+ ],
+ "score": {
+  "per_approach": {
+   "tier_cards": {
+    "precision": 0.2,
+    "recall": 1.0,
+    "f1": 0.333
+   },
+   "comparison_table": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": null
+   }
+  },
+  "best_approach": "tier_cards",
+  "f1": 0.333
+ },
+ "secs": 7.1
+}

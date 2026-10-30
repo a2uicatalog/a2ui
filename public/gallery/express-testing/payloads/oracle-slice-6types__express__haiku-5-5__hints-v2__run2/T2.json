@@ -1,0 +1,111 @@
+{
+ "label": "oracle-slice-6types__express__haiku-5-5__hints-v2__run2",
+ "task": "T2",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/d-t2.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "kpi_sales",
+      "component": "stat_card",
+      "value": "$12,345",
+      "label": "Sales",
+      "delta": "+10%",
+      "is_up": true
+     },
+     {
+      "id": "kpi_users",
+      "component": "stat_card",
+      "value": "4,821",
+      "label": "Active Users",
+      "delta": "+6%",
+      "is_up": true
+     },
+     {
+      "id": "kpi_churn",
+      "component": "stat_card",
+      "value": "2.4%",
+      "label": "Churn Rate",
+      "delta": "-0.3%",
+      "is_up": false
+     },
+     {
+      "id": "kpi_latency",
+      "component": "stat_card",
+      "value": "182 ms",
+      "label": "Avg Latency",
+      "delta": "+14 ms",
+      "is_up": false
+     },
+     {
+      "id": "revenue_chart",
+      "component": "chartjs_bar",
+      "labels": [
+       "Jan",
+       "Feb",
+       "Mar",
+       "Apr",
+       "May",
+       "Jun"
+      ],
+      "datasets": [
+       {
+        "label": "Revenue",
+        "data": [
+         8200,
+         9100,
+         8800,
+         10400,
+         11250,
+         12345
+        ]
+       },
+       {
+        "label": "Target",
+        "data": [
+         9000,
+         9000,
+         9500,
+         10000,
+         10500,
+         11000
+        ]
+       }
+      ]
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "items": [
+       {
+        "blocks": [
+         "kpi_sales",
+         "kpi_users",
+         "kpi_churn",
+         "kpi_latency"
+        ]
+       },
+       {
+        "blocks": [
+         "revenue_chart"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

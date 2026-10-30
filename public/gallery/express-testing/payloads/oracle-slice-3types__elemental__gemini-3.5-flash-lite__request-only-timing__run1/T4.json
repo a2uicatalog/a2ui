@@ -1,0 +1,142 @@
+{
+ "label": "oracle-slice-3types__elemental__gemini-3.5-flash-lite__request-only-timing__run1",
+ "task": "T4",
+ "format": "elemental",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display-elemental.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "h1",
+      "component": "heading",
+      "text": "Task Operations & Status"
+     },
+     {
+      "id": "status-filter",
+      "component": "segmented_control",
+      "name": "filter",
+      "selected_value": {
+       "path": "/filter"
+      },
+      "options": [
+       {
+        "label": "All",
+        "value": "all"
+       },
+       {
+        "label": "In Progress",
+        "value": "inprogress"
+       },
+       {
+        "label": "Success",
+        "value": "success"
+       },
+       {
+        "label": "New",
+        "value": "new"
+       }
+      ]
+     },
+     {
+      "id": "task-list",
+      "component": "entity_list",
+      "items": {
+       "path": "/items"
+      }
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "1.5rem",
+      "items": [
+       {
+        "blocks": [
+         "t",
+         "a",
+         "s",
+         "k",
+         "-",
+         "l",
+         "i",
+         "s",
+         "t"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_data_model": {
+    "surface_id": "main",
+    "path": "/",
+    "value": {
+     "filter": "all",
+     "items": [
+      {
+       "title": "Database Migration",
+       "status": "inprogress",
+       "detail": "Migrating user records to AWS RDS cluster",
+       "status_label": "In Progress"
+      },
+      {
+       "title": "API Gateway v2",
+       "status": "success",
+       "detail": "Deployed rate limiting and new auth endpoints",
+       "status_label": "Success"
+      },
+      {
+       "title": "SSL Certificate Renewal",
+       "status": "removed",
+       "detail": "Wildcard certificate expired on *.internal.net",
+       "status_label": "Removed"
+      },
+      {
+       "title": "Security Audit",
+       "status": "inprogress",
+       "detail": "Penetration testing ongoing by external firm",
+       "status_label": "In Progress"
+      },
+      {
+       "title": "Cache Layer Upgrade",
+       "status": "new",
+       "detail": "Evaluate Redis Cluster vs Memcached for session store",
+       "status_label": "New"
+      },
+      {
+       "title": "Billing Service Patch",
+       "status": "success",
+       "detail": "Fixed invoice rounding bug for international currencies",
+       "status_label": "Success"
+      },
+      {
+       "title": "CI/CD Pipeline Speedup",
+       "status": "moved",
+       "detail": "Migrated heavy test suites to GPU runners",
+       "status_label": "Moved"
+      },
+      {
+       "title": "Compliance Check",
+       "status": "default",
+       "detail": "Annual SOC2 Type II documentation review",
+       "status_label": "Default"
+      }
+     ]
+    }
+   }
+  }
+ ]
+}

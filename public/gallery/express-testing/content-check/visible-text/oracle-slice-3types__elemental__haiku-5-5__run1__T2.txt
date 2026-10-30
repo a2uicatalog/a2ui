@@ -1,0 +1,36 @@
+Metrics Overview
+ $1.24M ↑ 
+ Revenue
+ vs. last month
+ 48,210 ↑ 
+ Active Users
+ vs. last month
+ 2.4% ↓ 
+ Churn Rate
+ vs. last month
+ 182 ms ↓ 
+ Avg Response Time
+ vs. last month
+ This Year 
+ Last Year 
+ 0
+ 200
+ 400
+ 600
+ 800
+ 1,000
+ 1,200
+ 1,400
+ Jan
+ Feb
+ Mar
+ Apr
+ May
+ Jun
+ Category This Year Last Year 
+ Jan 820 640 
+ Feb 932 710 
+ Mar 901 760 
+ Apr 934 802 
+ May 1,290 830 
+ Jun 1,330 870

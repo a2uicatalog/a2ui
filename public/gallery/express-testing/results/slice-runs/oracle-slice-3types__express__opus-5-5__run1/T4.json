@@ -1,0 +1,45 @@
+{
+ "task": "T4",
+ "condition": "C_opus-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-opus-5-5",
+ "hints": false,
+ "label": "oracle-slice-3types__express__opus-5-5__run1",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 16421,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 14.3,
+ "usage": {
+  "input_tokens": 6049,
+  "output_tokens": 1312
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "heading",
+  "body",
+  "segmented_control",
+  "badge_group",
+  "entity_list",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.333,
+  "recall": 0.667,
+  "f1": 0.444,
+  "slot_hits": {
+   "list": true,
+   "status indicator": false,
+   "filter control": true
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"status-list-surface\")\n\ntitle = heading(\"Project Workstreams\")\n\nintro = body(\"Eight workstreams tracked this sprint. Choose a status to narrow the list.\")\n\nstatusFilter = segmented_control([{label: \"All\", value: \"all\"}, {label: \"Active\", value: \"active\"}, {label: \"Pending\", value: \"pending\"}, {label: \"Blocked\", value: \"blocked\"}, {label: \"Done\", value: \"done\"}], \"all\", \"status_filter\")\n\nstatusCounts = badge_group(\"By status\", [{text: \"Active \u00b7 3\", color: \"green\", pulse: true}, {text: \"Pending \u00b7 2\", color: \"yellow\"}, {text: \"Blocked \u00b7 1\", color: \"red\"}, {text: \"Done \u00b7 2\", color: \"grey\"}])\n\nitemList = entity_list([\n  {name: \"Checkout Redesign\", subtitle: \"New payment step layout is in QA review.\", icon: \"\ud83d\uded2\", status: \"Active\", meta: \"Due Fri\"},\n  {name: \"Search Indexing\", subtitle: \"Reindex job running nightly across all regions.\", icon: \"\ud83d\udd0e\", status: \"Active\", meta: \"Ongoing\"},\n  {name: \"Mobile Push Alerts\", subtitle: \"Notification templates drafted for marketing sign-off.\", icon: \"\ud83d\udcf1\", status: \"Active\", meta: \"Due Mon\"},\n  {name: \"Billing Migration\", subtitle: \"Waiting on finance approval before cutover.\", icon: \"\ud83d\udcb3\", status: \"Pending\", meta: \"Queued\"},\n  {name: \"Accessibility Audit\", subtitle: \"Vendor scheduled to start next sprint.\", icon: \"\u267f\", status: \"Pending\", meta: \"Queued\"},\n  {name: \"SSO Integration\", subtitle: \"Blocked by missing identity provider certificate.\", icon: \"\ud83d\udd10\", status: \"Blocked\", meta: \"2 days\"},\n  {name: \"Onboarding Emails\", subtitle: \"Welcome sequence shipped and tracking opens.\", icon: \"\u2709\ufe0f\", status: \"Done\", meta: \"Shipped\"},\n  {name: \"Dashboard Caching\", subtitle: \"Load times reduced by 40% after release.\", icon: \"\u26a1\", status: \"Done\", meta: \"Shipped\"}\n])\n\nroot = columns(2, \"1.5rem\", \"top\", [\n  {blocks: [title, intro, statusFilter, statusCounts]},\n  {blocks: [itemList]}\n])\n</a2ui>"
+}

@@ -1,0 +1,46 @@
+{
+ "task": "T5",
+ "condition": "CN_haiku-5-5",
+ "temperature_applied": false,
+ "format": "json",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "oracle-slice-3types__json__haiku-5-5__run1",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "C-marketing-commerce.json",
+ "atoms_in_catalogue": 23,
+ "prompt_chars": 24557,
+ "slot_recall": [
+  1,
+  1
+ ],
+ "secs": 5.6,
+ "usage": {
+  "input_tokens": 9454,
+  "output_tokens": 1312
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "pricing_tier_group"
+ ],
+ "score": {
+  "per_approach": {
+   "tier_cards": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+   },
+   "comparison_table": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": null
+   }
+  },
+  "best_approach": "tier_cards",
+  "f1": 1.0
+ },
+ "reply": "Here's a three-tier pricing comparison with the Pro plan marked as recommended.\n\n<a2ui-json>\n[\n  {\n    \"version\": \"v0.9.1\",\n    \"createSurface\": {\n      \"surfaceId\": \"subscription_tiers\",\n      \"catalogId\": \"https://a2uicatalog.ai/catalog/c-marketing-commerce.json\"\n    }\n  },\n  {\n    \"version\": \"v0.9.1\",\n    \"updateComponents\": {\n      \"surfaceId\": \"subscription_tiers\",\n      \"components\": [\n        {\n          \"id\": \"root\",\n          \"component\": \"pricing_tier_group\",\n          \"tiers\": [\n            {\n              \"name\": \"Starter\",\n              \"price\": \"$9\",\n              \"period\": \"per month\",\n              \"recommended\": false,\n              \"features\": [\n                \"Up to 5 projects\",\n                \"10 GB storage\",\n                \"Email support\",\n                \"Basic analytics\"\n              ],\n              \"cta_label\": \"Start with Starter\",\n              \"cta_url\": \"https://example.com/subscribe/starter\"\n            },\n            {\n              \"name\": \"Pro\",\n              \"price\": \"$29\",\n              \"period\": \"per month\",\n              \"recommended\": true,\n              \"badge\": \"Recommended\",\n              \"features\": [\n                \"Unlimited projects\",\n                \"100 GB storage\",\n                \"Priority email and chat support\",\n                \"Advanced analytics\",\n                \"Team collaboration for up to 10 members\"\n              ],\n              \"cta_label\": \"Choose Pro\",\n              \"cta_url\": \"https://example.com/subscribe/pro\"\n            },\n            {\n              \"name\": \"Enterprise\",\n              \"price\": \"$99\",\n              \"period\": \"per month\",\n              \"recommended\": false,\n              \"features\": [\n                \"Everything in Pro\",\n                \"Unlimited storage\",\n                \"Dedicated account manager\",\n                \"SSO and advanced security\",\n                \"Custom integrations and SLA\"\n              ],\n              \"cta_label\": \"Contact sales\",\n              \"cta_url\": \"https://example.com/contact-sales\"\n            }\n          ]\n        }\n      ]\n    }\n  }\n]\n</a2ui-json>"
+}

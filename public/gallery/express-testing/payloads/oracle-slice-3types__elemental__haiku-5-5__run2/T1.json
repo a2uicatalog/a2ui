@@ -1,0 +1,126 @@
+{
+ "label": "oracle-slice-3types__elemental__haiku-5-5__run2",
+ "task": "T1",
+ "format": "elemental",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "root",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning-elemental.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "root",
+    "components": [
+     {
+      "id": "lesson-header",
+      "component": "page_header",
+      "title": "The Water Cycle",
+      "subtitle": "How water moves between the ocean, atmosphere, and land",
+      "icon": "\ud83d\udca7",
+      "tag": "Earth Science",
+      "accent": "#0ea5e9"
+     },
+     {
+      "id": "heading-concepts",
+      "component": "heading",
+      "text": "Core concepts"
+     },
+     {
+      "id": "concept-evaporation",
+      "component": "concept_rung",
+      "badge": "1",
+      "kind": "depth",
+      "title": "Evaporation",
+      "Body": "Heat from the sun warms liquid water in oceans, lakes, and rivers. As the water warms, molecules gain enough energy to escape into the air as water vapor.",
+      "takeaway": "Sunlight turns liquid water into vapor."
+     },
+     {
+      "id": "concept-condensation",
+      "component": "concept_rung",
+      "badge": "2",
+      "kind": "depth",
+      "title": "Condensation",
+      "Body": "As water vapor rises, it cools. The cooler air can hold less vapor, so the vapor changes back into tiny liquid droplets that cluster together to form clouds.",
+      "takeaway": "Cooling vapor forms clouds."
+     },
+     {
+      "id": "concept-precipitation",
+      "component": "concept_rung",
+      "badge": "3",
+      "kind": "depth",
+      "title": "Precipitation",
+      "Body": "When droplets in a cloud grow large and heavy enough, gravity pulls them down as rain, snow, sleet, or hail. This water returns to the land and sea, and the cycle begins again.",
+      "takeaway": "Gravity returns water to the surface."
+     },
+     {
+      "id": "heading-example",
+      "component": "heading",
+      "text": "Worked example"
+     },
+     {
+      "id": "example-puddle",
+      "component": "concept_rung",
+      "badge": "EX",
+      "kind": "example",
+      "title": "A puddle disappears on a sunny day",
+      "Body": "A puddle forms after a morning rain. By noon, the sun heats the water, so it evaporates into the air. Later, the vapor cools as it rises and condenses into small clouds. The puddle is gone, but the water has not left the cycle.",
+      "code_caption": "Trace the water: puddle, vapor, cloud, rain, puddle.",
+      "takeaway": "The water changes state but is never destroyed."
+     },
+     {
+      "id": "heading-check",
+      "component": "heading",
+      "text": "Self-check"
+     },
+     {
+      "id": "quiz-self-check",
+      "component": "quiz_set",
+      "title": "Water cycle self-check",
+      "pass_score": 70,
+      "accent": "#0ea5e9",
+      "questions": [
+       {
+        "question": "What process turns liquid water into water vapor?",
+        "options": [
+         "Condensation",
+         "Precipitation",
+         "Evaporation",
+         "Collection"
+        ],
+        "correct": 2,
+        "explanation": "Evaporation occurs when heat from the sun gives water molecules enough energy to escape as vapor."
+       },
+       {
+        "question": "Why does water vapor form clouds high in the atmosphere?",
+        "options": [
+         "The vapor freezes into ice",
+         "The vapor cools and condenses into droplets",
+         "The vapor is pushed down by wind",
+         "The vapor turns directly into rock"
+        ],
+        "correct": 1,
+        "explanation": "As vapor rises, it cools. Cooler air holds less vapor, so it condenses into droplets that form clouds."
+       },
+       {
+        "question": "Which step returns water from clouds to the land and sea?",
+        "options": [
+         "Evaporation",
+         "Condensation",
+         "Transpiration",
+         "Precipitation"
+        ],
+        "correct": 3,
+        "explanation": "Precipitation is any form of water, such as rain or snow, that falls from clouds due to gravity."
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

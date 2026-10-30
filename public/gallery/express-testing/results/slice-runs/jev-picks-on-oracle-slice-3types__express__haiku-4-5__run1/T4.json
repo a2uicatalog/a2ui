@@ -1,0 +1,32 @@
+{
+ "task": "T4",
+ "condition": "JC",
+ "label": "jev-picks-on-oracle-slice-3types__express__haiku-4-5__run1",
+ "agent_type": "jev-narrowed",
+ "catalogue": "JC-T4.json",
+ "atoms_in_catalogue": 12,
+ "prompt_chars": 8500,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 5.2,
+ "usage": {
+  "input_tokens": 2351,
+  "output_tokens": 506
+ },
+ "valid": false,
+ "error": "A2uiCompilationParseError: Failed to parse expression: Syntax error at line 18:2: extraneous input '(' expecting {'[', ']', '{', '_', 'null', RAW_TRIPLE_STRING, TRIPLE_STRING, RAW_STRING, STANDARD_STRING, PATH, CHECK, NUMBER, BOOLEAN, IDENTIFIER} (line 18) - Line 18, Col 2 - Help: Please correct the syntax error in your Expre",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "list": false,
+   "status indicator": false,
+   "filter control": false
+  }
+ },
+ "reply": "<a2ui>\n// Initialize filter state\n$/filter_status = \"all\"\n\n// Sample data with title, status, and detail\n$/items = [\n  {title: \"Setup authentication\", status: \"completed\", detail: \"OAuth 2.0 configured\"},\n  {title: \"Database migration\", status: \"in_progress\", detail: \"75% complete\"},\n  {title: \"API documentation\", status: \"pending\", detail: \"Awaiting review\"},\n  {title: \"Security audit\", status: \"completed\", detail: \"No issues found\"},\n  {title: \"Performance testing\", status: \"in_progress\", detail: \"Load test running\"},\n  {title: \"User onboarding flow\", status: \"pending\", detail: \"Design phase\"},\n  {title: \"Payment integration\", status: \"completed\", detail: \"Stripe connected\"},\n  {title: \"Analytics dashboard\", status: \"pending\", detail: \"Requirements gathering\"}\n]\n\n// Filter function to return visible items\n_filter_items = [\n  ($/filter_status == \"all\" || item.status == $/filter_status) for item in $/items\n]\n\nroot = [\n  heading(\"Tasks\"),\n  \n  chip_group(\n    label=\"Filter by Status\",\n    layout=\"wrap\",\n    chips=[\n      {label: \"All\", value: \"all\", active: ($/filter_status == \"all\")},\n      {label: \"Completed\", value: \"completed\", active: ($/filter_status == \"completed\"), color: \"#36B37E\"},\n      {label: \"In Progress\", value: \"in_progress\", active: ($/filter_status == \"in_progress\"), color: \"#0052CC\"},\n      {label: \"Pending\", value: \"pending\", active: ($/filter_status == \"pending\"), color: \"#FFAB00\"}\n    ]\n  ),\n  \n  entity_list(\n    items=_template(\n      _filter_items,\n      itemTemplate\n    )\n  )\n]\n\nitemTemplate = {\n  name: $title,\n  subtitle: $detail,\n  status: $status,\n  meta: $status\n}\n</a2ui>"
+}

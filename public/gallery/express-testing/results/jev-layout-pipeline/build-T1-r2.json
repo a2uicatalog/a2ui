@@ -1,0 +1,29 @@
+{
+ "task": "T1",
+ "repeat": 2,
+ "writer_model": "gemini-3.5-flash-lite",
+ "decisions": "jev",
+ "jev_ms": 195,
+ "jev_usage": {
+  "input_tokens": 599,
+  "output_tokens": 101
+ },
+ "jev_answers": {
+  "layout": "lesson",
+  "count": "4",
+  "cta": "no"
+ },
+ "layout": "lesson",
+ "count": 4,
+ "cta": false,
+ "writer_secs": 1.18,
+ "writer_tokens": {
+  "in": 164,
+  "out": 203
+ },
+ "build_ms": 0.12,
+ "valid": true,
+ "error": null,
+ "compile_ms": 13.17,
+ "express": "<a2ui>\nhdr = page_header(title=\"The Water Cycle\", subtitle=\"Explore how Earth continuously recycles its water supply through evaporation, condensation, and precipitation.\")\nh1 = heading(text=\"Evaporation\")\nb1 = body(text=\"Heat from the sun warms water in oceans, lakes, and rivers, causing it to turn into invisible water vapor and rise into the atmosphere.\")\nh2 = heading(text=\"Condensation\")\nb2 = body(text=\"As water vapor rises, it cools and changes back into tiny liquid water droplets, gathering together to form clouds high in the sky.\")\nh3 = heading(text=\"Precipitation\")\nb3 = body(text=\"When the water droplets in clouds become too heavy, gravity pulls them back down to Earth as rain, snow, sleet, or hail.\")\nh4 = heading(text=\"Worked Example & Quiz\")\nb4 = body(text=\"Example: A puddle disappears on a sunny day due to evaporation. Quiz: 1. What turns liquid water into vapor? 2. How do clouds form? 3. What is rain considered?\")\nroot = columns(cols=1, gap=\"1.5rem\", align=\"top\", items=[{blocks: [hdr, h1, b1, h2, b2, h3, b3, h4, b4]}])\n</a2ui>"
+}

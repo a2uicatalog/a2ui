@@ -1,0 +1,139 @@
+{
+ "label": "oracle-slice-3types__express__sonnet-5-5__temp0__hints-v2__run1",
+ "task": "T1",
+ "format": "express",
+ "model_id": "claude-sonnet-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "water-cycle-lesson",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "water-cycle-lesson",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "2rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         {
+          "type": "page_header",
+          "title": "The Water Cycle",
+          "subtitle": "How water moves between the oceans, the air and the land",
+          "icon": "\ud83d\udca7",
+          "tag": "Earth Science",
+          "accent": "#0ea5e9"
+         },
+         {
+          "type": "body",
+          "text": "Water is never used up. It keeps moving around the planet, changing between liquid, vapour and ice. This lesson covers the three main stages and then works through a short example."
+         },
+         {
+          "type": "heading",
+          "text": "Three Core Concepts"
+         },
+         {
+          "type": "concept_rung",
+          "badge": "1",
+          "kind": "depth",
+          "title": "Evaporation",
+          "body": "The sun heats water in oceans, lakes and rivers. Some of the liquid turns into invisible water vapour and rises into the air.\n\nPlants add to this through transpiration, which releases water vapour from their leaves.",
+          "takeaway": "Heat from the sun turns liquid water into vapour."
+         },
+         {
+          "type": "concept_rung",
+          "badge": "2",
+          "kind": "depth",
+          "title": "Condensation",
+          "body": "As water vapour rises it meets cooler air and loses heat. The vapour turns back into tiny liquid droplets around dust particles.\n\nMillions of these droplets together form clouds.",
+          "takeaway": "Cooling turns vapour into droplets, which form clouds."
+         },
+         {
+          "type": "concept_rung",
+          "badge": "3",
+          "kind": "depth",
+          "title": "Precipitation and Collection",
+          "body": "When cloud droplets merge and grow heavy enough, they fall as rain, snow, sleet or hail.\n\nThe water then runs off into rivers, soaks into the ground or collects in oceans and lakes. From there the cycle starts again.",
+          "takeaway": "Gravity brings water back down, and the cycle repeats."
+         }
+        ]
+       },
+       {
+        "blocks": [
+         {
+          "type": "heading",
+          "text": "Worked Example"
+         },
+         {
+          "type": "concept_rung",
+          "badge": "EX",
+          "kind": "example",
+          "title": "How much water does a lake lose in a day?",
+          "body": "A lake covers 2 square kilometres. On a warm day, evaporation removes 5 mm of water from its surface. How much water is that?\n\nConvert everything to metres first, then multiply area by depth.",
+          "code": "area   = 2 km\u00b2 = 2,000,000 m\u00b2\ndepth  = 5 mm  = 0.005 m\nvolume = 2,000,000 \u00d7 0.005\n       = 10,000 m\u00b3\n       = 10,000,000 litres",
+          "code_caption": "1 m\u00b3 equals 1,000 litres.",
+          "takeaway": "A single lake can send about 10 million litres into the air in one day."
+         },
+         {
+          "type": "heading",
+          "text": "Self-Check Quiz"
+         },
+         {
+          "type": "quiz_set",
+          "title": "Water Cycle Check",
+          "pass_score": 67,
+          "accent": "#0ea5e9",
+          "questions": [
+           {
+            "question": "Which process turns liquid water into water vapour?",
+            "options": [
+             "Condensation",
+             "Evaporation",
+             "Precipitation",
+             "Collection"
+            ],
+            "correct": 1,
+            "explanation": "Evaporation happens when the sun's heat gives water molecules enough energy to escape into the air as vapour."
+           },
+           {
+            "question": "What causes clouds to form?",
+            "options": [
+             "Water vapour cooling and condensing into droplets",
+             "Rain evaporating from the ground",
+             "Snow melting on mountains",
+             "Plants absorbing water"
+            ],
+            "correct": 0,
+            "explanation": "Rising vapour cools and condenses into tiny droplets, and many droplets together make a cloud."
+           },
+           {
+            "question": "Which of these is a form of precipitation?",
+            "options": [
+             "Fog on the ground",
+             "Water vapour",
+             "Hail",
+             "Dew on grass"
+            ],
+            "correct": 2,
+            "explanation": "Precipitation is water falling from clouds, as rain, snow, sleet or hail."
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

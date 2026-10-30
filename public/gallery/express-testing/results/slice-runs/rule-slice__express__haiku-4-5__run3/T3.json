@@ -1,0 +1,33 @@
+{
+ "task": "T3",
+ "condition": "B",
+ "label": "rule-slice__express__haiku-4-5__run3",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "B-marketing-commerce.json",
+ "atoms_in_catalogue": 189,
+ "prompt_chars": 80817,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 4.9,
+ "usage": {
+  "input_tokens": 23073,
+  "output_tokens": 452
+ },
+ "valid": false,
+ "error": "A2uiCompilationParseError: Failed to parse expression: Syntax error at line 19:16: mismatched input '=' expecting ':' (line 19) - Line 19, Col 16 - Help: Please correct the syntax error in your Express DSL.",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "hero": false,
+   "feature columns (x3)": false,
+   "testimonial": false,
+   "CTA": false
+  }
+ },
+ "reply": "<a2ui>\nroot = columns(\n  cols=1,\n  gap=\"0\",\n  items=[\n    {blocks: [\n      gradient_hero(\n        title=\"Discover Your Next Game-Changer\",\n        subtitle=\"Experience the power of innovation. Transform your workflow with cutting-edge features designed for modern teams.\",\n        cta_label=\"Get Started Today\",\n        cta_url=\"#\"\n      )\n    ]},\n    {blocks: [\n      feature_grid(\n        heading=\"Why Choose Us\",\n        columns=3,\n        features=[\n          {\n            icon=\"\u26a1\",\n            title=\"Lightning Fast\",\n            description=\"Deploy in seconds with our optimized infrastructure built for speed and reliability.\"\n          },\n          {\n            icon=\"\ud83d\udd12\",\n            title=\"Enterprise Security\",\n            description=\"Bank-level encryption and compliance standards keep your data safe and secure.\"\n          },\n          {\n            icon=\"\ud83c\udfaf\",\n            title=\"Intuitive Design\",\n            description=\"Beautiful, user-friendly interface that requires zero training to get started.\"\n          }\n        ]\n      )\n    ]},\n    {blocks: [\n      testimonial_card(\n        text=\"This product completely transformed how we work. The efficiency gains alone have saved us thousands of hours.\",\n        author_name=\"Sarah Chen\",\n        author_title=\"VP of Operations, TechCorp\",\n        author_avatar_url=\"https://i.pravatar.cc/150?img=1\",\n        rating=5\n      )\n    ]},\n    {blocks: [\n      cta_section(\n        heading=\"Ready to Get Started?\",\n        body=\"Join hundreds of teams already experiencing faster, smarter workflows.\",\n        primary_cta={label: \"Start Your Free Trial\", url: \"#\"},\n        secondary_cta={label: \"View Pricing\", url: \"#\"}\n      )\n    ]}\n  ]\n)\n</a2ui>"
+}

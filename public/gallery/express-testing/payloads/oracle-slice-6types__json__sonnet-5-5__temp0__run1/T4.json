@@ -1,0 +1,124 @@
+{
+ "label": "oracle-slice-6types__json__sonnet-5-5__temp0__run1",
+ "task": "T4",
+ "format": "json",
+ "model_id": "claude-sonnet-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "status_list",
+    "catalog_id": "https://a2uicatalog.ai/catalog/d-t4.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "status_list",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         {
+          "component": "heading",
+          "text": "Filter by status"
+         },
+         {
+          "component": "segmented_control",
+          "name": "status_filter",
+          "selected_value": "all",
+          "options": [
+           {
+            "label": "All",
+            "value": "all"
+           },
+           {
+            "label": "Done",
+            "value": "done"
+           },
+           {
+            "label": "In progress",
+            "value": "in_progress"
+           },
+           {
+            "label": "Blocked",
+            "value": "blocked"
+           },
+           {
+            "label": "Queued",
+            "value": "queued"
+           }
+          ]
+         },
+         {
+          "component": "body",
+          "text": "Showing all 8 items. Choose a status to narrow the list."
+         }
+        ]
+       },
+       {
+        "blocks": [
+         {
+          "component": "heading",
+          "text": "Items"
+         },
+         {
+          "component": "entity_list",
+          "items": [
+           {
+            "name": "Set up project repository",
+            "subtitle": "Repo created with branch protection and CI enabled.",
+            "status": "Done"
+           },
+           {
+            "name": "Design onboarding flow",
+            "subtitle": "Wireframes approved by the product team.",
+            "status": "Done"
+           },
+           {
+            "name": "Build authentication API",
+            "subtitle": "Login and token refresh endpoints are under review.",
+            "status": "In progress"
+           },
+           {
+            "name": "Implement dashboard charts",
+            "subtitle": "Line and bar charts done; pie chart still to do.",
+            "status": "In progress"
+           },
+           {
+            "name": "Integrate payment provider",
+            "subtitle": "Waiting on sandbox credentials from the vendor.",
+            "status": "Blocked"
+           },
+           {
+            "name": "Migrate legacy data",
+            "subtitle": "Schema mapping is unresolved for the customer table.",
+            "status": "Blocked"
+           },
+           {
+            "name": "Write end-to-end tests",
+            "subtitle": "Scheduled to start after the auth API merges.",
+            "status": "Queued"
+           },
+           {
+            "name": "Prepare launch announcement",
+            "subtitle": "Draft copy due the week before release.",
+            "status": "Queued"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

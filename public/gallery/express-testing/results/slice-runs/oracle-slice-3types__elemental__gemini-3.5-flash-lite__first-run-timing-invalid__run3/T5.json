@@ -1,0 +1,46 @@
+{
+ "task": "T5",
+ "condition": "CX_gemini-3.5-flash-l",
+ "temperature_applied": false,
+ "format": "elemental",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash-lite",
+ "hints": false,
+ "label": "oracle-slice-3types__elemental__gemini-3.5-flash-lite__first-run-timing-invalid__run3",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "C-marketing-commerce.json",
+ "atoms_in_catalogue": 23,
+ "prompt_chars": 12539,
+ "slot_recall": [
+  1,
+  1
+ ],
+ "secs": 19.1,
+ "usage": {
+  "input_tokens": 3611,
+  "output_tokens": 352
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "pricing_tier_group"
+ ],
+ "score": {
+  "per_approach": {
+   "tier_cards": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+   },
+   "comparison_table": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": null
+   }
+  },
+  "best_approach": "tier_cards",
+  "f1": 1.0
+ },
+ "reply": "<a2ui>\n  <body>\n    <script type=\"application/json\">\n      {\n        \"tiers\": [\n          {\n            \"name\": \"Starter\",\n            \"price\": \"$9\",\n            \"period\": \"/month\",\n            \"description\": \"Essential features for individuals and side projects.\",\n            \"cta_label\": \"Get Started\",\n            \"cta_url\": \"#\",\n            \"features\": [\"1 User\", \"5GB Storage\", \"Basic Support\", \"Community Access\"]\n          },\n          {\n            \"name\": \"Pro\",\n            \"price\": \"$29\",\n            \"period\": \"/month\",\n            \"description\": \"Advanced tools and power for growing teams.\",\n            \"cta_label\": \"Start Free Trial\",\n            \"cta_url\": \"#\",\n            \"recommended\": true,\n            \"features\": [\"Unlimited Users\", \"100GB Storage\", \"Priority Support\", \"Advanced Analytics\", \"Custom Domain\"]\n          },\n          {\n            \"name\": \"Enterprise\",\n            \"price\": \"$99\",\n            \"period\": \"/month\",\n            \"description\": \"Maximum security, support, and performance for scale.\",\n            \"cta_label\": \"Contact Sales\",\n            \"cta_url\": \"#\",\n            \"features\": [\"Dedicated Infrastructure\", \"Unlimited Storage\", \"24/7 Phone Support\", \"Custom Integrations\", \"SLA Guarantee\"]\n          }\n        ]\n      }\n    </script>\n    <ui-pricing_tier_group id=\"root\" tiers=\"{$/tiers}\" />\n  </body>\n</a2ui>"
+}

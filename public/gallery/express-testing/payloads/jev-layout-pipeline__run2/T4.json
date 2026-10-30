@@ -1,0 +1,95 @@
+{
+ "label": "jev-layout-pipeline__run2",
+ "task": "T4",
+ "format": "express",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "ttl",
+      "component": "heading",
+      "text": "System Diagnostics"
+     },
+     {
+      "id": "kpis",
+      "component": "metric_row",
+      "cols": 4,
+      "metrics": [
+       {
+        "value": "99.9%",
+        "label": "Uptime",
+        "sub": "+0.1% vs last period",
+        "trend": "up"
+       },
+       {
+        "value": "24ms",
+        "label": "Latency",
+        "sub": "-4ms vs last period",
+        "trend": "down"
+       },
+       {
+        "value": "1,482",
+        "label": "Requests/s",
+        "sub": "+12% vs last period",
+        "trend": "up"
+       },
+       {
+        "value": "0.02%",
+        "label": "Error Rate",
+        "sub": "-0.01% vs last period",
+        "trend": "down"
+       }
+      ]
+     },
+     {
+      "id": "chart",
+      "component": "chartjs_bar",
+      "labels": [
+       "Mon",
+       "Tue",
+       "Wed",
+       "Thu"
+      ],
+      "datasets": [
+       {
+        "label": "Active Nodes",
+        "data": [
+         120,
+         135,
+         142,
+         150
+        ]
+       }
+      ]
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "ttl",
+         "kpis",
+         "chart"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

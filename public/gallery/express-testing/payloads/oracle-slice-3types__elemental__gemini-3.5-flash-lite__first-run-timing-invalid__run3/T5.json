@@ -1,0 +1,86 @@
+{
+ "label": "oracle-slice-3types__elemental__gemini-3.5-flash-lite__first-run-timing-invalid__run3",
+ "task": "T5",
+ "format": "elemental",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce-elemental.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "pricing_tier_group",
+      "tiers": {
+       "path": "/tiers"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_data_model": {
+    "surface_id": "main",
+    "path": "/",
+    "value": {
+     "tiers": [
+      {
+       "name": "Starter",
+       "price": "$9",
+       "period": "/month",
+       "description": "Essential features for individuals and side projects.",
+       "cta_label": "Get Started",
+       "cta_url": "#",
+       "features": [
+        "1 User",
+        "5GB Storage",
+        "Basic Support",
+        "Community Access"
+       ]
+      },
+      {
+       "name": "Pro",
+       "price": "$29",
+       "period": "/month",
+       "description": "Advanced tools and power for growing teams.",
+       "cta_label": "Start Free Trial",
+       "cta_url": "#",
+       "recommended": true,
+       "features": [
+        "Unlimited Users",
+        "100GB Storage",
+        "Priority Support",
+        "Advanced Analytics",
+        "Custom Domain"
+       ]
+      },
+      {
+       "name": "Enterprise",
+       "price": "$99",
+       "period": "/month",
+       "description": "Maximum security, support, and performance for scale.",
+       "cta_label": "Contact Sales",
+       "cta_url": "#",
+       "features": [
+        "Dedicated Infrastructure",
+        "Unlimited Storage",
+        "24/7 Phone Support",
+        "Custom Integrations",
+        "SLA Guarantee"
+       ]
+      }
+     ]
+    }
+   }
+  }
+ ]
+}

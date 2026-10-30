@@ -1,0 +1,122 @@
+{
+ "label": "oracle-slice-6types__express__haiku-5-5__run1",
+ "task": "T4",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/d-t4.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "filter",
+      "component": "segmented_control",
+      "options": [
+       {
+        "label": "All",
+        "value": "all"
+       },
+       {
+        "label": "Active",
+        "value": "active"
+       },
+       {
+        "label": "In progress",
+        "value": "in_progress"
+       },
+       {
+        "label": "Blocked",
+        "value": "blocked"
+       },
+       {
+        "label": "New",
+        "value": "new"
+       }
+      ],
+      "selected_value": "all",
+      "name": "status_filter"
+     },
+     {
+      "id": "title",
+      "component": "heading",
+      "text": "Items"
+     },
+     {
+      "id": "items",
+      "component": "entity_list",
+      "items": [
+       {
+        "name": "Item 1",
+        "subtitle": "Initial configuration is complete and running.",
+        "status": "Active"
+       },
+       {
+        "name": "Item 2",
+        "subtitle": "Waiting on the latest data export to finish.",
+        "status": "In progress"
+       },
+       {
+        "name": "Item 3",
+        "subtitle": "Connection to the upstream service keeps timing out.",
+        "status": "Blocked"
+       },
+       {
+        "name": "Item 4",
+        "subtitle": "Newly added and awaiting its first review.",
+        "status": "New"
+       },
+       {
+        "name": "Item 5",
+        "subtitle": "Scheduled sync ran successfully overnight.",
+        "status": "Active"
+       },
+       {
+        "name": "Item 6",
+        "subtitle": "Migration to the new schema is underway.",
+        "status": "In progress"
+       },
+       {
+        "name": "Item 7",
+        "subtitle": "Permission check failed for one of the roles.",
+        "status": "Blocked"
+       },
+       {
+        "name": "Item 8",
+        "subtitle": "Registered today and queued for setup.",
+        "status": "New"
+       }
+      ]
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "1.5rem",
+      "align": "stretch",
+      "items": [
+       {
+        "blocks": [
+         "title",
+         "filter"
+        ]
+       },
+       {
+        "blocks": [
+         "items"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

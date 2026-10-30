@@ -1,0 +1,99 @@
+{
+ "label": "oracle-slice-3types__json__gemini-3.5-flash-lite__request-only-timing__run1",
+ "task": "T6",
+ "format": "json",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "vocab-flashcards",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning.json",
+    "theme": {
+     "primaryColor": "#4f46e5"
+    }
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "vocab-flashcards",
+    "components": [
+     {
+      "id": "root",
+      "component": "page_header",
+      "title": "Vocabulary Builder",
+      "subtitle": "Master your target language vocabulary using interactive flashcards.",
+      "icon": "\ud83d\udcda",
+      "tag": "SRS & Review",
+      "accent": "#4f46e5"
+     },
+     {
+      "id": "xp-indicator",
+      "component": "xp_bar",
+      "level_label": "Level 1 \u2014 Novice Reviewer",
+      "xp_current": 4,
+      "xp_next": 10,
+      "accent": "#4f46e5"
+     },
+     {
+      "id": "deck-callout",
+      "component": "text_callout",
+      "variant": "info",
+      "title": "Instructions",
+      "description": "Review each card below. Flip the cards to check the definitions and build up your streak!"
+     },
+     {
+      "id": "flashcard-set",
+      "component": "flashcard_deck",
+      "accent": "#4f46e5",
+      "label_front": "TERM",
+      "label_back": "DEFINITION",
+      "cards": [
+       {
+        "front": "Ephemeral",
+        "back": "Lasting for a very short time."
+       },
+       {
+        "front": "Serendipity",
+        "back": "The occurrence of events by chance in a happy or beneficial way."
+       },
+       {
+        "front": "Pragmatic",
+        "back": "Dealing with things sensibly and realistically."
+       },
+       {
+        "front": "Benevolent",
+        "back": "Well meaning and kindly."
+       },
+       {
+        "front": "Cacophony",
+        "back": "A harsh, discordant mixture of sounds."
+       },
+       {
+        "front": "Mellifluous",
+        "back": "(Of a voice or words) sweet or musical; pleasant to hear."
+       },
+       {
+        "front": "Fastidious",
+        "back": "Very attentive to and concerned about accuracy and detail."
+       },
+       {
+        "front": "Garrulous",
+        "back": "Excessively talkative, especially on trivial matters."
+       },
+       {
+        "front": "Obfuscate",
+        "back": "Render obscure, unclear, or unintelligible."
+       },
+       {
+        "front": "Sycophant",
+        "back": "A person who acts obsequiously toward someone important in order to gain advantage."
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

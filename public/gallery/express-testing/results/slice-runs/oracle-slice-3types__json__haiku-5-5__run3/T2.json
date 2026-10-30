@@ -1,0 +1,40 @@
+{
+ "task": "T2",
+ "condition": "CN_haiku-5-5",
+ "temperature_applied": false,
+ "format": "json",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "oracle-slice-3types__json__haiku-5-5__run3",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 31546,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 10.4,
+ "usage": {
+  "input_tokens": 12376,
+  "output_tokens": 2199
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns"
+ ],
+ "score": {
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "KPI tile (x4)": false,
+   "trend (required only if metric_row was chosen; stat_card's own delta already satisfies it)": false,
+   "comparison chart": false
+  }
+ },
+ "reply": "I'll build this as a two-column surface: the four KPI tiles on one side and the year-over-year comparison chart on the other. The catalog has no generic container, so I'm using `columns` as the root.\n\n<a2ui-json>\n[\n  {\n    \"version\": \"v0.9\",\n    \"createSurface\": {\n      \"surfaceId\": \"metrics-overview\",\n      \"catalogId\": \"https://a2uicatalog.ai/catalog/c-data-display.json\"\n    }\n  },\n  {\n    \"version\": \"v0.9\",\n    \"updateComponents\": {\n      \"surfaceId\": \"metrics-overview\",\n      \"components\": [\n        {\n          \"id\": \"root\",\n          \"component\": \"columns\",\n          \"cols\": 2,\n          \"gap\": \"1.5rem\",\n          \"align\": \"top\",\n          \"items\": [\n            {\n              \"blocks\": [\n                {\n                  \"id\": \"kpi-row\",\n                  \"component\": \"metric_row\",\n                  \"cols\": 2,\n                  \"metrics\": [\n                    {\n                      \"value\": \"48,210\",\n                      \"prefix\": \"$\",\n                      \"label\": \"Revenue\",\n                      \"sub\": \"vs. last month\",\n                      \"trend\": \"up\"\n                    },\n                    {\n                      \"value\": \"9,340\",\n                      \"label\": \"Active users\",\n                      \"sub\": \"vs. last month\",\n                      \"trend\": \"up\"\n                    },\n                    {\n                      \"value\": \"2.3\",\n                      \"suffix\": \"%\",\n                      \"label\": \"Churn rate\",\n                      \"sub\": \"vs. last month\",\n                      \"trend\": \"down\"\n                    },\n                    {\n                      \"value\": \"212\",\n                      \"suffix\": \" ms\",\n                      \"label\": \"Avg response time\",\n                      \"sub\": \"vs. last month\",\n                      \"trend\": \"down\"\n                    }\n                  ]\n                }\n              ]\n            },\n            {\n              \"blocks\": [\n                {\n                  \"id\": \"comparison-chart\",\n                  \"component\": \"chartjs_bar\",\n                  \"labels\": [\"Q1\", \"Q2\", \"Q3\", \"Q4\"],\n                  \"datasets\": [\n                    {\n                      \"label\": \"This year\",\n                      \"data\": [32, 41, 38, 52]\n                    },\n                    {\n                      \"label\": \"Last year\",\n                      \"data\": [28, 35, 40, 44]\n                    }\n                  ]\n                }\n              ]\n            }\n          ]\n        }\n      ]\n    }\n  }\n]\n</a2ui-json>\n\nThe KPI values and the chart data are placeholders. Replace them with real figures before use."
+}

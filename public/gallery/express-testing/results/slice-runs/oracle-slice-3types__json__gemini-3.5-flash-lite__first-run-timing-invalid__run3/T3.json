@@ -1,0 +1,44 @@
+{
+ "task": "T3",
+ "condition": "CN_gemini-3.5-f",
+ "temperature_applied": false,
+ "format": "json",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash-lite",
+ "hints": false,
+ "label": "oracle-slice-3types__json__gemini-3.5-flash-lite__first-run-timing-invalid__run3",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "C-marketing-commerce.json",
+ "atoms_in_catalogue": 23,
+ "prompt_chars": 24557,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 20.3,
+ "usage": {
+  "input_tokens": 6001,
+  "output_tokens": 777
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "gradient_hero",
+  "feature_grid",
+  "testimonial_card",
+  "cta_section"
+ ],
+ "score": {
+  "precision": 1.0,
+  "recall": 1.0,
+  "f1": 1.0,
+  "slot_hits": {
+   "hero": true,
+   "feature columns (x3)": true,
+   "testimonial": true,
+   "CTA": true
+  }
+ },
+ "reply": "<a2ui-json>\n{\n  \"version\": \"v0.9.1\",\n  \"createSurface\": {\n    \"surfaceId\": \"product-landing-page\",\n    \"catalogId\": \"https://a2uicatalog.ai/catalog/c-marketing-commerce.json\",\n    \"theme\": {\n      \"primaryColor\": \"#4f46e5\"\n    }\n  }\n}\n</a2ui-json>\n\n<a2ui-json>\n{\n  \"version\": \"v0.9.1\",\n  \"updateComponents\": {\n    \"surfaceId\": \"product-landing-page\",\n    \"components\": [\n      {\n        \"id\": \"root\",\n        \"component\": \"gradient_hero\",\n        \"title\": \"Build Better Products, Faster\",\n        \"subtitle\": \"Streamline your workflow, collaborate in real-time, and ship high-quality software with our all-in-one platform designed for modern engineering teams.\",\n        \"badge\": \"\u2728 Announcing v2.0\",\n        \"cta_label\": \"Get Started Free\",\n        \"cta_url\": \"#signup\",\n        \"align\": \"center\"\n      },\n      {\n        \"id\": \"features-grid\",\n        \"component\": \"feature_grid\",\n        \"heading\": \"Everything you need to succeed\",\n        \"description\": \"Powerful features built to scale with your team and accelerate your release cycle.\",\n        \"columns\": 3,\n        \"features\": [\n          {\n            \"icon\": \"\u26a1\",\n            \"title\": \"Lightning Fast\",\n            \"description\": \"Optimized performance ensures your team never waits on slow builds or lagging tools.\"\n          },\n          {\n            \"icon\": \"\ud83d\udd12\",\n            \"title\": \"Enterprise Security\",\n            \"description\": \"Advanced compliance, end-to-end encryption, and role-based access control keep your data safe.\"\n          },\n          {\n            \"icon\": \"\ud83d\udcc8\",\n            \"title\": \"Real-time Analytics\",\n            \"description\": \"Gain deep insights into your pipeline and team velocity with live dashboards.\"\n          }\n        ]\n      },\n      {\n        \"id\": \"customer-testimonial\",\n        \"component\": \"testimonial_card\",\n        \"text\": \"Switching to this platform completely transformed how our engineering department operates. We shipped our last major release two weeks ahead of schedule.\",\n        \"author_name\": \"Sarah Jenkins\",\n        \"author_title\": \"VP of Engineering at TechFlow\",\n        \"author_avatar_url\": \"https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150\",\n        \"rating\": 5\n      },\n      {\n        \"id\": \"bottom-cta\",\n        \"component\": \"cta_section\",\n        \"heading\": \"Ready to accelerate your workflow?\",\n        \"body\": \"Join thousands of teams already building better software with our platform. Start your 14-day free trial today.\",\n        \"primary_cta\": {\n          \"label\": \"Start Free Trial\",\n          \"url\": \"#signup\"\n        },\n        \"secondary_cta\": {\n          \"label\": \"Contact Sales\",\n          \"url\": \"#sales\"\n        },\n        \"background\": \"#f8fafc\"\n      }\n    ]\n  }\n}\n</a2ui-json>"
+}

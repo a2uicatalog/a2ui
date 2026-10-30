@@ -1,0 +1,133 @@
+{
+ "label": "oracle-slice-3types__elemental__sonnet-5-5__run3",
+ "task": "T4",
+ "format": "elemental",
+ "model_id": "claude-sonnet-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display-elemental.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "heading",
+      "text": "Work Items"
+     },
+     {
+      "id": "status_filter",
+      "component": "segmented_control",
+      "name": "status_filter",
+      "selected_value": {
+       "path": "/filter"
+      },
+      "options": [
+       {
+        "label": "All",
+        "value": "all"
+       },
+       {
+        "label": "Done",
+        "value": "Done"
+       },
+       {
+        "label": "In progress",
+        "value": "In progress"
+       },
+       {
+        "label": "Blocked",
+        "value": "Blocked"
+       },
+       {
+        "label": "Pending",
+        "value": "Pending"
+       }
+      ]
+     },
+     {
+      "id": "item_list",
+      "component": "entity_list",
+      "items": {
+       "path": "/items"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_data_model": {
+    "surface_id": "main",
+    "path": "/",
+    "value": {
+     "filter": "all",
+     "items": [
+      {
+       "name": "Migrate billing database",
+       "subtitle": "Cutover scheduled after the nightly backup completes.",
+       "icon": "\ud83d\uddc4\ufe0f",
+       "status": "In progress",
+       "meta": "Infra"
+      },
+      {
+       "name": "Update onboarding emails",
+       "subtitle": "New copy approved and live for all new signups.",
+       "icon": "\u2709\ufe0f",
+       "status": "Done",
+       "meta": "Marketing"
+      },
+      {
+       "name": "Fix checkout timeout",
+       "subtitle": "Waiting on payment provider to confirm the API limit.",
+       "icon": "\ud83d\uded2",
+       "status": "Blocked",
+       "meta": "Payments"
+      },
+      {
+       "name": "Design settings page",
+       "subtitle": "Wireframes drafted, awaiting design review.",
+       "icon": "\ud83c\udfa8",
+       "status": "Pending",
+       "meta": "Design"
+      },
+      {
+       "name": "Rotate API keys",
+       "subtitle": "All production keys replaced and verified.",
+       "icon": "\ud83d\udd11",
+       "status": "Done",
+       "meta": "Security"
+      },
+      {
+       "name": "Add CSV export",
+       "subtitle": "Backend endpoint finished, UI work under way.",
+       "icon": "\ud83d\udcc4",
+       "status": "In progress",
+       "meta": "Product"
+      },
+      {
+       "name": "Renew SSL certificates",
+       "subtitle": "Blocked until the DNS change is approved.",
+       "icon": "\ud83d\udd12",
+       "status": "Blocked",
+       "meta": "Infra"
+      },
+      {
+       "name": "Plan Q3 roadmap",
+       "subtitle": "Kickoff meeting not yet scheduled.",
+       "icon": "\ud83d\uddfa\ufe0f",
+       "status": "Pending",
+       "meta": "Strategy"
+      }
+     ]
+    }
+   }
+  }
+ ]
+}

@@ -1,0 +1,48 @@
+{
+ "task": "T5",
+ "condition": "CN_gemini-3.5-f",
+ "temperature_applied": false,
+ "format": "json",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash-lite",
+ "hints": false,
+ "label": "oracle-slice-3types__json__gemini-3.5-flash-lite__first-run-timing-invalid__run3",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "C-marketing-commerce.json",
+ "atoms_in_catalogue": 23,
+ "prompt_chars": 24557,
+ "slot_recall": [
+  1,
+  1
+ ],
+ "secs": 20.3,
+ "usage": {
+  "input_tokens": 5991,
+  "output_tokens": 768
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "gradient_hero",
+  "pricing_tier_group",
+  "cta_section"
+ ],
+ "score": {
+  "per_approach": {
+   "tier_cards": {
+    "precision": 0.333,
+    "recall": 1.0,
+    "f1": 0.5
+   },
+   "comparison_table": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": null
+   }
+  },
+  "best_approach": "tier_cards",
+  "f1": 0.5
+ },
+ "reply": "<a2ui-json>\n{\n  \"version\": \"v0.9.1\",\n  \"createSurface\": {\n    \"surfaceId\": \"pricing-surface\",\n    \"catalogId\": \"https://a2uicatalog.ai/catalog/c-marketing-commerce.json\",\n    \"theme\": {\n      \"primaryColor\": \"#4f46e5\"\n    }\n  }\n}\n</a2ui-json>\n\n<a2ui-json>\n{\n  \"version\": \"v0.9.1\",\n  \"updateComponents\": {\n    \"surfaceId\": \"pricing-surface\",\n    \"components\": [\n      {\n        \"id\": \"root\",\n        \"component\": \"gradient_hero\",\n        \"title\": \"Simple, transparent pricing\",\n        \"subtitle\": \"Choose the right plan for your team. Scale up or down at any time.\",\n        \"badge\": \"Pricing Plans\",\n        \"align\": \"center\",\n        \"cta_label\": \"Contact Sales\",\n        \"cta_url\": \"#contact\"\n      },\n      {\n        \"id\": \"pricing_group\",\n        \"component\": \"pricing_tier_group\",\n        \"tiers\": [\n          {\n            \"name\": \"Starter\",\n            \"price\": \"$9\",\n            \"cadence\": \"/month\",\n            \"description\": \"Essential features for individuals and small projects.\",\n            \"features\": [\n              \"Up to 5 team members\",\n              \"10GB cloud storage\",\n              \"Basic support\",\n              \"Community access\"\n            ],\n            \"cta_label\": \"Start Free Trial\",\n            \"cta_url\": \"#signup-starter\"\n          },\n          {\n            \"name\": \"Pro\",\n            \"price\": \"$29\",\n            \"cadence\": \"/month\",\n            \"description\": \"Advanced features for growing teams and businesses.\",\n            \"features\": [\n              \"Up to 20 team members\",\n              \"100GB cloud storage\",\n              \"Priority support\",\n              \"Advanced analytics\",\n              \"Custom integrations\"\n            ],\n            \"recommended\": true,\n            \"cta_label\": \"Get Started\",\n            \"cta_url\": \"#signup-pro\"\n          },\n          {\n            \"name\": \"Enterprise\",\n            \"price\": \"$99\",\n            \"cadence\": \"/month\",\n            \"description\": \"Maximum power, security, and support for large organizations.\",\n            \"features\": [\n              \"Unlimited team members\",\n              \"1TB cloud storage\",\n              \"24/7 dedicated support\",\n              \"Advanced security & SSO\",\n              \"Custom SLA\"\n            ],\n            \"cta_label\": \"Contact Us\",\n            \"cta_url\": \"#signup-enterprise\"\n          }\n        ]\n      },\n      {\n        \"id\": \"pricing_cta\",\n        \"component\": \"cta_section\",\n        \"heading\": \"Still have questions?\",\n        \"body\": \"Our team is happy to help you find the right plan or configure a custom enterprise solution.\",\n        \"primary_cta\": {\n          \"label\": \"Talk to Support\",\n          \"url\": \"#support\"\n        },\n        \"secondary_cta\": {\n          \"label\": \"View Documentation\",\n          \"url\": \"#docs\"\n        }\n      }\n    ]\n  }\n}\n</a2ui-json>"
+}

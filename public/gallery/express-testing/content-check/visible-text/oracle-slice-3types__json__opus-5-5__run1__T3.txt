@@ -1,0 +1,2 @@
+Did not compile.
+ A2uiIntegrityError: Component 'cta' is not reachable from 'root'

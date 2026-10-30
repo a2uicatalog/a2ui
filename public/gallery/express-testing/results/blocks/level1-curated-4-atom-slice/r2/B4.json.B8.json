@@ -1,0 +1,36 @@
+{
+ "model": "sonnet-5-5",
+ "cond": "B4",
+ "format": "json",
+ "brief": "B8",
+ "repeat": 2,
+ "seq": 31,
+ "model_id": "claude-sonnet-5-5",
+ "utc": "2026-10-29T19:55:33Z",
+ "prompt_chars": 19029,
+ "prompt_sha256": "(removed for publication)",
+ "temperature_requested": null,
+ "temperature_sent": false,
+ "max_tokens": 32768,
+ "request_secs": 10.94,
+ "input_tokens": 7255,
+ "output_tokens": 1411,
+ "stop_reason": "end_turn",
+ "usage": {
+  "input_tokens": 7255,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "cache_creation": {
+   "ephemeral_5m_input_tokens": 0,
+   "ephemeral_1h_input_tokens": 0
+  },
+  "output_tokens": 1411,
+  "output_tokens_details": {
+   "thinking_tokens": 634
+  },
+  "service_tier": "standard",
+  "inference_geo": "global",
+  "speed": "standard"
+ },
+ "reply": "The catalog has no chart, text or layout components, so I built the bar chart as a 3D brick model. Each bar is a stack of bricks, one brick per unit of monthly sales (January to June, rising to a June peak). It assembles itself and can be orbited by dragging. Because there is no layout container, the dashboard is a single component with no separate title or labels.\n\n<a2ui-json>\n[\n  {\n    \"version\": \"v0.9.1\",\n    \"createSurface\": {\n      \"surfaceId\": \"sales_dashboard\",\n      \"catalogId\": \"https://a2uicatalog.ai/catalog/blocks-b4.json\"\n    }\n  },\n  {\n    \"version\": \"v0.9.1\",\n    \"updateComponents\": {\n      \"surfaceId\": \"sales_dashboard\",\n      \"components\": [\n        {\n          \"id\": \"root\",\n          \"component\": \"brick_build_3d\",\n          \"bricks\": [\n            {\"x\": 0,  \"y\": 0, \"z\": 0, \"w\": 2, \"d\": 2, \"h\": 3, \"c\": \"#2563eb\"},\n            {\"x\": 3,  \"y\": 0, \"z\": 0, \"w\": 2, \"d\": 2, \"h\": 5, \"c\": \"#0ea5e9\"},\n            {\"x\": 6,  \"y\": 0, \"z\": 0, \"w\": 2, \"d\": 2, \"h\": 4, \"c\": \"#14b8a6\"},\n            {\"x\": 9,  \"y\": 0, \"z\": 0, \"w\": 2, \"d\": 2, \"h\": 7, \"c\": \"#22c55e\"},\n            {\"x\": 12, \"y\": 0, \"z\": 0, \"w\": 2, \"d\": 2, \"h\": 6, \"c\": \"#eab308\"},\n            {\"x\": 15, \"y\": 0, \"z\": 0, \"w\": 2, \"d\": 2, \"h\": 9, \"c\": \"#f97316\"}\n          ],\n          \"mode\": \"animate\",\n          \"look\": \"studio\",\n          \"base\": \"#e5e7eb\",\n          \"orbit\": true,\n          \"height\": 440,\n          \"scrubber\": false,\n          \"checks\": false,\n          \"parts\": false,\n          \"picker\": false,\n          \"accessibility\": {\n            \"label\": \"Sales bar chart\",\n            \"description\": \"Brick bar chart of monthly sales from January to June, rising from 3 units in January to 9 in June.\"\n          }\n        }\n      ]\n    }\n  }\n]\n</a2ui-json>"
+}

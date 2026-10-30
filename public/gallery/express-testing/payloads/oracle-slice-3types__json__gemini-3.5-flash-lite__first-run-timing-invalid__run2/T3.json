@@ -1,0 +1,81 @@
+{
+ "label": "oracle-slice-3types__json__gemini-3.5-flash-lite__first-run-timing-invalid__run2",
+ "task": "T3",
+ "format": "json",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "product-landing",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce.json",
+    "send_data_model": false
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "product-landing",
+    "components": [
+     {
+      "component": "gradient_hero",
+      "id": "root",
+      "title": "Build Better Products, Faster",
+      "subtitle": "Streamline your workflow, collaborate in real-time, and ship with confidence using our next-generation platform.",
+      "badge": "\u2728 Announcing v2.0",
+      "cta_label": "Get Started",
+      "cta_url": "#",
+      "align": "center"
+     },
+     {
+      "component": "feature_grid",
+      "id": "features",
+      "heading": "Everything you need to scale",
+      "description": "Powerful features designed to help your team perform at their absolute best.",
+      "columns": 3,
+      "features": [
+       {
+        "icon": "\u26a1",
+        "title": "Lightning Fast",
+        "description": "Optimized performance ensuring zero lag and instantaneous page loads."
+       },
+       {
+        "icon": "\ud83d\udd12",
+        "title": "Enterprise Security",
+        "description": "State-of-the-art encryption and compliance to keep your data safe."
+       },
+       {
+        "icon": "\ud83d\udcc8",
+        "title": "Advanced Analytics",
+        "description": "Deep insights and real-time metrics to track your growth effortlessly."
+       }
+      ]
+     },
+     {
+      "component": "testimonial_card",
+      "id": "testimonial",
+      "text": "This platform completely transformed how our engineering and product teams collaborate. We shipped our latest feature in half the usual time.",
+      "author_name": "Sarah Jenkins",
+      "author_title": "VP of Product at TechCorp",
+      "author_avatar_url": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150",
+      "rating": 5
+     },
+     {
+      "component": "cta_section",
+      "id": "cta",
+      "heading": "Ready to get started?",
+      "body": "Join thousands of satisfied teams building the future today.",
+      "primary_cta": {
+       "label": "Start Free Trial",
+       "url": "#"
+      },
+      "secondary_cta": {
+       "label": "Contact Sales",
+       "url": "#"
+      }
+     }
+    ]
+   }
+  }
+ ]
+}

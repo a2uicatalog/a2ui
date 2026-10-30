@@ -1,0 +1,44 @@
+{
+ "task": "T3",
+ "condition": "CX_gemini-3.5-flash-l",
+ "temperature_applied": false,
+ "format": "elemental",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash-lite",
+ "hints": false,
+ "label": "oracle-slice-3types__elemental__gemini-3.5-flash-lite__first-run-timing-invalid__run3",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "C-marketing-commerce.json",
+ "atoms_in_catalogue": 23,
+ "prompt_chars": 12539,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 20.5,
+ "usage": {
+  "input_tokens": 3621,
+  "output_tokens": 495
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "gradient_hero",
+  "feature_grid",
+  "testimonial_card",
+  "cta_section"
+ ],
+ "score": {
+  "precision": 1.0,
+  "recall": 1.0,
+  "f1": 1.0,
+  "slot_hits": {
+   "hero": true,
+   "feature columns (x3)": true,
+   "testimonial": true,
+   "CTA": true
+  }
+ },
+ "reply": "<a2ui>\n  <body>\n    <script type=\"application/json\">\n      {\n        \"hero_title\": \"Build the future of digital commerce\",\n        \"hero_sub\": \"Our elemental platform provides all the components you need to scale your marketing and sales effortlessly.\",\n        \"feat_title\": \"Everything you need to succeed\",\n        \"feat_desc\": \"Powerful features designed to convert visitors into loyal customers.\",\n        \"cta_heading\": \"Ready to accelerate your growth?\",\n        \"cta_body\": \"Join thousands of businesses already scaling with our platform today.\"\n      }\n    </script>\n    <ui-gradient_hero id=\"root\" title=\"Build the future of digital commerce\" subtitle=\"Our elemental platform provides all the components you need to scale your marketing and sales effortlessly.\" cta_label=\"Get Started\" cta_url=\"#\" Badge=\"New Release\" align=\"center\" />\n    <ui-feature_grid id=\"features\" Heading=\"Everything you need to succeed\" description=\"Powerful features designed to convert visitors into loyal customers.\" columns=\"{3}\">\n      <script type=\"application/json\" slot=\"features\">[\n        {\n          \"icon\": \"\u26a1\",\n          \"title\": \"Lightning Fast\",\n          \"description\": \"Optimized performance ensures your customers never wait for a page load.\"\n        },\n        {\n          \"icon\": \"\ud83d\udee1\ufe0f\",\n          \"title\": \"Enterprise Security\",\n          \"description\": \"Bank-grade encryption and compliance built right into the core architecture.\"\n        },\n        {\n          \"icon\": \"\ud83d\udcc8\",\n          \"title\": \"Advanced Analytics\",\n          \"description\": \"Real-time insights and conversions tracking to measure your exact ROI.\"\n        }\n      ]</script>\n    </ui-feature_grid>\n    <ui-testimonial_card id=\"testimonial\" text=\"This platform completely transformed how we launch campaigns. Our conversion rates doubled in the first month.\" author_name=\"Sarah Jenkins\" author_title=\"Head of Growth, Acme Corp\" rating=\"{5}\" />\n    <ui-cta_section id=\"cta\" Heading=\"Ready to accelerate your growth?\" Body=\"Join thousands of businesses already scaling with our platform today.\" background=\"#1e1b4b\" />\n  </body>\n</a2ui>"
+}

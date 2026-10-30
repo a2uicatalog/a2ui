@@ -1,0 +1,43 @@
+{
+ "task": "T6",
+ "condition": "C_gemini-3.5-flash",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash",
+ "hints": false,
+ "label": "oracle-slice-3types__express__gemini-3.5-flash__thinking-on_first-run-timing-invalid__run2",
+ "agent_type": "Learning",
+ "catalogue": "C-learning.json",
+ "atoms_in_catalogue": 36,
+ "prompt_chars": 21139,
+ "slot_recall": [
+  2,
+  2
+ ],
+ "secs": 38.4,
+ "usage": {
+  "input_tokens": 5726,
+  "output_tokens": 4459
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "page_header",
+  "progress_bar",
+  "text_callout",
+  "flashcard_deck",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.4,
+  "recall": 1.0,
+  "f1": 0.571,
+  "slot_hits": {
+   "flashcard deck": true,
+   "progress indicator": true
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"vocabulary-deck-surface\")\n\n# Header Section\nheader = page_header(\n    title=\"**Academic Vocabulary Builder**\",\n    subtitle=\"Elevate your lexical power. Review these 10 high-yield verbal reasoning terms designed to boost comprehension.\",\n    icon=\"\ud83d\udcda\",\n    tag=\"Set 1 of 5\",\n    accent=\"#4f46e5\"\n)\n\n# Active Progress Tracking\nprog = progress_bar(\n    value=70,\n    label=\"Deck Review Progress\",\n    accent=\"#4f46e5\",\n    show_percent=true,\n    caption=\"7 out of 10 terms successfully completed\"\n)\n\n# Helpful Study Tips\ntips = text_callout(\n    variant=\"info\",\n    title=\"Study Strategy\",\n    description=\"Look at the word on the front, recall its meaning, then tap the card to flip it over. Rate your internal recall before moving to the next term.\"\n)\n\n# 10 Vocabulary Flashcards Deck\ndeck = flashcard_deck(\n    cards=[\n        {\n            front: \"Ephemeral\",\n            back: \"Lasting for a very short time; transient, fleeting, or passing quickly.\"\n        },\n        {\n            front: \"Ubiquitous\",\n            back: \"Present, appearing, or found everywhere at once; omnipresent.\"\n        },\n        {\n            front: \"Cacophony\",\n            back: \"A harsh, discordant, and meaningless mixture of loud sounds.\"\n        },\n        {\n            front: \"Capricious\",\n            back: \"Given to sudden and unaccountable changes of mood, behavior, or opinion.\"\n        },\n        {\n            front: \"Alacrity\",\n            back: \"Brisk, cheerful, and eager readiness to respond or act.\"\n        },\n        {\n            front: \"Ennui\",\n            back: \"A feeling of listlessness, boredom, and dissatisfaction arising from lack of excitement.\"\n        },\n        {\n            front: \"Fastidious\",\n            back: \"Very attentive to detail, accuracy, and cleanliness; difficult to please.\"\n        },\n        {\n            front: \"Garrulous\",\n            back: \"Excessively talkative, especially on trivial or unimportant matters; wordy.\"\n        },\n        {\n            front: \"Impervious\",\n            back: \"Not allowing fluid to pass through; completely unaffected or undisturbed by external forces.\"\n        },\n        {\n            front: \"Nefarious\",\n            back: \"Extremely wicked, villainous, or criminal in nature.\"\n        }\n    ],\n    accent=\"#4f46e5\",\n    label_front=\"VOCABULARY WORD\",\n    label_back=\"DEFINITION\"\n)\n\n# Arrange the workspace using a side-by-side 2-column layout\nroot = columns(\n    cols=2,\n    gap=\"2rem\",\n    align=\"top\",\n    items=[\n        {\n            blocks: [header, tips, prog]\n        },\n        {\n            blocks: [deck]\n        }\n    ]\n)\n</a2ui>"
+}

@@ -1,0 +1,109 @@
+{
+ "label": "oracle-slice-3types__express__haiku-5-5__hints-v2__run2",
+ "task": "T2",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "kpis",
+      "component": "metric_row",
+      "cols": 4,
+      "metrics": [
+       {
+        "value": "$128,430",
+        "label": "Revenue",
+        "sub": "vs. last month",
+        "trend": "up"
+       },
+       {
+        "value": "3,912",
+        "label": "Active users",
+        "sub": "vs. last month",
+        "trend": "up"
+       },
+       {
+        "value": "2.4%",
+        "label": "Churn rate",
+        "sub": "vs. last month",
+        "trend": "down"
+       },
+       {
+        "value": "18 min",
+        "label": "Avg. response time",
+        "sub": "vs. last month",
+        "trend": "down"
+       }
+      ]
+     },
+     {
+      "id": "comparison",
+      "component": "chartjs_bar",
+      "labels": [
+       "Jan",
+       "Feb",
+       "Mar",
+       "Apr",
+       "May",
+       "Jun"
+      ],
+      "datasets": [
+       {
+        "label": "This year",
+        "data": [
+         62,
+         71,
+         68,
+         80,
+         86,
+         94
+        ]
+       },
+       {
+        "label": "Last year",
+        "data": [
+         55,
+         60,
+         64,
+         70,
+         73,
+         79
+        ]
+       }
+      ]
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "kpis"
+        ]
+       },
+       {
+        "blocks": [
+         "comparison"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

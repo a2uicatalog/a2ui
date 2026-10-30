@@ -1,0 +1,34 @@
+{
+ "task": "T1",
+ "condition": "E",
+ "label": "wrong-domain-slice__express__haiku-4-5__run3",
+ "agent_type": "Data display",
+ "catalogue": "B-data-display.json",
+ "atoms_in_catalogue": 248,
+ "prompt_chars": 125436,
+ "slot_recall": [
+  3,
+  5
+ ],
+ "secs": 10.8,
+ "usage": {
+  "input_tokens": 36031,
+  "output_tokens": 1090
+ },
+ "valid": false,
+ "error": "A2uiCompilationParseError: Failed to parse expression: Syntax error at line 18:16: mismatched input '=' expecting ':' (line 18) - Line 18, Col 16 - Help: Please correct the syntax error in your Express DSL.",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "title": false,
+   "concept sections (x3)": false,
+   "worked example": false,
+   "3-question quiz": false,
+   "quiz result": false
+  }
+ },
+ "reply": "<a2ui>\nroot = color_section(\n  accent=\"#4f46e5\",\n  style=\"tint\",\n  padding=\"32px\",\n  blocks=[\n    article_hero(\n      title=\"The Water Cycle\",\n      subtitle=\"Understanding how water moves through Earth's atmosphere, land, and oceans\",\n      image_url=\"https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=400&fit=crop\"\n    ),\n    divider(),\n    heading(text=\"Key Concepts\"),\n    columns(\n      cols=3,\n      gap=\"2rem\",\n      items=[\n        {\n          blocks=[\n            highlight_box(\n              title=\"Evaporation\",\n              text=\"Water from oceans, lakes, and rivers transforms into water vapor due to heat from the sun. This vapor rises into the atmosphere.\",\n              icon=\"\u2600\ufe0f\",\n              accent=\"#4f46e5\",\n              style=\"gradient\"\n            )\n          ]\n        },\n        {\n          blocks=[\n            highlight_box(\n              title=\"Condensation\",\n              text=\"As water vapor cools in the upper atmosphere, it condenses into tiny water droplets. These droplets form clouds and fog.\",\n              icon=\"\u2601\ufe0f\",\n              accent=\"#4f46e5\",\n              style=\"gradient\"\n            )\n          ]\n        },\n        {\n          blocks=[\n            highlight_box(\n              title=\"Precipitation\",\n              text=\"When water droplets in clouds combine and become heavy, they fall back to Earth as rain, snow, sleet, or hail.\",\n              icon=\"\ud83c\udf27\ufe0f\",\n              accent=\"#4f46e5\",\n              style=\"gradient\"\n            )\n          ]\n        }\n      ]\n    ),\n    divider(),\n    heading(text=\"Worked Example\"),\n    two_tone_card(\n      title=\"The Amazon Rainforest Water Cycle\",\n      subtitle=\"A real-world application\",\n      icon=\"\ud83c\udf33\",\n      accent=\"#10b981\",\n      blocks=[\n        body(text=\"**Evaporation:** The Amazon rainforest releases approximately 20 billion tons of water into the atmosphere daily through evaporation and transpiration (collectively called evapotranspiration).\"),\n        spacer(height=\"12px\"),\n        body(text=\"**Condensation:** This massive amount of water vapor rises and cools, forming the dense cloud systems that are characteristic of the Amazon region.\"),\n        spacer(height=\"12px\"),\n        body(text=\"**Precipitation:** The clouds release this moisture as heavy rainfall\u2014the Amazon receives about 2,000 mm annually\u2014which feeds the rivers and sustains the ecosystem.\"),\n        spacer(height=\"12px\"),\n        body(text=\"**Collection & Continuation:** The water collects in the Amazon River and returns to the ocean, completing the cycle and enabling the forest to thrive.\"),\n        spacer(height=\"12px\"),\n        inline_alert(\n          variant=\"info\",\n          message=\"The Amazon's water cycle is so powerful that it influences rainfall patterns across South America and even globally.\"\n        )\n      ]\n    ),\n    divider(),\n    heading(text=\"Check Your Understanding\"),\n    faq_accordion(\n      items=[\n        {\n          question=\"Question 1: What is the primary source of energy that drives the water cycle?\",\n          answer=\"**Answer: The Sun.** Solar energy heats water in oceans, lakes, and rivers, causing evaporation. Without the sun's heat, the water cycle would not occur.\"\n        },\n        {\n          question=\"Question 2: Name two ways water returns to Earth during the precipitation stage.\",\n          answer=\"**Answer: Any two of the following:** Rain (liquid water), snow (frozen crystals), sleet (ice pellets), or hail (larger ice chunks). The form depends on atmospheric temperature.\"\n        },\n        {\n          question=\"Question 3: How do plants contribute to the water cycle?\",\n          answer=\"**Answer:** Plants absorb water from the soil through their roots and release water vapor into the atmosphere through their leaves in a process called transpiration. Combined with evaporation from water bodies, this is called evapotranspiration.\"\n        }\n      ]\n    ),\n    spacer(height=\"24px\"),\n    callout(\n      kind=\"tip\",\n      title=\"Key Takeaway\",\n      text=\"The water cycle is a continuous process with no beginning or end. Water is constantly moving between the atmosphere, land, and oceans, driven by solar energy. Understanding this cycle is essential for grasping weather, climate, and environmental science.\"\n    )\n  ]\n)\n</a2ui>"
+}

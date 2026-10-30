@@ -1,0 +1,83 @@
+{
+ "label": "oracle-slice-3types__json__gemini-3.5-flash-lite__first-run-timing-invalid__run1",
+ "task": "T3",
+ "format": "json",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "product-landing-page",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce.json",
+    "theme": {
+     "primaryColor": "#4f46e5"
+    }
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "product-landing-page",
+    "components": [
+     {
+      "id": "root",
+      "component": "gradient_hero",
+      "badge": "New Release",
+      "title": "Build Better Products, Faster",
+      "subtitle": "Streamline your workflow, collaborate with your team, and ship quality features with unprecedented speed.",
+      "cta_label": "Get Started",
+      "cta_url": "#signup",
+      "align": "center"
+     },
+     {
+      "id": "features-grid",
+      "component": "feature_grid",
+      "heading": "Everything you need to succeed",
+      "description": "Powerful features designed to help your team focus on what matters most.",
+      "columns": 3,
+      "features": [
+       {
+        "icon": "\u26a1",
+        "title": "Lightning Fast",
+        "description": "Optimized performance ensures your team never waits for tools to catch up."
+       },
+       {
+        "icon": "\ud83d\udd12",
+        "title": "Enterprise Security",
+        "description": "Bank-grade encryption and advanced compliance keep your data safe and sound."
+       },
+       {
+        "icon": "\ud83d\udcc8",
+        "title": "Advanced Analytics",
+        "description": "Gain deep insights into your workflow with real-time reporting and metrics."
+       }
+      ]
+     },
+     {
+      "id": "testimonial",
+      "component": "testimonial_card",
+      "text": "This platform completely transformed how our engineering team operates. We shipped our latest product 2x faster than planned.",
+      "author_name": "Sarah Jenkins",
+      "author_title": "VP of Engineering at TechCorp",
+      "author_avatar_url": "https://images.unsplash.com/photo-1494790108377-be9c29b29330",
+      "rating": 5
+     },
+     {
+      "id": "cta-banner",
+      "component": "cta_section",
+      "heading": "Ready to accelerate your workflow?",
+      "body": "Join thousands of teams already building the future with our platform.",
+      "primary_cta": {
+       "label": "Start Free Trial",
+       "url": "#trial"
+      },
+      "secondary_cta": {
+       "label": "Contact Sales",
+       "url": "#sales"
+      }
+     }
+    ]
+   }
+  }
+ ]
+}

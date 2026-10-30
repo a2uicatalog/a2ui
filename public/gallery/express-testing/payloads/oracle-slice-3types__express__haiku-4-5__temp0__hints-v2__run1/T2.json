@@ -1,0 +1,122 @@
+{
+ "label": "oracle-slice-3types__express__haiku-4-5__temp0__hints-v2__run1",
+ "task": "T2",
+ "format": "express",
+ "model_id": "claude-haiku-4-5-20251001",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "kpi_1",
+      "component": "stat_card",
+      "value": "$2.4M",
+      "label": "Total Revenue",
+      "delta": "+12%",
+      "is_up": true,
+      "accent": "#4CAF50"
+     },
+     {
+      "id": "kpi_2",
+      "component": "stat_card",
+      "value": "8,432",
+      "label": "Active Users",
+      "delta": "+5%",
+      "is_up": true,
+      "accent": "#2196F3"
+     },
+     {
+      "id": "kpi_3",
+      "component": "stat_card",
+      "value": "94.2%",
+      "label": "Uptime",
+      "delta": "-0.3%",
+      "is_up": false,
+      "accent": "#FF9800"
+     },
+     {
+      "id": "kpi_4",
+      "component": "stat_card",
+      "value": "2.1s",
+      "label": "Avg Response Time",
+      "delta": "-8%",
+      "is_up": true,
+      "accent": "#4CAF50"
+     },
+     {
+      "id": "comparison_chart",
+      "component": "chartjs_bar",
+      "labels": [
+       "Q1",
+       "Q2",
+       "Q3",
+       "Q4"
+      ],
+      "datasets": [
+       {
+        "label": "2023",
+        "data": [
+         65,
+         72,
+         68,
+         81
+        ]
+       },
+       {
+        "label": "2024",
+        "data": [
+         78,
+         85,
+         92,
+         88
+        ]
+       }
+      ]
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 4,
+      "gap": "1.5rem",
+      "items": [
+       {
+        "blocks": [
+         "kpi_1"
+        ]
+       },
+       {
+        "blocks": [
+         "kpi_2"
+        ]
+       },
+       {
+        "blocks": [
+         "kpi_3"
+        ]
+       },
+       {
+        "blocks": [
+         "kpi_4"
+        ]
+       },
+       {
+        "blocks": [
+         "comparison_chart"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,44 @@
+{
+ "task": "T3",
+ "condition": "CX_haiku-5-5",
+ "temperature_applied": false,
+ "format": "elemental",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "oracle-slice-3types__elemental__haiku-5-5__run2",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "C-marketing-commerce.json",
+ "atoms_in_catalogue": 23,
+ "prompt_chars": 12539,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 7.7,
+ "usage": {
+  "input_tokens": 4938,
+  "output_tokens": 1619
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "gradient_hero",
+  "feature_grid",
+  "testimonial_card",
+  "cta_button"
+ ],
+ "score": {
+  "precision": 1.0,
+  "recall": 1.0,
+  "f1": 1.0,
+  "slot_hits": {
+   "hero": true,
+   "feature columns (x3)": true,
+   "testimonial": true,
+   "CTA": true
+  }
+ },
+ "reply": "<a2ui>\n<body id=\"root\">\n  <ui-gradient_hero\n    id=\"hero\"\n    badge=\"New release\"\n    title=\"Ship faster with Nimbus\"\n    subtitle=\"The developer platform that turns your ideas into production-ready apps in minutes, not weeks.\"\n    accent=\"#4f46e5\"\n    accent2=\"#8b5cf6\"\n    align=\"center\"\n    cta_label=\"Start free trial\"\n    cta_url=\"https://example.com/signup\" />\n\n  <ui-feature_grid\n    id=\"features\"\n    Heading=\"Everything you need to launch\"\n    description=\"Built-in tools that help your team move from prototype to production.\"\n    columns=\"{3}\">\n    <script type=\"application/json\" slot=\"features\">[\n      {\"icon\": \"\u26a1\", \"title\": \"Lightning-fast builds\", \"description\": \"Incremental builds and smart caching cut your deploy times dramatically.\", \"color\": \"#4f46e5\"},\n      {\"icon\": \"\ud83d\udd12\", \"title\": \"Secure by default\", \"description\": \"Automatic certificates, secret management, and role-based access controls.\", \"color\": \"#8b5cf6\"},\n      {\"icon\": \"\ud83d\udcc8\", \"title\": \"Scales with you\", \"description\": \"From a single service to thousands of containers, scaling happens automatically.\", \"color\": \"#0ea5e9\"}\n    ]</script>\n  </ui-feature_grid>\n\n  <ui-testimonial_card\n    id=\"testimonial\"\n    text=\"Nimbus cut our release cycle from two weeks to two days. Our engineers finally spend their time building features instead of managing infrastructure.\"\n    author_name=\"Priya Raman\"\n    author_title=\"VP of Engineering, Lumen Labs\"\n    author_avatar_url=\"https://example.com/avatars/priya.jpg\"\n    rating=\"{5}\" />\n\n  <ui-cta_button\n    id=\"cta\"\n    label=\"Get started today\"\n    url=\"https://example.com/signup\"\n    color=\"#4f46e5\"\n    same_tab=\"{true}\" />\n</body>\n</a2ui>"
+}

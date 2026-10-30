@@ -1,0 +1,36 @@
+{
+ "model": "sonnet-5-5",
+ "cond": "B4",
+ "format": "express",
+ "brief": "B8",
+ "repeat": 1,
+ "seq": 15,
+ "model_id": "claude-sonnet-5-5",
+ "utc": "2026-10-29T19:53:07Z",
+ "prompt_chars": 12621,
+ "prompt_sha256": "(removed for publication)",
+ "temperature_requested": null,
+ "temperature_sent": false,
+ "max_tokens": 32768,
+ "request_secs": 11.53,
+ "input_tokens": 4675,
+ "output_tokens": 1669,
+ "stop_reason": "end_turn",
+ "usage": {
+  "input_tokens": 4675,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "cache_creation": {
+   "ephemeral_5m_input_tokens": 0,
+   "ephemeral_1h_input_tokens": 0
+  },
+  "output_tokens": 1669,
+  "output_tokens_details": {
+   "thinking_tokens": 1009
+  },
+  "service_tier": "standard",
+  "inference_geo": "global",
+  "speed": "standard"
+ },
+ "reply": "<a2ui>\nsurface(\"sales-dashboard\")\nroot = brick_build_3d(bricks=[\n  {x: -1, y: 0, z: -1, w: 19, d: 4, h: 1, c: \"#9e9e9e\"},\n  {x: 0, y: 1, z: 0, w: 2, d: 2, h: 2, c: \"#1e88e5\"},\n  {x: 0, y: 3, z: 0, w: 2, d: 2, h: 1, c: \"#fb8c00\"},\n  {x: 3, y: 1, z: 0, w: 2, d: 2, h: 3, c: \"#1e88e5\"},\n  {x: 3, y: 4, z: 0, w: 2, d: 2, h: 2, c: \"#fb8c00\"},\n  {x: 6, y: 1, z: 0, w: 2, d: 2, h: 3, c: \"#1e88e5\"},\n  {x: 6, y: 4, z: 0, w: 2, d: 2, h: 1, c: \"#fb8c00\"},\n  {x: 9, y: 1, z: 0, w: 2, d: 2, h: 4, c: \"#1e88e5\"},\n  {x: 9, y: 5, z: 0, w: 2, d: 2, h: 3, c: \"#fb8c00\"},\n  {x: 12, y: 1, z: 0, w: 2, d: 2, h: 4, c: \"#1e88e5\"},\n  {x: 12, y: 5, z: 0, w: 2, d: 2, h: 2, c: \"#fb8c00\"},\n  {x: 15, y: 1, z: 0, w: 2, d: 2, h: 5, c: \"#1e88e5\"},\n  {x: 15, y: 6, z: 0, w: 2, d: 2, h: 4, c: \"#fb8c00\"}\n], mode=\"animate\", orbit=true, height=480, scrubber=true, checks=false, parts=true, look=\"studio\", base=\"none\")\n</a2ui>"
+}

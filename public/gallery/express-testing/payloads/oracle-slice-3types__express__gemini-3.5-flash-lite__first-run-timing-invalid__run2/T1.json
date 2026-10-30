@@ -1,0 +1,180 @@
+{
+ "label": "oracle-slice-3types__express__gemini-3.5-flash-lite__first-run-timing-invalid__run2",
+ "task": "T1",
+ "format": "express",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "water-cycle-lesson",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "water-cycle-lesson",
+    "components": [
+     {
+      "id": "header",
+      "component": "page_header",
+      "title": "The Water Cycle",
+      "subtitle": "Journey of water through evaporation, condensation, and precipitation.",
+      "icon": "\ud83d\udca7",
+      "tag": "Earth Science",
+      "accent": "#0284c7",
+      "theme": "light"
+     },
+     {
+      "id": "xp",
+      "component": "xp_bar",
+      "level_label": "Module 1 \u2014 Hydrology Fundamentals",
+      "xp_current": 45,
+      "xp_next": 100,
+      "accent": "#0284c7"
+     },
+     {
+      "id": "intro",
+      "component": "callout",
+      "kind": "info",
+      "title": "Overview",
+      "text": "Water is constantly moving on Earth. It changes from liquid to gas to solid, recycling itself through a continuous global journey driven by the sun."
+     },
+     {
+      "id": "section1",
+      "component": "concept_rung",
+      "badge": "1",
+      "kind": "depth",
+      "label": "EVAPORATION & TRANSPIRATION",
+      "title": "Lifting Water into the Sky",
+      "body": "Heat from the sun warms water in oceans, lakes, and rivers, causing it to evaporate into water vapour. Plants also release moisture from their leaves through a process called transpiration.",
+      "takeaway": "Solar energy powers the upward movement of water vapour into the atmosphere."
+     },
+     {
+      "id": "section2",
+      "component": "concept_rung",
+      "badge": "2",
+      "kind": "depth",
+      "label": "CONDENSATION",
+      "title": "Forming Clouds",
+      "body": "As warm water vapour rises, it cools and condenses into tiny liquid water droplets or ice crystals around microscopic particles in the air, forming clouds and fog.",
+      "takeaway": "Cooling air forces water vapour to transition back into liquid droplets, creating clouds."
+     },
+     {
+      "id": "section3",
+      "component": "concept_rung",
+      "badge": "3",
+      "kind": "depth",
+      "label": "PRECIPITATION & COLLECTION",
+      "title": "Returning to Earth",
+      "body": "When water droplets in clouds become too heavy to stay suspended, they fall back to Earth as rain, snow, sleet, or hail. This water collects in oceans, rivers, and underground aquifers, ready to start the cycle again.",
+      "takeaway": "Gravity pulls condensed moisture downward, completing the continuous cycle."
+     },
+     {
+      "id": "example",
+      "component": "concept_rung",
+      "badge": "EX",
+      "kind": "example",
+      "label": "WORKED EXAMPLE",
+      "title": "Puddle Disappearance",
+      "body": "Have you ever noticed a puddle disappearing on a sunny day after rain? \n\n1. Heat from the sun warms the puddle water.\n2. Water molecules absorb energy and escape into the air as invisible vapour.\n3. Within hours, the puddle is completely dry.",
+      "code": "# Simulated Puddle Evaporation Rate\nsunlight_intensity = 0.85 # High\ninitial_volume_liters = 2.5\nevaporation_rate_per_hour = 0.5\n\nhours_to_dry = initial_volume_liters / evaporation_rate_per_hour\nprint(f\"Puddle dries in approximately {hours_to_dry} hours.\")",
+      "code_caption": "Python simulation of solar evaporation over time.",
+      "takeaway": "Evaporation happens every day at ambient temperatures, not just at boiling point."
+     },
+     {
+      "id": "quiz",
+      "component": "quiz_set",
+      "title": "Water Cycle Self-Check",
+      "pass_score": 66,
+      "accent": "#0284c7",
+      "questions": [
+       {
+        "question": "What primary energy source drives the entire water cycle?",
+        "options": [
+         "The Moon's gravity",
+         "The Sun",
+         "Wind currents",
+         "Earth's core heat"
+        ],
+        "correct": 1,
+        "explanation": "Solar energy provides the heat required for evaporation and atmospheric currents."
+       },
+       {
+        "question": "What is the process called when plants release water from their leaves?",
+        "options": [
+         "Condensation",
+         "Precipitation",
+         "Transpiration",
+         "Sublimation"
+        ],
+        "correct": 2,
+        "explanation": "Transpiration is the release of water vapour from plant leaves into the atmosphere."
+       },
+       {
+        "question": "Which phase change occurs during condensation?",
+        "options": [
+         "Liquid to Gas",
+         "Gas to Liquid",
+         "Solid to Liquid",
+         "Liquid to Solid"
+        ],
+        "correct": 1,
+        "explanation": "Condensation turns warm water vapour (gas) into cooler water droplets (liquid)."
+       }
+      ],
+      "on_pass": "quiz_on_pass",
+      "on_fail": "quiz_on_fail"
+     },
+     {
+      "id": "quiz_on_pass",
+      "component": "callout",
+      "kind": "tip",
+      "title": "Fantastic job!",
+      "text": "You have successfully mastered the basics of the water cycle."
+     },
+     {
+      "id": "quiz_on_fail",
+      "component": "callout",
+      "kind": "warning",
+      "title": "Keep reviewing!",
+      "text": "Take another look at the concept sections and try the quiz again."
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "1.5rem",
+      "items": [
+       {
+        "blocks": [
+         "header",
+         "xp",
+         "intro",
+         "_inline_1",
+         "section1",
+         "section2",
+         "section3",
+         "example",
+         "_inline_2",
+         "quiz"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "_inline_1",
+      "component": "heading",
+      "text": "Core Concepts"
+     },
+     {
+      "id": "_inline_2",
+      "component": "heading",
+      "text": "Knowledge Check"
+     }
+    ]
+   }
+  }
+ ]
+}

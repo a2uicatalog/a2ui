@@ -1,0 +1,17 @@
+{
+ "task": "T2",
+ "condition": "BT",
+ "original_label": "rule-slice__express__haiku-4-5__temp0__run1",
+ "original_error": "A2uiCompilationParseError: Failed to parse expression: Syntax error at line 6:12: mismatched input '=' expecting ':' (line 6) - Line 6, Col 12 - Help: Please correct the syntax error in your Express DSL.",
+ "repaired_valid": false,
+ "produced": [],
+ "f1_after": 0,
+ "prompt_chars": 6574,
+ "attempts": 1,
+ "usage": {
+  "input_tokens": 1810,
+  "output_tokens": 239
+ },
+ "reply": "<a2ui>\nroot = columns(\n  2,\n  \"2rem\",\n  _,\n  [\n    {\n      blocks=[\n        heading(\"Key Performance Indicators\"),\n        metric_row(\n          4,\n          _,\n          [\n            {value: 2847, label: \"Total Revenue\", prefix: \"$\", trend: \"up\"},\n            {value: 1243, label: \"Active Users\", suffix: \"k\", trend: \"up\"},\n            {value: 94.2, label: \"Uptime\", suffix: \"%\", trend: \"up\"},\n            {value: 3.2, label: \"Avg Response\", suffix: \"s\", trend: \"down\"}\n          ]\n        )\n      ]\n    },\n    {\n      blocks=[\n        heading(\"Performance Comparison\"),\n        metric_comparison_card(\n          \"Monthly Growth\",\n          15420,\n          13890,\n          false\n        )\n      ]\n    }\n  ]\n)\n</a2ui>",
+ "final_error": "A2uiCompilationParseError: Failed to parse expression: Syntax error at line 7:12: mismatched input '=' expecting ':' (line 7) - Line 7, Col 12 - Help: Please correct the syntax error in your Express DSL."
+}

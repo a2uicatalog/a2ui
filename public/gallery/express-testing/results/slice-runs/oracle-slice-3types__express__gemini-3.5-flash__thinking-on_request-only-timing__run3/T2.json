@@ -1,0 +1,48 @@
+{
+ "task": "T2",
+ "condition": "C_gemini-3.5-flash",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash",
+ "hints": false,
+ "label": "oracle-slice-3types__express__gemini-3.5-flash__thinking-on_request-only-timing__run3",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 16421,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 14.9,
+ "usage": {
+  "input_tokens": 4602,
+  "output_tokens": 4173
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "stat_card",
+  "stat_card",
+  "stat_card",
+  "stat_card",
+  "columns",
+  "chartjs_bar",
+  "columns",
+  "heading",
+  "heading"
+ ],
+ "score": {
+  "precision": 0.556,
+  "recall": 1.0,
+  "f1": 0.714,
+  "slot_hits": {
+   "KPI tile (x4)": true,
+   "trend (required only if metric_row was chosen; stat_card's own delta already satisfies it)": true,
+   "comparison chart": true
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"metrics-overview\")\n\nkpi1 = stat_card(\"14,892\", \"Active Subscriptions\", \"+8.4%\", true, \"#10B981\")\nkpi2 = stat_card(\"$184,200\", \"Monthly Recurring Revenue\", \"+14.2%\", true, \"#10B981\")\nkpi3 = stat_card(\"99.98%\", \"System SLA Compliance\", \"+0.02%\", true, \"#10B981\")\nkpi4 = stat_card(\"1.25%\", \"Customer Churn Rate\", \"-0.45%\", false, \"#EF4444\")\n\nkpis = columns(4, \"1rem\", \"stretch\", [\n    {\"blocks\": [kpi1]},\n    {\"blocks\": [kpi2]},\n    {\"blocks\": [kpi3]},\n    {\"blocks\": [kpi4]}\n])\n\ncomparison_chart = chartjs_bar(\n    [\"Q1\", \"Q2\", \"Q3\", \"Q4\"],\n    [\n        {\"label\": \"Current Year\", \"data\": [120000, 145000, 168000, 184200]},\n        {\"label\": \"Previous Year\", \"data\": [98000, 115000, 130000, 142000]}\n    ]\n)\n\nroot = columns(1, \"2rem\", \"top\", [\n    {\"blocks\": [\n        heading(\"Executive Performance Metrics\"),\n        kpis,\n        heading(\"Quarter-over-Quarter Revenue Performance\"),\n        comparison_chart\n    ]}\n])\n</a2ui>"
+}

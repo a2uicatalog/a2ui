@@ -1,0 +1,106 @@
+{
+ "label": "oracle-slice-6types__express__haiku-5-5__hints-v2__run1",
+ "task": "T6",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/d-t6.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "deck",
+      "component": "flashcard_deck",
+      "cards": [
+       {
+        "front": "Ephemeral",
+        "back": "Lasting for a very short time"
+       },
+       {
+        "front": "Lucid",
+        "back": "Clear, easy to understand"
+       },
+       {
+        "front": "Resilient",
+        "back": "Able to recover quickly from difficulty"
+       },
+       {
+        "front": "Ambiguous",
+        "back": "Open to more than one interpretation"
+       },
+       {
+        "front": "Meticulous",
+        "back": "Showing great attention to detail"
+       },
+       {
+        "front": "Candid",
+        "back": "Truthful and straightforward"
+       },
+       {
+        "front": "Diligent",
+        "back": "Careful and persistent in work"
+       },
+       {
+        "front": "Frugal",
+        "back": "Sparing with money or resources"
+       },
+       {
+        "front": "Eloquent",
+        "back": "Fluent and persuasive in speech"
+       },
+       {
+        "front": "Tenacious",
+        "back": "Holding firmly to a purpose"
+       }
+      ],
+      "accent": "#4f46e5",
+      "label_front": "TERM",
+      "label_back": "MEANING"
+     },
+     {
+      "id": "heading_text",
+      "component": "heading",
+      "text": "Vocabulary Flashcards"
+     },
+     {
+      "id": "progress",
+      "component": "progress_bar",
+      "value": 0,
+      "label": "Cards reviewed",
+      "accent": "#4f46e5",
+      "show_percent": true,
+      "caption": "0 of 10 reviewed"
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "heading_text",
+         "progress"
+        ]
+       },
+       {
+        "blocks": [
+         "deck"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

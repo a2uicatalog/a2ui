@@ -1,0 +1,141 @@
+{
+ "task": "T5",
+ "condition": "G",
+ "chooser": "clef",
+ "slice_atoms_in_options": 259,
+ "picks": [
+  {
+   "slot": "Three pricing cards arranged side by side in a row, one per subscription tier, e #1",
+   "decomposer_line": "Three pricing cards arranged side by side in a row, one per subscription tier, each showing the tier name at the top",
+   "atom": "pricing_tier_group",
+   "confidence": 0.8729,
+   "top3": [
+    [
+     "pricing_tier_group",
+     0.9672
+    ],
+    [
+     "columns",
+     0.0328
+    ]
+   ],
+   "finalists": [
+    "pricing_tier_group",
+    "columns"
+   ]
+  },
+  {
+   "slot": "A price and billing period displayed prominently on each tier card #2",
+   "decomposer_line": "A price and billing period displayed prominently on each tier card",
+   "atom": "pricing_tier_card",
+   "confidence": 0.7908,
+   "top3": [
+    [
+     "pricing_tier_card",
+     0.9446
+    ],
+    [
+     "two_tone_card",
+     0.0554
+    ]
+   ],
+   "finalists": [
+    "pricing_tier_card",
+    "two_tone_card"
+   ]
+  },
+  {
+   "slot": "A distinct feature list on each tier card, with its own set of included features #3",
+   "decomposer_line": "A distinct feature list on each tier card, with its own set of included features",
+   "atom": "icon_checklist",
+   "confidence": 0.0148,
+   "top3": [
+    [
+     "icon_checklist",
+     0.5608
+    ],
+    [
+     "pricing_tier_card",
+     0.4392
+    ]
+   ],
+   "finalists": [
+    "pricing_tier_card",
+    "icon_checklist"
+   ]
+  },
+  {
+   "slot": "A visual highlight or badge on the one tier marked as recommended, setting it ap #4",
+   "decomposer_line": "A visual highlight or badge on the one tier marked as recommended, setting it apart from the other two",
+   "atom": "pricing_tier_group",
+   "confidence": 0.7236,
+   "top3": [
+    [
+     "pricing_tier_group",
+     0.9253
+    ],
+    [
+     "highlighted_text",
+     0.0747
+    ]
+   ],
+   "finalists": [
+    "pricing_tier_group",
+    "highlighted_text"
+   ]
+  },
+  {
+   "slot": "A call-to-action button on each tier card for choosing that plan #5",
+   "decomposer_line": "A call-to-action button on each tier card for choosing that plan",
+   "atom": "cta_button",
+   "confidence": 0.5923,
+   "top3": [
+    [
+     "cta_button",
+     0.8848
+    ],
+    [
+     "pricing_tier_card",
+     0.1152
+    ]
+   ],
+   "finalists": [
+    "pricing_tier_card",
+    "cta_button"
+   ]
+  }
+ ],
+ "cost": {
+  "decomposer_input_tokens": 0,
+  "decomposer_output_tokens": 0,
+  "decomposer_thinking_tokens": 0,
+  "jev_input_tokens": 54334,
+  "jev_output_tokens": 0,
+  "jev_calls": 5
+ },
+ "error": null,
+ "atoms": [
+  "pricing_tier_group",
+  "pricing_tier_card",
+  "icon_checklist",
+  "pricing_tier_group",
+  "cta_button"
+ ],
+ "score": {
+  "per_approach": {
+   "tier_cards": {
+    "precision": 0.2,
+    "recall": 1.0,
+    "f1": 0.333
+   },
+   "comparison_table": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": null
+   }
+  },
+  "best_approach": "tier_cards",
+  "f1": 0.333
+ },
+ "secs": 7.3
+}

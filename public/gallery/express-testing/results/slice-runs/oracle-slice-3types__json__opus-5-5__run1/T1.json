@@ -1,0 +1,47 @@
+{
+ "task": "T1",
+ "condition": "CN_opus-5-5",
+ "temperature_applied": false,
+ "format": "json",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-opus-5-5",
+ "hints": false,
+ "label": "oracle-slice-3types__json__opus-5-5__run1",
+ "agent_type": "Learning",
+ "catalogue": "C-learning.json",
+ "atoms_in_catalogue": 36,
+ "prompt_chars": 37811,
+ "slot_recall": [
+  5,
+  5
+ ],
+ "secs": 30.6,
+ "usage": {
+  "input_tokens": 14392,
+  "output_tokens": 3497
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "gradient_hero",
+  "concept_rung",
+  "concept_rung",
+  "concept_rung",
+  "concept_rung",
+  "quiz_set"
+ ],
+ "score": {
+  "precision": 1.0,
+  "recall": 0.6,
+  "f1": 0.75,
+  "slot_hits": {
+   "title": true,
+   "concept sections (x3)": false,
+   "worked example": true,
+   "3-question quiz": true,
+   "quiz result": false
+  }
+ },
+ "reply": "<a2ui-json>\n[\n  {\n    \"version\": \"v0.9\",\n    \"createSurface\": {\n      \"surfaceId\": \"water-cycle-title\",\n      \"catalogId\": \"https://a2uicatalog.ai/catalog/c-learning.json\"\n    }\n  },\n  {\n    \"version\": \"v0.9\",\n    \"updateComponents\": {\n      \"surfaceId\": \"water-cycle-title\",\n      \"components\": [\n        {\n          \"id\": \"root\",\n          \"component\": \"gradient_hero\",\n          \"badge\": \"Earth Science \u00b7 Lesson 4\",\n          \"title\": \"The Water Cycle\",\n          \"subtitle\": \"How Earth moves the same water around, again and again, through evaporation, condensation and precipitation.\",\n          \"accent\": \"#0284c7\",\n          \"accent2\": \"#38bdf8\",\n          \"align\": \"left\"\n        }\n      ]\n    }\n  },\n  {\n    \"version\": \"v0.9\",\n    \"createSurface\": {\n      \"surfaceId\": \"water-cycle-concept-1\",\n      \"catalogId\": \"https://a2uicatalog.ai/catalog/c-learning.json\"\n    }\n  },\n  {\n    \"version\": \"v0.9\",\n    \"updateComponents\": {\n      \"surfaceId\": \"water-cycle-concept-1\",\n      \"components\": [\n        {\n          \"id\": \"root\",\n          \"component\": \"concept_rung\",\n          \"badge\": \"1\",\n          \"kind\": \"depth\",\n          \"label\": \"CONCEPT 1\",\n          \"title\": \"Evaporation: water rises as vapour\",\n          \"body\": \"The Sun heats water in oceans, lakes and rivers. Molecules at the surface gain enough energy to escape into the air as invisible water vapour.\\n\\nPlants also release water vapour through tiny pores in their leaves, a process called transpiration. Together, these are often called evapotranspiration.\",\n          \"takeaway\": \"Energy from the Sun powers the whole cycle by turning liquid water into vapour.\"\n        }\n      ]\n    }\n  },\n  {\n    \"version\": \"v0.9\",\n    \"createSurface\": {\n      \"surfaceId\": \"water-cycle-concept-2\",\n      \"catalogId\": \"https://a2uicatalog.ai/catalog/c-learning.json\"\n    }\n  },\n  {\n    \"version\": \"v0.9\",\n    \"updateComponents\": {\n      \"surfaceId\": \"water-cycle-concept-2\",\n      \"components\": [\n        {\n          \"id\": \"root\",\n          \"component\": \"concept_rung\",\n          \"badge\": \"2\",\n          \"kind\": \"depth\",\n          \"label\": \"CONCEPT 2\",\n          \"title\": \"Condensation: vapour becomes clouds\",\n          \"body\": \"As warm, moist air rises, it expands and cools. Cooler air can hold less water vapour, so the vapour condenses onto tiny particles of dust, salt or smoke.\\n\\nBillions of these microscopic droplets cluster together and become visible as clouds or fog.\",\n          \"takeaway\": \"Cooling turns vapour back into liquid droplets, and that is what makes clouds.\"\n        }\n      ]\n    }\n  },\n  {\n    \"version\": \"v0.9\",\n    \"createSurface\": {\n      \"surfaceId\": \"water-cycle-concept-3\",\n      \"catalogId\": \"https://a2uicatalog.ai/catalog/c-learning.json\"\n    }\n  },\n  {\n    \"version\": \"v0.9\",\n    \"updateComponents\": {\n      \"surfaceId\": \"water-cycle-concept-3\",\n      \"components\": [\n        {\n          \"id\": \"root\",\n          \"component\": \"concept_rung\",\n          \"badge\": \"3\",\n          \"kind\": \"depth\",\n          \"label\": \"CONCEPT 3\",\n          \"title\": \"Precipitation and collection: water returns\",\n          \"body\": \"When cloud droplets merge and grow too heavy to stay aloft, they fall as rain, snow, sleet or hail.\\n\\nOn the ground, water runs off into rivers, soaks into soil as groundwater, or is stored in ice sheets. Eventually it reaches the ocean or evaporates again, and the cycle restarts.\",\n          \"takeaway\": \"Water falls, collects and flows back, so the cycle has no start or end.\"\n        }\n      ]\n    }\n  },\n  {\n    \"version\": \"v0.9\",\n    \"createSurface\": {\n      \"surfaceId\": \"water-cycle-example\",\n      \"catalogId\": \"https://a2uicatalog.ai/catalog/c-learning.json\"\n    }\n  },\n  {\n    \"version\": \"v0.9\",\n    \"updateComponents\": {\n      \"surfaceId\": \"water-cycle-example\",\n      \"components\": [\n        {\n          \"id\": \"root\",\n          \"component\": \"concept_rung\",\n          \"badge\": \"EX\",\n          \"kind\": \"example\",\n          \"title\": \"How long does a water molecule stay in the ocean?\",\n          \"body\": \"Scientists estimate *residence time* by dividing how much water a reservoir holds by how fast water leaves it. Let's apply that to the ocean.\\n\\nThe ocean holds about 1,338,000,000 km\u00b3 of water. Roughly 413,000 km\u00b3 evaporates from Earth's surface each year, and most of that comes from the ocean.\",\n          \"code\": \"residence_time = volume / outflow_rate\\n\\nvolume        \u2248 1,338,000,000 km\u00b3\\noutflow_rate  \u2248       413,000 km\u00b3 / year\\n\\nresidence_time \u2248 1,338,000,000 / 413,000\\n               \u2248 3,240 years\",\n          \"code_caption\": \"Using total global evaporation as an upper bound for ocean outflow.\",\n          \"takeaway\": \"On average, a water molecule spends about 3,000+ years in the ocean before evaporating.\"\n        }\n      ]\n    }\n  },\n  {\n    \"version\": \"v0.9\",\n    \"createSurface\": {\n      \"surfaceId\": \"water-cycle-quiz\",\n      \"catalogId\": \"https://a2uicatalog.ai/catalog/c-learning.json\"\n    }\n  },\n  {\n    \"version\": \"v0.9\",\n    \"updateComponents\": {\n      \"surfaceId\": \"water-cycle-quiz\",\n      \"components\": [\n        {\n          \"id\": \"root\",\n          \"component\": \"quiz_set\",\n          \"title\": \"Self-check: The Water Cycle\",\n          \"pass_score\": 67,\n          \"accent\": \"#0284c7\",\n          \"questions\": [\n            {\n              \"question\": \"What provides the energy that drives evaporation?\",\n              \"options\": [\"The Moon's gravity\", \"Heat from the Sun\", \"Wind from the ocean\", \"Earth's magnetic field\"],\n              \"correct\": 1,\n              \"explanation\": \"Solar energy heats surface water, giving molecules enough energy to escape as vapour.\"\n            },\n            {\n              \"question\": \"Why does water vapour condense into clouds as air rises?\",\n              \"options\": [\"The air gets warmer\", \"The air gains more dust\", \"The air cools and can hold less vapour\", \"The air pressure increases\"],\n              \"correct\": 2,\n              \"explanation\": \"Rising air expands and cools. Cooler air holds less vapour, so the excess condenses into droplets.\"\n            },\n            {\n              \"question\": \"In the worked example, roughly how long does a water molecule stay in the ocean?\",\n              \"options\": [\"About 9 days\", \"About 30 years\", \"About 3,000 years\", \"About 3 million years\"],\n              \"correct\": 2,\n              \"explanation\": \"1,338,000,000 km\u00b3 \u00f7 413,000 km\u00b3/year \u2248 3,240 years.\"\n            }\n          ]\n        }\n      ]\n    }\n  }\n]\n</a2ui-json>\n\nThis catalog has no container component that can hold child components by ID. Because of that, each section is its own surface with a single `root` component. Together they render in lesson order: the title, three concept sections, the worked example, and the three-question quiz."
+}

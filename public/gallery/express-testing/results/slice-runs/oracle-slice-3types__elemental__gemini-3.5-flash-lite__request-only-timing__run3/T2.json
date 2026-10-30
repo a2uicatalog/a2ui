@@ -1,0 +1,47 @@
+{
+ "task": "T2",
+ "condition": "CX_gemini-3.5-flash-l",
+ "temperature_applied": false,
+ "format": "elemental",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash-lite",
+ "hints": false,
+ "label": "oracle-slice-3types__elemental__gemini-3.5-flash-lite__request-only-timing__run3",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 16902,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 2.0,
+ "usage": {
+  "input_tokens": 4995,
+  "output_tokens": 714
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "heading",
+  "stat_card",
+  "stat_card",
+  "stat_card",
+  "stat_card",
+  "columns",
+  "heading",
+  "benchmark_comparison"
+ ],
+ "score": {
+  "precision": 0.625,
+  "recall": 1.0,
+  "f1": 0.769,
+  "slot_hits": {
+   "KPI tile (x4)": true,
+   "trend (required only if metric_row was chosen; stat_card's own delta already satisfies it)": true,
+   "comparison chart": true
+  }
+ },
+ "reply": "<a2ui>\n  <body>\n    <script type=\"application/json\">\n      {\n        \"metricsData\": [\n          {\n            \"value\": \"$128,450\",\n            \"label\": \"Total Revenue\",\n            \"delta\": \"+12.4%\",\n            \"is_up\": \"true\",\n            \"accent\": \"#4CAF50\"\n          },\n          {\n            \"value\": \"1,429\",\n            \"label\": \"New Customers\",\n            \"delta\": \"+5.2%\",\n            \"is_up\": \"true\",\n            \"accent\": \"#2196F3\"\n          },\n          {\n            \"value\": \"94.2%\",\n            \"label\": \"Retention Rate\",\n            \"delta\": \"-0.8%\",\n            \"is_up\": \"false\",\n            \"accent\": \"#FF9800\"\n          },\n          {\n            \"value\": \"3.8s\",\n            \"label\": \"Avg Response Time\",\n            \"delta\": \"-14.1%\",\n            \"is_up\": \"true\",\n            \"accent\": \"#9C27B0\"\n          }\n        ],\n        \"benchmarkItems\": [\n          { \"label\": \"Q1 Performance\", \"value\": 75 },\n          { \"label\": \"Q2 Performance\", \"value\": 88 },\n          { \"label\": \"Q3 Target\", \"value\": 95 }\n        ]\n      }\n    </script>\n\n    <ui-heading id=\"root\" text=\"Metrics Overview\" />\n\n    <ui-columns id=\"kpi-columns\" cols=\"{4}\" gap=\"1rem\">\n      <ui-stat_card id=\"stat-1\" value=\"{$/metricsData/0/value}\" label=\"{$/metricsData/0/label}\" delta=\"{$/metricsData/0/delta}\" is-up=\"{$/metricsData/0/is_up}\" accent=\"{$/metricsData/0/accent}\" />\n      <ui-stat_card id=\"stat-2\" value=\"{$/metricsData/1/value}\" label=\"{$/metricsData/1/label}\" delta=\"{$/metricsData/1/delta}\" is-up=\"{$/metricsData/1/is_up}\" accent=\"{$/metricsData/1/accent}\" />\n      <ui-stat_card id=\"stat-3\" value=\"{$/metricsData/2/value}\" label=\"{$/metricsData/2/label}\" delta=\"{$/metricsData/2/delta}\" is-up=\"{$/metricsData/2/is_up}\" accent=\"{$/metricsData/2/accent}\" />\n      <ui-stat_card id=\"stat-4\" value=\"{$/metricsData/3/value}\" label=\"{$/metricsData/3/label}\" delta=\"{$/metricsData/3/delta}\" is-up=\"{$/metricsData/3/is_up}\" accent=\"{$/metricsData/3/accent}\" />\n    </ui-columns>\n\n    <ui-heading id=\"comparison-heading\" text=\"Quarterly Benchmark Comparison\" />\n\n    <ui-benchmark_comparison id=\"benchmark-comp\" items=\"{$/benchmarkItems}\" />\n  </body>\n</a2ui>"
+}

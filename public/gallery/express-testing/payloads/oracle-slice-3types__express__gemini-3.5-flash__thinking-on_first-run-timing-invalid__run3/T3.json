@@ -1,0 +1,94 @@
+{
+ "label": "oracle-slice-3types__express__gemini-3.5-flash__thinking-on_first-run-timing-invalid__run3",
+ "task": "T3",
+ "format": "express",
+ "model_id": "gemini-3.5-flash",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "hero",
+      "component": "gradient_hero",
+      "title": "Empower Your Workflow",
+      "subtitle": "Streamline your operations, automate repetitive tasks, and boost team productivity with our all-in-one platform.",
+      "badge": "Introducing Version 2.0",
+      "align": "center",
+      "cta_label": "Try it Free",
+      "cta_url": "https://example.com/signup"
+     },
+     {
+      "id": "features",
+      "component": "feature_grid",
+      "heading": "Engineered for Modern Teams",
+      "description": "Everything you need to collaborate, execute, and deliver high-quality results, faster.",
+      "columns": 3,
+      "features": [
+       {
+        "icon": "\u26a1",
+        "title": "Lightning Fast",
+        "description": "Real-time collaboration updates and sub-millisecond response times globally."
+       },
+       {
+        "icon": "\ud83d\udd12",
+        "title": "Enterprise Security",
+        "description": "Bank-grade encryption, role-based access control, and complete compliance standards."
+       },
+       {
+        "icon": "\ud83d\udcc8",
+        "title": "Scale Effortlessly",
+        "description": "Built on globally distributed edge networks to seamlessly handle any scale."
+       }
+      ]
+     },
+     {
+      "id": "testimonial",
+      "component": "testimonial_card",
+      "text": "This platform has completely transformed how our engineering team operates. We went from deploying weekly to multiple times a day with zero friction.",
+      "author_name": "Sarah Jenkins",
+      "author_title": "VP of Engineering, CloudScale",
+      "author_avatar_url": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150",
+      "rating": 5
+     },
+     {
+      "id": "cta",
+      "component": "shimmer_button",
+      "label": "Get Started Now",
+      "href": "https://example.com/signup",
+      "size": "lg",
+      "accent": "#38bdf8",
+      "background": "#1e293b",
+      "speed": "normal",
+      "description": "No credit card required. Start your 14-day free trial instantly."
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "3rem",
+      "align": "stretch",
+      "items": [
+       {
+        "blocks": [
+         "hero",
+         "features",
+         "testimonial",
+         "cta"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

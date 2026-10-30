@@ -1,0 +1,36 @@
+{
+ "model": "sonnet-5-5",
+ "cond": "G",
+ "format": "express",
+ "brief": "G6",
+ "repeat": 3,
+ "seq": 22,
+ "model_id": "claude-sonnet-5-5",
+ "utc": "2026-10-29T20:47:06Z",
+ "prompt_chars": 9794,
+ "prompt_sha256": "(removed for publication)",
+ "temperature_requested": null,
+ "temperature_sent": false,
+ "max_tokens": 32768,
+ "request_secs": 2.71,
+ "input_tokens": 3623,
+ "output_tokens": 69,
+ "stop_reason": "end_turn",
+ "usage": {
+  "input_tokens": 3623,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "cache_creation": {
+   "ephemeral_5m_input_tokens": 0,
+   "ephemeral_1h_input_tokens": 0
+  },
+  "output_tokens": 69,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "service_tier": "standard",
+  "inference_geo": "global",
+  "speed": "standard"
+ },
+ "reply": "<a2ui></a2ui>\nI can't do this: I'm the block agent, and brick_build_3d isn't in my catalogue, and I can't produce a real-parts table or act as a dashboard agent."
+}

@@ -1,0 +1,44 @@
+{
+ "task": "T6",
+ "condition": "C_gemini-3.5-flash",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash",
+ "hints": false,
+ "label": "oracle-slice-3types__express__gemini-3.5-flash__thinking-on_first-run-timing-invalid__run1",
+ "agent_type": "Learning",
+ "catalogue": "C-learning.json",
+ "atoms_in_catalogue": 36,
+ "prompt_chars": 21139,
+ "slot_recall": [
+  2,
+  2
+ ],
+ "secs": 43.5,
+ "usage": {
+  "input_tokens": 5726,
+  "output_tokens": 5346
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "page_header",
+  "flashcard_deck",
+  "progress_bar",
+  "xp_bar",
+  "callout",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.5,
+  "recall": 1.0,
+  "f1": 0.667,
+  "slot_hits": {
+   "flashcard deck": true,
+   "progress indicator": true
+  }
+ },
+ "reply": "<a2ui>\ncards_list = [\n    {\n        \"front\": \"Ephemeral\",\n        \"back\": \"Lasting for a very short time; transient, fleeting, or momentary.\"\n    },\n    {\n        \"front\": \"Obfuscate\",\n        \"back\": \"To deliberately make something obscure, unclear, or difficult to understand.\"\n    },\n    {\n        \"front\": \"Capricious\",\n        \"back\": \"Given to sudden and unaccountable changes of mood or behavior; fickle.\"\n    },\n    {\n        \"front\": \"Taciturn\",\n        \"back\": \"Reserved or uncommunicative in speech; saying very little.\"\n    },\n    {\n        \"front\": \"Loquacious\",\n        \"back\": \"Tending to talk a great deal; extremely talkative.\"\n    },\n    {\n        \"front\": \"Mitigate\",\n        \"back\": \"To make less severe, serious, or painful; to alleviate or moderate.\"\n    },\n    {\n        \"front\": \"Pragmatic\",\n        \"back\": \"Dealing with things sensibly and realistically based on practical considerations.\"\n    },\n    {\n        \"front\": \"Cacophony\",\n        \"back\": \"A harsh, discordant, and meaningless mixture of loud sounds.\"\n    },\n    {\n        \"front\": \"Anomalous\",\n        \"back\": \"Deviating from what is standard, normal, or expected; peculiar.\"\n    },\n    {\n        \"front\": \"Equivocate\",\n        \"back\": \"To use ambiguous language so as to conceal the truth or avoid committing oneself.\"\n    }\n]\n\nheader = page_header(\n    \"Lexicon Mastery\",\n    \"Enhance your verbal intelligence with this curated deck of ten high-impact vocabulary words. Use active recall for maximum retention.\",\n    \"\ud83c\udf93\",\n    \"Deck 01\",\n    \"#4f46e5\",\n    \"light\"\n)\n\ndeck = flashcard_deck(\n    cards_list,\n    \"#4f46e5\",\n    \"TERM\",\n    \"MEANING & DEFINITION\"\n)\n\nprogress = progress_bar(\n    60,\n    \"Review Progress\",\n    \"#10b981\",\n    true,\n    \"6 of 10 vocabulary cards reviewed in this session\"\n)\n\nxp = xp_bar(\n    \"Level 3 \u2014 Lexical Specialist\",\n    350,\n    500,\n    \"#4f46e5\",\n    true\n)\n\ntip = callout(\n    \"tip\",\n    \"Active Recall Strategy\",\n    \"Before flipping a card, try to define the term aloud or use it in an original sentence. Passive reading builds recognition, but active generation builds permanent recall.\"\n)\n\ncol1 = {\n    \"blocks\": [\n        header,\n        deck\n    ]\n}\n\ncol2 = {\n    \"blocks\": [\n        progress,\n        xp,\n        tip\n    ]\n}\n\nroot = columns(\n    2,\n    \"2.5rem\",\n    \"top\",\n    [col1, col2]\n)\n</a2ui>"
+}

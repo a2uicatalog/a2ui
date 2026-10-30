@@ -1,0 +1,44 @@
+{
+ "task": "T4",
+ "condition": "D_haiku-5-5H2",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": true,
+ "label": "oracle-slice-6types__express__haiku-5-5__hints-v2__run3",
+ "agent_type": "T4",
+ "catalogue": "D-t4.json",
+ "atoms_in_catalogue": 20,
+ "prompt_chars": 10490,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 8.0,
+ "usage": {
+  "input_tokens": 4118,
+  "output_tokens": 1810
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "segmented_control",
+  "heading",
+  "body",
+  "entity_list",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.4,
+  "recall": 0.667,
+  "f1": 0.5,
+  "slot_hits": {
+   "list": true,
+   "status indicator": false,
+   "filter control": true
+  }
+ },
+ "reply": "<a2ui>\nfilter = segmented_control([{label: \"All\", value: \"all\"}, {label: \"Active\", value: \"active\"}, {label: \"Pending\", value: \"pending\"}, {label: \"Blocked\", value: \"blocked\"}, {label: \"Done\", value: \"done\"}], \"all\", \"status_filter\")\n\ntitle = heading(\"Work items\")\n\nintro = body(\"Filter the list by status.\")\n\nlist = entity_list([\n  {name: \"Login service migration\", subtitle: \"Move auth endpoints to the new gateway.\", status: \"Active\"},\n  {name: \"Invoice export\", subtitle: \"Add CSV export to billing reports.\", status: \"Pending\"},\n  {name: \"Search indexing\", subtitle: \"Reindex the product catalogue nightly.\", status: \"Done\"},\n  {name: \"Mobile push alerts\", subtitle: \"Waiting on APNs certificate renewal.\", status: \"Blocked\"},\n  {name: \"Onboarding email\", subtitle: \"Rewrite the welcome sequence copy.\", status: \"Active\"},\n  {name: \"Data retention policy\", subtitle: \"Draft retention periods for logs.\", status: \"Pending\"},\n  {name: \"Dashboard caching\", subtitle: \"Cache aggregate queries for five minutes.\", status: \"Done\"},\n  {name: \"Payment retries\", subtitle: \"Needs the vendor webhook signing secret.\", status: \"Blocked\"}\n])\n\nroot = columns(2, \"1.5rem\", \"top\", [{blocks: [title, intro, filter]}, {blocks: [list]}])\n</a2ui>"
+}

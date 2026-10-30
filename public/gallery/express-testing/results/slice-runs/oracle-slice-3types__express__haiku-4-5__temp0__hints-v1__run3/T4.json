@@ -1,0 +1,35 @@
+{
+ "task": "T4",
+ "condition": "CTH",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-4-5-20251001",
+ "label": "oracle-slice-3types__express__haiku-4-5__temp0__hints-v1__run3",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 16421,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 5.4,
+ "usage": {
+  "input_tokens": 4946,
+  "output_tokens": 587
+ },
+ "valid": false,
+ "error": "A2uiCompilationValidationError: Property 'items' of component 'entity_list' does not support dynamic data bindings (paths). - Help: Property 'items' on 'entity_list' must be a static literal value, not a dynamic databinding ($path).",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "list": false,
+   "status indicator": false,
+   "filter control": false
+  }
+ },
+ "reply": "<a2ui>\nstatus_options = [\n  {label: \"Active\", value: \"active\"},\n  {label: \"Inactive\", value: \"inactive\"},\n  {label: \"Pending\", value: \"pending\"},\n  {label: \"All\", value: \"all\"}\n]\n\nitems_data = [\n  {title: \"Project Alpha\", status: \"active\", detail: \"On track for Q1 delivery\"},\n  {title: \"Project Beta\", status: \"inactive\", detail: \"Awaiting stakeholder approval\"},\n  {title: \"Project Gamma\", status: \"pending\", detail: \"Resource allocation in progress\"},\n  {title: \"Project Delta\", status: \"active\", detail: \"Sprint 3 currently underway\"},\n  {title: \"Project Epsilon\", status: \"inactive\", detail: \"Scheduled for restart in March\"},\n  {title: \"Project Zeta\", status: \"pending\", detail: \"Budget review pending\"},\n  {title: \"Project Eta\", status: \"active\", detail: \"Client feedback incorporated\"},\n  {title: \"Project Theta\", status: \"pending\", detail: \"Technical architecture review\"}\n]\n\n$/filtered_status = \"all\"\n\nfiltered_items = [\n  {title: \"Project Alpha\", status: \"active\", detail: \"On track for Q1 delivery\"},\n  {title: \"Project Beta\", status: \"inactive\", detail: \"Awaiting stakeholder approval\"},\n  {title: \"Project Gamma\", status: \"pending\", detail: \"Resource allocation in progress\"},\n  {title: \"Project Delta\", status: \"active\", detail: \"Sprint 3 currently underway\"},\n  {title: \"Project Epsilon\", status: \"inactive\", detail: \"Scheduled for restart in March\"},\n  {title: \"Project Zeta\", status: \"pending\", detail: \"Budget review pending\"},\n  {title: \"Project Eta\", status: \"active\", detail: \"Client feedback incorporated\"},\n  {title: \"Project Theta\", status: \"pending\", detail: \"Technical architecture review\"}\n]\n\nitem_template = entity_list([\n  {\n    name: $title,\n    subtitle: $detail,\n    status: $status\n  }\n])\n\nroot = columns(cols=1, items=[\n  {blocks: [\n    heading(\"Items\"),\n    segmented_control(options=status_options, selected_value=$/filtered_status, name=\"status_filter\"),\n    _template($/filtered_items, item_template)\n  ]}\n])\n</a2ui>"
+}

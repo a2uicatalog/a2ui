@@ -1,0 +1,87 @@
+{
+ "label": "jev-picks-on-oracle-slice-6types__express__haiku-4-5__run1",
+ "task": "T2",
+ "format": "express",
+ "model_id": null,
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/jd-t2.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 4,
+      "gap": "1.5rem",
+      "items": [
+       {
+        "blocks": [
+         "_inline_1"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_2"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_3"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_4"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "_inline_1",
+      "component": "stat_card",
+      "value": "$2.4M",
+      "label": "Revenue",
+      "delta": "+12%",
+      "is_up": true,
+      "accent": "#10B981"
+     },
+     {
+      "id": "_inline_2",
+      "component": "stat_card",
+      "value": "1,850",
+      "label": "Total Orders",
+      "delta": "+8%",
+      "is_up": true,
+      "accent": "#3B82F6"
+     },
+     {
+      "id": "_inline_3",
+      "component": "stat_card",
+      "value": "94.2%",
+      "label": "Customer Satisfaction",
+      "delta": "-2%",
+      "is_up": false,
+      "accent": "#EF4444"
+     },
+     {
+      "id": "_inline_4",
+      "component": "stat_card",
+      "value": "$1,280",
+      "label": "Avg Order Value",
+      "delta": "+5%",
+      "is_up": true,
+      "accent": "#8B5CF6"
+     }
+    ]
+   }
+  }
+ ]
+}

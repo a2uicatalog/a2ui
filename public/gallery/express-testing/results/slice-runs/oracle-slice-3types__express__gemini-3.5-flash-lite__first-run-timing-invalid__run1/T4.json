@@ -1,0 +1,44 @@
+{
+ "task": "T4",
+ "condition": "C_gemini-3.5-f",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash-lite",
+ "hints": false,
+ "label": "oracle-slice-3types__express__gemini-3.5-flash-lite__first-run-timing-invalid__run1",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 16421,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 20.3,
+ "usage": {
+  "input_tokens": 4601,
+  "output_tokens": 580
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns",
+  "heading",
+  "body",
+  "segmented_control",
+  "entity_list"
+ ],
+ "score": {
+  "precision": 0.4,
+  "recall": 0.667,
+  "f1": 0.5,
+  "slot_hits": {
+   "list": true,
+   "status indicator": false,
+   "filter control": true
+  }
+ },
+ "reply": "<a2ui>\nroot = columns(\n    cols=1,\n    gap=\"1rem\",\n    items=[\n        {\n            \"blocks\": [\n                heading(\"Project Tasks & Deliverables\"),\n                body(\"Filter and review current project deliverables and their statuses.\"),\n                segmented_control(\n                    options=[\n                        {\"label\": \"All\", \"value\": \"all\"},\n                        {\"label\": \"In Progress\", \"value\": \"in_progress\"},\n                        {\"label\": \"Completed\", \"value\": \"completed\"},\n                        {\"label\": \"Pending\", \"value\": \"pending\"}\n                    ],\n                    selected_value=\"all\",\n                    name=\"status_filter\"\n                ),\n                entity_list(\n                    items=[\n                        {\n                            \"name\": \"Design System Migration\",\n                            \"subtitle\": \"Convert legacy CSS to Tailwind tokens\",\n                            \"status\": \"In Progress\",\n                            \"meta\": \"Due in 3 days\"\n                        },\n                        {\n                            \"name\": \"API Authentication Refactor\",\n                            \"subtitle\": \"Implement OAuth2 refresh token rotation\",\n                            \"status\": \"Completed\",\n                            \"meta\": \"Finished yesterday\"\n                        },\n                        {\n                            \"name\": \"User Onboarding Flow\",\n                            \"subtitle\": \"Add interactive tooltips for first-time users\",\n                            \"status\": \"Pending\",\n                            \"meta\": \"Scheduled for next sprint\"\n                        },\n                        {\n                            \"name\": \"Performance Optimization\",\n                            \"subtitle\": \"Reduce bundle size below 200kb\",\n                            \"status\": \"In Progress\",\n                            \"meta\": \"Ongoing\"\n                        },\n                        {\n                            \"name\": \"Billing Dashboard v2\",\n                            \"subtitle\": \"Integrate Stripe subscription management\",\n                            \"status\": \"Pending\",\n                            \"meta\": \"Blocked on API specs\"\n                        },\n                        {\n                            \"name\": \"Automated Test Suite\",\n                            \"subtitle\": \"Achieve 80% code coverage on core modules\",\n                            \"status\": \"Completed\",\n                            \"meta\": \"Finished 2 days ago\"\n                        },\n                        {\n                            \"name\": \"Security Audit Remediation\",\n                            \"subtitle\": \"Address medium vulnerability alerts in dependencies\",\n                            \"status\": \"In Progress\",\n                            \"meta\": \"Due Friday\"\n                        },\n                        {\n                            \"name\": \"Mobile Responsive Polish\",\n                            \"subtitle\": \"Fix table overflow on smaller viewports\",\n                            \"status\": \"Completed\",\n                            \"meta\": \"Finished last week\"\n                        }\n                    ]\n                )\n            ]\n        }\n    ]\n)\n</a2ui>"
+}

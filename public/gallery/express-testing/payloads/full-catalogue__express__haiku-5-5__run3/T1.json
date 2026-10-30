@@ -1,0 +1,150 @@
+{
+ "label": "full-catalogue__express__haiku-5-5__run3",
+ "task": "T1",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/a-full.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "title",
+      "component": "heading",
+      "text": "The Water Cycle"
+     },
+     {
+      "id": "intro",
+      "component": "body",
+      "text": "Water moves continuously between the oceans, the atmosphere, and the land. In this lesson you will learn the three main stages and work through one example."
+     },
+     {
+      "id": "s1h",
+      "component": "subheading",
+      "text": "1. Evaporation"
+     },
+     {
+      "id": "s1b",
+      "component": "body",
+      "text": "The Sun heats water at the surface of oceans, lakes, and rivers. Some molecules gain enough energy to escape as water vapour into the air."
+     },
+     {
+      "id": "s2h",
+      "component": "subheading",
+      "text": "2. Condensation and precipitation"
+     },
+     {
+      "id": "s2b",
+      "component": "body",
+      "text": "As warm, moist air rises it cools. Water vapour condenses onto tiny dust particles to form clouds. When droplets grow heavy enough, they fall as precipitation."
+     },
+     {
+      "id": "s3h",
+      "component": "subheading",
+      "text": "3. Collection and runoff"
+     },
+     {
+      "id": "s3b",
+      "component": "body",
+      "text": "Precipitation collects in rivers, lakes, groundwater, and oceans. Water that soaks into the ground can be taken up by plants and released again through transpiration."
+     },
+     {
+      "id": "ex_h",
+      "component": "subheading",
+      "text": "Worked example"
+     },
+     {
+      "id": "ex_steps",
+      "component": "steps",
+      "items": [
+       {
+        "label": "Start",
+        "text": "A shallow pond holds 10 L of water in the sun."
+       },
+       {
+        "label": "Evaporation",
+        "text": "Heat turns 4 L into vapour, which rises into the air."
+       },
+       {
+        "label": "Condensation",
+        "text": "The vapour cools and forms a cloud. Later, 4 L falls as rain onto a river."
+       },
+       {
+        "label": "Collection",
+        "text": "The river carries that water downstream to the sea, completing the cycle."
+       }
+      ]
+     },
+     {
+      "id": "quiz",
+      "component": "quiz_set",
+      "title": "Self-check",
+      "questions": [
+       {
+        "question": "What drives evaporation?",
+        "options": [
+         "Gravity pulling water down",
+         "Heat energy from the Sun",
+         "Wind blowing over rivers",
+         "Plants releasing oxygen"
+        ],
+        "correct": 1,
+        "explanation": "The Sun's heat gives water molecules enough energy to become vapour."
+       },
+       {
+        "question": "How do clouds form?",
+        "options": [
+         "Water vapour freezes on the ground",
+         "Water vapour cools and condenses onto particles",
+         "Rain is pushed up into the sky",
+         "Rivers evaporate above 100 degrees"
+        ],
+        "correct": 1,
+        "explanation": "Rising air cools, and the vapour condenses onto dust particles to form droplets."
+       },
+       {
+        "question": "Which process returns water from plants to the atmosphere?",
+        "options": [
+         "Precipitation",
+         "Runoff",
+         "Transpiration",
+         "Condensation"
+        ],
+        "correct": 2,
+        "explanation": "Transpiration is the release of water vapour through plant leaves."
+       }
+      ],
+      "pass_score": 70,
+      "accent": "#0e7bb8"
+     },
+     {
+      "id": "root",
+      "component": "reveal",
+      "animation": "fade_up",
+      "blocks": [
+       "title",
+       "intro",
+       "s1h",
+       "s1b",
+       "s2h",
+       "s2b",
+       "s3h",
+       "s3b",
+       "ex_h",
+       "ex_steps",
+       "quiz"
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

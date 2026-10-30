@@ -1,0 +1,90 @@
+{
+ "label": "jev-layout-pipeline__run2",
+ "task": "T1",
+ "format": "express",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "hdr",
+      "component": "page_header",
+      "title": "The Water Cycle",
+      "subtitle": "Explore how Earth continuously recycles its water supply through evaporation, condensation, and precipitation."
+     },
+     {
+      "id": "h1",
+      "component": "heading",
+      "text": "Evaporation"
+     },
+     {
+      "id": "b1",
+      "component": "body",
+      "text": "Heat from the sun warms water in oceans, lakes, and rivers, causing it to turn into invisible water vapor and rise into the atmosphere."
+     },
+     {
+      "id": "h2",
+      "component": "heading",
+      "text": "Condensation"
+     },
+     {
+      "id": "b2",
+      "component": "body",
+      "text": "As water vapor rises, it cools and changes back into tiny liquid water droplets, gathering together to form clouds high in the sky."
+     },
+     {
+      "id": "h3",
+      "component": "heading",
+      "text": "Precipitation"
+     },
+     {
+      "id": "b3",
+      "component": "body",
+      "text": "When the water droplets in clouds become too heavy, gravity pulls them back down to Earth as rain, snow, sleet, or hail."
+     },
+     {
+      "id": "h4",
+      "component": "heading",
+      "text": "Worked Example & Quiz"
+     },
+     {
+      "id": "b4",
+      "component": "body",
+      "text": "Example: A puddle disappears on a sunny day due to evaporation. Quiz: 1. What turns liquid water into vapor? 2. How do clouds form? 3. What is rain considered?"
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "hdr",
+         "h1",
+         "b1",
+         "h2",
+         "b2",
+         "h3",
+         "b3",
+         "h4",
+         "b4"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,34 @@
+{
+ "task": "T4",
+ "condition": "F",
+ "label": "random-slice__express__haiku-4-5__run3",
+ "agent_type": "Data display",
+ "catalogue": "F-data-display.json",
+ "atoms_in_catalogue": 248,
+ "prompt_chars": 130958,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 2.3,
+ "usage": {
+  "input_tokens": 37598,
+  "output_tokens": 231
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "filterable_list"
+ ],
+ "score": {
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "list": false,
+   "status indicator": false,
+   "filter control": false
+  }
+ },
+ "reply": "<a2ui>\nroot = filterable_list(\n  title=\"Items\",\n  items=[\n    {title: \"Item 1\", detail: \"First item detail\", status: \"active\"},\n    {title: \"Item 2\", detail: \"Second item detail\", status: \"completed\"},\n    {title: \"Item 3\", detail: \"Third item detail\", status: \"active\"},\n    {title: \"Item 4\", detail: \"Fourth item detail\", status: \"pending\"},\n    {title: \"Item 5\", detail: \"Fifth item detail\", status: \"active\"},\n    {title: \"Item 6\", detail: \"Sixth item detail\", status: \"completed\"},\n    {title: \"Item 7\", detail: \"Seventh item detail\", status: \"pending\"},\n    {title: \"Item 8\", detail: \"Eighth item detail\", status: \"active\"}\n  ],\n  filter_field=\"status\",\n  show_counts=true\n)\n</a2ui>"
+}

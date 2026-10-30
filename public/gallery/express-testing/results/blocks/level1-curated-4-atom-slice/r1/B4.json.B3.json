@@ -1,0 +1,36 @@
+{
+ "model": "sonnet-5-5",
+ "cond": "B4",
+ "format": "json",
+ "brief": "B3",
+ "repeat": 1,
+ "seq": 6,
+ "model_id": "claude-sonnet-5-5",
+ "utc": "2026-10-29T19:51:22Z",
+ "prompt_chars": 19037,
+ "prompt_sha256": "(removed for publication)",
+ "temperature_requested": null,
+ "temperature_sent": false,
+ "max_tokens": 32768,
+ "request_secs": 11.0,
+ "input_tokens": 7253,
+ "output_tokens": 1523,
+ "stop_reason": "end_turn",
+ "usage": {
+  "input_tokens": 7253,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "cache_creation": {
+   "ephemeral_5m_input_tokens": 0,
+   "ephemeral_1h_input_tokens": 0
+  },
+  "output_tokens": 1523,
+  "output_tokens_details": {
+   "thinking_tokens": 849
+  },
+  "service_tier": "standard",
+  "inference_geo": "global",
+  "speed": "standard"
+ },
+ "reply": "<a2ui-json>\n[\n  {\"version\":\"v0.9.1\",\"createSurface\":{\"surfaceId\":\"robot\",\"catalogId\":\"https://a2uicatalog.ai/catalog/blocks-b4.json\"}},\n  {\"version\":\"v0.9.1\",\"updateComponents\":{\"surfaceId\":\"robot\",\"components\":[\n    {\"id\":\"root\",\"component\":\"brick_build_3d\",\"label\":\"Small brick robot with a red head\",\"bricks\":[\n      {\"x\":1,\"y\":0,\"z\":1,\"w\":2,\"d\":2,\"h\":1,\"c\":\"#555b66\"},\n      {\"x\":5,\"y\":0,\"z\":1,\"w\":2,\"d\":2,\"h\":1,\"c\":\"#555b66\"},\n      {\"x\":1,\"y\":1,\"z\":1,\"w\":6,\"d\":2,\"h\":2,\"c\":\"#1e66d0\"},\n      {\"x\":0,\"y\":1,\"z\":1,\"w\":1,\"d\":2,\"h\":2,\"c\":\"#9aa0aa\"},\n      {\"x\":7,\"y\":1,\"z\":1,\"w\":1,\"d\":2,\"h\":2,\"c\":\"#9aa0aa\"},\n      {\"x\":2,\"y\":3,\"z\":1,\"w\":4,\"d\":2,\"h\":2,\"c\":\"#d01012\"},\n      {\"x\":2,\"y\":5,\"z\":2,\"w\":1,\"d\":1,\"h\":1,\"c\":\"#ffffff\"},\n      {\"x\":5,\"y\":5,\"z\":2,\"w\":1,\"d\":1,\"h\":1,\"c\":\"#ffffff\"},\n      {\"x\":3,\"y\":5,\"z\":1,\"w\":1,\"d\":1,\"h\":2,\"c\":\"#f5c518\"}\n    ],\"mode\":\"animate\",\"look\":\"studio\",\"orbit\":true,\"height\":380,\"checks\":true,\"parts\":false}\n  ]}}\n]\n</a2ui-json>\n\nHere's a small brick robot with a red head, a blue body, gray arms and legs, white eyes, and a yellow antenna. It assembles itself and slowly orbits, and you can drag to rotate it."
+}

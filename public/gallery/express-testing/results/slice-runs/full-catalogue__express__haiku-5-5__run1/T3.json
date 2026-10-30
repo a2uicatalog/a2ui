@@ -1,0 +1,45 @@
+{
+ "task": "T3",
+ "condition": "A_haiku-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "full-catalogue__express__haiku-5-5__run1",
+ "agent_type": "full",
+ "catalogue": "A-full.json",
+ "atoms_in_catalogue": 557,
+ "prompt_chars": 294155,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 10.2,
+ "usage": {
+  "input_tokens": 107823,
+  "output_tokens": 1913
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "gradient_hero",
+  "feature_grid",
+  "blockquote_with_avatar",
+  "cta_button",
+  "color_section"
+ ],
+ "score": {
+  "precision": 0.8,
+  "recall": 1.0,
+  "f1": 0.889,
+  "slot_hits": {
+   "hero": true,
+   "feature columns (x3)": true,
+   "testimonial": true,
+   "CTA": true
+  }
+ },
+ "reply": "<a2ui>\nhero = gradient_hero(\"Ship your next landing page in minutes\", \"Describe what you need in plain language and get a polished, responsive page your visitors will actually convert on.\", \"NEW\", \"#4f46e5\", \"#8b5cf6\", null, \"center\", \"Get started free\", \"#signup\")\n\nfeatures = feature_grid(\"Everything you need to launch\", \"Built for speed, clarity, and conversion.\", 3, [{icon: \"\u26a1\", title: \"Lightning fast\", description: \"Pages load instantly and stay responsive on every device.\", color: \"#4f46e5\"}, {icon: \"\ud83c\udfaf\", title: \"Clear messaging\", description: \"Layouts that guide visitors from headline to action without distraction.\", color: \"#8b5cf6\"}, {icon: \"\ud83d\udd12\", title: \"Secure by default\", description: \"Your data stays private, with safe defaults built into every component.\", color: \"#0ea5e9\"}])\n\ntestimonial = blockquote_with_avatar(\"We went from idea to a live landing page in an afternoon, and sign-ups doubled in the first week.\", \"Jordan Lee\", \"Head of Product, Acme Co.\", null)\n\ncta = cta_button(\"#signup\", \"Start your free trial\", \"#4f46e5\", true)\n\nroot = color_section(\"#4f46e5\", \"light\", \"48px 24px\", null, \"960px\", [hero, features, testimonial, cta])\n</a2ui>"
+}

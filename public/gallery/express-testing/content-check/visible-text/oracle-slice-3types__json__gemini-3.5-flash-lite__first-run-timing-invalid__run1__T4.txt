@@ -1,0 +1,12 @@
+Item Management Dashboard
+ Review and filter system items and their operational statuses.
+ [ { " l a b e l " : " A l l " , " v a l u e " : " a l l " } , { " l a b e l " : " A c t i v e " , " v a l u e " : " a c t i v e " } , { " l a b e l " : " P e n d i n g " , " v a l u e " : " p e n d i n g " } , { " l a b e l " : " A r c h i v e d " , " v a l u e " : " a r c h i v e d " } ] 
+ Title Status Detail 
+ Alpha Gateway Active Primary traffic routing node in US-East. 
+ Beta Cluster Pending Provisioning compute instances. 
+ Gamma Service Active Authentication endpoint operating normally. 
+ Delta Pipeline Archived Deprecated legacy ETL job. 
+ Epsilon Store Active Distributed cache cluster replica. 
+ Zeta Worker Pending Awaiting security compliance clearance. 
+ Eta Monitor Active Infrastructure metrics collection agent. 
+ Theta Backup Archived Cold storage snapshot archive.

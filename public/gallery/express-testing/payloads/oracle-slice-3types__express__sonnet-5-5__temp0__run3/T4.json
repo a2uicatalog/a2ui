@@ -1,0 +1,134 @@
+{
+ "label": "oracle-slice-3types__express__sonnet-5-5__temp0__run3",
+ "task": "T4",
+ "format": "express",
+ "model_id": "claude-sonnet-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "status-list",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "status-list",
+    "components": [
+     {
+      "id": "filter",
+      "component": "segmented_control",
+      "options": [
+       {
+        "label": "All",
+        "value": "all"
+       },
+       {
+        "label": "Active",
+        "value": "active"
+       },
+       {
+        "label": "Pending",
+        "value": "pending"
+       },
+       {
+        "label": "Blocked",
+        "value": "blocked"
+       },
+       {
+        "label": "Done",
+        "value": "done"
+       }
+      ],
+      "selected_value": "all",
+      "name": "status_filter"
+     },
+     {
+      "id": "list",
+      "component": "entity_list",
+      "items": [
+       {
+        "name": "Migrate billing database",
+        "subtitle": "Cutover rehearsal completed with no data drift",
+        "icon": "\ud83d\uddc4\ufe0f",
+        "status": "Active",
+        "meta": "Infra"
+       },
+       {
+        "name": "Update onboarding emails",
+        "subtitle": "Copy is waiting on legal review",
+        "icon": "\u2709\ufe0f",
+        "status": "Pending",
+        "meta": "Marketing"
+       },
+       {
+        "name": "Renew TLS certificates",
+        "subtitle": "Vendor API access is down, so renewal can't proceed",
+        "icon": "\ud83d\udd12",
+        "status": "Blocked",
+        "meta": "Security"
+       },
+       {
+        "name": "Launch referral program",
+        "subtitle": "Shipped to 100% of users on Monday",
+        "icon": "\ud83d\ude80",
+        "status": "Done",
+        "meta": "Growth"
+       },
+       {
+        "name": "Refactor search indexing",
+        "subtitle": "Two of five services moved to the new pipeline",
+        "icon": "\ud83d\udd0d",
+        "status": "Active",
+        "meta": "Platform"
+       },
+       {
+        "name": "Vendor security questionnaire",
+        "subtitle": "Submitted and awaiting a response",
+        "icon": "\ud83d\udccb",
+        "status": "Pending",
+        "meta": "Compliance"
+       },
+       {
+        "name": "Mobile push notifications",
+        "subtitle": "Blocked until the app store approves the entitlement",
+        "icon": "\ud83d\udcf1",
+        "status": "Blocked",
+        "meta": "Mobile"
+       },
+       {
+        "name": "Q2 analytics dashboard",
+        "subtitle": "Reviewed and published to leadership",
+        "icon": "\ud83d\udcca",
+        "status": "Done",
+        "meta": "Data"
+       }
+      ]
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "_inline_1",
+         "filter",
+         "list"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "_inline_1",
+      "component": "heading",
+      "text": "Work items"
+     }
+    ]
+   }
+  }
+ ]
+}

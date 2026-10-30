@@ -1,0 +1,110 @@
+{
+ "label": "oracle-slice-3types__elemental__sonnet-5-5__run2",
+ "task": "T2",
+ "format": "elemental",
+ "model_id": "claude-sonnet-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display-elemental.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "title",
+      "component": "heading",
+      "text": "Metrics Overview"
+     },
+     {
+      "id": "kpis",
+      "component": "metric_row",
+      "cols": 4,
+      "metrics": [
+       {
+        "value": "$128K",
+        "label": "Revenue",
+        "sub": "vs. last month",
+        "trend": "up"
+       },
+       {
+        "value": "4,210",
+        "label": "Active Users",
+        "sub": "vs. last month",
+        "trend": "up"
+       },
+       {
+        "value": "3.2%",
+        "label": "Churn Rate",
+        "sub": "vs. last month",
+        "trend": "down"
+       },
+       {
+        "value": "92",
+        "label": "NPS Score",
+        "sub": "vs. last month",
+        "trend": "down"
+       }
+      ]
+     },
+     {
+      "id": "chart-title",
+      "component": "heading",
+      "text": "This Quarter vs. Last Quarter"
+     },
+     {
+      "id": "comparison-chart",
+      "component": "chartjs_bar",
+      "labels": [
+       "Revenue ($K)",
+       "Active Users (100s)",
+       "Churn (%)",
+       "NPS"
+      ],
+      "datasets": [
+       {
+        "label": "Last Quarter",
+        "data": [
+         110,
+         38,
+         3.8,
+         95
+        ]
+       },
+       {
+        "label": "This Quarter",
+        "data": [
+         128,
+         42,
+         3.2,
+         92
+        ]
+       }
+      ]
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "1.5rem",
+      "items": [
+       {
+        "blocks": [
+         "title",
+         "kpis",
+         "chart-title",
+         "comparison-chart"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

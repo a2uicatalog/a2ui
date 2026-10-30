@@ -1,0 +1,45 @@
+{
+ "task": "T3",
+ "condition": "C_gemini-3.5-flash-l",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash-lite",
+ "hints": false,
+ "label": "oracle-slice-3types__express__gemini-3.5-flash-lite__request-only-timing__run1",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "C-marketing-commerce.json",
+ "atoms_in_catalogue": 23,
+ "prompt_chars": 12467,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 1.9,
+ "usage": {
+  "input_tokens": 3413,
+  "output_tokens": 538
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "dark_hero",
+  "feature_grid",
+  "testimonial_card",
+  "cta_section",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.8,
+  "recall": 1.0,
+  "f1": 0.889,
+  "slot_hits": {
+   "hero": true,
+   "feature columns (x3)": true,
+   "testimonial": true,
+   "CTA": true
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"product-landing-page\")\n\nhero = dark_hero(\n    \"Supercharge Your Workflow\",\n    \"Streamline your tasks, collaborate seamlessly, and achieve more in less time with our next-generation platform.\",\n    \"New Release\",\n    \"linear-gradient(135deg,#1e1b4b,#312e81)\",\n    \"Get Started Free\",\n    \"https://example.com/signup\",\n    \"center\"\n)\n\nfeatures = feature_grid(\n    \"Built for Productivity\",\n    \"Everything you need to keep your projects on track and your team aligned.\",\n    3,\n    [\n        {\n            \"icon\": \"\u26a1\",\n            \"title\": \"Lightning Fast\",\n            \"description\": \"Optimized performance ensures zero lag as your projects scale.\",\n            \"badge\": \"Fast\"\n        },\n        {\n            \"icon\": \"\ud83d\udd12\",\n            \"title\": \"Secure by Default\",\n            \"description\": \"Enterprise-grade encryption keeps your sensitive data protected 24/7.\",\n            \"badge\": \"Secure\"\n        },\n        {\n            \"icon\": \"\ud83e\udd1d\",\n            \"title\": \"Real-time Sync\",\n            \"description\": \"Collaborate with your team instantly with zero-latency synchronization.\",\n            \"badge\": \"Live\"\n        }\n    ]\n)\n\ntestimonial = testimonial_card(\n    \"This platform has completely transformed how our team manages day-to-day operations. Efficiency is up 40%!\",\n    \"Sarah Jenkins\",\n    \"Head of Product at TechCorp\",\n    \"https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150\",\n    5\n)\n\ncta = cta_section(\n    \"Ready to transform your workflow?\",\n    \"Join thousands of teams already building the future with our tools. No credit card required.\",\n    {\"label\": \"Start Free Trial\", \"url\": \"https://example.com/trial\"},\n    {\"label\": \"Contact Sales\", \"url\": \"https://example.com/contact\"}\n)\n\nroot = columns(\n    1,\n    \"2.5rem\",\n    \"center\",\n    [\n        {\"blocks\": [hero, features, testimonial, cta]}\n    ]\n)\n</a2ui>"
+}

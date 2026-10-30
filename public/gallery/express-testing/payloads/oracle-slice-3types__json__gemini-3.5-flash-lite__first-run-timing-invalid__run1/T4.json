@@ -1,0 +1,106 @@
+{
+ "label": "oracle-slice-3types__json__gemini-3.5-flash-lite__first-run-timing-invalid__run1",
+ "task": "T4",
+ "format": "json",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "filtered-item-list",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display.json",
+    "theme": {
+     "primaryColor": "#3b82f6"
+    }
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "filtered-item-list",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "1rem",
+      "items": [
+       {
+        "blocks": [
+         {
+          "id": "page_heading",
+          "component": "heading",
+          "text": "Item Management Dashboard"
+         },
+         {
+          "id": "intro_body",
+          "component": "body",
+          "text": "Review and filter system items and their operational statuses."
+         },
+         {
+          "id": "filter_segment",
+          "component": "segmented_control",
+          "name": "status_filter",
+          "selected_value": "all",
+          "options": "[{\"label\": \"All\", \"value\": \"all\"}, {\"label\": \"Active\", \"value\": \"active\"}, {\"label\": \"Pending\", \"value\": \"pending\"}, {\"label\": \"Archived\", \"value\": \"archived\"}]"
+         },
+         {
+          "id": "items_table",
+          "component": "data_table_sortable",
+          "headers": [
+           "Title",
+           "Status",
+           "Detail"
+          ],
+          "rows": [
+           [
+            "Alpha Gateway",
+            "Active",
+            "Primary traffic routing node in US-East."
+           ],
+           [
+            "Beta Cluster",
+            "Pending",
+            "Provisioning compute instances."
+           ],
+           [
+            "Gamma Service",
+            "Active",
+            "Authentication endpoint operating normally."
+           ],
+           [
+            "Delta Pipeline",
+            "Archived",
+            "Deprecated legacy ETL job."
+           ],
+           [
+            "Epsilon Store",
+            "Active",
+            "Distributed cache cluster replica."
+           ],
+           [
+            "Zeta Worker",
+            "Pending",
+            "Awaiting security compliance clearance."
+           ],
+           [
+            "Eta Monitor",
+            "Active",
+            "Infrastructure metrics collection agent."
+           ],
+           [
+            "Theta Backup",
+            "Archived",
+            "Cold storage snapshot archive."
+           ]
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

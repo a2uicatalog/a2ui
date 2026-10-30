@@ -1,0 +1,37 @@
+{
+ "task": "T6",
+ "condition": "C_haiku-5-5H2",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": true,
+ "label": "oracle-slice-3types__express__haiku-5-5__hints-v2__run1",
+ "agent_type": "Learning",
+ "catalogue": "C-learning.json",
+ "atoms_in_catalogue": 36,
+ "prompt_chars": 21139,
+ "slot_recall": [
+  2,
+  2
+ ],
+ "secs": 5.8,
+ "usage": {
+  "input_tokens": 7807,
+  "output_tokens": 1308
+ },
+ "valid": false,
+ "error": "A2uiCompilationParseError: Root target 'root' is not defined. - Help: Ensure root component 'root' is assigned in your Express DSL.",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "flashcard deck": false,
+   "progress indicator": false
+  }
+ },
+ "reply": "<a2ui>\nheading_title = heading(\"Vocabulary Review\")\nprogress = progress_bar(0, \"Cards reviewed\", \"#4f46e5\", true, \"0 of 10 reviewed\")\ndeck = flashcard_deck([{front: \"Ephemeral\", back: \"Lasting for a very short time\"}, {front: \"Ubiquitous\", back: \"Present or found everywhere\"}, {front: \"Meticulous\", back: \"Showing great attention to detail\"}, {front: \"Ambiguous\", back: \"Open to more than one interpretation\"}, {front: \"Resilient\", back: \"Able to recover quickly from difficulty\"}, {front: \"Candid\", back: \"Truthful and straightforward\"}, {front: \"Pragmatic\", back: \"Dealing with things in a practical, sensible way\"}, {front: \"Eloquent\", back: \"Fluent, expressive and persuasive in speech\"}, {front: \"Frugal\", back: \"Sparing or economical with resources\"}, {front: \"Diligent\", back: \"Careful, steady and persistent in work\"}], \"#4f46e5\", \"QUESTION\", \"ANSWER\")\nleft_col = columns(2, \"1.5rem\", \"top\", [{blocks: [heading_title, progress]}, {blocks: [deck]}])\nroot = left_col\n</a2ui>"
+}

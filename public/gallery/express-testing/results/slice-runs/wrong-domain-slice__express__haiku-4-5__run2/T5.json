@@ -1,0 +1,38 @@
+{
+ "task": "T5",
+ "condition": "E",
+ "label": "wrong-domain-slice__express__haiku-4-5__run2",
+ "agent_type": "Learning",
+ "catalogue": "B-learning.json",
+ "atoms_in_catalogue": 184,
+ "prompt_chars": 88519,
+ "slot_recall": [
+  0,
+  1
+ ],
+ "secs": 3.7,
+ "usage": {
+  "input_tokens": 24756,
+  "output_tokens": 378
+ },
+ "valid": false,
+ "error": "A2uiCompilationParseError: Failed to parse expression: Syntax error at line 6:12: mismatched input '=' expecting ':' (line 6) - Line 6, Col 12 - Help: Please correct the syntax error in your Express DSL.",
+ "produced": [],
+ "score": {
+  "per_approach": {
+   "tier_cards": {
+    "precision": null,
+    "recall": 0.0,
+    "f1": null
+   },
+   "comparison_table": {
+    "precision": null,
+    "recall": 0.0,
+    "f1": null
+   }
+  },
+  "best_approach": "tier_cards",
+  "f1": null
+ },
+ "reply": "<a2ui>\nroot = columns(\n  cols=3,\n  gap=\"2rem\",\n  items=[\n    {\n      blocks=[\n        heading(\"Starter\"),\n        body(\"$29/month\"),\n        bullet_list([\n          {text: \"Up to 10 projects\"},\n          {text: \"5GB storage\"},\n          {text: \"Email support\"},\n          {text: \"Basic analytics\"}\n        ]),\n        ripple_button(\"Get Started\", accent=\"#4f46e5\")\n      ]\n    },\n    {\n      blocks=[\n        section_label(\"RECOMMENDED\"),\n        heading(\"Professional\"),\n        body(\"$79/month\"),\n        bullet_list([\n          {text: \"Unlimited projects\"},\n          {text: \"100GB storage\"},\n          {text: \"Priority support\"},\n          {text: \"Advanced analytics\"},\n          {text: \"Team collaboration\"},\n          {text: \"API access\"}\n        ]),\n        ripple_button(\"Get Started\", accent=\"#8b5cf6\")\n      ]\n    },\n    {\n      blocks=[\n        heading(\"Enterprise\"),\n        body(\"Custom pricing\"),\n        bullet_list([\n          {text: \"Everything in Professional\"},\n          {text: \"Unlimited storage\"},\n          {text: \"24/7 phone support\"},\n          {text: \"Custom integrations\"},\n          {text: \"Dedicated account manager\"},\n          {text: \"SLA guarantee\"}\n        ]),\n        ripple_button(\"Contact Sales\", accent=\"#4f46e5\")\n      ]\n    }\n  ]\n)\n</a2ui>"
+}

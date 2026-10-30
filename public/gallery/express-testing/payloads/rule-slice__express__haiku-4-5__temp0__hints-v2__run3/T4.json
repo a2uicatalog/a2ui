@@ -1,0 +1,72 @@
+{
+ "label": "rule-slice__express__haiku-4-5__temp0__hints-v2__run3",
+ "task": "T4",
+ "format": "express",
+ "model_id": "claude-haiku-4-5-20251001",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/b-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "filterable_list",
+      "title": "Project Tasks",
+      "items": [
+       {
+        "title": "Design System",
+        "detail": "Complete component library",
+        "status": "done"
+       },
+       {
+        "title": "API Documentation",
+        "detail": "REST endpoints documented",
+        "status": "done"
+       },
+       {
+        "title": "User Authentication",
+        "detail": "OAuth2 integration in progress",
+        "status": "in-progress"
+       },
+       {
+        "title": "Payment Processing",
+        "detail": "Stripe integration pending",
+        "status": "planned"
+       },
+       {
+        "title": "Email Notifications",
+        "detail": "SMTP service configured",
+        "status": "done"
+       },
+       {
+        "title": "Analytics Dashboard",
+        "detail": "Data pipeline setup underway",
+        "status": "in-progress"
+       },
+       {
+        "title": "Mobile App",
+        "detail": "iOS and Android builds planned",
+        "status": "planned"
+       },
+       {
+        "title": "Performance Optimization",
+        "detail": "CDN caching implemented",
+        "status": "done"
+       }
+      ],
+      "filter_field": "status",
+      "show_counts": true
+     }
+    ]
+   }
+  }
+ ]
+}

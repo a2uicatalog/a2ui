@@ -1,0 +1,37 @@
+Project Workstreams
+ Eight workstreams tracked this sprint. Choose a status to narrow the list.
+ All Active Pending Blocked Done 
+ By status
+ Active · 3 Pending · 2 Blocked · 1 Done · 2 
+ 🛒
+ Checkout Redesign
+ Active New payment step layout is in QA review.
+ Due Fri
+ 🔎
+ Search Indexing
+ Active Reindex job running nightly across all regions.
+ Ongoing
+ 📱
+ Mobile Push Alerts
+ Active Notification templates drafted for marketing sign-off.
+ Due Mon
+ 💳
+ Billing Migration
+ Pending Waiting on finance approval before cutover.
+ Queued
+ ♿
+ Accessibility Audit
+ Pending Vendor scheduled to start next sprint.
+ Queued
+ 🔐
+ SSO Integration
+ Blocked Blocked by missing identity provider certificate.
+ 2 days
+ ✉️
+ Onboarding Emails
+ Done Welcome sequence shipped and tracking opens.
+ Shipped
+ ⚡
+ Dashboard Caching
+ Done Load times reduced by 40% after release.
+ Shipped

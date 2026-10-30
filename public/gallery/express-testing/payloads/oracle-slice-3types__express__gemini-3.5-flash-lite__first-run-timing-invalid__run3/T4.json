@@ -1,0 +1,127 @@
+{
+ "label": "oracle-slice-3types__express__gemini-3.5-flash-lite__first-run-timing-invalid__run3",
+ "task": "T4",
+ "format": "express",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "1rem",
+      "items": [
+       {
+        "blocks": [
+         "_inline_1",
+         "_inline_2",
+         "_inline_3",
+         "_inline_4"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "_inline_1",
+      "component": "heading",
+      "text": "Task Status Overview"
+     },
+     {
+      "id": "_inline_2",
+      "component": "body",
+      "text": "Filterable list of system items and their current operational status."
+     },
+     {
+      "id": "_inline_3",
+      "component": "segmented_control",
+      "options": [
+       {
+        "label": "All",
+        "value": "all"
+       },
+       {
+        "label": "Active",
+        "value": "active"
+       },
+       {
+        "label": "Pending",
+        "value": "pending"
+       },
+       {
+        "label": "Offline",
+        "value": "offline"
+       }
+      ],
+      "selected_value": "all",
+      "name": "status_filter"
+     },
+     {
+      "id": "_inline_4",
+      "component": "entity_list",
+      "items": [
+       {
+        "name": "Database Replication Service",
+        "subtitle": "Primary node cluster sync operational",
+        "status": "active",
+        "meta": "99.9% uptime"
+       },
+       {
+        "name": "Payment Gateway API",
+        "subtitle": "Awaiting webhook security credentials renewal",
+        "status": "pending",
+        "meta": "Due in 2 days"
+       },
+       {
+        "name": "Legacy Storage Backup",
+        "subtitle": "Node unreachable on port 5432",
+        "status": "offline",
+        "meta": "Checked 5m ago"
+       },
+       {
+        "name": "User Authentication Engine",
+        "subtitle": "OAuth2 token issuer operating normally",
+        "status": "active",
+        "meta": "4ms latency"
+       },
+       {
+        "name": "Email Notification Queue",
+        "subtitle": "SMTP relay handshake verification queued",
+        "status": "pending",
+        "meta": "In queue"
+       },
+       {
+        "name": "Analytics Batch Processor",
+        "subtitle": "Scheduled cron job finished successfully",
+        "status": "active",
+        "meta": "Completed"
+       },
+       {
+        "name": "CDN Asset Purge Service",
+        "subtitle": "Edge cache eviction timeout reached",
+        "status": "offline",
+        "meta": "Retrying..."
+       },
+       {
+        "name": "Customer Support Webhook",
+        "subtitle": "Real-time ticket routing active",
+        "status": "active",
+        "meta": "Operational"
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,674 @@
+[
+ {
+  "model": "tags",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "Y1",
+  "reply": "{\"catalogue\": \"a2ui-charts-v1\"}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 0.0001511052349815145,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-charts-v1",
+    1.7323
+   ],
+   [
+    "a2ui-aviation-v1",
+    0.941
+   ],
+   [
+    "a2ui-presentation-v1",
+    0.468
+   ]
+  ],
+  "threshold": 0.0
+ },
+ {
+  "model": "tags",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "Y2",
+  "reply": "{\"catalogue\": \"a2ui-aviation-v1\"}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 0.00014732036972418428,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-aviation-v1",
+    2.1407
+   ],
+   [
+    "a2ui-presentation-v1",
+    1.38
+   ],
+   [
+    "a2ui-charts-v1",
+    1.0
+   ]
+  ],
+  "threshold": 0.0
+ },
+ {
+  "model": "tags",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "Y3",
+  "reply": "{\"catalogue\": \"a2ui-marketing-v1\"}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 0.00014951364486478268,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-marketing-v1",
+    0.5933
+   ],
+   [
+    "a2ui-meta-v1",
+    0.1815
+   ],
+   [
+    "a2ui-ops-v1",
+    0.1054
+   ]
+  ],
+  "threshold": 0.0
+ },
+ {
+  "model": "tags",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "Y4",
+  "reply": "{\"catalogue\": \"a2ui-ops-v1\"}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 0.00013870780530851335,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-ops-v1",
+    0.661
+   ],
+   [
+    "a2ui-meta-v1",
+    0.3537
+   ],
+   [
+    "a2ui-charts-v1",
+    0.3257
+   ]
+  ],
+  "threshold": 0.0
+ },
+ {
+  "model": "tags",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "Y5",
+  "reply": "{\"catalogue\": \"a2ui-marketing-v1\"}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 0.00012985455512534827,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-marketing-v1",
+    0.8602
+   ],
+   [
+    "a2ui-ops-v1",
+    0.3949
+   ],
+   [
+    "a2ui-google-workspace-live-v1",
+    0.376
+   ]
+  ],
+  "threshold": 0.0
+ },
+ {
+  "model": "tags",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "Y6",
+  "reply": "{\"catalogue\": \"a2ui-aviation-v1\"}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 0.00011754490493331105,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-aviation-v1",
+    1.7959
+   ],
+   [
+    "a2ui-effects-v1",
+    1.6569
+   ],
+   [
+    "a2ui-presentation-v1",
+    0.9855
+   ]
+  ],
+  "threshold": 0.0
+ },
+ {
+  "model": "tags",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "Y7",
+  "reply": "{\"catalogue\": \"a2ui-charts-v1\"}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 0.00014304634998552502,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-charts-v1",
+    1.509
+   ],
+   [
+    "a2ui-aviation-v1",
+    0.7775
+   ],
+   [
+    "a2ui-ops-v1",
+    0.393
+   ]
+  ],
+  "threshold": 0.0
+ },
+ {
+  "model": "tags",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "Y8",
+  "reply": "{\"catalogue\": \"a2ui-learning-v1\"}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 0.00014773781003896147,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-learning-v1",
+    1.1817
+   ],
+   [
+    "a2ui-presentation-v1",
+    0.473
+   ],
+   [
+    "a2ui-ops-v1",
+    0.2557
+   ]
+  ],
+  "threshold": 0.0
+ },
+ {
+  "model": "tags",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "Y9",
+  "reply": "{\"catalogue\": \"a2ui-charts-v1\"}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 0.0001877832249738276,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-charts-v1",
+    1.2178
+   ],
+   [
+    "a2ui-aviation-v1",
+    0.8776
+   ],
+   [
+    "a2ui-ops-v1",
+    0.7531
+   ]
+  ],
+  "threshold": 0.0
+ },
+ {
+  "model": "tags",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "Y10",
+  "reply": "{\"catalogue\": \"a2ui-learning-v1\"}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 0.00013555006997194142,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-learning-v1",
+    0.9013
+   ],
+   [
+    "a2ui-presentation-v1",
+    0.766
+   ],
+   [
+    "a2ui-embeds-v1",
+    0.6943
+   ]
+  ],
+  "threshold": 0.0
+ },
+ {
+  "model": "tags",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "Y11",
+  "reply": "{\"catalogue\": \"a2ui-aviation-v1\"}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 0.00021601466985885054,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-aviation-v1",
+    2.1514
+   ],
+   [
+    "a2ui-presentation-v1",
+    1.3926
+   ],
+   [
+    "a2ui-charts-v1",
+    1.0
+   ]
+  ],
+  "threshold": 0.0
+ },
+ {
+  "model": "tags",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "Y12",
+  "reply": "{\"catalogue\": \"a2ui-charts-v1\"}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 0.00015291930991224946,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-charts-v1",
+    1.588
+   ],
+   [
+    "a2ui-aviation-v1",
+    0.9157
+   ],
+   [
+    "a2ui-presentation-v1",
+    0.8433
+   ]
+  ],
+  "threshold": 0.0
+ },
+ {
+  "model": "tags",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "Y13",
+  "reply": "{\"catalogue\": null}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 6.315234990324826e-05,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-atoms-v1",
+    0.0
+   ],
+   [
+    "a2ui-aviation-v1",
+    0.0
+   ],
+   [
+    "a2ui-bricks-v1",
+    0.0
+   ]
+  ],
+  "threshold": 0.0
+ },
+ {
+  "model": "tags",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "Y14",
+  "reply": "{\"catalogue\": null}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 5.953643005341291e-05,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-atoms-v1",
+    0.0
+   ],
+   [
+    "a2ui-aviation-v1",
+    0.0
+   ],
+   [
+    "a2ui-bricks-v1",
+    0.0
+   ]
+  ],
+  "threshold": 0.0
+ },
+ {
+  "model": "tags",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "Y15",
+  "reply": "{\"catalogue\": \"a2ui-charts-v1\"}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 0.00010030906472820789,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-charts-v1",
+    0.8201
+   ],
+   [
+    "a2ui-aviation-v1",
+    0.6416
+   ],
+   [
+    "a2ui-meta-v1",
+    0.5297
+   ]
+  ],
+  "threshold": 0.0
+ },
+ {
+  "model": "tags",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "Y16",
+  "reply": "{\"catalogue\": \"a2ui-learning-v1\"}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 6.43384049180895e-05,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-learning-v1",
+    0.9377
+   ],
+   [
+    "a2ui-presentation-v1",
+    0.3484
+   ],
+   [
+    "a2ui-editorial-v1",
+    0.2716
+   ]
+  ],
+  "threshold": 0.0
+ },
+ {
+  "model": "tags",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "Y17",
+  "reply": "{\"catalogue\": \"a2ui-aviation-v1\"}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 6.410004512872546e-05,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-aviation-v1",
+    1.42
+   ],
+   [
+    "a2ui-presentation-v1",
+    0.9669
+   ],
+   [
+    "a2ui-embeds-v1",
+    0.8669
+   ]
+  ],
+  "threshold": 0.0
+ },
+ {
+  "model": "tags",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "Y18",
+  "reply": "{\"catalogue\": \"a2ui-ops-v1\"}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 6.319379492197185e-05,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-ops-v1",
+    0.5581
+   ],
+   [
+    "a2ui-charts-v1",
+    0.2645
+   ],
+   [
+    "a2ui-meta-v1",
+    0.248
+   ]
+  ],
+  "threshold": 0.0
+ },
+ {
+  "model": "tags",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "Y19",
+  "reply": "{\"catalogue\": null}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 9.89623653003946e-05,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-atoms-v1",
+    0.0
+   ],
+   [
+    "a2ui-aviation-v1",
+    0.0
+   ],
+   [
+    "a2ui-bricks-v1",
+    0.0
+   ]
+  ],
+  "threshold": 0.0
+ },
+ {
+  "model": "tags",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "Y20",
+  "reply": "{\"catalogue\": \"a2ui-learning-v1\"}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 0.0001302387297619134,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-learning-v1",
+    0.9655
+   ],
+   [
+    "a2ui-presentation-v1",
+    0.3704
+   ],
+   [
+    "a2ui-editorial-v1",
+    0.327
+   ]
+  ],
+  "threshold": 0.0
+ },
+ {
+  "model": "tags",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "Y21",
+  "reply": "{\"catalogue\": \"a2ui-charts-v1\"}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 0.00015307900030165912,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-charts-v1",
+    1.5362
+   ],
+   [
+    "a2ui-aviation-v1",
+    0.8757
+   ],
+   [
+    "a2ui-presentation-v1",
+    0.8675
+   ]
+  ],
+  "threshold": 0.0
+ },
+ {
+  "model": "tags",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "Y22",
+  "reply": "{\"catalogue\": \"a2ui-learning-v1\"}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 0.00010445374005939812,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-learning-v1",
+    0.8611
+   ],
+   [
+    "a2ui-editorial-v1",
+    0.6286
+   ],
+   [
+    "a2ui-presentation-v1",
+    0.5
+   ]
+  ],
+  "threshold": 0.0
+ },
+ {
+  "model": "tags",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "Y23",
+  "reply": "{\"catalogue\": \"a2ui-google-workspace-live-v1\"}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 0.00010102248459588737,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-google-workspace-live-v1",
+    0.5891
+   ],
+   [
+    "a2ui-ops-v1",
+    0.3795
+   ],
+   [
+    "a2ui-meta-v1",
+    0.3467
+   ]
+  ],
+  "threshold": 0.0
+ },
+ {
+  "model": "tags",
+  "repeat": 1,
+  "cond": "R",
+  "format": "express",
+  "brief": "Y24",
+  "reply": "{\"catalogue\": \"a2ui-charts-v1\"}",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "request_secs": 0.00013593468989711255,
+  "stop_reason": "offline",
+  "seq": 0,
+  "top3": [
+   [
+    "a2ui-charts-v1",
+    1.6974
+   ],
+   [
+    "a2ui-aviation-v1",
+    1.0994
+   ],
+   [
+    "a2ui-effects-v1",
+    0.6841
+   ]
+  ],
+  "threshold": 0.0
+ }
+]

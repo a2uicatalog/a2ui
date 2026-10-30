@@ -1,0 +1,27 @@
+System Diagnostics
+ 99.9% ↑ 
+ Uptime
+ +0.1% vs last period
+ 24ms ↓ 
+ Latency
+ -4ms vs last period
+ 1,042 ↑ 
+ Active Nodes
+ +12 vs last period
+ 0.02% ↓ 
+ Error Rate
+ -0.01% vs last period
+ 0
+ 5,000
+ 10,000
+ 15,000
+ 20,000
+ Mon
+ Tue
+ Wed
+ Thu
+ Category Active Requests 
+ Mon 12,500 
+ Tue 14,200 
+ Wed 13,800 
+ Thu 15,600

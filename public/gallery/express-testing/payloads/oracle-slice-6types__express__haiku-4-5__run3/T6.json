@@ -1,0 +1,123 @@
+{
+ "label": "oracle-slice-6types__express__haiku-4-5__run3",
+ "task": "T6",
+ "format": "express",
+ "model_id": null,
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/d-t6.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "2rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "_inline_1",
+         "_inline_2",
+         "_inline_3"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_4"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "_inline_1",
+      "component": "heading",
+      "text": "Vocabulary Review"
+     },
+     {
+      "id": "_inline_2",
+      "component": "body",
+      "text": "Click cards to flip and reveal definitions. Track your progress as you review each card."
+     },
+     {
+      "id": "_inline_3",
+      "component": "progress_bar",
+      "value": 0,
+      "label": "Cards Reviewed",
+      "accent": "#4f46e5",
+      "show_percent": true,
+      "caption": "0 / 10"
+     },
+     {
+      "id": "_inline_4",
+      "component": "flashcard_deck",
+      "cards": [
+       {
+        "front": "Hello",
+        "back": "A greeting"
+       },
+       {
+        "front": "Serendipity",
+        "back": "Finding something good by chance"
+       },
+       {
+        "front": "Ephemeral",
+        "back": "Lasting for a very short time"
+       },
+       {
+        "front": "Eloquent",
+        "back": "Fluent and persuasive in speaking or writing"
+       },
+       {
+        "front": "Ubiquitous",
+        "back": "Present everywhere at once"
+       },
+       {
+        "front": "Melancholy",
+        "back": "A feeling of thoughtful sadness"
+       },
+       {
+        "front": "Pragmatic",
+        "back": "Dealing with things in a practical way"
+       },
+       {
+        "front": "Benevolent",
+        "back": "Kind and generous"
+       },
+       {
+        "front": "Meticulous",
+        "back": "Showing great attention to detail"
+       },
+       {
+        "front": "Nostalgia",
+        "back": "Sentimental longing for the past"
+       }
+      ],
+      "accent": "#4f46e5",
+      "label_front": "WORD",
+      "label_back": "DEFINITION"
+     }
+    ]
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_data_model": {
+    "surface_id": "main",
+    "path": "/",
+    "value": {
+     "reviewed_count": 0,
+     "total_cards": 10
+    }
+   }
+  }
+ ]
+}

@@ -1,0 +1,109 @@
+{
+ "label": "jev-picks-on-rule-slice__express__haiku-4-5__temp0__hints-v2__run1",
+ "task": "T2",
+ "format": "express",
+ "model_id": null,
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/jb-t2.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "kpi_1",
+      "component": "stat_card",
+      "value": "$124,500",
+      "label": "Total Revenue",
+      "delta": "+12%",
+      "is_up": true,
+      "accent": "green"
+     },
+     {
+      "id": "kpi_2",
+      "component": "stat_card",
+      "value": "8,240",
+      "label": "Active Users",
+      "delta": "+5%",
+      "is_up": true,
+      "accent": "blue"
+     },
+     {
+      "id": "kpi_3",
+      "component": "stat_card",
+      "value": "3.2s",
+      "label": "Avg Response Time",
+      "delta": "-8%",
+      "is_up": true,
+      "accent": "green"
+     },
+     {
+      "id": "kpi_4",
+      "component": "stat_card",
+      "value": "94.2%",
+      "label": "System Uptime",
+      "delta": "+0.3%",
+      "is_up": true,
+      "accent": "purple"
+     },
+     {
+      "id": "comparison",
+      "component": "benchmark_comparison",
+      "items": [
+       {
+        "label": "Product A",
+        "value": 87
+       },
+       {
+        "label": "Product B",
+        "value": 72
+       },
+       {
+        "label": "Product C",
+        "value": 95
+       },
+       {
+        "label": "Product D",
+        "value": 68
+       }
+      ]
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 4,
+      "gap": "1.5rem",
+      "items": [
+       {
+        "blocks": [
+         "kpi_1"
+        ]
+       },
+       {
+        "blocks": [
+         "kpi_2"
+        ]
+       },
+       {
+        "blocks": [
+         "kpi_3"
+        ]
+       },
+       {
+        "blocks": [
+         "kpi_4"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

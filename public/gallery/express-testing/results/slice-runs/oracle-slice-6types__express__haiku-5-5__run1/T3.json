@@ -1,0 +1,45 @@
+{
+ "task": "T3",
+ "condition": "D_haiku-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "oracle-slice-6types__express__haiku-5-5__run1",
+ "agent_type": "T3",
+ "catalogue": "D-t3.json",
+ "atoms_in_catalogue": 21,
+ "prompt_chars": 12164,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 11.0,
+ "usage": {
+  "input_tokens": 4389,
+  "output_tokens": 2126
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "gradient_hero",
+  "feature_grid",
+  "testimonial_card",
+  "cta_section",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.8,
+  "recall": 1.0,
+  "f1": 0.889,
+  "slot_hits": {
+   "hero": true,
+   "feature columns (x3)": true,
+   "testimonial": true,
+   "CTA": true
+  }
+ },
+ "reply": "<a2ui>\nhero = gradient_hero(\n  title=\"Build faster with less friction\",\n  subtitle=\"A simple toolkit that helps your team ship polished product pages in minutes, not days.\",\n  badge=\"New release\",\n  align=\"center\",\n  cta_label=\"Get started\",\n  cta_url=\"https://example.com/signup\"\n)\n\nfeatures = feature_grid(\n  heading=\"Why teams choose us\",\n  description=\"Everything you need to launch with confidence.\",\n  columns=3,\n  features=[\n    {icon: \"\u26a1\", title: \"Fast setup\", description: \"Go from idea to live page in minutes with ready-made sections.\", badge: \"Quick\", color: \"#4f46e5\"},\n    {icon: \"\ud83c\udfa8\", title: \"Beautiful by default\", description: \"Consistent, modern components that look great on any screen.\", color: \"#8b5cf6\"},\n    {icon: \"\ud83d\udd12\", title: \"Secure and reliable\", description: \"Built on proven infrastructure with enterprise-grade protection.\", color: \"#0ea5e9\"}\n  ]\n)\n\ntestimonial = testimonial_card(\n  text=\"We cut our landing page launch time in half. The team loves how easy it is to iterate.\",\n  author_name=\"Jordan Lee\",\n  author_title=\"Head of Product, Acme Co.\",\n  author_avatar_url=\"https://example.com/avatars/jordan.jpg\",\n  rating=5\n)\n\ncta = cta_section(\n  heading=\"Ready to launch your next page?\",\n  body=\"Start free today and publish your landing page this afternoon.\",\n  primary_cta={label: \"Start free trial\", url: \"https://example.com/signup\"},\n  secondary_cta={label: \"Contact sales\", url: \"https://example.com/contact\"}\n)\n\nroot = columns(\n  cols=1,\n  gap=\"2.5rem\",\n  align=\"stretch\",\n  items=[\n    {blocks: [hero]},\n    {blocks: [features]},\n    {blocks: [testimonial]},\n    {blocks: [cta]}\n  ]\n)\n</a2ui>\n\nNote: the catalog has no vertical stack container, so I used `columns` with a single column to stack the sections. If your renderer supports a different container for vertical layout, swap it in for `root`."
+}

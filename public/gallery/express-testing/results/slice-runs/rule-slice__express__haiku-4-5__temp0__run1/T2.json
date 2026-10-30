@@ -1,0 +1,35 @@
+{
+ "task": "T2",
+ "condition": "BT",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-4-5-20251001",
+ "label": "rule-slice__express__haiku-4-5__temp0__run1",
+ "agent_type": "Data display",
+ "catalogue": "B-data-display.json",
+ "atoms_in_catalogue": 248,
+ "prompt_chars": 125436,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 3.2,
+ "usage": {
+  "input_tokens": 36032,
+  "output_tokens": 251
+ },
+ "valid": false,
+ "error": "A2uiCompilationParseError: Failed to parse expression: Syntax error at line 6:12: mismatched input '=' expecting ':' (line 6) - Line 6, Col 12 - Help: Please correct the syntax error in your Express DSL.",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "KPI tile (x4)": false,
+   "trend (required only if metric_row was chosen; stat_card's own delta already satisfies it)": false,
+   "comparison chart": false
+  }
+ },
+ "reply": "<a2ui>\nroot = columns(\n  cols=2,\n  gap=\"2rem\",\n  items=[\n    {\n      blocks=[\n        heading(\"Key Performance Indicators\"),\n        metric_row(\n          cols=4,\n          metrics=[\n            {value: \"2,847\", label: \"Total Revenue\", prefix: \"$\", trend: \"up\"},\n            {value: \"1,243\", label: \"Active Users\", suffix: \"k\", trend: \"up\"},\n            {value: \"94.2\", label: \"Uptime\", suffix: \"%\", trend: \"up\"},\n            {value: \"3.2\", label: \"Avg Response\", suffix: \"s\", trend: \"down\"}\n          ]\n        )\n      ]\n    },\n    {\n      blocks=[\n        heading(\"Performance Comparison\"),\n        metric_comparison_card(\n          label=\"Monthly Growth\",\n          value=15420,\n          previous=13890,\n          lower_is_better=false\n        )\n      ]\n    }\n  ]\n)\n</a2ui>"
+}

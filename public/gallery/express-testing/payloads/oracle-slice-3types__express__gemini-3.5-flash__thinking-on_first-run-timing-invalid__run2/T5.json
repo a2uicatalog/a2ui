@@ -1,0 +1,78 @@
+{
+ "label": "oracle-slice-3types__express__gemini-3.5-flash__thinking-on_first-run-timing-invalid__run2",
+ "task": "T5",
+ "format": "express",
+ "model_id": "gemini-3.5-flash",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "pricing_tier_group",
+      "tiers": [
+       {
+        "name": "Starter",
+        "price": "$19",
+        "interval": "month",
+        "description": "Essential features for individuals and small side projects.",
+        "features": [
+         "1 User seat",
+         "Up to 3 active projects",
+         "Standard email support",
+         "5 GB secure cloud storage"
+        ],
+        "button_label": "Get Started",
+        "button_url": "https://example.com/signup/starter",
+        "recommended": false
+       },
+       {
+        "name": "Professional",
+        "price": "$49",
+        "interval": "month",
+        "description": "The perfect plan for scaling teams and power users.",
+        "features": [
+         "Up to 10 user seats",
+         "Unlimited active projects",
+         "Priority 24/7 support",
+         "50 GB secure cloud storage",
+         "Advanced usage analytics",
+         "Custom integrations"
+        ],
+        "button_label": "Start 14-Day Free Trial",
+        "button_url": "https://example.com/signup/pro",
+        "recommended": true
+       },
+       {
+        "name": "Enterprise",
+        "price": "$149",
+        "interval": "month",
+        "description": "Full control, advanced security, and dedicated infrastructure.",
+        "features": [
+         "Unlimited user seats",
+         "Unlimited active projects",
+         "Dedicated Account Manager",
+         "1 TB secure cloud storage",
+         "Single Sign-On (SSO)",
+         "Custom SLA guarantees"
+        ],
+        "button_label": "Contact Sales",
+        "button_url": "https://example.com/contact",
+        "recommended": false
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

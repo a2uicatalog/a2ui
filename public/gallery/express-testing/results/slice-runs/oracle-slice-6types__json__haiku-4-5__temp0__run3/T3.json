@@ -1,0 +1,42 @@
+{
+ "task": "T3",
+ "condition": "DTN",
+ "format": "json",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-4-5-20251001",
+ "label": "oracle-slice-6types__json__haiku-4-5__temp0__run3",
+ "agent_type": "T3",
+ "catalogue": "D-t3.json",
+ "atoms_in_catalogue": 21,
+ "prompt_chars": 23591,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 8.7,
+ "usage": {
+  "input_tokens": 6597,
+  "output_tokens": 938
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "gradient_hero",
+  "feature_grid",
+  "testimonial_card",
+  "cta_section"
+ ],
+ "score": {
+  "precision": 1.0,
+  "recall": 1.0,
+  "f1": 1.0,
+  "slot_hits": {
+   "hero": true,
+   "feature columns (x3)": true,
+   "testimonial": true,
+   "CTA": true
+  }
+ },
+ "reply": "I'll compose a product landing page with the components you've requested.\n\n<a2ui-json>\n{\n  \"version\": \"v0.9.1\",\n  \"createSurface\": {\n    \"surfaceId\": \"product-landing-page\",\n    \"catalogId\": \"https://a2uicatalog.ai/catalog/d-t3.json\"\n  }\n}\n</a2ui-json>\n\n<a2ui-json>\n{\n  \"version\": \"v0.9.1\",\n  \"updateComponents\": {\n    \"surfaceId\": \"product-landing-page\",\n    \"components\": [\n      {\n        \"id\": \"root\",\n        \"component\": \"gradient_hero\",\n        \"title\": \"Transform Your Workflow\",\n        \"subtitle\": \"Streamline your productivity with our intelligent platform designed for modern teams\",\n        \"badge\": \"New Release\",\n        \"accent\": \"#4f46e5\",\n        \"accent2\": \"#8b5cf6\",\n        \"align\": \"center\",\n        \"cta_label\": \"Get Started Free\",\n        \"cta_url\": \"https://example.com/signup\"\n      },\n      {\n        \"id\": \"features-section\",\n        \"component\": \"feature_grid\",\n        \"heading\": \"Powerful Features\",\n        \"description\": \"Everything you need to succeed\",\n        \"columns\": 3,\n        \"features\": [\n          {\n            \"icon\": \"\u26a1\",\n            \"title\": \"Lightning Fast\",\n            \"description\": \"Experience blazing-fast performance with our optimized infrastructure\",\n            \"color\": \"#fbbf24\"\n          },\n          {\n            \"icon\": \"\ud83d\udd12\",\n            \"title\": \"Enterprise Security\",\n            \"description\": \"Bank-level encryption and compliance with industry standards\",\n            \"color\": \"#34d399\"\n          },\n          {\n            \"icon\": \"\ud83e\udd1d\",\n            \"title\": \"Easy Collaboration\",\n            \"description\": \"Work seamlessly with your team in real-time\",\n            \"color\": \"#60a5fa\"\n          }\n        ]\n      },\n      {\n        \"id\": \"testimonial-section\",\n        \"component\": \"testimonial_card\",\n        \"text\": \"This platform has completely transformed how our team works. We've cut our project timelines in half and our team couldn't be happier.\",\n        \"author_name\": \"Sarah Chen\",\n        \"author_title\": \"Product Manager at TechCorp\",\n        \"author_avatar_url\": \"https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah\",\n        \"rating\": 5\n      },\n      {\n        \"id\": \"cta-final\",\n        \"component\": \"cta_section\",\n        \"heading\": \"Ready to Get Started?\",\n        \"body\": \"Join thousands of teams already using our platform to transform their workflow.\",\n        \"primary_cta\": {\n          \"label\": \"Start Free Trial\",\n          \"url\": \"https://example.com/trial\"\n        },\n        \"secondary_cta\": {\n          \"label\": \"View Pricing\",\n          \"url\": \"https://example.com/pricing\"\n        }\n      }\n    ]\n  }\n}\n</a2ui-json>\n\nI've created a complete product landing page with:\n\n1. **Hero Section** - A gradient hero with headline \"Transform Your Workflow\", subheading, badge, and a primary CTA button\n2. **Three Feature Columns** - A feature grid showcasing three key benefits (Lightning Fast, Enterprise Security, Easy Collaboration) with icons and descriptions\n3. **Testimonial** - A customer testimonial card from Sarah Chen with a 5-star rating\n4. **Call-to-Action Section** - A full-width CTA banner with both primary and secondary buttons to drive conversions\n\nThe page flows naturally from attention (hero) \u2192 education (features) \u2192 social proof (testimonial) \u2192 action (final CTA)."
+}

@@ -1,0 +1,88 @@
+{
+ "label": "oracle-slice-3types__express__haiku-4-5__run2",
+ "task": "T3",
+ "format": "express",
+ "model_id": null,
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "body",
+      "text": [
+       "root_text_0",
+       "root_text_1",
+       "root_text_2",
+       "root_text_3"
+      ]
+     },
+     {
+      "id": "root_text_0",
+      "component": "gradient_hero",
+      "title": "Transform Your Workflow",
+      "subtitle": "Streamline your process and boost productivity with our innovative solution",
+      "cta_label": "Get Started",
+      "cta_url": "https://example.com/signup"
+     },
+     {
+      "id": "root_text_1",
+      "component": "feature_grid",
+      "heading": "Why Choose Us",
+      "description": "Discover the features that make us stand out",
+      "columns": 3,
+      "features": [
+       {
+        "icon": "\u26a1",
+        "title": "Lightning Fast",
+        "description": "Experience blazing-fast performance that keeps up with your demands"
+       },
+       {
+        "icon": "\ud83d\udd12",
+        "title": "Secure & Reliable",
+        "description": "Enterprise-grade security ensures your data is always protected"
+       },
+       {
+        "icon": "\ud83c\udfaf",
+        "title": "Easy to Use",
+        "description": "Intuitive interface designed for users of all skill levels"
+       }
+      ]
+     },
+     {
+      "id": "root_text_2",
+      "component": "testimonial_card",
+      "text": "This product completely transformed how we work. The results were immediate and impressive.",
+      "author_name": "Sarah Johnson",
+      "author_title": "CEO at TechCorp",
+      "author_avatar_url": "https://i.pravatar.cc/150?img=1",
+      "rating": 5
+     },
+     {
+      "id": "root_text_3",
+      "component": "cta_section",
+      "heading": "Ready to Get Started?",
+      "body": "Join thousands of satisfied customers who have already transformed their workflow.",
+      "primary_cta": {
+       "label": "Start Free Trial",
+       "url": "https://example.com/trial"
+      },
+      "secondary_cta": {
+       "label": "Learn More",
+       "url": "https://example.com/learn"
+      }
+     }
+    ]
+   }
+  }
+ ]
+}

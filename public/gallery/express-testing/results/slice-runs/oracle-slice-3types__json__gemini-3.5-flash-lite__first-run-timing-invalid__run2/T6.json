@@ -1,0 +1,42 @@
+{
+ "task": "T6",
+ "condition": "CN_gemini-3.5-f",
+ "temperature_applied": false,
+ "format": "json",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash-lite",
+ "hints": false,
+ "label": "oracle-slice-3types__json__gemini-3.5-flash-lite__first-run-timing-invalid__run2",
+ "agent_type": "Learning",
+ "catalogue": "C-learning.json",
+ "atoms_in_catalogue": 36,
+ "prompt_chars": 37811,
+ "slot_recall": [
+  2,
+  2
+ ],
+ "secs": 15.8,
+ "usage": {
+  "input_tokens": 9248,
+  "output_tokens": 799
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "page_header",
+  "xp_bar",
+  "text_callout",
+  "flashcard_deck"
+ ],
+ "score": {
+  "precision": 0.5,
+  "recall": 1.0,
+  "f1": 0.667,
+  "slot_hits": {
+   "flashcard deck": true,
+   "progress indicator": true
+  }
+ },
+ "reply": "<a2ui-json>\n{\n  \"version\": \"v0.9.1\",\n  \"createSurface\": {\n    \"surfaceId\": \"vocab-flashcards\",\n    \"catalogId\": \"https://a2uicatalog.ai/catalog/c-learning.json\",\n    \"theme\": {\n      \"primaryColor\": \"#4f46e5\"\n    }\n  }\n}\n</a2ui-json>\n\n<a2ui-json>\n{\n  \"version\": \"v0.9.1\",\n  \"updateComponents\": {\n    \"surfaceId\": \"vocab-flashcards\",\n    \"components\": [\n      {\n        \"id\": \"root\",\n        \"component\": \"page_header\",\n        \"title\": \"Vocabulary Builder\",\n        \"subtitle\": \"Review the 10 essential terms below. Use the flashcards to test your recall.\",\n        \"icon\": \"\ud83d\udcda\",\n        \"tag\": \"Interactive\",\n        \"accent\": \"#4f46e5\"\n      },\n      {\n        \"id\": \"xp-indicator\",\n        \"component\": \"xp_bar\",\n        \"level_label\": \"Review Session\",\n        \"xp_current\": 10,\n        \"xp_next\": 10,\n        \"accent\": \"#4f46e5\",\n        \"show_flash\": false\n      },\n      {\n        \"id\": \"deck-intro\",\n        \"component\": \"text_callout\",\n        \"variant\": \"info\",\n        \"title\": \"Tip\",\n        \"description\": \"Click or hover over any card in the deck below to reveal its definition.\"\n      },\n      {\n        \"id\": \"flashcards-deck\",\n        \"component\": \"flashcard_deck\",\n        \"accent\": \"#4f46e5\",\n        \"label_front\": \"TERM\",\n        \"label_back\": \"DEFINITION\",\n        \"cards\": [\n          {\n            \"front\": \"Ephemeral\",\n            \"back\": \"Lasting for a very short time.\"\n          },\n          {\n            \"front\": \"Serendipity\",\n            \"back\": \"The occurrence of events by chance in a happy or beneficial way.\"\n          },\n          {\n            \"front\": \"Pragmatic\",\n            \"back\": \"Dealing with things sensibly and realistically in a way that is based on practical rather than theoretical considerations.\"\n          },\n          {\n            \"front\": \"Benevolent\",\n            \"back\": \"Well meaning and kindly.\"\n          },\n          {\n            \"front\": \"Cacophony\",\n            \"back\": \"A harsh, discordant mixture of sounds.\"\n          },\n          {\n            \"front\": \"Mellifluous\",\n            \"back\": \"(Of a voice or words) sweet or musical; pleasant to hear.\"\n          },\n          {\n            \"front\": \"Ubiquitous\",\n            \"back\": \"Present, appearing, or found everywhere.\"\n          },\n          {\n            \"front\": \"Garrulous\",\n            \"back\": \"Excessively talkative, especially on trivial matters.\"\n          },\n          {\n            \"front\": \"Nadir\",\n            \"back\": \"The lowest point in the fortunes of a person or organization.\"\n          },\n          {\n            \"front\": \"Sycophant\",\n            \"back\": \"A person who acts obsequiously toward someone important in order to gain advantage.\"\n          }\n        ]\n      }\n    ]\n  }\n}\n</a2ui-json>"
+}

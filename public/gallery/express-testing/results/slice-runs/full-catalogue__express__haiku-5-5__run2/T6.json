@@ -1,0 +1,42 @@
+{
+ "task": "T6",
+ "condition": "A_haiku-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "full-catalogue__express__haiku-5-5__run2",
+ "agent_type": "full",
+ "catalogue": "A-full.json",
+ "atoms_in_catalogue": 557,
+ "prompt_chars": 294155,
+ "slot_recall": [
+  2,
+  2
+ ],
+ "secs": 6.3,
+ "usage": {
+  "input_tokens": 107821,
+  "output_tokens": 1263
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "heading",
+  "flashcard_deck",
+  "progress_bar",
+  "color_section"
+ ],
+ "score": {
+  "precision": 0.5,
+  "recall": 1.0,
+  "f1": 0.667,
+  "slot_hits": {
+   "flashcard deck": true,
+   "progress indicator": true
+  }
+ },
+ "reply": "<a2ui>\ntitle = heading(text=\"Spanish Vocabulary\")\n\ndeck = flashcard_deck(cards=[{front: \"casa\", back: \"house\"}, {front: \"perro\", back: \"dog\"}, {front: \"gato\", back: \"cat\"}, {front: \"agua\", back: \"water\"}, {front: \"libro\", back: \"book\"}, {front: \"mesa\", back: \"table\"}, {front: \"sol\", back: \"sun\"}, {front: \"luna\", back: \"moon\"}, {front: \"amigo\", back: \"friend\"}, {front: \"comer\", back: \"to eat\"}], accent=\"#4f46e5\", label_front=\"SPANISH\", label_back=\"ENGLISH\")\n\nprogress = progress_bar(value=0, label=\"Cards reviewed\", caption=\"0 of 10 reviewed\", show_percent=true, accent=\"#4f46e5\")\n\nroot = color_section(accent=\"#4f46e5\", style=\"light\", padding=\"24px\", blocks=[title, deck, progress])\n</a2ui>\n\nThe flashcard deck flips each card to reveal its English meaning. The progress bar starts at 0 of 10. The catalog has no way to bind it to flip events, so it will not update as cards are reviewed. Updating it would need a stateful atom that isn't in the catalog."
+}

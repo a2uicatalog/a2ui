@@ -1,0 +1,83 @@
+{
+ "label": "oracle-slice-3types__json__opus-5-5__run3",
+ "task": "T5",
+ "format": "json",
+ "model_id": "claude-opus-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "pricing-plans",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "pricing-plans",
+    "components": [
+     {
+      "id": "root",
+      "component": "pricing_tier_group",
+      "accessibility": {
+       "label": "Subscription plans",
+       "description": "Three subscription tiers compared side by side. The Pro plan is recommended."
+      },
+      "tiers": [
+       {
+        "name": "Starter",
+        "price": "$9",
+        "period": "per month",
+        "description": "For individuals getting started.",
+        "features": [
+         "1 user",
+         "5 projects",
+         "10 GB storage",
+         "Email support"
+        ],
+        "cta_label": "Choose Starter",
+        "cta_url": "#starter",
+        "recommended": false
+       },
+       {
+        "name": "Pro",
+        "price": "$29",
+        "period": "per month",
+        "description": "For growing teams that need more power.",
+        "badge": "Recommended",
+        "features": [
+         "Up to 10 users",
+         "Unlimited projects",
+         "100 GB storage",
+         "Advanced analytics",
+         "Priority support"
+        ],
+        "cta_label": "Choose Pro",
+        "cta_url": "#pro",
+        "recommended": true,
+        "highlighted": true
+       },
+       {
+        "name": "Enterprise",
+        "price": "$99",
+        "period": "per month",
+        "description": "For organizations with advanced needs.",
+        "features": [
+         "Unlimited users",
+         "Unlimited projects",
+         "1 TB storage",
+         "SSO and audit logs",
+         "Dedicated account manager",
+         "24/7 phone support"
+        ],
+        "cta_label": "Contact Sales",
+        "cta_url": "#enterprise",
+        "recommended": false
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

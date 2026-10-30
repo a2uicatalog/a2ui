@@ -1,0 +1,73 @@
+{
+ "label": "full-catalogue__express__haiku-5-5__run1",
+ "task": "T4",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/a-full.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "filterable_list",
+      "title": "Launch checklist",
+      "items": [
+       {
+        "title": "Database migration",
+        "status": "done",
+        "detail": "Schema v12 applied to production."
+       },
+       {
+        "title": "API gateway rollout",
+        "status": "in_progress",
+        "detail": "Canary running at 25% of traffic."
+       },
+       {
+        "title": "Auth token rotation",
+        "status": "blocked",
+        "detail": "Waiting on security sign-off."
+       },
+       {
+        "title": "Load test",
+        "status": "done",
+        "detail": "Sustained 2k req/s for 30 minutes."
+       },
+       {
+        "title": "Public docs update",
+        "status": "open",
+        "detail": "API reference still lists v1 endpoints."
+       },
+       {
+        "title": "Billing webhook",
+        "status": "in_progress",
+        "detail": "Retry logic under review."
+       },
+       {
+        "title": "Feature flag cleanup",
+        "status": "open",
+        "detail": "Twelve stale flags remain in code."
+       },
+       {
+        "title": "Incident runbook",
+        "status": "done",
+        "detail": "Reviewed and linked from the on-call wiki."
+       }
+      ],
+      "filter_field": "status",
+      "show_counts": true,
+      "empty_text": "No items match this status."
+     }
+    ]
+   }
+  }
+ ]
+}

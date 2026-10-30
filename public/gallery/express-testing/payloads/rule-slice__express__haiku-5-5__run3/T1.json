@@ -1,0 +1,131 @@
+{
+ "label": "rule-slice__express__haiku-5-5__run3",
+ "task": "T1",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/b-learning.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "title",
+      "component": "page_header",
+      "title": "The Water Cycle",
+      "subtitle": "How water moves between the sky, land, and sea",
+      "icon": "\ud83d\udca7",
+      "tag": "Lesson 1",
+      "accent": "#0e7bb8"
+     },
+     {
+      "id": "h_evap",
+      "component": "heading",
+      "text": "1. Evaporation"
+     },
+     {
+      "id": "b_evap",
+      "component": "body",
+      "text": "Heat from the Sun warms water in oceans, lakes, and rivers. As the water warms, molecules gain enough energy to break free and rise into the air as water vapour. Plants also release water vapour through their leaves, a process called transpiration."
+     },
+     {
+      "id": "h_cond",
+      "component": "heading",
+      "text": "2. Condensation"
+     },
+     {
+      "id": "b_cond",
+      "component": "body",
+      "text": "As water vapour rises, it cools. Cooler air cannot hold as much vapour, so the vapour changes back into tiny liquid droplets. These droplets gather around dust particles and form clouds."
+     },
+     {
+      "id": "h_precip",
+      "component": "heading",
+      "text": "3. Precipitation"
+     },
+     {
+      "id": "b_precip",
+      "component": "body",
+      "text": "When droplets in a cloud grow heavy enough, they fall to the ground as rain, snow, sleet, or hail. Some of this water soaks into the soil, some flows over land as runoff, and some returns to the sea, where the cycle begins again."
+     },
+     {
+      "id": "example",
+      "component": "highlight_box",
+      "title": "Worked example",
+      "text": "A puddle of 100 mL on a sunny pavement shrinks over the afternoon. The Sun supplies the energy for evaporation, so the water becomes vapour and leaves the puddle. Later, that vapour may cool high in the atmosphere, condense into a cloud, and fall again as rain.",
+      "icon": "\ud83e\uddea",
+      "accent": "#0e7bb8",
+      "style": "outline"
+     },
+     {
+      "id": "quiz",
+      "component": "quiz_set",
+      "title": "Self-check",
+      "questions": [
+       {
+        "question": "What process changes liquid water into water vapour?",
+        "options": [
+         "Condensation",
+         "Evaporation",
+         "Precipitation",
+         "Infiltration"
+        ],
+        "correct": 1,
+        "explanation": "Evaporation is caused by heat energy, which lets liquid molecules escape as vapour."
+       },
+       {
+        "question": "What is the name for vapour cooling into droplets that form clouds?",
+        "options": [
+         "Condensation",
+         "Transpiration",
+         "Runoff",
+         "Sublimation"
+        ],
+        "correct": 0,
+        "explanation": "Condensation happens when cooling vapour turns back into liquid droplets."
+       },
+       {
+        "question": "What is the main source of energy that drives the water cycle?",
+        "options": [
+         "The Moon",
+         "Energy from the Sun",
+         "Wind alone",
+         "Volcanoes"
+        ],
+        "correct": 1,
+        "explanation": "Solar energy heats water so it evaporates, powering the whole cycle."
+       }
+      ],
+      "pass_score": 70,
+      "accent": "#0e7bb8"
+     },
+     {
+      "id": "root",
+      "component": "color_section",
+      "accent": "#0e7bb8",
+      "style": "light",
+      "padding": "24px",
+      "blocks": [
+       "title",
+       "h_evap",
+       "b_evap",
+       "h_cond",
+       "b_cond",
+       "h_precip",
+       "b_precip",
+       "example",
+       "quiz"
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

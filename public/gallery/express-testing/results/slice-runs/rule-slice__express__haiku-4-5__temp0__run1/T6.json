@@ -1,0 +1,47 @@
+{
+ "task": "T6",
+ "condition": "BT",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-4-5-20251001",
+ "label": "rule-slice__express__haiku-4-5__temp0__run1",
+ "agent_type": "Learning",
+ "catalogue": "B-learning.json",
+ "atoms_in_catalogue": 184,
+ "prompt_chars": 88519,
+ "slot_recall": [
+  1,
+  2
+ ],
+ "secs": 6.7,
+ "usage": {
+  "input_tokens": 24756,
+  "output_tokens": 607
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns",
+  "heading",
+  "body",
+  "spacer",
+  "flashcard_deck",
+  "heading",
+  "spacer",
+  "info_card",
+  "spacer",
+  "course_progress_card",
+  "spacer",
+  "key_takeaways"
+ ],
+ "score": {
+  "precision": 0.083,
+  "recall": 0.5,
+  "f1": 0.143,
+  "slot_hits": {
+   "flashcard deck": true,
+   "progress indicator": false
+  }
+ },
+ "reply": "<a2ui>\nroot = columns(cols=2, gap=\"2rem\", items=[\n  {blocks: [\n    heading(\"Vocabulary Review\"),\n    body(\"Master these 10 essential terms by flipping each card to reveal the definition.\"),\n    spacer(height=\"1.5rem\"),\n    flashcard_deck(\n      cards=[\n        {front: \"Ephemeral\", back: \"Lasting for a very short time; transitory\"},\n        {front: \"Ubiquitous\", back: \"Present, appearing, or found everywhere\"},\n        {front: \"Serendipity\", back: \"The occurrence of events by chance in a happy or beneficial way\"},\n        {front: \"Pragmatic\", back: \"Dealing with things in a practical, realistic way based on actual circumstances\"},\n        {front: \"Ambiguous\", back: \"Open to more than one interpretation; unclear or uncertain\"},\n        {front: \"Benevolent\", back: \"Kind, generous, and charitable in nature\"},\n        {front: \"Candid\", back: \"Truthful and straightforward; frank and honest\"},\n        {front: \"Diligent\", back: \"Showing careful and persistent effort in one's work or duties\"},\n        {front: \"Eloquent\", back: \"Fluent, persuasive, and expressive in speaking or writing\"},\n        {front: \"Fortuitous\", back: \"Happening by chance or luck, especially in a beneficial way\"}\n      ],\n      accent=\"#4f46e5\",\n      label_front=\"TERM\",\n      label_back=\"DEFINITION\"\n    )\n  ]},\n  {blocks: [\n    heading(\"Progress Tracker\"),\n    spacer(height=\"1rem\"),\n    info_card(\n      title=\"Cards Reviewed\",\n      text=\"Track your progress as you flip through each vocabulary card. Return anytime to review terms you'd like to strengthen.\"\n    ),\n    spacer(height=\"1.5rem\"),\n    course_progress_card(\n      course_title=\"Vocabulary Mastery\",\n      modules=[\n        {title: \"Essential Terms\", lessons_total: 10, lessons_done: 0}\n      ],\n      accent=\"#4f46e5\"\n    ),\n    spacer(height=\"1.5rem\"),\n    key_takeaways(points=[\n      \"Flip each card to reveal the definition\",\n      \"Review cards multiple times to reinforce learning\",\n      \"Focus on terms you find most challenging\",\n      \"Use these words in sentences to deepen understanding\"\n    ])\n  ]}\n])\n</a2ui>"
+}

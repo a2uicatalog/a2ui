@@ -1,0 +1,106 @@
+{
+ "label": "oracle-slice-3types__express__haiku-5-5__hints-v2__run1",
+ "task": "T2",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "title",
+      "component": "heading",
+      "text": "Metrics overview"
+     },
+     {
+      "id": "kpis",
+      "component": "metric_row",
+      "cols": 4,
+      "accent": "",
+      "metrics": [
+       {
+        "value": "$12,345",
+        "label": "Revenue",
+        "trend": "up"
+       },
+       {
+        "value": "1,284",
+        "label": "Orders",
+        "trend": "up"
+       },
+       {
+        "value": "3.2%",
+        "label": "Churn",
+        "trend": "down"
+       },
+       {
+        "value": "4.8/5",
+        "label": "Satisfaction",
+        "trend": "up"
+       }
+      ]
+     },
+     {
+      "id": "comparison",
+      "component": "chartjs_bar",
+      "labels": [
+       "Jan",
+       "Feb",
+       "Mar",
+       "Apr"
+      ],
+      "datasets": [
+       {
+        "label": "This year",
+        "data": [
+         8200,
+         9100,
+         10400,
+         12345
+        ]
+       },
+       {
+        "label": "Last year",
+        "data": [
+         7400,
+         7900,
+         8600,
+         9300
+        ]
+       }
+      ]
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "title",
+         "kpis"
+        ]
+       },
+       {
+        "blocks": [
+         "comparison"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,44 @@
+{
+ "task": "T4",
+ "condition": "DT_sonnet-5-5H2",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-sonnet-5-5",
+ "hints": true,
+ "label": "oracle-slice-6types__express__sonnet-5-5__temp0__hints-v2__run3",
+ "agent_type": "T4",
+ "catalogue": "D-t4.json",
+ "atoms_in_catalogue": 20,
+ "prompt_chars": 10490,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 11.5,
+ "usage": {
+  "input_tokens": 4118,
+  "output_tokens": 1356
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "segmented_control",
+  "entity_list",
+  "heading",
+  "body",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.4,
+  "recall": 0.667,
+  "f1": 0.5,
+  "slot_hits": {
+   "list": true,
+   "status indicator": false,
+   "filter control": true
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"status-list\")\nfilter = segmented_control([{label: \"All\", value: \"all\"}, {label: \"Active\", value: \"active\"}, {label: \"Pending\", value: \"pending\"}, {label: \"Blocked\", value: \"blocked\"}, {label: \"Done\", value: \"done\"}], \"all\", \"status_filter\")\nlist = entity_list([{name: \"Migrate billing service\", subtitle: \"Moving invoices to the new ledger API\", status: \"Active\"}, {name: \"Update onboarding copy\", subtitle: \"Waiting on legal review of the new terms\", status: \"Pending\"}, {name: \"Fix login timeout\", subtitle: \"Blocked by the identity provider outage\", status: \"Blocked\"}, {name: \"Launch referral program\", subtitle: \"Shipped to all regions last Friday\", status: \"Done\"}, {name: \"Redesign settings page\", subtitle: \"Prototype in review with design\", status: \"Active\"}, {name: \"Audit access permissions\", subtitle: \"Scheduled to start next sprint\", status: \"Pending\"}, {name: \"Upgrade database cluster\", subtitle: \"Needs budget approval before scheduling\", status: \"Blocked\"}, {name: \"Archive legacy reports\", subtitle: \"Completed and verified by the data team\", status: \"Done\"}])\ntitle = heading(\"Work items\")\nhint = body(\"Filter by status\")\nroot = columns(2, \"1.5rem\", \"top\", [{blocks: [title, hint, filter]}, {blocks: [list]}])\n</a2ui>\n\nThe catalog has no component that filters a list on its own. The segmented control is the status filter (All, Active, Pending, Blocked, Done). The list holds eight items, each with a title, a status, and a one-line detail. The filter isn't wired to the list, so choosing a status won't hide any rows yet."
+}

@@ -1,0 +1,33 @@
+{
+ "task": "T3",
+ "condition": "JD",
+ "label": "jev-picks-on-oracle-slice-6types__express__haiku-4-5__run3",
+ "agent_type": "jev-narrowed",
+ "catalogue": "JD-T3.json",
+ "atoms_in_catalogue": 14,
+ "prompt_chars": 9482,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 4.7,
+ "usage": {
+  "input_tokens": 2687,
+  "output_tokens": 500
+ },
+ "valid": false,
+ "error": "A2uiCompilationParseError: Failed to parse expression: Syntax error at line 27:10: mismatched input '=' expecting ':' (line 27) - Line 27, Col 10 - Help: Please correct the syntax error in your Express DSL.",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "hero": false,
+   "feature columns (x3)": false,
+   "testimonial": false,
+   "CTA": false
+  }
+ },
+ "reply": "<a2ui>\nroot = columns(\n  cols=1,\n  gap=\"0\",\n  align=\"stretch\",\n  items=[\n    {blocks: [hero]},\n    {blocks: [features]},\n    {blocks: [testimonial_section]},\n    {blocks: [cta]}\n  ]\n)\n\nhero = gradient_hero(\n  title=\"Transform Your Workflow\",\n  subtitle=\"Streamline your productivity with our innovative platform designed for modern teams\",\n  badge=\"New Release\",\n  cta_label=\"Get Started\",\n  cta_url=\"https://example.com/signup\"\n)\n\nfeatures = feature_grid(\n  heading=\"Why Choose Us\",\n  description=\"Discover the features that make us the best choice for your business\",\n  columns=3,\n  features=[\n    {\n      icon=\"\u26a1\",\n      title=\"Lightning Fast\",\n      description=\"Experience blazing-fast performance optimized for speed and efficiency\"\n    },\n    {\n      icon=\"\ud83d\udd12\",\n      title=\"Secure & Reliable\",\n      description=\"Enterprise-grade security keeping your data safe and protected at all times\"\n    },\n    {\n      icon=\"\ud83c\udfaf\",\n      title=\"Easy Integration\",\n      description=\"Seamlessly integrate with your existing tools and workflows in minutes\"\n    }\n  ]\n)\n\ntestimonial_section = testimonial_card(\n  text=\"This product has completely transformed how our team works. It's intuitive, powerful, and has saved us countless hours every week.\",\n  author_name=\"Sarah Chen\",\n  author_title=\"CEO at TechCorp\",\n  author_avatar_url=\"https://i.pravatar.cc/150?img=1\",\n  rating=5\n)\n\ncta = cta_section(\n  heading=\"Ready to Get Started?\",\n  body=\"Join thousands of teams already using our platform to accelerate their success.\",\n  primary_cta={label: \"Start Free Trial\", url: \"https://example.com/trial\"},\n  secondary_cta={label: \"Learn More\", url: \"https://example.com/features\"}\n)\n</a2ui>"
+}

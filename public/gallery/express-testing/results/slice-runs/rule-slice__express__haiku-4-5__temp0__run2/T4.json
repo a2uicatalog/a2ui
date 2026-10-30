@@ -1,0 +1,35 @@
+{
+ "task": "T4",
+ "condition": "BT",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-4-5-20251001",
+ "label": "rule-slice__express__haiku-4-5__temp0__run2",
+ "agent_type": "Data display",
+ "catalogue": "B-data-display.json",
+ "atoms_in_catalogue": 248,
+ "prompt_chars": 125436,
+ "slot_recall": [
+  2,
+  3
+ ],
+ "secs": 3.7,
+ "usage": {
+  "input_tokens": 36029,
+  "output_tokens": 446
+ },
+ "valid": false,
+ "error": "A2uiCompilationValidationError: Standalone function calls are not supported in A2UI v0.9.1 - Help: Please correct the syntax error in your Express DSL.",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "list": false,
+   "status indicator": false,
+   "filter control": false
+  }
+ },
+ "reply": "<a2ui>\nfilterable_list(\n  title=\"Items\",\n  items=[\n    {title: \"Item 1\", detail: \"First item detail\", status: \"active\"},\n    {title: \"Item 2\", detail: \"Second item detail\", status: \"completed\"},\n    {title: \"Item 3\", detail: \"Third item detail\", status: \"active\"},\n    {title: \"Item 4\", detail: \"Fourth item detail\", status: \"pending\"},\n    {title: \"Item 5\", detail: \"Fifth item detail\", status: \"completed\"},\n    {title: \"Item 6\", detail: \"Sixth item detail\", status: \"active\"},\n    {title: \"Item 7\", detail: \"Seventh item detail\", status: \"pending\"},\n    {title: \"Item 8\", detail: \"Eighth item detail\", status: \"completed\"}\n  ],\n  filter_field=\"status\",\n  show_counts=true\n)\n\nroot = filterable_list(\n  title=\"Items\",\n  items=[\n    {title: \"Item 1\", detail: \"First item detail\", status: \"active\"},\n    {title: \"Item 2\", detail: \"Second item detail\", status: \"completed\"},\n    {title: \"Item 3\", detail: \"Third item detail\", status: \"active\"},\n    {title: \"Item 4\", detail: \"Fourth item detail\", status: \"pending\"},\n    {title: \"Item 5\", detail: \"Fifth item detail\", status: \"completed\"},\n    {title: \"Item 6\", detail: \"Sixth item detail\", status: \"active\"},\n    {title: \"Item 7\", detail: \"Seventh item detail\", status: \"pending\"},\n    {title: \"Item 8\", detail: \"Eighth item detail\", status: \"completed\"}\n  ],\n  filter_field=\"status\",\n  show_counts=true\n)\n</a2ui>"
+}

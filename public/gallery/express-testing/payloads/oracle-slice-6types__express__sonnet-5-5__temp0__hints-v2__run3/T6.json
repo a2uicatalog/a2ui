@@ -1,0 +1,225 @@
+{
+ "label": "oracle-slice-6types__express__sonnet-5-5__temp0__hints-v2__run3",
+ "task": "T6",
+ "format": "express",
+ "model_id": "claude-sonnet-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "vocab-flashcards",
+    "catalog_id": "https://a2uicatalog.ai/catalog/d-t6.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "vocab-flashcards",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 3,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "_inline_1",
+         "_inline_2",
+         "_inline_3"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_4",
+         "_inline_5",
+         "_inline_6",
+         "_inline_7",
+         "_inline_8"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_9",
+         "_inline_10",
+         "_inline_11",
+         "_inline_12",
+         "_inline_13"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "_inline_1",
+      "component": "heading",
+      "text": "Vocabulary Flashcards"
+     },
+     {
+      "id": "_inline_2",
+      "component": "body",
+      "text": "Flip each card to reveal the definition, then rate your confidence from 1 to 5. Each card you review lights up a badge below."
+     },
+     {
+      "id": "_inline_3",
+      "component": "badge_showcase",
+      "title": "Reviewed Cards",
+      "columns": 5,
+      "badges": [
+       {
+        "id": "b1",
+        "label": "Ephemeral",
+        "icon": "\u2728",
+        "description": "Reviewed Ephemeral",
+        "required_id": "vocab-1"
+       },
+       {
+        "id": "b2",
+        "label": "Ubiquitous",
+        "icon": "\ud83c\udf0d",
+        "description": "Reviewed Ubiquitous",
+        "required_id": "vocab-2"
+       },
+       {
+        "id": "b3",
+        "label": "Candid",
+        "icon": "\ud83d\udcac",
+        "description": "Reviewed Candid",
+        "required_id": "vocab-3"
+       },
+       {
+        "id": "b4",
+        "label": "Pragmatic",
+        "icon": "\ud83d\udee0\ufe0f",
+        "description": "Reviewed Pragmatic",
+        "required_id": "vocab-4"
+       },
+       {
+        "id": "b5",
+        "label": "Resilient",
+        "icon": "\ud83c\udf31",
+        "description": "Reviewed Resilient",
+        "required_id": "vocab-5"
+       },
+       {
+        "id": "b6",
+        "label": "Meticulous",
+        "icon": "\ud83d\udd0d",
+        "description": "Reviewed Meticulous",
+        "required_id": "vocab-6"
+       },
+       {
+        "id": "b7",
+        "label": "Eloquent",
+        "icon": "\ud83c\udfa4",
+        "description": "Reviewed Eloquent",
+        "required_id": "vocab-7"
+       },
+       {
+        "id": "b8",
+        "label": "Ambiguous",
+        "icon": "\u2753",
+        "description": "Reviewed Ambiguous",
+        "required_id": "vocab-8"
+       },
+       {
+        "id": "b9",
+        "label": "Benevolent",
+        "icon": "\ud83d\udc9b",
+        "description": "Reviewed Benevolent",
+        "required_id": "vocab-9"
+       },
+       {
+        "id": "b10",
+        "label": "Tenacious",
+        "icon": "\ud83e\uddd7",
+        "description": "Reviewed Tenacious",
+        "required_id": "vocab-10"
+       }
+      ]
+     },
+     {
+      "id": "_inline_4",
+      "component": "spaced_repetition_card",
+      "front": "Ephemeral",
+      "back": "Lasting for a very short time.",
+      "card_id": "vocab-1",
+      "accent": "#4f46e5"
+     },
+     {
+      "id": "_inline_5",
+      "component": "spaced_repetition_card",
+      "front": "Ubiquitous",
+      "back": "Present, appearing, or found everywhere.",
+      "card_id": "vocab-2",
+      "accent": "#4f46e5"
+     },
+     {
+      "id": "_inline_6",
+      "component": "spaced_repetition_card",
+      "front": "Candid",
+      "back": "Truthful and straightforward; frank.",
+      "card_id": "vocab-3",
+      "accent": "#4f46e5"
+     },
+     {
+      "id": "_inline_7",
+      "component": "spaced_repetition_card",
+      "front": "Pragmatic",
+      "back": "Dealing with things sensibly and realistically.",
+      "card_id": "vocab-4",
+      "accent": "#4f46e5"
+     },
+     {
+      "id": "_inline_8",
+      "component": "spaced_repetition_card",
+      "front": "Resilient",
+      "back": "Able to recover quickly from difficulties.",
+      "card_id": "vocab-5",
+      "accent": "#4f46e5"
+     },
+     {
+      "id": "_inline_9",
+      "component": "spaced_repetition_card",
+      "front": "Meticulous",
+      "back": "Showing great attention to detail; very careful.",
+      "card_id": "vocab-6",
+      "accent": "#0ea5e9"
+     },
+     {
+      "id": "_inline_10",
+      "component": "spaced_repetition_card",
+      "front": "Eloquent",
+      "back": "Fluent and persuasive in speaking or writing.",
+      "card_id": "vocab-7",
+      "accent": "#0ea5e9"
+     },
+     {
+      "id": "_inline_11",
+      "component": "spaced_repetition_card",
+      "front": "Ambiguous",
+      "back": "Open to more than one interpretation; unclear.",
+      "card_id": "vocab-8",
+      "accent": "#0ea5e9"
+     },
+     {
+      "id": "_inline_12",
+      "component": "spaced_repetition_card",
+      "front": "Benevolent",
+      "back": "Well meaning and kindly.",
+      "card_id": "vocab-9",
+      "accent": "#0ea5e9"
+     },
+     {
+      "id": "_inline_13",
+      "component": "spaced_repetition_card",
+      "front": "Tenacious",
+      "back": "Holding firmly to a goal; persistent.",
+      "card_id": "vocab-10",
+      "accent": "#0ea5e9"
+     }
+    ]
+   }
+  }
+ ]
+}

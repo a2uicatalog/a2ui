@@ -1,0 +1,122 @@
+{
+ "label": "oracle-slice-3types__express__haiku-5-5__run3",
+ "task": "T4",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "filter",
+      "component": "segmented_control",
+      "options": [
+       {
+        "label": "All",
+        "value": "all"
+       },
+       {
+        "label": "Active",
+        "value": "active"
+       },
+       {
+        "label": "Pending",
+        "value": "pending"
+       },
+       {
+        "label": "Blocked",
+        "value": "blocked"
+       },
+       {
+        "label": "Done",
+        "value": "done"
+       }
+      ],
+      "selected_value": "all",
+      "name": "status_filter"
+     },
+     {
+      "id": "list",
+      "component": "entity_list",
+      "items": [
+       {
+        "name": "Auth service migration",
+        "subtitle": "Token refresh flow moved to new gateway.",
+        "status": "Active"
+       },
+       {
+        "name": "Billing export",
+        "subtitle": "Waiting on finance sign-off for CSV schema.",
+        "status": "Pending"
+       },
+       {
+        "name": "Search reindex",
+        "subtitle": "Full index rebuilt overnight.",
+        "status": "Done"
+       },
+       {
+        "name": "Mobile push alerts",
+        "subtitle": "Awaiting APNs certificate renewal.",
+        "status": "Blocked"
+       },
+       {
+        "name": "Onboarding emails",
+        "subtitle": "Drafts in review for copy changes.",
+        "status": "Active"
+       },
+       {
+        "name": "Data retention job",
+        "subtitle": "Scheduled for next maintenance window.",
+        "status": "Pending"
+       },
+       {
+        "name": "Dashboard caching",
+        "subtitle": "Cache hit rate up to 92%.",
+        "status": "Done"
+       },
+       {
+        "name": "Payment webhook retries",
+        "subtitle": "Exponential backoff being tested in staging.",
+        "status": "Active"
+       }
+      ]
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "_inline_1",
+         "filter"
+        ]
+       },
+       {
+        "blocks": [
+         "list"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "_inline_1",
+      "component": "heading",
+      "text": "Workstream Status"
+     }
+    ]
+   }
+  }
+ ]
+}

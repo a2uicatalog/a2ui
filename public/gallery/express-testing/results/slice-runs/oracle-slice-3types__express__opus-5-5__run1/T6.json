@@ -1,0 +1,44 @@
+{
+ "task": "T6",
+ "condition": "C_opus-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-opus-5-5",
+ "hints": false,
+ "label": "oracle-slice-3types__express__opus-5-5__run1",
+ "agent_type": "Learning",
+ "catalogue": "C-learning.json",
+ "atoms_in_catalogue": 36,
+ "prompt_chars": 21139,
+ "slot_recall": [
+  2,
+  2
+ ],
+ "secs": 11.8,
+ "usage": {
+  "input_tokens": 7488,
+  "output_tokens": 1200
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "page_header",
+  "flashcard_deck",
+  "progress_ring",
+  "progress_bar",
+  "text_callout",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.5,
+  "recall": 1.0,
+  "f1": 0.667,
+  "slot_hits": {
+   "flashcard deck": true,
+   "progress indicator": true
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"vocab-flashcards\")\nheader = page_header(title=\"Vocabulary Builder\", subtitle=\"Flip each card to reveal its definition, then move on to the next.\", icon=\"\ud83d\udcda\", tag=\"10 cards\", accent=\"#4f46e5\")\ndeck = flashcard_deck(cards=[\n  {front: \"Ephemeral\", back: \"Lasting for a very short time. e.g. \\\"The beauty of the sunset was ephemeral.\\\"\"},\n  {front: \"Ubiquitous\", back: \"Present, appearing, or found everywhere. e.g. \\\"Smartphones have become ubiquitous.\\\"\"},\n  {front: \"Pragmatic\", back: \"Dealing with things sensibly and realistically. e.g. \\\"She took a pragmatic approach to the problem.\\\"\"},\n  {front: \"Eloquent\", back: \"Fluent or persuasive in speaking or writing. e.g. \\\"He gave an eloquent speech.\\\"\"},\n  {front: \"Meticulous\", back: \"Showing great attention to detail; very careful and precise.\"},\n  {front: \"Resilient\", back: \"Able to recover quickly from difficulties; tough.\"},\n  {front: \"Ambiguous\", back: \"Open to more than one interpretation; not having one obvious meaning.\"},\n  {front: \"Candid\", back: \"Truthful and straightforward; frank.\"},\n  {front: \"Benevolent\", back: \"Well meaning and kindly; generous toward others.\"},\n  {front: \"Tenacious\", back: \"Tending to keep a firm hold; persistent and determined.\"}\n], accent=\"#4f46e5\", label_front=\"WORD\", label_back=\"DEFINITION\")\nring = progress_ring(value=30, size=120, stroke_width=10, color=\"#4f46e5\", label=\"Cards reviewed\", show_value=true, unit=\"%\")\nbar = progress_bar(value=30, label=\"Review progress\", accent=\"#4f46e5\", show_percent=true, caption=\"3 of 10 cards reviewed\")\ntip = text_callout(variant=\"info\", title=\"Tip\", description=\"Try to recall the definition before flipping. Saying the word aloud helps it stick.\")\nroot = columns(cols=2, gap=\"1.5rem\", align=\"top\", items=[\n  {blocks: [header, deck]},\n  {blocks: [ring, bar, tip]}\n])\n</a2ui>"
+}

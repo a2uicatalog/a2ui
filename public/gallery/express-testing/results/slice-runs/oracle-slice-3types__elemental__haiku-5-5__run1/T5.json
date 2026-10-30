@@ -1,0 +1,46 @@
+{
+ "task": "T5",
+ "condition": "CX_haiku-5-5",
+ "temperature_applied": false,
+ "format": "elemental",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "oracle-slice-3types__elemental__haiku-5-5__run1",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "C-marketing-commerce.json",
+ "atoms_in_catalogue": 23,
+ "prompt_chars": 12539,
+ "slot_recall": [
+  1,
+  1
+ ],
+ "secs": 4.9,
+ "usage": {
+  "input_tokens": 4928,
+  "output_tokens": 1021
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "pricing_tier_group"
+ ],
+ "score": {
+  "per_approach": {
+   "tier_cards": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+   },
+   "comparison_table": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": null
+   }
+  },
+  "best_approach": "tier_cards",
+  "f1": 1.0
+ },
+ "reply": "<a2ui>\n<body id=\"root\">\n  <ui-pricing_tier_group id=\"pricing-tiers\">\n    <script type=\"application/json\" slot=\"tiers\">[\n      {\n        \"name\": \"Starter\",\n        \"price\": \"$9\",\n        \"period\": \"per month\",\n        \"description\": \"For individuals getting started.\",\n        \"recommended\": false,\n        \"features\": [\n          \"Up to 3 projects\",\n          \"5 GB of storage\",\n          \"Community support\",\n          \"Basic analytics\"\n        ]\n      },\n      {\n        \"name\": \"Pro\",\n        \"price\": \"$29\",\n        \"period\": \"per month\",\n        \"description\": \"For growing teams that need more.\",\n        \"recommended\": true,\n        \"features\": [\n          \"Unlimited projects\",\n          \"100 GB of storage\",\n          \"Priority email support\",\n          \"Advanced analytics\",\n          \"Team collaboration tools\",\n          \"Custom integrations\"\n        ]\n      },\n      {\n        \"name\": \"Enterprise\",\n        \"price\": \"$99\",\n        \"period\": \"per month\",\n        \"description\": \"For organizations with advanced needs.\",\n        \"recommended\": false,\n        \"features\": [\n          \"Everything in Pro\",\n          \"Unlimited storage\",\n          \"24/7 phone and chat support\",\n          \"Single sign-on (SSO)\",\n          \"Dedicated account manager\",\n          \"Custom SLA\"\n        ]\n      }\n    ]</script>\n  </ui-pricing_tier_group>\n</body>\n</a2ui>"
+}

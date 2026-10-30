@@ -1,0 +1,23 @@
+{
+ "task": "T4",
+ "label": "haiku-live3-r1",
+ "secs": 3.5,
+ "usage": {
+  "input_tokens": 85002,
+  "output_tokens": 248
+ },
+ "valid": false,
+ "error": "A2uiCompilationValidationError: Standalone function calls are not supported in A2UI v0.9.1 - Help: Please correct the syntax error in your Express DSL.",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "list": false,
+   "status indicator": false,
+   "filter control": false
+  }
+ },
+ "reply": "<a2ui>\nfilterable_list(\n  title=\"Task List\",\n  items=[\n    {title: \"Design system audit\", detail: \"Review current component library\", status: \"in_progress\"},\n    {title: \"API documentation\", detail: \"Write endpoint reference guides\", status: \"open\"},\n    {title: \"Database optimization\", detail: \"Index critical tables\", status: \"done\"},\n    {title: \"User research interviews\", detail: \"Conduct 5 stakeholder sessions\", status: \"open\"},\n    {title: \"Performance testing\", detail: \"Benchmark load times under scale\", status: \"in_progress\"},\n    {title: \"Security audit\", detail: \"External pen test and remediation\", status: \"done\"},\n    {title: \"Mobile app beta\", detail: \"Release to 100 testers\", status: \"open\"},\n    {title: \"Team training program\", detail: \"Onboard new developers\", status: \"in_progress\"}\n  ],\n  filter_field=\"status\",\n  show_counts=true\n)\n</a2ui>"
+}

@@ -1,0 +1,41 @@
+{
+ "task": "T6",
+ "condition": "C_haiku-5-5H2",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": true,
+ "label": "oracle-slice-3types__express__haiku-5-5__hints-v2__run3",
+ "agent_type": "Learning",
+ "catalogue": "C-learning.json",
+ "atoms_in_catalogue": 36,
+ "prompt_chars": 21139,
+ "slot_recall": [
+  2,
+  2
+ ],
+ "secs": 5.5,
+ "usage": {
+  "input_tokens": 7807,
+  "output_tokens": 1269
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "progress_bar",
+  "flashcard_deck",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.667,
+  "recall": 1.0,
+  "f1": 0.8,
+  "slot_hits": {
+   "flashcard deck": true,
+   "progress indicator": true
+  }
+ },
+ "reply": "<a2ui>\nprogress = progress_bar(0, \"Cards reviewed\", \"#4f46e5\", true, \"0 of 10 cards reviewed\")\n\ndeck = flashcard_deck([{front: \"casa\", back: \"house\"}, {front: \"perro\", back: \"dog\"}, {front: \"gato\", back: \"cat\"}, {front: \"libro\", back: \"book\"}, {front: \"agua\", back: \"water\"}, {front: \"comer\", back: \"to eat\"}, {front: \"leer\", back: \"to read\"}, {front: \"escuela\", back: \"school\"}, {front: \"amigo\", back: \"friend\"}, {front: \"ciudad\", back: \"city\"}], \"#4f46e5\", \"WORD\", \"MEANING\")\n\nroot = columns(2, \"1.5rem\", \"top\", [{blocks: [progress]}, {blocks: [deck]}])\n</a2ui>"
+}

@@ -1,0 +1,98 @@
+{
+ "label": "oracle-slice-3types__json__haiku-5-5__run2",
+ "task": "T4",
+ "format": "json",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "status_items",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "status_items",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         {
+          "id": "list_heading",
+          "component": "heading",
+          "text": "Items"
+         },
+         {
+          "id": "status_filter",
+          "component": "segmented_control",
+          "name": "status",
+          "selected_value": "all",
+          "options": "[{\"label\":\"All\",\"value\":\"all\"},{\"label\":\"Open\",\"value\":\"open\"},{\"label\":\"In progress\",\"value\":\"in_progress\"},{\"label\":\"Blocked\",\"value\":\"blocked\"},{\"label\":\"Done\",\"value\":\"done\"}]"
+         }
+        ]
+       },
+       {
+        "blocks": [
+         {
+          "id": "item_list",
+          "component": "entity_list",
+          "items": [
+           {
+            "name": "Migrate billing database",
+            "subtitle": "Schedule cutover window with finance",
+            "status": "Open"
+           },
+           {
+            "name": "Rotate API keys",
+            "subtitle": "Staging keys rotated; production pending",
+            "status": "In progress"
+           },
+           {
+            "name": "Update onboarding copy",
+            "subtitle": "Revised copy approved and shipped",
+            "status": "Done"
+           },
+           {
+            "name": "Fix checkout timeout",
+            "subtitle": "Waiting on payment provider logs",
+            "status": "Blocked"
+           },
+           {
+            "name": "Add audit logging",
+            "subtitle": "Events defined; storage backend chosen",
+            "status": "In progress"
+           },
+           {
+            "name": "Refresh pricing page",
+            "subtitle": "Mockups due Friday",
+            "status": "Open"
+           },
+           {
+            "name": "Patch login redirect bug",
+            "subtitle": "Fix merged and verified in staging",
+            "status": "Done"
+           },
+           {
+            "name": "Review vendor contract",
+            "subtitle": "Legal review pending signature",
+            "status": "Blocked"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

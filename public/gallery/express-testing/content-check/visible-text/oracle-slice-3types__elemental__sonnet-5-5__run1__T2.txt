@@ -1,0 +1,31 @@
+$128.4K ↑ 
+ Monthly Revenue
+ +12.5% vs. last month
+ 8,420 ↑ 
+ Active Users
+ +6.1% vs. last month
+ 3.2% ↓ 
+ Churn Rate
+ +0.4% vs. last month
+ 4.6 ↓ 
+ Avg. Satisfaction
+ -0.1 vs. last month
+ Last Month 
+ This Month 
+ 0
+ 20
+ 40
+ 60
+ 80
+ 100
+ 120
+ 140
+ Revenue ($K)
+ Active Users (hundreds)
+ Churn (%)
+ Satisfaction (x10)
+ Category Last Month This Month 
+ Revenue ($K) 114.0 128.0 
+ Active Users (hundreds) 79.0 84.0 
+ Churn (%) 2.8 3.2 
+ Satisfaction (x10) 47.0 46.0

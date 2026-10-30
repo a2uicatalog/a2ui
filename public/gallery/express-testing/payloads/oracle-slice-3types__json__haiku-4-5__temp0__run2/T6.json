@@ -1,0 +1,217 @@
+{
+ "label": "oracle-slice-3types__json__haiku-4-5__temp0__run2",
+ "task": "T6",
+ "format": "json",
+ "model_id": "claude-haiku-4-5-20251001",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "vocabulary-flashcards",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "vocabulary-flashcards",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "items": [
+       {
+        "blocks": [
+         {
+          "id": "header",
+          "component": "page_header",
+          "title": "Vocabulary Flashcards",
+          "subtitle": "Review and master 10 essential vocabulary terms",
+          "icon": "\ud83d\udcda"
+         },
+         {
+          "id": "progress",
+          "component": "progress_bar",
+          "value": 0,
+          "label": "Cards Reviewed",
+          "show_percent": true,
+          "caption": "0 of 10 cards reviewed"
+         },
+         {
+          "id": "cards-container",
+          "component": "columns",
+          "cols": 2,
+          "gap": "1.5rem",
+          "items": [
+           {
+            "blocks": [
+             {
+              "id": "card-1",
+              "component": "flashcard_deck",
+              "cards": [
+               {
+                "front": "Ephemeral",
+                "back": "Lasting for a very short time; transitory"
+               }
+              ],
+              "label_front": "WORD",
+              "label_back": "DEFINITION"
+             }
+            ]
+           },
+           {
+            "blocks": [
+             {
+              "id": "card-2",
+              "component": "flashcard_deck",
+              "cards": [
+               {
+                "front": "Serendipity",
+                "back": "The occurrence of events by chance in a happy or beneficial way"
+               }
+              ],
+              "label_front": "WORD",
+              "label_back": "DEFINITION"
+             }
+            ]
+           },
+           {
+            "blocks": [
+             {
+              "id": "card-3",
+              "component": "flashcard_deck",
+              "cards": [
+               {
+                "front": "Ubiquitous",
+                "back": "Present, appearing, or found everywhere"
+               }
+              ],
+              "label_front": "WORD",
+              "label_back": "DEFINITION"
+             }
+            ]
+           },
+           {
+            "blocks": [
+             {
+              "id": "card-4",
+              "component": "flashcard_deck",
+              "cards": [
+               {
+                "front": "Pragmatic",
+                "back": "Dealing with things in a practical, realistic way based on actual circumstances"
+               }
+              ],
+              "label_front": "WORD",
+              "label_back": "DEFINITION"
+             }
+            ]
+           },
+           {
+            "blocks": [
+             {
+              "id": "card-5",
+              "component": "flashcard_deck",
+              "cards": [
+               {
+                "front": "Mellifluous",
+                "back": "Sweet or musical; pleasant to hear"
+               }
+              ],
+              "label_front": "WORD",
+              "label_back": "DEFINITION"
+             }
+            ]
+           },
+           {
+            "blocks": [
+             {
+              "id": "card-6",
+              "component": "flashcard_deck",
+              "cards": [
+               {
+                "front": "Obfuscate",
+                "back": "To deliberately make something unclear or difficult to understand"
+               }
+              ],
+              "label_front": "WORD",
+              "label_back": "DEFINITION"
+             }
+            ]
+           },
+           {
+            "blocks": [
+             {
+              "id": "card-7",
+              "component": "flashcard_deck",
+              "cards": [
+               {
+                "front": "Sanguine",
+                "back": "Optimistic or positive, especially in an unlikely situation"
+               }
+              ],
+              "label_front": "WORD",
+              "label_back": "DEFINITION"
+             }
+            ]
+           },
+           {
+            "blocks": [
+             {
+              "id": "card-8",
+              "component": "flashcard_deck",
+              "cards": [
+               {
+                "front": "Perspicacious",
+                "back": "Having keen insight, discernment, or understanding"
+               }
+              ],
+              "label_front": "WORD",
+              "label_back": "DEFINITION"
+             }
+            ]
+           },
+           {
+            "blocks": [
+             {
+              "id": "card-9",
+              "component": "flashcard_deck",
+              "cards": [
+               {
+                "front": "Ameliorate",
+                "back": "To make something better or improve a situation"
+               }
+              ],
+              "label_front": "WORD",
+              "label_back": "DEFINITION"
+             }
+            ]
+           },
+           {
+            "blocks": [
+             {
+              "id": "card-10",
+              "component": "flashcard_deck",
+              "cards": [
+               {
+                "front": "Laconic",
+                "back": "Using very few words; brief and concise in speech or writing"
+               }
+              ],
+              "label_front": "WORD",
+              "label_back": "DEFINITION"
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

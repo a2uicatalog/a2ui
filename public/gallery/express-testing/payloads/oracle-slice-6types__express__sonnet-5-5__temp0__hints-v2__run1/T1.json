@@ -1,0 +1,127 @@
+{
+ "label": "oracle-slice-6types__express__sonnet-5-5__temp0__hints-v2__run1",
+ "task": "T1",
+ "format": "express",
+ "model_id": "claude-sonnet-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "water-cycle-lesson",
+    "catalog_id": "https://a2uicatalog.ai/catalog/d-t1.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "water-cycle-lesson",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "2rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         {
+          "type": "page_header",
+          "title": "The Water Cycle",
+          "subtitle": "How water moves between the oceans, the air and the land",
+          "icon": "\ud83d\udca7",
+          "tag": "Earth Science",
+          "accent": "#0284c7"
+         },
+         {
+          "type": "heading",
+          "text": "1. Evaporation"
+         },
+         {
+          "type": "body",
+          "text": "The Sun heats water in oceans, lakes and rivers. Liquid water turns into water vapor, an invisible gas that rises into the atmosphere. Plants also release vapor through their leaves, which is called transpiration."
+         },
+         {
+          "type": "heading",
+          "text": "2. Condensation"
+         },
+         {
+          "type": "body",
+          "text": "As water vapor rises it cools. The cooled vapor turns back into tiny liquid droplets around dust particles. Billions of these droplets gather to form clouds."
+         },
+         {
+          "type": "heading",
+          "text": "3. Precipitation and Collection"
+         },
+         {
+          "type": "body",
+          "text": "When cloud droplets grow heavy enough, they fall as rain, snow, sleet or hail. The water runs off into rivers, soaks into the ground or collects in oceans and lakes, and the cycle begins again."
+         },
+         {
+          "type": "concept_rung",
+          "kind": "example",
+          "badge": "EX",
+          "title": "Worked example: a puddle on a warm day",
+          "body": "A puddle forms after a rainstorm. By afternoon it has disappeared. Where did the water go?",
+          "code": "1. Sunlight warms the puddle        -> evaporation\n2. Vapor rises and cools aloft       -> condensation\n3. Droplets gather into clouds       -> cloud formation\n4. Heavy clouds release water        -> precipitation",
+          "code_caption": "Tracing one puddle through the cycle",
+          "takeaway": "The puddle did not vanish. Its water changed state and will return as rain."
+         }
+        ]
+       },
+       {
+        "blocks": [
+         {
+          "type": "heading",
+          "text": "Self-check quiz"
+         },
+         {
+          "type": "quiz_set",
+          "title": "Check your understanding",
+          "pass_score": 70,
+          "accent": "#0284c7",
+          "questions": [
+           {
+            "question": "Which process turns liquid water into water vapor?",
+            "options": [
+             "Condensation",
+             "Evaporation",
+             "Precipitation",
+             "Collection"
+            ],
+            "correct": 1,
+            "explanation": "Evaporation happens when heat from the Sun changes liquid water into a gas."
+           },
+           {
+            "question": "What forms when water vapor cools and turns back into droplets?",
+            "options": [
+             "Clouds",
+             "Groundwater",
+             "Glaciers",
+             "Wind"
+            ],
+            "correct": 0,
+            "explanation": "Condensation of vapor into droplets is how clouds form."
+           },
+           {
+            "question": "Which of these is NOT a form of precipitation?",
+            "options": [
+             "Rain",
+             "Snow",
+             "Hail",
+             "Transpiration"
+            ],
+            "correct": 3,
+            "explanation": "Transpiration is water vapor released by plants. It is part of evaporation, not precipitation."
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

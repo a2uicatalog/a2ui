@@ -1,0 +1,38 @@
+{
+ "task": "T2",
+ "condition": "D",
+ "label": "oracle-slice-6types__express__haiku-4-5__run3",
+ "agent_type": "T2",
+ "catalogue": "D-t2.json",
+ "atoms_in_catalogue": 16,
+ "prompt_chars": 10550,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 2.9,
+ "usage": {
+  "input_tokens": 3089,
+  "output_tokens": 222
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns",
+  "stat_card",
+  "stat_card",
+  "stat_card",
+  "stat_card"
+ ],
+ "score": {
+  "precision": 0.8,
+  "recall": 0.667,
+  "f1": 0.727,
+  "slot_hits": {
+   "KPI tile (x4)": true,
+   "trend (required only if metric_row was chosen; stat_card's own delta already satisfies it)": true,
+   "comparison chart": false
+  }
+ },
+ "reply": "<a2ui>\nroot = columns(\n  cols=4,\n  gap=\"1.5rem\",\n  align=\"top\",\n  items=[\n    {blocks: [stat_card(value=\"$12,450\", label=\"Revenue\", delta=\"+8%\", is_up=true, accent=\"#4CAF50\")]},\n    {blocks: [stat_card(value=\"2,847\", label=\"Active Users\", delta=\"+12%\", is_up=true, accent=\"#2196F3\")]},\n    {blocks: [stat_card(value=\"94.2%\", label=\"Uptime\", delta=\"-0.3%\", is_up=false, accent=\"#FF9800\")]},\n    {blocks: [stat_card(value=\"3.2s\", label=\"Avg Response Time\", delta=\"-0.5s\", is_up=true, accent=\"#9C27B0\")]}\n  ]\n)\n</a2ui>"
+}

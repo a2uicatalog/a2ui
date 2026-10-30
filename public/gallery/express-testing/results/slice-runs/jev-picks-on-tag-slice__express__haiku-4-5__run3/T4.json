@@ -1,0 +1,32 @@
+{
+ "task": "T4",
+ "condition": "JG",
+ "label": "jev-picks-on-tag-slice__express__haiku-4-5__run3",
+ "agent_type": "jev-narrowed",
+ "catalogue": "JG-T4.json",
+ "atoms_in_catalogue": 11,
+ "prompt_chars": 7364,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 4.2,
+ "usage": {
+  "input_tokens": 2075,
+  "output_tokens": 426
+ },
+ "valid": false,
+ "error": "A2uiCompilationParseError: Failed to parse expression: Syntax error at line 24:42: extraneous input '=' expecting {<EOF>, '[', ',', ']', '{', '}', ')', '_', 'null', RAW_TRIPLE_STRING, TRIPLE_STRING, RAW_STRING, STANDARD_STRING, PATH, CHECK, NUMBER, BOOLEAN, IDENTIFIER} (line 24) - Line 24, Col 42 - Help: Please correct the sy",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "list": false,
+   "status indicator": false,
+   "filter control": false
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"main-surface\")\n\n// Initialize filter state\n$/activeFilter = \"all\"\n\n// Sample data\n$/items = [\n  {title: \"Project Alpha\", status: \"active\", detail: \"Development phase 2 underway\"},\n  {title: \"Project Beta\", status: \"completed\", detail: \"Delivered to client on schedule\"},\n  {title: \"Project Gamma\", status: \"active\", detail: \"Awaiting stakeholder approval\"},\n  {title: \"Project Delta\", status: \"pending\", detail: \"Scheduled to start next quarter\"},\n  {title: \"Project Epsilon\", status: \"active\", detail: \"Design review completed\"},\n  {title: \"Project Zeta\", status: \"completed\", detail: \"Documentation finalized\"},\n  {title: \"Project Eta\", status: \"pending\", detail: \"Requirements gathering phase\"},\n  {title: \"Project Theta\", status: \"active\", detail: \"Testing and QA in progress\"}\n]\n\n// Filter chips\nfilterChips = chip_group(\n  \"Filter by Status\",\n  \"wrap\",\n  true,\n  [\n    {label: \"All\", active: $/activeFilter == \"all\"},\n    {label: \"Active\", active: $/activeFilter == \"active\"},\n    {label: \"Completed\", active: $/activeFilter == \"completed\"},\n    {label: \"Pending\", active: $/activeFilter == \"pending\"}\n  ]\n)\n\n// Filtered items list\nfilteredItems = entity_list(\n  [\n    {\n      name: $title,\n      subtitle: $detail,\n      status: $status,\n      icon: null\n    }\n  ]\n)\n\nroot = body([\n  heading(\"Project List\"),\n  filterChips,\n  filteredItems\n])\n</a2ui>"
+}

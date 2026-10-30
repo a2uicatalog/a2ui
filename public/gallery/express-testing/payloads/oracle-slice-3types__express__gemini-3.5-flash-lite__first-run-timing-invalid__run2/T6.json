@@ -1,0 +1,156 @@
+{
+ "label": "oracle-slice-3types__express__gemini-3.5-flash-lite__first-run-timing-invalid__run2",
+ "task": "T6",
+ "format": "express",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "vocabulary-flashcards",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "vocabulary-flashcards",
+    "components": [
+     {
+      "id": "header",
+      "component": "page_header",
+      "title": "Vocabulary Flashcards",
+      "subtitle": "Review key terms and flip cards to check your understanding.",
+      "icon": "\ud83d\udcda",
+      "tag": "Study Mode",
+      "accent": "#4f46e5"
+     },
+     {
+      "id": "xp",
+      "component": "xp_bar",
+      "level_label": "Review Session \u2014 10 Cards",
+      "xp_current": 0,
+      "xp_next": 10,
+      "accent": "#4f46e5",
+      "show_flash": false
+     },
+     {
+      "id": "card1",
+      "component": "spaced_repetition_card",
+      "front": "Ephemeral",
+      "back": "Lasting for a very short time.",
+      "card_id": "vocab_1",
+      "accent": "#4f46e5"
+     },
+     {
+      "id": "card2",
+      "component": "spaced_repetition_card",
+      "front": "Benevolent",
+      "back": "Well meaning and kindly.",
+      "card_id": "vocab_2",
+      "accent": "#4f46e5"
+     },
+     {
+      "id": "card3",
+      "component": "spaced_repetition_card",
+      "front": "Pragmatic",
+      "back": "Dealing with things sensibly and realistically.",
+      "card_id": "vocab_3",
+      "accent": "#4f46e5"
+     },
+     {
+      "id": "card4",
+      "component": "spaced_repetition_card",
+      "front": "Cacophony",
+      "back": "A harsh, discordant mixture of sounds.",
+      "card_id": "vocab_4",
+      "accent": "#4f46e5"
+     },
+     {
+      "id": "card5",
+      "component": "spaced_repetition_card",
+      "front": "Mundane",
+      "back": "Lacking interest or excitement; ordinary.",
+      "card_id": "vocab_5",
+      "accent": "#4f46e5"
+     },
+     {
+      "id": "card6",
+      "component": "spaced_repetition_card",
+      "front": "Ambivalent",
+      "back": "Having mixed feelings or contradictory ideas about something.",
+      "card_id": "vocab_6",
+      "accent": "#4f46e5"
+     },
+     {
+      "id": "card7",
+      "component": "spaced_repetition_card",
+      "front": "Garrulous",
+      "back": "Excessively talkative, especially on trivial matters.",
+      "card_id": "vocab_7",
+      "accent": "#4f46e5"
+     },
+     {
+      "id": "card8",
+      "component": "spaced_repetition_card",
+      "front": "Innovative",
+      "back": "Featuring new methods; advanced and original.",
+      "card_id": "vocab_8",
+      "accent": "#4f46e5"
+     },
+     {
+      "id": "card9",
+      "component": "spaced_repetition_card",
+      "front": "Resilient",
+      "back": "Able to withstand or recover quickly from difficult conditions.",
+      "card_id": "vocab_9",
+      "accent": "#4f46e5"
+     },
+     {
+      "id": "card10",
+      "component": "spaced_repetition_card",
+      "front": "Ubiquitous",
+      "back": "Present, appearing, or found everywhere.",
+      "card_id": "vocab_10",
+      "accent": "#4f46e5"
+     },
+     {
+      "id": "deck_cols",
+      "component": "columns",
+      "cols": 2,
+      "gap": "1.5rem",
+      "items": [
+       {
+        "blocks": [
+         "card1",
+         "card3",
+         "card5",
+         "card7",
+         "card9"
+        ]
+       },
+       {
+        "blocks": [
+         "card2",
+         "card4",
+         "card6",
+         "card8",
+         "card10"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "root",
+      "component": "body",
+      "text": [
+       "header",
+       "xp",
+       "deck_cols"
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

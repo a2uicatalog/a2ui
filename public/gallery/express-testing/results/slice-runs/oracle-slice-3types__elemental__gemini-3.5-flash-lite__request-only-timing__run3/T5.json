@@ -1,0 +1,47 @@
+{
+ "task": "T5",
+ "condition": "CX_gemini-3.5-flash-l",
+ "temperature_applied": false,
+ "format": "elemental",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash-lite",
+ "hints": false,
+ "label": "oracle-slice-3types__elemental__gemini-3.5-flash-lite__request-only-timing__run3",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "C-marketing-commerce.json",
+ "atoms_in_catalogue": 23,
+ "prompt_chars": 12612,
+ "slot_recall": [
+  1,
+  1
+ ],
+ "secs": 1.6,
+ "usage": {
+  "input_tokens": 3630,
+  "output_tokens": 484
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "gradient_hero",
+  "pricing_tier_group"
+ ],
+ "score": {
+  "per_approach": {
+   "tier_cards": {
+    "precision": 0.5,
+    "recall": 1.0,
+    "f1": 0.667
+   },
+   "comparison_table": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": null
+   }
+  },
+  "best_approach": "tier_cards",
+  "f1": 0.667
+ },
+ "reply": "<a2ui>\n  <body>\n    <script type=\"application/json\">\n      {\n        \"data\": {}\n      }\n    </script>\n    <ui-gradient_hero \n      id=\"root\" \n      badge=\"Pricing\" \n      title=\"Simple, transparent pricing\" \n      subtitle=\"Choose the perfect plan for your team. Upgrade or downgrade at any time.\" \n      align=\"center\"\n      cta_label=\"Get Started\"\n      cta_url=\"#pricing\"\n    >\n      <ui-pricing_tier_group id=\"tier-group\" slot=\"pricing_tier_group\">\n        <script type=\"application/json\" slot=\"tiers\">[\n          {\n            \"name\": \"Starter\",\n            \"price\": \"$9\",\n            \"cadence\": \"/month\",\n            \"description\": \"Essential features for individuals and small projects.\",\n            \"features\": [\"1 User\", \"5GB Storage\", \"Basic Support\", \"Community Access\"],\n            \"cta_label\": \"Start Free Trial\",\n            \"cta_url\": \"#\",\n            \"highlighted\": false\n          },\n          {\n            \"name\": \"Pro\",\n            \"price\": \"$29\",\n            \"cadence\": \"/month\",\n            \"description\": \"Advanced features for growing teams and businesses.\",\n            \"features\": [\"Unlimited Users\", \"100GB Storage\", \"Priority Support\", \"Advanced Analytics\", \"Custom Integrations\"],\n            \"cta_label\": \"Get Started\",\n            \"cta_url\": \"#\",\n            \"highlighted\": true\n          },\n          {\n            \"name\": \"Enterprise\",\n            \"price\": \"$99\",\n            \"cadence\": \"/month\",\n            \"description\": \"Maximum power and security for large scale operations.\",\n            \"features\": [\"Dedicated Support\", \"Unlimited Storage\", \"SLA Guarantee\", \"Custom Security\", \"Dedicated Account Manager\"],\n            \"cta_label\": \"Contact Sales\",\n            \"cta_url\": \"#\",\n            \"highlighted\": false\n          }\n        ]</script>\n      </ui-pricing_tier_group>\n    </ui-gradient_hero>\n  </body>\n</a2ui>"
+}

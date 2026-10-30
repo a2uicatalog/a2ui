@@ -1,0 +1,43 @@
+{
+ "task": "T6",
+ "condition": "C_opus-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-opus-5-5",
+ "hints": false,
+ "label": "oracle-slice-3types__express__opus-5-5__run2",
+ "agent_type": "Learning",
+ "catalogue": "C-learning.json",
+ "atoms_in_catalogue": 36,
+ "prompt_chars": 21139,
+ "slot_recall": [
+  2,
+  2
+ ],
+ "secs": 8.5,
+ "usage": {
+  "input_tokens": 7488,
+  "output_tokens": 928
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "page_header",
+  "progress_bar",
+  "text_callout",
+  "flashcard_deck",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.4,
+  "recall": 1.0,
+  "f1": 0.571,
+  "slot_hits": {
+   "flashcard deck": true,
+   "progress indicator": true
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"vocab-flashcards\")\n\nheader = page_header(title=\"Vocabulary Review\", subtitle=\"Flip each card to reveal the definition, then move on to the next word.\", icon=\"\ud83d\udcda\", tag=\"10 words\", accent=\"#4f46e5\")\n\nprogress = progress_bar(value=30, label=\"Cards reviewed\", accent=\"#4f46e5\", show_percent=true, caption=\"3 of 10 cards reviewed\")\n\ntip = text_callout(variant=\"info\", title=\"Tip\", description=\"Try to recall the meaning before flipping. Saying the word out loud can help it stick.\")\n\ndeck = flashcard_deck(cards=[\n  {front: \"Ephemeral\", back: \"Lasting for a very short time. e.g. \\\"The beauty of the sunset was ephemeral.\\\"\"},\n  {front: \"Ubiquitous\", back: \"Present, appearing, or found everywhere. e.g. \\\"Smartphones are now ubiquitous.\\\"\"},\n  {front: \"Candid\", back: \"Truthful and straightforward; frank. e.g. \\\"She gave a candid account of events.\\\"\"},\n  {front: \"Meticulous\", back: \"Showing great attention to detail; very careful and precise.\"},\n  {front: \"Resilient\", back: \"Able to recover quickly from difficulties; tough.\"},\n  {front: \"Eloquent\", back: \"Fluent or persuasive in speaking or writing.\"},\n  {front: \"Pragmatic\", back: \"Dealing with things sensibly and realistically, based on practical considerations.\"},\n  {front: \"Benevolent\", back: \"Well-meaning and kindly; generous in helping others.\"},\n  {front: \"Ambiguous\", back: \"Open to more than one interpretation; not having one obvious meaning.\"},\n  {front: \"Tenacious\", back: \"Holding firmly to something; persistent and determined.\"}\n], accent=\"#4f46e5\", label_front=\"WORD\", label_back=\"DEFINITION\")\n\nroot = columns(cols=2, gap=\"1.5rem\", align=\"top\", items=[\n  {blocks: [header, progress, tip]},\n  {blocks: [deck]}\n])\n</a2ui>"
+}

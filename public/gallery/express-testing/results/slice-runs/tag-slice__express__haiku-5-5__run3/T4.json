@@ -1,0 +1,40 @@
+{
+ "task": "T4",
+ "condition": "G_haiku-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "tag-slice__express__haiku-5-5__run3",
+ "agent_type": "Data display",
+ "catalogue": "G-data-display.json",
+ "atoms_in_catalogue": 354,
+ "prompt_chars": 179044,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 5.8,
+ "usage": {
+  "input_tokens": 65258,
+  "output_tokens": 1059
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "filterable_list"
+ ],
+ "score": {
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "list": false,
+   "status indicator": false,
+   "filter control": false
+  }
+ },
+ "reply": "<a2ui>\nroot = filterable_list(\"Work items\", [\n  {title: \"Set up CI pipeline\", detail: \"Build and test run on every push to main.\", status: \"done\"},\n  {title: \"Migrate user database\", detail: \"Schema migration staged; backfill is running.\", status: \"in_progress\"},\n  {title: \"Write API docs\", detail: \"Endpoints documented; code examples still pending.\", status: \"open\"},\n  {title: \"Rotate service credentials\", detail: \"Blocked waiting on vendor access approval.\", status: \"blocked\"},\n  {title: \"Update onboarding emails\", detail: \"Copy drafted; awaiting legal review.\", status: \"open\"},\n  {title: \"Fix login timeout bug\", detail: \"Root cause identified; patch in code review.\", status: \"in_progress\"},\n  {title: \"Review billing rules\", detail: \"All rules checked against the new pricing sheet.\", status: \"done\"},\n  {title: \"Load-test checkout flow\", detail: \"Scenario scripted; test environment not yet provisioned.\", status: \"open\"}\n], filter_field=\"status\", colors={open: \"#3b82f6\", in_progress: \"#f59e0b\", done: \"#10b981\", blocked: \"#ef4444\"}, show_counts=true, empty_text=\"No items match this status.\")\n</a2ui>"
+}

@@ -1,0 +1,32 @@
+{
+ "task": "T4",
+ "condition": "D",
+ "label": "oracle-slice-6types__express__haiku-4-5__run3",
+ "agent_type": "T4",
+ "catalogue": "D-t4.json",
+ "atoms_in_catalogue": 20,
+ "prompt_chars": 10490,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 6.5,
+ "usage": {
+  "input_tokens": 2959,
+  "output_tokens": 588
+ },
+ "valid": false,
+ "error": "A2uiCompilationParseError: Failed to parse expression: Syntax error at line 29:28: extraneous input '=' expecting {<EOF>, '[', '{', '_', 'null', RAW_TRIPLE_STRING, TRIPLE_STRING, RAW_STRING, STANDARD_STRING, PATH, CHECK, NUMBER, BOOLEAN, IDENTIFIER} (line 29) - Line 29, Col 28 - Help: Please correct the syntax error in your E",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "list": false,
+   "status indicator": false,
+   "filter control": false
+  }
+ },
+ "reply": "<a2ui>\n// Initialize filter state\n$/filterStatus = \"all\"\n\n// Sample data\n$/items = [\n  {id: 1, title: \"Design System Update\", status: \"in_progress\", detail: \"Refining component library and documentation\"},\n  {id: 2, title: \"API Integration\", status: \"completed\", detail: \"Successfully connected payment gateway\"},\n  {id: 3, title: \"Mobile Optimization\", status: \"pending\", detail: \"Awaiting design approval from stakeholders\"},\n  {id: 4, title: \"Database Migration\", status: \"in_progress\", detail: \"Moving legacy data to new PostgreSQL instance\"},\n  {id: 5, title: \"Security Audit\", status: \"pending\", detail: \"Scheduled for next quarter review cycle\"},\n  {id: 6, title: \"User Authentication\", status: \"completed\", detail: \"OAuth 2.0 implementation now live\"},\n  {id: 7, title: \"Performance Testing\", status: \"in_progress\", detail: \"Load testing with 10k concurrent users\"},\n  {id: 8, title: \"Documentation Portal\", status: \"completed\", detail: \"Published comprehensive API reference guide\"}\n]\n\n// Status filter control\nstatusFilter = segmented_control(\n  options=[\n    {label: \"All\", value: \"all\"},\n    {label: \"Pending\", value: \"pending\"},\n    {label: \"In Progress\", value: \"in_progress\"},\n    {label: \"Completed\", value: \"completed\"}\n  ],\n  selected_value=$/filterStatus,\n  name=\"statusFilter\"\n)\n\n// Define status appearance mapping\ngetStatusAppearance(status) = \n  status == \"completed\" ? \"success\" :\n  status == \"in_progress\" ? \"inprogress\" :\n  \"moved\"\n\n// Item template\nitemTemplate = entity_list(items=[\n  {\n    name: $title,\n    subtitle: $detail,\n    status: lozenge(text=$status, appearance=getStatusAppearance($status)),\n    icon: \"\ud83d\udccb\"\n  }\n])\n\n// Filtered items based on status\nfilteredItems = $/filterStatus == \"all\" \n  ? $/items\n  : $/items.filter(item => item.status == $/filterStatus)\n\n// Root layout\nroot = body(text=\"\") + [\n  heading(\"Items\"),\n  statusFilter,\n  _template(filteredItems, itemTemplate)\n]\n</a2ui>"
+}

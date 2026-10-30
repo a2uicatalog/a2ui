@@ -1,0 +1,34 @@
+{
+ "task": "T1",
+ "condition": "D",
+ "label": "oracle-slice-6types__express__haiku-4-5__run1",
+ "agent_type": "T1",
+ "catalogue": "D-t1.json",
+ "atoms_in_catalogue": 28,
+ "prompt_chars": 17769,
+ "slot_recall": [
+  5,
+  5
+ ],
+ "secs": 9.2,
+ "usage": {
+  "input_tokens": 4914,
+  "output_tokens": 944
+ },
+ "valid": false,
+ "error": "A2uiCompilationValidationError: Unknown component 'Column' not defined in catalog 'https://a2uicatalog.ai/catalog/d-t1.json'. - Help: Please correct the syntax error in your Express DSL.",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "title": false,
+   "concept sections (x3)": false,
+   "worked example": false,
+   "3-question quiz": false,
+   "quiz result": false
+  }
+ },
+ "reply": "<a2ui>\nroot = Column([\n  page_header(\n    title=\"The Water Cycle\",\n    subtitle=\"Understanding Earth's continuous water movement\",\n    icon=\"\ud83d\udca7\",\n    tag=\"Science\"\n  ),\n  \n  heading(\"Core Concepts\"),\n  \n  concept_ladder([\n    evaporation_rung,\n    condensation_rung,\n    precipitation_rung,\n    example_rung\n  ]),\n  \n  heading(\"Self-Check Quiz\"),\n  \n  quiz_set(\n    title=\"Water Cycle Knowledge Check\",\n    questions=[\n      {\n        question: \"Which process converts liquid water into water vapor?\",\n        options: [\"Evaporation\", \"Condensation\", \"Precipitation\", \"Freezing\"],\n        correct: 0,\n        explanation: \"Evaporation is the process where water from oceans, lakes, and rivers turns into vapor and rises into the atmosphere.\"\n      },\n      {\n        question: \"What causes water vapor to turn into liquid water droplets?\",\n        options: [\"Evaporation\", \"Condensation\", \"Precipitation\", \"Sublimation\"],\n        correct: 1,\n        explanation: \"Condensation occurs when water vapor cools and transforms back into liquid droplets, forming clouds.\"\n      },\n      {\n        question: \"Which of these is a form of precipitation?\",\n        options: [\"Evaporation\", \"Wind\", \"Snow\", \"Humidity\"],\n        correct: 2,\n        explanation: \"Precipitation includes all forms of water falling from clouds\u2014rain, snow, sleet, and hail.\"\n      }\n    ],\n    pass_score=70,\n    accent=\"#4f46e5\"\n  )\n])\n\nevaporation_rung = concept_rung(\n  badge=\"1\",\n  kind=\"depth\",\n  label=\"DEPTH 1\",\n  title=\"Evaporation\",\n  body=\"Evaporation is the process where water from surface sources like oceans, lakes, rivers, and soil absorbs heat energy from the sun and transforms into invisible water vapor. This vapor rises into the atmosphere, driven by solar radiation and temperature differences.\",\n  takeaway=\"Heat energy converts liquid water into water vapor that rises into the atmosphere.\"\n)\n\ncondensation_rung = concept_rung(\n  badge=\"2\",\n  kind=\"depth\",\n  label=\"DEPTH 2\",\n  title=\"Condensation\",\n  body=\"As water vapor rises higher in the atmosphere, it encounters cooler air temperatures. When the vapor cools below its dew point, it condenses into tiny liquid water droplets. These droplets cluster together to form visible clouds and fog.\",\n  takeaway=\"Cooling water vapor transforms it into visible water droplets that form clouds.\"\n)\n\nprecipitation_rung = concept_rung(\n  badge=\"3\",\n  kind=\"depth\",\n  label=\"DEPTH 3\",\n  title=\"Precipitation\",\n  body=\"When cloud droplets combine and become heavy enough, they fall back to Earth as precipitation\u2014rain, snow, sleet, or hail. This water returns to the surface, replenishing rivers, lakes, oceans, and groundwater, completing the cycle.\",\n  takeaway=\"Water droplets become heavy and fall to Earth as rain or snow, returning water to the surface.\"\n)\n\nexample_rung = concept_rung(\n  badge=\"EX\",\n  kind=\"example\",\n  label=\"WORKED EXAMPLE\",\n  title=\"The Complete Water Cycle in Action\",\n  body=\"On a sunny morning, the ocean surface warms and water evaporates. The invisible vapor rises through the atmosphere. As it reaches cooler air at higher altitudes, it condenses into clouds. Throughout the day, more vapor joins the clouds, making them heavier. By afternoon, the cloud can no longer hold the water droplets, and rain falls. This rain flows downhill into rivers, which carry it back to the ocean, where the cycle begins again.\",\n  takeaway=\"One water molecule may cycle through evaporation, condensation, and precipitation countless times across millions of years.\"\n)\n</a2ui>"
+}

@@ -1,0 +1,244 @@
+{
+  "_about": "Stats for the blocks and catalog-routing tests: curated agent, routers, cost and tokens. Every number was recomputed from the raw results in results/blocks/ and checked by an independent audit. Label per number: measured, computed, sourced. Small tests, one writer model (Sonnet 5.5), briefs and keys written by us, 3 repeats.",
+  "prices_usd": {
+    "sonnet_5_5_in_per_mtok": 2.0,
+    "sonnet_5_5_out_per_mtok": 10.0,
+    "sonnet_5_5_cache_hit_per_mtok": 0.1,
+    "source": "https://platform.claude.com/docs/en/about-claude/pricing (fetched 2026-10-29)",
+    "label": "sourced",
+    "jev_per_billion_tokens": 42,
+    "jev_label": "sourced (provider price page, checked 2026-10-29)",
+    "gemini_3_8_flash_in_out_cache_per_mtok": [
+      0.75,
+      3.75,
+      0.075
+    ],
+    "gemini_3_5_flash_lite_in_out_cache_per_mtok": [
+      0.3,
+      2.5,
+      0.03
+    ],
+    "gemini_source": "https://ai.google.dev/gemini-api/docs/pricing (last updated 2026-10-28; 3.8 Flash prices double on 2027-01-01)"
+  },
+  "tokens_per_request": {
+    "full_catalog_input": 122832,
+    "full_catalog_input_B2": 122833,
+    "label": "measured (L3 pilot, 2 calls, Sonnet 5.5, 573 atoms)",
+    "source": "results/blocks/level3-full-catalog-pilot/",
+    "agent_slice_input": 3601.5,
+    "agent_slice_output_mean": 52,
+    "agent_label": "measured, 6 calls (P B1/B2 x3)",
+    "source_agent": "results/blocks/level2-with-profile/",
+    "sonnet_router_input": 1768.5,
+    "sonnet_router_output": 43,
+    "jev_router_input": 1456.65,
+    "jev_router_output": 216.2,
+    "router_label": "measured means (Sonnet R 48 calls; Jev 120 calls)",
+    "full_output_mean": 67.5,
+    "routed_total_input_sonnet_router": 5370,
+    "routed_total_input_jev_router": 5058,
+    "input_token_ratio_sonnet_router": 22.9,
+    "input_token_ratio_jev_router": 24.3,
+    "ratio_label": "computed, uncached"
+  },
+  "latency_s": {
+    "full_catalog": 4.505,
+    "full_label": "measured, 2 calls (4.74, 4.27)",
+    "sonnet_router": 1.656,
+    "jev_router": 0.1916,
+    "agent_slice": 1.69,
+    "routed_sonnet_router_sum": 3.35,
+    "routed_jev_router_sum": 1.88,
+    "quicker_sonnet_router": 1.35,
+    "quicker_jev_router": 2.39,
+    "sum_label": "computed: sums of separately measured means; routed path not run end to end"
+  },
+  "cost_usd_per_request": {
+    "uncached": {
+      "full_catalog": 0.24634,
+      "jev_routed": 0.00779,
+      "sonnet_routed": 0.01169,
+      "jev_ratio": 31.6,
+      "sonnet_ratio": 21.1
+    },
+    "cached_steady_state": {
+      "full_catalog": 0.01296,
+      "jev_routed": 0.00095,
+      "sonnet_routed": 0.00148,
+      "jev_ratio": 13.6,
+      "sonnet_ratio": 8.7
+    },
+    "router_step_only": {
+      "sonnet_uncached": 0.00397,
+      "jev_uncached": 7.02e-05,
+      "ratio_uncached": 56.4,
+      "sonnet_cached": 0.00061,
+      "ratio_cached": 8.57
+    },
+    "formula": "input_tokens x price_in + output_tokens x price_out; Jev tokens at Jev price; cached = 100 percent cache hits at 0.10 USD/MTok on both sides; cache writes (1.25x) and 5-minute TTL ignored",
+    "label": "computed"
+  },
+  "cost_usd_per_1000_requests": {
+    "uncached": {
+      "full_catalog": 246.34,
+      "jev_routed": 7.79,
+      "sonnet_routed": 11.69
+    },
+    "cached": {
+      "full_catalog": 12.96,
+      "jev_routed": 0.95,
+      "sonnet_routed": 1.48
+    }
+  },
+  "gemini_writer_estimate": {
+    "label": "ESTIMATE: Gemini prices applied to Claude-tokenizer counts",
+    "gemini_3_8_flash": {
+      "uncached_full": 0.0924,
+      "uncached_jev_routed": 0.003,
+      "ratio_uncached": 31.1,
+      "cached_ratio": 17.7
+    },
+    "gemini_3_5_flash_lite": {
+      "uncached_full": 0.037,
+      "uncached_jev_routed": 0.0013,
+      "ratio_uncached": 28.9,
+      "cached_ratio": 12.5
+    }
+  },
+  "routing_accuracy": {
+    "set_R_16_briefs_x3": {
+      "sonnet": {
+        "block": "18/18",
+        "cross": "21/21",
+        "null": "3/3",
+        "judgement": "6/6",
+        "clear_total": "42/42"
+      },
+      "jev": {
+        "block": "15/18 (B4 spaceship -> none x3)",
+        "cross": "21/21",
+        "null": "3/3",
+        "judgement": "6/6",
+        "clear_total": "39/42"
+      },
+      "note": "easy set we wrote; non-discriminating"
+    },
+    "set_R2_24_briefs_x3": {
+      "sonnet": {
+        "clear": "36/36",
+        "null": "9/9",
+        "two_catalog": "10/12",
+        "judgement": "11/15",
+        "empty_replies": "6 of 72 (token cap, not bad JSON)",
+        "ms_per_route": 1953
+      },
+      "jev": {
+        "clear": "36/36",
+        "null": "9/9",
+        "two_catalog": "12/12",
+        "judgement": "12/15 (Y6 toy plane -> none x3)",
+        "ms_per_route": 192
+      },
+      "non_llm": {
+        "lexical_bm25_clear": "7/12",
+        "tags_clear": "7/12",
+        "hybrid_clear": "8/12",
+        "tags_hybrid_cannot_say_none": true
+      }
+    },
+    "label": "measured",
+    "source": "results/blocks/scores/routers-non-llm/summary.md",
+    "accuracy_not_compared_claim": "Accuracy not compared on screen: small test, we wrote the briefs"
+  },
+  "curated_agent": {
+    "level1_B4_slice_stage1": {
+      "calls": 48,
+      "express_compile": "24/24",
+      "json_compile": "21/24",
+      "matching_briefs_B1_B2_B4": "9/9 both formats",
+      "express_out_tokens_matching": "66-113",
+      "json_out_tokens_matching": "266-591",
+      "b8_refused": "0/3 both formats",
+      "post_hoc_rescore_express_F1_B1_B7": "0.57 -> 1.0",
+      "post_hoc_rescore_json": "0.57 -> 0.86",
+      "note": "post-hoc: key error found after seeing results (house/cat accepted only motion_bricks); pinned scores kept"
+    },
+    "level2_P_profile_slice_P3": {
+      "calls": 24,
+      "express_only": true,
+      "compile": "24/24",
+      "matching_F1": 1.0,
+      "refusals_B7_B8": "6/6"
+    },
+    "guardrail_G": {
+      "calls": 24,
+      "clear_refused": "6/6",
+      "injection_refused": "6/6",
+      "controls": "6/6",
+      "borderline_built_bricks": "6/6 (judgement)",
+      "prompt": "byte-identical to P (profile + P3 slice)"
+    },
+    "refusals_total_with_profile": "18/18 (G 12 + P 6), all instructed by the profile; unprofiled B8 0/3",
+    "level3_full_catalog_pilot": {
+      "calls": 2,
+      "picked_right_block": "2/2",
+      "input_tokens": 122832,
+      "other_22_calls": "not run"
+    }
+  },
+  "google_claims": {
+    "source": "https://developers.googleblog.com/fast-reliable-a2ui/",
+    "express_latency": "up to 3x",
+    "express_tokens": "up to 3x fewer vs Direct JSON",
+    "decision_models_like_jev_latency": "up to 80x (baseline not stated)",
+    "jev_questions_per_screen": "about 30 (a count, not a speed)",
+    "their_run": "11 prompts: tree on screen 92-298 ms, screens complete 0.8-1.7 s"
+  },
+  "our_express_vs_json": {
+    "sonnet_5_5": {
+      "output_tokens": "2.1x fewer",
+      "time": "2.0x faster",
+      "compiled": "18/18 (JSON 15/18)"
+    },
+    "gemini_3_5_flash_thinking_off": {
+      "tokens": "1.7x",
+      "time_paired": "1.24x (n=15)",
+      "compiled": "15/18 vs 18/18"
+    },
+    "gemini_3_8_flash": {
+      "tokens": "1.55x",
+      "time": "no reliable gain (1.06x, n=10)",
+      "compiled": "16/18 vs 10/18"
+    }
+  },
+  "jev_output_free_correction_2026_10_30": {
+    "source": "typesafe.ai/blog/introducing-system-one-models-and-jev, Cost row: input $0.042/MTok ($42 per billion), output FREE",
+    "label": "computed; supersedes the Jev rows above that priced output at the input rate",
+    "jev_router_cost_per_route_usd": 6.12e-05,
+    "router_step_ratio_uncached": 64.9,
+    "router_step_ratio_cached": 10.0,
+    "jev_routed_per_request_usd": {
+      "uncached": 0.00778,
+      "cached": 0.00094
+    },
+    "jev_routed_per_1000_usd": {
+      "uncached": 7.78,
+      "cached": 0.94
+    },
+    "ratio_vs_full_catalog": {
+      "uncached": 31.7,
+      "cached": 13.8
+    },
+    "cached_precision": "derived from rounded 0.00095; margin about 0.1x",
+    "unchanged": "all Sonnet-router rows, token ratios, latency, accuracy"
+  },
+  "not_claimed": [
+    "80x confirmed or refuted",
+    "our 24x (writer input tokens) compared with their 80x (a latency claim)",
+    "Jev better than Sonnet in general",
+    "routing improves accuracy",
+    "any model ranking",
+    "cheaper without saying uncached or cached",
+    "routed path run end to end"
+  ]
+}

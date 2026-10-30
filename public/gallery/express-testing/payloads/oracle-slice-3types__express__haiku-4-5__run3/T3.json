@@ -1,0 +1,91 @@
+{
+ "label": "oracle-slice-3types__express__haiku-4-5__run3",
+ "task": "T3",
+ "format": "express",
+ "model_id": null,
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "2rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "_inline_1"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_2",
+         "_inline_3",
+         "_inline_4"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "_inline_1",
+      "component": "gradient_hero",
+      "title": "Transform Your Workflow",
+      "subtitle": "Streamline your process with powerful, intuitive tools designed for modern teams",
+      "badge": "New Release",
+      "cta_label": "Get Started",
+      "cta_url": "https://example.com/signup"
+     },
+     {
+      "id": "_inline_2",
+      "component": "feature_grid",
+      "heading": "Why Choose Us",
+      "columns": 3,
+      "features": [
+       {
+        "icon": "\u26a1",
+        "title": "Lightning Fast",
+        "description": "Experience blazing-fast performance that keeps your team productive"
+       },
+       {
+        "icon": "\ud83d\udd12",
+        "title": "Secure",
+        "description": "Enterprise-grade security to protect your sensitive data"
+       },
+       {
+        "icon": "\ud83c\udfaf",
+        "title": "Intuitive",
+        "description": "Clean, simple interface that your team will love to use"
+       }
+      ]
+     },
+     {
+      "id": "_inline_3",
+      "component": "blockquote_with_avatar",
+      "quote": "This product completely transformed how our team works. We saved hours every week.",
+      "author_name": "Sarah Chen",
+      "author_title": "Product Manager at TechCorp",
+      "avatar_url": "https://api.example.com/avatars/sarah.jpg"
+     },
+     {
+      "id": "_inline_4",
+      "component": "cta_button",
+      "label": "Start Your Free Trial",
+      "url": "https://example.com/trial",
+      "color": "#4f46e5"
+     }
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,87 @@
+{
+ "label": "tag-slice__express__haiku-5-5__run3",
+ "task": "T3",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/g-marketing-commerce.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "hero",
+      "component": "gradient_hero",
+      "title": "Ship faster with less busywork",
+      "subtitle": "Everything your team needs to plan, build, and launch in one place, without the status-meeting overhead.",
+      "badge": "New: Version 2.0",
+      "cta_label": "Start free trial",
+      "cta_url": "https://example.com/signup",
+      "align": "center"
+     },
+     {
+      "id": "feature_list",
+      "component": "feature_grid",
+      "heading": "Why teams choose us",
+      "description": "Three core capabilities that cut the time from idea to launch.",
+      "columns": 3,
+      "features": [
+       {
+        "icon": "bolt",
+        "title": "Lightning-fast workflows",
+        "description": "Automate repetitive tasks and keep work moving without manual handoffs.",
+        "color": "#4f46e5"
+       },
+       {
+        "icon": "groups",
+        "title": "Built for collaboration",
+        "description": "Share context, assign owners, and see progress live across every project.",
+        "color": "#4f46e5"
+       },
+       {
+        "icon": "shield",
+        "title": "Secure by default",
+        "description": "Role-based access, audit logs, and encryption keep your data protected.",
+        "color": "#4f46e5"
+       }
+      ]
+     },
+     {
+      "id": "testimonial",
+      "component": "blockquote_with_avatar",
+      "quote": "We cut our launch cycle in half. The team finally spends its time building instead of chasing updates.",
+      "author_name": "Maya Chen",
+      "author_title": "VP of Product, Northwind"
+     },
+     {
+      "id": "cta",
+      "component": "cta_button",
+      "url": "https://example.com/signup",
+      "label": "Get started free",
+      "color": "#4f46e5",
+      "same_tab": true
+     },
+     {
+      "id": "root",
+      "component": "color_section",
+      "style": "light",
+      "padding": "48px 24px",
+      "blocks": [
+       "hero",
+       "feature_list",
+       "testimonial",
+       "cta"
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

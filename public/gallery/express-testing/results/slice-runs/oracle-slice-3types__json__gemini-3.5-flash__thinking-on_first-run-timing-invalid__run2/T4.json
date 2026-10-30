@@ -1,0 +1,40 @@
+{
+ "task": "T4",
+ "condition": "CN_gemini-3.5-flash",
+ "temperature_applied": false,
+ "format": "json",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash",
+ "hints": false,
+ "label": "oracle-slice-3types__json__gemini-3.5-flash__thinking-on_first-run-timing-invalid__run2",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 31546,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 58.3,
+ "usage": {
+  "input_tokens": 7912,
+  "output_tokens": 7878
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns"
+ ],
+ "score": {
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "list": false,
+   "status indicator": false,
+   "filter control": false
+  }
+ },
+ "reply": "Here is the interactive UI representing the filterable task queue. It utilizes a two-column dashboard layout with filter controls on the left and a detailed sortable task registry on the right.\n\n### Step 1: Initialize the Surface\nFirst, we instantiate a new interface surface.\n\n<a2ui-json>\n{\n  \"version\": \"v0.9.1\",\n  \"createSurface\": {\n    \"surfaceId\": \"task-manager-surface\",\n    \"catalogId\": \"https://a2uicatalog.ai/catalog/c-data-display.json\"\n  }\n}\n</a2ui-json>\n\n### Step 2: Render the Components\nNext, we populate the interface with our filter layout, status selector, and the registry of eight distinct items.\n\n<a2ui-json>\n{\n  \"version\": \"v0.9.1\",\n  \"updateComponents\": {\n    \"surfaceId\": \"task-manager-surface\",\n    \"components\": [\n      {\n        \"id\": \"root\",\n        \"component\": \"columns\",\n        \"cols\": 2,\n        \"gap\": \"2rem\",\n        \"align\": \"top\",\n        \"items\": [\n          {\n            \"blocks\": [\n              {\n                \"id\": \"left-heading\",\n                \"component\": \"heading\",\n                \"text\": \"Operational Task Queue\"\n              },\n              {\n                \"id\": \"left-body\",\n                \"component\": \"body\",\n                \"text\": \"Monitor ongoing engineering tasks and deployment milestones. Select a status filter below to refine the visible task list.\"\n              },\n              {\n                \"id\": \"status-filter\",\n                \"component\": \"segmented_control\",\n                \"name\": \"status_filter\",\n                \"options\": \"[{\\\"label\\\": \\\"All (8)\\\", \\\"value\\\": \\\"all\\\"}, {\\\"label\\\": \\\"Active (3)\\\", \\\"value\\\": \\\"active\\\"}, {\\\"label\\\": \\\"Pending (3)\\\", \\\"value\\\": \\\"pending\\\"}, {\\\"label\\\": \\\"Completed (2)\\\", \\\"value\\\": \\\"completed\\\"}]\",\n                \"selected_value\": \"all\"\n              },\n              {\n                \"id\": \"summary-metrics\",\n                \"component\": \"metric_row\",\n                \"cols\": 2,\n                \"metrics\": [\n                  {\n                    \"value\": \"37.5%\",\n                    \"label\": \"Completion Rate\",\n                    \"trend\": \"up\"\n                  },\n                  {\n                    \"value\": \"3 Active\",\n                    \"label\": \"In Progress\"\n                  }\n                ]\n              }\n            ]\n          },\n          {\n            \"blocks\": [\n              {\n                \"id\": \"right-table\",\n                \"component\": \"data_table_sortable\",\n                \"headers\": [\n                  \"Task / Title\",\n                  \"One-Line Detail\",\n                  \"Status\"\n                ],\n                \"rows\": [\n                  [\n                    \"Database Migration\",\n                    \"Migrate legacy user records to PostgreSQL\",\n                    \"Active\"\n                  ],\n                  [\n                    \"API Integration\",\n                    \"Connect Stripe billing webhooks and checkout flow\",\n                    \"Active\"\n                  ],\n                  [\n                    \"Security Audit\",\n                    \"Review IAM permissions and access control lists\",\n                    \"Pending\"\n                  ],\n                  [\n                    \"UI Redesign\",\n                    \"Refactor core dashboard layouts to CSS Grid\",\n                    \"Completed\"\n                  ],\n                  [\n                    \"Load Testing\",\n                    \"Simulate 10k concurrent WebSocket connections\",\n                    \"Pending\"\n                  ],\n                  [\n                    \"Documentation\",\n                    \"Update developer onboarding setup guides\",\n                    \"Completed\"\n                  ],\n                  [\n                    \"SSL Certificate Renewal\",\n                    \"Rotate wildcard certificates for staging domains\",\n                    \"Active\"\n                  ],\n                  [\n                    \"Analytics Setup\",\n                    \"Configure Mixpanel event tracking for signup funnels\",\n                    \"Pending\"\n                  ]\n                ]\n              }\n            ]\n          }\n        ]\n      }\n    ]\n  }\n}\n</a2ui-json>"
+}

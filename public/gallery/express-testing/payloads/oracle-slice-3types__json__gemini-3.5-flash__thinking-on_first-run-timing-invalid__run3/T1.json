@@ -1,0 +1,119 @@
+{
+ "label": "oracle-slice-3types__json__gemini-3.5-flash__thinking-on_first-run-timing-invalid__run3",
+ "task": "T1",
+ "format": "json",
+ "model_id": "gemini-3.5-flash",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "water-cycle-lesson",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "water-cycle-lesson",
+    "components": [
+     {
+      "id": "root",
+      "component": "page_header",
+      "title": "The Water Cycle",
+      "subtitle": "Discover how water moves endlessly through Earth's atmosphere, land, and oceans.",
+      "icon": "\ud83d\udca7",
+      "tag": "Earth Science",
+      "accent": "#0284c7"
+     },
+     {
+      "id": "progress",
+      "component": "reading_progress_bar",
+      "color": "#0284c7"
+     },
+     {
+      "id": "rung-1",
+      "component": "concept_rung",
+      "badge": "1",
+      "kind": "depth",
+      "label": "Phase 1: Vaporization",
+      "title": "Evaporation & Transpiration",
+      "body": "Solar radiation warms oceans, lakes, and rivers, causing liquid water to absorb heat energy and transform into water vapor. This gas rises into the sky. Simultaneously, plants release moisture from their leaves into the atmosphere in a process called **transpiration**.",
+      "takeaway": "Solar energy powers the upward movement of water into the atmosphere."
+     },
+     {
+      "id": "rung-2",
+      "component": "concept_rung",
+      "badge": "2",
+      "kind": "depth",
+      "label": "Phase 2: Transition",
+      "title": "Condensation & Cloud Formation",
+      "body": "As water vapor ascends, it encounters progressively colder air at higher altitudes. This cooling causes the gas to condense back into liquid water droplets or ice crystals, which collect around tiny airborne particles (like dust) to form clouds and fog.",
+      "takeaway": "Atmospheric cooling forces invisible gas to revert into visible droplets."
+     },
+     {
+      "id": "rung-3",
+      "component": "concept_rung",
+      "badge": "3",
+      "kind": "depth",
+      "label": "Phase 3: Return",
+      "title": "Precipitation & Infiltration",
+      "body": "When cloud droplets collide and grow too heavy to remain suspended, gravity pulls them down as precipitation (rain, snow, sleet, or hail). Once on the ground, some water runs off into streams and oceans, while some seeps deep into the soil through **infiltration** to recharge groundwater aquifers.",
+      "takeaway": "Gravity brings water back to Earth, restarting the cycle."
+     },
+     {
+      "id": "rung-example",
+      "component": "concept_rung",
+      "kind": "example",
+      "label": "WORKED EXAMPLE",
+      "title": "Calculating Aquifer Recharge (Infiltration)",
+      "body": "Let's calculate the water distribution for a localized storm. A forest area receives 120 mm of precipitation (P). Soil evaporation and plant transpiration account for 50 mm (E). Surface runoff into nearby streams is measured at 40 mm (R). How much water infiltrates (I) to recharge the groundwater?",
+      "code": "I = P - (E + R)\nI = 120mm - (50mm + 40mm)\nI = 120mm - 90mm = 30mm",
+      "code_caption": "Water Balance Equation: Infiltration = Precipitation - (Evapotranspiration + Runoff)",
+      "takeaway": "Out of 120 mm of rain, exactly 30 mm (or 25%) successfully recharges the aquifer."
+     },
+     {
+      "id": "quiz",
+      "component": "quiz_set",
+      "title": "Water Cycle Self-Check",
+      "accent": "#0284c7",
+      "questions": [
+       {
+        "question": "Which process describes plants releasing water vapor into the air?",
+        "options": [
+         "Condensation",
+         "Infiltration",
+         "Transpiration",
+         "Precipitation"
+        ],
+        "correct": 2,
+        "explanation": "Transpiration is the vaporization of liquid water from plant tissues, primarily through leaf stomata."
+       },
+       {
+        "question": "What atmospheric change causes condensation to occur?",
+        "options": [
+         "Increasing temperature",
+         "Decreasing temperature",
+         "Increasing wind speed",
+         "Decreasing humidity"
+        ],
+        "correct": 1,
+        "explanation": "As warm, moist air rises, it cools. Lower temperatures reduce the air's capacity to hold water vapor, causing it to condense."
+       },
+       {
+        "question": "What is the primary driving force behind precipitation and runoff?",
+        "options": [
+         "Earth's magnetic field",
+         "Solar radiation",
+         "Centrifugal force",
+         "Gravity"
+        ],
+        "correct": 3,
+        "explanation": "Gravity pulls condensed water down from clouds as precipitation and forces surface water to flow downhill as runoff."
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

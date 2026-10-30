@@ -1,0 +1,37 @@
+{
+ "task": "T4",
+ "condition": "JB",
+ "label": "jev-picks-on-rule-slice__express__haiku-4-5__run1",
+ "agent_type": "jev-narrowed",
+ "catalogue": "JB-T4.json",
+ "atoms_in_catalogue": 20,
+ "prompt_chars": 10018,
+ "slot_recall": [
+  2,
+  3
+ ],
+ "secs": 5.0,
+ "usage": {
+  "input_tokens": 2823,
+  "output_tokens": 519
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns",
+  "heading",
+  "tag_block",
+  "entity_list"
+ ],
+ "score": {
+  "precision": 0.25,
+  "recall": 0.333,
+  "f1": 0.286,
+  "slot_hits": {
+   "list": true,
+   "status indicator": false,
+   "filter control": false
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"main-surface\")\n\n// Initialize filter state\n$/activeFilter = \"all\"\n\n// Sample data with statuses\n$/items = [\n  {title: \"Project Alpha\", status: \"in_progress\", detail: \"Currently building core features\"},\n  {title: \"Project Beta\", status: \"completed\", detail: \"Launched to production last week\"},\n  {title: \"Project Gamma\", status: \"pending\", detail: \"Waiting for stakeholder approval\"},\n  {title: \"Project Delta\", status: \"in_progress\", detail: \"Testing phase underway\"},\n  {title: \"Project Epsilon\", status: \"completed\", detail: \"Delivered ahead of schedule\"},\n  {title: \"Project Zeta\", status: \"pending\", detail: \"Requirements gathering in progress\"},\n  {title: \"Project Eta\", status: \"in_progress\", detail: \"Design review scheduled for Friday\"},\n  {title: \"Project Theta\", status: \"completed\", detail: \"Archived and documented\"}\n]\n\nroot = columns(1, \"0\", \"top\", [\n  {blocks: [\n    heading(\"Projects\"),\n    tag_block([\"All\", \"In Progress\", \"Completed\", \"Pending\"], color=\"#e5e7eb\")\n  ]},\n  {blocks: [\n    entity_list([\n      {name: \"Project Alpha\", subtitle: \"Currently building core features\", status: \"inprogress\"},\n      {name: \"Project Beta\", subtitle: \"Launched to production last week\", status: \"success\"},\n      {name: \"Project Gamma\", subtitle: \"Waiting for stakeholder approval\", status: \"moved\"},\n      {name: \"Project Delta\", subtitle: \"Testing phase underway\", status: \"inprogress\"},\n      {name: \"Project Epsilon\", subtitle: \"Delivered ahead of schedule\", status: \"success\"},\n      {name: \"Project Zeta\", subtitle: \"Requirements gathering in progress\", status: \"moved\"},\n      {name: \"Project Eta\", subtitle: \"Design review scheduled for Friday\", status: \"inprogress\"},\n      {name: \"Project Theta\", subtitle: \"Archived and documented\", status: \"success\"}\n    ])\n  ]}\n])\n\n</a2ui>"
+}

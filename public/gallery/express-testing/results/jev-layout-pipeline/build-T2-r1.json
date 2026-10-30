@@ -1,0 +1,29 @@
+{
+ "task": "T2",
+ "repeat": 1,
+ "writer_model": "gemini-3.5-flash-lite",
+ "decisions": "jev",
+ "jev_ms": 165,
+ "jev_usage": {
+  "input_tokens": 600,
+  "output_tokens": 101
+ },
+ "jev_answers": {
+  "layout": "dashboard",
+  "count": "4",
+  "cta": "no"
+ },
+ "layout": "dashboard",
+ "count": 4,
+ "cta": false,
+ "writer_secs": 1.05,
+ "writer_tokens": {
+  "in": 252,
+  "out": 211
+ },
+ "build_ms": 0.2,
+ "valid": true,
+ "error": null,
+ "compile_ms": 22.71,
+ "express": "<a2ui>\nttl = heading(text=\"Performance Overview\")\nkpis = metric_row(cols=4, metrics=[{value:\"$48,250\", label:\"Total Revenue\", sub:\"+12.4% vs last period\", trend:\"up\"}, {value:\"1,420\", label:\"Active Users\", sub:\"+5.1% vs last period\", trend:\"up\"}, {value:\"3.8%\", label:\"Bounce Rate\", sub:\"-0.8% vs last period\", trend:\"down\"}, {value:\"$34.50\", label:\"Avg Order Value\", sub:\"+2.3% vs last period\", trend:\"up\"}])\nchart = chartjs_bar(labels=[\"Mon\", \"Tue\", \"Wed\", \"Thu\"], datasets=[{label:\"Daily Revenue\", data:[11200, 12500, 11800, 13400]}])\nroot = columns(cols=1, gap=\"1.5rem\", align=\"top\", items=[{blocks: [ttl, kpis, chart]}])\n</a2ui>"
+}

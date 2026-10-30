@@ -1,0 +1,98 @@
+{
+ "label": "oracle-slice-3types__express__haiku-5-5__run1",
+ "task": "T3",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "hero",
+      "component": "gradient_hero",
+      "title": "Ship landing pages in minutes, not weeks",
+      "subtitle": "Acme gives your team drag-and-drop building blocks, live previews, and one-click publishing, so every launch looks polished from day one.",
+      "badge": "New in 2.0",
+      "accent": "#4f46e5",
+      "accent2": "#8b5cf6",
+      "align": "center",
+      "cta_label": "Get started free",
+      "cta_url": "https://example.com/signup"
+     },
+     {
+      "id": "features",
+      "component": "feature_grid",
+      "heading": "Everything you need to launch",
+      "description": "Built for product marketers and developers who want to move fast without cutting corners.",
+      "columns": 3,
+      "features": [
+       {
+        "icon": "\u26a1",
+        "title": "Lightning fast",
+        "description": "Pages load in under a second on any device, with automatic image optimization.",
+        "badge": "Performance",
+        "color": "#4f46e5"
+       },
+       {
+        "icon": "\ud83c\udfa8",
+        "title": "Brand-ready themes",
+        "description": "Start from a template and customize colors, fonts, and spacing to match your brand.",
+        "badge": "Design",
+        "color": "#8b5cf6"
+       },
+       {
+        "icon": "\ud83d\udcca",
+        "title": "Built-in analytics",
+        "description": "See visitors, conversions, and drop-off points in real time without extra scripts.",
+        "badge": "Insights",
+        "color": "#0ea5e9"
+       }
+      ]
+     },
+     {
+      "id": "quote",
+      "component": "blockquote_with_avatar",
+      "quote": "We went from idea to a live launch page in an afternoon. Our signup rate doubled in the first week.",
+      "author_name": "Jordan Lee",
+      "author_title": "Head of Growth, Northwind",
+      "avatar_url": "https://example.com/avatars/jordan-lee.jpg"
+     },
+     {
+      "id": "cta",
+      "component": "cta_button",
+      "url": "https://example.com/signup",
+      "label": "Start your free trial",
+      "color": "#4f46e5",
+      "same_tab": true
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "2rem",
+      "align": "center",
+      "items": [
+       {
+        "blocks": [
+         "hero",
+         "features",
+         "quote",
+         "cta"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

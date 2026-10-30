@@ -1,0 +1,42 @@
+{
+ "task": "T6",
+ "condition": "C_gemini-3.5-flash-l",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash-lite",
+ "hints": false,
+ "label": "oracle-slice-3types__express__gemini-3.5-flash-lite__request-only-timing__run3",
+ "agent_type": "Learning",
+ "catalogue": "C-learning.json",
+ "atoms_in_catalogue": 36,
+ "prompt_chars": 21139,
+ "slot_recall": [
+  2,
+  2
+ ],
+ "secs": 2.0,
+ "usage": {
+  "input_tokens": 5727,
+  "output_tokens": 487
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "page_header",
+  "progress_bar",
+  "flashcard_deck",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.5,
+  "recall": 1.0,
+  "f1": 0.667,
+  "slot_hits": {
+   "flashcard deck": true,
+   "progress indicator": true
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"flashcard-study-surface\")\n\n$/vocab/reviewed_count = 0\n$/vocab/total_count = 10\n\nheader = page_header(\n    title=\"Vocabulary Flashcards\",\n    subtitle=\"Flip through the cards to test your knowledge and track your progress.\",\n    icon=\"\ud83d\udcda\",\n    tag=\"Study Mode\",\n    accent=\"#4f46e5\"\n)\n\nprogress = progress_bar(\n    value=40,\n    label=\"Cards Reviewed\",\n    accent=\"#4f46e5\",\n    show_percent=true,\n    caption=\"4 of 10 cards reviewed\"\n)\n\ndeck = flashcard_deck(\n    cards=[\n        {front: \"Ephemeral\", back: \"Lasting for a very short time.\"},\n        {front: \"Serendipity\", back: \"Finding valuable things by chance rather than design.\"},\n        {front: \"Mellifluous\", back: \"Sweet or musical; pleasant to hear.\"},\n        {front: \"Petrichor\", back: \"A pleasant smell that frequently accompanies the first rain after a long period of warm, dry weather.\"},\n        {front: \"Ineffable\", back: \"Too great or extreme to be expressed or described in words.\"},\n        {front: \"Cynosure\", back: \"A person or thing that is the center of attention.\"},\n        {front: \"Lethologica\", back: \"The inability to remember a particular word you want to use.\"},\n        {front: \"Nebulous\", back: \"Inclearly defined, hazy, or vague.\"},\n        {front: \"Panacea\", back: \"A solution or remedy for all difficulties or diseases.\"},\n        {front: \"Sempiternal\", back: \"Eternal and unchanging; everlasting.\"}\n    ],\n    accent=\"#4f46e5\",\n    label_front=\"TERM\",\n    label_back=\"DEFINITION\"\n)\n\nroot = columns(\n    cols=1,\n    gap=\"1.5rem\",\n    items=[\n        {blocks: [header]},\n        {blocks: [progress]},\n        {blocks: [deck]}\n    ]\n)\n</a2ui>"
+}

@@ -1,0 +1,161 @@
+{
+ "label": "tag-slice__express__haiku-4-5__run1",
+ "task": "T1",
+ "format": "express",
+ "model_id": null,
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/g-learning.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "color_section",
+      "accent": "#06b6d4",
+      "style": "tint",
+      "blocks": [
+       "root_blocks_0",
+       "root_blocks_1",
+       "root_blocks_2",
+       "root_blocks_3",
+       "root_blocks_4",
+       "root_blocks_5",
+       "root_blocks_6",
+       "root_blocks_7"
+      ]
+     },
+     {
+      "id": "root_blocks_0",
+      "component": "article_hero",
+      "title": "The Water Cycle",
+      "subtitle": "Understanding Earth's continuous journey of water",
+      "image_url": "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1200&h=400&fit=crop"
+     },
+     {
+      "id": "root_blocks_1",
+      "component": "concept_ladder",
+      "title": "How Water Moves Through Earth's Systems",
+      "eyebrow": "CORE CONCEPT",
+      "dek": "Water perpetually cycles through evaporation, condensation, and precipitation.",
+      "hook": "Water is never created or destroyed on Earth\u2014it simply transforms and moves between the atmosphere, land, and oceans in a continuous cycle powered by the sun.",
+      "model": "Think of it as a cosmic recycling system where the sun acts as the pump.",
+      "model_note": "Every water molecule that falls as rain today may have once been in an ancient ocean or dinosaur.",
+      "rungs": [
+       "root_blocks_1_rungs_0",
+       "root_blocks_1_rungs_1",
+       "root_blocks_1_rungs_2",
+       "root_blocks_1_rungs_3"
+      ],
+      "closing_note": "The water cycle is a closed system\u2014the total amount of water on Earth stays roughly constant, but its location and form are always changing."
+     },
+     {
+      "id": "root_blocks_1_rungs_0",
+      "component": "concept_rung",
+      "badge": "1",
+      "kind": "depth",
+      "label": "EVAPORATION",
+      "title": "Water Rises as Vapor",
+      "body": "The sun's heat transforms liquid water from oceans, lakes, and rivers into invisible water vapor. This invisible gas rises into the atmosphere, carrying water molecules skyward. Plants also release water through transpiration, combining with evaporation to form evapotranspiration.",
+      "code": "Temperature \u2191 \u2192 Liquid Water \u2192 Water Vapor \u2191",
+      "code_caption": "Energy from the sun drives the phase change"
+     },
+     {
+      "id": "root_blocks_1_rungs_1",
+      "component": "concept_rung",
+      "badge": "2",
+      "kind": "depth",
+      "label": "CONDENSATION",
+      "title": "Vapor Becomes Visible",
+      "body": "As water vapor rises into the cooler upper atmosphere, it cools and condenses into liquid water droplets around microscopic dust particles. Billions of these droplets cluster together to form clouds\u2014the visible sign that water has changed form again.",
+      "code": "Water Vapor + Cooling \u2192 Liquid Droplets \u2192 Clouds",
+      "code_caption": "Clouds are collections of trillions of tiny water droplets"
+     },
+     {
+      "id": "root_blocks_1_rungs_2",
+      "component": "concept_rung",
+      "badge": "3",
+      "kind": "depth",
+      "label": "PRECIPITATION",
+      "title": "Water Returns to Earth",
+      "body": "When cloud droplets combine and become too heavy, they fall back to Earth as precipitation: rain, snow, sleet, or hail. This water lands on mountains, forests, plains, and oceans\u2014completing a cycle that takes days, years, or even millennia.",
+      "code": "Heavy Cloud Droplets \u2192 Gravity \u2192 Precipitation \u2193",
+      "code_caption": "Precipitation is the only way water returns from clouds to the surface"
+     },
+     {
+      "id": "root_blocks_1_rungs_3",
+      "component": "concept_rung",
+      "badge": "EX",
+      "kind": "example",
+      "label": "WORKED EXAMPLE",
+      "title": "Tracking One Water Droplet's Journey",
+      "body": "Imagine a raindrop lands in the Atlantic Ocean on Monday. Over the next week, solar radiation heats the ocean surface, and our droplet evaporates into water vapor. The vapor rises 3,000 meters into the atmosphere, where temperatures plummet. Our droplet condenses into a cloud droplet over the Azores. By Friday, the cloud drifts over Portugal and cools further. Our droplet combines with others and falls as rain on a hillside. Some of this water soaks into soil (infiltration), where it may be absorbed by tree roots and later transpired back into the air, or it may percolate deep underground to become groundwater.",
+      "code": "Ocean \u2192 Evaporation \u2192 Rise \u2192 Condensation \u2192 Cloud \u2192 Precipitation \u2192 Land \u2192 Infiltration \u2192 Groundwater",
+      "takeaway": "A single water molecule can take different paths: some cycles last days, others take thousands of years."
+     },
+     {
+      "id": "root_blocks_2",
+      "component": "spacer",
+      "height": "2rem"
+     },
+     {
+      "id": "root_blocks_3",
+      "component": "knowledge_check",
+      "question": "What is the primary energy source that drives the water cycle?",
+      "options": [
+       "The moon's gravitational pull",
+       "The sun's heat and radiation",
+       "Earth's internal heat from the core",
+       "Wind patterns in the atmosphere"
+      ],
+      "correct": 1,
+      "explanation": "The sun provides the energy that evaporates water from oceans and land surfaces, making it the engine of the entire water cycle."
+     },
+     {
+      "id": "root_blocks_4",
+      "component": "spacer",
+      "height": "2rem"
+     },
+     {
+      "id": "root_blocks_5",
+      "component": "knowledge_check",
+      "question": "Which process describes water vapor cooling and turning into liquid water droplets?",
+      "options": [
+       "Evaporation",
+       "Precipitation",
+       "Condensation",
+       "Transpiration"
+      ],
+      "correct": 2,
+      "explanation": "Condensation is the phase change from gas (water vapor) to liquid. This occurs in the upper atmosphere where temperatures are much cooler."
+     },
+     {
+      "id": "root_blocks_6",
+      "component": "spacer",
+      "height": "2rem"
+     },
+     {
+      "id": "root_blocks_7",
+      "component": "knowledge_check",
+      "question": "How does water return from clouds back to Earth's surface?",
+      "options": [
+       "Through sublimation directly into the ground",
+       "Through precipitation such as rain, snow, or hail",
+       "Through reflection by atmospheric particles",
+       "Through absorption by the ozone layer"
+      ],
+      "correct": 1,
+      "explanation": "Precipitation is the only mechanism by which water from clouds returns to the surface. When water droplets become too heavy, gravity pulls them down as rain, snow, sleet, or hail."
+     }
+    ]
+   }
+  }
+ ]
+}

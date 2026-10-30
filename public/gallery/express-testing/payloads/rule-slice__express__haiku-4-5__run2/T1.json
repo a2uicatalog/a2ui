@@ -1,0 +1,176 @@
+{
+ "label": "rule-slice__express__haiku-4-5__run2",
+ "task": "T1",
+ "format": "express",
+ "model_id": null,
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/b-learning.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "color_section",
+      "accent": "#4f46e5",
+      "style": "tint",
+      "blocks": [
+       "root_blocks_0",
+       "root_blocks_1",
+       "root_blocks_2",
+       "root_blocks_3",
+       "root_blocks_4",
+       "root_blocks_5",
+       "root_blocks_6",
+       "root_blocks_7",
+       "root_blocks_8"
+      ]
+     },
+     {
+      "id": "root_blocks_0",
+      "component": "heading",
+      "text": "The Water Cycle"
+     },
+     {
+      "id": "root_blocks_1",
+      "component": "body",
+      "text": "Water constantly moves between Earth's surface and the atmosphere in an endless cycle. Understanding this process is key to comprehending weather, climate, and environmental systems."
+     },
+     {
+      "id": "root_blocks_2",
+      "component": "spacer",
+      "height": 24
+     },
+     {
+      "id": "root_blocks_3",
+      "component": "concept_ladder",
+      "title": "Understanding the Water Cycle",
+      "eyebrow": "CORE CONCEPT",
+      "dek": "How water transforms and travels through our planet",
+      "hook": "Water doesn't stay in one place\u2014it's constantly evaporating, condensing, and falling as precipitation in a continuous planetary process.",
+      "model": "Think of it as nature's recycling system, where water changes form but never disappears.",
+      "model_note": "This cycle has been running for billions of years.",
+      "rungs": [
+       "root_blocks_3_rungs_0",
+       "root_blocks_3_rungs_1",
+       "root_blocks_3_rungs_2",
+       "root_blocks_3_rungs_3"
+      ],
+      "closing_note": "Every water molecule on Earth has cycled through this process countless times over billions of years."
+     },
+     {
+      "id": "root_blocks_3_rungs_0",
+      "component": "concept_rung",
+      "badge": "1",
+      "kind": "depth",
+      "title": "Evaporation",
+      "body": "Water from oceans, lakes, and rivers is heated by the sun and transforms into water vapor, rising into the atmosphere. This is the cycle's starting point.",
+      "takeaway": "Heat + water = water vapor in the air"
+     },
+     {
+      "id": "root_blocks_3_rungs_1",
+      "component": "concept_rung",
+      "badge": "2",
+      "kind": "depth",
+      "title": "Condensation",
+      "body": "As water vapor rises and cools in the upper atmosphere, it condenses into tiny water droplets. These droplets cluster together to form clouds.",
+      "takeaway": "Cool air + water vapor = liquid water droplets"
+     },
+     {
+      "id": "root_blocks_3_rungs_2",
+      "component": "concept_rung",
+      "badge": "3",
+      "kind": "depth",
+      "title": "Precipitation",
+      "body": "When water droplets in clouds become heavy enough, they fall back to Earth as rain, snow, sleet, or hail. This returns water to the surface.",
+      "takeaway": "Heavy clouds + gravity = water returns to Earth"
+     },
+     {
+      "id": "root_blocks_3_rungs_3",
+      "component": "concept_rung",
+      "badge": "EX",
+      "kind": "example",
+      "title": "The Complete Cycle in Action",
+      "body": "Imagine a raindrop that falls on a mountain lake. Solar radiation heats it until it becomes water vapor and rises into the sky. As it climbs higher and encounters cooler air at 10,000 feet, it condenses into a cloud droplet. More droplets join it, and eventually the cloud becomes so saturated that the droplet falls as rain on a forest far away. It soaks into the soil, is absorbed by tree roots, and transpired back into the air through leaves. The cycle continues endlessly.",
+      "code": "Solar Input \u2192 Evaporation \u2192 Rising Vapor \u2192 Cooling\n     \u2192 Condensation \u2192 Cloud Formation \u2192 Precipitation\n     \u2192 Collection \u2192 Transpiration \u2192 Back to Start",
+      "code_caption": "The water cycle continuously repeats this sequence."
+     },
+     {
+      "id": "root_blocks_4",
+      "component": "spacer",
+      "height": 32
+     },
+     {
+      "id": "root_blocks_5",
+      "component": "heading",
+      "text": "Check Your Understanding"
+     },
+     {
+      "id": "root_blocks_6",
+      "component": "quiz_set",
+      "title": "Water Cycle Self-Check",
+      "questions": [
+       {
+        "question": "What is the primary energy source that drives the water cycle?",
+        "options": [
+         "Gravity",
+         "The sun's heat",
+         "Wind patterns",
+         "Ocean currents"
+        ],
+        "correct": 1,
+        "explanation": "The sun's heat is the primary driver\u2014it provides the energy needed to evaporate water from Earth's surface into the atmosphere."
+       },
+       {
+        "question": "Which process describes water vapor turning into liquid water droplets?",
+        "options": [
+         "Evaporation",
+         "Condensation",
+         "Precipitation",
+         "Sublimation"
+        ],
+        "correct": 1,
+        "explanation": "Condensation is the phase change from gas (water vapor) to liquid. This occurs when water vapor cools in the upper atmosphere."
+       },
+       {
+        "question": "What happens to water after it falls as precipitation?",
+        "options": [
+         "It immediately evaporates",
+         "It flows to the ocean, infiltrates soil, or is absorbed by plants",
+         "It remains frozen on land",
+         "It escapes to space"
+        ],
+        "correct": 1,
+        "explanation": "Precipitation can follow multiple pathways: it may run off into rivers and oceans, soak into groundwater, or be absorbed by plants and eventually transpired back to the atmosphere."
+       }
+      ],
+      "pass_score": 70,
+      "accent": "#4f46e5"
+     },
+     {
+      "id": "root_blocks_7",
+      "component": "spacer",
+      "height": 24
+     },
+     {
+      "id": "root_blocks_8",
+      "component": "learning_objectives",
+      "objectives": [
+       "Explain the three main stages of the water cycle: evaporation, condensation, and precipitation",
+       "Identify the sun's role as the primary energy source driving the water cycle",
+       "Describe the pathways water takes after precipitation falls to Earth",
+       "Understand how water continuously cycles through different forms and locations"
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

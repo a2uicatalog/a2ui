@@ -1,0 +1,40 @@
+{
+ "task": "T4",
+ "condition": "DTN_sonnet-5-5",
+ "temperature_applied": false,
+ "format": "json",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-sonnet-5-5",
+ "hints": false,
+ "label": "oracle-slice-6types__json__sonnet-5-5__temp0__run3",
+ "agent_type": "T4",
+ "catalogue": "D-t4.json",
+ "atoms_in_catalogue": 20,
+ "prompt_chars": 21258,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 17.7,
+ "usage": {
+  "input_tokens": 8261,
+  "output_tokens": 2116
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns"
+ ],
+ "score": {
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "list": false,
+   "status indicator": false,
+   "filter control": false
+  }
+ },
+ "reply": "The brief is a filterable list of eight items. I used a two-column layout with the status filter chips on the left and a sortable table on the right. The table gives each item a title, status, and one-line detail.\n\nThe catalog has no action or state wiring, so the chips show the filter options and the current \"All\" selection but don't filter the rows themselves.\n\n<a2ui-json>\n[\n  {\n    \"version\": \"v0.9.1\",\n    \"createSurface\": {\n      \"surfaceId\": \"status-list\",\n      \"catalogId\": \"https://a2uicatalog.ai/catalog/d-t4.json\"\n    }\n  },\n  {\n    \"version\": \"v0.9.1\",\n    \"updateComponents\": {\n      \"surfaceId\": \"status-list\",\n      \"components\": [\n        {\n          \"id\": \"root\",\n          \"component\": \"columns\",\n          \"cols\": 2,\n          \"gap\": \"1.5rem\",\n          \"align\": \"top\",\n          \"items\": [\n            {\n              \"blocks\": [\n                {\n                  \"id\": \"list-heading\",\n                  \"component\": \"heading\",\n                  \"text\": \"Project items\"\n                },\n                {\n                  \"id\": \"list-intro\",\n                  \"component\": \"body\",\n                  \"text\": \"Eight items. Filter by status to narrow the list.\"\n                },\n                {\n                  \"id\": \"status-filter\",\n                  \"component\": \"chip_group\",\n                  \"label\": \"Filter by status\",\n                  \"layout\": \"wrap\",\n                  \"chips\": [\n                    { \"label\": \"All (8)\", \"active\": true },\n                    { \"label\": \"Done (2)\", \"color\": \"#2e9e5b\" },\n                    { \"label\": \"In progress (3)\", \"color\": \"#2f6fdb\" },\n                    { \"label\": \"Blocked (1)\", \"color\": \"#d64545\" },\n                    { \"label\": \"Not started (2)\", \"color\": \"#7a8394\" }\n                  ]\n                }\n              ]\n            },\n            {\n              \"blocks\": [\n                {\n                  \"id\": \"items-table\",\n                  \"component\": \"data_table_sortable\",\n                  \"headers\": [\"Title\", \"Status\", \"Detail\"],\n                  \"rows\": [\n                    [\"Set up repository\", \"Done\", \"Repo created with CI and branch protection.\"],\n                    [\"Design data model\", \"Done\", \"Schema reviewed and approved by the team.\"],\n                    [\"Build API endpoints\", \"In progress\", \"Auth and list routes are done; search is pending.\"],\n                    [\"Create dashboard UI\", \"In progress\", \"Layout is finished; charts are still being wired up.\"],\n                    [\"Write integration tests\", \"In progress\", \"Covering the main user flows first.\"],\n                    [\"Third-party payment setup\", \"Blocked\", \"Waiting on vendor credentials.\"],\n                    [\"Performance audit\", \"Not started\", \"Scheduled once the API is feature-complete.\"],\n                    [\"Launch checklist\", \"Not started\", \"To be drafted before the release candidate.\"]\n                  ]\n                }\n              ]\n            }\n          ]\n        }\n      ]\n    }\n  }\n]\n</a2ui-json>"
+}

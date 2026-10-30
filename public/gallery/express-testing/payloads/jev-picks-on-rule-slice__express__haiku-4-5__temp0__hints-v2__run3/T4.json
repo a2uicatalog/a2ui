@@ -1,0 +1,205 @@
+{
+ "label": "jev-picks-on-rule-slice__express__haiku-4-5__temp0__hints-v2__run3",
+ "task": "T4",
+ "format": "express",
+ "model_id": null,
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/jb-t4.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "statusFilter",
+      "component": "tab_group",
+      "target": "selectedStatus",
+      "options": [
+       {
+        "value": "all",
+        "label": "All",
+        "selected": true
+       },
+       {
+        "value": "active",
+        "label": "Active"
+       },
+       {
+        "value": "completed",
+        "label": "Completed"
+       },
+       {
+        "value": "pending",
+        "label": "Pending"
+       }
+      ],
+      "panels": {
+       "all": "items-all",
+       "active": "items-active",
+       "completed": "items-completed",
+       "pending": "items-pending"
+      }
+     },
+     {
+      "id": "itemsAll",
+      "component": "entity_list",
+      "items": [
+       {
+        "name": "Item One",
+        "subtitle": "Setup initial configuration",
+        "status": "active",
+        "icon": "circle"
+       },
+       {
+        "name": "Item Two",
+        "subtitle": "Review documentation",
+        "status": "completed",
+        "icon": "check"
+       },
+       {
+        "name": "Item Three",
+        "subtitle": "Deploy to staging",
+        "status": "pending",
+        "icon": "clock"
+       },
+       {
+        "name": "Item Four",
+        "subtitle": "Run integration tests",
+        "status": "active",
+        "icon": "circle"
+       },
+       {
+        "name": "Item Five",
+        "subtitle": "Prepare release notes",
+        "status": "completed",
+        "icon": "check"
+       },
+       {
+        "name": "Item Six",
+        "subtitle": "Schedule team meeting",
+        "status": "pending",
+        "icon": "clock"
+       },
+       {
+        "name": "Item Seven",
+        "subtitle": "Update API documentation",
+        "status": "active",
+        "icon": "circle"
+       },
+       {
+        "name": "Item Eight",
+        "subtitle": "Archive old records",
+        "status": "completed",
+        "icon": "check"
+       }
+      ]
+     },
+     {
+      "id": "itemsActive",
+      "component": "entity_list",
+      "items": [
+       {
+        "name": "Item One",
+        "subtitle": "Setup initial configuration",
+        "status": "active",
+        "icon": "circle"
+       },
+       {
+        "name": "Item Four",
+        "subtitle": "Run integration tests",
+        "status": "active",
+        "icon": "circle"
+       },
+       {
+        "name": "Item Seven",
+        "subtitle": "Update API documentation",
+        "status": "active",
+        "icon": "circle"
+       }
+      ]
+     },
+     {
+      "id": "itemsCompleted",
+      "component": "entity_list",
+      "items": [
+       {
+        "name": "Item Two",
+        "subtitle": "Review documentation",
+        "status": "completed",
+        "icon": "check"
+       },
+       {
+        "name": "Item Five",
+        "subtitle": "Prepare release notes",
+        "status": "completed",
+        "icon": "check"
+       },
+       {
+        "name": "Item Eight",
+        "subtitle": "Archive old records",
+        "status": "completed",
+        "icon": "check"
+       }
+      ]
+     },
+     {
+      "id": "itemsPending",
+      "component": "entity_list",
+      "items": [
+       {
+        "name": "Item Three",
+        "subtitle": "Deploy to staging",
+        "status": "pending",
+        "icon": "clock"
+       },
+       {
+        "name": "Item Six",
+        "subtitle": "Schedule team meeting",
+        "status": "pending",
+        "icon": "clock"
+       }
+      ]
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "items": [
+       {
+        "blocks": [
+         "statusFilter"
+        ]
+       },
+       {
+        "blocks": [
+         "itemsAll"
+        ]
+       },
+       {
+        "blocks": [
+         "itemsActive"
+        ]
+       },
+       {
+        "blocks": [
+         "itemsCompleted"
+        ]
+       },
+       {
+        "blocks": [
+         "itemsPending"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

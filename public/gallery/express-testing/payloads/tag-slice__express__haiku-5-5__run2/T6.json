@@ -1,0 +1,100 @@
+{
+ "label": "tag-slice__express__haiku-5-5__run2",
+ "task": "T6",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/g-learning.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "color_section",
+      "accent": "#4f46e5",
+      "style": "light",
+      "padding": "24px",
+      "grid": false,
+      "max_width": "90%",
+      "blocks": [
+       "root_blocks_0",
+       "root_blocks_1",
+       "root_blocks_2"
+      ]
+     },
+     {
+      "id": "root_blocks_0",
+      "component": "heading",
+      "text": "French Vocabulary"
+     },
+     {
+      "id": "root_blocks_1",
+      "component": "progress_bar",
+      "value": 0,
+      "label": "Cards reviewed",
+      "accent": "#4f46e5",
+      "show_percent": true,
+      "caption": "0 of 10 cards reviewed"
+     },
+     {
+      "id": "root_blocks_2",
+      "component": "flashcard_deck",
+      "cards": [
+       {
+        "front": "bonjour",
+        "back": "hello"
+       },
+       {
+        "front": "merci",
+        "back": "thank you"
+       },
+       {
+        "front": "chat",
+        "back": "cat"
+       },
+       {
+        "front": "chien",
+        "back": "dog"
+       },
+       {
+        "front": "maison",
+        "back": "house"
+       },
+       {
+        "front": "eau",
+        "back": "water"
+       },
+       {
+        "front": "pain",
+        "back": "bread"
+       },
+       {
+        "front": "livre",
+        "back": "book"
+       },
+       {
+        "front": "soleil",
+        "back": "sun"
+       },
+       {
+        "front": "ami",
+        "back": "friend"
+       }
+      ],
+      "accent": "#4f46e5",
+      "label_front": "FRENCH",
+      "label_back": "ENGLISH"
+     }
+    ]
+   }
+  }
+ ]
+}

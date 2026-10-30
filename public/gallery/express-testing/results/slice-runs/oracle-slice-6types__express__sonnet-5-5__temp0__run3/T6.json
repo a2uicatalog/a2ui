@@ -1,0 +1,43 @@
+{
+ "task": "T6",
+ "condition": "DT_sonnet-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-sonnet-5-5",
+ "hints": false,
+ "label": "oracle-slice-6types__express__sonnet-5-5__temp0__run3",
+ "agent_type": "T6",
+ "catalogue": "D-t6.json",
+ "atoms_in_catalogue": 12,
+ "prompt_chars": 8305,
+ "slot_recall": [
+  2,
+  2
+ ],
+ "secs": 7.3,
+ "usage": {
+  "input_tokens": 3043,
+  "output_tokens": 798
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "heading",
+  "body",
+  "progress_bar",
+  "flashcard_deck",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.4,
+  "recall": 1.0,
+  "f1": 0.571,
+  "slot_hits": {
+   "flashcard deck": true,
+   "progress indicator": true
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"vocab-flashcards\")\ntitle = heading(\"Vocabulary Flashcards\")\nintro = body(\"Click a card to flip it and reveal the definition. Work through all ten words to complete your review.\")\nprogress = progress_bar(0, \"Cards reviewed\", \"#4f46e5\", true, \"0 of 10 reviewed\")\ndeck = flashcard_deck([\n  {front: \"Ephemeral\", back: \"Lasting for a very short time.\"},\n  {front: \"Ubiquitous\", back: \"Present, appearing, or found everywhere.\"},\n  {front: \"Benevolent\", back: \"Well-meaning and kindly.\"},\n  {front: \"Meticulous\", back: \"Showing great attention to detail; very careful and precise.\"},\n  {front: \"Pragmatic\", back: \"Dealing with things sensibly and realistically.\"},\n  {front: \"Eloquent\", back: \"Fluent and persuasive in speaking or writing.\"},\n  {front: \"Resilient\", back: \"Able to recover quickly from difficulties.\"},\n  {front: \"Candid\", back: \"Truthful and straightforward; frank.\"},\n  {front: \"Ambiguous\", back: \"Open to more than one interpretation; unclear.\"},\n  {front: \"Tenacious\", back: \"Holding firmly to a goal or belief; persistent.\"}\n], \"#4f46e5\", \"WORD\", \"DEFINITION\")\nroot = columns(2, \"1rem\", \"top\", [\n  {blocks: [title, intro, progress]},\n  {blocks: [deck]}\n])\n</a2ui>"
+}

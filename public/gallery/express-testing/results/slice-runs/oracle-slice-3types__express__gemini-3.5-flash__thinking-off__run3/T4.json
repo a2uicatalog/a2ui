@@ -1,0 +1,44 @@
+{
+ "task": "T4",
+ "condition": "C_gemini-3.5-flash",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 32768,
+ "model_id": "gemini-3.5-flash",
+ "hints": false,
+ "label": "oracle-slice-3types__express__gemini-3.5-flash__thinking-off__run3",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 16421,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 5.0,
+ "usage": {
+  "input_tokens": 4600,
+  "output_tokens": 939
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "chip_group",
+  "entity_list",
+  "columns",
+  "heading",
+  "body"
+ ],
+ "score": {
+  "precision": 0.4,
+  "recall": 0.667,
+  "f1": 0.5,
+  "slot_hits": {
+   "list": true,
+   "status indicator": false,
+   "filter control": true
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"status-filter-surface\")\n\n# Initialize default selected filter tab to \"All\"\n$/filter/selected = \"All\"\n\n# List of items matching the brief (8 items with title, status, and one-line detail)\n$/items = [\n  {title: \"Database Migration\", status: \"In Progress\", detail: \"Migrating primary production database to PostgreSQL 16.\"},\n  {title: \"API Gateway Integration\", status: \"Completed\", detail: \"Successfully configured rate limiting and OAuth2 proxy.\"},\n  {title: \"OAuth2 Security Audit\", status: \"Pending\", detail: \"Reviewing active client credentials and refresh token rotation.\"},\n  {title: \"Billing Pipeline Fix\", status: \"In Progress\", detail: \"Addressing edge-case webhook drops during high traffic hours.\"},\n  {title: \"Mobile Push Notifications\", status: \"Completed\", detail: \"APNs and FCM certificates updated for the next release cycle.\"},\n  {title: \"Disaster Recovery Drill\", status: \"Pending\", detail: \"Testing multi-region failover and point-in-time recovery pipelines.\"},\n  {title: \"Frontend Error Tracking\", status: \"Completed\", detail: \"Sentry SDK integrated across all core dashboard modules.\"},\n  {title: \"LLM Helper Evaluation\", status: \"Pending\", detail: \"Testing latency and cost effectiveness of model variants.\"}\n]\n\n# Set up interactive filter chips utilizing chip_group component.\n# Action updates the selected filter stored in $/filter/selected.\nfilter_tabs = chip_group(\n  label=\"Filter by Status\",\n  layout=\"wrap\",\n  same_tab=true,\n  chips=[\n    {label: \"All\", color: \"#6B7280\", url: \"javascript:void(0)\", active: true},\n    {label: \"Completed\", color: \"#10B981\", url: \"javascript:void(0)\"},\n    {label: \"In Progress\", color: \"#3B82F6\", url: \"javascript:void(0)\"},\n    {label: \"Pending\", color: \"#F59E0B\", url: \"javascript:void(0)\"}\n  ]\n)\n\n# Render our list items using entity_list matching the selected filter state (represented static layout here)\n# Since we are rendering 8 items, we represent them together with their distinct semantic status badges.\nitems_list = entity_list([\n  {name: \"Database Migration\", subtitle: \"Migrating primary production database to PostgreSQL 16.\", icon: \"\u2699\ufe0f\", status: \"In Progress\", meta: \"High Priority\"},\n  {name: \"API Gateway Integration\", subtitle: \"Successfully configured rate limiting and OAuth2 proxy.\", icon: \"\u2705\", status: \"Completed\", meta: \"Infrastructure\"},\n  {name: \"OAuth2 Security Audit\", subtitle: \"Reviewing active client credentials and refresh token rotation.\", icon: \"\u26a0\ufe0f\", status: \"Pending\", meta: \"Compliance\"},\n  {name: \"Billing Pipeline Fix\", subtitle: \"Addressing edge-case webhook drops during high traffic hours.\", icon: \"\u2699\ufe0f\", status: \"In Progress\", meta: \"Finance\"},\n  {name: \"Mobile Push Notifications\", subtitle: \"APNs and FCM certificates updated for the next release cycle.\", icon: \"\u2705\", status: \"Completed\", meta: \"Mobile\"},\n  {name: \"Disaster Recovery Drill\", subtitle: \"Testing multi-region failover and point-in-time recovery pipelines.\", icon: \"\u26a0\ufe0f\", status: \"Pending\", meta: \"Operations\"},\n  {name: \"Frontend Error Tracking\", subtitle: \"Sentry SDK integrated across all core dashboard modules.\", icon: \"\u2705\", status: \"Completed\", meta: \"Frontend\"},\n  {name: \"LLM Helper Evaluation\", subtitle: \"Testing latency and cost effectiveness of model variants.\", icon: \"\u26a0\ufe0f\", status: \"Pending\", meta: \"Research\"}\n])\n\nroot = columns(\n  cols=1,\n  gap=\"1.5rem\",\n  align=\"top\",\n  items=[\n    {blocks: [\n      heading(\"Project Task Board\"),\n      body(\"View and filter the active development items below by their status state.\"),\n      filter_tabs,\n      items_list\n    ]}\n  ]\n)\n</a2ui>"
+}

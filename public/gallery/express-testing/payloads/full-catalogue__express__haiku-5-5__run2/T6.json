@@ -1,0 +1,98 @@
+{
+ "label": "full-catalogue__express__haiku-5-5__run2",
+ "task": "T6",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/a-full.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "title",
+      "component": "heading",
+      "text": "Spanish Vocabulary"
+     },
+     {
+      "id": "deck",
+      "component": "flashcard_deck",
+      "cards": [
+       {
+        "front": "casa",
+        "back": "house"
+       },
+       {
+        "front": "perro",
+        "back": "dog"
+       },
+       {
+        "front": "gato",
+        "back": "cat"
+       },
+       {
+        "front": "agua",
+        "back": "water"
+       },
+       {
+        "front": "libro",
+        "back": "book"
+       },
+       {
+        "front": "mesa",
+        "back": "table"
+       },
+       {
+        "front": "sol",
+        "back": "sun"
+       },
+       {
+        "front": "luna",
+        "back": "moon"
+       },
+       {
+        "front": "amigo",
+        "back": "friend"
+       },
+       {
+        "front": "comer",
+        "back": "to eat"
+       }
+      ],
+      "accent": "#4f46e5",
+      "label_front": "SPANISH",
+      "label_back": "ENGLISH"
+     },
+     {
+      "id": "progress",
+      "component": "progress_bar",
+      "value": 0,
+      "label": "Cards reviewed",
+      "caption": "0 of 10 reviewed",
+      "show_percent": true,
+      "accent": "#4f46e5"
+     },
+     {
+      "id": "root",
+      "component": "color_section",
+      "accent": "#4f46e5",
+      "style": "light",
+      "padding": "24px",
+      "blocks": [
+       "title",
+       "deck",
+       "progress"
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

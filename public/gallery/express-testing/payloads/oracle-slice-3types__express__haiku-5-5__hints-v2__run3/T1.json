@@ -1,0 +1,138 @@
+{
+ "label": "oracle-slice-3types__express__haiku-5-5__hints-v2__run3",
+ "task": "T1",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "title",
+      "component": "page_header",
+      "title": "The Water Cycle",
+      "subtitle": "How water moves between the oceans, atmosphere, and land",
+      "icon": "\ud83d\udca7",
+      "tag": "Lesson 1",
+      "accent": "#0ea5e9"
+     },
+     {
+      "id": "h1",
+      "component": "heading",
+      "text": "1. Evaporation"
+     },
+     {
+      "id": "b1",
+      "component": "body",
+      "text": "The Sun heats water at the surface of oceans, lakes, and rivers. Water molecules gain energy, turn into vapour, and rise into the atmosphere."
+     },
+     {
+      "id": "h2",
+      "component": "heading",
+      "text": "2. Condensation"
+     },
+     {
+      "id": "b2",
+      "component": "body",
+      "text": "As warm, moist air rises it cools. Water vapour condenses onto tiny particles such as dust, forming droplets that cluster into clouds."
+     },
+     {
+      "id": "h3",
+      "component": "heading",
+      "text": "3. Precipitation and Collection"
+     },
+     {
+      "id": "b3",
+      "component": "body",
+      "text": "When droplets grow heavy enough they fall as rain, snow, sleet, or hail. Water then collects in lakes, rivers, groundwater, and oceans, and the cycle begins again."
+     },
+     {
+      "id": "example",
+      "component": "concept_rung",
+      "kind": "example",
+      "title": "Worked example: a puddle after rain",
+      "body": "A puddle forms on a warm afternoon after a storm. Sunlight heats the water, so it evaporates into the air (evaporation). The vapour cools higher up and forms a small cloud (condensation). Later, that cloud releases rain back onto the ground (precipitation).",
+      "takeaway": "Every drop of water is part of a continuous loop, not a one-way trip."
+     },
+     {
+      "id": "check",
+      "component": "quiz_set",
+      "title": "Self-check",
+      "pass_score": 70,
+      "accent": "#0ea5e9",
+      "questions": [
+       {
+        "question": "What drives evaporation in the water cycle?",
+        "options": [
+         "Wind alone",
+         "Heat energy from the Sun",
+         "Gravity",
+         "Soil pressure"
+        ],
+        "correct": 1,
+        "explanation": "Solar energy heats surface water, giving molecules enough energy to become vapour."
+       },
+       {
+        "question": "What is condensation?",
+        "options": [
+         "Water vapour turning into liquid droplets",
+         "Liquid water turning into vapour",
+         "Ice melting into rivers",
+         "Rain falling onto land"
+        ],
+        "correct": 0,
+        "explanation": "Cooling water vapour condenses onto particles to form droplets and clouds."
+       },
+       {
+        "question": "Which process returns water from clouds to the Earth's surface?",
+        "options": [
+         "Transpiration",
+         "Infiltration",
+         "Precipitation",
+         "Sublimation"
+        ],
+        "correct": 2,
+        "explanation": "Precipitation includes rain, snow, sleet, and hail falling from clouds."
+       }
+      ]
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "2rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "title",
+         "h1",
+         "b1",
+         "h2",
+         "b2",
+         "h3",
+         "b3"
+        ]
+       },
+       {
+        "blocks": [
+         "example",
+         "check"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

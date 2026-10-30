@@ -1,0 +1,157 @@
+{
+ "label": "jev-picks-on-rule-slice__express__haiku-4-5__run1",
+ "task": "T4",
+ "format": "express",
+ "model_id": null,
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main-surface",
+    "catalog_id": "https://a2uicatalog.ai/catalog/jb-t4.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main-surface",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "0",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "_inline_1",
+         "_inline_2"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_3"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "_inline_1",
+      "component": "heading",
+      "text": "Projects"
+     },
+     {
+      "id": "_inline_2",
+      "component": "tag_block",
+      "tags": [
+       "All",
+       "In Progress",
+       "Completed",
+       "Pending"
+      ],
+      "color": "#e5e7eb"
+     },
+     {
+      "id": "_inline_3",
+      "component": "entity_list",
+      "items": [
+       {
+        "name": "Project Alpha",
+        "subtitle": "Currently building core features",
+        "status": "inprogress"
+       },
+       {
+        "name": "Project Beta",
+        "subtitle": "Launched to production last week",
+        "status": "success"
+       },
+       {
+        "name": "Project Gamma",
+        "subtitle": "Waiting for stakeholder approval",
+        "status": "moved"
+       },
+       {
+        "name": "Project Delta",
+        "subtitle": "Testing phase underway",
+        "status": "inprogress"
+       },
+       {
+        "name": "Project Epsilon",
+        "subtitle": "Delivered ahead of schedule",
+        "status": "success"
+       },
+       {
+        "name": "Project Zeta",
+        "subtitle": "Requirements gathering in progress",
+        "status": "moved"
+       },
+       {
+        "name": "Project Eta",
+        "subtitle": "Design review scheduled for Friday",
+        "status": "inprogress"
+       },
+       {
+        "name": "Project Theta",
+        "subtitle": "Archived and documented",
+        "status": "success"
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_data_model": {
+    "surface_id": "main-surface",
+    "path": "/",
+    "value": {
+     "activeFilter": "all",
+     "items": [
+      {
+       "title": "Project Alpha",
+       "status": "in_progress",
+       "detail": "Currently building core features"
+      },
+      {
+       "title": "Project Beta",
+       "status": "completed",
+       "detail": "Launched to production last week"
+      },
+      {
+       "title": "Project Gamma",
+       "status": "pending",
+       "detail": "Waiting for stakeholder approval"
+      },
+      {
+       "title": "Project Delta",
+       "status": "in_progress",
+       "detail": "Testing phase underway"
+      },
+      {
+       "title": "Project Epsilon",
+       "status": "completed",
+       "detail": "Delivered ahead of schedule"
+      },
+      {
+       "title": "Project Zeta",
+       "status": "pending",
+       "detail": "Requirements gathering in progress"
+      },
+      {
+       "title": "Project Eta",
+       "status": "in_progress",
+       "detail": "Design review scheduled for Friday"
+      },
+      {
+       "title": "Project Theta",
+       "status": "completed",
+       "detail": "Archived and documented"
+      }
+     ]
+    }
+   }
+  }
+ ]
+}

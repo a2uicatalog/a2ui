@@ -1,0 +1,33 @@
+Metrics Overview
+ $ 128.4K ↑ 
+ Monthly Revenue
+ +12.3% vs last month
+ 8,942 ↑ 
+ Active Users
+ +5.8% vs last month
+ 3.2 % ↓ 
+ Churn Rate
+ -0.4 pts vs last month
+ 4.6 % ↑ 
+ Conversion Rate
+ +0.7 pts vs last month
+ This Month vs Last Month
+ Last Month 
+ This Month 
+ 0
+ 20
+ 40
+ 60
+ 80
+ 100
+ 120
+ 140
+ Revenue ($K)
+ Active Users (K)
+ Churn (%)
+ Conversion (%)
+ Category Last Month This Month 
+ Revenue ($K) 114.30 128.40 
+ Active Users (K) 8.45 8.94 
+ Churn (%) 3.60 3.20 
+ Conversion (%) 3.90 4.60

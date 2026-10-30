@@ -1,0 +1,48 @@
+{
+ "task": "T1",
+ "condition": "D_haiku-5-5H2",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": true,
+ "label": "oracle-slice-6types__express__haiku-5-5__hints-v2__run1",
+ "agent_type": "T1",
+ "catalogue": "D-t1.json",
+ "atoms_in_catalogue": 28,
+ "prompt_chars": 17769,
+ "slot_recall": [
+  5,
+  5
+ ],
+ "secs": 10.8,
+ "usage": {
+  "input_tokens": 6606,
+  "output_tokens": 2346
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "page_header",
+  "concept_rung",
+  "concept_rung",
+  "concept_rung",
+  "concept_rung",
+  "quiz_set",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.857,
+  "recall": 0.6,
+  "f1": 0.706,
+  "slot_hits": {
+   "title": true,
+   "concept sections (x3)": false,
+   "worked example": true,
+   "3-question quiz": true,
+   "quiz result": false
+  }
+ },
+ "reply": "<a2ui>\nheader = page_header(\"The Water Cycle\", \"How water moves between the ocean, the air, and the land\", \"\ud83d\udca7\", \"Lesson\")\n\nc1 = concept_rung(\"1\", \"depth\", \"DEPTH 1\", \"Evaporation\", \"The Sun heats water in oceans, lakes, and rivers. The water turns into vapor and rises into the air, leaving most salt and impurities behind.\")\n\nc2 = concept_rung(\"2\", \"depth\", \"DEPTH 2\", \"Condensation and Precipitation\", \"As water vapor rises it cools and condenses into tiny droplets that form clouds. When the droplets grow heavy enough, they fall as rain, snow, sleet, or hail.\")\n\nc3 = concept_rung(\"3\", \"depth\", \"DEPTH 3\", \"Collection and Runoff\", \"Precipitation collects in oceans, lakes, and underground aquifers. Some water soaks into the soil, some runs off across the land into streams, and plants release water vapor through transpiration.\")\n\nexample = concept_rung(\"EX\", \"example\", \"WORKED EXAMPLE\", \"Tracing One Raindrop\", \"1. Evaporation: sunlight lifts water from the Pacific Ocean into the air.\\n\\n2. Transport: winds carry the vapor inland over a mountain range.\\n\\n3. Condensation: the vapor cools and forms a cloud.\\n\\n4. Precipitation: the droplet falls as snow on the mountain peak.\\n\\n5. Runoff: meltwater flows downhill into a river and returns to the ocean.\", \"\", \"\", \"The same water molecules keep cycling through every stage.\")\n\nquiz = quiz_set(\"Self-check\", [\n  {question: \"What process turns liquid water into water vapor?\", options: [\"Condensation\", \"Precipitation\", \"Evaporation\", \"Runoff\"], correct: 2, explanation: \"Evaporation happens when the Sun heats liquid water and it becomes vapor.\"},\n  {question: \"What happens when water vapor cools and forms clouds?\", options: [\"Transpiration\", \"Condensation\", \"Infiltration\", \"Collection\"], correct: 1, explanation: \"Condensation turns vapor into tiny droplets that make up clouds.\"},\n  {question: \"Which of these is NOT a form of precipitation?\", options: [\"Rain\", \"Snow\", \"Hail\", \"Evaporation\"], correct: 3, explanation: \"Evaporation is a stage of the cycle where water becomes vapor. Rain, snow, and hail all fall from clouds.\"}\n], 70, \"#4f46e5\")\n\nroot = columns(2, \"1.5rem\", \"top\", [\n  {blocks: [header, c1, c2, c3]},\n  {blocks: [example, quiz]}\n])\n</a2ui>"
+}

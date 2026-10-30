@@ -1,0 +1,23 @@
+{
+ "task": "T4",
+ "label": "haiku-live3-r3",
+ "secs": 3.6,
+ "usage": {
+  "input_tokens": 85002,
+  "output_tokens": 336
+ },
+ "valid": false,
+ "error": "A2uiCompilationValidationError: Standalone function calls are not supported in A2UI v0.9.1 - Help: Please correct the syntax error in your Express DSL.",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "list": false,
+   "status indicator": false,
+   "filter control": false
+  }
+ },
+ "reply": "<a2ui>\nfilterable_list(\n  title=\"Task List\",\n  items=[\n    {title: \"Complete project proposal\", detail: \"Due by end of week\", status: \"in_progress\"},\n    {title: \"Review team feedback\", detail: \"Waiting for input from 3 members\", status: \"pending\"},\n    {title: \"Update documentation\", detail: \"All sections completed\", status: \"done\"},\n    {title: \"Schedule stakeholder meeting\", detail: \"Tentatively booked for Thursday\", status: \"pending\"},\n    {title: \"Fix critical bug in production\", detail: \"Deployed hotfix yesterday\", status: \"done\"},\n    {title: \"Prepare budget presentation\", detail: \"Slides 60% complete\", status: \"in_progress\"},\n    {title: \"Onboard new team member\", detail: \"First day orientation scheduled\", status: \"pending\"},\n    {title: \"Refactor legacy code module\", detail: \"Peer review in progress\", status: \"in_progress\"}\n  ],\n  filter_field=\"status\",\n  filters=[\n    {value: \"done\", label: \"Done\", color: \"#10b981\"},\n    {value: \"in_progress\", label: \"In Progress\", color: \"#f59e0b\"},\n    {value: \"pending\", label: \"Pending\", color: \"#6b7280\"}\n  ],\n  show_counts=true\n)\n</a2ui>"
+}

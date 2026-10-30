@@ -1,0 +1,134 @@
+{
+ "label": "oracle-slice-3types__json__opus-5-5__run1",
+ "task": "T6",
+ "format": "json",
+ "model_id": "claude-opus-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "vocab-flashcards",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "vocab-flashcards",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "2rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         {
+          "type": "page_header",
+          "title": "Vocabulary Review",
+          "subtitle": "Ten words to flip through. Read the word, recall its meaning, then flip to check.",
+          "icon": "\ud83d\udcda",
+          "tag": "10 cards",
+          "accent": "#4f46e5",
+          "meta": [
+           {
+            "label": "Deck",
+            "value": "Advanced English"
+           },
+           {
+            "label": "Cards",
+            "value": "10"
+           }
+          ]
+         },
+         {
+          "type": "flashcard_deck",
+          "accent": "#4f46e5",
+          "label_front": "WORD",
+          "label_back": "MEANING",
+          "cards": [
+           {
+            "front": "Ephemeral",
+            "back": "Lasting a very short time. \"The ephemeral beauty of cherry blossoms.\""
+           },
+           {
+            "front": "Ubiquitous",
+            "back": "Present or found everywhere. \"Smartphones have become ubiquitous.\""
+           },
+           {
+            "front": "Candid",
+            "back": "Truthful and straightforward; frank. \"She gave a candid account of the mistake.\""
+           },
+           {
+            "front": "Meticulous",
+            "back": "Showing great attention to detail. \"He kept meticulous records.\""
+           },
+           {
+            "front": "Resilient",
+            "back": "Able to recover quickly from difficulty. \"Children are often remarkably resilient.\""
+           },
+           {
+            "front": "Ambiguous",
+            "back": "Open to more than one interpretation. \"The ending of the film was deliberately ambiguous.\""
+           },
+           {
+            "front": "Pragmatic",
+            "back": "Dealing with things sensibly and realistically. \"We need a pragmatic solution.\""
+           },
+           {
+            "front": "Benevolent",
+            "back": "Well-meaning and kindly. \"A benevolent donor funded the library.\""
+           },
+           {
+            "front": "Lucid",
+            "back": "Expressed clearly; easy to understand. \"She wrote a lucid summary of the research.\""
+           },
+           {
+            "front": "Tenacious",
+            "back": "Holding firmly to a goal; persistent. \"A tenacious reporter chasing the story.\""
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "blocks": [
+         {
+          "type": "heading",
+          "text": "Your progress"
+         },
+         {
+          "type": "progress_ring",
+          "value": "60",
+          "size": "140",
+          "stroke_width": "10",
+          "color": "#4f46e5",
+          "label": "Cards reviewed",
+          "show_value": "true",
+          "unit": "%"
+         },
+         {
+          "type": "progress_bar",
+          "value": 60,
+          "label": "Reviewed",
+          "accent": "#4f46e5",
+          "show_percent": "true",
+          "caption": "6 of 10 cards reviewed \u00b7 4 remaining"
+         },
+         {
+          "type": "text_callout",
+          "variant": "info",
+          "title": "How to review",
+          "description": "Say the meaning out loud before you flip. If you got it right, move on; if not, revisit the card at the end of the deck."
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

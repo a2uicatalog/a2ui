@@ -1,0 +1,84 @@
+{
+ "label": "oracle-slice-3types__json__gemini-3.5-flash-lite__first-run-timing-invalid__run3",
+ "task": "T3",
+ "format": "json",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "product-landing-page",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce.json",
+    "theme": {
+     "primaryColor": "#4f46e5"
+    }
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "product-landing-page",
+    "components": [
+     {
+      "id": "root",
+      "component": "gradient_hero",
+      "title": "Build Better Products, Faster",
+      "subtitle": "Streamline your workflow, collaborate in real-time, and ship high-quality software with our all-in-one platform designed for modern engineering teams.",
+      "badge": "\u2728 Announcing v2.0",
+      "cta_label": "Get Started Free",
+      "cta_url": "#signup",
+      "align": "center"
+     },
+     {
+      "id": "features-grid",
+      "component": "feature_grid",
+      "heading": "Everything you need to succeed",
+      "description": "Powerful features built to scale with your team and accelerate your release cycle.",
+      "columns": 3,
+      "features": [
+       {
+        "icon": "\u26a1",
+        "title": "Lightning Fast",
+        "description": "Optimized performance ensures your team never waits on slow builds or lagging tools."
+       },
+       {
+        "icon": "\ud83d\udd12",
+        "title": "Enterprise Security",
+        "description": "Advanced compliance, end-to-end encryption, and role-based access control keep your data safe."
+       },
+       {
+        "icon": "\ud83d\udcc8",
+        "title": "Real-time Analytics",
+        "description": "Gain deep insights into your pipeline and team velocity with live dashboards."
+       }
+      ]
+     },
+     {
+      "id": "customer-testimonial",
+      "component": "testimonial_card",
+      "text": "Switching to this platform completely transformed how our engineering department operates. We shipped our last major release two weeks ahead of schedule.",
+      "author_name": "Sarah Jenkins",
+      "author_title": "VP of Engineering at TechFlow",
+      "author_avatar_url": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150",
+      "rating": 5
+     },
+     {
+      "id": "bottom-cta",
+      "component": "cta_section",
+      "heading": "Ready to accelerate your workflow?",
+      "body": "Join thousands of teams already building better software with our platform. Start your 14-day free trial today.",
+      "primary_cta": {
+       "label": "Start Free Trial",
+       "url": "#signup"
+      },
+      "secondary_cta": {
+       "label": "Contact Sales",
+       "url": "#sales"
+      },
+      "background": "#f8fafc"
+     }
+    ]
+   }
+  }
+ ]
+}

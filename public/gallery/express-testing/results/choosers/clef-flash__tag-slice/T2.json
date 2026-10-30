@@ -1,0 +1,135 @@
+{
+ "task": "T2",
+ "condition": "G",
+ "chooser": "clef-flash",
+ "slice_atoms_in_options": 338,
+ "picks": [
+  {
+   "slot": "Top-left KPI tile showing a headline number, its short descriptive label, and an #1",
+   "decomposer_line": "Top-left KPI tile showing a headline number, its short descriptive label, and an arrow with percentage change indicating whether the metric went up or down",
+   "atom": "metric_delta",
+   "confidence": 0.4884,
+   "top3": [
+    [
+     "metric_delta",
+     0.8494
+    ],
+    [
+     "metric_row",
+     0.1506
+    ]
+   ],
+   "finalists": [
+    "metric_delta",
+    "metric_row"
+   ]
+  },
+  {
+   "slot": "Second KPI tile showing a headline number, its short descriptive label, and an a #2",
+   "decomposer_line": "Second KPI tile showing a headline number, its short descriptive label, and an arrow with percentage change indicating whether the metric went up or down",
+   "atom": "metric_delta",
+   "confidence": 0.3977,
+   "top3": [
+    [
+     "metric_delta",
+     0.8153
+    ],
+    [
+     "metric_row",
+     0.1847
+    ]
+   ],
+   "finalists": [
+    "metric_delta",
+    "metric_row"
+   ]
+  },
+  {
+   "slot": "Third KPI tile showing a headline number, its short descriptive label, and an ar #3",
+   "decomposer_line": "Third KPI tile showing a headline number, its short descriptive label, and an arrow with percentage change indicating whether the metric went up or down",
+   "atom": "stat_pulse",
+   "confidence": 0.0848,
+   "top3": [
+    [
+     "stat_pulse",
+     0.6456
+    ],
+    [
+     "metric_comparison_card",
+     0.3544
+    ]
+   ],
+   "finalists": [
+    "metric_comparison_card",
+    "stat_pulse"
+   ]
+  },
+  {
+   "slot": "Fourth KPI tile showing a headline number, its short descriptive label, and an a #4",
+   "decomposer_line": "Fourth KPI tile showing a headline number, its short descriptive label, and an arrow with percentage change indicating whether the metric went up or down",
+   "atom": "metric_row",
+   "confidence": 0.52,
+   "top3": [
+    [
+     "metric_row",
+     0.8606
+    ],
+    [
+     "metric_comparison_card",
+     0.1394
+    ]
+   ],
+   "finalists": [
+    "metric_comparison_card",
+    "metric_row"
+   ]
+  },
+  {
+   "slot": "Comparison chart that visually contrasts values across categories or periods so  #5",
+   "decomposer_line": "Comparison chart that visually contrasts values across categories or periods so the user can compare them at a glance",
+   "atom": "comparison_grid",
+   "confidence": 0.5338,
+   "top3": [
+    [
+     "comparison_grid",
+     0.8653
+    ],
+    [
+     "skill_radar",
+     0.1347
+    ]
+   ],
+   "finalists": [
+    "comparison_grid",
+    "skill_radar"
+   ]
+  }
+ ],
+ "cost": {
+  "decomposer_input_tokens": 0,
+  "decomposer_output_tokens": 0,
+  "decomposer_thinking_tokens": 0,
+  "jev_input_tokens": 73582,
+  "jev_output_tokens": 0,
+  "jev_calls": 5
+ },
+ "error": null,
+ "atoms": [
+  "metric_delta",
+  "metric_delta",
+  "stat_pulse",
+  "metric_row",
+  "comparison_grid"
+ ],
+ "score": {
+  "precision": 0.6,
+  "recall": 0.667,
+  "f1": 0.632,
+  "slot_hits": {
+   "KPI tile (x4)": true,
+   "trend (required only if metric_row was chosen; stat_card's own delta already satisfies it)": true,
+   "comparison chart": false
+  }
+ },
+ "secs": 20.9
+}

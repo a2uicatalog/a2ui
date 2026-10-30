@@ -1,0 +1,40 @@
+{
+ "task": "T5",
+ "condition": "JD",
+ "label": "jev-picks-on-oracle-slice-6types__express__haiku-4-5__run1",
+ "agent_type": "jev-narrowed",
+ "catalogue": "JD-T5.json",
+ "atoms_in_catalogue": 5,
+ "prompt_chars": 4922,
+ "slot_recall": [
+  1,
+  1
+ ],
+ "secs": 3.5,
+ "usage": {
+  "input_tokens": 1361,
+  "output_tokens": 355
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "pricing_tier_group"
+ ],
+ "score": {
+  "per_approach": {
+   "tier_cards": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+   },
+   "comparison_table": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": null
+   }
+  },
+  "best_approach": "tier_cards",
+  "f1": 1.0
+ },
+ "reply": "<a2ui>\nroot = pricing_tier_group([\n  {\n    name: \"Starter\",\n    price: \"$29\",\n    period: \"per month\",\n    description: \"Perfect for individuals\",\n    features: [\n      \"Up to 10 projects\",\n      \"1 GB storage\",\n      \"Email support\",\n      \"Basic analytics\"\n    ],\n    cta: \"Get Started\",\n    action: Event(\"select_starter\")\n  },\n  {\n    name: \"Professional\",\n    price: \"$79\",\n    period: \"per month\",\n    description: \"Best for growing teams\",\n    features: [\n      \"Unlimited projects\",\n      \"100 GB storage\",\n      \"Priority email & chat support\",\n      \"Advanced analytics\",\n      \"Team collaboration tools\",\n      \"Custom integrations\"\n    ],\n    cta: \"Get Started\",\n    action: Event(\"select_professional\"),\n    recommended: true\n  },\n  {\n    name: \"Enterprise\",\n    price: \"Custom\",\n    period: \"contact us\",\n    description: \"For large organizations\",\n    features: [\n      \"Unlimited everything\",\n      \"Dedicated account manager\",\n      \"24/7 phone & email support\",\n      \"Custom analytics & reporting\",\n      \"Advanced security features\",\n      \"SLA guarantee\",\n      \"On-premise deployment\"\n    ],\n    cta: \"Contact Sales\",\n    action: Event(\"contact_enterprise\")\n  }\n])\n</a2ui>"
+}

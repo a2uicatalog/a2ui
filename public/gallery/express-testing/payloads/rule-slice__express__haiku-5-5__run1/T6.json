@@ -1,0 +1,104 @@
+{
+ "label": "rule-slice__express__haiku-5-5__run1",
+ "task": "T6",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/b-learning.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "title",
+      "component": "heading",
+      "text": "Vocabulary Flashcards"
+     },
+     {
+      "id": "progress",
+      "component": "course_progress_card",
+      "course_title": "Vocabulary Review",
+      "modules": [
+       {
+        "title": "Words reviewed",
+        "lessons_total": 10,
+        "lessons_done": 0
+       }
+      ],
+      "accent": "#4f46e5"
+     },
+     {
+      "id": "deck",
+      "component": "flashcard_deck",
+      "cards": [
+       {
+        "front": "ephemeral",
+        "back": "Lasting for a very short time"
+       },
+       {
+        "front": "ubiquitous",
+        "back": "Present or found everywhere"
+       },
+       {
+        "front": "meticulous",
+        "back": "Showing great attention to detail"
+       },
+       {
+        "front": "candid",
+        "back": "Truthful and straightforward"
+       },
+       {
+        "front": "resilient",
+        "back": "Able to recover quickly from difficulty"
+       },
+       {
+        "front": "ambiguous",
+        "back": "Open to more than one interpretation"
+       },
+       {
+        "front": "eloquent",
+        "back": "Fluent and persuasive in speech or writing"
+       },
+       {
+        "front": "pragmatic",
+        "back": "Dealing with things sensibly and realistically"
+       },
+       {
+        "front": "benevolent",
+        "back": "Well-meaning and kindly"
+       },
+       {
+        "front": "tenacious",
+        "back": "Holding firmly to a purpose; persistent"
+       }
+      ],
+      "accent": "#4f46e5",
+      "label_front": "WORD",
+      "label_back": "MEANING"
+     },
+     {
+      "id": "root",
+      "component": "color_section",
+      "accent": "#4f46e5",
+      "style": "light",
+      "padding": "24px",
+      "grid": false,
+      "max_width": "90%",
+      "blocks": [
+       "title",
+       "progress",
+       "deck"
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

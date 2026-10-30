@@ -1,0 +1,106 @@
+{
+ "label": "oracle-slice-6types__json__haiku-4-5__temp0__run1",
+ "task": "T6",
+ "format": "json",
+ "model_id": "claude-haiku-4-5-20251001",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "vocabulary_flashcards",
+    "catalog_id": "https://a2uicatalog.ai/catalog/d-t6.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "vocabulary_flashcards",
+    "components": [
+     {
+      "id": "root",
+      "component": "body",
+      "text": "Vocabulary Review"
+     },
+     {
+      "id": "progress_section",
+      "component": "progress_bar",
+      "value": 0,
+      "label": "Cards Reviewed",
+      "show_percent": "true",
+      "caption": "0 of 10 cards reviewed"
+     },
+     {
+      "id": "flashcard_1",
+      "component": "flip_card",
+      "front_content": "Serendipity",
+      "back_content": "The occurrence of events by chance in a happy or beneficial way",
+      "trigger_on_hover": true
+     },
+     {
+      "id": "flashcard_2",
+      "component": "flip_card",
+      "front_content": "Ephemeral",
+      "back_content": "Lasting for a very short time; transitory",
+      "trigger_on_hover": true
+     },
+     {
+      "id": "flashcard_3",
+      "component": "flip_card",
+      "front_content": "Eloquent",
+      "back_content": "Fluent or persuasive in speaking or writing",
+      "trigger_on_hover": true
+     },
+     {
+      "id": "flashcard_4",
+      "component": "flip_card",
+      "front_content": "Ubiquitous",
+      "back_content": "Present, appearing, or found everywhere",
+      "trigger_on_hover": true
+     },
+     {
+      "id": "flashcard_5",
+      "component": "flip_card",
+      "front_content": "Pragmatic",
+      "back_content": "Dealing with things in a practical, realistic way based on actual circumstances",
+      "trigger_on_hover": true
+     },
+     {
+      "id": "flashcard_6",
+      "component": "flip_card",
+      "front_content": "Melancholy",
+      "back_content": "A feeling of pensive sadness, typically with no obvious cause",
+      "trigger_on_hover": true
+     },
+     {
+      "id": "flashcard_7",
+      "component": "flip_card",
+      "front_content": "Ambiguous",
+      "back_content": "Open to more than one interpretation; unclear or uncertain",
+      "trigger_on_hover": true
+     },
+     {
+      "id": "flashcard_8",
+      "component": "flip_card",
+      "front_content": "Benevolent",
+      "back_content": "Kind, generous, and charitable in nature",
+      "trigger_on_hover": true
+     },
+     {
+      "id": "flashcard_9",
+      "component": "flip_card",
+      "front_content": "Meticulous",
+      "back_content": "Showing great attention to detail; very careful and precise",
+      "trigger_on_hover": true
+     },
+     {
+      "id": "flashcard_10",
+      "component": "flip_card",
+      "front_content": "Nostalgia",
+      "back_content": "A sentimental longing for the past, typically for a period or place with happy associations",
+      "trigger_on_hover": true
+     }
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,46 @@
+{
+ "task": "T5",
+ "condition": "C_gemini-3.8-flash",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 32768,
+ "model_id": "gemini-3.8-flash",
+ "hints": false,
+ "label": "oracle-slice-3types__express__gemini-3.8-flash__thinking-off__run1",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "C-marketing-commerce.json",
+ "atoms_in_catalogue": 23,
+ "prompt_chars": 12467,
+ "slot_recall": [
+  1,
+  1
+ ],
+ "secs": 5.8,
+ "usage": {
+  "input_tokens": 3402,
+  "output_tokens": 410
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "pricing_tier_group"
+ ],
+ "score": {
+  "per_approach": {
+   "tier_cards": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+   },
+   "comparison_table": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": null
+   }
+  },
+  "best_approach": "tier_cards",
+  "f1": 1.0
+ },
+ "reply": "<a2ui>\nroot = pricing_tier_group([\n  {\n    name: \"Starter\",\n    price: \"$19\",\n    cadence: \"/month\",\n    description: \"Essential tools for individuals and small projects getting started.\",\n    features: [\n      \"Up to 3 projects\",\n      \"5 GB cloud storage\",\n      \"Basic analytics\",\n      \"Community support\",\n      \"Standard integrations\"\n    ],\n    cta_label: \"Get Started\",\n    cta_url: \"/signup?plan=starter\",\n    highlighted: false\n  },\n  {\n    name: \"Pro\",\n    price: \"$49\",\n    cadence: \"/month\",\n    description: \"Advanced capabilities and priority support for growing teams.\",\n    badge: \"Recommended\",\n    features: [\n      \"Unlimited projects\",\n      \"100 GB cloud storage\",\n      \"Advanced real-time analytics\",\n      \"Priority 24/7 support\",\n      \"Custom integrations & webhooks\",\n      \"Team collaboration tools\"\n    ],\n    cta_label: \"Start Free Trial\",\n    cta_url: \"/signup?plan=pro\",\n    highlighted: true\n  },\n  {\n    name: \"Enterprise\",\n    price: \"$149\",\n    cadence: \"/month\",\n    description: \"Maximum scale, enterprise-grade governance, and dedicated assistance.\",\n    features: [\n      \"Unlimited projects & storage\",\n      \"Dedicated account manager\",\n      \"Custom SLA guarantees\",\n      \"SSO & SAML authentication\",\n      \"Advanced audit logs & security\",\n      \"Onboarding & training sessions\"\n    ],\n    cta_label: \"Contact Sales\",\n    cta_url: \"/contact-sales\",\n    highlighted: false\n  }\n])\n</a2ui>"
+}

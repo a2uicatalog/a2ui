@@ -1,0 +1,45 @@
+{
+ "task": "T2",
+ "condition": "D_haiku-5-5H2",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": true,
+ "label": "oracle-slice-6types__express__haiku-5-5__hints-v2__run2",
+ "agent_type": "T2",
+ "catalogue": "D-t2.json",
+ "atoms_in_catalogue": 16,
+ "prompt_chars": 10550,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 7.4,
+ "usage": {
+  "input_tokens": 4301,
+  "output_tokens": 1317
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "stat_card",
+  "stat_card",
+  "stat_card",
+  "stat_card",
+  "chartjs_bar",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.833,
+  "recall": 1.0,
+  "f1": 0.909,
+  "slot_hits": {
+   "KPI tile (x4)": true,
+   "trend (required only if metric_row was chosen; stat_card's own delta already satisfies it)": true,
+   "comparison chart": true
+  }
+ },
+ "reply": "<a2ui>\nkpi_sales = stat_card(value=\"$12,345\", label=\"Sales\", delta=\"+10%\", is_up=true)\nkpi_users = stat_card(value=\"4,821\", label=\"Active Users\", delta=\"+6%\", is_up=true)\nkpi_churn = stat_card(value=\"2.4%\", label=\"Churn Rate\", delta=\"-0.3%\", is_up=false)\nkpi_latency = stat_card(value=\"182 ms\", label=\"Avg Latency\", delta=\"+14 ms\", is_up=false)\nrevenue_chart = chartjs_bar(labels=[\"Jan\", \"Feb\", \"Mar\", \"Apr\", \"May\", \"Jun\"], datasets=[{label: \"Revenue\", data: [8200, 9100, 8800, 10400, 11250, 12345]}, {label: \"Target\", data: [9000, 9000, 9500, 10000, 10500, 11000]}])\nroot = columns(cols=2, items=[{blocks: [kpi_sales, kpi_users, kpi_churn, kpi_latency]}, {blocks: [revenue_chart]}])\n</a2ui>"
+}

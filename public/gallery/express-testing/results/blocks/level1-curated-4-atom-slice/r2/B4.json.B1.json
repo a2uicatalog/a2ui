@@ -1,0 +1,36 @@
+{
+ "model": "sonnet-5-5",
+ "cond": "B4",
+ "format": "json",
+ "brief": "B1",
+ "repeat": 2,
+ "seq": 17,
+ "model_id": "claude-sonnet-5-5",
+ "utc": "2026-10-29T19:53:23Z",
+ "prompt_chars": 19009,
+ "prompt_sha256": "(removed for publication)",
+ "temperature_requested": null,
+ "temperature_sent": false,
+ "max_tokens": 32768,
+ "request_secs": 2.56,
+ "input_tokens": 7248,
+ "output_tokens": 262,
+ "stop_reason": "end_turn",
+ "usage": {
+  "input_tokens": 7248,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "cache_creation": {
+   "ephemeral_5m_input_tokens": 0,
+   "ephemeral_1h_input_tokens": 0
+  },
+  "output_tokens": 262,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "service_tier": "standard",
+  "inference_geo": "global",
+  "speed": "standard"
+ },
+ "reply": "<a2ui-json>\n[\n  {\n    \"version\": \"v0.9.1\",\n    \"createSurface\": {\n      \"surfaceId\": \"toy_robot\",\n      \"catalogId\": \"https://a2uicatalog.ai/catalog/blocks-b4.json\"\n    }\n  },\n  {\n    \"version\": \"v0.9.1\",\n    \"updateComponents\": {\n      \"surfaceId\": \"toy_robot\",\n      \"components\": [\n        {\n          \"id\": \"root\",\n          \"component\": \"block_robot\",\n          \"look\": \"studio\",\n          \"ratio\": \"1:1\",\n          \"label\": \"Toy brick robot building itself\"\n        }\n      ]\n    }\n  }\n]\n</a2ui-json>\n\nHere's a toy robot made of 10 bricks. It builds itself and turns slowly on a baseplate."
+}

@@ -1,0 +1,169 @@
+{
+ "label": "oracle-slice-3types__express__opus-5-5__run1",
+ "task": "T4",
+ "format": "express",
+ "model_id": "claude-opus-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "status-list-surface",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "status-list-surface",
+    "components": [
+     {
+      "id": "title",
+      "component": "heading",
+      "text": "Project Workstreams"
+     },
+     {
+      "id": "intro",
+      "component": "body",
+      "text": "Eight workstreams tracked this sprint. Choose a status to narrow the list."
+     },
+     {
+      "id": "statusFilter",
+      "component": "segmented_control",
+      "options": [
+       {
+        "label": "All",
+        "value": "all"
+       },
+       {
+        "label": "Active",
+        "value": "active"
+       },
+       {
+        "label": "Pending",
+        "value": "pending"
+       },
+       {
+        "label": "Blocked",
+        "value": "blocked"
+       },
+       {
+        "label": "Done",
+        "value": "done"
+       }
+      ],
+      "selected_value": "all",
+      "name": "status_filter"
+     },
+     {
+      "id": "statusCounts",
+      "component": "badge_group",
+      "title": "By status",
+      "badges": [
+       {
+        "text": "Active \u00b7 3",
+        "color": "green",
+        "pulse": true
+       },
+       {
+        "text": "Pending \u00b7 2",
+        "color": "yellow"
+       },
+       {
+        "text": "Blocked \u00b7 1",
+        "color": "red"
+       },
+       {
+        "text": "Done \u00b7 2",
+        "color": "grey"
+       }
+      ]
+     },
+     {
+      "id": "itemList",
+      "component": "entity_list",
+      "items": [
+       {
+        "name": "Checkout Redesign",
+        "subtitle": "New payment step layout is in QA review.",
+        "icon": "\ud83d\uded2",
+        "status": "Active",
+        "meta": "Due Fri"
+       },
+       {
+        "name": "Search Indexing",
+        "subtitle": "Reindex job running nightly across all regions.",
+        "icon": "\ud83d\udd0e",
+        "status": "Active",
+        "meta": "Ongoing"
+       },
+       {
+        "name": "Mobile Push Alerts",
+        "subtitle": "Notification templates drafted for marketing sign-off.",
+        "icon": "\ud83d\udcf1",
+        "status": "Active",
+        "meta": "Due Mon"
+       },
+       {
+        "name": "Billing Migration",
+        "subtitle": "Waiting on finance approval before cutover.",
+        "icon": "\ud83d\udcb3",
+        "status": "Pending",
+        "meta": "Queued"
+       },
+       {
+        "name": "Accessibility Audit",
+        "subtitle": "Vendor scheduled to start next sprint.",
+        "icon": "\u267f",
+        "status": "Pending",
+        "meta": "Queued"
+       },
+       {
+        "name": "SSO Integration",
+        "subtitle": "Blocked by missing identity provider certificate.",
+        "icon": "\ud83d\udd10",
+        "status": "Blocked",
+        "meta": "2 days"
+       },
+       {
+        "name": "Onboarding Emails",
+        "subtitle": "Welcome sequence shipped and tracking opens.",
+        "icon": "\u2709\ufe0f",
+        "status": "Done",
+        "meta": "Shipped"
+       },
+       {
+        "name": "Dashboard Caching",
+        "subtitle": "Load times reduced by 40% after release.",
+        "icon": "\u26a1",
+        "status": "Done",
+        "meta": "Shipped"
+       }
+      ]
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "title",
+         "intro",
+         "statusFilter",
+         "statusCounts"
+        ]
+       },
+       {
+        "blocks": [
+         "itemList"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

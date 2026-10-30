@@ -1,0 +1,43 @@
+{
+ "task": "T4",
+ "condition": "CT_sonnet-5-5H2",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-sonnet-5-5",
+ "hints": true,
+ "label": "oracle-slice-3types__express__sonnet-5-5__temp0__hints-v2__run3",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 16421,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 11.1,
+ "usage": {
+  "input_tokens": 6368,
+  "output_tokens": 1273
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "heading",
+  "segmented_control",
+  "entity_list",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.5,
+  "recall": 0.667,
+  "f1": 0.571,
+  "slot_hits": {
+   "list": true,
+   "status indicator": false,
+   "filter control": true
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"status-list\")\ntitle = heading(\"Project Tasks\")\nfilter = segmented_control([{label: \"All\", value: \"all\"}, {label: \"Active\", value: \"active\"}, {label: \"Pending\", value: \"pending\"}, {label: \"Blocked\", value: \"blocked\"}, {label: \"Done\", value: \"done\"}], \"all\", \"status_filter\")\ntasks = entity_list([\n  {name: \"Design system audit\", subtitle: \"Review all components for accessibility gaps\", status: \"Active\"},\n  {name: \"API rate limiting\", subtitle: \"Add per-key throttling to public endpoints\", status: \"Active\"},\n  {name: \"Billing migration\", subtitle: \"Waiting on finance sign-off for the new plan tiers\", status: \"Pending\"},\n  {name: \"Mobile onboarding\", subtitle: \"Draft copy is ready for legal review\", status: \"Pending\"},\n  {name: \"Search indexing\", subtitle: \"Blocked by the upstream vendor outage\", status: \"Blocked\"},\n  {name: \"SSO integration\", subtitle: \"Needs credentials from the customer IT team\", status: \"Blocked\"},\n  {name: \"Dashboard redesign\", subtitle: \"Shipped to all users on Monday\", status: \"Done\"},\n  {name: \"Release notes v2.4\", subtitle: \"Published to the changelog\", status: \"Done\"}\n])\nroot = columns(2, \"1.5rem\", \"top\", [{blocks: [title, filter]}, {blocks: [tasks]}])\n</a2ui>\n\nThe filter strip and the list are both on the surface, but the catalog gives me no way to connect them. `segmented_control` has no action or binding, and `entity_list` has no filter input. Choosing a status will not hide any rows yet, so the filtering still needs to be wired up on the host side."
+}

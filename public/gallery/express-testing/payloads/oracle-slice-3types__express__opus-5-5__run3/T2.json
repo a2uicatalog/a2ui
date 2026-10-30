@@ -1,0 +1,121 @@
+{
+ "label": "oracle-slice-3types__express__opus-5-5__run3",
+ "task": "T2",
+ "format": "express",
+ "model_id": "claude-opus-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "metrics-overview",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "metrics-overview",
+    "components": [
+     {
+      "id": "kpis",
+      "component": "metric_row",
+      "cols": 2,
+      "accent": "#2563eb",
+      "metrics": [
+       {
+        "value": "128.4K",
+        "label": "Monthly Revenue",
+        "prefix": "$",
+        "sub": "+12.3% vs. last month",
+        "trend": "up"
+       },
+       {
+        "value": "8,942",
+        "label": "Active Users",
+        "sub": "+6.8% vs. last month",
+        "trend": "up"
+       },
+       {
+        "value": "3.2",
+        "label": "Churn Rate",
+        "suffix": "%",
+        "sub": "-0.4 pts vs. last month",
+        "trend": "down",
+        "accent": "#16a34a"
+       },
+       {
+        "value": "212",
+        "label": "Avg. Response Time",
+        "suffix": "ms",
+        "sub": "+18ms vs. last month",
+        "trend": "up",
+        "accent": "#dc2626"
+       }
+      ]
+     },
+     {
+      "id": "chart",
+      "component": "chartjs_bar",
+      "labels": [
+       "Revenue ($K)",
+       "Active Users (K)",
+       "Churn (%)",
+       "Response (x10ms)"
+      ],
+      "datasets": [
+       {
+        "label": "Last Month",
+        "data": [
+         114.3,
+         8.37,
+         3.6,
+         19.4
+        ]
+       },
+       {
+        "label": "This Month",
+        "data": [
+         128.4,
+         8.94,
+         3.2,
+         21.2
+        ]
+       }
+      ]
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "_inline_1",
+         "kpis"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_2",
+         "chart"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "_inline_1",
+      "component": "heading",
+      "text": "Key Metrics"
+     },
+     {
+      "id": "_inline_2",
+      "component": "heading",
+      "text": "This Month vs. Last Month"
+     }
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,48 @@
+{
+ "task": "T1",
+ "condition": "CX_haiku-5-5",
+ "temperature_applied": false,
+ "format": "elemental",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "oracle-slice-3types__elemental__haiku-5-5__run3",
+ "agent_type": "Learning",
+ "catalogue": "C-learning.json",
+ "atoms_in_catalogue": 36,
+ "prompt_chars": 21279,
+ "slot_recall": [
+  5,
+  5
+ ],
+ "secs": 10.5,
+ "usage": {
+  "input_tokens": 8148,
+  "output_tokens": 2284
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "page_header",
+  "concept_rung",
+  "concept_rung",
+  "concept_rung",
+  "concept_rung",
+  "heading",
+  "quiz_set"
+ ],
+ "score": {
+  "precision": 1.0,
+  "recall": 0.6,
+  "f1": 0.75,
+  "slot_hits": {
+   "title": true,
+   "concept sections (x3)": false,
+   "worked example": true,
+   "3-question quiz": true,
+   "quiz result": false
+  }
+ },
+ "reply": "<a2ui>\n<body id=\"root\">\n  <ui-page_header id=\"header\" title=\"The Water Cycle\" subtitle=\"How water moves continuously between Earth's surface and atmosphere\" icon=\"\ud83d\udca7\" tag=\"Earth Science\" accent=\"#0ea5e9\" theme=\"light\"></ui-page_header>\n\n  <ui-concept_rung id=\"depth-1\" badge=\"1\" kind=\"depth\" title=\"Evaporation\" body=\"Heat from the Sun warms water in oceans, lakes, and rivers. The water changes from liquid to water vapour and rises into the air.\" takeaway=\"Sunlight turns liquid water into invisible vapour.\"></ui-concept_rung>\n\n  <ui-concept_rung id=\"depth-2\" badge=\"2\" kind=\"depth\" title=\"Condensation\" body=\"As water vapour rises, it cools and gathers around tiny particles such as dust. This forms the droplets that make up clouds.\" takeaway=\"Cooling vapour gathers into clouds.\"></ui-concept_rung>\n\n  <ui-concept_rung id=\"depth-3\" badge=\"3\" kind=\"depth\" title=\"Precipitation\" body=\"When cloud droplets grow heavy enough, they fall as rain, snow, sleet, or hail. Some of this water soaks into the ground and some runs back into rivers and oceans.\" takeaway=\"Heavy droplets fall back to Earth as precipitation.\"></ui-concept_rung>\n\n  <ui-concept_rung id=\"example-1\" kind=\"example\" title=\"Worked Example: Tracing a Raindrop\" body=\"A drop of water evaporates from a lake on a warm morning. It rises, cools high in the sky, and condenses onto a dust particle to form part of a cumulus cloud. Later, the droplet merges with others and falls as rain onto a hillside. It soaks into the soil, flows into a stream, and eventually returns to the lake, where the cycle begins again.\" code_caption=\"Stages in order: evaporation, condensation, precipitation, collection.\" takeaway=\"The same water can cycle through every stage repeatedly.\"></ui-concept_rung>\n\n  <ui-heading id=\"check-heading\" text=\"Self-Check\"></ui-heading>\n\n  <ui-quiz_set id=\"self-check\" title=\"Water Cycle Self-Check\" pass_score=\"70\" accent=\"#0ea5e9\">\n    <script type=\"application/json\" slot=\"questions\">[\n      {\n        \"question\": \"What process turns liquid water into water vapour?\",\n        \"options\": [\"Condensation\", \"Precipitation\", \"Evaporation\", \"Collection\"],\n        \"correct\": 2,\n        \"explanation\": \"Evaporation happens when heat from the Sun turns liquid water into vapour.\"\n      },\n      {\n        \"question\": \"What forms when water vapour cools and gathers around dust particles?\",\n        \"options\": [\"Clouds\", \"Rain\", \"Groundwater\", \"Glaciers\"],\n        \"correct\": 0,\n        \"explanation\": \"Condensation forms the droplets that make up clouds.\"\n      },\n      {\n        \"question\": \"Which of these is a form of precipitation?\",\n        \"options\": [\"Snow\", \"Evaporation\", \"Condensation\", \"Transpiration\"],\n        \"correct\": 0,\n        \"explanation\": \"Snow, rain, sleet, and hail are all forms of precipitation.\"\n      }\n    ]</script>\n  </ui-quiz_set>\n</body>\n</a2ui>"
+}

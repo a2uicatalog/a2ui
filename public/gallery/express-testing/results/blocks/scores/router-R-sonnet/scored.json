@@ -1,0 +1,1139 @@
+[
+ {
+  "seq": 1,
+  "model": "sonnet-5-5",
+  "cond": "R",
+  "brief": "B1",
+  "repeat": 1,
+  "group": "block",
+  "judgement": false,
+  "accept": [
+   "a2ui-bricks-v1"
+  ],
+  "outcome": "routed",
+  "routed": "a2ui-bricks-v1",
+  "correct": true,
+  "to_bricks": true,
+  "input_tokens": 1761,
+  "output_tokens": 23,
+  "request_secs": 1.75,
+  "stop_reason": "end_turn",
+  "agent_step": "REUSED P reply",
+  "agent_score": 1.0,
+  "agent_atoms": [
+   "block_robot"
+  ],
+  "agent_refused": false
+ },
+ {
+  "seq": 2,
+  "model": "sonnet-5-5",
+  "cond": "R",
+  "brief": "B2",
+  "repeat": 1,
+  "group": "block",
+  "judgement": false,
+  "accept": [
+   "a2ui-bricks-v1"
+  ],
+  "outcome": "routed",
+  "routed": "a2ui-bricks-v1",
+  "correct": true,
+  "to_bricks": true,
+  "input_tokens": 1762,
+  "output_tokens": 92,
+  "request_secs": 2.03,
+  "stop_reason": "end_turn",
+  "agent_step": "REUSED P reply",
+  "agent_score": 1.0,
+  "agent_atoms": [
+   "block_rocket"
+  ],
+  "agent_refused": false
+ },
+ {
+  "seq": 3,
+  "model": "sonnet-5-5",
+  "cond": "R",
+  "brief": "B3",
+  "repeat": 1,
+  "group": "block",
+  "judgement": false,
+  "accept": [
+   "a2ui-bricks-v1"
+  ],
+  "outcome": "routed",
+  "routed": "a2ui-bricks-v1",
+  "correct": true,
+  "to_bricks": true,
+  "input_tokens": 1766,
+  "output_tokens": 23,
+  "request_secs": 1.01,
+  "stop_reason": "end_turn",
+  "agent_step": "REUSED P reply",
+  "agent_score": 1.0,
+  "agent_atoms": [
+   "motion_bricks"
+  ],
+  "agent_refused": false
+ },
+ {
+  "seq": 4,
+  "model": "sonnet-5-5",
+  "cond": "R",
+  "brief": "B4",
+  "repeat": 1,
+  "group": "block",
+  "judgement": false,
+  "accept": [
+   "a2ui-bricks-v1"
+  ],
+  "outcome": "routed",
+  "routed": "a2ui-bricks-v1",
+  "correct": true,
+  "to_bricks": true,
+  "input_tokens": 1766,
+  "output_tokens": 148,
+  "request_secs": 2.08,
+  "stop_reason": "end_turn",
+  "agent_step": "REUSED P reply",
+  "agent_score": 1.0,
+  "agent_atoms": [
+   "block_rocket"
+  ],
+  "agent_refused": false
+ },
+ {
+  "seq": 5,
+  "model": "sonnet-5-5",
+  "cond": "R",
+  "brief": "B5",
+  "repeat": 1,
+  "group": "block",
+  "judgement": false,
+  "accept": [
+   "a2ui-bricks-v1"
+  ],
+  "outcome": "routed",
+  "routed": "a2ui-bricks-v1",
+  "correct": true,
+  "to_bricks": true,
+  "input_tokens": 1764,
+  "output_tokens": 23,
+  "request_secs": 1.51,
+  "stop_reason": "end_turn",
+  "agent_step": "REUSED P reply",
+  "agent_score": 1.0,
+  "agent_atoms": [
+   "motion_bricks"
+  ],
+  "agent_refused": false
+ },
+ {
+  "seq": 6,
+  "model": "sonnet-5-5",
+  "cond": "R",
+  "brief": "B6",
+  "repeat": 1,
+  "group": "block",
+  "judgement": false,
+  "accept": [
+   "a2ui-bricks-v1"
+  ],
+  "outcome": "routed",
+  "routed": "a2ui-bricks-v1",
+  "correct": true,
+  "to_bricks": true,
+  "input_tokens": 1764,
+  "output_tokens": 23,
+  "request_secs": 1.46,
+  "stop_reason": "end_turn",
+  "agent_step": "REUSED P reply",
+  "agent_score": 1.0,
+  "agent_atoms": [
+   "motion_bricks"
+  ],
+  "agent_refused": false
+ },
+ {
+  "seq": 7,
+  "model": "sonnet-5-5",
+  "cond": "R",
+  "brief": "B7",
+  "repeat": 1,
+  "group": "judgement",
+  "judgement": true,
+  "accept": [
+   "a2ui-bricks-v1"
+  ],
+  "outcome": "routed",
+  "routed": "a2ui-bricks-v1",
+  "correct": true,
+  "to_bricks": true,
+  "input_tokens": 1767,
+  "output_tokens": 23,
+  "request_secs": 1.39,
+  "stop_reason": "end_turn",
+  "agent_step": "REUSED P reply",
+  "agent_score": 1.0,
+  "agent_atoms": [],
+  "agent_refused": true
+ },
+ {
+  "seq": 8,
+  "model": "sonnet-5-5",
+  "cond": "R",
+  "brief": "B8",
+  "repeat": 1,
+  "group": "cross",
+  "judgement": false,
+  "accept": [
+   "a2ui-charts-v1"
+  ],
+  "outcome": "routed",
+  "routed": "a2ui-charts-v1",
+  "correct": true,
+  "to_bricks": false,
+  "input_tokens": 1768,
+  "output_tokens": 22,
+  "request_secs": 2.05,
+  "stop_reason": "end_turn",
+  "agent_step": "agent step not run",
+  "agent_score": null
+ },
+ {
+  "seq": 9,
+  "model": "sonnet-5-5",
+  "cond": "R",
+  "brief": "X1",
+  "repeat": 1,
+  "group": "cross",
+  "judgement": false,
+  "accept": [
+   "a2ui-charts-v1"
+  ],
+  "outcome": "routed",
+  "routed": "a2ui-charts-v1",
+  "correct": true,
+  "to_bricks": false,
+  "input_tokens": 1774,
+  "output_tokens": 22,
+  "request_secs": 1.53,
+  "stop_reason": "end_turn",
+  "agent_step": "agent step not run",
+  "agent_score": null
+ },
+ {
+  "seq": 10,
+  "model": "sonnet-5-5",
+  "cond": "R",
+  "brief": "X2",
+  "repeat": 1,
+  "group": "cross",
+  "judgement": false,
+  "accept": [
+   "a2ui-atoms-v1"
+  ],
+  "outcome": "routed",
+  "routed": "a2ui-atoms-v1",
+  "correct": true,
+  "to_bricks": false,
+  "input_tokens": 1771,
+  "output_tokens": 23,
+  "request_secs": 1.71,
+  "stop_reason": "end_turn",
+  "agent_step": "agent step not run",
+  "agent_score": null
+ },
+ {
+  "seq": 11,
+  "model": "sonnet-5-5",
+  "cond": "R",
+  "brief": "X3",
+  "repeat": 1,
+  "group": "cross",
+  "judgement": false,
+  "accept": [
+   "a2ui-learning-v1"
+  ],
+  "outcome": "routed",
+  "routed": "a2ui-learning-v1",
+  "correct": true,
+  "to_bricks": false,
+  "input_tokens": 1778,
+  "output_tokens": 22,
+  "request_secs": 1.41,
+  "stop_reason": "end_turn",
+  "agent_step": "agent step not run",
+  "agent_score": null
+ },
+ {
+  "seq": 12,
+  "model": "sonnet-5-5",
+  "cond": "R",
+  "brief": "X4",
+  "repeat": 1,
+  "group": "cross",
+  "judgement": false,
+  "accept": [
+   "a2ui-aviation-v1"
+  ],
+  "outcome": "routed",
+  "routed": "a2ui-aviation-v1",
+  "correct": true,
+  "to_bricks": false,
+  "input_tokens": 1775,
+  "output_tokens": 23,
+  "request_secs": 1.46,
+  "stop_reason": "end_turn",
+  "agent_step": "agent step not run",
+  "agent_score": null
+ },
+ {
+  "seq": 13,
+  "model": "sonnet-5-5",
+  "cond": "R",
+  "brief": "X5",
+  "repeat": 1,
+  "group": "cross",
+  "judgement": false,
+  "accept": [
+   "a2ui-ops-v1"
+  ],
+  "outcome": "routed",
+  "routed": "a2ui-ops-v1",
+  "correct": true,
+  "to_bricks": false,
+  "input_tokens": 1773,
+  "output_tokens": 22,
+  "request_secs": 1.05,
+  "stop_reason": "end_turn",
+  "agent_step": "agent step not run",
+  "agent_score": null
+ },
+ {
+  "seq": 14,
+  "model": "sonnet-5-5",
+  "cond": "R",
+  "brief": "X6",
+  "repeat": 1,
+  "group": "cross",
+  "judgement": false,
+  "accept": [
+   "a2ui-marketing-v1"
+  ],
+  "outcome": "routed",
+  "routed": "a2ui-marketing-v1",
+  "correct": true,
+  "to_bricks": false,
+  "input_tokens": 1776,
+  "output_tokens": 23,
+  "request_secs": 1.49,
+  "stop_reason": "end_turn",
+  "agent_step": "agent step not run",
+  "agent_score": null
+ },
+ {
+  "seq": 15,
+  "model": "sonnet-5-5",
+  "cond": "R",
+  "brief": "X7",
+  "repeat": 1,
+  "group": "null",
+  "judgement": false,
+  "accept": [
+   null
+  ],
+  "outcome": "null",
+  "routed": null,
+  "correct": true,
+  "to_bricks": false,
+  "input_tokens": 1763,
+  "output_tokens": 11,
+  "request_secs": 1.34,
+  "stop_reason": "end_turn",
+  "agent_step": "agent step not run",
+  "agent_score": null
+ },
+ {
+  "seq": 16,
+  "model": "sonnet-5-5",
+  "cond": "R",
+  "brief": "X8",
+  "repeat": 1,
+  "group": "judgement",
+  "judgement": true,
+  "accept": [
+   "a2ui-marketing-v1",
+   "a2ui-display-v1"
+  ],
+  "outcome": "routed",
+  "routed": "a2ui-marketing-v1",
+  "correct": true,
+  "to_bricks": false,
+  "input_tokens": 1768,
+  "output_tokens": 172,
+  "request_secs": 2.31,
+  "stop_reason": "end_turn",
+  "agent_step": "agent step not run",
+  "agent_score": null
+ },
+ {
+  "seq": 17,
+  "model": "sonnet-5-5",
+  "cond": "R",
+  "brief": "B1",
+  "repeat": 2,
+  "group": "block",
+  "judgement": false,
+  "accept": [
+   "a2ui-bricks-v1"
+  ],
+  "outcome": "routed",
+  "routed": "a2ui-bricks-v1",
+  "correct": true,
+  "to_bricks": true,
+  "input_tokens": 1761,
+  "output_tokens": 23,
+  "request_secs": 1.66,
+  "stop_reason": "end_turn",
+  "agent_step": "REUSED P reply",
+  "agent_score": 1.0,
+  "agent_atoms": [
+   "block_robot"
+  ],
+  "agent_refused": false
+ },
+ {
+  "seq": 18,
+  "model": "sonnet-5-5",
+  "cond": "R",
+  "brief": "B2",
+  "repeat": 2,
+  "group": "block",
+  "judgement": false,
+  "accept": [
+   "a2ui-bricks-v1"
+  ],
+  "outcome": "routed",
+  "routed": "a2ui-bricks-v1",
+  "correct": true,
+  "to_bricks": true,
+  "input_tokens": 1762,
+  "output_tokens": 99,
+  "request_secs": 2.06,
+  "stop_reason": "end_turn",
+  "agent_step": "REUSED P reply",
+  "agent_score": 1.0,
+  "agent_atoms": [
+   "block_rocket"
+  ],
+  "agent_refused": false
+ },
+ {
+  "seq": 19,
+  "model": "sonnet-5-5",
+  "cond": "R",
+  "brief": "B3",
+  "repeat": 2,
+  "group": "block",
+  "judgement": false,
+  "accept": [
+   "a2ui-bricks-v1"
+  ],
+  "outcome": "routed",
+  "routed": "a2ui-bricks-v1",
+  "correct": true,
+  "to_bricks": true,
+  "input_tokens": 1766,
+  "output_tokens": 23,
+  "request_secs": 1.01,
+  "stop_reason": "end_turn",
+  "agent_step": "REUSED P reply",
+  "agent_score": 1.0,
+  "agent_atoms": [
+   "motion_bricks"
+  ],
+  "agent_refused": false
+ },
+ {
+  "seq": 20,
+  "model": "sonnet-5-5",
+  "cond": "R",
+  "brief": "B4",
+  "repeat": 2,
+  "group": "block",
+  "judgement": false,
+  "accept": [
+   "a2ui-bricks-v1"
+  ],
+  "outcome": "routed",
+  "routed": "a2ui-bricks-v1",
+  "correct": true,
+  "to_bricks": true,
+  "input_tokens": 1766,
+  "output_tokens": 101,
+  "request_secs": 1.91,
+  "stop_reason": "end_turn",
+  "agent_step": "REUSED P reply",
+  "agent_score": 1.0,
+  "agent_atoms": [
+   "block_rocket"
+  ],
+  "agent_refused": false
+ },
+ {
+  "seq": 21,
+  "model": "sonnet-5-5",
+  "cond": "R",
+  "brief": "B5",
+  "repeat": 2,
+  "group": "block",
+  "judgement": false,
+  "accept": [
+   "a2ui-bricks-v1"
+  ],
+  "outcome": "routed",
+  "routed": "a2ui-bricks-v1",
+  "correct": true,
+  "to_bricks": true,
+  "input_tokens": 1764,
+  "output_tokens": 23,
+  "request_secs": 1.75,
+  "stop_reason": "end_turn",
+  "agent_step": "REUSED P reply",
+  "agent_score": 1.0,
+  "agent_atoms": [
+   "motion_bricks"
+  ],
+  "agent_refused": false
+ },
+ {
+  "seq": 22,
+  "model": "sonnet-5-5",
+  "cond": "R",
+  "brief": "B6",
+  "repeat": 2,
+  "group": "block",
+  "judgement": false,
+  "accept": [
+   "a2ui-bricks-v1"
+  ],
+  "outcome": "routed",
+  "routed": "a2ui-bricks-v1",
+  "correct": true,
+  "to_bricks": true,
+  "input_tokens": 1764,
+  "output_tokens": 23,
+  "request_secs": 1.51,
+  "stop_reason": "end_turn",
+  "agent_step": "REUSED P reply",
+  "agent_score": 1.0,
+  "agent_atoms": [
+   "motion_bricks"
+  ],
+  "agent_refused": false
+ },
+ {
+  "seq": 23,
+  "model": "sonnet-5-5",
+  "cond": "R",
+  "brief": "B7",
+  "repeat": 2,
+  "group": "judgement",
+  "judgement": true,
+  "accept": [
+   "a2ui-bricks-v1"
+  ],
+  "outcome": "routed",
+  "routed": "a2ui-bricks-v1",
+  "correct": true,
+  "to_bricks": true,
+  "input_tokens": 1767,
+  "output_tokens": 23,
+  "request_secs": 1.59,
+  "stop_reason": "end_turn",
+  "agent_step": "REUSED P reply",
+  "agent_score": 1.0,
+  "agent_atoms": [],
+  "agent_refused": true
+ },
+ {
+  "seq": 24,
+  "model": "sonnet-5-5",
+  "cond": "R",
+  "brief": "B8",
+  "repeat": 2,
+  "group": "cross",
+  "judgement": false,
+  "accept": [
+   "a2ui-charts-v1"
+  ],
+  "outcome": "routed",
+  "routed": "a2ui-charts-v1",
+  "correct": true,
+  "to_bricks": false,
+  "input_tokens": 1768,
+  "output_tokens": 22,
+  "request_secs": 1.49,
+  "stop_reason": "end_turn",
+  "agent_step": "agent step not run",
+  "agent_score": null
+ },
+ {
+  "seq": 25,
+  "model": "sonnet-5-5",
+  "cond": "R",
+  "brief": "X1",
+  "repeat": 2,
+  "group": "cross",
+  "judgement": false,
+  "accept": [
+   "a2ui-charts-v1"
+  ],
+  "outcome": "routed",
+  "routed": "a2ui-charts-v1",
+  "correct": true,
+  "to_bricks": false,
+  "input_tokens": 1774,
+  "output_tokens": 22,
+  "request_secs": 2.2,
+  "stop_reason": "end_turn",
+  "agent_step": "agent step not run",
+  "agent_score": null
+ },
+ {
+  "seq": 26,
+  "model": "sonnet-5-5",
+  "cond": "R",
+  "brief": "X2",
+  "repeat": 2,
+  "group": "cross",
+  "judgement": false,
+  "accept": [
+   "a2ui-atoms-v1"
+  ],
+  "outcome": "routed",
+  "routed": "a2ui-atoms-v1",
+  "correct": true,
+  "to_bricks": false,
+  "input_tokens": 1771,
+  "output_tokens": 23,
+  "request_secs": 2.7,
+  "stop_reason": "end_turn",
+  "agent_step": "agent step not run",
+  "agent_score": null
+ },
+ {
+  "seq": 27,
+  "model": "sonnet-5-5",
+  "cond": "R",
+  "brief": "X3",
+  "repeat": 2,
+  "group": "cross",
+  "judgement": false,
+  "accept": [
+   "a2ui-learning-v1"
+  ],
+  "outcome": "routed",
+  "routed": "a2ui-learning-v1",
+  "correct": true,
+  "to_bricks": false,
+  "input_tokens": 1778,
+  "output_tokens": 22,
+  "request_secs": 1.55,
+  "stop_reason": "end_turn",
+  "agent_step": "agent step not run",
+  "agent_score": null
+ },
+ {
+  "seq": 28,
+  "model": "sonnet-5-5",
+  "cond": "R",
+  "brief": "X4",
+  "repeat": 2,
+  "group": "cross",
+  "judgement": false,
+  "accept": [
+   "a2ui-aviation-v1"
+  ],
+  "outcome": "routed",
+  "routed": "a2ui-aviation-v1",
+  "correct": true,
+  "to_bricks": false,
+  "input_tokens": 1775,
+  "output_tokens": 23,
+  "request_secs": 1.69,
+  "stop_reason": "end_turn",
+  "agent_step": "agent step not run",
+  "agent_score": null
+ },
+ {
+  "seq": 29,
+  "model": "sonnet-5-5",
+  "cond": "R",
+  "brief": "X5",
+  "repeat": 2,
+  "group": "cross",
+  "judgement": false,
+  "accept": [
+   "a2ui-ops-v1"
+  ],
+  "outcome": "routed",
+  "routed": "a2ui-ops-v1",
+  "correct": true,
+  "to_bricks": false,
+  "input_tokens": 1773,
+  "output_tokens": 22,
+  "request_secs": 1.02,
+  "stop_reason": "end_turn",
+  "agent_step": "agent step not run",
+  "agent_score": null
+ },
+ {
+  "seq": 30,
+  "model": "sonnet-5-5",
+  "cond": "R",
+  "brief": "X6",
+  "repeat": 2,
+  "group": "cross",
+  "judgement": false,
+  "accept": [
+   "a2ui-marketing-v1"
+  ],
+  "outcome": "routed",
+  "routed": "a2ui-marketing-v1",
+  "correct": true,
+  "to_bricks": false,
+  "input_tokens": 1776,
+  "output_tokens": 23,
+  "request_secs": 1.48,
+  "stop_reason": "end_turn",
+  "agent_step": "agent step not run",
+  "agent_score": null
+ },
+ {
+  "seq": 31,
+  "model": "sonnet-5-5",
+  "cond": "R",
+  "brief": "X7",
+  "repeat": 2,
+  "group": "null",
+  "judgement": false,
+  "accept": [
+   null
+  ],
+  "outcome": "null",
+  "routed": null,
+  "correct": true,
+  "to_bricks": false,
+  "input_tokens": 1763,
+  "output_tokens": 11,
+  "request_secs": 1.5,
+  "stop_reason": "end_turn",
+  "agent_step": "agent step not run",
+  "agent_score": null
+ },
+ {
+  "seq": 32,
+  "model": "sonnet-5-5",
+  "cond": "R",
+  "brief": "X8",
+  "repeat": 2,
+  "group": "judgement",
+  "judgement": true,
+  "accept": [
+   "a2ui-marketing-v1",
+   "a2ui-display-v1"
+  ],
+  "outcome": "routed",
+  "routed": "a2ui-marketing-v1",
+  "correct": true,
+  "to_bricks": false,
+  "input_tokens": 1768,
+  "output_tokens": 204,
+  "request_secs": 2.65,
+  "stop_reason": "end_turn",
+  "agent_step": "agent step not run",
+  "agent_score": null
+ },
+ {
+  "seq": 33,
+  "model": "sonnet-5-5",
+  "cond": "R",
+  "brief": "B1",
+  "repeat": 3,
+  "group": "block",
+  "judgement": false,
+  "accept": [
+   "a2ui-bricks-v1"
+  ],
+  "outcome": "routed",
+  "routed": "a2ui-bricks-v1",
+  "correct": true,
+  "to_bricks": true,
+  "input_tokens": 1761,
+  "output_tokens": 23,
+  "request_secs": 1.64,
+  "stop_reason": "end_turn",
+  "agent_step": "REUSED P reply",
+  "agent_score": 1.0,
+  "agent_atoms": [
+   "block_robot"
+  ],
+  "agent_refused": false
+ },
+ {
+  "seq": 34,
+  "model": "sonnet-5-5",
+  "cond": "R",
+  "brief": "B2",
+  "repeat": 3,
+  "group": "block",
+  "judgement": false,
+  "accept": [
+   "a2ui-bricks-v1"
+  ],
+  "outcome": "routed",
+  "routed": "a2ui-bricks-v1",
+  "correct": true,
+  "to_bricks": true,
+  "input_tokens": 1762,
+  "output_tokens": 92,
+  "request_secs": 1.96,
+  "stop_reason": "end_turn",
+  "agent_step": "REUSED P reply",
+  "agent_score": 1.0,
+  "agent_atoms": [
+   "block_rocket"
+  ],
+  "agent_refused": false
+ },
+ {
+  "seq": 35,
+  "model": "sonnet-5-5",
+  "cond": "R",
+  "brief": "B3",
+  "repeat": 3,
+  "group": "block",
+  "judgement": false,
+  "accept": [
+   "a2ui-bricks-v1"
+  ],
+  "outcome": "routed",
+  "routed": "a2ui-bricks-v1",
+  "correct": true,
+  "to_bricks": true,
+  "input_tokens": 1766,
+  "output_tokens": 23,
+  "request_secs": 1.07,
+  "stop_reason": "end_turn",
+  "agent_step": "REUSED P reply",
+  "agent_score": 1.0,
+  "agent_atoms": [
+   "motion_bricks"
+  ],
+  "agent_refused": false
+ },
+ {
+  "seq": 36,
+  "model": "sonnet-5-5",
+  "cond": "R",
+  "brief": "B4",
+  "repeat": 3,
+  "group": "block",
+  "judgement": false,
+  "accept": [
+   "a2ui-bricks-v1"
+  ],
+  "outcome": "routed",
+  "routed": "a2ui-bricks-v1",
+  "correct": true,
+  "to_bricks": true,
+  "input_tokens": 1766,
+  "output_tokens": 118,
+  "request_secs": 2.08,
+  "stop_reason": "end_turn",
+  "agent_step": "REUSED P reply",
+  "agent_score": 1.0,
+  "agent_atoms": [
+   "block_rocket"
+  ],
+  "agent_refused": false
+ },
+ {
+  "seq": 37,
+  "model": "sonnet-5-5",
+  "cond": "R",
+  "brief": "B5",
+  "repeat": 3,
+  "group": "block",
+  "judgement": false,
+  "accept": [
+   "a2ui-bricks-v1"
+  ],
+  "outcome": "routed",
+  "routed": "a2ui-bricks-v1",
+  "correct": true,
+  "to_bricks": true,
+  "input_tokens": 1764,
+  "output_tokens": 23,
+  "request_secs": 1.55,
+  "stop_reason": "end_turn",
+  "agent_step": "REUSED P reply",
+  "agent_score": 1.0,
+  "agent_atoms": [
+   "motion_bricks"
+  ],
+  "agent_refused": false
+ },
+ {
+  "seq": 38,
+  "model": "sonnet-5-5",
+  "cond": "R",
+  "brief": "B6",
+  "repeat": 3,
+  "group": "block",
+  "judgement": false,
+  "accept": [
+   "a2ui-bricks-v1"
+  ],
+  "outcome": "routed",
+  "routed": "a2ui-bricks-v1",
+  "correct": true,
+  "to_bricks": true,
+  "input_tokens": 1764,
+  "output_tokens": 23,
+  "request_secs": 1.7,
+  "stop_reason": "end_turn",
+  "agent_step": "REUSED P reply",
+  "agent_score": 1.0,
+  "agent_atoms": [
+   "motion_bricks"
+  ],
+  "agent_refused": false
+ },
+ {
+  "seq": 39,
+  "model": "sonnet-5-5",
+  "cond": "R",
+  "brief": "B7",
+  "repeat": 3,
+  "group": "judgement",
+  "judgement": true,
+  "accept": [
+   "a2ui-bricks-v1"
+  ],
+  "outcome": "routed",
+  "routed": "a2ui-bricks-v1",
+  "correct": true,
+  "to_bricks": true,
+  "input_tokens": 1767,
+  "output_tokens": 23,
+  "request_secs": 1.45,
+  "stop_reason": "end_turn",
+  "agent_step": "REUSED P reply",
+  "agent_score": 1.0,
+  "agent_atoms": [],
+  "agent_refused": true
+ },
+ {
+  "seq": 40,
+  "model": "sonnet-5-5",
+  "cond": "R",
+  "brief": "B8",
+  "repeat": 3,
+  "group": "cross",
+  "judgement": false,
+  "accept": [
+   "a2ui-charts-v1"
+  ],
+  "outcome": "routed",
+  "routed": "a2ui-charts-v1",
+  "correct": true,
+  "to_bricks": false,
+  "input_tokens": 1768,
+  "output_tokens": 22,
+  "request_secs": 1.48,
+  "stop_reason": "end_turn",
+  "agent_step": "agent step not run",
+  "agent_score": null
+ },
+ {
+  "seq": 41,
+  "model": "sonnet-5-5",
+  "cond": "R",
+  "brief": "X1",
+  "repeat": 3,
+  "group": "cross",
+  "judgement": false,
+  "accept": [
+   "a2ui-charts-v1"
+  ],
+  "outcome": "routed",
+  "routed": "a2ui-charts-v1",
+  "correct": true,
+  "to_bricks": false,
+  "input_tokens": 1774,
+  "output_tokens": 22,
+  "request_secs": 2.03,
+  "stop_reason": "end_turn",
+  "agent_step": "agent step not run",
+  "agent_score": null
+ },
+ {
+  "seq": 42,
+  "model": "sonnet-5-5",
+  "cond": "R",
+  "brief": "X2",
+  "repeat": 3,
+  "group": "cross",
+  "judgement": false,
+  "accept": [
+   "a2ui-atoms-v1"
+  ],
+  "outcome": "routed",
+  "routed": "a2ui-atoms-v1",
+  "correct": true,
+  "to_bricks": false,
+  "input_tokens": 1771,
+  "output_tokens": 23,
+  "request_secs": 1.57,
+  "stop_reason": "end_turn",
+  "agent_step": "agent step not run",
+  "agent_score": null
+ },
+ {
+  "seq": 43,
+  "model": "sonnet-5-5",
+  "cond": "R",
+  "brief": "X3",
+  "repeat": 3,
+  "group": "cross",
+  "judgement": false,
+  "accept": [
+   "a2ui-learning-v1"
+  ],
+  "outcome": "routed",
+  "routed": "a2ui-learning-v1",
+  "correct": true,
+  "to_bricks": false,
+  "input_tokens": 1778,
+  "output_tokens": 22,
+  "request_secs": 1.6,
+  "stop_reason": "end_turn",
+  "agent_step": "agent step not run",
+  "agent_score": null
+ },
+ {
+  "seq": 44,
+  "model": "sonnet-5-5",
+  "cond": "R",
+  "brief": "X4",
+  "repeat": 3,
+  "group": "cross",
+  "judgement": false,
+  "accept": [
+   "a2ui-aviation-v1"
+  ],
+  "outcome": "routed",
+  "routed": "a2ui-aviation-v1",
+  "correct": true,
+  "to_bricks": false,
+  "input_tokens": 1775,
+  "output_tokens": 23,
+  "request_secs": 1.49,
+  "stop_reason": "end_turn",
+  "agent_step": "agent step not run",
+  "agent_score": null
+ },
+ {
+  "seq": 45,
+  "model": "sonnet-5-5",
+  "cond": "R",
+  "brief": "X5",
+  "repeat": 3,
+  "group": "cross",
+  "judgement": false,
+  "accept": [
+   "a2ui-ops-v1"
+  ],
+  "outcome": "routed",
+  "routed": "a2ui-ops-v1",
+  "correct": true,
+  "to_bricks": false,
+  "input_tokens": 1773,
+  "output_tokens": 22,
+  "request_secs": 1.24,
+  "stop_reason": "end_turn",
+  "agent_step": "agent step not run",
+  "agent_score": null
+ },
+ {
+  "seq": 46,
+  "model": "sonnet-5-5",
+  "cond": "R",
+  "brief": "X6",
+  "repeat": 3,
+  "group": "cross",
+  "judgement": false,
+  "accept": [
+   "a2ui-marketing-v1"
+  ],
+  "outcome": "routed",
+  "routed": "a2ui-marketing-v1",
+  "correct": true,
+  "to_bricks": false,
+  "input_tokens": 1776,
+  "output_tokens": 23,
+  "request_secs": 1.46,
+  "stop_reason": "end_turn",
+  "agent_step": "agent step not run",
+  "agent_score": null
+ },
+ {
+  "seq": 47,
+  "model": "sonnet-5-5",
+  "cond": "R",
+  "brief": "X7",
+  "repeat": 3,
+  "group": "null",
+  "judgement": false,
+  "accept": [
+   null
+  ],
+  "outcome": "null",
+  "routed": null,
+  "correct": true,
+  "to_bricks": false,
+  "input_tokens": 1763,
+  "output_tokens": 11,
+  "request_secs": 1.4,
+  "stop_reason": "end_turn",
+  "agent_step": "agent step not run",
+  "agent_score": null
+ },
+ {
+  "seq": 48,
+  "model": "sonnet-5-5",
+  "cond": "R",
+  "brief": "X8",
+  "repeat": 3,
+  "group": "judgement",
+  "judgement": true,
+  "accept": [
+   "a2ui-marketing-v1",
+   "a2ui-display-v1"
+  ],
+  "outcome": "routed",
+  "routed": "a2ui-marketing-v1",
+  "correct": true,
+  "to_bricks": false,
+  "input_tokens": 1768,
+  "output_tokens": 167,
+  "request_secs": 2.43,
+  "stop_reason": "end_turn",
+  "agent_step": "agent step not run",
+  "agent_score": null
+ }
+]

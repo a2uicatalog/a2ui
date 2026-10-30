@@ -1,0 +1,42 @@
+{
+ "task": "T2",
+ "condition": "CTH2",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-4-5-20251001",
+ "label": "oracle-slice-3types__express__haiku-4-5__temp0__hints-v2__run2",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 16421,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 3.8,
+ "usage": {
+  "input_tokens": 5006,
+  "output_tokens": 359
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "stat_card",
+  "stat_card",
+  "stat_card",
+  "stat_card",
+  "chartjs_bar",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.833,
+  "recall": 1.0,
+  "f1": 0.909,
+  "slot_hits": {
+   "KPI tile (x4)": true,
+   "trend (required only if metric_row was chosen; stat_card's own delta already satisfies it)": true,
+   "comparison chart": true
+  }
+ },
+ "reply": "<a2ui>\nkpi_1 = stat_card(value=\"$2.4M\", label=\"Total Revenue\", delta=\"+12%\", is_up=true, accent=\"#4CAF50\")\nkpi_2 = stat_card(value=\"8,432\", label=\"Active Users\", delta=\"+5%\", is_up=true, accent=\"#2196F3\")\nkpi_3 = stat_card(value=\"94.2%\", label=\"Uptime\", delta=\"-0.3%\", is_up=false, accent=\"#FF9800\")\nkpi_4 = stat_card(value=\"2.1s\", label=\"Avg Response Time\", delta=\"-8%\", is_up=true, accent=\"#4CAF50\")\n\ncomparison_chart = chartjs_bar(\n  labels=[\"Q1\", \"Q2\", \"Q3\", \"Q4\"],\n  datasets=[\n    {label: \"2023\", data: [65, 72, 68, 81]},\n    {label: \"2024\", data: [78, 85, 92, 88]}\n  ]\n)\n\nroot = columns(\n  cols=4,\n  gap=\"1.5rem\",\n  items=[\n    {blocks: [kpi_1]},\n    {blocks: [kpi_2]},\n    {blocks: [kpi_3]},\n    {blocks: [kpi_4]},\n    {blocks: [comparison_chart]}\n  ]\n)\n</a2ui>"
+}

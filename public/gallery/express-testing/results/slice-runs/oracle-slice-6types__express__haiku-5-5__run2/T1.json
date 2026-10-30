@@ -1,0 +1,51 @@
+{
+ "task": "T1",
+ "condition": "D_haiku-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "oracle-slice-6types__express__haiku-5-5__run2",
+ "agent_type": "T1",
+ "catalogue": "D-t1.json",
+ "atoms_in_catalogue": 28,
+ "prompt_chars": 17769,
+ "slot_recall": [
+  5,
+  5
+ ],
+ "secs": 14.1,
+ "usage": {
+  "input_tokens": 6287,
+  "output_tokens": 2814
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "page_header",
+  "heading",
+  "body",
+  "heading",
+  "body",
+  "heading",
+  "body",
+  "concept_rung",
+  "quiz_set",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.9,
+  "recall": 0.8,
+  "f1": 0.847,
+  "slot_hits": {
+   "title": true,
+   "concept sections (x3)": true,
+   "worked example": true,
+   "3-question quiz": true,
+   "quiz result": false
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"water-cycle-lesson\")\n\ntitle = page_header(title=\"The Water Cycle\", subtitle=\"How water moves continuously between the oceans, atmosphere, and land\", icon=\"\ud83d\udca7\", tag=\"Earth Science\", accent=\"#0ea5e9\")\n\nh_evap = heading(text=\"1. Evaporation\")\nb_evap = body(text=\"Heat from the Sun warms water at the surface of oceans, lakes, and rivers. The warmed water changes into water vapor and rises into the air. Plants also release water vapor through their leaves in a process called transpiration.\")\n\nh_cond = heading(text=\"2. Condensation\")\nb_cond = body(text=\"As water vapor rises, it cools. Cooler air cannot hold as much vapor, so the vapor turns back into tiny liquid droplets. Billions of these droplets gather around dust particles and form clouds.\")\n\nh_precip = heading(text=\"3. Precipitation and Collection\")\nb_precip = body(text=\"When droplets in a cloud combine into heavy drops, they fall as rain, snow, sleet, or hail. Water that lands on land flows as runoff into rivers and lakes, soaks into the ground as groundwater, or is stored as ice. Most of it eventually returns to the oceans, and the cycle begins again.\")\n\nexample = concept_rung(kind=\"example\", badge=\"EX\", title=\"Worked example: a puddle after rain\", body=\"Morning sun shines on a puddle left by last night's storm. Water at the surface absorbs heat and evaporates into the air (evaporation). By afternoon, the vapor has risen, cooled, and formed small cumulus clouds (condensation). When those clouds grow heavy, they release a brief shower (precipitation), and the new drops refill the puddle.\", takeaway=\"The same water can pass through every stage in a single day.\")\n\nquiz = quiz_set(title=\"Self-check\", pass_score=70, accent=\"#0ea5e9\", questions=[\n    {question: \"What is the main source of water vapor in the atmosphere?\", options: [\"Plant roots\", \"Evaporation from oceans\", \"Volcanic eruptions\", \"Melting glaciers\"], correct: 1, explanation: \"Oceans cover most of Earth's surface, so they supply most of the water that evaporates.\"},\n    {question: \"What causes water vapor to form clouds?\", options: [\"It warms and rises higher\", \"It cools and condenses into droplets\", \"It freezes into ice crystals\", \"It falls back as precipitation\"], correct: 1, explanation: \"Cooling air holds less vapor, so the vapor condenses into tiny droplets that make up clouds.\"},\n    {question: \"Where does most runoff eventually end up?\", options: [\"Only back in the atmosphere\", \"Oceans, lakes, and rivers\", \"Deep underground permanently\", \"Outer space\"], correct: 1, explanation: \"Runoff flows downhill into streams and rivers, which carry the water back to the oceans.\"}\n])\n\nleft = [title, h_evap, b_evap, h_cond, b_cond, h_precip, b_precip, example]\n\nroot = columns(cols=2, gap=\"2rem\", align=\"top\", items=[{blocks: left}, {blocks: [quiz]}])\n</a2ui>"
+}

@@ -1,0 +1,51 @@
+{
+ "task": "T1",
+ "condition": "C_haiku-5-5H2",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": true,
+ "label": "oracle-slice-3types__express__haiku-5-5__hints-v2__run2",
+ "agent_type": "Learning",
+ "catalogue": "C-learning.json",
+ "atoms_in_catalogue": 36,
+ "prompt_chars": 21139,
+ "slot_recall": [
+  5,
+  5
+ ],
+ "secs": 10.9,
+ "usage": {
+  "input_tokens": 7808,
+  "output_tokens": 2133
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "page_header",
+  "heading",
+  "body",
+  "heading",
+  "body",
+  "heading",
+  "body",
+  "concept_rung",
+  "quiz_set",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.9,
+  "recall": 0.8,
+  "f1": 0.847,
+  "slot_hits": {
+   "title": true,
+   "concept sections (x3)": true,
+   "worked example": true,
+   "3-question quiz": true,
+   "quiz result": false
+  }
+ },
+ "reply": "<a2ui>\nheader = page_header(\"The Water Cycle\", \"How water moves between the oceans, atmosphere, and land\", \"\ud83d\udca7\", \"Earth Science\", \"#0ea5e9\")\n\nevap_h = heading(\"1. Evaporation\")\nevap_b = body(\"Heat from the Sun warms water at the surface of oceans, lakes, and rivers. Molecules gain enough energy to escape as water vapour, rising into the atmosphere. Plants also release water vapour through their leaves in a process called transpiration.\")\n\ncond_h = heading(\"2. Condensation\")\ncond_b = body(\"As water vapour rises, it cools. Cooler air holds less moisture, so the vapour changes back into tiny liquid droplets. These droplets cluster around dust and salt particles, forming clouds.\")\n\nprecip_h = heading(\"3. Precipitation\")\nprecip_b = body(\"When droplets in clouds grow heavy enough, they fall as rain, snow, sleet, or hail. Most precipitation lands in the oceans, but some soaks into the ground or runs off into rivers, which carry it back to the sea.\")\n\nexample = concept_rung(\"EX\", \"example\", \"WORKED EXAMPLE\", \"Tracing one raindrop\", \"A drop evaporates from a lake on a warm afternoon. It rises, cools high in the sky, and condenses onto a dust particle to form a cloud droplet. Later, it joins other droplets, falls as rain onto a hillside, soaks into the soil, and eventually seeps into a stream that flows back to the lake.\", \"\", \"\", \"Water is continuously recycled, so the same molecules can cycle through many stages over time.\")\n\nquiz = quiz_set(\"Self-check\", [\n  {question: \"What primarily drives evaporation?\", options: [\"Wind\", \"Heat from the Sun\", \"Gravity\", \"Soil pressure\"], correct: 1, explanation: \"Solar heat gives water molecules the energy needed to become vapour.\"},\n  {question: \"What happens to water vapour as it cools?\", options: [\"It condenses into droplets\", \"It turns into salt\", \"It sinks to the ground\", \"It disappears\"], correct: 0, explanation: \"Cooler air can hold less vapour, so it condenses into liquid droplets that form clouds.\"},\n  {question: \"Which process returns water from clouds to the surface?\", options: [\"Transpiration\", \"Precipitation\", \"Evaporation\", \"Infiltration\"], correct: 1, explanation: \"Precipitation is any form of water falling from clouds, such as rain or snow.\"}\n], 70)\n\nroot = columns(2, \"2rem\", \"top\", [\n  {blocks: [header, evap_h, evap_b, cond_h, cond_b, precip_h, precip_b]},\n  {blocks: [example, quiz]}\n])\n</a2ui>"
+}

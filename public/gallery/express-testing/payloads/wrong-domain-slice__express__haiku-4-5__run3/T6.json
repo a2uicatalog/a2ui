@@ -1,0 +1,157 @@
+{
+ "label": "wrong-domain-slice__express__haiku-4-5__run3",
+ "task": "T6",
+ "format": "express",
+ "model_id": null,
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/b-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "items": [
+       {
+        "blocks": [
+         "_inline_1",
+         "_inline_2",
+         "_inline_3",
+         "_inline_4",
+         "flashcard_grid"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "_inline_1",
+      "component": "heading",
+      "text": "Vocabulary Flashcards"
+     },
+     {
+      "id": "_inline_2",
+      "component": "body",
+      "text": "Hover over each card to reveal the definition and origin."
+     },
+     {
+      "id": "_inline_3",
+      "component": "progress_bar",
+      "value": 0,
+      "label": "Cards Reviewed",
+      "show_percent": true
+     },
+     {
+      "id": "_inline_4",
+      "component": "spacer",
+      "height": "1.5rem"
+     },
+     {
+      "id": "card1",
+      "component": "flip_card",
+      "front_content": "**English**\n\nPersevere",
+      "back_content": "**Spanish**\n\nPerseverar\n\n*To persist despite difficulty*",
+      "trigger_on_hover": true
+     },
+     {
+      "id": "card2",
+      "component": "flip_card",
+      "front_content": "**English**\n\nPlacate",
+      "back_content": "**Latin**\n\nPlacare\n\n*To appease or calm*",
+      "trigger_on_hover": true
+     },
+     {
+      "id": "card3",
+      "component": "flip_card",
+      "front_content": "**English**\n\nEphemeral",
+      "back_content": "**Greek**\n\nEphemeros\n\n*Lasting a very short time*",
+      "trigger_on_hover": true
+     },
+     {
+      "id": "card4",
+      "component": "flip_card",
+      "front_content": "**English**\n\nPedantic",
+      "back_content": "**Italian**\n\nPedante\n\n*Overly concerned with rules*",
+      "trigger_on_hover": true
+     },
+     {
+      "id": "card5",
+      "component": "flip_card",
+      "front_content": "**English**\n\nSerendipity",
+      "back_content": "**Persian**\n\nSerendip\n\n*Happy accident; fortunate discovery*",
+      "trigger_on_hover": true
+     },
+     {
+      "id": "card6",
+      "component": "flip_card",
+      "front_content": "**English**\n\nMellifluous",
+      "back_content": "**Latin**\n\nMel + fluere\n\n*Sweet-sounding; musical*",
+      "trigger_on_hover": true
+     },
+     {
+      "id": "card7",
+      "component": "flip_card",
+      "front_content": "**English**\n\nObfuscate",
+      "back_content": "**Latin**\n\nObfuscare\n\n*To make unclear or obscure*",
+      "trigger_on_hover": true
+     },
+     {
+      "id": "card8",
+      "component": "flip_card",
+      "front_content": "**English**\n\nSanguine",
+      "back_content": "**Latin**\n\nSanguinis\n\n*Optimistic; blood-red*",
+      "trigger_on_hover": true
+     },
+     {
+      "id": "card9",
+      "component": "flip_card",
+      "front_content": "**English**\n\nAmbivalent",
+      "back_content": "**Latin**\n\nAmbi + valens\n\n*Having mixed feelings*",
+      "trigger_on_hover": true
+     },
+     {
+      "id": "card10",
+      "component": "flip_card",
+      "front_content": "**English**\n\nSerendipitous",
+      "back_content": "**Derived**\n\nFrom Serendip\n\n*Occurring by happy chance*",
+      "trigger_on_hover": true
+     },
+     {
+      "id": "flashcard_grid",
+      "component": "columns",
+      "cols": 2,
+      "gap": "1.25rem",
+      "items": [
+       {
+        "blocks": [
+         "card1",
+         "card2",
+         "card3",
+         "card4",
+         "card5"
+        ]
+       },
+       {
+        "blocks": [
+         "card6",
+         "card7",
+         "card8",
+         "card9",
+         "card10"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

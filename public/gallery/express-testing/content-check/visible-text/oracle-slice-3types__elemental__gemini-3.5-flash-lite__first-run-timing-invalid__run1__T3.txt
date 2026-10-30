@@ -1,0 +1,2 @@
+Did not compile.
+ A2uiCompilationValidationError: Unexpected characters at end of expression: ': 'Get Started', 'url': '#signup'' - Help: Please correct the validation or syntax error in your Elemental XML/HTML.

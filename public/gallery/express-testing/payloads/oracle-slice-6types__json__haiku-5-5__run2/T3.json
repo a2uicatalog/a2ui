@@ -1,0 +1,96 @@
+{
+ "label": "oracle-slice-6types__json__haiku-5-5__run2",
+ "task": "T3",
+ "format": "json",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9",
+   "create_surface": {
+    "surface_id": "landing-page",
+    "catalog_id": "https://a2uicatalog.ai/catalog/d-t3.json"
+   }
+  },
+  {
+   "version": "v0.9",
+   "update_components": {
+    "surface_id": "landing-page",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "0",
+      "align": "stretch",
+      "items": [
+       {
+        "blocks": [
+         {
+          "id": "hero",
+          "component": "gradient_hero",
+          "badge": "New for 2025",
+          "title": "Ship faster with Acme",
+          "subtitle": "Acme gives product teams one place to plan, build, and launch features without the busywork.",
+          "align": "center",
+          "accent": "#4f46e5",
+          "accent2": "#8b5cf6"
+         },
+         {
+          "id": "features",
+          "component": "feature_grid",
+          "heading": "Everything you need to launch",
+          "description": "Three core capabilities that keep your team moving.",
+          "columns": 3,
+          "features": [
+           {
+            "icon": "\u26a1",
+            "title": "Instant setup",
+            "description": "Connect your repositories and start shipping in minutes, not days.",
+            "color": "#4f46e5"
+           },
+           {
+            "icon": "\ud83d\udd17",
+            "title": "Seamless integrations",
+            "description": "Works with the tools you already use, including GitHub, Slack, and Jira.",
+            "color": "#8b5cf6"
+           },
+           {
+            "icon": "\ud83d\udcca",
+            "title": "Clear insights",
+            "description": "Track progress and release health with dashboards that update in real time.",
+            "color": "#0ea5e9"
+           }
+          ]
+         },
+         {
+          "id": "testimonial",
+          "component": "testimonial_card",
+          "text": "Acme cut our release cycle in half. The team finally spends time building instead of coordinating.",
+          "author_name": "Priya Raman",
+          "author_title": "VP of Engineering, Northwind",
+          "rating": 5
+         },
+         {
+          "id": "cta",
+          "component": "cta_section",
+          "heading": "Ready to ship your next release?",
+          "body": "Start your free 14-day trial today. No credit card required.",
+          "primary_cta": {
+           "label": "Start free trial",
+           "url": "https://example.com/signup"
+          },
+          "secondary_cta": {
+           "label": "Talk to sales",
+           "url": "https://example.com/contact"
+          },
+          "background": "#4f46e5"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

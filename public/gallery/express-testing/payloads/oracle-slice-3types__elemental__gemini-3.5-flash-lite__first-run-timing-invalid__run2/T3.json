@@ -1,0 +1,105 @@
+{
+ "label": "oracle-slice-3types__elemental__gemini-3.5-flash-lite__first-run-timing-invalid__run2",
+ "task": "T3",
+ "format": "elemental",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce-elemental.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "gradient_hero",
+      "title": {
+       "path": "/hero_title"
+      },
+      "subtitle": {
+       "path": "/hero_subtitle"
+      },
+      "Badge": "NEW RELEASE",
+      "align": "center"
+     },
+     {
+      "id": "features",
+      "component": "feature_grid",
+      "Heading": {
+       "path": "/feature_heading"
+      },
+      "description": "Everything you need to succeed in the digital marketplace.",
+      "Columns": 3,
+      "features": [
+       {
+        "icon": "\u26a1",
+        "title": "Lightning Fast",
+        "description": "Optimized performance ensures your customers never wait."
+       },
+       {
+        "icon": "\ud83d\udd12",
+        "title": "Secure by Default",
+        "description": "Enterprise-grade security protecting every transaction."
+       },
+       {
+        "icon": "\ud83d\udcc8",
+        "title": "Scalable Growth",
+        "description": "Grow from startup to global enterprise seamlessly."
+       }
+      ]
+     },
+     {
+      "id": "testimonial",
+      "component": "testimonial_card",
+      "text": {
+       "path": "/testimonial_text"
+      },
+      "rating": 5
+     },
+     {
+      "id": "cta-section",
+      "component": "cta_section",
+      "Heading": "Ready to accelerate your growth?",
+      "Body": "Join thousands of businesses already scaling with our platform today.",
+      "background": "#1e1b4b",
+      "primary_cta": {
+       "label": "Start Free Trial",
+       "url": "#signup"
+      },
+      "secondary_cta": {
+       "label": "Contact Sales",
+       "url": "#contact"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_data_model": {
+    "surface_id": "main",
+    "path": "/",
+    "value": {
+     "hero_title": "Build the future of digital commerce",
+     "hero_subtitle": "Empower your business with our cutting-edge marketing and commerce elemental tools, designed for lightning-fast deployment.",
+     "feature_heading": "Why choose our platform?",
+     "feature_1_title": "Lightning Fast",
+     "feature_1_desc": "Optimized performance ensures your customers never wait.",
+     "feature_2_title": "Secure by Default",
+     "feature_2_desc": "Enterprise-grade security protecting every transaction.",
+     "feature_3_title": "Scalable Growth",
+     "feature_3_desc": "Grow from startup to global enterprise seamlessly.",
+     "testimonial_text": "This platform completely transformed how we handle our online storefront. Conversions are up 40%!",
+     "testimonial_author": "Sarah Jenkins",
+     "testimonial_title": "Head of E-Commerce, RetailCorp"
+    }
+   }
+  }
+ ]
+}

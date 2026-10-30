@@ -1,0 +1,119 @@
+{
+ "label": "oracle-slice-3types__json__haiku-5-5__run3",
+ "task": "T4",
+ "format": "json",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "status_list_surface",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "status_list_surface",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         {
+          "id": "filter_heading",
+          "component": "heading",
+          "text": "Filter by status"
+         },
+         {
+          "id": "status_filter",
+          "component": "segmented_control",
+          "name": "status_filter",
+          "selected_value": "all",
+          "options": [
+           {
+            "label": "All",
+            "value": "all"
+           },
+           {
+            "label": "Active",
+            "value": "active"
+           },
+           {
+            "label": "Pending",
+            "value": "pending"
+           },
+           {
+            "label": "Blocked",
+            "value": "blocked"
+           },
+           {
+            "label": "Done",
+            "value": "done"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "blocks": [
+         {
+          "id": "item_list",
+          "component": "entity_list",
+          "items": [
+           {
+            "name": "Migrate billing database",
+            "subtitle": "Cutover window scheduled for Saturday 02:00 UTC.",
+            "status": "Active"
+           },
+           {
+            "name": "Update onboarding emails",
+            "subtitle": "Copy approved; waiting on legal sign-off.",
+            "status": "Pending"
+           },
+           {
+            "name": "Rotate API keys",
+            "subtitle": "Service account lacks rotation permission.",
+            "status": "Blocked"
+           },
+           {
+            "name": "Audit access logs",
+            "subtitle": "Q3 review is 60% complete.",
+            "status": "Active"
+           },
+           {
+            "name": "Launch beta dashboard",
+            "subtitle": "Released to 200 pilot accounts.",
+            "status": "Done"
+           },
+           {
+            "name": "Vendor contract renewal",
+            "subtitle": "Vendor returned redlines on Tuesday.",
+            "status": "Pending"
+           },
+           {
+            "name": "Fix checkout latency",
+            "subtitle": "Waiting on payment provider trace data.",
+            "status": "Blocked"
+           },
+           {
+            "name": "Publish API docs v2",
+            "subtitle": "All endpoints documented and reviewed.",
+            "status": "Done"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

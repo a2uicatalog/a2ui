@@ -1,0 +1,42 @@
+{
+ "task": "T3",
+ "condition": "CTH2",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-4-5-20251001",
+ "label": "oracle-slice-3types__express__haiku-4-5__temp0__hints-v2__run2",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "C-marketing-commerce.json",
+ "atoms_in_catalogue": 23,
+ "prompt_chars": 12467,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 4.2,
+ "usage": {
+  "input_tokens": 3764,
+  "output_tokens": 433
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "gradient_hero",
+  "feature_grid",
+  "testimonial_card",
+  "cta_section",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.8,
+  "recall": 1.0,
+  "f1": 0.889,
+  "slot_hits": {
+   "hero": true,
+   "feature columns (x3)": true,
+   "testimonial": true,
+   "CTA": true
+  }
+ },
+ "reply": "<a2ui>\nhero = gradient_hero(\n  title=\"Transform Your Workflow\",\n  subtitle=\"Streamline your process with powerful tools designed for modern teams\",\n  cta_label=\"Get Started\",\n  cta_url=\"https://example.com/signup\"\n)\n\nfeatures = feature_grid(\n  heading=\"Why Choose Us\",\n  description=\"Everything you need to succeed\",\n  columns=3,\n  features=[\n    {icon: \"\u26a1\", title: \"Lightning Fast\", description: \"Optimized performance that keeps up with your pace\"},\n    {icon: \"\ud83d\udd12\", title: \"Secure & Reliable\", description: \"Enterprise-grade security for peace of mind\"},\n    {icon: \"\ud83c\udfaf\", title: \"Easy to Use\", description: \"Intuitive interface that requires minimal training\"}\n  ]\n)\n\ntestimonial = testimonial_card(\n  text=\"This product completely transformed how our team works. We've seen a 40% increase in productivity.\",\n  author_name=\"Sarah Chen\",\n  author_title=\"Product Manager at TechCorp\",\n  author_avatar_url=\"https://api.example.com/avatars/sarah.jpg\",\n  rating=5\n)\n\ncta = cta_section(\n  heading=\"Ready to Get Started?\",\n  body=\"Join thousands of teams already using our platform to achieve more.\",\n  primary_cta={label: \"Start Free Trial\", url: \"https://example.com/trial\"},\n  secondary_cta={label: \"Learn More\", url: \"https://example.com/docs\"}\n)\n\nroot = columns(\n  cols=1,\n  items=[\n    {blocks: [hero]},\n    {blocks: [features]},\n    {blocks: [testimonial]},\n    {blocks: [cta]}\n  ]\n)\n</a2ui>"
+}

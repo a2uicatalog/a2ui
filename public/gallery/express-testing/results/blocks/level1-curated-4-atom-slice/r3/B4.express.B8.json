@@ -1,0 +1,36 @@
+{
+ "model": "sonnet-5-5",
+ "cond": "B4",
+ "format": "express",
+ "brief": "B8",
+ "repeat": 3,
+ "seq": 47,
+ "model_id": "claude-sonnet-5-5",
+ "utc": "2026-10-29T19:58:14Z",
+ "prompt_chars": 12621,
+ "prompt_sha256": "(removed for publication)",
+ "temperature_requested": null,
+ "temperature_sent": false,
+ "max_tokens": 32768,
+ "request_secs": 9.95,
+ "input_tokens": 4675,
+ "output_tokens": 1164,
+ "stop_reason": "end_turn",
+ "usage": {
+  "input_tokens": 4675,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "cache_creation": {
+   "ephemeral_5m_input_tokens": 0,
+   "ephemeral_1h_input_tokens": 0
+  },
+  "output_tokens": 1164,
+  "output_tokens_details": {
+   "thinking_tokens": 706
+  },
+  "service_tier": "standard",
+  "inference_geo": "global",
+  "speed": "standard"
+ },
+ "reply": "<a2ui>\nsurface(\"sales-dashboard\")\nroot = brick_build_3d(\n  bricks=[\n    [0, 0, 0, 2, 2, 3, \"#e3000b\"],\n    [3, 0, 0, 2, 2, 5, \"#ff8c00\"],\n    [6, 0, 0, 2, 2, 4, \"#ffd500\"],\n    [9, 0, 0, 2, 2, 7, \"#2ea043\"],\n    [12, 0, 0, 2, 2, 6, \"#0055bf\"],\n    [15, 0, 0, 2, 2, 9, \"#8a2be2\"]\n  ],\n  mode=\"animate\",\n  orbit=true,\n  height=480,\n  look=\"studio\",\n  scrubber=true,\n  checks=false,\n  parts=true,\n  picker=false,\n  base=\"#2b2f36\"\n)\n</a2ui>\n\nThe catalog only has brick-model components, so I built the sales dashboard as a 3D bar chart out of bricks. Each of the six columns is a bar whose height shows that period's sales, and the bars rise from left to right. The chart assembles itself, can be orbited by dragging, and has a step scrubber and a parts list with an indicative cost.\n\nThe catalog has no text, axis or label components, so the chart has no axis labels, values or title. The bar heights and colors are placeholder numbers I chose, not real sales data."
+}

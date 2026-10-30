@@ -1,0 +1,38 @@
+{
+ "task": "T2",
+ "condition": "DN_haiku-5-5",
+ "temperature_applied": false,
+ "format": "json",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "oracle-slice-6types__json__haiku-5-5__run2",
+ "agent_type": "T2",
+ "catalogue": "D-t2.json",
+ "atoms_in_catalogue": 16,
+ "prompt_chars": 20191,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 8.2,
+ "usage": {
+  "input_tokens": 7963,
+  "output_tokens": 1826
+ },
+ "valid": false,
+ "error": "A2uiIntegrityError: Component 'comparison_chart' is not reachable from 'root'",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "KPI tile (x4)": false,
+   "trend (required only if metric_row was chosen; stat_card's own delta already satisfies it)": false,
+   "comparison chart": false
+  }
+ },
+ "reply": "I'll build this as a heading, a row of four KPI tiles, and a year-over-year comparison bar chart.\n\n<a2ui-json>\n[\n  {\n    \"version\": \"v0.9.1\",\n    \"createSurface\": {\n      \"surfaceId\": \"metrics_overview\",\n      \"catalogId\": \"https://a2uicatalog.ai/catalog/d-t2.json\"\n    }\n  },\n  {\n    \"version\": \"v0.9.1\",\n    \"updateComponents\": {\n      \"surfaceId\": \"metrics_overview\",\n      \"components\": [\n        {\n          \"id\": \"root\",\n          \"component\": \"heading\",\n          \"text\": \"Metrics Overview\"\n        },\n        {\n          \"id\": \"kpi_row\",\n          \"component\": \"metric_row\",\n          \"cols\": 4,\n          \"metrics\": [\n            {\n              \"value\": \"482K\",\n              \"label\": \"Revenue\",\n              \"prefix\": \"$\",\n              \"sub\": \"vs. last month\",\n              \"trend\": \"up\"\n            },\n            {\n              \"value\": \"12.8K\",\n              \"label\": \"Active Users\",\n              \"sub\": \"vs. last month\",\n              \"trend\": \"up\"\n            },\n            {\n              \"value\": \"3.2\",\n              \"label\": \"Churn Rate\",\n              \"suffix\": \"%\",\n              \"sub\": \"vs. last month\",\n              \"trend\": \"down\"\n            },\n            {\n              \"value\": \"4.7\",\n              \"label\": \"Conversion Rate\",\n              \"suffix\": \"%\",\n              \"sub\": \"vs. last month\",\n              \"trend\": \"up\"\n            }\n          ]\n        },\n        {\n          \"id\": \"comparison_chart\",\n          \"component\": \"chartjs_bar\",\n          \"labels\": [\"Q1\", \"Q2\", \"Q3\", \"Q4\"],\n          \"datasets\": [\n            {\n              \"label\": \"This year\",\n              \"data\": [98, 112, 125, 147]\n            },\n            {\n              \"label\": \"Last year\",\n              \"data\": [84, 91, 103, 118]\n            }\n          ]\n        }\n      ]\n    }\n  }\n]\n</a2ui-json>\n\nThe surface contains the heading, the four KPI tiles (Revenue and Active Users trending up, Churn trending down, Conversion trending up), and a quarterly bar chart comparing this year against last year."
+}

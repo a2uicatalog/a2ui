@@ -1,0 +1,31 @@
+{
+ "task": "T6",
+ "condition": "F",
+ "label": "random-slice__express__haiku-4-5__run1",
+ "agent_type": "Learning",
+ "catalogue": "F-learning.json",
+ "atoms_in_catalogue": 184,
+ "prompt_chars": 101177,
+ "slot_recall": [
+  2,
+  2
+ ],
+ "secs": 4.3,
+ "usage": {
+  "input_tokens": 29212,
+  "output_tokens": 364
+ },
+ "valid": false,
+ "error": "A2uiCompilationValidationError: Unknown component 'column' not defined in catalog 'https://a2uicatalog.ai/catalog/f-learning.json'. - Help: Please correct the syntax error in your Express DSL.",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "flashcard deck": false,
+   "progress indicator": false
+  }
+ },
+ "reply": "<a2ui>\nroot = column([\n  progress_bar(\n    value=20,\n    label=\"Progress\",\n    show_percent=true,\n    caption=\"1 of 5 cards reviewed\"\n  ),\n  spacer(height=24),\n  flashcard_deck(\n    cards=[\n      {front: \"Serendipity\", back: \"The occurrence of events by chance in a happy or beneficial way\"},\n      {front: \"Ephemeral\", back: \"Lasting for a very short time\"},\n      {front: \"Mellifluous\", back: \"Sweet or musical; pleasant to hear\"},\n      {front: \"Ubiquitous\", back: \"Present, appearing, or found everywhere\"},\n      {front: \"Sanguine\", back: \"Optimistic or positive, especially in an unjustified way\"},\n      {front: \"Perspicacious\", back: \"Having keen insight, discernment, or understanding\"},\n      {front: \"Pellucid\", back: \"Clear in style or meaning; easily understood\"},\n      {front: \"Obfuscate\", back: \"To deliberately make something unclear or difficult to understand\"},\n      {front: \"Taciturn\", back: \"Reserved or uncommunicative in speech\"},\n      {front: \"Propitious\", back: \"Giving or indicating a good chance of success; favorable\"}\n    ],\n    accent=\"#4f46e5\",\n    label_front=\"WORD\",\n    label_back=\"DEFINITION\"\n  )\n])\n</a2ui>"
+}

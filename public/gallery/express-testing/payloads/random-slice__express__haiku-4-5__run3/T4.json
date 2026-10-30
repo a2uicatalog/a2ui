@@ -1,0 +1,72 @@
+{
+ "label": "random-slice__express__haiku-4-5__run3",
+ "task": "T4",
+ "format": "express",
+ "model_id": null,
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/f-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "filterable_list",
+      "title": "Items",
+      "items": [
+       {
+        "title": "Item 1",
+        "detail": "First item detail",
+        "status": "active"
+       },
+       {
+        "title": "Item 2",
+        "detail": "Second item detail",
+        "status": "completed"
+       },
+       {
+        "title": "Item 3",
+        "detail": "Third item detail",
+        "status": "active"
+       },
+       {
+        "title": "Item 4",
+        "detail": "Fourth item detail",
+        "status": "pending"
+       },
+       {
+        "title": "Item 5",
+        "detail": "Fifth item detail",
+        "status": "active"
+       },
+       {
+        "title": "Item 6",
+        "detail": "Sixth item detail",
+        "status": "completed"
+       },
+       {
+        "title": "Item 7",
+        "detail": "Seventh item detail",
+        "status": "pending"
+       },
+       {
+        "title": "Item 8",
+        "detail": "Eighth item detail",
+        "status": "active"
+       }
+      ],
+      "filter_field": "status",
+      "show_counts": true
+     }
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,113 @@
+{
+ "label": "oracle-slice-6types__express__haiku-5-5__run3",
+ "task": "T2",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/d-t2.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "kpi_revenue",
+      "component": "metric_row",
+      "cols": 4,
+      "metrics": [
+       {
+        "value": "1.24",
+        "label": "Revenue",
+        "prefix": "$",
+        "suffix": "M",
+        "sub": "vs. last month",
+        "trend": "up"
+       },
+       {
+        "value": "48,210",
+        "label": "Active Users",
+        "sub": "vs. last month",
+        "trend": "up"
+       },
+       {
+        "value": "2.4",
+        "label": "Churn Rate",
+        "suffix": "%",
+        "sub": "vs. last month",
+        "trend": "down"
+       },
+       {
+        "value": "212",
+        "label": "Avg Response",
+        "suffix": " ms",
+        "sub": "vs. last month",
+        "trend": "down"
+       }
+      ]
+     },
+     {
+      "id": "comparison",
+      "component": "chartjs_bar",
+      "labels": [
+       "Jan",
+       "Feb",
+       "Mar",
+       "Apr",
+       "May",
+       "Jun"
+      ],
+      "datasets": [
+       {
+        "label": "Actual",
+        "data": [
+         820,
+         932,
+         901,
+         934,
+         1290,
+         1330
+        ]
+       },
+       {
+        "label": "Target",
+        "data": [
+         900,
+         900,
+         950,
+         950,
+         1000,
+         1000
+        ]
+       }
+      ]
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "1.5rem",
+      "align": "stretch",
+      "items": [
+       {
+        "blocks": [
+         "kpi_revenue"
+        ]
+       },
+       {
+        "blocks": [
+         "comparison"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

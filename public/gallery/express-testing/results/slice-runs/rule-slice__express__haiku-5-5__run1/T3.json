@@ -1,0 +1,45 @@
+{
+ "task": "T3",
+ "condition": "B_haiku-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "rule-slice__express__haiku-5-5__run1",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "B-marketing-commerce.json",
+ "atoms_in_catalogue": 189,
+ "prompt_chars": 80817,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 9.3,
+ "usage": {
+  "input_tokens": 29190,
+  "output_tokens": 1811
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "gradient_hero",
+  "feature_grid",
+  "testimonial_card",
+  "cta_section",
+  "color_section"
+ ],
+ "score": {
+  "precision": 0.8,
+  "recall": 1.0,
+  "f1": 0.889,
+  "slot_hits": {
+   "hero": true,
+   "feature columns (x3)": true,
+   "testimonial": true,
+   "CTA": true
+  }
+ },
+ "reply": "<a2ui>\nhero = gradient_hero(title=\"Ship faster with Lumen\", subtitle=\"Lumen turns your scattered tools into one fast, reliable workflow so your team spends less time switching and more time building.\", badge=\"New in v2.0\", accent=\"#4f46e5\", accent2=\"#8b5cf6\", align=\"center\")\n\nfeatures = feature_grid(heading=\"Everything your team needs\", description=\"Three core capabilities that work together out of the box.\", columns=3, features=[{icon: \"\u26a1\", title: \"Lightning-fast sync\", description: \"Changes reach every connected tool in under a second, so nobody works from stale data.\"}, {icon: \"\ud83d\udd17\", title: \"Connects to your stack\", description: \"Prebuilt integrations with the tools you already use, plus a simple API for everything else.\"}, {icon: \"\ud83d\udee1\ufe0f\", title: \"Secure by default\", description: \"Role-based access, audit logs, and end-to-end encryption protect your data at every step.\"}])\n\ntestimonial = testimonial_card(text=\"Lumen cut our release coordination time in half. The team finally works from one source of truth.\", author_name=\"Priya Shah\", author_title=\"VP Engineering, Northwind\", rating=5)\n\ncta = cta_section(heading=\"Ready to work better?\", body=\"Start your free 14-day trial today. No credit card required.\", primary_cta={label: \"Start free trial\", url: \"https://example.com/signup\"}, background=\"#0f172a\")\n\nroot = color_section(style=\"light\", padding=\"48px 24px\", blocks=[hero, features, testimonial, cta])\n</a2ui>"
+}

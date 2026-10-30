@@ -1,0 +1,130 @@
+{
+ "label": "oracle-slice-3types__elemental__gemini-3.5-flash-lite__request-only-timing__run2",
+ "task": "T4",
+ "format": "elemental",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display-elemental.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "h1",
+      "component": "heading",
+      "text": "Project Tasks & Status"
+     },
+     {
+      "id": "filters",
+      "component": "chip_group",
+      "label": "Filter by Status",
+      "layout": "wrap",
+      "chips": "JSON: [\n        { 'label': 'All', 'active': true },\n        { 'label': 'In Progress' },\n        { 'label': 'Completed' },\n        { 'label': 'Pending' }\n      ]"
+     },
+     {
+      "id": "task-table",
+      "component": "data_table_sortable",
+      "headers": "JSON: ['Task', 'Status', 'Details']",
+      "rows": "JSON: [\n        ['Database Migration', 'In Progress', 'Migrating user records to AWS RDS cluster'],\n        ['API Rate Limiting', 'Completed', 'Implemented Redis sliding window limiter'],\n        ['SSL Certificate Renewal', 'Pending', 'Wildcard cert expires in 14 days'],\n        ['Frontend Bundle Optimization', 'In Progress', 'Code splitting vendor chunks for faster load times'],\n        ['Security Audit', 'Completed', 'Penetration test passed with zero critical findings'],\n        ['CI/CD Pipeline Speedup', 'Pending', 'Caching node_modules across workflow runs'],\n        ['Error Tracking Integration', 'Completed', 'Connected Sentry for real-time exception alerts'],\n        ['Dark Mode Support', 'In Progress', 'Refactoring CSS variables for surface themes']\n      ]"
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "1.5rem",
+      "items": [
+       {
+        "blocks": [
+         "t",
+         "a",
+         "s",
+         "k",
+         "-",
+         "t",
+         "a",
+         "b",
+         "l",
+         "e"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_data_model": {
+    "surface_id": "main",
+    "path": "/",
+    "value": {
+     "items": [
+      {
+       "id": "1",
+       "title": "Database Migration",
+       "status": "In Progress",
+       "detail": "Migrating user records to AWS RDS cluster",
+       "status_color": "inprogress"
+      },
+      {
+       "id": "2",
+       "title": "API Rate Limiting",
+       "status": "Completed",
+       "detail": "Implemented Redis sliding window limiter",
+       "status_color": "success"
+      },
+      {
+       "id": "3",
+       "title": "SSL Certificate Renewal",
+       "status": "Pending",
+       "detail": "Wildcard cert expires in 14 days",
+       "status_color": "new"
+      },
+      {
+       "id": "4",
+       "title": "Frontend Bundle Optimization",
+       "status": "In Progress",
+       "detail": "Code splitting vendor chunks for faster load times",
+       "status_color": "inprogress"
+      },
+      {
+       "id": "5",
+       "title": "Security Audit",
+       "status": "Completed",
+       "detail": "Penetration test passed with zero critical findings",
+       "status_color": "success"
+      },
+      {
+       "id": "6",
+       "title": "CI/CD Pipeline Speedup",
+       "status": "Pending",
+       "detail": "Caching node_modules across workflow runs",
+       "status_color": "new"
+      },
+      {
+       "id": "7",
+       "title": "Error Tracking Integration",
+       "status": "Completed",
+       "detail": "Connected Sentry for real-time exception alerts",
+       "status_color": "success"
+      },
+      {
+       "id": "8",
+       "title": "Dark Mode Support",
+       "status": "In Progress",
+       "detail": "Refactoring CSS variables for surface themes",
+       "status_color": "inprogress"
+      }
+     ]
+    }
+   }
+  }
+ ]
+}

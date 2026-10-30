@@ -1,0 +1,46 @@
+{
+ "task": "T5",
+ "condition": "C_gemini-3.5-flash",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash",
+ "hints": false,
+ "label": "oracle-slice-3types__express__gemini-3.5-flash__thinking-on_request-only-timing__run2",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "C-marketing-commerce.json",
+ "atoms_in_catalogue": 23,
+ "prompt_chars": 12467,
+ "slot_recall": [
+  1,
+  1
+ ],
+ "secs": 10.0,
+ "usage": {
+  "input_tokens": 3402,
+  "output_tokens": 2573
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "pricing_tier_group"
+ ],
+ "score": {
+  "per_approach": {
+   "tier_cards": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+   },
+   "comparison_table": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": null
+   }
+  },
+  "best_approach": "tier_cards",
+  "f1": 1.0
+ },
+ "reply": "<a2ui>\nsurface(\"subscription-plans\")\n\ntiers_list = [\n  {\n    \"name\": \"Starter\",\n    \"price\": \"$19\",\n    \"interval\": \"month\",\n    \"description\": \"Perfect for freelancers, hobbyists, and early-stage side projects.\",\n    \"features\": [\n      \"Up to 3 active projects\",\n      \"Basic analytics dashboard\",\n      \"Community support access\",\n      \"5GB secure cloud storage\"\n    ],\n    \"cta_label\": \"Start Starter Trial\",\n    \"cta_url\": \"/checkout?plan=starter\",\n    \"recommended\": false\n  },\n  {\n    \"name\": \"Growth Pro\",\n    \"price\": \"$49\",\n    \"interval\": \"month\",\n    \"description\": \"Ideal for expanding teams, serious creators, and business scaling.\",\n    \"features\": [\n      \"Unlimited active projects\",\n      \"Advanced real-time analytics\",\n      \"Priority 24/7 support line\",\n      \"100GB secure cloud storage\",\n      \"Custom branding & domains\",\n      \"Team collaboration tools\"\n    ],\n    \"cta_label\": \"Start Pro Trial\",\n    \"cta_url\": \"/checkout?plan=pro\",\n    \"recommended\": true\n  },\n  {\n    \"name\": \"Enterprise\",\n    \"price\": \"$149\",\n    \"interval\": \"month\",\n    \"description\": \"Enterprise-grade security, controls, and premium dedicated resources.\",\n    \"features\": [\n      \"Everything in Growth Pro\",\n      \"Unlimited secure cloud storage\",\n      \"Dedicated account success manager\",\n      \"Custom SSO & SAML integration\",\n      \"99.9% guaranteed uptime SLA\",\n      \"Custom billing and contracts\"\n    ],\n    \"cta_label\": \"Contact Sales\",\n    \"cta_url\": \"/enterprise-contact\",\n    \"recommended\": false\n  }\n]\n\nroot = pricing_tier_group(tiers_list)\n</a2ui>"
+}

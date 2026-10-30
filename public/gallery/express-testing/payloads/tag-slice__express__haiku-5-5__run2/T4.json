@@ -1,0 +1,73 @@
+{
+ "label": "tag-slice__express__haiku-5-5__run2",
+ "task": "T4",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/g-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "filterable_list",
+      "title": "Work items",
+      "items": [
+       {
+        "title": "Set up CI pipeline",
+        "detail": "Configure build and test jobs for the main branch",
+        "status": "done"
+       },
+       {
+        "title": "Migrate user database",
+        "detail": "Move records from legacy schema to the new tables",
+        "status": "in_progress"
+       },
+       {
+        "title": "Write API documentation",
+        "detail": "Document all public endpoints with examples",
+        "status": "open"
+       },
+       {
+        "title": "Fix login timeout",
+        "detail": "Sessions expire early on mobile devices",
+        "status": "in_progress"
+       },
+       {
+        "title": "Add rate limiting",
+        "detail": "Throttle anonymous requests to protect the API",
+        "status": "open"
+       },
+       {
+        "title": "Update dependencies",
+        "detail": "Upgrade framework to the latest stable release",
+        "status": "done"
+       },
+       {
+        "title": "Design onboarding flow",
+        "detail": "Draft the three-step setup wizard for new users",
+        "status": "open"
+       },
+       {
+        "title": "Review security audit",
+        "detail": "Triage findings from the external penetration test",
+        "status": "done"
+       }
+      ],
+      "filter_field": "status",
+      "show_counts": true,
+      "empty_text": "No items match this status."
+     }
+    ]
+   }
+  }
+ ]
+}

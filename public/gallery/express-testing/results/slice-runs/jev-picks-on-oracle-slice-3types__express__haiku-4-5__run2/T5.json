@@ -1,0 +1,40 @@
+{
+ "task": "T5",
+ "condition": "JC",
+ "label": "jev-picks-on-oracle-slice-3types__express__haiku-4-5__run2",
+ "agent_type": "jev-narrowed",
+ "catalogue": "JC-T5.json",
+ "atoms_in_catalogue": 9,
+ "prompt_chars": 6392,
+ "slot_recall": [
+  1,
+  1
+ ],
+ "secs": 3.4,
+ "usage": {
+  "input_tokens": 1771,
+  "output_tokens": 369
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "pricing_tier_group"
+ ],
+ "score": {
+  "per_approach": {
+   "tier_cards": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+   },
+   "comparison_table": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": null
+   }
+  },
+  "best_approach": "tier_cards",
+  "f1": 1.0
+ },
+ "reply": "<a2ui>\nroot = pricing_tier_group(tiers=[\n  {\n    name: \"Starter\",\n    price: \"$29\",\n    description: \"Perfect for individuals and small projects\",\n    features: [\n      \"Up to 5 projects\",\n      \"1 GB storage\",\n      \"Basic analytics\",\n      \"Community support\"\n    ],\n    cta_label: \"Get Started\",\n    cta_url: \"https://example.com/starter\"\n  },\n  {\n    name: \"Professional\",\n    price: \"$79\",\n    description: \"Ideal for growing teams and businesses\",\n    features: [\n      \"Unlimited projects\",\n      \"100 GB storage\",\n      \"Advanced analytics\",\n      \"Priority email support\",\n      \"Team collaboration\",\n      \"Custom integrations\"\n    ],\n    cta_label: \"Start Free Trial\",\n    cta_url: \"https://example.com/professional\",\n    recommended: true,\n    badge: \"Most Popular\"\n  },\n  {\n    name: \"Enterprise\",\n    price: \"Custom\",\n    description: \"For large-scale operations and enterprises\",\n    features: [\n      \"Unlimited everything\",\n      \"Unlimited storage\",\n      \"Real-time analytics\",\n      \"24/7 dedicated support\",\n      \"Advanced security\",\n      \"Custom contracts\",\n      \"SLA guarantee\"\n    ],\n    cta_label: \"Contact Sales\",\n    cta_url: \"https://example.com/enterprise\"\n  }\n])\n</a2ui>"
+}

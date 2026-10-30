@@ -1,0 +1,165 @@
+{
+ "label": "oracle-slice-3types__express__gemini-3.5-flash__thinking-on_first-run-timing-invalid__run3",
+ "task": "T4",
+ "format": "express",
+ "model_id": "gemini-3.5-flash",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "task-filter-board",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "task-filter-board",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "2rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "_inline_1",
+         "_inline_2",
+         "_inline_3",
+         "_inline_4"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_5",
+         "_inline_6"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "_inline_1",
+      "component": "heading",
+      "text": "Task Control Center"
+     },
+     {
+      "id": "_inline_2",
+      "component": "body",
+      "text": "Monitor, filter, and track active system tasks and maintenance events across all environment clusters in real-time."
+     },
+     {
+      "id": "_inline_3",
+      "component": "segmented_control",
+      "options": [
+       {
+        "label": "All (8)",
+        "value": "all"
+       },
+       {
+        "label": "Completed",
+        "value": "completed"
+       },
+       {
+        "label": "In Progress",
+        "value": "inprogress"
+       },
+       {
+        "label": "Pending",
+        "value": "pending"
+       }
+      ],
+      "selected_value": "all",
+      "name": "status_filter"
+     },
+     {
+      "id": "_inline_4",
+      "component": "metric_row",
+      "cols": 2,
+      "accent": "#4F46E5",
+      "metrics": [
+       {
+        "value": "8",
+        "label": "Total Tasks",
+        "prefix": ""
+       },
+       {
+        "value": "3",
+        "label": "Action Needed",
+        "trend": "up"
+       }
+      ]
+     },
+     {
+      "id": "_inline_5",
+      "component": "heading",
+      "text": "System Tasks & Logs"
+     },
+     {
+      "id": "_inline_6",
+      "component": "entity_list",
+      "items": [
+       {
+        "name": "Server Migration",
+        "subtitle": "Transferring core assets to us-east cluster",
+        "icon": "\ud83d\ude80",
+        "status": "In Progress",
+        "meta": "Ops"
+       },
+       {
+        "name": "Database Backup",
+        "subtitle": "Nightly snapshot of production database",
+        "icon": "\ud83d\udcbe",
+        "status": "Completed",
+        "meta": "Storage"
+       },
+       {
+        "name": "API Integration",
+        "subtitle": "Syncing payment gateway webhooks",
+        "icon": "\ud83d\udd0c",
+        "status": "Pending",
+        "meta": "Dev"
+       },
+       {
+        "name": "SSL Certificate Renewal",
+        "subtitle": "Renewing wildcard certs for public domains",
+        "icon": "\ud83d\udd12",
+        "status": "Expired",
+        "meta": "Sec"
+       },
+       {
+        "name": "Firewall Rule Update",
+        "subtitle": "Restricting port 22 access to internal VPN",
+        "icon": "\ud83d\udee1\ufe0f",
+        "status": "In Progress",
+        "meta": "Sec"
+       },
+       {
+        "name": "Billing Audit",
+        "subtitle": "Quarterly cloud spend and resource analysis",
+        "icon": "\ud83d\udcca",
+        "status": "Pending",
+        "meta": "Finance"
+       },
+       {
+        "name": "DNS Routing Optimization",
+        "subtitle": "Configuring latency-based routing via Cloudflare",
+        "icon": "\ud83c\udf10",
+        "status": "Completed",
+        "meta": "Ops"
+       },
+       {
+        "name": "User Access Review",
+        "subtitle": "IAM permission compliance and audit check",
+        "icon": "\ud83d\udc65",
+        "status": "Scheduled",
+        "meta": "Sec"
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

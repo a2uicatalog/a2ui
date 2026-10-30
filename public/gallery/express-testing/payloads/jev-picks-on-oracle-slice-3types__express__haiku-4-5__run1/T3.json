@@ -1,0 +1,104 @@
+{
+ "label": "jev-picks-on-oracle-slice-3types__express__haiku-4-5__run1",
+ "task": "T3",
+ "format": "express",
+ "model_id": null,
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/jc-t3.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 3,
+      "gap": "2rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "_inline_1"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_2"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_3",
+         "_inline_4"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "_inline_1",
+      "component": "gradient_hero",
+      "title": "Transform Your Workflow",
+      "subtitle": "Streamline your process with our intelligent platform",
+      "badge": "New Release",
+      "accent": "#4f46e5",
+      "accent2": "#8b5cf6",
+      "align": "left",
+      "cta_label": "Get Started",
+      "cta_url": "https://example.com"
+     },
+     {
+      "id": "_inline_2",
+      "component": "feature_grid",
+      "heading": "Why Choose Us",
+      "description": "Powerful features designed for modern teams",
+      "columns": 3,
+      "features": [
+       {
+        "icon": "\u26a1",
+        "title": "Lightning Fast",
+        "description": "Optimized performance for seamless productivity",
+        "color": "#4f46e5"
+       },
+       {
+        "icon": "\ud83d\udd12",
+        "title": "Secure & Reliable",
+        "description": "Enterprise-grade security for peace of mind",
+        "color": "#7c3aed"
+       },
+       {
+        "icon": "\ud83d\ude80",
+        "title": "Easy Integration",
+        "description": "Connect with your favorite tools instantly",
+        "color": "#a855f7"
+       }
+      ]
+     },
+     {
+      "id": "_inline_3",
+      "component": "testimonial_card",
+      "text": "This platform has completely transformed how our team collaborates. The intuitive interface and powerful features have saved us countless hours.",
+      "author_name": "Sarah Chen",
+      "author_title": "Product Manager, TechCorp",
+      "author_avatar_url": "https://example.com/avatar.jpg",
+      "rating": 5
+     },
+     {
+      "id": "_inline_4",
+      "component": "cta_button",
+      "url": "https://example.com/signup",
+      "label": "Start Your Free Trial",
+      "color": "#4f46e5",
+      "same_tab": false
+     }
+    ]
+   }
+  }
+ ]
+}

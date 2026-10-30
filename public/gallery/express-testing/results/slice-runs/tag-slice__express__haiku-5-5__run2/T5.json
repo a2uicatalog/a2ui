@@ -1,0 +1,46 @@
+{
+ "task": "T5",
+ "condition": "G_haiku-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "tag-slice__express__haiku-5-5__run2",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "G-marketing-commerce.json",
+ "atoms_in_catalogue": 263,
+ "prompt_chars": 119490,
+ "slot_recall": [
+  1,
+  1
+ ],
+ "secs": 4.9,
+ "usage": {
+  "input_tokens": 43125,
+  "output_tokens": 744
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "pricing_tier_group"
+ ],
+ "score": {
+  "per_approach": {
+   "tier_cards": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+   },
+   "comparison_table": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": null
+   }
+  },
+  "best_approach": "tier_cards",
+  "f1": 1.0
+ },
+ "reply": "<a2ui>\nroot = pricing_tier_group([\n  {plan_name: \"Starter\", price: \"9\", currency: \"$\", frequency: \"/month\", features: [\"Up to 5 projects\", \"Email support\", \"1 GB storage\", \"Basic analytics\"], call_to_action_label: \"Choose Starter\", call_to_action_url: \"https://example.com/signup/starter\", is_highlighted: false},\n  {plan_name: \"Pro\", price: \"29\", currency: \"$\", frequency: \"/month\", features: [\"Unlimited projects\", \"Priority support\", \"50 GB storage\", \"Advanced analytics\", \"Team collaboration\"], call_to_action_label: \"Choose Pro\", call_to_action_url: \"https://example.com/signup/pro\", is_highlighted: true},\n  {plan_name: \"Enterprise\", price: \"99\", currency: \"$\", frequency: \"/month\", features: [\"Everything in Pro\", \"Dedicated account manager\", \"Unlimited storage\", \"SSO and audit logs\", \"99.9% uptime SLA\"], call_to_action_label: \"Contact Sales\", call_to_action_url: \"https://example.com/contact-sales\", is_highlighted: false}\n])\n</a2ui>"
+}

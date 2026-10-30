@@ -1,0 +1,44 @@
+{
+ "task": "T3",
+ "condition": "CX_haiku-5-5",
+ "temperature_applied": false,
+ "format": "elemental",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "oracle-slice-3types__elemental__haiku-5-5__run3",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "C-marketing-commerce.json",
+ "atoms_in_catalogue": 23,
+ "prompt_chars": 12539,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 8.1,
+ "usage": {
+  "input_tokens": 4938,
+  "output_tokens": 1736
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "gradient_hero",
+  "feature_grid",
+  "testimonial_card",
+  "cta_button"
+ ],
+ "score": {
+  "precision": 1.0,
+  "recall": 1.0,
+  "f1": 1.0,
+  "slot_hits": {
+   "hero": true,
+   "feature columns (x3)": true,
+   "testimonial": true,
+   "CTA": true
+  }
+ },
+ "reply": "```html\n<a2ui>\n<body id=\"root\">\n  <ui-gradient_hero\n    id=\"hero\"\n    title=\"Ship faster with Lumen Pro\"\n    subtitle=\"The all-in-one workspace that keeps your team aligned, your projects on track, and your releases on schedule.\"\n    badge=\"New in 2025\"\n    accent=\"#4f46e5\"\n    accent2=\"#8b5cf6\"\n    align=\"center\"\n    cta_label=\"Start your free trial\"\n    cta_url=\"https://example.com/signup\"\n  />\n\n  <ui-feature_grid\n    id=\"features\"\n    Heading=\"Everything your team needs\"\n    description=\"Three core capabilities that replace the tools you juggle today.\"\n    Columns=\"{3}\"\n  >\n    <script type=\"application/json\" slot=\"features\">[\n      {\n        \"icon\": \"bolt\",\n        \"title\": \"Lightning-fast sync\",\n        \"description\": \"Changes appear across every device in milliseconds, so no one works from stale data.\",\n        \"badge\": \"Real-time\",\n        \"color\": \"#4f46e5\"\n      },\n      {\n        \"icon\": \"hub\",\n        \"title\": \"Connected workflows\",\n        \"description\": \"Link tasks, docs, and code reviews in one place to keep context from getting lost.\",\n        \"badge\": \"Integrations\",\n        \"color\": \"#8b5cf6\"\n      },\n      {\n        \"icon\": \"shield\",\n        \"title\": \"Enterprise-grade security\",\n        \"description\": \"SSO, audit logs, and granular permissions keep your data protected at every level.\",\n        \"badge\": \"SOC 2\",\n        \"color\": \"#0ea5e9\"\n      }\n    ]</script>\n  </ui-feature_grid>\n\n  <ui-testimonial_card\n    id=\"testimonial\"\n    text=\"Lumen Pro cut our release planning time in half. Our whole engineering org now runs on one shared view of what matters.\"\n    author_name=\"Maya Chen\"\n    author_title=\"VP of Engineering, Northwind Labs\"\n    rating=\"{5}\"\n  />\n\n  <ui-cta_button\n    id=\"cta\"\n    url=\"https://example.com/signup\"\n    label=\"Get started free\"\n    color=\"#4f46e5\"\n  />\n</body>\n</a2ui>\n```"
+}

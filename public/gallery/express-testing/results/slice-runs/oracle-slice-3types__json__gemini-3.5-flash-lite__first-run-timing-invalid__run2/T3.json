@@ -1,0 +1,44 @@
+{
+ "task": "T3",
+ "condition": "CN_gemini-3.5-f",
+ "temperature_applied": false,
+ "format": "json",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash-lite",
+ "hints": false,
+ "label": "oracle-slice-3types__json__gemini-3.5-flash-lite__first-run-timing-invalid__run2",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "C-marketing-commerce.json",
+ "atoms_in_catalogue": 23,
+ "prompt_chars": 24557,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 16.4,
+ "usage": {
+  "input_tokens": 6001,
+  "output_tokens": 700
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "gradient_hero",
+  "feature_grid",
+  "testimonial_card",
+  "cta_section"
+ ],
+ "score": {
+  "precision": 1.0,
+  "recall": 1.0,
+  "f1": 1.0,
+  "slot_hits": {
+   "hero": true,
+   "feature columns (x3)": true,
+   "testimonial": true,
+   "CTA": true
+  }
+ },
+ "reply": "<a2ui-json>\n{\n  \"version\": \"v0.9.1\",\n  \"createSurface\": {\n    \"surfaceId\": \"product-landing\",\n    \"catalogId\": \"https://a2uicatalog.ai/catalog/c-marketing-commerce.json\",\n    \"sendDataModel\": false\n  }\n}\n</a2ui-json>\n\n<a2ui-json>\n{\n  \"version\": \"v0.9.1\",\n  \"updateComponents\": {\n    \"surfaceId\": \"product-landing\",\n    \"components\": [\n      {\n        \"component\": \"gradient_hero\",\n        \"id\": \"root\",\n        \"title\": \"Build Better Products, Faster\",\n        \"subtitle\": \"Streamline your workflow, collaborate in real-time, and ship with confidence using our next-generation platform.\",\n        \"badge\": \"\u2728 Announcing v2.0\",\n        \"cta_label\": \"Get Started\",\n        \"cta_url\": \"#\",\n        \"align\": \"center\"\n      },\n      {\n        \"component\": \"feature_grid\",\n        \"id\": \"features\",\n        \"heading\": \"Everything you need to scale\",\n        \"description\": \"Powerful features designed to help your team perform at their absolute best.\",\n        \"columns\": 3,\n        \"features\": [\n          {\n            \"icon\": \"\u26a1\",\n            \"title\": \"Lightning Fast\",\n            \"description\": \"Optimized performance ensuring zero lag and instantaneous page loads.\"\n          },\n          {\n            \"icon\": \"\ud83d\udd12\",\n            \"title\": \"Enterprise Security\",\n            \"description\": \"State-of-the-art encryption and compliance to keep your data safe.\"\n          },\n          {\n            \"icon\": \"\ud83d\udcc8\",\n            \"title\": \"Advanced Analytics\",\n            \"description\": \"Deep insights and real-time metrics to track your growth effortlessly.\"\n          }\n        ]\n      },\n      {\n        \"component\": \"testimonial_card\",\n        \"id\": \"testimonial\",\n        \"text\": \"This platform completely transformed how our engineering and product teams collaborate. We shipped our latest feature in half the usual time.\",\n        \"author_name\": \"Sarah Jenkins\",\n        \"author_title\": \"VP of Product at TechCorp\",\n        \"author_avatar_url\": \"https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150\",\n        \"rating\": 5\n      },\n      {\n        \"component\": \"cta_section\",\n        \"id\": \"cta\",\n        \"heading\": \"Ready to get started?\",\n        \"body\": \"Join thousands of satisfied teams building the future today.\",\n        \"primary_cta\": {\n          \"label\": \"Start Free Trial\",\n          \"url\": \"#\"\n        },\n        \"secondary_cta\": {\n          \"label\": \"Contact Sales\",\n          \"url\": \"#\"\n        }\n      }\n    ]\n  }\n}\n</a2ui-json>"
+}

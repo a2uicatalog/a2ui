@@ -1,0 +1,22 @@
+{
+ "task": "T4",
+ "condition": "CTH2",
+ "original_label": "oracle-slice-3types__express__haiku-4-5__temp0__hints-v2__run3",
+ "original_error": "A2uiCompilationValidationError: Property 'selected_value' of component 'segmented_control' does not support dynamic data bindings (paths). - Help: Property 'selected_value' on 'segmented_control' must be a static literal value, not a dynamic databinding ($path).",
+ "repaired_valid": true,
+ "produced": [
+  "columns",
+  "heading",
+  "segmented_control",
+  "entity_list"
+ ],
+ "f1_after": 0.571,
+ "prompt_chars": 7122,
+ "attempts": 1,
+ "usage": {
+  "input_tokens": 1971,
+  "output_tokens": 523
+ },
+ "reply": "<a2ui>\nstatus_options = [\n  {label: \"Active\", value: \"active\"},\n  {label: \"Inactive\", value: \"inactive\"},\n  {label: \"Pending\", value: \"pending\"},\n  {label: \"All\", value: \"all\"}\n]\n\nitems_data = [\n  {title: \"Project Alpha\", status: \"active\", detail: \"Development in progress\"},\n  {title: \"Project Beta\", status: \"inactive\", detail: \"On hold pending review\"},\n  {title: \"Project Gamma\", status: \"pending\", detail: \"Awaiting stakeholder approval\"},\n  {title: \"Project Delta\", status: \"active\", detail: \"Testing phase underway\"},\n  {title: \"Project Epsilon\", status: \"inactive\", detail: \"Archived after completion\"},\n  {title: \"Project Zeta\", status: \"pending\", detail: \"Scheduled to start next quarter\"},\n  {title: \"Project Eta\", status: \"active\", detail: \"Final deployment preparations\"},\n  {title: \"Project Theta\", status: \"inactive\", detail: \"Maintenance mode only\"}\n]\n\n$/filterStatus = \"all\"\n\nfiltered_items = [\n  {name: \"Project Alpha\", status: \"active\", meta: \"Development in progress\"},\n  {name: \"Project Beta\", status: \"inactive\", meta: \"On hold pending review\"},\n  {name: \"Project Gamma\", status: \"pending\", meta: \"Awaiting stakeholder approval\"},\n  {name: \"Project Delta\", status: \"active\", meta: \"Testing phase underway\"},\n  {name: \"Project Epsilon\", status: \"inactive\", meta: \"Archived after completion\"},\n  {name: \"Project Zeta\", status: \"pending\", meta: \"Scheduled to start next quarter\"},\n  {name: \"Project Eta\", status: \"active\", meta: \"Final deployment preparations\"},\n  {name: \"Project Theta\", status: \"inactive\", meta: \"Maintenance mode only\"}\n]\n\nroot = columns(1, items=[\n  {blocks: [\n    heading(\"Items\"),\n    segmented_control(status_options, \"all\", \"statusFilter\"),\n    entity_list(filtered_items)\n  ]}\n])\n</a2ui>",
+ "final_error": null
+}

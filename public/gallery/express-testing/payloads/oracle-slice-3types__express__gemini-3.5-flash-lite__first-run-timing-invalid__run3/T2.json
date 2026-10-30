@@ -1,0 +1,102 @@
+{
+ "label": "oracle-slice-3types__express__gemini-3.5-flash-lite__first-run-timing-invalid__run3",
+ "task": "T2",
+ "format": "express",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "metrics-overview",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "metrics-overview",
+    "components": [
+     {
+      "id": "metricsStrip",
+      "component": "metric_row",
+      "cols": 4,
+      "accent": "#3f51b5",
+      "metrics": [
+       {
+        "value": "$128,430",
+        "label": "Monthly Recurring Revenue",
+        "prefix": "$",
+        "trend": "up",
+        "accent": "#4CAF50"
+       },
+       {
+        "value": "1,429",
+        "label": "Active Enterprise Customers",
+        "prefix": "",
+        "trend": "up",
+        "accent": "#2196F3"
+       },
+       {
+        "value": "99.98%",
+        "label": "Platform Uptime SLA",
+        "prefix": "",
+        "trend": "up",
+        "accent": "#9C27B0"
+       },
+       {
+        "value": "4.2%",
+        "label": "Net Churn Rate",
+        "prefix": "",
+        "trend": "down",
+        "accent": "#FF9800"
+       }
+      ]
+     },
+     {
+      "id": "headingTitle",
+      "component": "heading",
+      "text": "Performance Comparison (Q3 vs Q4)"
+     },
+     {
+      "id": "comparisonChart",
+      "component": "benchmark_comparison",
+      "items": [
+       {
+        "label": "Customer Acquisition Cost",
+        "value": 85
+       },
+       {
+        "label": "Average Revenue Per User",
+        "value": 65
+       },
+       {
+        "label": "Support Resolution Speed",
+        "value": 92
+       },
+       {
+        "label": "Feature Adoption Rate",
+        "value": 78
+       }
+      ]
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "metricsStrip",
+         "headingTitle",
+         "comparisonChart"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

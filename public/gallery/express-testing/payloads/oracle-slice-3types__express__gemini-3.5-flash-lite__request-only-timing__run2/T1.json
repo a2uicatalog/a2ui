@@ -1,0 +1,143 @@
+{
+ "label": "oracle-slice-3types__express__gemini-3.5-flash-lite__request-only-timing__run2",
+ "task": "T1",
+ "format": "express",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "water-cycle-lesson",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "water-cycle-lesson",
+    "components": [
+     {
+      "id": "header",
+      "component": "page_header",
+      "title": "The Water Cycle",
+      "subtitle": "Understand how Earth recycles its water through evaporation, condensation, and precipitation.",
+      "icon": "\ud83d\udca7",
+      "tag": "Earth Science",
+      "accent": "#0ea5e9"
+     },
+     {
+      "id": "step1",
+      "component": "concept_rung",
+      "badge": "1",
+      "kind": "depth",
+      "title": "Evaporation and Transpiration",
+      "body": "Energy from the sun heats up water in oceans, lakes, and rivers, causing it to turn into water vapour and rise into the atmosphere. Plants also release moisture from their leaves through a process called transpiration.",
+      "takeaway": "Heat drives the upward movement of moisture into the atmosphere."
+     },
+     {
+      "id": "step2",
+      "component": "concept_rung",
+      "badge": "2",
+      "kind": "depth",
+      "title": "Condensation",
+      "body": "As warm water vapour rises, it cools and loses thermal energy. This cooling causes the gas to turn back into tiny liquid water droplets or ice crystals, gathering around microscopic particles in the air to form clouds and fog.",
+      "takeaway": "Cooling transforms water vapour back into liquid droplets, forming clouds."
+     },
+     {
+      "id": "step3",
+      "component": "concept_rung",
+      "badge": "3",
+      "kind": "depth",
+      "title": "Precipitation and Collection",
+      "body": "When water droplets in clouds become too heavy to stay suspended in rising air currents, they fall back to Earth as rain, snow, sleet, or hail. This water collects in oceans, rivers, and underground aquifers, ready to begin the cycle again.",
+      "takeaway": "Gravity pulls condensed moisture down as precipitation, replenishing Earth's water supplies."
+     },
+     {
+      "id": "example_rung",
+      "component": "concept_rung",
+      "badge": "EX",
+      "kind": "example",
+      "title": "Worked Example: Morning Dew on Grass",
+      "body": "On a clear night, the ground cools rapidly by radiating heat. Air touching the grass cools down to its dew point. Because cooler air holds less moisture, the excess water vapour condenses directly onto grass blades as liquid droplets.",
+      "code": "Temp_Air = 18.5\nTemp_DewPoint = 12.0\nif Temp_Air <= Temp_DewPoint:\n    status = \"Condensation Formed\"",
+      "code_caption": "Simplified thermal radiation and phase change logic",
+      "takeaway": "Dew is a miniature, ground-level example of condensation in action."
+     },
+     {
+      "id": "ladder",
+      "component": "columns",
+      "cols": 1,
+      "gap": "1.5rem",
+      "items": [
+       {
+        "blocks": [
+         "step1",
+         "step2",
+         "step3",
+         "example_rung"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "quiz",
+      "component": "quiz_set",
+      "title": "Water Cycle Self-Check",
+      "pass_score": 66,
+      "accent": "#0ea5e9",
+      "questions": [
+       {
+        "question": "What primary energy source drives the entire water cycle?",
+        "options": [
+         "The Moon",
+         "The Sun",
+         "Wind currents",
+         "Earth's core"
+        ],
+        "correct": 1,
+        "explanation": "Solar radiation provides the heat energy required to evaporate water from oceans, lakes, and land."
+       },
+       {
+        "question": "Which process describes water vapour turning back into liquid droplets to form clouds?",
+        "options": [
+         "Evaporation",
+         "Transpiration",
+         "Condensation",
+         "Precipitation"
+        ],
+        "correct": 2,
+        "explanation": "Condensation occurs when warm water vapour cools down and changes back into liquid form."
+       },
+       {
+        "question": "What is the term for plants releasing moisture from their leaves?",
+        "options": [
+         "Transpiration",
+         "Respiration",
+         "Sublimation",
+         "Infiltration"
+        ],
+        "correct": 0,
+        "explanation": "Transpiration is the transport of water through plants from roots to leaves where it evaporates into the air."
+       }
+      ]
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "2rem",
+      "items": [
+       {
+        "blocks": [
+         "header",
+         "ladder",
+         "quiz"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

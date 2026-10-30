@@ -1,0 +1,23 @@
+{
+ "task": "T1",
+ "condition": "B",
+ "original_label": "rule-slice__express__haiku-4-5__run3",
+ "original_error": "A2uiCompilationValidationError: Property 'closing' is not a valid property of component 'concept_ladder'. - Help: Component 'concept_ladder' accepts properties: closing_note, dek, eyebrow, fonts, hook, model, model_note, palette, rungs, source, theme, title, use_plex_fonts.",
+ "repaired_valid": true,
+ "produced": [
+  "concept_ladder",
+  "concept_rung",
+  "concept_rung",
+  "concept_rung",
+  "concept_rung"
+ ],
+ "f1_after": 0.32,
+ "prompt_chars": 11993,
+ "attempts": 1,
+ "usage": {
+  "input_tokens": 3142,
+  "output_tokens": 919
+ },
+ "reply": "<a2ui>\nroot = concept_ladder(\n  title=\"The Water Cycle\",\n  eyebrow=\"Earth Science\",\n  dek=\"The continuous movement of water between Earth's surface and the atmosphere\",\n  hook=\"Water is constantly moving. It evaporates from oceans and lakes, rises into the sky, condenses into clouds, falls as precipitation, and flows back to where it started\u2014completing an endless cycle that powers weather, sustains life, and shapes our planet.\",\n  model=\"Think of it as nature's recycling system\u2014water molecules take a round trip from the surface to the sky and back again, driven by the sun's energy.\",\n  model_note=\"The cycle has no beginning or end; it's been running for billions of years.\",\n  rungs=[\n    concept_rung(\n      badge=\"1\",\n      kind=\"depth\",\n      title=\"Evaporation: Water Rises\",\n      body=\"Evaporation is the process where liquid water from oceans, lakes, and rivers is heated by the sun and transforms into water vapor\u2014an invisible gas. This vapor rises into the atmosphere. Plants also release water vapor through transpiration, and together these processes are called evapotranspiration.\\n\\nNot all water needs to reach boiling point to evaporate; even cool water can slowly transform into vapor through solar heating.\",\n      takeaway=\"The sun's energy is the engine that lifts water from Earth's surface into the air.\"\n    ),\n    concept_rung(\n      badge=\"2\",\n      kind=\"depth\",\n      title=\"Condensation: Water Cools and Clouds Form\",\n      body=\"As water vapor rises higher into the atmosphere, it encounters cooler temperatures. Condensation occurs when this vapor cools below its dew point and transforms back into liquid water droplets. These droplets cluster around tiny dust particles and salt crystals in the air, forming visible clouds.\\n\\nThis is the same process you see when a bathroom mirror fogs up after a hot shower.\",\n      takeaway=\"Cooling air causes invisible vapor to become visible water droplets\u2014the birth of clouds.\"\n    ),\n    concept_rung(\n      badge=\"3\",\n      kind=\"depth\",\n      title=\"Precipitation: Water Falls to Earth\",\n      body=\"When cloud droplets combine and grow heavy enough, they fall back to Earth as precipitation\u2014rain, snow, sleet, or hail, depending on air temperature. Precipitation is the primary way water returns from the atmosphere to the surface.\\n\\nSome precipitation is intercepted by plants and trees, some soaks into the ground as groundwater, and some flows over land as runoff, eventually reaching rivers and oceans.\",\n      takeaway=\"Gravity pulls accumulated water back down to the surface in various forms.\"\n    ),\n    concept_rung(\n      badge=\"EX\",\n      kind=\"example\",\n      title=\"Worked Example: Tracking a Water Molecule\",\n      body=\"Let's follow one water molecule through a complete cycle:\\n\\n1. Our molecule starts in the Pacific Ocean, where it absorbs solar energy.\\n2. It evaporates and drifts upward in the atmosphere for three days.\\n3. High above the Rocky Mountains, it encounters cold air and condenses into a cloud droplet.\\n4. A few hours later, it falls as rain onto a pine forest.\\n5. The tree's roots absorb it, and it's transported up through the trunk.\\n6. It exits through a leaf's stomata via transpiration, returning to the atmosphere.\\n7. Eventually, it condenses again and falls as snow in Canada.\\n8. It melts in spring, flows into a river, and reaches the Arctic Ocean\u2014a new destination, but the cycle continues.\",\n      code_caption=\"This molecule might take days, weeks, or years to complete different paths through the cycle.\"\n    )\n  ],\n  closing_note=\"The water cycle is both simple and profound: a continuous loop powered by solar energy that connects every ecosystem on Earth. Understanding it helps us appreciate water's journey and the delicate balance our planet maintains.\"\n)\n</a2ui>",
+ "final_error": null
+}

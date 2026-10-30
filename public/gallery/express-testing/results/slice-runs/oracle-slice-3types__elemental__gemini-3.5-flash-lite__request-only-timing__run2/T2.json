@@ -1,0 +1,43 @@
+{
+ "task": "T2",
+ "condition": "CX_gemini-3.5-flash-l",
+ "temperature_applied": false,
+ "format": "elemental",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash-lite",
+ "hints": false,
+ "label": "oracle-slice-3types__elemental__gemini-3.5-flash-lite__request-only-timing__run2",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 16902,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 1.4,
+ "usage": {
+  "input_tokens": 4995,
+  "output_tokens": 292
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "heading",
+  "metric_row",
+  "heading",
+  "benchmark_comparison"
+ ],
+ "score": {
+  "precision": 0.5,
+  "recall": 0.667,
+  "f1": 0.571,
+  "slot_hits": {
+   "KPI tile (x4)": true,
+   "trend (required only if metric_row was chosen; stat_card's own delta already satisfies it)": false,
+   "comparison chart": true
+  }
+ },
+ "reply": "<a2ui>\n  <body>\n    <script type=\"application/json\">\n      {\n        \"metrics\": [\n          { \"value\": \"$48,250\", \"label\": \"Monthly Revenue\", \"prefix\": \"$\", \"trend\": \"up\" },\n          { \"value\": \"1,420\", \"label\": \"Active Subscriptions\", \"trend\": \"up\" },\n          { \"value\": \"99.8%\", \"label\": \"System Uptime\", \"trend\": \"up\" },\n          { \"value\": \"2.4%\", \"label\": \"Churn Rate\", \"trend\": \"down\" }\n        ]\n      }\n    </script>\n    <ui-heading id=\"root\" text=\"Performance Overview\" />\n    <ui-metric_row id=\"metrics-row\" cols=\"{4}\" metrics=\"{$/metrics}\" />\n    <ui-heading id=\"comparison-heading\" text=\"Platform Performance Benchmarks\" />\n    <ui-benchmark_comparison id=\"benchmark\" items=\"JSON: [\n      { \\\"label\\\": \\\"Current Quarter\\\", \\\"value\\\": 85 },\n      { \\\"label\\\": \\\"Previous Quarter\\\", \\\"value\\\": 70 },\n      { \\\"label\\\": \\\"Industry Average\\\", \\\"value\\\": 60 }\n    ]\" />\n  </body>\n</a2ui>"
+}

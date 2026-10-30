@@ -1,0 +1,79 @@
+{
+ "label": "tag-slice__express__haiku-5-5__run1",
+ "task": "T4",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/g-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "filterable_list",
+      "title": "Release Checklist",
+      "filter_field": "status",
+      "show_counts": true,
+      "empty_text": "No items match this status.",
+      "colors": {
+       "open": "#64748b",
+       "in_progress": "#2563eb",
+       "blocked": "#dc2626",
+       "done": "#16a34a"
+      },
+      "items": [
+       {
+        "title": "Draft release notes",
+        "detail": "Summarise changes since the last tagged version.",
+        "status": "done"
+       },
+       {
+        "title": "Run regression suite",
+        "detail": "Execute the full automated test pass on staging.",
+        "status": "in_progress"
+       },
+       {
+        "title": "Update API documentation",
+        "detail": "Document the three new endpoints and deprecated parameters.",
+        "status": "open"
+       },
+       {
+        "title": "Security review sign-off",
+        "detail": "Waiting on the security team to clear the auth changes.",
+        "status": "blocked"
+       },
+       {
+        "title": "Performance benchmark",
+        "detail": "Compare p95 latency against the previous release baseline.",
+        "status": "in_progress"
+       },
+       {
+        "title": "Database migration script",
+        "detail": "Write and dry-run the forward and rollback migrations.",
+        "status": "open"
+       },
+       {
+        "title": "Accessibility audit",
+        "detail": "Check keyboard navigation and contrast on the new screens.",
+        "status": "done"
+       },
+       {
+        "title": "Customer communication",
+        "detail": "Prepare the announcement email for the support team.",
+        "status": "blocked"
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

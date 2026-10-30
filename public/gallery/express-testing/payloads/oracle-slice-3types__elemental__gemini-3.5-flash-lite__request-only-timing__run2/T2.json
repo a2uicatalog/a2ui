@@ -1,0 +1,78 @@
+{
+ "label": "oracle-slice-3types__elemental__gemini-3.5-flash-lite__request-only-timing__run2",
+ "task": "T2",
+ "format": "elemental",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display-elemental.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "heading",
+      "text": "Performance Overview"
+     },
+     {
+      "id": "metrics-row",
+      "component": "metric_row",
+      "cols": 4,
+      "metrics": {
+       "path": "/metrics"
+      }
+     },
+     {
+      "id": "comparison-heading",
+      "component": "heading",
+      "text": "Platform Performance Benchmarks"
+     },
+     {
+      "id": "benchmark",
+      "component": "benchmark_comparison",
+      "items": "JSON: [\n      { \\"
+     }
+    ]
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_data_model": {
+    "surface_id": "main",
+    "path": "/",
+    "value": {
+     "metrics": [
+      {
+       "value": "$48,250",
+       "label": "Monthly Revenue",
+       "prefix": "$",
+       "trend": "up"
+      },
+      {
+       "value": "1,420",
+       "label": "Active Subscriptions",
+       "trend": "up"
+      },
+      {
+       "value": "99.8%",
+       "label": "System Uptime",
+       "trend": "up"
+      },
+      {
+       "value": "2.4%",
+       "label": "Churn Rate",
+       "trend": "down"
+      }
+     ]
+    }
+   }
+  }
+ ]
+}

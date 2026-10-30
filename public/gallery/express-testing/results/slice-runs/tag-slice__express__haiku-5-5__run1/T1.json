@@ -1,0 +1,55 @@
+{
+ "task": "T1",
+ "condition": "G_haiku-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "tag-slice__express__haiku-5-5__run1",
+ "agent_type": "Learning",
+ "catalogue": "G-learning.json",
+ "atoms_in_catalogue": 236,
+ "prompt_chars": 117248,
+ "slot_recall": [
+  5,
+  5
+ ],
+ "secs": 14.4,
+ "usage": {
+  "input_tokens": 41970,
+  "output_tokens": 2940
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "page_header",
+  "heading",
+  "body",
+  "heading",
+  "body",
+  "heading",
+  "body",
+  "heading",
+  "body",
+  "steps",
+  "callout",
+  "heading",
+  "quiz_set",
+  "reveal"
+ ],
+ "score": {
+  "precision": 0.929,
+  "recall": 0.8,
+  "f1": 0.86,
+  "slot_hits": {
+   "title": true,
+   "concept sections (x3)": true,
+   "worked example": true,
+   "3-question quiz": true,
+   "quiz result": false
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"water-cycle-lesson\")\n\nheader = page_header(\"The Water Cycle\", \"How water moves through air, land and sea\", \"\ud83d\udca7\", \"Lesson 1\", \"#0e7bb8\", \"light\")\n\nevap_h = heading(\"1. Evaporation\")\nevap_b = body(\"Heat from the sun warms water in oceans, lakes and rivers. Molecules at the surface gain enough energy to break free and rise into the air as water vapour.\")\n\ncond_h = heading(\"2. Condensation\")\ncond_b = body(\"As water vapour rises, it cools and turns back into tiny liquid droplets. These droplets cluster around dust particles and gather into clouds.\")\n\nprec_h = heading(\"3. Precipitation and Collection\")\nprec_b = body(\"When droplets grow heavy enough, they fall as rain, snow, sleet or hail. The water then soaks into the ground or runs off into rivers and lakes, eventually returning to the oceans to begin the cycle again.\")\n\nex_h = heading(\"Worked Example: A Puddle Disappears\")\nex_b = body(\"A puddle left on a sunny pavement is gone by evening. Trace where the water goes:\")\nex_steps = steps([{label: \"Heating\", text: \"The sun warms the pavement and the puddle's surface water.\"}, {label: \"Evaporation\", text: \"Warm water molecules escape into the air as vapour, so the puddle shrinks.\"}, {label: \"Condensation\", text: \"Some vapour cools above the street and forms a tiny cloud, if the air is cool enough.\"}, {label: \"Precipitation\", text: \"On a cooler day, that water could fall again as rain.\"}])\nex_tip = callout(\"tip\", \"Key idea\", \"Evaporation needs energy, and sunlight is the main energy source driving the whole water cycle.\")\n\ncheck_h = heading(\"Self-Check\")\nquiz = quiz_set(\"Check Your Understanding\", [{question: \"What process turns liquid water into water vapour?\", options: [\"Condensation\", \"Evaporation\", \"Precipitation\", \"Runoff\"], correct: 1, explanation: \"Evaporation is driven by heat, which lets surface molecules escape as vapour.\"}, {question: \"What causes water vapour to form droplets in clouds?\", options: [\"Cooling\", \"Heating\", \"Freezing\", \"Compression of the ground\"], correct: 0, explanation: \"When vapour cools, it condenses into droplets that gather into clouds.\"}, {question: \"Which step returns water from the land to the oceans?\", options: [\"Evaporation\", \"Transpiration\", \"Precipitation and runoff\", \"Condensation\"], correct: 2, explanation: \"Precipitation brings water down, and runoff carries it over land into rivers and eventually the sea.\"}], 70, \"#0e7bb8\")\n\nroot = reveal(\"stagger\", 500, 0, 120, [header, evap_h, evap_b, cond_h, cond_b, prec_h, prec_b, ex_h, ex_b, ex_steps, ex_tip, check_h, quiz])\n</a2ui>"
+}

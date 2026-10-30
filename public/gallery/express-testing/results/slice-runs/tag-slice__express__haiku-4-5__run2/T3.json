@@ -1,0 +1,45 @@
+{
+ "task": "T3",
+ "condition": "G",
+ "label": "tag-slice__express__haiku-4-5__run2",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "G-marketing-commerce.json",
+ "atoms_in_catalogue": 263,
+ "prompt_chars": 119490,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 5.2,
+ "usage": {
+  "input_tokens": 34144,
+  "output_tokens": 464
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "color_section",
+  "gradient_hero",
+  "spacer",
+  "columns",
+  "feature_grid",
+  "feature_grid",
+  "feature_grid",
+  "spacer",
+  "testimonial_card",
+  "spacer",
+  "cta_button"
+ ],
+ "score": {
+  "precision": 0.545,
+  "recall": 1.0,
+  "f1": 0.706,
+  "slot_hits": {
+   "hero": true,
+   "feature columns (x3)": true,
+   "testimonial": true,
+   "CTA": true
+  }
+ },
+ "reply": "<a2ui>\nroot = color_section(\n  accent=\"#4f46e5\",\n  style=\"tint\",\n  blocks=[\n    gradient_hero(\n      title=\"Transform Your Workflow\",\n      subtitle=\"Experience the power of seamless integration and intelligent automation\",\n      badge=\"New Release\",\n      cta_label=\"Get Started\",\n      cta_url=\"https://example.com/signup\"\n    ),\n    spacer(height=\"40px\"),\n    columns(\n      cols=3,\n      gap=\"2rem\",\n      items=[\n        {blocks: [\n          feature_grid(\n            features=[\n              {icon: \"\u26a1\", title: \"Lightning Fast\", description: \"Process data at unprecedented speeds with our optimized engine\"}\n            ]\n          )\n        ]},\n        {blocks: [\n          feature_grid(\n            features=[\n              {icon: \"\ud83d\udd12\", title: \"Enterprise Secure\", description: \"Bank-grade encryption and compliance with industry standards\"}\n            ]\n          )\n        ]},\n        {blocks: [\n          feature_grid(\n            features=[\n              {icon: \"\ud83c\udfaf\", title: \"Precision Analytics\", description: \"Get actionable insights with our advanced reporting tools\"}\n            ]\n          )\n        ]}\n      ]\n    ),\n    spacer(height=\"60px\"),\n    testimonial_card(\n      text=\"This product has completely transformed how we manage our operations. The efficiency gains are remarkable.\",\n      author_name=\"Sarah Chen\",\n      author_title=\"Product Director\",\n      author_avatar_url=\"https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah\",\n      rating=5\n    ),\n    spacer(height=\"40px\"),\n    cta_button(\n      label=\"Start Your Free Trial\",\n      url=\"https://example.com/trial\",\n      color=\"#4f46e5\"\n    )\n  ]\n)\n</a2ui>"
+}

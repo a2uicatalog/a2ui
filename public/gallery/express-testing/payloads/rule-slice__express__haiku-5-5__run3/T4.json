@@ -1,0 +1,73 @@
+{
+ "label": "rule-slice__express__haiku-5-5__run3",
+ "task": "T4",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/b-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "filterable_list",
+      "title": "Service Rollout Checklist",
+      "items": [
+       {
+        "title": "Database migration",
+        "status": "done",
+        "detail": "Schema v12 applied to the production cluster without downtime."
+       },
+       {
+        "title": "API gateway configuration",
+        "status": "done",
+        "detail": "Rate limits and auth routes deployed to all three regions."
+       },
+       {
+        "title": "Payment provider sandbox tests",
+        "status": "in-progress",
+        "detail": "Refund flows pass; partial-capture cases still under review."
+       },
+       {
+        "title": "Load testing at 2x peak traffic",
+        "status": "in-progress",
+        "detail": "Latency holds under 300 ms; memory use climbs past the 80% threshold."
+       },
+       {
+        "title": "Security review sign-off",
+        "status": "blocked",
+        "detail": "Waiting on the external auditor's report for the token storage findings."
+       },
+       {
+        "title": "Customer communication draft",
+        "status": "planned",
+        "detail": "Release notes drafted; awaiting legal wording on data residency."
+       },
+       {
+        "title": "Monitoring and alert rules",
+        "status": "planned",
+        "detail": "Dashboards built; paging thresholds still need on-call sign-off."
+       },
+       {
+        "title": "Rollback procedure rehearsal",
+        "status": "blocked",
+        "detail": "Staging environment is missing the snapshot restore tooling."
+       }
+      ],
+      "filter_field": "status",
+      "show_counts": true,
+      "empty_text": "No items match this status."
+     }
+    ]
+   }
+  }
+ ]
+}

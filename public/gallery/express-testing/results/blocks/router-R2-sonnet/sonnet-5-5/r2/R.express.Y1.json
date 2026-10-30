@@ -1,0 +1,35 @@
+{
+ "model": "sonnet-5-5",
+ "cond": "R",
+ "format": "express",
+ "brief": "Y1",
+ "repeat": 2,
+ "seq": 25,
+ "utc": "2026-10-29T21:02:17Z",
+ "model_id": "claude-sonnet-5-5",
+ "prompt_chars": 4068,
+ "prompt_sha256": "(removed for publication)",
+ "temperature_sent": false,
+ "max_tokens": 256,
+ "request_secs": 3.64,
+ "input_tokens": 1768,
+ "output_tokens": 256,
+ "stop_reason": "max_tokens",
+ "usage": {
+  "input_tokens": 1768,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "cache_creation": {
+   "ephemeral_5m_input_tokens": 0,
+   "ephemeral_1h_input_tokens": 0
+  },
+  "output_tokens": 256,
+  "output_tokens_details": {
+   "thinking_tokens": 255
+  },
+  "service_tier": "standard",
+  "inference_geo": "global",
+  "speed": "standard"
+ },
+ "reply": ""
+}

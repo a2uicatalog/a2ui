@@ -1,0 +1,97 @@
+{
+ "label": "rule-slice__express__haiku-5-5__run3",
+ "task": "T6",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/b-learning.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "deck",
+      "component": "flashcard_deck",
+      "cards": [
+       {
+        "front": "Ephemeral",
+        "back": "Lasting for a very short time"
+       },
+       {
+        "front": "Ubiquitous",
+        "back": "Present or found everywhere"
+       },
+       {
+        "front": "Pragmatic",
+        "back": "Dealing with things sensibly and realistically"
+       },
+       {
+        "front": "Meticulous",
+        "back": "Showing great attention to detail"
+       },
+       {
+        "front": "Resilient",
+        "back": "Able to recover quickly from difficulty"
+       },
+       {
+        "front": "Ambiguous",
+        "back": "Open to more than one interpretation"
+       },
+       {
+        "front": "Eloquent",
+        "back": "Fluent and persuasive in speech or writing"
+       },
+       {
+        "front": "Candid",
+        "back": "Truthful and straightforward"
+       },
+       {
+        "front": "Diligent",
+        "back": "Careful and persistent in work or duty"
+       },
+       {
+        "front": "Lucid",
+        "back": "Expressed clearly; easy to understand"
+       }
+      ],
+      "accent": "#4f46e5",
+      "label_front": "WORD",
+      "label_back": "MEANING"
+     },
+     {
+      "id": "progress",
+      "component": "course_progress_card",
+      "course_title": "Cards reviewed",
+      "modules": [
+       {
+        "title": "Vocabulary flashcards",
+        "lessons_total": 10,
+        "lessons_done": 0
+       }
+      ],
+      "accent": "#4f46e5"
+     },
+     {
+      "id": "root",
+      "component": "two_tone_card",
+      "title": "Vocabulary Flashcards",
+      "subtitle": "Tap a card to flip it and see the meaning",
+      "icon": "\ud83d\udcc7",
+      "accent": "#4f46e5",
+      "blocks": [
+       "deck",
+       "progress"
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

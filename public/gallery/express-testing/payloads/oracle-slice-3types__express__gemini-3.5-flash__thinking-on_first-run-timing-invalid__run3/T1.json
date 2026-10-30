@@ -1,0 +1,159 @@
+{
+ "label": "oracle-slice-3types__express__gemini-3.5-flash__thinking-on_first-run-timing-invalid__run3",
+ "task": "T1",
+ "format": "express",
+ "model_id": "gemini-3.5-flash",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "water-cycle-lesson",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "water-cycle-lesson",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "2rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "_inline_1",
+         "_inline_2",
+         "_inline_3",
+         "_inline_4",
+         "_inline_5"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_6",
+         "_inline_7",
+         "_inline_8"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "_inline_1",
+      "component": "gradient_hero",
+      "title": "The Hydrologic Cycle",
+      "subtitle": "Explore how Earth's water moves continuously between the oceans, atmosphere, and land in an endless loop driven by solar energy.",
+      "badge": "EARTH SCIENCE MODULE",
+      "accent": "#0284c7",
+      "accent2": "#3b82f6",
+      "align": "left"
+     },
+     {
+      "id": "_inline_2",
+      "component": "concept_rung",
+      "badge": "1",
+      "kind": "depth",
+      "label": "STAGE 1",
+      "title": "Evaporation & Transpiration",
+      "body": "Solar radiation warms liquid water surfaces across oceans, lakes, and soils, exciting the molecules until they transition into an invisible atmospheric gas: water vapor. Simultaneously, plants pull water from the soil and release vapor through microscopic pores in their leaves\u2014a parallel process called transpiration.",
+      "takeaway": "Evapotranspiration is the primary mechanism that lifts liquid surface water up into the atmosphere."
+     },
+     {
+      "id": "_inline_3",
+      "component": "concept_rung",
+      "badge": "2",
+      "kind": "depth",
+      "label": "STAGE 2",
+      "title": "Condensation & Cloud Formation",
+      "body": "As warm water vapor rises, it expands and cools in the upper atmosphere. Because cooler air cannot hold as much vapor as warm air, the water molecules slow down and condense back into liquid micro-droplets. These droplets group around tiny airborne particles (like dust or sea salt) to form visible clouds.",
+      "takeaway": "Condensation acts as the crucial transition step converting vapor back into liquid before return."
+     },
+     {
+      "id": "_inline_4",
+      "component": "concept_rung",
+      "badge": "3",
+      "kind": "depth",
+      "label": "STAGE 3",
+      "title": "Precipitation & Surface Flow",
+      "body": "Inside clouds, tiny water droplets constantly collide and fuse. Once they become too heavy to remain suspended by updrafts, gravity pulls them down to Earth as rain, snow, sleet, or hail. This fresh water either flows along the surface as runoff back into waterways, or infiltrates deep into the ground.",
+      "takeaway": "Gravity and precipitation complete the loop, collecting water back on Earth's surface."
+     },
+     {
+      "id": "_inline_5",
+      "component": "concept_rung",
+      "badge": "EX",
+      "kind": "example",
+      "label": "WORKED EXAMPLE",
+      "title": "Calculating Volumetric Reservoir Loss",
+      "body": "A community water reservoir has a total surface area of 500,000 square meters. During a dry summer day, environmental sensors record an evaporation rate of 6 millimeters (0.006 meters) per day. How many cubic meters of water are lost to the atmosphere in 24 hours?",
+      "code": "# Surface area of reservoir in square meters\narea_m2 = 500000\n\n# Daily evaporation rate in meters\nevap_rate_m = 0.006\n\n# Volumetric water loss calculation\ndaily_loss_m3 = area_m2 * evap_rate_m\nprint(f'Daily water loss: {daily_loss_m3} cubic meters')\n# Equivalent to 3,000,000 liters of water!",
+      "code_caption": "Python logic tracking physical evaporation loss using area and rates.",
+      "takeaway": "In just one hot day, 3,000 cubic meters of fresh water transition from liquid to gas from this reservoir alone."
+     },
+     {
+      "id": "_inline_6",
+      "component": "highlight_box",
+      "title": "Interactive Study Companion",
+      "text": "Review the concepts and calculations on the left, then test your knowledge using the quick-quiz below to solidify your understanding of the hydrologic cycle.",
+      "icon": "\ud83e\udde0",
+      "accent": "#0284c7",
+      "style": "gradient"
+     },
+     {
+      "id": "_inline_7",
+      "component": "progress_ring",
+      "value": 100,
+      "label": "Module Progress",
+      "color": "#0284c7",
+      "show_value": true
+     },
+     {
+      "id": "_inline_8",
+      "component": "quiz_set",
+      "title": "Water Cycle Self-Check",
+      "questions": [
+       {
+        "question": "Which process describes water transforming from a liquid to a gas directly from plant leaves?",
+        "options": [
+         "Sublimation",
+         "Condensation",
+         "Transpiration",
+         "Precipitation"
+        ],
+        "correct": 2,
+        "explanation": "Transpiration is the release of water vapor from plant foliage into the atmosphere as part of their metabolic process."
+       },
+       {
+        "question": "What is the primary power source driving the entire Earth water cycle?",
+        "options": [
+         "Geothermal heat",
+         "Solar radiation",
+         "Ocean currents",
+         "Lunar gravity"
+        ],
+        "correct": 1,
+        "explanation": "The Sun provides the thermal energy required to evaporate liquid water and drive atmospheric wind circulation."
+       },
+       {
+        "question": "Which physical change of state is responsible for cloud formation?",
+        "options": [
+         "Gas to liquid (Condensation)",
+         "Liquid to gas (Evaporation)",
+         "Solid to gas (Sublimation)",
+         "Liquid to solid (Freezing)"
+        ],
+        "correct": 0,
+        "explanation": "As warm, moist air rises, it cools, causing water vapor to transition back into liquid droplets\u2014forming clouds."
+       }
+      ],
+      "pass_score": 66,
+      "accent": "#0284c7"
+     }
+    ]
+   }
+  }
+ ]
+}

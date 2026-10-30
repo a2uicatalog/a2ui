@@ -1,0 +1,41 @@
+{
+ "task": "T6",
+ "condition": "CX_haiku-5-5",
+ "temperature_applied": false,
+ "format": "elemental",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "oracle-slice-3types__elemental__haiku-5-5__run3",
+ "agent_type": "Learning",
+ "catalogue": "C-learning.json",
+ "atoms_in_catalogue": 36,
+ "prompt_chars": 21279,
+ "slot_recall": [
+  2,
+  2
+ ],
+ "secs": 7.4,
+ "usage": {
+  "input_tokens": 8147,
+  "output_tokens": 1624
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "page_header",
+  "progress_bar",
+  "flashcard_deck"
+ ],
+ "score": {
+  "precision": 0.667,
+  "recall": 1.0,
+  "f1": 0.8,
+  "slot_hits": {
+   "flashcard deck": true,
+   "progress indicator": true
+  }
+ },
+ "reply": "<a2ui>\n<body id=\"root\">\n<script type=\"application/json\">{\"progress\": 0, \"reviewed\": 0, \"total\": 10}</script>\n<ui-page_header id=\"header\" title=\"Vocabulary Flashcards\" subtitle=\"Flip each card to reveal its meaning\" icon=\"\ud83d\udcda\" tag=\"VOCAB\" accent=\"#4f46e5\"></ui-page_header>\n<ui-progress_bar id=\"review-progress\" value=\"{$/progress}\" label=\"Cards reviewed\" accent=\"#4f46e5\" show_percent=\"true\" caption=\"Flip a card to mark it as reviewed\"></ui-progress_bar>\n<ui-flashcard_deck id=\"vocab-deck\" accent=\"#4f46e5\" label_front=\"WORD\" label_back=\"MEANING\">\n<script type=\"application/json\" slot=\"cards\">[\n{\"front\": \"Ephemeral\", \"back\": \"Lasting for a very short time\"},\n{\"front\": \"Ubiquitous\", \"back\": \"Present or found everywhere\"},\n{\"front\": \"Meticulous\", \"back\": \"Showing great attention to detail\"},\n{\"front\": \"Candid\", \"back\": \"Truthful and straightforward; frank\"},\n{\"front\": \"Resilient\", \"back\": \"Able to recover quickly from difficulties\"},\n{\"front\": \"Ambiguous\", \"back\": \"Open to more than one interpretation\"},\n{\"front\": \"Pragmatic\", \"back\": \"Dealing with things sensibly and realistically\"},\n{\"front\": \"Eloquent\", \"back\": \"Fluent, persuasive, and expressive in speech or writing\"},\n{\"front\": \"Tenacious\", \"back\": \"Holding firmly to a purpose; persistent\"},\n{\"front\": \"Lucid\", \"back\": \"Expressed clearly; easy to understand\"}\n]</script>\n</ui-flashcard_deck>\n</body>\n</a2ui>\n\nThe deck is ten flip cards, each with a word on the front and its meaning on the back. The progress bar is bound to `/progress` (0\u2013100) and starts at 0%. The catalog's flashcard deck doesn't emit a flip event, so nothing in this markup increments that value automatically. Updating it needs a surface update that sets `/progress`, or a catalog event if one is available."
+}

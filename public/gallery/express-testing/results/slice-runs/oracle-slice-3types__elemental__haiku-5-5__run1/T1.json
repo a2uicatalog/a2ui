@@ -1,0 +1,51 @@
+{
+ "task": "T1",
+ "condition": "CX_haiku-5-5",
+ "temperature_applied": false,
+ "format": "elemental",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "oracle-slice-3types__elemental__haiku-5-5__run1",
+ "agent_type": "Learning",
+ "catalogue": "C-learning.json",
+ "atoms_in_catalogue": 36,
+ "prompt_chars": 21279,
+ "slot_recall": [
+  5,
+  5
+ ],
+ "secs": 10.9,
+ "usage": {
+  "input_tokens": 8148,
+  "output_tokens": 2356
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "page_header",
+  "heading",
+  "body",
+  "heading",
+  "body",
+  "heading",
+  "body",
+  "callout",
+  "heading",
+  "quiz_set"
+ ],
+ "score": {
+  "precision": 1.0,
+  "recall": 0.8,
+  "f1": 0.889,
+  "slot_hits": {
+   "title": true,
+   "concept sections (x3)": true,
+   "worked example": true,
+   "3-question quiz": true,
+   "quiz result": false
+  }
+ },
+ "reply": "<a2ui>\n<body id=\"root\">\n  <ui-page_header id=\"title\" title=\"The Water Cycle\" subtitle=\"How water moves continuously between the oceans, atmosphere, and land\" icon=\"\ud83d\udca7\" tag=\"Earth Science\" accent=\"#0ea5e9\" theme=\"light\"></ui-page_header>\n\n  <ui-heading id=\"h-evap\" text=\"1. Evaporation and Condensation\"></ui-heading>\n  <ui-body id=\"b-evap\" text=\"The sun heats water in oceans, lakes, and rivers, turning it into water vapour. This process is called evaporation. As the vapour rises and cools, it changes back into tiny liquid droplets that gather into clouds. This change is called condensation.\"></ui-body>\n\n  <ui-heading id=\"h-precip\" text=\"2. Precipitation and Collection\"></ui-heading>\n  <ui-body id=\"b-precip\" text=\"When droplets in clouds merge and grow heavy enough, they fall as precipitation, in the form of rain, snow, sleet, or hail. Much of this water lands in oceans, but some collects in lakes, rivers, and glaciers.\"></ui-body>\n\n  <ui-heading id=\"h-infil\" text=\"3. Infiltration, Runoff, and Transpiration\"></ui-heading>\n  <ui-body id=\"b-infil\" text=\"Some precipitation soaks into the ground, a process called infiltration, and may later seep into groundwater. Water that does not soak in flows over the surface as runoff and returns to bodies of water. Plants also release water vapour through their leaves, a process called transpiration.\"></ui-body>\n\n  <ui-callout id=\"example\" kind=\"tip\" title=\"Worked example\" text=\"A 2 litre puddle sits on a warm pavement. Heat from the sun causes some water to evaporate into the air, leaving less water on the ground. The vapour later rises, cools, and condenses into a cloud. If that cloud grows heavy, it may return the water as rain somewhere else. The same water is cycling through every stage.\"></ui-callout>\n\n  <ui-heading id=\"h-check\" text=\"Self-Check\"></ui-heading>\n  <ui-quiz_set id=\"quiz\" title=\"Water Cycle Self-Check\" pass_score=\"{70}\" accent=\"#0ea5e9\">\n    <script type=\"application/json\" slot=\"questions\">[\n      {\n        \"question\": \"What is the process by which water vapour changes back into liquid droplets in clouds?\",\n        \"options\": [\"Evaporation\", \"Condensation\", \"Precipitation\", \"Infiltration\"],\n        \"correct\": 1,\n        \"explanation\": \"Condensation occurs when rising water vapour cools and forms tiny liquid droplets that make up clouds.\"\n      },\n      {\n        \"question\": \"Which process describes plants releasing water vapour through their leaves?\",\n        \"options\": [\"Runoff\", \"Transpiration\", \"Infiltration\", \"Precipitation\"],\n        \"correct\": 1,\n        \"explanation\": \"Transpiration is the release of water vapour from plant leaves into the atmosphere.\"\n      },\n      {\n        \"question\": \"What happens to water that flows over the surface of the land instead of soaking in?\",\n        \"options\": [\"It becomes runoff and returns to bodies of water\", \"It turns directly into clouds\", \"It becomes groundwater only\", \"It stays frozen permanently\"],\n        \"correct\": 0,\n        \"explanation\": \"Water that does not infiltrate the ground flows over the surface as runoff and eventually reaches lakes, rivers, or oceans.\"\n      }\n    ]</script>\n  </ui-quiz_set>\n</body>\n</a2ui>"
+}

@@ -1,0 +1,41 @@
+{
+ "task": "T2",
+ "condition": "CN_gemini-3.5-f",
+ "temperature_applied": false,
+ "format": "json",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash-lite",
+ "hints": false,
+ "label": "oracle-slice-3types__json__gemini-3.5-flash-lite__first-run-timing-invalid__run1",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 31546,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 28.1,
+ "usage": {
+  "input_tokens": 7915,
+  "output_tokens": 688
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns",
+  "benchmark_comparison"
+ ],
+ "score": {
+  "precision": 0.5,
+  "recall": 0.333,
+  "f1": 0.4,
+  "slot_hits": {
+   "KPI tile (x4)": false,
+   "trend (required only if metric_row was chosen; stat_card's own delta already satisfies it)": false,
+   "comparison chart": true
+  }
+ },
+ "reply": "<a2ui-json>\n{\n  \"version\": \"v0.9.1\",\n  \"createSurface\": {\n    \"surfaceId\": \"metrics-overview\",\n    \"catalogId\": \"https://a2uicatalog.ai/catalog/c-data-display.json\"\n  }\n}\n</a2ui-json>\n\n<a2ui-json>\n{\n  \"version\": \"v0.9.1\",\n  \"updateComponents\": {\n    \"surfaceId\": \"metrics-overview\",\n    \"components\": [\n      {\n        \"id\": \"root\",\n        \"component\": \"columns\",\n        \"cols\": 2,\n        \"items\": [\n          {\n            \"blocks\": [\n              {\n                \"id\": \"heading-overview\",\n                \"component\": \"heading\",\n                \"text\": \"Executive Performance Metrics\"\n              },\n              {\n                \"id\": \"stat-revenue\",\n                \"component\": \"stat_card\",\n                \"label\": \"Total Revenue\",\n                \"value\": \"$128,430\",\n                \"delta\": \"+12.4%\",\n                \"is_up\": \"true\",\n                \"accent\": \"#4CAF50\"\n              },\n              {\n                \"id\": \"stat-users\",\n                \"component\": \"stat_card\",\n                \"label\": \"Active Users\",\n                \"value\": \"14,230\",\n                \"delta\": \"+5.1%\",\n                \"is_up\": \"true\",\n                \"accent\": \"#2196F3\"\n              }\n            ]\n          },\n          {\n            \"blocks\": [\n              {\n                \"id\": \"heading-secondary\",\n                \"component\": \"heading\",\n                \"text\": \"Operational Health\"\n              },\n              {\n                \"id\": \"stat-conversion\",\n                \"component\": \"stat_card\",\n                \"label\": \"Conversion Rate\",\n                \"value\": \"3.42%\",\n                \"delta\": \"-0.8%\",\n                \"is_up\": \"false\",\n                \"accent\": \"#FF9800\"\n              },\n              {\n                \"id\": \"stat-latency\",\n                \"component\": \"stat_card\",\n                \"label\": \"Avg Latency\",\n                \"value\": \"120ms\",\n                \"delta\": \"-15ms\",\n                \"is_up\": \"true\",\n                \"accent\": \"#9C27B0\"\n              }\n            ]\n          }\n        ]\n      },\n      {\n        \"id\": \"benchmark-chart\",\n        \"component\": \"benchmark_comparison\",\n        \"items\": [\n          { \"label\": \"Q1 Performance\", \"value\": 75 },\n          { \"label\": \"Q2 Performance\", \"value\": 88 },\n          { \"label\": \"Q3 Target\", \"value\": 92 }\n        ]\n      }\n    ]\n  }\n}\n</a2ui-json>"
+}

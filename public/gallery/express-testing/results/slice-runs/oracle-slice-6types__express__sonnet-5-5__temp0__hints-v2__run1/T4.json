@@ -1,0 +1,44 @@
+{
+ "task": "T4",
+ "condition": "DT_sonnet-5-5H2",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-sonnet-5-5",
+ "hints": true,
+ "label": "oracle-slice-6types__express__sonnet-5-5__temp0__hints-v2__run1",
+ "agent_type": "T4",
+ "catalogue": "D-t4.json",
+ "atoms_in_catalogue": 20,
+ "prompt_chars": 10490,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 11.4,
+ "usage": {
+  "input_tokens": 4118,
+  "output_tokens": 1216
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "segmented_control",
+  "entity_list",
+  "columns",
+  "heading",
+  "body"
+ ],
+ "score": {
+  "precision": 0.4,
+  "recall": 0.667,
+  "f1": 0.5,
+  "slot_hits": {
+   "list": true,
+   "status indicator": false,
+   "filter control": true
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"status-list\")\nfilter = segmented_control([{label: \"All\", value: \"all\"}, {label: \"Done\", value: \"done\"}, {label: \"In progress\", value: \"in_progress\"}, {label: \"Blocked\", value: \"blocked\"}], \"all\", \"status_filter\")\nlist = entity_list([{name: \"Set up project repository\", subtitle: \"Repository created and access granted to the team.\", icon: \"\ud83d\udcc1\", status: \"Done\"}, {name: \"Design onboarding flow\", subtitle: \"Wireframes approved by the product lead.\", icon: \"\ud83c\udfa8\", status: \"Done\"}, {name: \"Build authentication\", subtitle: \"Login and password reset are being implemented.\", icon: \"\ud83d\udd10\", status: \"In progress\"}, {name: \"Write API documentation\", subtitle: \"Endpoint reference is half complete.\", icon: \"\ud83d\udcdd\", status: \"In progress\"}, {name: \"Integrate payment gateway\", subtitle: \"Waiting on credentials from the provider.\", icon: \"\ud83d\udcb3\", status: \"Blocked\"}, {name: \"Configure CI pipeline\", subtitle: \"Automated tests now run on every pull request.\", icon: \"\u2699\ufe0f\", status: \"Done\"}, {name: \"Performance testing\", subtitle: \"Load test scripts are being prepared.\", icon: \"\ud83d\udcc8\", status: \"In progress\"}, {name: \"Security review\", subtitle: \"Blocked until the audit slot opens next week.\", icon: \"\ud83d\udee1\ufe0f\", status: \"Blocked\"}])\nroot = columns(2, \"2rem\", \"top\", [{blocks: [heading(\"Project tasks\"), body(\"Eight items. Choose a status to narrow the list.\"), filter]}, {blocks: [list]}])\n</a2ui>\n\nThe catalog has no component that filters a list on its own. The segmented control shows the status filter, but it is not wired to the list, so choosing a status won't hide any rows until the host connects the two."
+}

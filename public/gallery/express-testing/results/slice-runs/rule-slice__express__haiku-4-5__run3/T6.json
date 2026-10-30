@@ -1,0 +1,44 @@
+{
+ "task": "T6",
+ "condition": "B",
+ "label": "rule-slice__express__haiku-4-5__run3",
+ "agent_type": "Learning",
+ "catalogue": "B-learning.json",
+ "atoms_in_catalogue": 184,
+ "prompt_chars": 88519,
+ "slot_recall": [
+  1,
+  2
+ ],
+ "secs": 6.6,
+ "usage": {
+  "input_tokens": 24756,
+  "output_tokens": 627
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns",
+  "heading",
+  "body",
+  "spacer",
+  "flashcard_deck",
+  "heading",
+  "spacer",
+  "course_progress_card",
+  "spacer",
+  "highlight_box",
+  "spacer",
+  "key_takeaways"
+ ],
+ "score": {
+  "precision": 0.083,
+  "recall": 0.5,
+  "f1": 0.143,
+  "slot_hits": {
+   "flashcard deck": true,
+   "progress indicator": false
+  }
+ },
+ "reply": "<a2ui>\nroot = columns(cols=2, gap=\"2rem\", items=[\n  {blocks: [\n    heading(\"Vocabulary Review\"),\n    body(\"Master these 10 essential terms. Click each card to reveal the definition.\"),\n    spacer(height=\"1.5rem\"),\n    flashcard_deck(\n      cards=[\n        {front: \"Ephemeral\", back: \"Lasting for a very short time; transitory\"},\n        {front: \"Ubiquitous\", back: \"Present, appearing, or found everywhere\"},\n        {front: \"Perspicacious\", back: \"Having keen insight or discernment; mentally sharp\"},\n        {front: \"Obfuscate\", back: \"To deliberately make unclear or difficult to understand\"},\n        {front: \"Mellifluous\", back: \"Sweet or musical; pleasing to the ear\"},\n        {front: \"Serendipity\", back: \"The occurrence of events by chance in a happy or beneficial way\"},\n        {front: \"Cognizant\", back: \"Aware or informed; having knowledge of\"},\n        {front: \"Quintessential\", back: \"Representing the most perfect example of something\"},\n        {front: \"Sanguine\", back: \"Optimistic or positive, especially about the future\"},\n        {front: \"Perspicacity\", back: \"The quality of having keen insight and understanding\"}\n      ],\n      accent=\"#4f46e5\",\n      label_front=\"TERM\",\n      label_back=\"DEFINITION\"\n    )\n  ]},\n  {blocks: [\n    heading(\"Progress Tracker\"),\n    spacer(height=\"1rem\"),\n    course_progress_card(\n      course_title=\"Vocabulary Mastery\",\n      modules=[\n        {title: \"Session Progress\", lessons_total: 10, lessons_done: 0}\n      ],\n      accent=\"#4f46e5\"\n    ),\n    spacer(height=\"2rem\"),\n    highlight_box(\n      title=\"How to Use\",\n      text=\"Click any flashcard to flip it and reveal the definition. Review each term carefully to build your vocabulary. Your progress is tracked as you review each card.\",\n      icon=\"\ud83d\udcda\",\n      accent=\"#4f46e5\",\n      style=\"gradient\"\n    ),\n    spacer(height=\"1.5rem\"),\n    key_takeaways(points=[\n      \"Read the term on the front of each card\",\n      \"Click to reveal the definition on the back\",\n      \"Review all 10 terms to master this vocabulary set\",\n      \"Repeat cards that challenge you for better retention\"\n    ])\n  ]}\n])\n</a2ui>"
+}

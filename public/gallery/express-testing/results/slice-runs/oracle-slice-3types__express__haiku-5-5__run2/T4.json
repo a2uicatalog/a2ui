@@ -1,0 +1,43 @@
+{
+ "task": "T4",
+ "condition": "C_haiku-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "oracle-slice-3types__express__haiku-5-5__run2",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 16421,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 10.9,
+ "usage": {
+  "input_tokens": 6049,
+  "output_tokens": 2197
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "heading",
+  "segmented_control",
+  "entity_list",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.5,
+  "recall": 0.667,
+  "f1": 0.571,
+  "slot_hits": {
+   "list": true,
+   "status indicator": false,
+   "filter control": true
+  }
+ },
+ "reply": "<a2ui>\ntitle = heading(\"Service Status\")\n\nfilter = segmented_control([{label: \"All\", value: \"all\"}, {label: \"Healthy\", value: \"healthy\"}, {label: \"Warning\", value: \"warning\"}, {label: \"Failed\", value: \"failed\"}], \"all\", \"status_filter\")\n\nlist = entity_list([{name: \"API Gateway\", subtitle: \"Latency within 200 ms target\", status: \"healthy\"}, {name: \"Auth Service\", subtitle: \"Token refresh errors up 3%\", status: \"warning\"}, {name: \"Billing Worker\", subtitle: \"Last batch job failed at 02:14\", status: \"failed\"}, {name: \"Search Index\", subtitle: \"Reindex completed in 41 min\", status: \"healthy\"}, {name: \"Notification Queue\", subtitle: \"Backlog of 1,200 messages\", status: \"warning\"}, {name: \"Data Warehouse\", subtitle: \"Nightly export finished\", status: \"healthy\"}, {name: \"Payments Webhook\", subtitle: \"Retries exhausted for 6 events\", status: \"failed\"}, {name: \"CDN Edge\", subtitle: \"Cache hit ratio at 96%\", status: \"healthy\"}])\n\nroot = columns(2, \"1.5rem\", \"top\", [{blocks: [title, filter]}, {blocks: [list]}])\n</a2ui>"
+}

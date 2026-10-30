@@ -1,0 +1,42 @@
+{
+ "task": "T6",
+ "condition": "C_gemini-3.5-flash-l",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash-lite",
+ "hints": false,
+ "label": "oracle-slice-3types__express__gemini-3.5-flash-lite__request-only-timing__run2",
+ "agent_type": "Learning",
+ "catalogue": "C-learning.json",
+ "atoms_in_catalogue": 36,
+ "prompt_chars": 21139,
+ "slot_recall": [
+  2,
+  2
+ ],
+ "secs": 1.8,
+ "usage": {
+  "input_tokens": 5727,
+  "output_tokens": 443
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "page_header",
+  "xp_bar",
+  "flashcard_deck",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.5,
+  "recall": 1.0,
+  "f1": 0.667,
+  "slot_hits": {
+   "flashcard deck": true,
+   "progress indicator": true
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"vocab-flashcards\")\n\nheader = page_header(\n    title=\"Vocabulary Flashcards\",\n    subtitle=\"Review key terms and flip cards to test your retention.\",\n    icon=\"\ud83d\udcda\",\n    tag=\"Practice\",\n    accent=\"#4f46e5\",\n    theme=\"light\"\n)\n\nxp = xp_bar(\n    level_label=\"Review Session \u2014 10 Terms\",\n    xp_current=3,\n    xp_next=10,\n    accent=\"#4f46e5\",\n    show_flash=true\n)\n\ndeck = flashcard_deck(\n    cards=[\n        {front: \"Ephemeral\", back: \"Lasting for a very short time.\"},\n        {front: \"Ubiquitous\", back: \"Present, appearing, or found everywhere.\"},\n        {front: \"Pragmatic\", back: \"Dealing with things sensibly and realistically.\"},\n        {front: \"Benevolent\", back: \"Well meaning and kindly.\"},\n        {front: \"Cacophony\", back: \"A harsh, discordant mixture of sounds.\"},\n        {front: \"Mollify\", back: \"Appease the anger or anxiety of someone.\"},\n        {front: \"Nefarious\", back: \"Wicked or criminal (typically of an action or activity).\"},\n        {front: \"Paradigm\", back: \"A typical example or pattern of something; a model.\"},\n        {front: \"Resilient\", back: \"Able to withstand or recover quickly from difficult conditions.\"},\n        {front: \"Zealot\", back: \"A person who is fanatical and uncompromising in pursuit of their ideals.\"}\n    ],\n    accent=\"#4f46e5\",\n    label_front=\"TERM\",\n    label_back=\"DEFINITION\"\n)\n\nroot = columns(\n    cols=1,\n    gap=\"1.5rem\",\n    items=[\n        {blocks: [header, xp, deck]}\n    ]\n)\n</a2ui>"
+}

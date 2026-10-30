@@ -1,0 +1,49 @@
+{
+ "task": "T5",
+ "condition": "A_haiku-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "full-catalogue__express__haiku-5-5__run1",
+ "agent_type": "full",
+ "catalogue": "A-full.json",
+ "atoms_in_catalogue": 557,
+ "prompt_chars": 294155,
+ "slot_recall": [
+  1,
+  1
+ ],
+ "secs": 6.4,
+ "usage": {
+  "input_tokens": 107813,
+  "output_tokens": 1221
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "pricing_tier_card",
+  "pricing_tier_card",
+  "pricing_tier_card",
+  "columns"
+ ],
+ "score": {
+  "per_approach": {
+   "tier_cards": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": null
+   },
+   "comparison_table": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": null
+   }
+  },
+  "best_approach": "tier_cards",
+  "f1": null
+ },
+ "reply": "<a2ui>\nstarter = pricing_tier_card(\"Starter\", \"9\", \"$\", \"per month\", [\"Up to 3 projects\", \"5 GB storage\", \"Email support\"], \"Start free trial\", \"https://example.com/signup/starter\", false)\npro = pricing_tier_card(\"Pro\", \"29\", \"$\", \"per month\", [\"Unlimited projects\", \"100 GB storage\", \"Priority support\", \"Advanced analytics\"], \"Get Pro\", \"https://example.com/signup/pro\", true)\nteam = pricing_tier_card(\"Team\", \"79\", \"$\", \"per month\", [\"Everything in Pro\", \"Unlimited members\", \"SSO and audit logs\", \"Dedicated success manager\"], \"Contact sales\", \"https://example.com/contact\", false)\nroot = columns(3, \"1.5rem\", \"stretch\", [{blocks: [starter]}, {blocks: [pro]}, {blocks: [team]}])\n</a2ui>"
+}

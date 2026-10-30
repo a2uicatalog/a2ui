@@ -1,0 +1,172 @@
+{
+ "label": "oracle-slice-3types__express__gemini-3.5-flash__thinking-on_first-run-timing-invalid__run3",
+ "task": "T6",
+ "format": "express",
+ "model_id": "gemini-3.5-flash",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "vocab-learning",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "vocab-learning",
+    "components": [
+     {
+      "id": "header",
+      "component": "page_header",
+      "title": "### Vocabulary Mastery Dashboard",
+      "subtitle": "Active learning & recall workspace. Boost your lexicon with systematic reviews.",
+      "icon": "\ud83e\udde0",
+      "tag": "Daily Target",
+      "accent": "#4f46e5",
+      "theme": "light"
+     },
+     {
+      "id": "xp_stats",
+      "component": "xp_bar",
+      "level_label": "Level 4 \u2014 Linguistic Elite",
+      "xp_current": 750,
+      "xp_next": 1000,
+      "accent": "#4f46e5",
+      "show_flash": true
+     },
+     {
+      "id": "progress_stats",
+      "component": "progress_ring",
+      "value": 70,
+      "size": 130,
+      "stroke_width": 10,
+      "color": "#10b981",
+      "track_color": "#e2e8f0",
+      "label": "Today's Review Progress (7/10 Cards)",
+      "show_value": true,
+      "unit": "%"
+     },
+     {
+      "id": "help_callout",
+      "component": "callout",
+      "kind": "tip",
+      "title": "Spaced Repetition Method",
+      "text": "Flip each card to test your recall. Use the buttons on the back to rate your confidence (1-5). Low ratings trigger sooner reviews, while high ratings schedule them further out to leverage memory retention curves."
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "3rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "header",
+         "xp_stats",
+         "progress_stats",
+         "help_callout"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_1",
+         "_inline_2",
+         "_inline_3",
+         "_inline_4",
+         "_inline_5",
+         "_inline_6",
+         "_inline_7",
+         "_inline_8",
+         "_inline_9",
+         "_inline_10"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "_inline_1",
+      "component": "spaced_repetition_card",
+      "front": "Ephemeral",
+      "back": "Lasting for a very short time; transient or fleeting.",
+      "card_id": "vocab_ephemeral",
+      "accent": "#4f46e5"
+     },
+     {
+      "id": "_inline_2",
+      "component": "spaced_repetition_card",
+      "front": "Capricious",
+      "back": "Given to sudden and unpredictable changes of mood or behavior; fickle.",
+      "card_id": "vocab_capricious",
+      "accent": "#8b5cf6"
+     },
+     {
+      "id": "_inline_3",
+      "component": "spaced_repetition_card",
+      "front": "Cacophony",
+      "back": "A harsh, discordant mixture of sounds; jarring noise.",
+      "card_id": "vocab_cacophony",
+      "accent": "#4f46e5"
+     },
+     {
+      "id": "_inline_4",
+      "component": "spaced_repetition_card",
+      "front": "Alacrity",
+      "back": "Brisk, cheerful readiness and eager promptness.",
+      "card_id": "vocab_alacrity",
+      "accent": "#8b5cf6"
+     },
+     {
+      "id": "_inline_5",
+      "component": "spaced_repetition_card",
+      "front": "Taciturn",
+      "back": "Reserved or uncommunicative in speech; saying very little.",
+      "card_id": "vocab_taciturn",
+      "accent": "#4f46e5"
+     },
+     {
+      "id": "_inline_6",
+      "component": "spaced_repetition_card",
+      "front": "Pernicious",
+      "back": "Having a harmful effect, especially in a gradual or subtle way.",
+      "card_id": "vocab_pernicious",
+      "accent": "#8b5cf6"
+     },
+     {
+      "id": "_inline_7",
+      "component": "spaced_repetition_card",
+      "front": "Mitigate",
+      "back": "To make less severe, serious, painful, or damaging.",
+      "card_id": "vocab_mitigate",
+      "accent": "#4f46e5"
+     },
+     {
+      "id": "_inline_8",
+      "component": "spaced_repetition_card",
+      "front": "Loquacious",
+      "back": "Tending to talk a great deal; extremely talkative.",
+      "card_id": "vocab_loquacious",
+      "accent": "#8b5cf6"
+     },
+     {
+      "id": "_inline_9",
+      "component": "spaced_repetition_card",
+      "front": "Anachronism",
+      "back": "A thing belonging or appropriate to a period other than that in which it exists.",
+      "card_id": "vocab_anachronism",
+      "accent": "#4f46e5"
+     },
+     {
+      "id": "_inline_10",
+      "component": "spaced_repetition_card",
+      "front": "Nefarious",
+      "back": "Wicked, villainous, or criminal in nature.",
+      "card_id": "vocab_nefarious",
+      "accent": "#8b5cf6"
+     }
+    ]
+   }
+  }
+ ]
+}

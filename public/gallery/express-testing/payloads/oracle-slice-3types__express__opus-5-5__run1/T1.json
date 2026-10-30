@@ -1,0 +1,193 @@
+{
+ "label": "oracle-slice-3types__express__opus-5-5__run1",
+ "task": "T1",
+ "format": "express",
+ "model_id": "claude-opus-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "water-cycle-lesson",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "water-cycle-lesson",
+    "components": [
+     {
+      "id": "title",
+      "component": "page_header",
+      "title": "The Water Cycle",
+      "subtitle": "How water moves between the oceans, the sky and the land, again and again",
+      "icon": "\ud83d\udca7",
+      "tag": "Earth Science",
+      "accent": "#0284c7",
+      "meta": [
+       {
+        "label": "Sections",
+        "value": "3 concepts"
+       },
+       {
+        "label": "Example",
+        "value": "1 worked"
+       },
+       {
+        "label": "Self-check",
+        "value": "3 questions"
+       }
+      ]
+     },
+     {
+      "id": "intro",
+      "component": "body",
+      "text": "Water on Earth is always on the move. The water cycle has no start or end. Water changes state as it gains or loses heat energy, and the sun drives the whole process. This lesson covers the three main stages, works through one real example, and ends with a short self-check."
+     },
+     {
+      "id": "concept1",
+      "component": "concept_rung",
+      "badge": "1",
+      "kind": "depth",
+      "title": "Evaporation & Transpiration",
+      "body": "Heat from the sun turns liquid water in oceans, lakes and rivers into water vapour. That vapour rises into the atmosphere.\n\nPlants also release water vapour through tiny pores in their leaves. This is called transpiration. Together, the two processes are often called evapotranspiration.",
+      "takeaway": "Heat in \u2192 liquid becomes gas \u2192 vapour rises."
+     },
+     {
+      "id": "concept2",
+      "component": "concept_rung",
+      "badge": "2",
+      "kind": "depth",
+      "title": "Condensation",
+      "body": "As water vapour rises, the air around it gets cooler. Cooler air can hold less vapour, so the vapour condenses onto tiny particles of dust or salt. This forms droplets.\n\nBillions of these droplets gather together and become the clouds and fog we can see.",
+      "takeaway": "Heat out \u2192 gas becomes liquid \u2192 clouds form."
+     },
+     {
+      "id": "concept3",
+      "component": "concept_rung",
+      "badge": "3",
+      "kind": "depth",
+      "title": "Precipitation & Collection",
+      "body": "Droplets in a cloud bump into each other and merge. When they grow too heavy to stay in the air, they fall as rain, snow, sleet or hail.\n\nThe water then collects in oceans, lakes and rivers, or soaks into the ground as groundwater. Runoff carries surface water back toward the sea, ready to evaporate again.",
+      "takeaway": "Gravity brings water down. Collection closes the loop."
+     },
+     {
+      "id": "example",
+      "component": "concept_rung",
+      "badge": "EX",
+      "kind": "example",
+      "title": "Following one puddle after a summer storm",
+      "body": "A puddle forms on a playground after an afternoon storm. We can trace each stage of the cycle through it.",
+      "code": "1. 2 pm  Sun heats puddle       -> EVAPORATION (liquid -> vapour)\n2. 4 pm  Vapour rises & cools    -> CONDENSATION (vapour -> cloud droplets)\n3. 7 pm  Droplets merge & grow   -> PRECIPITATION (rain falls)\n4. 8 pm  Rain drains to a stream -> COLLECTION (runoff to river/sea)",
+      "code_caption": "The same water molecules can travel through every stage in a single day.",
+      "takeaway": "Every puddle is a small model of the whole water cycle."
+     },
+     {
+      "id": "tip",
+      "component": "text_callout",
+      "variant": "info",
+      "title": "Remember",
+      "description": "Evaporation needs heat to be added. Condensation happens when heat is lost."
+     },
+     {
+      "id": "quiz",
+      "component": "quiz_set",
+      "title": "Self-check: The Water Cycle",
+      "accent": "#0284c7",
+      "pass_score": 67,
+      "questions": [
+       {
+        "question": "Which process turns liquid water into water vapour?",
+        "options": [
+         "Condensation",
+         "Evaporation",
+         "Precipitation",
+         "Collection"
+        ],
+        "correct": 1,
+        "explanation": "Evaporation happens when heat energy turns liquid water into a gas."
+       },
+       {
+        "question": "Clouds form mainly because rising water vapour\u2026",
+        "options": [
+         "heats up and expands",
+         "cools and condenses into droplets",
+         "freezes into hail straight away",
+         "mixes with groundwater"
+        ],
+        "correct": 1,
+        "explanation": "Rising air cools. The vapour condenses on dust particles and forms cloud droplets."
+       },
+       {
+        "question": "What is the release of water vapour from plant leaves called?",
+        "options": [
+         "Transpiration",
+         "Infiltration",
+         "Runoff",
+         "Sublimation"
+        ],
+        "correct": 0,
+        "explanation": "Transpiration is evaporation through the pores in plant leaves."
+       }
+      ],
+      "on_pass": {
+       "type": "callout",
+       "kind": "tip",
+       "title": "Great work!",
+       "text": "You understand the main stages of the water cycle."
+      },
+      "on_fail": {
+       "type": "callout",
+       "kind": "warning",
+       "title": "Review and retry",
+       "text": "Look back at the three concept sections and the worked example, then try again."
+      }
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "2rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "title",
+         "intro",
+         "_inline_1",
+         "concept1",
+         "concept2",
+         "concept3",
+         "_inline_2",
+         "example"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_3",
+         "tip",
+         "quiz"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "_inline_1",
+      "component": "heading",
+      "text": "Key Concepts"
+     },
+     {
+      "id": "_inline_2",
+      "component": "heading",
+      "text": "Worked Example"
+     },
+     {
+      "id": "_inline_3",
+      "component": "heading",
+      "text": "Check Your Understanding"
+     }
+    ]
+   }
+  }
+ ]
+}

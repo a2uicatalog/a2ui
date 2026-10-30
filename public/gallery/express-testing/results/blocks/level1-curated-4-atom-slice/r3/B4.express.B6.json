@@ -1,0 +1,36 @@
+{
+ "model": "sonnet-5-5",
+ "cond": "B4",
+ "format": "express",
+ "brief": "B6",
+ "repeat": 3,
+ "seq": 43,
+ "model_id": "claude-sonnet-5-5",
+ "utc": "2026-10-29T19:57:16Z",
+ "prompt_chars": 12609,
+ "prompt_sha256": "(removed for publication)",
+ "temperature_requested": null,
+ "temperature_sent": false,
+ "max_tokens": 32768,
+ "request_secs": 22.82,
+ "input_tokens": 4671,
+ "output_tokens": 2903,
+ "stop_reason": "end_turn",
+ "usage": {
+  "input_tokens": 4671,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "cache_creation": {
+   "ephemeral_5m_input_tokens": 0,
+   "ephemeral_1h_input_tokens": 0
+  },
+  "output_tokens": 2903,
+  "output_tokens_details": {
+   "thinking_tokens": 2038
+  },
+  "service_tier": "standard",
+  "inference_geo": "global",
+  "speed": "standard"
+ },
+ "reply": "<a2ui>\nsurface(\"brick-cat\")\nroot = brick_build_3d(null, [\n  {x: 1, y: 0, z: 1, w: 4, d: 5, h: 1, c: \"#f59e0b\"},\n  {x: 1, y: 1, z: 1, w: 4, d: 4, h: 1, c: \"#f59e0b\"},\n  {x: 1, y: 1, z: 5, w: 1, d: 1, h: 1, c: \"#f59e0b\"},\n  {x: 2, y: 1, z: 5, w: 2, d: 1, h: 1, c: \"#ffffff\"},\n  {x: 4, y: 1, z: 5, w: 1, d: 1, h: 1, c: \"#f59e0b\"},\n  {x: 5, y: 0, z: 1, w: 1, d: 1, h: 3, c: \"#f59e0b\"},\n  {x: 5, y: 3, z: 1, w: 1, d: 1, h: 1, c: \"#ffffff\"},\n  {x: 1, y: 2, z: 2, w: 4, d: 3, h: 2, c: \"#f59e0b\"},\n  {x: 1, y: 2, z: 5, w: 1, d: 1, h: 1, c: \"#f59e0b\"},\n  {x: 2, y: 2, z: 5, w: 2, d: 1, h: 1, c: \"#f472b6\"},\n  {x: 4, y: 2, z: 5, w: 1, d: 1, h: 1, c: \"#f59e0b\"},\n  {x: 1, y: 3, z: 5, w: 1, d: 1, h: 1, c: \"#22c55e\"},\n  {x: 2, y: 3, z: 5, w: 2, d: 1, h: 1, c: \"#f59e0b\"},\n  {x: 4, y: 3, z: 5, w: 1, d: 1, h: 1, c: \"#22c55e\"},\n  {x: 1, y: 4, z: 2, w: 1, d: 1, h: 1, c: \"#f59e0b\"},\n  {x: 4, y: 4, z: 2, w: 1, d: 1, h: 1, c: \"#f59e0b\"},\n  {x: 1, y: 4, z: 3, w: 1, d: 1, h: 1, c: \"#f472b6\"},\n  {x: 4, y: 4, z: 3, w: 1, d: 1, h: 1, c: \"#f472b6\"}\n], null, \"animate\", 1, 1, true, 420, null, true, true, true, null, null, null, null, \"studio\", null)\n</a2ui>"
+}

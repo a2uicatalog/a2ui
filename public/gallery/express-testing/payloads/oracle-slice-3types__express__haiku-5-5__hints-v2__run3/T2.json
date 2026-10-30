@@ -1,0 +1,102 @@
+{
+ "label": "oracle-slice-3types__express__haiku-5-5__hints-v2__run3",
+ "task": "T2",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "kpis",
+      "component": "metric_row",
+      "cols": 4,
+      "metrics": [
+       {
+        "value": "$128.4K",
+        "label": "Revenue",
+        "sub": "vs. last month",
+        "trend": "up"
+       },
+       {
+        "value": "3,942",
+        "label": "Active users",
+        "sub": "vs. last month",
+        "trend": "up"
+       },
+       {
+        "value": "2.7%",
+        "label": "Churn rate",
+        "sub": "vs. last month",
+        "trend": "down"
+       },
+       {
+        "value": "4.6",
+        "label": "Avg. rating",
+        "sub": "vs. last month",
+        "trend": "up"
+       }
+      ]
+     },
+     {
+      "id": "comparison",
+      "component": "chartjs_bar",
+      "labels": [
+       "Q1",
+       "Q2",
+       "Q3",
+       "Q4"
+      ],
+      "datasets": [
+       {
+        "label": "2025",
+        "data": [
+         82,
+         91,
+         88,
+         104
+        ]
+       },
+       {
+        "label": "2026",
+        "data": [
+         96,
+         103,
+         110,
+         121
+        ]
+       }
+      ]
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "align": "stretch",
+      "items": [
+       {
+        "blocks": [
+         "kpis"
+        ]
+       },
+       {
+        "blocks": [
+         "comparison"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

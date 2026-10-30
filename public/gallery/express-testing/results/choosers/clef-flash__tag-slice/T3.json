@@ -1,0 +1,178 @@
+{
+ "task": "T3",
+ "condition": "G",
+ "chooser": "clef-flash",
+ "slice_atoms_in_options": 259,
+ "picks": [
+  {
+   "slot": "Headline area at the top of the page that states the main value proposition in l #1",
+   "decomposer_line": "Headline area at the top of the page that states the main value proposition in large, bold text",
+   "atom": "gradient_hero",
+   "confidence": 0.7312,
+   "top3": [
+    [
+     "gradient_hero",
+     0.9276
+    ],
+    [
+     "article_hero",
+     0.0724
+    ]
+   ],
+   "finalists": [
+    "article_hero",
+    "gradient_hero"
+   ]
+  },
+  {
+   "slot": "Subheadline text directly beneath the headline that expands on the value proposi #2",
+   "decomposer_line": "Subheadline text directly beneath the headline that expands on the value proposition in smaller supporting copy",
+   "atom": "gradient_hero",
+   "confidence": 0.133,
+   "top3": [
+    [
+     "gradient_hero",
+     0.6823
+    ],
+    [
+     "subheading",
+     0.3177
+    ]
+   ],
+   "finalists": [
+    "subheading",
+    "gradient_hero"
+   ]
+  },
+  {
+   "slot": "First feature column showing a small icon or image with a short title and brief  #3",
+   "decomposer_line": "First feature column showing a small icon or image with a short title and brief description of one product benefit",
+   "atom": "feature_grid",
+   "confidence": 0.9176,
+   "top3": [
+    [
+     "feature_grid",
+     0.9789
+    ],
+    [
+     "product_thumbnail",
+     0.0211
+    ]
+   ],
+   "finalists": [
+    "product_thumbnail",
+    "feature_grid"
+   ]
+  },
+  {
+   "slot": "Second feature column showing a small icon or image with a short title and brief #4",
+   "decomposer_line": "Second feature column showing a small icon or image with a short title and brief description of another product benefit",
+   "atom": "feature_grid",
+   "confidence": 0.9333,
+   "top3": [
+    [
+     "feature_grid",
+     0.983
+    ],
+    [
+     "product_thumbnail",
+     0.017
+    ]
+   ],
+   "finalists": [
+    "product_thumbnail",
+    "feature_grid"
+   ]
+  },
+  {
+   "slot": "Third feature column showing a small icon or image with a short title and brief  #5",
+   "decomposer_line": "Third feature column showing a small icon or image with a short title and brief description of a third product benefit",
+   "atom": "feature_grid",
+   "confidence": 0.9417,
+   "top3": [
+    [
+     "feature_grid",
+     0.9852
+    ],
+    [
+     "product_thumbnail",
+     0.0148
+    ]
+   ],
+   "finalists": [
+    "product_thumbnail",
+    "feature_grid"
+   ]
+  },
+  {
+   "slot": "Testimonial block showing a customer quote, the customer's name, and their role  #6",
+   "decomposer_line": "Testimonial block showing a customer quote, the customer's name, and their role or company",
+   "atom": "testimonial_card",
+   "confidence": 0.9431,
+   "top3": [
+    [
+     "testimonial_card",
+     0.9856
+    ],
+    [
+     "marquee_strip",
+     0.0144
+    ]
+   ],
+   "finalists": [
+    "testimonial_card",
+    "marquee_strip"
+   ]
+  },
+  {
+   "slot": "Call-to-action button that prompts the visitor to take a primary action, such as #7",
+   "decomposer_line": "Call-to-action button that prompts the visitor to take a primary action, such as signing up or starting a trial, and responds to clicks",
+   "atom": "cta_button",
+   "confidence": 0.908,
+   "top3": [
+    [
+     "cta_button",
+     0.9765
+    ],
+    [
+     "newsletter_cta",
+     0.0235
+    ]
+   ],
+   "finalists": [
+    "newsletter_cta",
+    "cta_button"
+   ]
+  }
+ ],
+ "cost": {
+  "decomposer_input_tokens": 0,
+  "decomposer_output_tokens": 0,
+  "decomposer_thinking_tokens": 0,
+  "jev_input_tokens": 76243,
+  "jev_output_tokens": 0,
+  "jev_calls": 7
+ },
+ "error": null,
+ "atoms": [
+  "gradient_hero",
+  "gradient_hero",
+  "feature_grid",
+  "feature_grid",
+  "feature_grid",
+  "testimonial_card",
+  "cta_button"
+ ],
+ "score": {
+  "precision": 1.0,
+  "recall": 1.0,
+  "f1": 1.0,
+  "slot_hits": {
+   "hero": true,
+   "feature columns (x3)": true,
+   "testimonial": true,
+   "CTA": true
+  }
+ },
+ "secs": 23.0
+}

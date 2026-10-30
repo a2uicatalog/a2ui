@@ -1,0 +1,166 @@
+{
+ "label": "oracle-slice-6types__express__haiku-4-5__temp0__hints-v2__run3",
+ "task": "T2",
+ "format": "express",
+ "model_id": "claude-haiku-4-5-20251001",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/d-t2.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "kpi_1",
+      "component": "stat_card",
+      "value": "$2.4M",
+      "label": "Revenue",
+      "delta": "+12%",
+      "is_up": true,
+      "accent": "#4CAF50"
+     },
+     {
+      "id": "kpi_2",
+      "component": "stat_card",
+      "value": "8,432",
+      "label": "Active Users",
+      "delta": "+5%",
+      "is_up": true,
+      "accent": "#2196F3"
+     },
+     {
+      "id": "kpi_3",
+      "component": "stat_card",
+      "value": "94.2%",
+      "label": "Uptime",
+      "delta": "-0.3%",
+      "is_up": false,
+      "accent": "#FF9800"
+     },
+     {
+      "id": "kpi_4",
+      "component": "stat_card",
+      "value": "3.2s",
+      "label": "Avg Response",
+      "delta": "-8%",
+      "is_up": true,
+      "accent": "#4CAF50"
+     },
+     {
+      "id": "metrics_row",
+      "component": "metric_row",
+      "cols": 4,
+      "metrics": [
+       {
+        "value": "2.4M",
+        "label": "Revenue",
+        "prefix": "$",
+        "trend": "up",
+        "accent": "#4CAF50"
+       },
+       {
+        "value": "8,432",
+        "label": "Active Users",
+        "trend": "up",
+        "accent": "#2196F3"
+       },
+       {
+        "value": "94.2%",
+        "label": "Uptime",
+        "trend": "down",
+        "accent": "#FF9800"
+       },
+       {
+        "value": "3.2s",
+        "label": "Avg Response",
+        "trend": "up",
+        "accent": "#4CAF50"
+       }
+      ]
+     },
+     {
+      "id": "comparison_chart",
+      "component": "chartjs_bar",
+      "labels": [
+       "Jan",
+       "Feb",
+       "Mar",
+       "Apr",
+       "May",
+       "Jun"
+      ],
+      "datasets": [
+       {
+        "label": "Target",
+        "data": [
+         85,
+         87,
+         89,
+         90,
+         92,
+         94
+        ]
+       },
+       {
+        "label": "Actual",
+        "data": [
+         78,
+         82,
+         88,
+         91,
+         93,
+         95
+        ]
+       }
+      ]
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "2rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "_inline_1"
+        ]
+       },
+       {
+        "blocks": [
+         "metrics_row"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_2"
+        ]
+       },
+       {
+        "blocks": [
+         "comparison_chart"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "_inline_1",
+      "component": "heading",
+      "text": "Metrics Overview"
+     },
+     {
+      "id": "_inline_2",
+      "component": "heading",
+      "text": "Performance Comparison"
+     }
+    ]
+   }
+  }
+ ]
+}

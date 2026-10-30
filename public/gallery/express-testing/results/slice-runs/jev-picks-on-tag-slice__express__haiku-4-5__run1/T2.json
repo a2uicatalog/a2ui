@@ -1,0 +1,38 @@
+{
+ "task": "T2",
+ "condition": "JG",
+ "label": "jev-picks-on-tag-slice__express__haiku-4-5__run1",
+ "agent_type": "jev-narrowed",
+ "catalogue": "JG-T2.json",
+ "atoms_in_catalogue": 7,
+ "prompt_chars": 6227,
+ "slot_recall": [
+  2,
+  3
+ ],
+ "secs": 2.8,
+ "usage": {
+  "input_tokens": 1749,
+  "output_tokens": 263
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns",
+  "metric_row",
+  "metric_row",
+  "metric_row",
+  "metric_row"
+ ],
+ "score": {
+  "precision": 0.8,
+  "recall": 0.333,
+  "f1": 0.471,
+  "slot_hits": {
+   "KPI tile (x4)": true,
+   "trend (required only if metric_row was chosen; stat_card's own delta already satisfies it)": false,
+   "comparison chart": false
+  }
+ },
+ "reply": "<a2ui>\nroot = columns(4, \"1.5rem\", \"top\", [\n  {blocks: [\n    metric_row(1, null, [\n      {value: \"24,580\", label: \"Total Revenue\", prefix: \"$\", trend: \"up\", accent: \"#10b981\"}\n    ])\n  ]},\n  {blocks: [\n    metric_row(1, null, [\n      {value: \"1,245\", label: \"New Customers\", trend: \"up\", accent: \"#3b82f6\"}\n    ])\n  ]},\n  {blocks: [\n    metric_row(1, null, [\n      {value: \"87.3\", label: \"Conversion Rate\", suffix: \"%\", trend: \"down\", accent: \"#f59e0b\"}\n    ])\n  ]},\n  {blocks: [\n    metric_row(1, null, [\n      {value: \"4.2\", label: \"Avg Order Value\", prefix: \"$\", trend: \"up\", accent: \"#8b5cf6\"}\n    ])\n  ]}\n])\n</a2ui>"
+}

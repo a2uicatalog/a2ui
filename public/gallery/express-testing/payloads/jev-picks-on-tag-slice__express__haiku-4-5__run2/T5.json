@@ -1,0 +1,86 @@
+{
+ "label": "jev-picks-on-tag-slice__express__haiku-4-5__run2",
+ "task": "T5",
+ "format": "express",
+ "model_id": null,
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/jg-t5.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "pricing_tier_group",
+      "tiers": [
+       "root_tiers_0",
+       "root_tiers_1",
+       "root_tiers_2"
+      ]
+     },
+     {
+      "id": "root_tiers_0",
+      "component": "pricing_tier_card",
+      "plan_name": "Starter",
+      "price": "29",
+      "currency": "$",
+      "frequency": "per month",
+      "features": [
+       "Up to 10 projects",
+       "Basic analytics",
+       "Email support",
+       "1 GB storage"
+      ],
+      "call_to_action_label": "Get Started",
+      "call_to_action_url": "https://example.com/starter",
+      "is_highlighted": false
+     },
+     {
+      "id": "root_tiers_1",
+      "component": "pricing_tier_card",
+      "plan_name": "Professional",
+      "price": "79",
+      "currency": "$",
+      "frequency": "per month",
+      "features": [
+       "Unlimited projects",
+       "Advanced analytics",
+       "Priority support",
+       "100 GB storage",
+       "Team collaboration"
+      ],
+      "call_to_action_label": "Get Started",
+      "call_to_action_url": "https://example.com/professional",
+      "is_highlighted": true
+     },
+     {
+      "id": "root_tiers_2",
+      "component": "pricing_tier_card",
+      "plan_name": "Enterprise",
+      "price": "199",
+      "currency": "$",
+      "frequency": "per month",
+      "features": [
+       "Custom solutions",
+       "Dedicated analytics",
+       "24/7 phone support",
+       "Unlimited storage",
+       "Advanced security",
+       "Custom integrations"
+      ],
+      "call_to_action_label": "Contact Sales",
+      "call_to_action_url": "https://example.com/enterprise",
+      "is_highlighted": false
+     }
+    ]
+   }
+  }
+ ]
+}

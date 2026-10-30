@@ -1,0 +1,47 @@
+{
+ "task": "T5",
+ "condition": "CX_gemini-3.5-flash-l",
+ "temperature_applied": false,
+ "format": "elemental",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash-lite",
+ "hints": false,
+ "label": "oracle-slice-3types__elemental__gemini-3.5-flash-lite__request-only-timing__run1",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "C-marketing-commerce.json",
+ "atoms_in_catalogue": 23,
+ "prompt_chars": 12612,
+ "slot_recall": [
+  1,
+  1
+ ],
+ "secs": 1.6,
+ "usage": {
+  "input_tokens": 3630,
+  "output_tokens": 443
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "gradient_hero",
+  "pricing_tier_group"
+ ],
+ "score": {
+  "per_approach": {
+   "tier_cards": {
+    "precision": 0.5,
+    "recall": 1.0,
+    "f1": 0.667
+   },
+   "comparison_table": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": null
+   }
+  },
+  "best_approach": "tier_cards",
+  "f1": 0.667
+ },
+ "reply": "<a2ui>\n  <body>\n    <script type=\"application/json\">\n      {\n        \"tiers\": [\n          {\n            \"name\": \"Starter\",\n            \"price\": \"$9\",\n            \"period\": \"/month\",\n            \"description\": \"Essential features for individuals and side projects.\",\n            \"features\": [\"1 Workspace\", \"Up to 5 team members\", \"Basic analytics\", \"Community support\"],\n            \"cta_label\": \"Get Started\",\n            \"cta_url\": \"#starter\",\n            \"recommended\": false\n          },\n          {\n            \"name\": \"Pro\",\n            \"price\": \"$29\",\n            \"period\": \"/month\",\n            \"description\": \"Advanced tools and unlimited resources for growing teams.\",\n            \"features\": [\"Unlimited Workspaces\", \"Up to 25 team members\", \"Advanced analytics\", \"Priority 24/7 support\", \"Custom integrations\"],\n            \"cta_label\": \"Upgrade to Pro\",\n            \"cta_url\": \"#pro\",\n            \"recommended\": true\n          },\n          {\n            \"name\": \"Enterprise\",\n            \"price\": \"$99\",\n            \"period\": \"/month\",\n            \"description\": \"Dedicated infrastructure and security for large-scale organizations.\",\n            \"features\": [\"Dedicated Server\", \"Unlimited team members\", \"Real-time auditing\", \"Dedicated account manager\", \"SLA guarantee\"],\n            \"cta_label\": \"Contact Sales\",\n            \"cta_url\": \"#enterprise\",\n            \"recommended\": false\n          }\n        ]\n      }\n    </script>\n    <ui-gradient_hero\n      id=\"root\"\n      title=\"Simple, transparent pricing\"\n      subtitle=\"Choose the plan that fits your needs. Upgrade or downgrade at any time.\"\n      badge=\"Pricing Plans\"\n      align=\"center\"\n    />\n    <ui-pricing_tier_group\n      id=\"tier-group\"\n      tiers=\"{$/tiers}\"\n    />\n  </body>\n</a2ui>"
+}

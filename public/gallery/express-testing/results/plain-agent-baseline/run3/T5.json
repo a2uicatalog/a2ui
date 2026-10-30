@@ -1,0 +1,31 @@
+{
+ "task": "T5",
+ "label": "haiku-live3-r3",
+ "secs": 3.6,
+ "usage": {
+  "input_tokens": 84996,
+  "output_tokens": 377
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "pricing_tier_group"
+ ],
+ "score": {
+  "per_approach": {
+   "tier_cards": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+   },
+   "comparison_table": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": null
+   }
+  },
+  "best_approach": "tier_cards",
+  "f1": 1.0
+ },
+ "reply": "<a2ui>\nroot = pricing_tier_group(\n  tiers=[\n    {\n      plan_name: \"Starter\",\n      price: \"29\",\n      currency: \"$\",\n      frequency: \"/month\",\n      features: [\n        \"Up to 10 projects\",\n        \"Basic analytics\",\n        \"Community support\",\n        \"1 GB storage\"\n      ],\n      call_to_action_label: \"Get Started\",\n      call_to_action_url: \"#\",\n      is_highlighted: false\n    },\n    {\n      plan_name: \"Professional\",\n      price: \"79\",\n      currency: \"$\",\n      frequency: \"/month\",\n      features: [\n        \"Unlimited projects\",\n        \"Advanced analytics\",\n        \"Priority email support\",\n        \"100 GB storage\",\n        \"Custom integrations\",\n        \"Team collaboration\"\n      ],\n      call_to_action_label: \"Start Free Trial\",\n      call_to_action_url: \"#\",\n      is_highlighted: true\n    },\n    {\n      plan_name: \"Enterprise\",\n      price: \"Custom\",\n      currency: \"$\",\n      frequency: \"contact sales\",\n      features: [\n        \"Everything in Professional\",\n        \"Dedicated support\",\n        \"Unlimited storage\",\n        \"SLA guarantee\",\n        \"On-premise option\",\n        \"Custom training\"\n      ],\n      call_to_action_label: \"Contact Sales\",\n      call_to_action_url: \"#\",\n      is_highlighted: false\n    }\n  ]\n)\n</a2ui>"
+}

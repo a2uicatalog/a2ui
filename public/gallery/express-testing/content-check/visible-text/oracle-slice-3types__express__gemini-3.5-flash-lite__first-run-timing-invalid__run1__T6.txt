@@ -1,0 +1,68 @@
+📚 Vocabulary Flashcards
+ Review key terms and flip cards to test your retention
+ Interactive Study 
+ Review Session — 10 Terms 0 / 10 XP 
+ Study Tip
+ Hover or click each card to flip it and test your memory before checking the definition.
+ 1 / 10 
+ TERM
+ Algorithmic Complexity
+ — space / click to flip —
+ DEFINITION
+ A metric that measures the amount of resources (such as time and memory) required to execute an algorithm as a function of the input size.
+ — space / click to flip —
+ TERM
+ Closure
+ — space / click to flip —
+ DEFINITION
+ A function bundled together with references to its surrounding state, allowing it to access variables from an outer function even after that outer function has finished executing.
+ — space / click to flip —
+ TERM
+ Idempotence
+ — space / click to flip —
+ DEFINITION
+ A property of certain operations in mathematics and computer science whereby they can be applied multiple times without changing the result beyond the initial application.
+ — space / click to flip —
+ TERM
+ Polymorphism
+ — space / click to flip —
+ DEFINITION
+ The provision of a single interface to entities of different types, or the use of a single symbol to represent multiple different types.
+ — space / click to flip —
+ TERM
+ Recursion
+ — space / click to flip —
+ DEFINITION
+ A method of solving a problem where the solution depends on solutions to smaller instances of the same problem.
+ — space / click to flip —
+ TERM
+ Concurrency
+ — space / click to flip —
+ DEFINITION
+ The ability of different parts or blocks of a program to be executed out-of-order or in partial order without affecting the final outcome.
+ — space / click to flip —
+ TERM
+ Memoization
+ — space / click to flip —
+ DEFINITION
+ An optimization technique used primarily to speed up computer programs by storing the results of expensive function calls and returning the cached result when the same inputs occur again.
+ — space / click to flip —
+ TERM
+ Mutation
+ — space / click to flip —
+ DEFINITION
+ The act of changing an object's state or value after it has been created, often contrasted with immutable data structures.
+ — space / click to flip —
+ TERM
+ Serialisation
+ — space / click to flip —
+ DEFINITION
+ The process of translating a data structure or object state into a format that can be stored or transmitted and reconstructed later.
+ — space / click to flip —
+ TERM
+ Throttling
+ — space / click to flip —
+ DEFINITION
+ A technique used to limit the rate at which a function can fire, ensuring it only executes once over a specified time interval.
+ — space / click to flip —
+ ← Prev Flip Next →

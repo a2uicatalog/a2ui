@@ -1,0 +1,40 @@
+{
+ "task": "T4",
+ "condition": "CTN_sonnet-5-5",
+ "temperature_applied": false,
+ "format": "json",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-sonnet-5-5",
+ "hints": false,
+ "label": "oracle-slice-3types__json__sonnet-5-5__temp0__run2",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 31546,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 16.2,
+ "usage": {
+  "input_tokens": 12365,
+  "output_tokens": 1973
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns"
+ ],
+ "score": {
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "list": false,
+   "status indicator": false,
+   "filter control": false
+  }
+ },
+ "reply": "I've composed the list as one surface. The catalog has no container component, so a single-column `columns` block holds the heading, the status filter and the eight-item list.\n\n<a2ui-json>\n[\n  {\n    \"version\": \"v0.9.1\",\n    \"createSurface\": {\n      \"surfaceId\": \"status_list\",\n      \"catalogId\": \"https://a2uicatalog.ai/catalog/c-data-display.json\"\n    }\n  },\n  {\n    \"version\": \"v0.9.1\",\n    \"updateComponents\": {\n      \"surfaceId\": \"status_list\",\n      \"components\": [\n        {\n          \"id\": \"root\",\n          \"component\": \"columns\",\n          \"cols\": 1,\n          \"gap\": \"1rem\",\n          \"align\": \"top\",\n          \"items\": [\n            {\n              \"blocks\": [\n                {\n                  \"component\": \"heading\",\n                  \"id\": \"title\",\n                  \"text\": \"Work Items\"\n                },\n                {\n                  \"component\": \"segmented_control\",\n                  \"id\": \"status_filter\",\n                  \"name\": \"status_filter\",\n                  \"selected_value\": \"all\",\n                  \"options\": [\n                    { \"label\": \"All\", \"value\": \"all\" },\n                    { \"label\": \"Active\", \"value\": \"active\" },\n                    { \"label\": \"Pending\", \"value\": \"pending\" },\n                    { \"label\": \"Blocked\", \"value\": \"blocked\" },\n                    { \"label\": \"Done\", \"value\": \"done\" }\n                  ]\n                },\n                {\n                  \"component\": \"entity_list\",\n                  \"id\": \"items_list\",\n                  \"items\": [\n                    { \"name\": \"Migrate billing database\", \"subtitle\": \"Cutover scheduled for Friday night\", \"icon\": \"\ud83d\uddc4\ufe0f\", \"status\": \"Active\" },\n                    { \"name\": \"Redesign onboarding flow\", \"subtitle\": \"Waiting on final copy from marketing\", \"icon\": \"\ud83c\udfa8\", \"status\": \"Pending\" },\n                    { \"name\": \"Upgrade payment SDK\", \"subtitle\": \"Blocked by vendor certification review\", \"icon\": \"\ud83d\udcb3\", \"status\": \"Blocked\" },\n                    { \"name\": \"Publish API v2 docs\", \"subtitle\": \"Released and announced to partners\", \"icon\": \"\ud83d\udcd8\", \"status\": \"Done\" },\n                    { \"name\": \"Fix mobile login timeout\", \"subtitle\": \"Patch in QA on iOS and Android\", \"icon\": \"\ud83d\udcf1\", \"status\": \"Active\" },\n                    { \"name\": \"Security audit follow-ups\", \"subtitle\": \"Three findings awaiting owner assignment\", \"icon\": \"\ud83d\udd12\", \"status\": \"Pending\" },\n                    { \"name\": \"Provision EU data region\", \"subtitle\": \"Blocked on legal approval of data terms\", \"icon\": \"\ud83c\udf0d\", \"status\": \"Blocked\" },\n                    { \"name\": \"Retire legacy cron jobs\", \"subtitle\": \"All jobs migrated and decommissioned\", \"icon\": \"\u23f1\ufe0f\", \"status\": \"Done\" }\n                  ]\n                }\n              ]\n            }\n          ]\n        }\n      ]\n    }\n  }\n]\n</a2ui-json>\n\nThe segmented control (All, Active, Pending, Blocked, Done) is the status filter and starts on \"All\". The catalog has no data-binding or action wiring between components, so the client has to apply the selection to the list."
+}

@@ -1,0 +1,45 @@
+{
+ "task": "T4",
+ "condition": "C_gemini-3.5-flash",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash",
+ "hints": false,
+ "label": "oracle-slice-3types__express__gemini-3.5-flash__thinking-on_first-run-timing-invalid__run1",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 16421,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 16.9,
+ "usage": {
+  "input_tokens": 4600,
+  "output_tokens": 3950
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "heading",
+  "segmented_control",
+  "stat_card",
+  "heading",
+  "entity_list",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.333,
+  "recall": 0.667,
+  "f1": 0.444,
+  "slot_hits": {
+   "list": true,
+   "status indicator": false,
+   "filter control": true
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"task-tracker-surface\")\n\nleft_title = heading(\"Filter & Summary\")\n\nfilter_control = segmented_control([\n    {\"label\": \"All Tasks\", \"value\": \"all\"},\n    {\"label\": \"Pending\", \"value\": \"pending\"},\n    {\"label\": \"In Progress\", \"value\": \"inprogress\"},\n    {\"label\": \"Completed\", \"value\": \"completed\"}\n], \"all\", \"filter_status\")\n\nsummary_card = stat_card(\"8 Active\", \"Total Tickets Queue\", \"Live Sync\", true, \"#0052CC\")\n\nright_title = heading(\"Service Request Queue\")\n\ntasks = entity_list([\n    {\"name\": \"Server Database Migration\", \"subtitle\": \"Migrating legacy Postgres instance to AWS RDS.\", \"status\": \"In Progress\", \"meta\": \"High Priority\", \"icon\": \"\u2699\ufe0f\"},\n    {\"name\": \"User Access Provisioning\", \"subtitle\": \"Grant access to GitHub & Slack for 3 new hires.\", \"status\": \"Completed\", \"meta\": \"Low Priority\", \"icon\": \"\ud83d\udc64\"},\n    {\"name\": \"SSL Certificate Renewal\", \"subtitle\": \"Renew expiring SSL certificates for production domains.\", \"status\": \"Urgent\", \"meta\": \"Due Today\", \"icon\": \"\ud83d\udd12\"},\n    {\"name\": \"API Gateway Rate Limiting\", \"subtitle\": \"Implement rate limiting policies to prevent abuse.\", \"status\": \"Pending\", \"meta\": \"Medium Priority\", \"icon\": \"\ud83c\udf10\"},\n    {\"name\": \"Weekly System Backup\", \"subtitle\": \"Verify integrity of automated weekly snapshots.\", \"status\": \"Completed\", \"meta\": \"Routine\", \"icon\": \"\ud83d\udcbe\"},\n    {\"name\": \"Billing Dashboard Bug\", \"subtitle\": \"Investigate negative total calculations on invoice export.\", \"status\": \"In Progress\", \"meta\": \"Medium Priority\", \"icon\": \"\ud83d\udc1b\"},\n    {\"name\": \"Security Compliance Audit\", \"subtitle\": \"Prepare evidence checklist for upcoming SOC2 audit.\", \"status\": \"Pending\", \"meta\": \"High Priority\", \"icon\": \"\ud83d\udcdd\"},\n    {\"name\": \"DNS Record Cleanup\", \"subtitle\": \"Remove orphaned TXT and CNAME entries.\", \"status\": \"Completed\", \"meta\": \"Routine\", \"icon\": \"\ud83c\udff7\ufe0f\"}\n])\n\nroot = columns(\n    2,\n    \"2rem\",\n    \"top\",\n    [\n        {\"blocks\": [left_title, filter_control, summary_card]},\n        {\"blocks\": [right_title, tasks]}\n    ]\n)\n</a2ui>"
+}

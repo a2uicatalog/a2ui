@@ -1,0 +1,59 @@
+{
+ "task": "T5",
+ "condition": "E",
+ "label": "wrong-domain-slice__express__haiku-4-5__run1",
+ "agent_type": "Learning",
+ "catalogue": "B-learning.json",
+ "atoms_in_catalogue": 184,
+ "prompt_chars": 88519,
+ "slot_recall": [
+  0,
+  1
+ ],
+ "secs": 5.6,
+ "usage": {
+  "input_tokens": 24756,
+  "output_tokens": 585
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns",
+  "two_tone_card",
+  "body",
+  "divider",
+  "bullet_list",
+  "spacer",
+  "ripple_button",
+  "two_tone_card",
+  "body",
+  "highlight_box",
+  "divider",
+  "bullet_list",
+  "spacer",
+  "ripple_button",
+  "two_tone_card",
+  "body",
+  "divider",
+  "bullet_list",
+  "spacer",
+  "ripple_button"
+ ],
+ "score": {
+  "per_approach": {
+   "tier_cards": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": null
+   },
+   "comparison_table": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": null
+   }
+  },
+  "best_approach": "tier_cards",
+  "f1": null
+ },
+ "reply": "<a2ui>\nroot = columns(\n  cols=3,\n  gap=\"2rem\",\n  items=[\n    {blocks: [\n      two_tone_card(\n        title=\"Starter\",\n        subtitle=\"Perfect for beginners\",\n        icon=\"\ud83d\ude80\",\n        accent=\"#3b82f6\",\n        blocks=[\n          body(\"$9/month\"),\n          divider(),\n          bullet_list(items=[\n            {text: \"Up to 5 projects\"},\n            {text: \"Basic analytics\"},\n            {text: \"Community support\"},\n            {text: \"1GB storage\"}\n          ]),\n          spacer(height=\"1.5rem\"),\n          ripple_button(label=\"Get Started\", url=\"#\", accent=\"#3b82f6\")\n        ]\n      )\n    ]},\n    {blocks: [\n      two_tone_card(\n        title=\"Professional\",\n        subtitle=\"Recommended for teams\",\n        icon=\"\u2b50\",\n        accent=\"#8b5cf6\",\n        blocks=[\n          body(\"$29/month\"),\n          highlight_box(\n            text=\"Most Popular\",\n            accent=\"#8b5cf6\",\n            style=\"solid\"\n          ),\n          divider(),\n          bullet_list(items=[\n            {text: \"Unlimited projects\"},\n            {text: \"Advanced analytics\"},\n            {text: \"Priority support\"},\n            {text: \"100GB storage\"},\n            {text: \"Team collaboration\"}\n          ]),\n          spacer(height=\"1.5rem\"),\n          ripple_button(label=\"Get Started\", url=\"#\", accent=\"#8b5cf6\", full_width=true)\n        ]\n      )\n    ]},\n    {blocks: [\n      two_tone_card(\n        title=\"Enterprise\",\n        subtitle=\"For large organizations\",\n        icon=\"\ud83d\udc51\",\n        accent=\"#ec4899\",\n        blocks=[\n          body(\"Custom pricing\"),\n          divider(),\n          bullet_list(items=[\n            {text: \"Everything in Pro\"},\n            {text: \"Custom integrations\"},\n            {text: \"Dedicated support\"},\n            {text: \"Unlimited storage\"},\n            {text: \"Advanced security\"},\n            {text: \"SLA guarantee\"}\n          ]),\n          spacer(height=\"1.5rem\"),\n          ripple_button(label=\"Contact Sales\", url=\"#\", accent=\"#ec4899\")\n        ]\n      )\n    ]}\n  ]\n)\n</a2ui>"
+}

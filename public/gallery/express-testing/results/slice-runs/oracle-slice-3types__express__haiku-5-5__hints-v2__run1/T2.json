@@ -1,0 +1,43 @@
+{
+ "task": "T2",
+ "condition": "C_haiku-5-5H2",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": true,
+ "label": "oracle-slice-3types__express__haiku-5-5__hints-v2__run1",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 16421,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 5.2,
+ "usage": {
+  "input_tokens": 6379,
+  "output_tokens": 1178
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "heading",
+  "metric_row",
+  "chartjs_bar",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.5,
+  "recall": 0.667,
+  "f1": 0.571,
+  "slot_hits": {
+   "KPI tile (x4)": true,
+   "trend (required only if metric_row was chosen; stat_card's own delta already satisfies it)": false,
+   "comparison chart": true
+  }
+ },
+ "reply": "<a2ui>\ntitle = heading(\"Metrics overview\")\nkpis = metric_row(4, \"\", [{value: \"$12,345\", label: \"Revenue\", trend: \"up\"}, {value: \"1,284\", label: \"Orders\", trend: \"up\"}, {value: \"3.2%\", label: \"Churn\", trend: \"down\"}, {value: \"4.8/5\", label: \"Satisfaction\", trend: \"up\"}])\ncomparison = chartjs_bar([\"Jan\", \"Feb\", \"Mar\", \"Apr\"], [{label: \"This year\", data: [8200, 9100, 10400, 12345]}, {label: \"Last year\", data: [7400, 7900, 8600, 9300]}])\nroot = columns(2, \"1.5rem\", \"top\", [{blocks: [title, kpis]}, {blocks: [comparison]}])\n</a2ui>"
+}

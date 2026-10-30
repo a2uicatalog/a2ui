@@ -1,0 +1,106 @@
+{
+ "label": "oracle-slice-3types__json__gemini-3.5-flash__thinking-on_first-run-timing-invalid__run1",
+ "task": "T2",
+ "format": "json",
+ "model_id": "gemini-3.5-flash",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "metrics-overview",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "metrics-overview",
+    "components": [
+     {
+      "component": "columns",
+      "id": "root",
+      "cols": 2,
+      "gap": "2rem",
+      "items": [
+       {
+        "blocks": [
+         {
+          "component": "heading",
+          "id": "kpis-title",
+          "text": "Key Performance Indicators"
+         },
+         {
+          "component": "metric_row",
+          "id": "kpi-metrics",
+          "cols": 2,
+          "metrics": [
+           {
+            "value": "$128.5K",
+            "label": "Weekly Sales",
+            "trend": "up"
+           },
+           {
+            "value": "12,450",
+            "label": "New Signups",
+            "trend": "up"
+           },
+           {
+            "value": "1.2s",
+            "label": "Avg Latency",
+            "trend": "down"
+           },
+           {
+            "value": "98.4%",
+            "label": "CSAT Score",
+            "trend": "up"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "blocks": [
+         {
+          "component": "heading",
+          "id": "chart-title",
+          "text": "Quarterly Growth Comparison"
+         },
+         {
+          "component": "chartjs_bar",
+          "id": "comparison-chart",
+          "labels": [
+           "Q1",
+           "Q2",
+           "Q3",
+           "Q4"
+          ],
+          "datasets": [
+           {
+            "label": "Current Year ($K)",
+            "data": [
+             45,
+             59,
+             80,
+             81
+            ]
+           },
+           {
+            "label": "Previous Year ($K)",
+            "data": [
+             38,
+             48,
+             65,
+             70
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

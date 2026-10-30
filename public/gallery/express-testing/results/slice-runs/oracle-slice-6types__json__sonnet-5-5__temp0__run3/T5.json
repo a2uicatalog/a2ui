@@ -1,0 +1,46 @@
+{
+ "task": "T5",
+ "condition": "DTN_sonnet-5-5",
+ "temperature_applied": false,
+ "format": "json",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-sonnet-5-5",
+ "hints": false,
+ "label": "oracle-slice-6types__json__sonnet-5-5__temp0__run3",
+ "agent_type": "T5",
+ "catalogue": "D-t5.json",
+ "atoms_in_catalogue": 5,
+ "prompt_chars": 10857,
+ "slot_recall": [
+  1,
+  1
+ ],
+ "secs": 7.9,
+ "usage": {
+  "input_tokens": 4227,
+  "output_tokens": 1071
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "pricing_tier_group"
+ ],
+ "score": {
+  "per_approach": {
+   "tier_cards": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+   },
+   "comparison_table": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": null
+   }
+  },
+  "best_approach": "tier_cards",
+  "f1": 1.0
+ },
+ "reply": "<a2ui-json>\n[\n  {\n    \"version\": \"v0.9.1\",\n    \"createSurface\": {\n      \"surfaceId\": \"pricing\",\n      \"catalogId\": \"https://a2uicatalog.ai/catalog/d-t5.json\"\n    }\n  },\n  {\n    \"version\": \"v0.9.1\",\n    \"updateComponents\": {\n      \"surfaceId\": \"pricing\",\n      \"components\": [\n        {\n          \"id\": \"root\",\n          \"component\": \"pricing_tier_group\",\n          \"tiers\": [\n            {\n              \"name\": \"Starter\",\n              \"price\": \"$9\",\n              \"period\": \"per month\",\n              \"description\": \"For individuals getting started.\",\n              \"features\": [\n                \"1 user\",\n                \"5 projects\",\n                \"2 GB storage\",\n                \"Community support\"\n              ],\n              \"recommended\": false,\n              \"cta\": \"Choose Starter\"\n            },\n            {\n              \"name\": \"Pro\",\n              \"price\": \"$29\",\n              \"period\": \"per month\",\n              \"description\": \"For growing teams that need more power.\",\n              \"features\": [\n                \"Up to 10 users\",\n                \"Unlimited projects\",\n                \"100 GB storage\",\n                \"Priority email support\",\n                \"Advanced analytics\"\n              ],\n              \"recommended\": true,\n              \"badge\": \"Recommended\",\n              \"cta\": \"Choose Pro\"\n            },\n            {\n              \"name\": \"Enterprise\",\n              \"price\": \"$99\",\n              \"period\": \"per month\",\n              \"description\": \"For organizations with advanced needs.\",\n              \"features\": [\n                \"Unlimited users\",\n                \"Unlimited projects\",\n                \"1 TB storage\",\n                \"24/7 dedicated support\",\n                \"Advanced analytics\",\n                \"SSO and audit logs\"\n              ],\n              \"recommended\": false,\n              \"cta\": \"Contact Sales\"\n            }\n          ]\n        }\n      ]\n    }\n  }\n]\n</a2ui-json>\n\nThis shows three subscription tiers side by side: Starter, Pro and Enterprise. Each tier has its own feature list, and Pro is marked as recommended. The catalog doesn't define the fields inside a tier, so the field names (`name`, `price`, `features`, `recommended`, `cta`) are my best guess. The renderer may not recognize all of them."
+}

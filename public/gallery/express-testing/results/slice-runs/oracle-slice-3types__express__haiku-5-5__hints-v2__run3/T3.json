@@ -1,0 +1,45 @@
+{
+ "task": "T3",
+ "condition": "C_haiku-5-5H2",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": true,
+ "label": "oracle-slice-3types__express__haiku-5-5__hints-v2__run3",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "C-marketing-commerce.json",
+ "atoms_in_catalogue": 23,
+ "prompt_chars": 12467,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 8.7,
+ "usage": {
+  "input_tokens": 4812,
+  "output_tokens": 1829
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "gradient_hero",
+  "feature_grid",
+  "blockquote_with_avatar",
+  "cta_button",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.8,
+  "recall": 1.0,
+  "f1": 0.889,
+  "slot_hits": {
+   "hero": true,
+   "feature columns (x3)": true,
+   "testimonial": true,
+   "CTA": true
+  }
+ },
+ "reply": "<a2ui>\nhero = gradient_hero(title=\"Ship faster with Acme Flow\", subtitle=\"Automate handoffs between design, engineering, and release in one place, without the busywork.\", badge=\"New in 2.0\", accent=\"#4f46e5\", accent2=\"#8b5cf6\", align=\"center\", cta_label=\"Start free trial\", cta_url=\"https://example.com/signup\")\n\nfeatures = feature_grid(heading=\"Everything your team needs\", description=\"Three core capabilities that keep projects moving.\", columns=3, features=[{icon: \"\u26a1\", title: \"Instant setup\", description: \"Connect your repos and tools in minutes with prebuilt integrations.\", color: \"#4f46e5\"}, {icon: \"\ud83d\udd01\", title: \"Automated handoffs\", description: \"Work moves between teams automatically when each step is complete.\", color: \"#8b5cf6\"}, {icon: \"\ud83d\udcca\", title: \"Clear visibility\", description: \"Live dashboards show progress, blockers, and release readiness.\", color: \"#0ea5e9\"}])\n\nquote = blockquote_with_avatar(quote=\"Acme Flow cut our release cycle in half. Our team spends time building, not chasing status updates.\", author_name=\"Priya Raman\", author_title=\"VP Engineering, Northwind\", avatar_url=\"https://example.com/avatars/priya.jpg\")\n\ncta = cta_button(url=\"https://example.com/signup\", label=\"Get started today\", color=\"#4f46e5\", same_tab=false)\n\nroot = columns(cols=2, gap=\"2rem\", align=\"top\", items=[{blocks: [hero, features]}, {blocks: [quote, cta]}])\n</a2ui>"
+}

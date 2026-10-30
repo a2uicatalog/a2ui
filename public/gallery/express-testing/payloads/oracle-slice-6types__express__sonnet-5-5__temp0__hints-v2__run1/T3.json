@@ -1,0 +1,96 @@
+{
+ "label": "oracle-slice-6types__express__sonnet-5-5__temp0__hints-v2__run1",
+ "task": "T3",
+ "format": "express",
+ "model_id": "claude-sonnet-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "product-landing",
+    "catalog_id": "https://a2uicatalog.ai/catalog/d-t3.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "product-landing",
+    "components": [
+     {
+      "id": "hero",
+      "component": "gradient_hero",
+      "title": "Ship your best work, faster",
+      "subtitle": "Meet Launchpad: the all-in-one workspace that turns ideas into shipped products without the busywork.",
+      "badge": "New: Launchpad 2.0",
+      "accent": "#4f46e5",
+      "accent2": "#8b5cf6",
+      "align": "center",
+      "cta_label": "Get started free",
+      "cta_url": "https://example.com/signup"
+     },
+     {
+      "id": "features",
+      "component": "feature_grid",
+      "heading": "Everything you need",
+      "description": "Three reasons teams choose Launchpad.",
+      "columns": 3,
+      "features": [
+       {
+        "icon": "\u26a1",
+        "title": "Lightning fast",
+        "description": "Automate repetitive tasks and move from idea to launch in record time.",
+        "color": "#f59e0b"
+       },
+       {
+        "icon": "\ud83e\udd1d",
+        "title": "Built for teams",
+        "description": "Share work, leave feedback and stay aligned in one shared space.",
+        "color": "#10b981"
+       },
+       {
+        "icon": "\ud83d\udd12",
+        "title": "Secure by default",
+        "description": "Enterprise-grade encryption and access controls come standard.",
+        "color": "#4f46e5"
+       }
+      ]
+     },
+     {
+      "id": "quote",
+      "component": "testimonial_card",
+      "text": "Launchpad cut our release cycle in half. We can't imagine working without it.",
+      "author_name": "Dana Whitaker",
+      "author_title": "VP of Product, Brightside",
+      "author_avatar_url": "https://example.com/avatars/dana.jpg",
+      "rating": 5
+     },
+     {
+      "id": "cta",
+      "component": "cta_button",
+      "url": "https://example.com/signup",
+      "label": "Start your free trial",
+      "color": "#4f46e5",
+      "same_tab": false
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "2rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "hero",
+         "features",
+         "quote",
+         "cta"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

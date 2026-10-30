@@ -1,0 +1,45 @@
+{
+ "task": "T3",
+ "condition": "C_opus-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-opus-5-5",
+ "hints": false,
+ "label": "oracle-slice-3types__express__opus-5-5__run3",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "C-marketing-commerce.json",
+ "atoms_in_catalogue": 23,
+ "prompt_chars": 12467,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 18.7,
+ "usage": {
+  "input_tokens": 4493,
+  "output_tokens": 1471
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "gradient_hero",
+  "feature_grid",
+  "testimonial_card",
+  "cta_button",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.8,
+  "recall": 1.0,
+  "f1": 0.889,
+  "slot_hits": {
+   "hero": true,
+   "feature columns (x3)": true,
+   "testimonial": true,
+   "CTA": true
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"product-landing\")\n\nhero = gradient_hero(title=\"Ship Faster with Flowline\", subtitle=\"The all-in-one workspace that turns scattered ideas into shipped products. Plan, build, and launch together without the chaos.\", badge=\"New: Flowline 2.0\", accent=\"#4f46e5\", accent2=\"#8b5cf6\", align=\"left\")\n\nfeatures = feature_grid(heading=\"Why teams choose Flowline\", description=\"Everything you need to move from idea to launch.\", columns=3, features=[{icon: \"\u26a1\", title: \"Lightning Fast\", description: \"Instant sync across every device means your team always works from the latest version.\"}, {icon: \"\ud83e\udd1d\", title: \"Built for Collaboration\", description: \"Comments, mentions, and shared boards keep everyone aligned in real time.\"}, {icon: \"\ud83d\udd12\", title: \"Secure by Default\", description: \"Enterprise-grade encryption and granular permissions protect your work.\"}])\n\ntestimonial = testimonial_card(text=\"Flowline cut our release cycle in half. Our whole team finally works from a single source of truth, and it shows in every launch.\", author_name=\"Priya Raman\", author_title=\"Head of Product, Northwind Labs\", author_avatar_url=\"https://i.pravatar.cc/150?img=47\", rating=5)\n\ncta = cta_button(url=\"https://example.com/signup\", label=\"Start Your Free Trial\", color=\"#4f46e5\", same_tab=true)\n\nroot = columns(cols=2, gap=\"2rem\", align=\"top\", items=[{blocks: [hero, features]}, {blocks: [testimonial, cta]}])\n</a2ui>"
+}

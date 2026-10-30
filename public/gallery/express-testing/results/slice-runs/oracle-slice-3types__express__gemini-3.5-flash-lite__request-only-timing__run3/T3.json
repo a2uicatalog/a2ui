@@ -1,0 +1,45 @@
+{
+ "task": "T3",
+ "condition": "C_gemini-3.5-flash-l",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash-lite",
+ "hints": false,
+ "label": "oracle-slice-3types__express__gemini-3.5-flash-lite__request-only-timing__run3",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "C-marketing-commerce.json",
+ "atoms_in_catalogue": 23,
+ "prompt_chars": 12467,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 1.8,
+ "usage": {
+  "input_tokens": 3413,
+  "output_tokens": 535
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "gradient_hero",
+  "feature_grid",
+  "testimonial_card",
+  "cta_section",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.8,
+  "recall": 1.0,
+  "f1": 0.889,
+  "slot_hits": {
+   "hero": true,
+   "feature columns (x3)": true,
+   "testimonial": true,
+   "CTA": true
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"landing-page\")\n\nhero = gradient_hero(\n    title = \"Build Better Products, Faster\",\n    subtitle = \"Empower your team with next-generation workflows, real-time collaboration, and powerful analytics built for modern creators.\",\n    badge = \"New v2.0 Release\",\n    cta_label = \"Get Started Free\",\n    cta_url = \"https://example.com/signup\"\n)\n\nfeatures = feature_grid(\n    heading = \"Everything you need to succeed\",\n    description = \"Our comprehensive suite of tools helps you ship faster and scale effortlessly.\",\n    columns = 3,\n    features = [\n        {\n            icon: \"\u26a1\",\n            title: \"Lightning Fast\",\n            description: \"Optimized performance ensures your projects render and deploy instantly.\"\n        },\n        {\n            icon: \"\ud83d\udd12\",\n            title: \"Enterprise Security\",\n            description: \"State-of-the-art encryption keeps your sensitive data completely secure.\"\n        },\n        {\n            icon: \"\ud83d\udcca\",\n            title: \"Advanced Analytics\",\n            description: \"Gain deep, actionable insights into user behavior and system performance.\"\n        }\n    ]\n)\n\ntestimonial = testimonial_card(\n    text = \"This platform has completely transformed how our engineering team operates. We've cut our deployment times in half!\",\n    author_name = \"Sarah Jenkins\",\n    author_title = \"VP of Engineering at TechCorp\",\n    author_avatar_url = \"https://images.unsplash.com/photo-1494790108377-be9c29b29330\",\n    rating = 5\n)\n\ncta = cta_section(\n    heading = \"Ready to accelerate your workflow?\",\n    body = \"Join thousands of satisfied teams building the future today. No credit card required.\",\n    primary_cta = {label: \"Start Free Trial\", url: \"https://example.com/trial\"},\n    secondary_cta = {label: \"Contact Sales\", url: \"https://example.com/contact\"}\n)\n\nroot = columns(\n    cols = 1,\n    gap = \"2rem\",\n    items = [\n        {blocks: [hero]},\n        {blocks: [features]},\n        {blocks: [testimonial]},\n        {blocks: [cta]}\n    ]\n)\n</a2ui>"
+}

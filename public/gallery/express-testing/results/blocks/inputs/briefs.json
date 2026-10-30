@@ -1,0 +1,38 @@
+{
+ "version": "blocks-express-test v1",
+ "source": "BLOCKS-EXPRESS-TEST-SPEC.md (2026-10-29 draft v0), brief table B1-B8, texts verbatim",
+ "briefs": [
+  {
+   "id": "B1",
+   "brief": "Show me a toy robot"
+  },
+  {
+   "id": "B2",
+   "brief": "Show me a toy rocket"
+  },
+  {
+   "id": "B3",
+   "brief": "Build a small robot with a red head and show it"
+  },
+  {
+   "id": "B4",
+   "brief": "A toy spaceship on a launch pad"
+  },
+  {
+   "id": "B5",
+   "brief": "Build a toy house out of bricks"
+  },
+  {
+   "id": "B6",
+   "brief": "Build a toy cat from bricks"
+  },
+  {
+   "id": "B7",
+   "brief": "Assemble a real-parts model of a small table"
+  },
+  {
+   "id": "B8",
+   "brief": "Show a sales dashboard with a bar chart"
+  }
+ ]
+}

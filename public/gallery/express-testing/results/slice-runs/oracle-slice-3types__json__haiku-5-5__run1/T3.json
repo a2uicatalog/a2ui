@@ -1,0 +1,39 @@
+{
+ "task": "T3",
+ "condition": "CN_haiku-5-5",
+ "temperature_applied": false,
+ "format": "json",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "oracle-slice-3types__json__haiku-5-5__run1",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "C-marketing-commerce.json",
+ "atoms_in_catalogue": 23,
+ "prompt_chars": 24557,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 10.0,
+ "usage": {
+  "input_tokens": 9464,
+  "output_tokens": 2078
+ },
+ "valid": false,
+ "error": "A2uiIntegrityError: Component 'cta' is not reachable from 'root'",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "hero": false,
+   "feature columns (x3)": false,
+   "testimonial": false,
+   "CTA": false
+  }
+ },
+ "reply": "The brief calls for a hero, three feature columns, a testimonial, and a call-to-action button. The catalog has no vertical container component, so the page is a flat, ordered list of components with the hero as the `root`.\n\n<a2ui-json>\n[\n  {\n    \"version\": \"v0.9\",\n    \"createSurface\": {\n      \"surfaceId\": \"product-landing\",\n      \"catalogId\": \"https://a2uicatalog.ai/catalog/c-marketing-commerce.json\"\n    }\n  },\n  {\n    \"version\": \"v0.9\",\n    \"updateComponents\": {\n      \"surfaceId\": \"product-landing\",\n      \"components\": [\n        {\n          \"id\": \"root\",\n          \"component\": \"gradient_hero\",\n          \"badge\": \"New Release\",\n          \"title\": \"Ship Your Product Faster\",\n          \"subtitle\": \"Build, launch, and scale your product with one simple platform that handles the hard parts for you.\",\n          \"accent\": \"#4f46e5\",\n          \"accent2\": \"#8b5cf6\",\n          \"align\": \"center\"\n        },\n        {\n          \"id\": \"features\",\n          \"component\": \"feature_grid\",\n          \"heading\": \"Everything you need\",\n          \"description\": \"Three core capabilities to help your team move quickly.\",\n          \"columns\": 3,\n          \"features\": [\n            {\n              \"icon\": \"\u26a1\",\n              \"title\": \"Lightning Fast\",\n              \"description\": \"Deploy in seconds with zero-configuration pipelines.\",\n              \"color\": \"#4f46e5\"\n            },\n            {\n              \"icon\": \"\ud83d\udd12\",\n              \"title\": \"Secure by Default\",\n              \"description\": \"Enterprise-grade encryption and access controls out of the box.\",\n              \"color\": \"#8b5cf6\"\n            },\n            {\n              \"icon\": \"\ud83d\udcc8\",\n              \"title\": \"Built to Scale\",\n              \"description\": \"Automatically scale from your first user to your millionth.\",\n              \"color\": \"#0ea5e9\"\n            }\n          ]\n        },\n        {\n          \"id\": \"testimonial\",\n          \"component\": \"testimonial_card\",\n          \"text\": \"We cut our release cycle in half. The platform just works, and our team spends time building features instead of managing infrastructure.\",\n          \"author_name\": \"Jordan Lee\",\n          \"author_title\": \"VP of Engineering, Northwind\",\n          \"rating\": 5\n        },\n        {\n          \"id\": \"cta\",\n          \"component\": \"cta_button\",\n          \"label\": \"Start Your Free Trial\",\n          \"url\": \"https://example.com/signup\",\n          \"color\": \"#4f46e5\",\n          \"same_tab\": true\n        }\n      ]\n    }\n  }\n]\n</a2ui-json>"
+}

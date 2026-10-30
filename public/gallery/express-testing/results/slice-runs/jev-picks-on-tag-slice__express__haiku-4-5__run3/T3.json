@@ -1,0 +1,41 @@
+{
+ "task": "T3",
+ "condition": "JG",
+ "label": "jev-picks-on-tag-slice__express__haiku-4-5__run3",
+ "agent_type": "jev-narrowed",
+ "catalogue": "JG-T3.json",
+ "atoms_in_catalogue": 12,
+ "prompt_chars": 8222,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 4.1,
+ "usage": {
+  "input_tokens": 2279,
+  "output_tokens": 378
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "body",
+  "article_hero",
+  "heading",
+  "feature_grid",
+  "heading",
+  "testimonial_card",
+  "cta_button"
+ ],
+ "score": {
+  "precision": 0.571,
+  "recall": 1.0,
+  "f1": 0.727,
+  "slot_hits": {
+   "hero": true,
+   "feature columns (x3)": true,
+   "testimonial": true,
+   "CTA": true
+  }
+ },
+ "reply": "<a2ui>\nroot = body([\n  article_hero(\n    \"Transform Your Workflow\",\n    \"Experience seamless integration and unmatched performance\",\n    \"https://images.unsplash.com/photo-1552664730-d307ca884978?w=1200&h=400&fit=crop\"\n  ),\n  heading(\"Why Choose Us\"),\n  feature_grid(\n    columns=3,\n    features=[\n      {\n        icon: \"\u26a1\",\n        title: \"Lightning Fast\",\n        description: \"Experience blazing-fast performance optimized for your needs\"\n      },\n      {\n        icon: \"\ud83d\udd12\",\n        title: \"Secure & Reliable\",\n        description: \"Enterprise-grade security with 99.9% uptime guarantee\"\n      },\n      {\n        icon: \"\ud83c\udfaf\",\n        title: \"Easy to Use\",\n        description: \"Intuitive interface designed for seamless user experience\"\n      }\n    ]\n  ),\n  heading(\"What Our Customers Say\"),\n  testimonial_card(\n    \"This product completely transformed how we work. Highly recommend!\",\n    \"Sarah Johnson\",\n    \"CEO, Tech Innovations Inc.\",\n    \"https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop\",\n    5\n  ),\n  cta_button(\n    \"https://example.com/signup\",\n    \"Get Started Today\",\n    \"#4f46e5\"\n  )\n])\n</a2ui>"
+}

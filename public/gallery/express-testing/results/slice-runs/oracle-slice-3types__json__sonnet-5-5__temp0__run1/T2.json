@@ -1,0 +1,40 @@
+{
+ "task": "T2",
+ "condition": "CTN_sonnet-5-5",
+ "temperature_applied": false,
+ "format": "json",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-sonnet-5-5",
+ "hints": false,
+ "label": "oracle-slice-3types__json__sonnet-5-5__temp0__run1",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 31546,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 14.9,
+ "usage": {
+  "input_tokens": 12376,
+  "output_tokens": 1967
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns"
+ ],
+ "score": {
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "KPI tile (x4)": false,
+   "trend (required only if metric_row was chosen; stat_card's own delta already satisfies it)": false,
+   "comparison chart": false
+  }
+ },
+ "reply": "I used a two-column layout because the catalog has no generic container. The left column holds the four KPI tiles and the right column holds the comparison chart. The inline block shape (`type` plus the component's properties) is my assumption about how `columns` takes its blocks, so check it against your renderer.\n\n<a2ui-json>\n[\n  {\n    \"version\": \"v0.9.1\",\n    \"createSurface\": {\n      \"surfaceId\": \"metrics_overview\",\n      \"catalogId\": \"https://a2uicatalog.ai/catalog/c-data-display.json\"\n    }\n  },\n  {\n    \"version\": \"v0.9.1\",\n    \"updateComponents\": {\n      \"surfaceId\": \"metrics_overview\",\n      \"components\": [\n        {\n          \"id\": \"root\",\n          \"component\": \"columns\",\n          \"cols\": 2,\n          \"gap\": \"1.5rem\",\n          \"align\": \"top\",\n          \"items\": [\n            {\n              \"blocks\": [\n                {\n                  \"type\": \"heading\",\n                  \"text\": \"Key metrics\"\n                },\n                {\n                  \"type\": \"metric_row\",\n                  \"cols\": 2,\n                  \"metrics\": [\n                    {\n                      \"value\": \"482\",\n                      \"prefix\": \"$\",\n                      \"suffix\": \"K\",\n                      \"label\": \"Monthly revenue\",\n                      \"sub\": \"+8.4% vs last month\",\n                      \"accent\": \"#22c55e\",\n                      \"trend\": \"up\"\n                    },\n                    {\n                      \"value\": \"28.4K\",\n                      \"label\": \"Active users\",\n                      \"sub\": \"+5.1% vs last month\",\n                      \"accent\": \"#3b82f6\",\n                      \"trend\": \"up\"\n                    },\n                    {\n                      \"value\": \"3.8\",\n                      \"suffix\": \"%\",\n                      \"label\": \"Conversion rate\",\n                      \"sub\": \"-0.3 pts vs last month\",\n                      \"accent\": \"#eab308\",\n                      \"trend\": \"down\"\n                    },\n                    {\n                      \"value\": \"2.1\",\n                      \"suffix\": \"%\",\n                      \"label\": \"Churn rate\",\n                      \"sub\": \"-0.4 pts vs last month\",\n                      \"accent\": \"#a855f7\",\n                      \"trend\": \"down\"\n                    }\n                  ]\n                }\n              ]\n            },\n            {\n              \"blocks\": [\n                {\n                  \"type\": \"heading\",\n                  \"text\": \"Revenue: this year vs last year ($K)\"\n                },\n                {\n                  \"type\": \"chartjs_bar\",\n                  \"labels\": [\"Jan\", \"Feb\", \"Mar\", \"Apr\", \"May\", \"Jun\"],\n                  \"datasets\": [\n                    {\n                      \"label\": \"Last year\",\n                      \"data\": [310, 335, 352, 380, 401, 425]\n                    },\n                    {\n                      \"label\": \"This year\",\n                      \"data\": [372, 398, 421, 447, 445, 482]\n                    }\n                  ]\n                }\n              ]\n            }\n          ]\n        }\n      ]\n    }\n  }\n]\n</a2ui-json>"
+}

@@ -1,0 +1,47 @@
+{
+ "task": "T2",
+ "condition": "C_gemini-3.5-flash-l",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash-lite",
+ "hints": false,
+ "label": "oracle-slice-3types__express__gemini-3.5-flash-lite__request-only-timing__run3",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 16421,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 1.2,
+ "usage": {
+  "input_tokens": 4603,
+  "output_tokens": 321
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "stat_card",
+  "stat_card",
+  "stat_card",
+  "stat_card",
+  "columns",
+  "heading",
+  "benchmark_comparison",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.625,
+  "recall": 1.0,
+  "f1": 0.769,
+  "slot_hits": {
+   "KPI tile (x4)": true,
+   "trend (required only if metric_row was chosen; stat_card's own delta already satisfies it)": true,
+   "comparison chart": true
+  }
+ },
+ "reply": "<a2ui>\nmetric1 = stat_card(\"12,480\", \"Active Users\", \"+12.4%\", true, \"#4CAF50\")\nmetric2 = stat_card(\"$48,290\", \"Monthly Revenue\", \"+8.1%\", true, \"#2196F3\")\nmetric3 = stat_card(\"99.94%\", \"System Uptime\", \"+0.02%\", true, \"#9C27B0\")\nmetric4 = stat_card(\"240ms\", \"Avg Latency\", \"-14.2%\", false, \"#FF9800\")\n\nmetrics_row = columns(\n  cols=4,\n  gap=\"1rem\",\n  items=[\n    {blocks: [metric1]},\n    {blocks: [metric2]},\n    {blocks: [metric3]},\n    {blocks: [metric4]}\n  ]\n)\n\nsec_heading = heading(\"Performance Benchmark Comparison\")\ncomparison = benchmark_comparison([\n  {label: \"Current Period\", value: 85},\n  {label: \"Previous Period\", value: 72},\n  {label: \"Target Benchmark\", value: 90}\n])\n\nroot = columns(\n  cols=1,\n  gap=\"1.5rem\",\n  items=[\n    {blocks: [metrics_row, sec_heading, comparison]}\n  ]\n)\n</a2ui>"
+}

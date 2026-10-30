@@ -1,0 +1,43 @@
+{
+ "task": "T4",
+ "condition": "CT_sonnet-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-sonnet-5-5",
+ "hints": false,
+ "label": "oracle-slice-3types__express__sonnet-5-5__temp0__run3",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 16421,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 13.1,
+ "usage": {
+  "input_tokens": 6049,
+  "output_tokens": 1544
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "segmented_control",
+  "entity_list",
+  "columns",
+  "heading"
+ ],
+ "score": {
+  "precision": 0.5,
+  "recall": 0.667,
+  "f1": 0.571,
+  "slot_hits": {
+   "list": true,
+   "status indicator": false,
+   "filter control": true
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"status-list\")\nfilter = segmented_control([{label: \"All\", value: \"all\"}, {label: \"Active\", value: \"active\"}, {label: \"Pending\", value: \"pending\"}, {label: \"Blocked\", value: \"blocked\"}, {label: \"Done\", value: \"done\"}], \"all\", \"status_filter\")\nlist = entity_list([\n  {name: \"Migrate billing database\", subtitle: \"Cutover rehearsal completed with no data drift\", icon: \"\ud83d\uddc4\ufe0f\", status: \"Active\", meta: \"Infra\"},\n  {name: \"Update onboarding emails\", subtitle: \"Copy is waiting on legal review\", icon: \"\u2709\ufe0f\", status: \"Pending\", meta: \"Marketing\"},\n  {name: \"Renew TLS certificates\", subtitle: \"Vendor API access is down, so renewal can't proceed\", icon: \"\ud83d\udd12\", status: \"Blocked\", meta: \"Security\"},\n  {name: \"Launch referral program\", subtitle: \"Shipped to 100% of users on Monday\", icon: \"\ud83d\ude80\", status: \"Done\", meta: \"Growth\"},\n  {name: \"Refactor search indexing\", subtitle: \"Two of five services moved to the new pipeline\", icon: \"\ud83d\udd0d\", status: \"Active\", meta: \"Platform\"},\n  {name: \"Vendor security questionnaire\", subtitle: \"Submitted and awaiting a response\", icon: \"\ud83d\udccb\", status: \"Pending\", meta: \"Compliance\"},\n  {name: \"Mobile push notifications\", subtitle: \"Blocked until the app store approves the entitlement\", icon: \"\ud83d\udcf1\", status: \"Blocked\", meta: \"Mobile\"},\n  {name: \"Q2 analytics dashboard\", subtitle: \"Reviewed and published to leadership\", icon: \"\ud83d\udcca\", status: \"Done\", meta: \"Data\"}\n])\nroot = columns(2, \"1.5rem\", \"top\", [{blocks: [heading(\"Work items\"), filter, list]}])\n</a2ui>\n\nThe catalog has no way to bind the filter to the list, so the status control is shown but doesn't hide rows yet. All eight items display regardless of the selection. To make it filter, the host app would need to react to the `status_filter` selection and re-render the list."
+}

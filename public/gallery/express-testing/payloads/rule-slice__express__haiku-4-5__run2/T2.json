@@ -1,0 +1,102 @@
+{
+ "label": "rule-slice__express__haiku-4-5__run2",
+ "task": "T2",
+ "format": "express",
+ "model_id": null,
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/b-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "items": [
+       {
+        "blocks": [
+         "_inline_1"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_2"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_3"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_4"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "_inline_1",
+      "component": "metric_row",
+      "cols": 2,
+      "metrics": [
+       {
+        "value": "24.5k",
+        "label": "Total Revenue",
+        "trend": "up",
+        "prefix": "$"
+       },
+       {
+        "value": "1,245",
+        "label": "Active Users",
+        "trend": "up"
+       }
+      ]
+     },
+     {
+      "id": "_inline_2",
+      "component": "metric_row",
+      "cols": 2,
+      "metrics": [
+       {
+        "value": "94.2%",
+        "label": "Uptime",
+        "trend": "up",
+        "suffix": "%"
+       },
+       {
+        "value": "2.3s",
+        "label": "Avg Response",
+        "trend": "down"
+       }
+      ]
+     },
+     {
+      "id": "_inline_3",
+      "component": "metric_comparison_card",
+      "label": "Monthly Revenue",
+      "value": 24500,
+      "previous": 21200,
+      "lower_is_better": false
+     },
+     {
+      "id": "_inline_4",
+      "component": "metric_comparison_card",
+      "label": "Support Response Time",
+      "value": 2.3,
+      "previous": 3.1,
+      "lower_is_better": true
+     }
+    ]
+   }
+  }
+ ]
+}

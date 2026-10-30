@@ -1,0 +1,95 @@
+{
+ "label": "tag-slice__express__haiku-5-5__run1",
+ "task": "T6",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/g-learning.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "title",
+      "component": "heading",
+      "text": "Spanish Vocabulary: Essentials"
+     },
+     {
+      "id": "deck",
+      "component": "flashcard_deck",
+      "cards": [
+       {
+        "front": "hola",
+        "back": "hello"
+       },
+       {
+        "front": "gracias",
+        "back": "thank you"
+       },
+       {
+        "front": "por favor",
+        "back": "please"
+       },
+       {
+        "front": "agua",
+        "back": "water"
+       },
+       {
+        "front": "casa",
+        "back": "house"
+       },
+       {
+        "front": "libro",
+        "back": "book"
+       },
+       {
+        "front": "amigo",
+        "back": "friend"
+       },
+       {
+        "front": "comer",
+        "back": "to eat"
+       },
+       {
+        "front": "grande",
+        "back": "big"
+       },
+       {
+        "front": "tiempo",
+        "back": "time / weather"
+       }
+      ],
+      "accent": "#4f46e5",
+      "label_front": "SPANISH",
+      "label_back": "ENGLISH"
+     },
+     {
+      "id": "progress",
+      "component": "progress_bar",
+      "value": 0,
+      "label": "Cards reviewed",
+      "accent": "#4f46e5",
+      "show_percent": true,
+      "caption": "0 of 10 cards reviewed"
+     },
+     {
+      "id": "root",
+      "component": "reveal",
+      "blocks": [
+       "title",
+       "deck",
+       "progress"
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,123 @@
+{
+ "label": "oracle-slice-3types__express__gemini-3.5-flash-lite__first-run-timing-invalid__run2",
+ "task": "T4",
+ "format": "express",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "1.5rem",
+      "items": [
+       {
+        "blocks": [
+         "_inline_1",
+         "_inline_2",
+         "_inline_3",
+         "_inline_4"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "_inline_1",
+      "component": "heading",
+      "text": "Task Items Overview"
+     },
+     {
+      "id": "_inline_2",
+      "component": "body",
+      "text": "Filterable list of items showing title, status, and details."
+     },
+     {
+      "id": "_inline_3",
+      "component": "segmented_control",
+      "options": [
+       {
+        "label": "All",
+        "value": "all"
+       },
+       {
+        "label": "Active",
+        "value": "active"
+       },
+       {
+        "label": "Completed",
+        "value": "completed"
+       }
+      ],
+      "selected_value": "all",
+      "name": "status_filter"
+     },
+     {
+      "id": "_inline_4",
+      "component": "entity_list",
+      "items": [
+       {
+        "name": "Server Migration",
+        "subtitle": "Migrate legacy databases to cloud infrastructure",
+        "status": "Active",
+        "meta": "Due in 3 days"
+       },
+       {
+        "name": "Security Audit",
+        "subtitle": "Perform annual penetration testing and vulnerability scan",
+        "status": "Pending",
+        "meta": "Due next week"
+       },
+       {
+        "name": "Design System Update",
+        "subtitle": "Refresh typography and button components in Figma",
+        "status": "Completed",
+        "meta": "Finished yesterday"
+       },
+       {
+        "name": "API Rate Limiting",
+        "subtitle": "Implement Redis-backed rate limiting for public endpoints",
+        "status": "Active",
+        "meta": "In progress"
+       },
+       {
+        "name": "Billing Portal Redesign",
+        "subtitle": "Upgrade Stripe integration and invoice PDF generation",
+        "status": "Pending",
+        "meta": "Scheduled"
+       },
+       {
+        "name": "User Onboarding Flow",
+        "subtitle": "A/B test new tooltips for first-time dashboard visitors",
+        "status": "Completed",
+        "meta": "Finished 2 days ago"
+       },
+       {
+        "name": "Mobile App Push Notifications",
+        "subtitle": "Integrate Firebase Cloud Messaging for iOS and Android",
+        "status": "Active",
+        "meta": "In review"
+       },
+       {
+        "name": "Database Indexing",
+        "subtitle": "Optimize slow-running queries on the transactions table",
+        "status": "Completed",
+        "meta": "Finished last week"
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

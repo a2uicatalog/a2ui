@@ -1,0 +1,70 @@
+{
+ "label": "oracle-slice-3types__express__gemini-3.5-flash-lite__request-only-timing__run1",
+ "task": "T5",
+ "format": "express",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "pricing-surface",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "pricing-surface",
+    "components": [
+     {
+      "id": "root",
+      "component": "pricing_tier_group",
+      "tiers": [
+       {
+        "name": "Starter",
+        "price": "$9",
+        "period": "per month",
+        "description": "Perfect for individuals and side projects.",
+        "features": [
+         "1 User",
+         "5 Projects",
+         "Basic Support",
+         "Community Access"
+        ],
+        "recommended": false
+       },
+       {
+        "name": "Pro",
+        "price": "$29",
+        "period": "per month",
+        "description": "Best for growing teams and professionals.",
+        "features": [
+         "Unlimited Users",
+         "50 Projects",
+         "Priority Support",
+         "Advanced Analytics",
+         "Custom Domain"
+        ],
+        "recommended": true
+       },
+       {
+        "name": "Enterprise",
+        "price": "$99",
+        "period": "per month",
+        "description": "For large organizations with advanced needs.",
+        "features": [
+         "Dedicated Account Manager",
+         "Unlimited Everything",
+         "24/7 Phone Support",
+         "Custom Integrations",
+         "SLA Guarantee"
+        ],
+        "recommended": false
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

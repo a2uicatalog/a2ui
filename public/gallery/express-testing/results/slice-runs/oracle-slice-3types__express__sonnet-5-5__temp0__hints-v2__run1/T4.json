@@ -1,0 +1,42 @@
+{
+ "task": "T4",
+ "condition": "CT_sonnet-5-5H2",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-sonnet-5-5",
+ "hints": true,
+ "label": "oracle-slice-3types__express__sonnet-5-5__temp0__hints-v2__run1",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 16421,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 11.7,
+ "usage": {
+  "input_tokens": 6368,
+  "output_tokens": 1349
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "segmented_control",
+  "entity_list",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.667,
+  "recall": 0.667,
+  "f1": 0.667,
+  "slot_hits": {
+   "list": true,
+   "status indicator": false,
+   "filter control": true
+  }
+ },
+ "reply": "The catalog has no single component that filters a list. I used `segmented_control` for the status filter next to an `entity_list` of the eight items, but the two are not wired together, so choosing a status will not hide rows. `columns` is the only container available, and it needs at least two columns, so the filter and list sit side by side.\n\n<a2ui>\nsurface(\"status-list\")\nfilter = segmented_control([{label: \"All\", value: \"all\"}, {label: \"Active\", value: \"active\"}, {label: \"Pending\", value: \"pending\"}, {label: \"Done\", value: \"done\"}], \"all\", \"status_filter\")\nlist = entity_list([{name: \"Migrate billing service\", subtitle: \"Cutover scheduled for Friday night\", status: \"Active\"}, {name: \"Update onboarding emails\", subtitle: \"Copy review in progress with marketing\", status: \"Pending\"}, {name: \"Fix login timeout bug\", subtitle: \"Patched and deployed to production\", status: \"Done\"}, {name: \"Design new dashboard\", subtitle: \"Second round of mockups under way\", status: \"Active\"}, {name: \"Renew SSL certificates\", subtitle: \"Waiting on approval from security team\", status: \"Pending\"}, {name: \"Archive old reports\", subtitle: \"All 2022 reports moved to cold storage\", status: \"Done\"}, {name: \"Load test checkout API\", subtitle: \"Running at 5x expected peak traffic\", status: \"Active\"}, {name: \"Vendor contract review\", subtitle: \"Legal has not yet returned comments\", status: \"Pending\"}])\nroot = columns(2, \"1.5rem\", \"top\", [{blocks: [filter]}, {blocks: [list]}])\n</a2ui>"
+}

@@ -1,0 +1,124 @@
+{
+ "label": "oracle-slice-3types__express__haiku-5-5__hints-v2__run2",
+ "task": "T4",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "filter",
+      "component": "segmented_control",
+      "options": [
+       {
+        "label": "All",
+        "value": "all"
+       },
+       {
+        "label": "Open",
+        "value": "open"
+       },
+       {
+        "label": "In progress",
+        "value": "in_progress"
+       },
+       {
+        "label": "Blocked",
+        "value": "blocked"
+       },
+       {
+        "label": "Done",
+        "value": "done"
+       }
+      ],
+      "selected_value": "all",
+      "name": "status_filter"
+     },
+     {
+      "id": "list",
+      "component": "entity_list",
+      "items": [
+       {
+        "name": "Migrate billing database",
+        "subtitle": "Schema copy finished, cutover is scheduled for Friday",
+        "status": "In progress",
+        "meta": "Owner: Priya"
+       },
+       {
+        "name": "Update login page copy",
+        "subtitle": "Waiting on final legal wording",
+        "status": "Open",
+        "meta": "Owner: Tom"
+       },
+       {
+        "name": "Fix invoice PDF export",
+        "subtitle": "Blocked by a missing font license",
+        "status": "Blocked",
+        "meta": "Owner: Ana"
+       },
+       {
+        "name": "Rotate API keys",
+        "subtitle": "All services now use the new keys",
+        "status": "Done",
+        "meta": "Owner: Sam"
+       },
+       {
+        "name": "Add audit logging",
+        "subtitle": "Log events are written but not yet indexed",
+        "status": "In progress",
+        "meta": "Owner: Lee"
+       },
+       {
+        "name": "Review vendor contract",
+        "subtitle": "Redlines sent back to procurement",
+        "status": "Open",
+        "meta": "Owner: Mia"
+       },
+       {
+        "name": "Upgrade CI runners",
+        "subtitle": "Blocked until network policy is approved",
+        "status": "Blocked",
+        "meta": "Owner: Omar"
+       },
+       {
+        "name": "Publish Q3 release notes",
+        "subtitle": "Published to the docs site",
+        "status": "Done",
+        "meta": "Owner: Jun"
+       }
+      ]
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "filter"
+        ]
+       },
+       {
+        "blocks": [
+         "list"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

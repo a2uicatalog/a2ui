@@ -1,0 +1,143 @@
+{
+ "label": "oracle-slice-3types__elemental__gemini-3.5-flash-lite__request-only-timing__run3",
+ "task": "T4",
+ "format": "elemental",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display-elemental.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "heading",
+      "component": "heading",
+      "text": "System Tasks & Items"
+     },
+     {
+      "id": "status-filters",
+      "component": "chip_group",
+      "label": "Filter by Status",
+      "layout": "wrap",
+      "chips": [
+       {
+        "label": "All",
+        "active": true,
+        "url": "#all"
+       },
+       {
+        "label": "In Progress",
+        "color": "#0052CC",
+        "url": "#inprogress"
+       },
+       {
+        "label": "Success",
+        "color": "#00875A",
+        "url": "#success"
+       },
+       {
+        "label": "New",
+        "color": "#403294",
+        "url": "#new"
+       },
+       {
+        "label": "Removed",
+        "color": "#DE350B",
+        "url": "#removed"
+       }
+      ]
+     },
+     {
+      "id": "item-list",
+      "component": "entity_list",
+      "items": {
+       "path": "/items"
+      }
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "1.5rem",
+      "items": [
+       {
+        "blocks": [
+         "heading",
+         "status-filters",
+         "item-list"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_data_model": {
+    "surface_id": "main",
+    "path": "/",
+    "value": {
+     "filter": "all",
+     "items": [
+      {
+       "title": "Database Migration",
+       "status": "inprogress",
+       "meta": "Scheduled for 02:00 UTC",
+       "icon": "\ud83d\udd04"
+      },
+      {
+       "title": "API Gateway Timeout",
+       "status": "removed",
+       "meta": "Resolved in v2.4.1",
+       "icon": "\u26a0\ufe0f"
+      },
+      {
+       "title": "Security Compliance Audit",
+       "status": "new",
+       "meta": "Pending external review",
+       "icon": "\ud83d\udee1\ufe0f"
+      },
+      {
+       "title": "Billing Service Scaling",
+       "status": "success",
+       "meta": "Auto-scaled to 12 nodes",
+       "icon": "\u26a1"
+      },
+      {
+       "title": "User Authentication Refactor",
+       "status": "inprogress",
+       "meta": "OAuth2 migration in progress",
+       "icon": "\ud83d\udd11"
+      },
+      {
+       "title": "CDN Cache Invalidation",
+       "status": "moved",
+       "meta": "Moved to next sprint backlog",
+       "icon": "\ud83d\udce6"
+      },
+      {
+       "title": "SSL Certificate Renewal",
+       "status": "success",
+       "meta": "Wildcard cert updated",
+       "icon": "\ud83d\udd12"
+      },
+      {
+       "title": "Legacy Endpoint Deprecation",
+       "status": "default",
+       "meta": "Notifying remaining clients",
+       "icon": "\ud83d\udce2"
+      }
+     ]
+    }
+   }
+  }
+ ]
+}

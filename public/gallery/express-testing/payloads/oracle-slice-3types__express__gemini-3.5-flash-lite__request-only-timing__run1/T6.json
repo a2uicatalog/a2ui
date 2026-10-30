@@ -1,0 +1,128 @@
+{
+ "label": "oracle-slice-3types__express__gemini-3.5-flash-lite__request-only-timing__run1",
+ "task": "T6",
+ "format": "express",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "flashcard-vocab-surface",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "flashcard-vocab-surface",
+    "components": [
+     {
+      "id": "header",
+      "component": "page_header",
+      "title": "Vocabulary Mastery",
+      "subtitle": "Flip the cards to test your knowledge and track your progress.",
+      "icon": "\ud83d\udcda",
+      "tag": "Flashcards",
+      "accent": "#4f46e5"
+     },
+     {
+      "id": "xp",
+      "component": "xp_bar",
+      "level_label": "Level 1 \u2014 Vocabulary Builder",
+      "xp_current": 0,
+      "xp_next": 10,
+      "accent": "#4f46e5",
+      "show_flash": true
+     },
+     {
+      "id": "progress",
+      "component": "progress_bar",
+      "value": 0,
+      "label": "Reviewed Cards",
+      "accent": "#4f46e5",
+      "show_percent": true,
+      "caption": "Review all 10 cards to complete the session."
+     },
+     {
+      "id": "deck",
+      "component": "flashcard_deck",
+      "cards": [
+       {
+        "front": "Ephemeral",
+        "back": "Lasting for a very short time."
+       },
+       {
+        "front": "Serendipity",
+        "back": "Finding valuable things by chance rather than luck."
+       },
+       {
+        "front": "Mellifluous",
+        "back": "A sound that is sweet and smooth, pleasing to hear."
+       },
+       {
+        "front": "Petrichor",
+        "back": "The pleasant, earthy smell after rain falls on dry soil."
+       },
+       {
+        "front": "Ineffable",
+        "back": "Too great or extreme to be expressed in words."
+       },
+       {
+        "front": "Lethargic",
+        "back": "Affected by lethargy; sluggish and apathetic."
+       },
+       {
+        "front": "Panacea",
+        "back": "A solution or remedy for all difficulties or diseases."
+       },
+       {
+        "front": "Resilience",
+        "back": "The capacity to recover quickly from difficulties."
+       },
+       {
+        "front": "Quintessential",
+        "back": "Representing the most perfect or typical example of a quality."
+       },
+       {
+        "front": "Solitude",
+        "back": "The state or situation of being alone."
+       }
+      ],
+      "accent": "#4f46e5",
+      "label_front": "TERM",
+      "label_back": "DEFINITION"
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "2rem",
+      "items": [
+       {
+        "blocks": [
+         "header",
+         "xp",
+         "progress",
+         "deck"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_data_model": {
+    "surface_id": "flashcard-vocab-surface",
+    "path": "/",
+    "value": {
+     "vocab": {
+      "reviewed_count": 0,
+      "total_count": 10
+     }
+    }
+   }
+  }
+ ]
+}

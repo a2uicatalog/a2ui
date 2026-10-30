@@ -1,0 +1,46 @@
+{
+ "task": "T5",
+ "condition": "DT_sonnet-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-sonnet-5-5",
+ "hints": false,
+ "label": "oracle-slice-6types__express__sonnet-5-5__temp0__run1",
+ "agent_type": "T5",
+ "catalogue": "D-t5.json",
+ "atoms_in_catalogue": 5,
+ "prompt_chars": 4922,
+ "slot_recall": [
+  1,
+  1
+ ],
+ "secs": 5.0,
+ "usage": {
+  "input_tokens": 1824,
+  "output_tokens": 573
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "pricing_tier_group"
+ ],
+ "score": {
+  "per_approach": {
+   "tier_cards": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+   },
+   "comparison_table": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": null
+   }
+  },
+  "best_approach": "tier_cards",
+  "f1": 1.0
+ },
+ "reply": "<a2ui>\nsurface(\"pricing-surface\")\nroot = pricing_tier_group([\n  {name: \"Starter\", price: \"$9\", period: \"per month\", description: \"For individuals getting started\", features: [\"1 project\", \"Basic analytics\", \"Community support\", \"1 GB storage\"], recommended: false, cta: \"Choose Starter\"},\n  {name: \"Pro\", price: \"$29\", period: \"per month\", description: \"For growing teams that need more power\", features: [\"Unlimited projects\", \"Advanced analytics\", \"Priority email support\", \"100 GB storage\", \"Team collaboration\"], recommended: true, badge: \"Recommended\", cta: \"Choose Pro\"},\n  {name: \"Enterprise\", price: \"$99\", period: \"per month\", description: \"For organizations with advanced needs\", features: [\"Unlimited projects\", \"Custom analytics & reporting\", \"24/7 dedicated support\", \"Unlimited storage\", \"SSO & audit logs\", \"Custom integrations\"], recommended: false, cta: \"Contact Sales\"}\n])\n</a2ui>"
+}

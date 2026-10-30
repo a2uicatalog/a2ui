@@ -1,0 +1,49 @@
+{
+ "task": "T2",
+ "condition": "C_gemini-3.5-flash",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash",
+ "hints": false,
+ "label": "oracle-slice-3types__express__gemini-3.5-flash__thinking-on_first-run-timing-invalid__run3",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 16421,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 13.2,
+ "usage": {
+  "input_tokens": 4602,
+  "output_tokens": 3678
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "stat_card",
+  "stat_card",
+  "stat_card",
+  "stat_card",
+  "columns",
+  "columns",
+  "chartjs_bar",
+  "columns",
+  "heading",
+  "heading"
+ ],
+ "score": {
+  "precision": 0.5,
+  "recall": 1.0,
+  "f1": 0.667,
+  "slot_hits": {
+   "KPI tile (x4)": true,
+   "trend (required only if metric_row was chosen; stat_card's own delta already satisfies it)": true,
+   "comparison chart": true
+  }
+ },
+ "reply": "<a2ui>\ncard1 = stat_card(\"12,450\", \"Active Users\", \"12%\", true, \"#10B981\")\ncard2 = stat_card(\"$45,200\", \"Monthly Revenue\", \"8.4%\", true, \"#10B981\")\ncard3 = stat_card(\"98.2%\", \"SLA Compliance\", \"0.5%\", false, \"#EF4444\")\ncard4 = stat_card(\"3.2s\", \"Avg Response Time\", \"12%\", true, \"#10B981\")\n\nkpis_row1 = columns(2, \"1rem\", \"top\", [\n    {blocks: [card1]},\n    {blocks: [card2]}\n])\n\nkpis_row2 = columns(2, \"1rem\", \"top\", [\n    {blocks: [card3]},\n    {blocks: [card4]}\n])\n\nchart = chartjs_bar(\n    [\"Q1\", \"Q2\", \"Q3\", \"Q4\"],\n    [\n        {label: \"Current Year\", data: [45, 52, 68, 85]},\n        {label: \"Prior Year\", data: [38, 42, 50, 62]}\n    ]\n)\n\nroot = columns(2, \"2rem\", \"top\", [\n    {blocks: [\n        heading(\"Key Performance Indicators\"),\n        kpis_row1,\n        kpis_row2\n    ]},\n    {blocks: [\n        heading(\"Quarterly Performance Comparison\"),\n        chart\n    ]}\n])\n</a2ui>"
+}

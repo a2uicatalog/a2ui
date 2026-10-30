@@ -1,0 +1,42 @@
+{
+ "task": "T4",
+ "condition": "C_haiku-5-5H2",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": true,
+ "label": "oracle-slice-3types__express__haiku-5-5__hints-v2__run2",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 16421,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 7.7,
+ "usage": {
+  "input_tokens": 6368,
+  "output_tokens": 1562
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "segmented_control",
+  "entity_list",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.667,
+  "recall": 0.667,
+  "f1": 0.667,
+  "slot_hits": {
+   "list": true,
+   "status indicator": false,
+   "filter control": true
+  }
+ },
+ "reply": "<a2ui>\nfilter = segmented_control([{label: \"All\", value: \"all\"}, {label: \"Open\", value: \"open\"}, {label: \"In progress\", value: \"in_progress\"}, {label: \"Blocked\", value: \"blocked\"}, {label: \"Done\", value: \"done\"}], \"all\", \"status_filter\")\nlist = entity_list([{name: \"Migrate billing database\", subtitle: \"Schema copy finished, cutover is scheduled for Friday\", status: \"In progress\", meta: \"Owner: Priya\"}, {name: \"Update login page copy\", subtitle: \"Waiting on final legal wording\", status: \"Open\", meta: \"Owner: Tom\"}, {name: \"Fix invoice PDF export\", subtitle: \"Blocked by a missing font license\", status: \"Blocked\", meta: \"Owner: Ana\"}, {name: \"Rotate API keys\", subtitle: \"All services now use the new keys\", status: \"Done\", meta: \"Owner: Sam\"}, {name: \"Add audit logging\", subtitle: \"Log events are written but not yet indexed\", status: \"In progress\", meta: \"Owner: Lee\"}, {name: \"Review vendor contract\", subtitle: \"Redlines sent back to procurement\", status: \"Open\", meta: \"Owner: Mia\"}, {name: \"Upgrade CI runners\", subtitle: \"Blocked until network policy is approved\", status: \"Blocked\", meta: \"Owner: Omar\"}, {name: \"Publish Q3 release notes\", subtitle: \"Published to the docs site\", status: \"Done\", meta: \"Owner: Jun\"}])\nroot = columns(2, \"1.5rem\", \"top\", [{blocks: [filter]}, {blocks: [list]}])\n</a2ui>"
+}

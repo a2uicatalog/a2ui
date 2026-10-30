@@ -1,0 +1,36 @@
+{
+ "model": "sonnet-5-5",
+ "cond": "P",
+ "format": "express",
+ "brief": "B3",
+ "repeat": 2,
+ "seq": 11,
+ "model_id": "claude-sonnet-5-5",
+ "utc": "2026-10-29T20:07:29Z",
+ "prompt_chars": 9756,
+ "prompt_sha256": "(removed for publication)",
+ "temperature_requested": null,
+ "temperature_sent": false,
+ "max_tokens": 32768,
+ "request_secs": 9.23,
+ "input_tokens": 3606,
+ "output_tokens": 1096,
+ "stop_reason": "end_turn",
+ "usage": {
+  "input_tokens": 3606,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "cache_creation": {
+   "ephemeral_5m_input_tokens": 0,
+   "ephemeral_1h_input_tokens": 0
+  },
+  "output_tokens": 1096,
+  "output_tokens_details": {
+   "thinking_tokens": 754
+  },
+  "service_tier": "standard",
+  "inference_geo": "global",
+  "speed": "standard"
+ },
+ "reply": "<a2ui>\nroot = motion_bricks(null, [[2,0,2,2,2,1,\"#1e5aa8\"],[6,0,2,2,2,1,\"#1e5aa8\"],[2,1,2,6,2,2,\"#9aa0a6\"],[0,1,2,2,2,2,\"#1e5aa8\"],[8,1,2,2,2,2,\"#1e5aa8\"],[3,3,2,4,2,2,\"#d01012\"],[4,4,1,1,1,1,\"#ffffff\"],[6,4,1,1,1,1,\"#ffffff\"],[5,5,2,1,1,1,\"#ffd500\"]], null, null, null, null, null, \"studio\", 30, 26, 1, {order: \"base-up\"}, \"1:1\", false, \"Small brick robot with a red head\")\n</a2ui>\n\nI built a small robot from explicit bricks: blue legs and arms, a gray body, and a red head with white eyes and a yellow antenna. It builds itself layer by layer and slowly turns."
+}

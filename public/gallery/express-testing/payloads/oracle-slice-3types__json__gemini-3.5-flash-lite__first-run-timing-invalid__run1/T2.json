@@ -1,0 +1,102 @@
+{
+ "label": "oracle-slice-3types__json__gemini-3.5-flash-lite__first-run-timing-invalid__run1",
+ "task": "T2",
+ "format": "json",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "metrics-overview",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "metrics-overview",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "items": [
+       {
+        "blocks": [
+         {
+          "id": "heading-overview",
+          "component": "heading",
+          "text": "Executive Performance Metrics"
+         },
+         {
+          "id": "stat-revenue",
+          "component": "stat_card",
+          "label": "Total Revenue",
+          "value": "$128,430",
+          "delta": "+12.4%",
+          "is_up": "true",
+          "accent": "#4CAF50"
+         },
+         {
+          "id": "stat-users",
+          "component": "stat_card",
+          "label": "Active Users",
+          "value": "14,230",
+          "delta": "+5.1%",
+          "is_up": "true",
+          "accent": "#2196F3"
+         }
+        ]
+       },
+       {
+        "blocks": [
+         {
+          "id": "heading-secondary",
+          "component": "heading",
+          "text": "Operational Health"
+         },
+         {
+          "id": "stat-conversion",
+          "component": "stat_card",
+          "label": "Conversion Rate",
+          "value": "3.42%",
+          "delta": "-0.8%",
+          "is_up": "false",
+          "accent": "#FF9800"
+         },
+         {
+          "id": "stat-latency",
+          "component": "stat_card",
+          "label": "Avg Latency",
+          "value": "120ms",
+          "delta": "-15ms",
+          "is_up": "true",
+          "accent": "#9C27B0"
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "id": "benchmark-chart",
+      "component": "benchmark_comparison",
+      "items": [
+       {
+        "label": "Q1 Performance",
+        "value": 75
+       },
+       {
+        "label": "Q2 Performance",
+        "value": 88
+       },
+       {
+        "label": "Q3 Target",
+        "value": 92
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

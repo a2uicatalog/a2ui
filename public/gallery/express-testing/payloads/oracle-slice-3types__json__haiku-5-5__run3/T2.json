@@ -1,0 +1,104 @@
+{
+ "label": "oracle-slice-3types__json__haiku-5-5__run3",
+ "task": "T2",
+ "format": "json",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9",
+   "create_surface": {
+    "surface_id": "metrics-overview",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9",
+   "update_components": {
+    "surface_id": "metrics-overview",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         {
+          "id": "kpi-row",
+          "component": "metric_row",
+          "cols": 2,
+          "metrics": [
+           {
+            "value": "48,210",
+            "prefix": "$",
+            "label": "Revenue",
+            "sub": "vs. last month",
+            "trend": "up"
+           },
+           {
+            "value": "9,340",
+            "label": "Active users",
+            "sub": "vs. last month",
+            "trend": "up"
+           },
+           {
+            "value": "2.3",
+            "suffix": "%",
+            "label": "Churn rate",
+            "sub": "vs. last month",
+            "trend": "down"
+           },
+           {
+            "value": "212",
+            "suffix": " ms",
+            "label": "Avg response time",
+            "sub": "vs. last month",
+            "trend": "down"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "blocks": [
+         {
+          "id": "comparison-chart",
+          "component": "chartjs_bar",
+          "labels": [
+           "Q1",
+           "Q2",
+           "Q3",
+           "Q4"
+          ],
+          "datasets": [
+           {
+            "label": "This year",
+            "data": [
+             32,
+             41,
+             38,
+             52
+            ]
+           },
+           {
+            "label": "Last year",
+            "data": [
+             28,
+             35,
+             40,
+             44
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

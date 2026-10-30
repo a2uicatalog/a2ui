@@ -1,0 +1,403 @@
+{
+ "label": "oracle-slice-6types__express__sonnet-5-5__temp0__run2",
+ "task": "T1",
+ "format": "express",
+ "model_id": "claude-sonnet-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "water-cycle-lesson",
+    "catalog_id": "https://a2uicatalog.ai/catalog/d-t1.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "water-cycle-lesson",
+    "components": [
+     {
+      "id": "header",
+      "component": "page_header",
+      "title": "The Water Cycle",
+      "subtitle": "How water moves between oceans, air, and land in a continuous loop",
+      "icon": "\ud83d\udca7",
+      "tag": "Earth Science",
+      "accent": "#0284c7"
+     },
+     {
+      "id": "intro",
+      "component": "body",
+      "text": "Water is never created or destroyed on Earth. It is constantly recycled, changing between liquid, vapor, and ice as it travels around the planet. This lesson covers the three main stages of that journey."
+     },
+     {
+      "id": "h1",
+      "component": "heading",
+      "text": "1. Evaporation"
+     },
+     {
+      "id": "c1",
+      "component": "body",
+      "text": "The Sun heats water in oceans, lakes, and rivers. Heated water molecules gain energy and escape into the air as invisible water vapor. Plants also release vapor through their leaves, a process called transpiration."
+     },
+     {
+      "id": "tip1",
+      "component": "callout",
+      "kind": "tip",
+      "title": "Key idea",
+      "text": "Evaporation is driven by solar energy. Warmer temperatures mean faster evaporation."
+     },
+     {
+      "id": "h2",
+      "component": "heading",
+      "text": "2. Condensation"
+     },
+     {
+      "id": "c2",
+      "component": "body",
+      "text": "As water vapor rises, it cools. Cooled vapor changes back into tiny liquid droplets around dust particles, forming clouds. This is why you see your breath on a cold day or droplets on a cold glass."
+     },
+     {
+      "id": "tip2",
+      "component": "callout",
+      "kind": "info",
+      "title": "Key idea",
+      "text": "Condensation releases heat and is the opposite of evaporation."
+     },
+     {
+      "id": "h3",
+      "component": "heading",
+      "text": "3. Precipitation and Collection"
+     },
+     {
+      "id": "c3",
+      "component": "body",
+      "text": "When cloud droplets merge and grow heavy, they fall as rain, snow, sleet, or hail. The water then runs over the land into rivers and lakes, or soaks into the ground as groundwater, and eventually returns to the ocean to begin again."
+     },
+     {
+      "id": "tip3",
+      "component": "callout",
+      "kind": "info",
+      "title": "Key idea",
+      "text": "Precipitation type depends on air temperature as the water falls."
+     },
+     {
+      "id": "exH",
+      "component": "heading",
+      "text": "Worked Example: Following a Water Molecule"
+     },
+     {
+      "id": "ex",
+      "component": "case_study_card",
+      "title": "A Puddle on a Sunny Afternoon",
+      "situation": "After a morning rainstorm, a puddle 2 cm deep sits on a warm sidewalk. By evening the puddle has disappeared. Where did the water go?",
+      "data_points": [
+       {
+        "label": "Air temperature",
+        "value": "30\u00b0C",
+        "note": "Warm and sunny"
+       },
+       {
+        "label": "Time elapsed",
+        "value": "6 hours",
+        "note": "Noon to evening"
+       },
+       {
+        "label": "Puddle depth",
+        "value": "2 cm to 0 cm",
+        "note": "Fully gone"
+       }
+      ],
+      "questions": [
+       "Which stage of the water cycle explains the vanishing puddle?",
+       "Where is the water now?",
+       "What must happen next for the water to fall as rain again?"
+      ],
+      "model_answer": "The puddle disappeared through evaporation: the Sun's heat gave the water molecules enough energy to become vapor. The water is now in the atmosphere as invisible vapor. As the vapor rises and cools it will condense into cloud droplets, and when those droplets grow heavy enough they will fall again as precipitation.",
+      "accent": "#0284c7"
+     },
+     {
+      "id": "steps_sum",
+      "component": "stepper",
+      "steps": [
+       "Evaporation: the Sun turns liquid water into vapor",
+       "Condensation: vapor cools into cloud droplets",
+       "Precipitation: water falls as rain or snow",
+       "Collection: water gathers in oceans, rivers, and ground"
+      ],
+      "active_index": 3,
+      "color": "#0284c7",
+      "label": "The cycle at a glance"
+     },
+     {
+      "id": "quizH",
+      "component": "heading",
+      "text": "Self-Check Quiz"
+     },
+     {
+      "id": "quiz",
+      "component": "quiz_set",
+      "title": "Water Cycle Check",
+      "questions": [
+       {
+        "question": "What energy source drives evaporation in the water cycle?",
+        "options": [
+         "The Moon's gravity",
+         "Heat from the Sun",
+         "Ocean currents",
+         "Wind"
+        ],
+        "correct": 1,
+        "explanation": "Solar energy heats surface water so molecules escape as vapor."
+       },
+       {
+        "question": "Which process turns water vapor into liquid droplets that form clouds?",
+        "options": [
+         "Evaporation",
+         "Transpiration",
+         "Condensation",
+         "Collection"
+        ],
+        "correct": 2,
+        "explanation": "Cooling vapor condenses into tiny droplets, forming clouds."
+       },
+       {
+        "question": "Which of these is a form of precipitation?",
+        "options": [
+         "Fog on a mirror",
+         "Snow",
+         "Steam from a kettle",
+         "Dew inside a cave"
+        ],
+        "correct": 1,
+        "explanation": "Precipitation is water falling from clouds as rain, snow, sleet, or hail."
+       }
+      ],
+      "pass_score": 70,
+      "accent": "#0284c7"
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": []
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "water-cycle-lesson",
+    "catalog_id": "https://a2uicatalog.ai/catalog/d-t1.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "water-cycle-lesson",
+    "components": [
+     {
+      "id": "header",
+      "component": "page_header",
+      "title": "The Water Cycle",
+      "subtitle": "How water moves between oceans, air, and land in a continuous loop",
+      "icon": "\ud83d\udca7",
+      "tag": "Earth Science",
+      "accent": "#0284c7"
+     },
+     {
+      "id": "intro",
+      "component": "body",
+      "text": "Water is never created or destroyed on Earth. It is constantly recycled, changing between liquid, vapor, and ice as it travels around the planet. This lesson covers the three main stages of that journey."
+     },
+     {
+      "id": "h1",
+      "component": "heading",
+      "text": "1. Evaporation"
+     },
+     {
+      "id": "c1",
+      "component": "body",
+      "text": "The Sun heats water in oceans, lakes, and rivers. Heated water molecules gain energy and escape into the air as invisible water vapor. Plants also release vapor through their leaves, a process called transpiration."
+     },
+     {
+      "id": "tip1",
+      "component": "callout",
+      "kind": "tip",
+      "title": "Key idea",
+      "text": "Evaporation is driven by solar energy. Warmer temperatures mean faster evaporation."
+     },
+     {
+      "id": "h2",
+      "component": "heading",
+      "text": "2. Condensation"
+     },
+     {
+      "id": "c2",
+      "component": "body",
+      "text": "As water vapor rises, it cools. Cooled vapor changes back into tiny liquid droplets around dust particles, forming clouds. This is why you see your breath on a cold day or droplets on a cold glass."
+     },
+     {
+      "id": "tip2",
+      "component": "callout",
+      "kind": "info",
+      "title": "Key idea",
+      "text": "Condensation releases heat and is the opposite of evaporation."
+     },
+     {
+      "id": "h3",
+      "component": "heading",
+      "text": "3. Precipitation and Collection"
+     },
+     {
+      "id": "c3",
+      "component": "body",
+      "text": "When cloud droplets merge and grow heavy, they fall as rain, snow, sleet, or hail. The water then runs over the land into rivers and lakes, or soaks into the ground as groundwater, and eventually returns to the ocean to begin again."
+     },
+     {
+      "id": "tip3",
+      "component": "callout",
+      "kind": "info",
+      "title": "Key idea",
+      "text": "Precipitation type depends on air temperature as the water falls."
+     },
+     {
+      "id": "exH",
+      "component": "heading",
+      "text": "Worked Example: Following a Water Molecule"
+     },
+     {
+      "id": "ex",
+      "component": "case_study_card",
+      "title": "A Puddle on a Sunny Afternoon",
+      "situation": "After a morning rainstorm, a puddle 2 cm deep sits on a warm sidewalk. By evening the puddle has disappeared. Where did the water go?",
+      "data_points": [
+       {
+        "label": "Air temperature",
+        "value": "30\u00b0C",
+        "note": "Warm and sunny"
+       },
+       {
+        "label": "Time elapsed",
+        "value": "6 hours",
+        "note": "Noon to evening"
+       },
+       {
+        "label": "Puddle depth",
+        "value": "2 cm to 0 cm",
+        "note": "Fully gone"
+       }
+      ],
+      "questions": [
+       "Which stage of the water cycle explains the vanishing puddle?",
+       "Where is the water now?",
+       "What must happen next for the water to fall as rain again?"
+      ],
+      "model_answer": "The puddle disappeared through evaporation: the Sun's heat gave the water molecules enough energy to become vapor. The water is now in the atmosphere as invisible vapor. As the vapor rises and cools it will condense into cloud droplets, and when those droplets grow heavy enough they will fall again as precipitation.",
+      "accent": "#0284c7"
+     },
+     {
+      "id": "recap",
+      "component": "stepper",
+      "steps": [
+       "Evaporation: the Sun turns liquid water into vapor",
+       "Condensation: vapor cools into cloud droplets",
+       "Precipitation: water falls as rain or snow",
+       "Collection: water gathers in oceans, rivers, and ground"
+      ],
+      "active_index": 3,
+      "color": "#0284c7",
+      "label": "The cycle at a glance"
+     },
+     {
+      "id": "quizH",
+      "component": "heading",
+      "text": "Self-Check Quiz"
+     },
+     {
+      "id": "quiz",
+      "component": "quiz_set",
+      "title": "Water Cycle Check",
+      "questions": [
+       {
+        "question": "What energy source drives evaporation in the water cycle?",
+        "options": [
+         "The Moon's gravity",
+         "Heat from the Sun",
+         "Ocean currents",
+         "Wind"
+        ],
+        "correct": 1,
+        "explanation": "Solar energy heats surface water so molecules escape as vapor."
+       },
+       {
+        "question": "Which process turns water vapor into liquid droplets that form clouds?",
+        "options": [
+         "Evaporation",
+         "Transpiration",
+         "Condensation",
+         "Collection"
+        ],
+        "correct": 2,
+        "explanation": "Cooling vapor condenses into tiny droplets, forming clouds."
+       },
+       {
+        "question": "Which of these is a form of precipitation?",
+        "options": [
+         "Fog on a mirror",
+         "Snow",
+         "Steam from a kettle",
+         "Dew inside a cave"
+        ],
+        "correct": 1,
+        "explanation": "Precipitation is water falling from clouds as rain, snow, sleet, or hail."
+       }
+      ],
+      "pass_score": 70,
+      "accent": "#0284c7"
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "header",
+         "intro",
+         "h1",
+         "c1",
+         "tip1",
+         "h2",
+         "c2",
+         "tip2",
+         "h3",
+         "c3",
+         "tip3"
+        ]
+       },
+       {
+        "blocks": [
+         "exH",
+         "ex",
+         "recap",
+         "quizH",
+         "quiz"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

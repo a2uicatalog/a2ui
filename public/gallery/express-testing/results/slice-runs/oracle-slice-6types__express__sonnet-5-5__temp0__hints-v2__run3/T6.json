@@ -1,0 +1,52 @@
+{
+ "task": "T6",
+ "condition": "DT_sonnet-5-5H2",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-sonnet-5-5",
+ "hints": true,
+ "label": "oracle-slice-6types__express__sonnet-5-5__temp0__hints-v2__run3",
+ "agent_type": "T6",
+ "catalogue": "D-t6.json",
+ "atoms_in_catalogue": 12,
+ "prompt_chars": 8305,
+ "slot_recall": [
+  2,
+  2
+ ],
+ "secs": 17.1,
+ "usage": {
+  "input_tokens": 3362,
+  "output_tokens": 2481
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns",
+  "heading",
+  "body",
+  "badge_showcase",
+  "spaced_repetition_card",
+  "spaced_repetition_card",
+  "spaced_repetition_card",
+  "spaced_repetition_card",
+  "spaced_repetition_card",
+  "spaced_repetition_card",
+  "spaced_repetition_card",
+  "spaced_repetition_card",
+  "spaced_repetition_card",
+  "spaced_repetition_card"
+ ],
+ "score": {
+  "precision": 0.714,
+  "recall": 0.5,
+  "f1": 0.588,
+  "slot_hits": {
+   "flashcard deck": true,
+   "progress indicator": false
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"vocab-flashcards\")\nroot = columns(3, \"1.5rem\", \"top\", [\n  {blocks: [\n    heading(\"Vocabulary Flashcards\"),\n    body(\"Flip each card to reveal the definition, then rate your confidence from 1 to 5. Each card you review lights up a badge below.\"),\n    badge_showcase(\"Reviewed Cards\", 5, [\n      {id: \"b1\", label: \"Ephemeral\", icon: \"\u2728\", description: \"Reviewed Ephemeral\", required_id: \"vocab-1\"},\n      {id: \"b2\", label: \"Ubiquitous\", icon: \"\ud83c\udf0d\", description: \"Reviewed Ubiquitous\", required_id: \"vocab-2\"},\n      {id: \"b3\", label: \"Candid\", icon: \"\ud83d\udcac\", description: \"Reviewed Candid\", required_id: \"vocab-3\"},\n      {id: \"b4\", label: \"Pragmatic\", icon: \"\ud83d\udee0\ufe0f\", description: \"Reviewed Pragmatic\", required_id: \"vocab-4\"},\n      {id: \"b5\", label: \"Resilient\", icon: \"\ud83c\udf31\", description: \"Reviewed Resilient\", required_id: \"vocab-5\"},\n      {id: \"b6\", label: \"Meticulous\", icon: \"\ud83d\udd0d\", description: \"Reviewed Meticulous\", required_id: \"vocab-6\"},\n      {id: \"b7\", label: \"Eloquent\", icon: \"\ud83c\udfa4\", description: \"Reviewed Eloquent\", required_id: \"vocab-7\"},\n      {id: \"b8\", label: \"Ambiguous\", icon: \"\u2753\", description: \"Reviewed Ambiguous\", required_id: \"vocab-8\"},\n      {id: \"b9\", label: \"Benevolent\", icon: \"\ud83d\udc9b\", description: \"Reviewed Benevolent\", required_id: \"vocab-9\"},\n      {id: \"b10\", label: \"Tenacious\", icon: \"\ud83e\uddd7\", description: \"Reviewed Tenacious\", required_id: \"vocab-10\"}\n    ])\n  ]},\n  {blocks: [\n    spaced_repetition_card(\"Ephemeral\", \"Lasting for a very short time.\", \"vocab-1\", \"#4f46e5\"),\n    spaced_repetition_card(\"Ubiquitous\", \"Present, appearing, or found everywhere.\", \"vocab-2\", \"#4f46e5\"),\n    spaced_repetition_card(\"Candid\", \"Truthful and straightforward; frank.\", \"vocab-3\", \"#4f46e5\"),\n    spaced_repetition_card(\"Pragmatic\", \"Dealing with things sensibly and realistically.\", \"vocab-4\", \"#4f46e5\"),\n    spaced_repetition_card(\"Resilient\", \"Able to recover quickly from difficulties.\", \"vocab-5\", \"#4f46e5\")\n  ]},\n  {blocks: [\n    spaced_repetition_card(\"Meticulous\", \"Showing great attention to detail; very careful.\", \"vocab-6\", \"#0ea5e9\"),\n    spaced_repetition_card(\"Eloquent\", \"Fluent and persuasive in speaking or writing.\", \"vocab-7\", \"#0ea5e9\"),\n    spaced_repetition_card(\"Ambiguous\", \"Open to more than one interpretation; unclear.\", \"vocab-8\", \"#0ea5e9\"),\n    spaced_repetition_card(\"Benevolent\", \"Well meaning and kindly.\", \"vocab-9\", \"#0ea5e9\"),\n    spaced_repetition_card(\"Tenacious\", \"Holding firmly to a goal; persistent.\", \"vocab-10\", \"#0ea5e9\")\n  ]}\n])\n</a2ui>"
+}

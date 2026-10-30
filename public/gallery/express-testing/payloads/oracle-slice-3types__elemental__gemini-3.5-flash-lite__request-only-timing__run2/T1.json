@@ -1,0 +1,139 @@
+{
+ "label": "oracle-slice-3types__elemental__gemini-3.5-flash-lite__request-only-timing__run2",
+ "task": "T1",
+ "format": "elemental",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning-elemental.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "page_header",
+      "title": "The Water Cycle",
+      "subtitle": "Journey of water through Earth's atmosphere, land, and oceans",
+      "icon": "\ud83d\udca7",
+      "tag": "Earth Science",
+      "accent": "#0284c7",
+      "theme": "light"
+     },
+     {
+      "id": "progress",
+      "component": "reading_progress_bar",
+      "color": "#0284c7"
+     },
+     {
+      "id": "hero",
+      "component": "article_hero",
+      "title": "Continuous Motion on Earth",
+      "subtitle": "Discover how the water you drink today has been cycling for billions of years.",
+      "image_url": "https://images.unsplash.com/photo-1428592951571-04987f1396a4?auto=format&fit=crop&w=1200&q=80"
+     },
+     {
+      "id": "sections_heading",
+      "component": "heading",
+      "text": "Core Concepts of the Water Cycle"
+     },
+     {
+      "id": "concept_list",
+      "component": "numbered_list",
+      "style": "cards",
+      "theme": "light",
+      "accent": "#0284c7",
+      "items": "{[\n        {\n          \\"
+     },
+     {
+      "id": "example_heading",
+      "component": "heading",
+      "text": "Worked Example: A Puddle on a Sunny Day"
+     },
+     {
+      "id": "worked_example",
+      "component": "concept_rung",
+      "badge": "EX",
+      "kind": "example",
+      "label": "WORKED EXAMPLE",
+      "title": "What happens to a roadside puddle after the rain stops?",
+      "Body": "1. The rain stops and leaves a puddle of liquid water on the pavement.`n2. Throughout the afternoon, the sun provides thermal energy.`n3. Water molecules at the surface absorb enough energy to break free into the air as invisible water vapor.`n4. Over time, the puddle disappears entirely because all its water has evaporated into the atmosphere.",
+      "takeaway": "Energy from the sun is the primary engine driving every phase change in the global water cycle."
+     },
+     {
+      "id": "quiz_heading",
+      "component": "heading",
+      "text": "Knowledge Self-Check"
+     },
+     {
+      "id": "water_cycle_quiz",
+      "component": "quiz_set",
+      "title": "Test Your Understanding",
+      "pass_score": 70,
+      "accent": "#0284c7",
+      "questions": {
+       "path": "/questions"
+      }
+     },
+     {
+      "id": "summary_tip",
+      "component": "callout",
+      "kind": "tip",
+      "title": "Did you know?",
+      "text": "The total amount of water on Earth is fixed and constantly recycled. The water from your tap today might have been swallowed by a dinosaur millions of years ago!"
+     }
+    ]
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_data_model": {
+    "surface_id": "main",
+    "path": "/",
+    "value": {
+     "questions": [
+      {
+       "question": "What process turns liquid water into water vapor?",
+       "options": [
+        "Condensation",
+        "Evaporation",
+        "Precipitation",
+        "Collection"
+       ],
+       "correct": 1,
+       "explanation": "Evaporation is the process where liquid water absorbs heat from the sun and changes into water vapor."
+      },
+      {
+       "question": "When water vapor cools down high in the atmosphere, what does it form?",
+       "options": [
+        "Clouds",
+        "Rivers",
+        "Glaciers",
+        "Oceans"
+       ],
+       "correct": 0,
+       "explanation": "Cooling water vapor condenses around tiny particles in the air to form clouds."
+      },
+      {
+       "question": "Which of the following is a form of precipitation?",
+       "options": [
+        "Sunlight",
+        "Wind",
+        "Rain",
+        "Evaporation"
+       ],
+       "correct": 2,
+       "explanation": "Rain, snow, sleet, and hail are all forms of precipitation that fall back to Earth."
+      }
+     ]
+    }
+   }
+  }
+ ]
+}

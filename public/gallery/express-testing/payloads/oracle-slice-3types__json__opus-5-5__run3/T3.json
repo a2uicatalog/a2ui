@@ -1,0 +1,90 @@
+{
+ "label": "oracle-slice-3types__json__opus-5-5__run3",
+ "task": "T3",
+ "format": "json",
+ "model_id": "claude-opus-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "product_landing",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "product_landing",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "3rem",
+      "align": "stretch",
+      "items": [
+       {
+        "blocks": [
+         {
+          "id": "hero",
+          "component": "gradient_hero",
+          "badge": "New \u00b7 Lumen 2.0",
+          "title": "Turn scattered data into decisions in minutes",
+          "subtitle": "Lumen connects your tools, cleans your data, and surfaces the insights that matter, with no SQL and no waiting on the data team.",
+          "align": "center",
+          "accent": "#4f46e5",
+          "accent2": "#8b5cf6"
+         },
+         {
+          "id": "features",
+          "component": "feature_grid",
+          "heading": "Everything you need to move faster",
+          "description": "Built for teams who want answers, not dashboards to maintain.",
+          "columns": 3,
+          "features": [
+           {
+            "icon": "\ud83d\udd0c",
+            "title": "One-click integrations",
+            "description": "Connect 100+ sources like Stripe, HubSpot, Postgres, and Sheets in seconds. Lumen keeps them synced automatically.",
+            "color": "#4f46e5"
+           },
+           {
+            "icon": "\u2728",
+            "title": "AI-powered insights",
+            "description": "Ask questions in plain English and get charts, trends, and anomalies explained instantly.",
+            "color": "#8b5cf6"
+           },
+           {
+            "icon": "\ud83d\udd12",
+            "title": "Enterprise-grade security",
+            "description": "SOC 2 Type II, SSO, and granular permissions keep your data safe and your team in control.",
+            "color": "#0ea5e9"
+           }
+          ]
+         },
+         {
+          "id": "testimonial",
+          "component": "testimonial_card",
+          "text": "Lumen cut our weekly reporting from six hours to fifteen minutes. Our whole team finally works from the same numbers.",
+          "author_name": "Priya Raman",
+          "author_title": "VP of Operations, Northwind Logistics",
+          "author_avatar_url": "https://i.pravatar.cc/150?img=47",
+          "rating": 5
+         },
+         {
+          "id": "cta",
+          "component": "cta_button",
+          "label": "Start your free 14-day trial",
+          "url": "/signup",
+          "color": "#4f46e5",
+          "same_tab": true
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

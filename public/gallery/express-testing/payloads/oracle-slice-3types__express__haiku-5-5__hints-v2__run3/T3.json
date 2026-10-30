@@ -1,0 +1,99 @@
+{
+ "label": "oracle-slice-3types__express__haiku-5-5__hints-v2__run3",
+ "task": "T3",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "hero",
+      "component": "gradient_hero",
+      "title": "Ship faster with Acme Flow",
+      "subtitle": "Automate handoffs between design, engineering, and release in one place, without the busywork.",
+      "badge": "New in 2.0",
+      "accent": "#4f46e5",
+      "accent2": "#8b5cf6",
+      "align": "center",
+      "cta_label": "Start free trial",
+      "cta_url": "https://example.com/signup"
+     },
+     {
+      "id": "features",
+      "component": "feature_grid",
+      "heading": "Everything your team needs",
+      "description": "Three core capabilities that keep projects moving.",
+      "columns": 3,
+      "features": [
+       {
+        "icon": "\u26a1",
+        "title": "Instant setup",
+        "description": "Connect your repos and tools in minutes with prebuilt integrations.",
+        "color": "#4f46e5"
+       },
+       {
+        "icon": "\ud83d\udd01",
+        "title": "Automated handoffs",
+        "description": "Work moves between teams automatically when each step is complete.",
+        "color": "#8b5cf6"
+       },
+       {
+        "icon": "\ud83d\udcca",
+        "title": "Clear visibility",
+        "description": "Live dashboards show progress, blockers, and release readiness.",
+        "color": "#0ea5e9"
+       }
+      ]
+     },
+     {
+      "id": "quote",
+      "component": "blockquote_with_avatar",
+      "quote": "Acme Flow cut our release cycle in half. Our team spends time building, not chasing status updates.",
+      "author_name": "Priya Raman",
+      "author_title": "VP Engineering, Northwind",
+      "avatar_url": "https://example.com/avatars/priya.jpg"
+     },
+     {
+      "id": "cta",
+      "component": "cta_button",
+      "url": "https://example.com/signup",
+      "label": "Get started today",
+      "color": "#4f46e5",
+      "same_tab": false
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "2rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "hero",
+         "features"
+        ]
+       },
+       {
+        "blocks": [
+         "quote",
+         "cta"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,31 @@
+{
+ "task": "T6",
+ "condition": "JD",
+ "label": "jev-picks-on-oracle-slice-6types__express__haiku-4-5__run1",
+ "agent_type": "jev-narrowed",
+ "catalogue": "JD-T6.json",
+ "atoms_in_catalogue": 10,
+ "prompt_chars": 7642,
+ "slot_recall": [
+  2,
+  2
+ ],
+ "secs": 4.7,
+ "usage": {
+  "input_tokens": 2176,
+  "output_tokens": 433
+ },
+ "valid": false,
+ "error": "A2uiCompilationValidationError: Property 'front_content' of component 'flip_card' does not support dynamic data bindings (paths). - Help: Property 'front_content' on 'flip_card' must be a static literal value, not a dynamic databinding ($path).",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "flashcard deck": false,
+   "progress indicator": false
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"flashcard-surface\")\n\n$/reviewed_count = 0\n$/total_cards = 10\n\ncards_data = [\n  {front: \"Serendipity\", back: \"The occurrence of events by chance in a happy or beneficial way\"},\n  {front: \"Ephemeral\", back: \"Lasting for a very short time\"},\n  {front: \"Eloquent\", back: \"Fluent or persuasive in speaking or writing\"},\n  {front: \"Ubiquitous\", back: \"Present, appearing, or found everywhere\"},\n  {front: \"Pragmatic\", back: \"Dealing with things in a realistic and practical way\"},\n  {front: \"Melancholy\", back: \"A feeling of pensive sadness, typically with no obvious cause\"},\n  {front: \"Benevolent\", back: \"Kind and generous\"},\n  {front: \"Cryptic\", back: \"Having a meaning that is mysterious or obscure\"},\n  {front: \"Diligent\", back: \"Having or showing care in one's work or duties\"},\n  {front: \"Nostalgia\", back: \"Sentimental longing for the past\"}\n]\n\ncard_list = _template($/cards, card_template)\n\ncard_template = flip_card(\n  $front,\n  $back,\n  trigger_on_hover=true\n)\n\nroot = columns(1, gap=\"2rem\", items=[\n  {blocks: [\n    heading(\"Vocabulary Flashcards\"),\n    progress_bar(\n      value=0,\n      label=\"Cards Reviewed\",\n      show_percent=true,\n      caption=\"0 of 10 cards\"\n    )\n  ]},\n  {blocks: [\n    card_list\n  ]}\n])\n\n$/cards = cards_data\n</a2ui>"
+}

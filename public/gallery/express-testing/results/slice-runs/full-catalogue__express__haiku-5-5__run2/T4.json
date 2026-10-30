@@ -1,0 +1,40 @@
+{
+ "task": "T4",
+ "condition": "A_haiku-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "full-catalogue__express__haiku-5-5__run2",
+ "agent_type": "full",
+ "catalogue": "A-full.json",
+ "atoms_in_catalogue": 557,
+ "prompt_chars": 294155,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 5.4,
+ "usage": {
+  "input_tokens": 107814,
+  "output_tokens": 927
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "filterable_list"
+ ],
+ "score": {
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "list": false,
+   "status indicator": false,
+   "filter control": false
+  }
+ },
+ "reply": "<a2ui>\nroot = filterable_list(\n  title=\"Release checklist\",\n  filter_field=\"status\",\n  show_counts=true,\n  empty_text=\"No tasks match this status.\",\n  colors={open: \"#f59e0b\", in_progress: \"#3b82f6\", done: \"#10b981\"},\n  items=[\n    {title: \"Freeze feature branch\", detail: \"No new features merged after Friday 17:00.\", status: \"done\"},\n    {title: \"Run regression suite\", detail: \"Full suite passing on the release candidate build.\", status: \"done\"},\n    {title: \"Update API documentation\", detail: \"Two new endpoints still lack parameter tables.\", status: \"in_progress\"},\n    {title: \"Security review of auth flow\", detail: \"Reviewer assigned; findings expected Tuesday.\", status: \"in_progress\"},\n    {title: \"Prepare migration script\", detail: \"Script drafted; dry run against staging not yet done.\", status: \"open\"},\n    {title: \"Confirm rollback plan\", detail: \"Rollback steps written but not rehearsed.\", status: \"open\"},\n    {title: \"Notify beta customers\", detail: \"Email template approved, send date not set.\", status: \"open\"},\n    {title: \"Tag release version\", detail: \"Waiting on the final sign-off from QA.\", status: \"open\"}\n  ]\n)\n</a2ui>"
+}

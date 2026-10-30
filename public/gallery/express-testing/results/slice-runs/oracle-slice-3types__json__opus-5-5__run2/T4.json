@@ -1,0 +1,41 @@
+{
+ "task": "T4",
+ "condition": "CN_opus-5-5",
+ "temperature_applied": false,
+ "format": "json",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-opus-5-5",
+ "hints": false,
+ "label": "oracle-slice-3types__json__opus-5-5__run2",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 31546,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 21.1,
+ "usage": {
+  "input_tokens": 12365,
+  "output_tokens": 2003
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "segmented_control",
+  "data_table_sortable"
+ ],
+ "score": {
+  "precision": 1.0,
+  "recall": 0.667,
+  "f1": 0.8,
+  "slot_hits": {
+   "list": true,
+   "status indicator": false,
+   "filter control": true
+  }
+ },
+ "reply": "Here's the status-filterable list. It uses two surfaces: a filter strip with status counts, and the eight-item list below it.\n\n<a2ui-json>\n[\n  {\n    \"version\": \"v0.9.1\",\n    \"createSurface\": {\n      \"surfaceId\": \"status-filter\",\n      \"catalogId\": \"https://a2uicatalog.ai/catalog/c-data-display.json\"\n    }\n  },\n  {\n    \"version\": \"v0.9.1\",\n    \"updateComponents\": {\n      \"surfaceId\": \"status-filter\",\n      \"components\": [\n        {\n          \"id\": \"root\",\n          \"component\": \"segmented_control\",\n          \"name\": \"status_filter\",\n          \"selected_value\": \"all\",\n          \"options\": \"[{\\\"label\\\": \\\"All (8)\\\", \\\"value\\\": \\\"all\\\"}, {\\\"label\\\": \\\"Active (3)\\\", \\\"value\\\": \\\"active\\\"}, {\\\"label\\\": \\\"Pending (2)\\\", \\\"value\\\": \\\"pending\\\"}, {\\\"label\\\": \\\"Blocked (1)\\\", \\\"value\\\": \\\"blocked\\\"}, {\\\"label\\\": \\\"Done (2)\\\", \\\"value\\\": \\\"done\\\"}]\",\n          \"accessibility\": {\n            \"label\": \"Filter by status\",\n            \"description\": \"Shows only the items with the selected status\"\n          }\n        }\n      ]\n    }\n  },\n  {\n    \"version\": \"v0.9.1\",\n    \"createSurface\": {\n      \"surfaceId\": \"item-list\",\n      \"catalogId\": \"https://a2uicatalog.ai/catalog/c-data-display.json\"\n    }\n  },\n  {\n    \"version\": \"v0.9.1\",\n    \"updateComponents\": {\n      \"surfaceId\": \"item-list\",\n      \"components\": [\n        {\n          \"id\": \"root\",\n          \"component\": \"data_table_sortable\",\n          \"headers\": [\"Title\", \"Status\", \"Detail\"],\n          \"rows\": [\n            [\"Onboarding flow redesign\", \"Active\", \"New welcome screens are in design review this week.\"],\n            [\"Billing API migration\", \"Active\", \"Moving invoice endpoints to the v2 gateway.\"],\n            [\"Search relevance tuning\", \"Active\", \"Testing a new ranking model on 10% of traffic.\"],\n            [\"Mobile push notifications\", \"Pending\", \"Waiting on copy approval from marketing.\"],\n            [\"Data retention policy\", \"Pending\", \"Legal review is scheduled for next Tuesday.\"],\n            [\"SSO for enterprise tenants\", \"Blocked\", \"Needs a SAML certificate from the identity team.\"],\n            [\"Dark mode support\", \"Done\", \"Shipped to all users in release 4.2.\"],\n            [\"Audit log export\", \"Done\", \"CSV and JSON export are now available in settings.\"]\n          ],\n          \"accessibility\": {\n            \"label\": \"Items\",\n            \"description\": \"Eight items, each with a title, status, and one-line detail\"\n          }\n        }\n      ]\n    }\n  }\n]\n</a2ui-json>\n\n**About filtering:** this catalog has no data-binding or functions, so the status control can't automatically hide rows in the list. The selected filter value (`status_filter`) is available to the host application, which can use it to re-send the list with only the matching rows. In the meantime, you can sort by the **Status** column to group items by status."
+}

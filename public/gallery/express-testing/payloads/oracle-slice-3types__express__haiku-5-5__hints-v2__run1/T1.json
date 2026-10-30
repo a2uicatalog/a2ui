@@ -1,0 +1,142 @@
+{
+ "label": "oracle-slice-3types__express__haiku-5-5__hints-v2__run1",
+ "task": "T1",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "header",
+      "component": "page_header",
+      "title": "The Water Cycle",
+      "subtitle": "How water moves between the ocean, air, and land",
+      "icon": "\ud83d\udca7",
+      "tag": "Lesson",
+      "accent": "#0ea5e9"
+     },
+     {
+      "id": "s1h",
+      "component": "heading",
+      "text": "1. Evaporation"
+     },
+     {
+      "id": "s1b",
+      "component": "body",
+      "text": "The sun heats water at the surface of oceans, lakes and rivers. It turns into water vapour, a gas that rises into the air."
+     },
+     {
+      "id": "s2h",
+      "component": "heading",
+      "text": "2. Condensation"
+     },
+     {
+      "id": "s2b",
+      "component": "body",
+      "text": "As warm vapour rises, it cools and gathers around tiny dust particles. These droplets form clouds."
+     },
+     {
+      "id": "s3h",
+      "component": "heading",
+      "text": "3. Precipitation and Runoff"
+     },
+     {
+      "id": "s3b",
+      "component": "body",
+      "text": "When droplets grow heavy, they fall as rain, snow or hail. The water then runs off into rivers or soaks into the ground, eventually returning to the sea."
+     },
+     {
+      "id": "ex",
+      "component": "concept_rung",
+      "badge": "1",
+      "kind": "example",
+      "label": "WORKED EXAMPLE",
+      "title": "A puddle disappears",
+      "body": "A 2 mm puddle sits on warm pavement on a dry afternoon. By evening it is gone.\n\nThe water evaporated into the air. It did not soak away or drain, because the pavement is not porous.",
+      "code": "",
+      "code_caption": "",
+      "takeaway": "Evaporation is driven by heat, so warm, sunny conditions speed up the water cycle."
+     },
+     {
+      "id": "quiz",
+      "component": "quiz_set",
+      "title": "Self-check",
+      "questions": [
+       {
+        "question": "Which process turns liquid water into water vapour?",
+        "options": [
+         "Condensation",
+         "Evaporation",
+         "Precipitation",
+         "Runoff"
+        ],
+        "correct": 1,
+        "explanation": "Evaporation is caused by heat, which turns liquid water into vapour."
+       },
+       {
+        "question": "What causes water vapour to form clouds?",
+        "options": [
+         "Cooling and condensing around particles",
+         "Freezing in the ground",
+         "Heating by sunlight",
+         "Wind blowing over oceans"
+        ],
+        "correct": 0,
+        "explanation": "Vapour cools, then condenses around dust particles to form droplets."
+       },
+       {
+        "question": "Where does runoff usually end up?",
+        "options": [
+         "In the atmosphere",
+         "Back in rivers and eventually the sea",
+         "Inside clouds only",
+         "On land forever"
+        ],
+        "correct": 1,
+        "explanation": "Runoff flows into rivers, which carry the water back to the sea."
+       }
+      ],
+      "pass_score": 70,
+      "accent": "#0ea5e9"
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "header",
+         "s1h",
+         "s1b",
+         "s2h",
+         "s2b",
+         "s3h",
+         "s3b"
+        ]
+       },
+       {
+        "blocks": [
+         "ex",
+         "quiz"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,38 @@
+{
+ "task": "T4",
+ "condition": "CTN",
+ "format": "json",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-4-5-20251001",
+ "label": "oracle-slice-3types__json__haiku-4-5__temp0__run2",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 31546,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 8.6,
+ "usage": {
+  "input_tokens": 9041,
+  "output_tokens": 973
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns"
+ ],
+ "score": {
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "list": false,
+   "status indicator": false,
+   "filter control": false
+  }
+ },
+ "reply": "I'll create a filterable list UI with eight items, each showing a title, status, and detail line.\n\n<a2ui-json>\n{\n  \"version\": \"v0.9.1\",\n  \"createSurface\": {\n    \"surfaceId\": \"filterable-list\",\n    \"catalogId\": \"https://a2uicatalog.ai/catalog/c-data-display.json\"\n  }\n}\n</a2ui-json>\n\n<a2ui-json>\n{\n  \"version\": \"v0.9.1\",\n  \"updateComponents\": {\n    \"surfaceId\": \"filterable-list\",\n    \"components\": [\n      {\n        \"id\": \"root\",\n        \"component\": \"columns\",\n        \"cols\": 1,\n        \"items\": [\n          {\n            \"blocks\": [\n              {\n                \"id\": \"title\",\n                \"component\": \"heading\",\n                \"text\": \"Task List\"\n              },\n              {\n                \"id\": \"filter-control\",\n                \"component\": \"segmented_control\",\n                \"name\": \"status-filter\",\n                \"options\": \"[{\\\"label\\\": \\\"All\\\", \\\"value\\\": \\\"all\\\"}, {\\\"label\\\": \\\"Active\\\", \\\"value\\\": \\\"active\\\"}, {\\\"label\\\": \\\"Completed\\\", \\\"value\\\": \\\"completed\\\"}, {\\\"label\\\": \\\"Pending\\\", \\\"value\\\": \\\"pending\\\"}]\",\n                \"selected_value\": \"all\"\n              },\n              {\n                \"id\": \"items-list\",\n                \"component\": \"entity_list\",\n                \"items\": {\n                  \"path\": \"/items\"\n                }\n              }\n            ]\n          }\n        ]\n      }\n    ]\n  }\n}\n</a2ui-json>\n\n<a2ui-json>\n{\n  \"version\": \"v0.9.1\",\n  \"updateDataModel\": {\n    \"surfaceId\": \"filterable-list\",\n    \"path\": \"/items\",\n    \"value\": [\n      {\n        \"name\": \"Design system update\",\n        \"subtitle\": \"Implement new color palette\",\n        \"status\": \"active\",\n        \"icon\": \"\ud83c\udfa8\"\n      },\n      {\n        \"name\": \"API documentation\",\n        \"subtitle\": \"Complete endpoint reference\",\n        \"status\": \"active\",\n        \"icon\": \"\ud83d\udcda\"\n      },\n      {\n        \"name\": \"Database migration\",\n        \"subtitle\": \"Upgrade to PostgreSQL 15\",\n        \"status\": \"completed\",\n        \"icon\": \"\ud83d\udcbe\"\n      },\n      {\n        \"name\": \"Security audit\",\n        \"subtitle\": \"Third-party penetration testing\",\n        \"status\": \"pending\",\n        \"icon\": \"\ud83d\udd12\"\n      },\n      {\n        \"name\": \"Performance optimization\",\n        \"subtitle\": \"Reduce load time by 40%\",\n        \"status\": \"active\",\n        \"icon\": \"\u26a1\"\n      },\n      {\n        \"name\": \"User testing sessions\",\n        \"subtitle\": \"Conduct 5 moderated interviews\",\n        \"status\": \"completed\",\n        \"icon\": \"\ud83d\udc65\"\n      },\n      {\n        \"name\": \"Mobile app release\",\n        \"subtitle\": \"iOS and Android v2.0\",\n        \"status\": \"pending\",\n        \"icon\": \"\ud83d\udcf1\"\n      },\n      {\n        \"name\": \"Analytics dashboard\",\n        \"subtitle\": \"Real-time metrics visualization\",\n        \"status\": \"active\",\n        \"icon\": \"\ud83d\udcca\"\n      }\n    ]\n  }\n}\n</a2ui-json>\n\nThis creates a filterable task list with:\n- **Title**: \"Task List\" heading\n- **Filter Control**: Segmented control to filter by All, Active, Completed, or Pending status\n- **Item List**: Eight items displayed with icons, titles, and one-line details using the entity_list component\n\nEach item includes an emoji icon, a task name, and a descriptive subtitle. The segmented control allows users to filter the list by status category."
+}

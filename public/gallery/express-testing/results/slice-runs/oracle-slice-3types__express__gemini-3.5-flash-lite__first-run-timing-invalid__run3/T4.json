@@ -1,0 +1,44 @@
+{
+ "task": "T4",
+ "condition": "C_gemini-3.5-f",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash-lite",
+ "hints": false,
+ "label": "oracle-slice-3types__express__gemini-3.5-flash-lite__first-run-timing-invalid__run3",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 16421,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 30.9,
+ "usage": {
+  "input_tokens": 4601,
+  "output_tokens": 560
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns",
+  "heading",
+  "body",
+  "segmented_control",
+  "entity_list"
+ ],
+ "score": {
+  "precision": 0.4,
+  "recall": 0.667,
+  "f1": 0.5,
+  "slot_hits": {
+   "list": true,
+   "status indicator": false,
+   "filter control": true
+  }
+ },
+ "reply": "<a2ui>\nroot = columns(\n    cols=1,\n    gap=\"1rem\",\n    items=[\n        {\n            \"blocks\": [\n                heading(\"Task Status Overview\"),\n                body(\"Filterable list of system items and their current operational status.\"),\n                segmented_control(\n                    options=[\n                        {\"label\": \"All\", \"value\": \"all\"},\n                        {\"label\": \"Active\", \"value\": \"active\"},\n                        {\"label\": \"Pending\", \"value\": \"pending\"},\n                        {\"label\": \"Offline\", \"value\": \"offline\"}\n                    ],\n                    selected_value=\"all\",\n                    name=\"status_filter\"\n                ),\n                entity_list(\n                    items=[\n                        {\n                            \"name\": \"Database Replication Service\",\n                            \"subtitle\": \"Primary node cluster sync operational\",\n                            \"status\": \"active\",\n                            \"meta\": \"99.9% uptime\"\n                        },\n                        {\n                            \"name\": \"Payment Gateway API\",\n                            \"subtitle\": \"Awaiting webhook security credentials renewal\",\n                            \"status\": \"pending\",\n                            \"meta\": \"Due in 2 days\"\n                        },\n                        {\n                            \"name\": \"Legacy Storage Backup\",\n                            \"subtitle\": \"Node unreachable on port 5432\",\n                            \"status\": \"offline\",\n                            \"meta\": \"Checked 5m ago\"\n                        },\n                        {\n                            \"name\": \"User Authentication Engine\",\n                            \"subtitle\": \"OAuth2 token issuer operating normally\",\n                            \"status\": \"active\",\n                            \"meta\": \"4ms latency\"\n                        },\n                        {\n                            \"name\": \"Email Notification Queue\",\n                            \"subtitle\": \"SMTP relay handshake verification queued\",\n                            \"status\": \"pending\",\n                            \"meta\": \"In queue\"\n                        },\n                        {\n                            \"name\": \"Analytics Batch Processor\",\n                            \"subtitle\": \"Scheduled cron job finished successfully\",\n                            \"status\": \"active\",\n                            \"meta\": \"Completed\"\n                        },\n                        {\n                            \"name\": \"CDN Asset Purge Service\",\n                            \"subtitle\": \"Edge cache eviction timeout reached\",\n                            \"status\": \"offline\",\n                            \"meta\": \"Retrying...\"\n                        },\n                        {\n                            \"name\": \"Customer Support Webhook\",\n                            \"subtitle\": \"Real-time ticket routing active\",\n                            \"status\": \"active\",\n                            \"meta\": \"Operational\"\n                        }\n                    ]\n                )\n            ]\n        }\n    ]\n)\n</a2ui>"
+}

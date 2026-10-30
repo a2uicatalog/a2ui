@@ -1,0 +1,32 @@
+{
+ "task": "T4",
+ "condition": "JB",
+ "label": "jev-picks-on-rule-slice__express__haiku-4-5__run2",
+ "agent_type": "jev-narrowed",
+ "catalogue": "JB-T4.json",
+ "atoms_in_catalogue": 20,
+ "prompt_chars": 10018,
+ "slot_recall": [
+  2,
+  3
+ ],
+ "secs": 5.5,
+ "usage": {
+  "input_tokens": 2823,
+  "output_tokens": 568
+ },
+ "valid": false,
+ "error": "A2uiCompilationParseError: Failed to parse expression: Syntax error at line 52:3: mismatched input '[' expecting {',', ')'} (line 52) - Line 52, Col 3 - Help: Please correct the syntax error in your Express DSL.",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "list": false,
+   "status indicator": false,
+   "filter control": false
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"items-surface\")\n\n// Initialize filter state\n$/filterStatus = \"all\"\n\n// Sample data\n$/items = [\n  {title: \"Project Alpha\", status: \"inprogress\", detail: \"Development phase ongoing\"},\n  {title: \"Project Beta\", status: \"success\", detail: \"Completed ahead of schedule\"},\n  {title: \"Project Gamma\", status: \"warning\", detail: \"Minor delays expected\"},\n  {title: \"Project Delta\", status: \"error\", detail: \"Blocked by external dependency\"},\n  {title: \"Project Epsilon\", status: \"inprogress\", detail: \"Testing in progress\"},\n  {title: \"Project Zeta\", status: \"success\", detail: \"Ready for production\"},\n  {title: \"Project Eta\", status: \"warning\", detail: \"Requires stakeholder approval\"},\n  {title: \"Project Theta\", status: \"neutral\", detail: \"Scheduled to start next week\"}\n]\n\n// Filter tabs\nfilter_tabs = tab_group(\n  target=\"filterStatus\",\n  options=[\n    {value: \"all\", label: \"All\", selected: true},\n    {value: \"inprogress\", label: \"In Progress\"},\n    {value: \"success\", label: \"Success\"},\n    {value: \"warning\", label: \"Warning\"},\n    {value: \"error\", label: \"Error\"},\n    {value: \"neutral\", label: \"Neutral\"}\n  ],\n  panels={\n    all: \"items-panel\",\n    inprogress: \"items-panel\",\n    success: \"items-panel\",\n    warning: \"items-panel\",\n    error: \"items-panel\",\n    neutral: \"items-panel\"\n  }\n)\n\n// Item template with status pill\nitem_template = columns(\n  cols=3,\n  gap=\"1rem\",\n  items=[\n    {blocks: [text_block($title)]},\n    {blocks: [status_pill($status, $status)]},\n    {blocks: [text_block($detail)]}\n  ]\n)\n\n// Filtered items list\nfiltered_items = _template(\n  $[$/items | filter(status == $/filterStatus || $/filterStatus == \"all\")],\n  item_template\n)\n\nroot = body(\n  [\n    heading(\"Items\"),\n    filter_tabs,\n    filtered_items\n  ]\n)\n\n</a2ui>"
+}

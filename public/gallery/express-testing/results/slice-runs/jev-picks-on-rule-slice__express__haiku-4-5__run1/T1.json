@@ -1,0 +1,34 @@
+{
+ "task": "T1",
+ "condition": "JB",
+ "label": "jev-picks-on-rule-slice__express__haiku-4-5__run1",
+ "agent_type": "jev-narrowed",
+ "catalogue": "JB-T1.json",
+ "atoms_in_catalogue": 13,
+ "prompt_chars": 11444,
+ "slot_recall": [
+  4,
+  5
+ ],
+ "secs": 12.7,
+ "usage": {
+  "input_tokens": 3200,
+  "output_tokens": 1242
+ },
+ "valid": false,
+ "error": "A2uiCompilationParseError: Failed to parse expression: Syntax error at line 58:14: mismatched input '=' expecting ':' (line 58) - Line 58, Col 14 - Help: Please correct the syntax error in your Express DSL.",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "title": false,
+   "concept sections (x3)": false,
+   "worked example": false,
+   "3-question quiz": false,
+   "quiz result": false
+  }
+ },
+ "reply": "<a2ui>\nroot = article_hero(\n  \"The Water Cycle\",\n  \"Understanding how water moves through Earth's systems\",\n  \"https://images.unsplash.com/photo-1505142468610-359e7d316be0?w=1200&h=400&fit=crop\"\n)\n\nintro_section = intro(\n  series_label=\"Earth Science Fundamentals\",\n  series_url=\"https://example.com/earth-science\"\n)\n\nevaporation_rung = concept_rung(\n  badge=\"1\",\n  kind=\"depth\",\n  title=\"Evaporation\",\n  body=\"Water from oceans, lakes, and rivers is heated by the sun. This energy transforms liquid water into water vapor, an invisible gas that rises into the atmosphere. About 90% of atmospheric water vapor comes from ocean evaporation.\"\n)\n\ncondensation_rung = concept_rung(\n  badge=\"2\",\n  kind=\"depth\",\n  title=\"Condensation\",\n  body=\"As water vapor rises and cools in the upper atmosphere, it transforms back into liquid water droplets. These droplets cluster together around dust particles to form clouds. This process is essential for precipitation to occur.\"\n)\n\nprecipitation_rung = concept_rung(\n  badge=\"3\",\n  kind=\"depth\",\n  title=\"Precipitation & Collection\",\n  body=\"Water droplets in clouds combine and become heavy enough to fall as rain, snow, or sleet\u2014called precipitation. This water collects in oceans, lakes, rivers, and underground aquifers, completing the cycle and returning to be evaporated again.\"\n)\n\nexample_rung = concept_rung(\n  badge=\"EX\",\n  kind=\"example\",\n  title=\"A Day in the Water Cycle\",\n  body=\"Imagine a water molecule in the Atlantic Ocean. On a sunny morning, solar radiation heats it, and it evaporates into the air. Wind currents carry the vapor westward. Over several days, as it rises into cooler air, it condenses with millions of others into a puffy cloud. When the cloud drifts over land and cools further, the droplets fall as rain, soaking into the soil. A plant's roots absorb this water, and weeks later, it transpires through leaf stomata back into the atmosphere\u2014continuing the endless cycle.\",\n  takeaway=\"One water molecule can cycle through evaporation, condensation, and precipitation countless times over centuries.\"\n)\n\nwater_cycle_ladder = concept_ladder(\n  title=\"The Water Cycle\",\n  eyebrow=\"Earth's Hydrological Process\",\n  dek=\"A continuous journey of water through evaporation, condensation, and precipitation\",\n  hook=\"Water is constantly moving between Earth's surface and atmosphere in a process driven by solar energy. Understanding this cycle is key to grasping weather, climate, and life itself.\",\n  model=\"Think of the water cycle as Earth's recycling system\u2014the same water molecules that rained on dinosaurs still exist today, perpetually transforming between liquid, gas, and solid states.\",\n  model_note=\"This endless circulation is powered entirely by solar energy and gravity.\",\n  rungs=[evaporation_rung, condensation_rung, precipitation_rung, example_rung],\n  closing_note=\"The water cycle connects the atmosphere, hydrosphere, and land in one interconnected system. Disruptions to this cycle\u2014from climate change to pollution\u2014affect ecosystems worldwide.\",\n  theme=\"light\",\n  fonts={body: \"sans\", heading: \"sans\", label: \"mono\"}\n)\n\nquiz = quiz_set(\n  title=\"Water Cycle Self-Check\",\n  questions=[\n    {\n      question=\"What is the primary energy source that drives the water cycle?\",\n      options=[\"Gravity\", \"Solar radiation from the sun\", \"Earth's magnetic field\", \"Ocean currents\"],\n      correct=1,\n      explanation=\"The sun's energy heats water, causing evaporation. Without solar radiation, the water cycle would not occur.\"\n    },\n    {\n      question=\"What is the process called when water vapor cools and becomes liquid droplets?\",\n      options=[\"Evaporation\", \"Precipitation\", \"Condensation\", \"Transpiration\"],\n      correct=2,\n      explanation=\"Condensation is the phase change from gas (water vapor) back to liquid. This is what forms clouds.\"\n    },\n    {\n      question=\"Which of the following is NOT a form of precipitation?\",\n      options=[\"Rain\", \"Snow\", \"Evaporation\", \"Sleet\"],\n      correct=2,\n      explanation=\"Evaporation is the process of water turning into vapor\u2014it's not a form of precipitation. Precipitation is water falling from clouds.\"\n    }\n  ],\n  pass_score=70,\n  accent=\"#4f46e5\",\n  on_pass=info_card(\n    title=\"Great work!\",\n    text=\"You've demonstrated a solid understanding of the water cycle. Keep exploring how this process interacts with weather patterns and climate!\"\n  ),\n  on_fail=info_card(\n    title=\"Review and try again\",\n    text=\"The water cycle involves three main stages: evaporation (heating), condensation (cooling), and precipitation (falling). Review the concept sections above and try the quiz again.\"\n  )\n)\n\nroot = [intro_section, water_cycle_ladder, quiz]\n</a2ui>"
+}

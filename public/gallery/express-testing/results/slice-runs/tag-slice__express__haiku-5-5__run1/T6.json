@@ -1,0 +1,42 @@
+{
+ "task": "T6",
+ "condition": "G_haiku-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "tag-slice__express__haiku-5-5__run1",
+ "agent_type": "Learning",
+ "catalogue": "G-learning.json",
+ "atoms_in_catalogue": 236,
+ "prompt_chars": 117248,
+ "slot_recall": [
+  2,
+  2
+ ],
+ "secs": 9.3,
+ "usage": {
+  "input_tokens": 41969,
+  "output_tokens": 1796
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "heading",
+  "flashcard_deck",
+  "progress_bar",
+  "reveal"
+ ],
+ "score": {
+  "precision": 0.5,
+  "recall": 1.0,
+  "f1": 0.667,
+  "slot_hits": {
+   "flashcard deck": true,
+   "progress indicator": true
+  }
+ },
+ "reply": "<a2ui>\ntitle = heading(\"Spanish Vocabulary: Essentials\")\n\ndeck = flashcard_deck(\n  cards=[\n    {front: \"hola\", back: \"hello\"},\n    {front: \"gracias\", back: \"thank you\"},\n    {front: \"por favor\", back: \"please\"},\n    {front: \"agua\", back: \"water\"},\n    {front: \"casa\", back: \"house\"},\n    {front: \"libro\", back: \"book\"},\n    {front: \"amigo\", back: \"friend\"},\n    {front: \"comer\", back: \"to eat\"},\n    {front: \"grande\", back: \"big\"},\n    {front: \"tiempo\", back: \"time / weather\"}\n  ],\n  accent=\"#4f46e5\",\n  label_front=\"SPANISH\",\n  label_back=\"ENGLISH\"\n)\n\nprogress = progress_bar(value=0, label=\"Cards reviewed\", accent=\"#4f46e5\", show_percent=true, caption=\"0 of 10 cards reviewed\")\n\nroot = reveal(blocks=[title, deck, progress])\n</a2ui>"
+}

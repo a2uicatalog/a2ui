@@ -1,0 +1,33 @@
+Metrics Overview
+ $128.4K ↑ 
+ Revenue
+ +12.5% vs last month
+ 8,942 ↑ 
+ Active Users
+ +6.2% vs last month
+ 3.1% ↓ 
+ Churn Rate
+ -0.4% vs last month
+ 231ms ↓ 
+ Avg Response Time
+ -18ms vs last month
+ Revenue vs Target by Quarter
+ Revenue ($K) 
+ Target ($K) 
+ 0
+ 20
+ 40
+ 60
+ 80
+ 100
+ 120
+ 140
+ Q1
+ Q2
+ Q3
+ Q4
+ Category Revenue ($K) Target ($K) 
+ Q1 95 100 
+ Q2 108 105 
+ Q3 121 115 
+ Q4 128 125

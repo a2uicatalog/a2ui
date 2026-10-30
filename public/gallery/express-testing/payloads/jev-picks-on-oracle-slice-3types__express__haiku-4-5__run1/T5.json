@@ -1,0 +1,94 @@
+{
+ "label": "jev-picks-on-oracle-slice-3types__express__haiku-4-5__run1",
+ "task": "T5",
+ "format": "express",
+ "model_id": null,
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/jc-t5.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "pricing_tier_group",
+      "tiers": [
+       {
+        "name": "Starter",
+        "price": "$29",
+        "description": "Perfect for individuals",
+        "features": [
+         "Up to 10 projects",
+         "Basic analytics",
+         "Community support",
+         "1 GB storage"
+        ],
+        "cta": "_inline_1"
+       },
+       {
+        "name": "Professional",
+        "price": "$79",
+        "description": "Ideal for growing teams",
+        "features": [
+         "Unlimited projects",
+         "Advanced analytics",
+         "Priority email support",
+         "100 GB storage",
+         "Custom integrations"
+        ],
+        "cta": "_inline_2",
+        "badge": "_inline_3"
+       },
+       {
+        "name": "Enterprise",
+        "price": "Custom",
+        "description": "For large organizations",
+        "features": [
+         "Everything in Professional",
+         "Dedicated account manager",
+         "24/7 phone support",
+         "Unlimited storage",
+         "Custom SLA",
+         "Advanced security"
+        ],
+        "cta": "_inline_4"
+       }
+      ]
+     },
+     {
+      "id": "_inline_1",
+      "component": "ripple_button",
+      "label": "Get Started",
+      "icon": "\u2192"
+     },
+     {
+      "id": "_inline_2",
+      "component": "ripple_button",
+      "label": "Get Started",
+      "icon": "\u2192",
+      "accent": "#0066ff"
+     },
+     {
+      "id": "_inline_3",
+      "component": "badge",
+      "text": "Recommended",
+      "color": "#0066ff"
+     },
+     {
+      "id": "_inline_4",
+      "component": "ripple_button",
+      "label": "Contact Sales",
+      "icon": "\u2192"
+     }
+    ]
+   }
+  }
+ ]
+}

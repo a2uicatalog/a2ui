@@ -1,0 +1,107 @@
+{
+ "label": "oracle-slice-6types__express__haiku-4-5__temp0__hints-v1__run3",
+ "task": "T3",
+ "format": "express",
+ "model_id": "claude-haiku-4-5-20251001",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/d-t3.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "hero",
+      "component": "gradient_hero",
+      "title": "Transform Your Workflow",
+      "subtitle": "Streamline your process with powerful tools designed for modern teams",
+      "badge": "New Release",
+      "cta_label": "Get Started",
+      "cta_url": "https://example.com/signup"
+     },
+     {
+      "id": "features",
+      "component": "feature_grid",
+      "heading": "Why Choose Us",
+      "description": "Powerful features built for your success",
+      "columns": 3,
+      "features": [
+       {
+        "icon": "\u26a1",
+        "title": "Lightning Fast",
+        "description": "Experience blazing-fast performance that keeps your team productive"
+       },
+       {
+        "icon": "\ud83d\udd12",
+        "title": "Secure & Reliable",
+        "description": "Enterprise-grade security with 99.9% uptime guarantee"
+       },
+       {
+        "icon": "\ud83c\udfaf",
+        "title": "Easy Integration",
+        "description": "Seamlessly connect with your favorite tools and platforms"
+       }
+      ]
+     },
+     {
+      "id": "testimonial",
+      "component": "testimonial_card",
+      "text": "This product completely transformed how our team collaborates. We've seen a 40% increase in productivity since switching.",
+      "author_name": "Sarah Chen",
+      "author_title": "Product Manager at TechCorp",
+      "author_avatar_url": "https://api.example.com/avatars/sarah.jpg",
+      "rating": 5
+     },
+     {
+      "id": "cta",
+      "component": "cta_section",
+      "heading": "Ready to Get Started?",
+      "body": "Join thousands of teams already using our platform to streamline their workflow.",
+      "primary_cta": {
+       "label": "Start Free Trial",
+       "url": "https://example.com/trial"
+      },
+      "secondary_cta": {
+       "label": "Learn More",
+       "url": "https://example.com/features"
+      }
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "0",
+      "items": [
+       {
+        "blocks": [
+         "hero"
+        ]
+       },
+       {
+        "blocks": [
+         "features"
+        ]
+       },
+       {
+        "blocks": [
+         "testimonial"
+        ]
+       },
+       {
+        "blocks": [
+         "cta"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,122 @@
+{
+ "label": "oracle-slice-6types__express__haiku-5-5__run2",
+ "task": "T4",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/d-t4.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "title",
+      "component": "heading",
+      "text": "Work items"
+     },
+     {
+      "id": "filter",
+      "component": "segmented_control",
+      "options": [
+       {
+        "label": "All",
+        "value": "all"
+       },
+       {
+        "label": "Open",
+        "value": "open"
+       },
+       {
+        "label": "In progress",
+        "value": "in_progress"
+       },
+       {
+        "label": "Done",
+        "value": "done"
+       },
+       {
+        "label": "Blocked",
+        "value": "blocked"
+       }
+      ],
+      "selected_value": "all",
+      "name": "status_filter"
+     },
+     {
+      "id": "items",
+      "component": "entity_list",
+      "items": [
+       {
+        "name": "Set up CI pipeline",
+        "subtitle": "Automated builds and tests run on every push.",
+        "status": "Done"
+       },
+       {
+        "name": "Draft API reference",
+        "subtitle": "Endpoint docs are written but examples are missing.",
+        "status": "In progress"
+       },
+       {
+        "name": "Migrate user database",
+        "subtitle": "Schema is ready; cutover date is not yet scheduled.",
+        "status": "Blocked"
+       },
+       {
+        "name": "Add rate limiting",
+        "subtitle": "Limits are defined for public endpoints only.",
+        "status": "Open"
+       },
+       {
+        "name": "Update onboarding emails",
+        "subtitle": "Copy is approved and awaiting template build.",
+        "status": "In progress"
+       },
+       {
+        "name": "Audit access logs",
+        "subtitle": "Quarterly review completed with no findings.",
+        "status": "Done"
+       },
+       {
+        "name": "Integrate payment provider",
+        "subtitle": "Sandbox credentials are missing from staging.",
+        "status": "Blocked"
+       },
+       {
+        "name": "Localize settings page",
+        "subtitle": "Translation requests have not been sent yet.",
+        "status": "Open"
+       }
+      ]
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "title",
+         "filter"
+        ]
+       },
+       {
+        "blocks": [
+         "items"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

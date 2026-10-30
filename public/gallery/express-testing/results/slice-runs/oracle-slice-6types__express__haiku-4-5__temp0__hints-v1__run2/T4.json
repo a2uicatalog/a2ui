@@ -1,0 +1,35 @@
+{
+ "task": "T4",
+ "condition": "DTH",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-4-5-20251001",
+ "label": "oracle-slice-6types__express__haiku-4-5__temp0__hints-v1__run2",
+ "agent_type": "T4",
+ "catalogue": "D-t4.json",
+ "atoms_in_catalogue": 20,
+ "prompt_chars": 10490,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 4.3,
+ "usage": {
+  "input_tokens": 3147,
+  "output_tokens": 504
+ },
+ "valid": true,
+ "error": null,
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "list": false,
+   "status indicator": false,
+   "filter control": false
+  }
+ },
+ "reply": "<a2ui>\n$/statusFilter = \"all\"\n\nstatusOptions = [\n  {value: \"all\", label: \"All\"},\n  {value: \"active\", label: \"Active\"},\n  {value: \"inactive\", label: \"Inactive\"},\n  {value: \"pending\", label: \"Pending\"}\n]\n\nitems = [\n  {title: \"Item One\", status: \"active\", detail: \"First item detail line\"},\n  {title: \"Item Two\", status: \"inactive\", detail: \"Second item detail line\"},\n  {title: \"Item Three\", status: \"pending\", detail: \"Third item detail line\"},\n  {title: \"Item Four\", status: \"active\", detail: \"Fourth item detail line\"},\n  {title: \"Item Five\", status: \"inactive\", detail: \"Fifth item detail line\"},\n  {title: \"Item Six\", status: \"active\", detail: \"Sixth item detail line\"},\n  {title: \"Item Seven\", status: \"pending\", detail: \"Seventh item detail line\"},\n  {title: \"Item Eight\", status: \"inactive\", detail: \"Eighth item detail line\"}\n]\n\nfilteredItems = [\n  {name: \"Item One\", subtitle: \"First item detail line\", status: \"active\"},\n  {name: \"Item Two\", subtitle: \"Second item detail line\", status: \"inactive\"},\n  {name: \"Item Three\", subtitle: \"Third item detail line\", status: \"pending\"},\n  {name: \"Item Four\", subtitle: \"Fourth item detail line\", status: \"active\"},\n  {name: \"Item Five\", subtitle: \"Fifth item detail line\", status: \"inactive\"},\n  {name: \"Item Six\", subtitle: \"Sixth item detail line\", status: \"active\"},\n  {name: \"Item Seven\", subtitle: \"Seventh item detail line\", status: \"pending\"},\n  {name: \"Item Eight\", subtitle: \"Eighth item detail line\", status: \"inactive\"}\n]\n\nroot = [\n  heading(\"Items\"),\n  segmented_control(options=statusOptions, selected_value=$/statusFilter, name=\"statusFilter\"),\n  entity_list(items=filteredItems)\n]\n</a2ui>"
+}

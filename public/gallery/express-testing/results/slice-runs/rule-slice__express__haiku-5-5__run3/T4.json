@@ -1,0 +1,40 @@
+{
+ "task": "T4",
+ "condition": "B_haiku-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "rule-slice__express__haiku-5-5__run3",
+ "agent_type": "Data display",
+ "catalogue": "B-data-display.json",
+ "atoms_in_catalogue": 248,
+ "prompt_chars": 125436,
+ "slot_recall": [
+  2,
+  3
+ ],
+ "secs": 5.5,
+ "usage": {
+  "input_tokens": 45608,
+  "output_tokens": 1043
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "filterable_list"
+ ],
+ "score": {
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "list": false,
+   "status indicator": false,
+   "filter control": false
+  }
+ },
+ "reply": "<a2ui>\nroot = filterable_list(\"Service Rollout Checklist\", [\n  {title: \"Database migration\", status: \"done\", detail: \"Schema v12 applied to the production cluster without downtime.\"},\n  {title: \"API gateway configuration\", status: \"done\", detail: \"Rate limits and auth routes deployed to all three regions.\"},\n  {title: \"Payment provider sandbox tests\", status: \"in-progress\", detail: \"Refund flows pass; partial-capture cases still under review.\"},\n  {title: \"Load testing at 2x peak traffic\", status: \"in-progress\", detail: \"Latency holds under 300 ms; memory use climbs past the 80% threshold.\"},\n  {title: \"Security review sign-off\", status: \"blocked\", detail: \"Waiting on the external auditor's report for the token storage findings.\"},\n  {title: \"Customer communication draft\", status: \"planned\", detail: \"Release notes drafted; awaiting legal wording on data residency.\"},\n  {title: \"Monitoring and alert rules\", status: \"planned\", detail: \"Dashboards built; paging thresholds still need on-call sign-off.\"},\n  {title: \"Rollback procedure rehearsal\", status: \"blocked\", detail: \"Staging environment is missing the snapshot restore tooling.\"}\n], filter_field=\"status\", show_counts=true, empty_text=\"No items match this status.\")\n</a2ui>"
+}

@@ -1,0 +1,31 @@
+{
+ "task": "T6",
+ "condition": "E",
+ "label": "wrong-domain-slice__express__haiku-4-5__run1",
+ "agent_type": "Data display",
+ "catalogue": "B-data-display.json",
+ "atoms_in_catalogue": 248,
+ "prompt_chars": 125436,
+ "slot_recall": [
+  2,
+  2
+ ],
+ "secs": 8.3,
+ "usage": {
+  "input_tokens": 36023,
+  "output_tokens": 926
+ },
+ "valid": false,
+ "error": "A2uiCompilationValidationError: Standalone function calls are not supported in A2UI v0.9.1 - Help: Please correct the syntax error in your Express DSL.",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "flashcard deck": false,
+   "progress indicator": false
+  }
+ },
+ "reply": "<a2ui>\npalette(accent=\"#4f46e5\")\n\ncard_items = [\n  {front: \"Ephemeral\", back: \"Lasting for a very short time; temporary\"},\n  {front: \"Serendipity\", back: \"Finding valuable things by chance; fortunate discovery\"},\n  {front: \"Ubiquitous\", back: \"Present or found everywhere; constantly encountered\"},\n  {front: \"Mellifluous\", back: \"Sweet; pleasant to hear; smooth and musical\"},\n  {front: \"Fortuitous\", back: \"Occurring by chance; happening by accident or luck\"},\n  {front: \"Pragmatic\", back: \"Practical; focused on actual results rather than theory\"},\n  {front: \"Sanguine\", back: \"Optimistic; hopeful; positive in attitude\"},\n  {front: \"Taciturn\", back: \"Quiet; saying very little; not talkative\"},\n  {front: \"Perspicacious\", back: \"Having keen insight or understanding; mentally sharp\"},\n  {front: \"Obfuscate\", back: \"To make unclear or obscure; to deliberately confuse\"}\n]\n\nreviewed_count = 0\n\nroot = color_section(\n  accent=\"#4f46e5\",\n  style=\"tint\",\n  padding=\"40px\",\n  blocks=[\n    page_header(\n      title=\"Vocabulary Flashcards\",\n      subtitle=\"Review all 10 words \u2022 Flip each card to see the definition\",\n      icon=\"\ud83d\udcda\"\n    ),\n    \n    progress_bar(\n      value=0,\n      label=\"Cards Reviewed\",\n      accent=\"#4f46e5\",\n      show_percent=true\n    ),\n    \n    columns(\n      cols=2,\n      gap=\"1.5rem\",\n      items=[\n        {blocks: [\n          flip_card(\n            front_content=\"Ephemeral\",\n            back_content=\"Lasting for a very short time; temporary\",\n            trigger_on_hover=false\n          ),\n          flip_card(\n            front_content=\"Serendipity\",\n            back_content=\"Finding valuable things by chance; fortunate discovery\",\n            trigger_on_hover=false\n          ),\n          flip_card(\n            front_content=\"Ubiquitous\",\n            back_content=\"Present or found everywhere; constantly encountered\",\n            trigger_on_hover=false\n          ),\n          flip_card(\n            front_content=\"Mellifluous\",\n            back_content=\"Sweet; pleasant to hear; smooth and musical\",\n            trigger_on_hover=false\n          ),\n          flip_card(\n            front_content=\"Fortuitous\",\n            back_content=\"Occurring by chance; happening by accident or luck\",\n            trigger_on_hover=false\n          )\n        ]},\n        {blocks: [\n          flip_card(\n            front_content=\"Pragmatic\",\n            back_content=\"Practical; focused on actual results rather than theory\",\n            trigger_on_hover=false\n          ),\n          flip_card(\n            front_content=\"Sanguine\",\n            back_content=\"Optimistic; hopeful; positive in attitude\",\n            trigger_on_hover=false\n          ),\n          flip_card(\n            front_content=\"Taciturn\",\n            back_content=\"Quiet; saying very little; not talkative\",\n            trigger_on_hover=false\n          ),\n          flip_card(\n            front_content=\"Perspicacious\",\n            back_content=\"Having keen insight or understanding; mentally sharp\",\n            trigger_on_hover=false\n          ),\n          flip_card(\n            front_content=\"Obfuscate\",\n            back_content=\"To make unclear or obscure; to deliberately confuse\",\n            trigger_on_hover=false\n          )\n        ]}\n      ]\n    )\n  ]\n)\n</a2ui>"
+}

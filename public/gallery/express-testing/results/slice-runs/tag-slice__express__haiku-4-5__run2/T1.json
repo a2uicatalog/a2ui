@@ -1,0 +1,34 @@
+{
+ "task": "T1",
+ "condition": "G",
+ "label": "tag-slice__express__haiku-4-5__run2",
+ "agent_type": "Learning",
+ "catalogue": "G-learning.json",
+ "atoms_in_catalogue": 236,
+ "prompt_chars": 117248,
+ "slot_recall": [
+  5,
+  5
+ ],
+ "secs": 11.3,
+ "usage": {
+  "input_tokens": 33062,
+  "output_tokens": 1100
+ },
+ "valid": false,
+ "error": "A2uiCompilationParseError: Failed to parse expression: Syntax error at line 62:18: mismatched input '=' expecting ':' (line 62) - Line 62, Col 18 - Help: Please correct the syntax error in your Express DSL.",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "title": false,
+   "concept sections (x3)": false,
+   "worked example": false,
+   "3-question quiz": false,
+   "quiz result": false
+  }
+ },
+ "reply": "<a2ui>\nroot = blur_fade_in(\n  title=\"The Water Cycle\",\n  body=\"Water continuously moves between Earth's surface and the atmosphere in a never-ending cycle, driving weather patterns and sustaining life.\",\n  delay=\"0s\",\n  speed=\"normal\",\n  direction=\"up\",\n  children=[\n    concept_ladder(\n      title=\"Understanding the Water Cycle\",\n      eyebrow=\"NATURAL PROCESSES\",\n      dek=\"How water transforms and travels through our planet's systems.\",\n      hook=\"Water is constantly in motion. It evaporates from oceans and lakes, rises into the atmosphere, condenses into clouds, and falls as precipitation\u2014a perpetual cycle powered by the sun's energy.\",\n      model=\"Think of it as nature's recycling system, where water continuously transforms between liquid, gas, and solid states.\",\n      model_note=\"This process has been occurring for billions of years.\",\n      rungs=[\n        concept_rung(\n          badge=\"1\",\n          kind=\"depth\",\n          title=\"Evaporation\",\n          body=\"Water from oceans, rivers, and lakes transforms into water vapor when heated by the sun. Heat energy breaks the bonds between water molecules, allowing them to escape into the atmosphere as an invisible gas.\",\n          takeaway=\"Evaporation is the process where liquid water becomes a gas.\"\n        ),\n        concept_rung(\n          badge=\"2\",\n          kind=\"depth\",\n          title=\"Condensation\",\n          body=\"As water vapor rises into cooler layers of the atmosphere, it loses energy and transforms back into tiny liquid water droplets. These droplets cluster together to form visible clouds and fog.\",\n          takeaway=\"Condensation converts water vapor back into liquid form.\"\n        ),\n        concept_rung(\n          badge=\"3\",\n          kind=\"depth\",\n          title=\"Precipitation\",\n          body=\"When water droplets in clouds become heavy enough, they fall back to Earth as rain, snow, sleet, or hail. This precipitation replenishes freshwater on land and in water bodies.\",\n          takeaway=\"Precipitation returns water to Earth's surface.\"\n        ),\n        concept_rung(\n          badge=\"4\",\n          kind=\"depth\",\n          title=\"Collection\",\n          body=\"Precipitation collects in oceans, rivers, lakes, and groundwater. Some water is absorbed by soil and plants, while the rest flows toward larger bodies of water, completing the cycle.\",\n          takeaway=\"Collection stores water for the next cycle phase.\"\n        ),\n        concept_rung(\n          badge=\"EX\",\n          kind=\"example\",\n          title=\"Worked Example: Tracking a Water Molecule\",\n          body=\"Follow a single water molecule through one complete cycle: Beginning in the Pacific Ocean, our molecule absorbs heat from the sun on a warm July afternoon. It evaporates and rises through the atmosphere for several hours.\",\n          code=\"Ocean (25\u00b0C) \u2192 Evaporation \u2192 Atmosphere (rising) \u2192 Condensation (cooling) \u2192 Cloud formation \u2192 Precipitation (rain) \u2192 Collection (river) \u2192 Ocean\",\n          code_caption=\"A simplified journey showing state changes and locations.\",\n          takeaway=\"A water molecule can complete a full cycle in days or years depending on its path.\"\n        )\n      ],\n      closing_note=\"The water cycle is essential for climate regulation, weather formation, and the distribution of water resources across our planet.\"\n    ),\n    spacer(height=\"2rem\"),\n    heading(text=\"Knowledge Check\"),\n    quiz_set(\n      title=\"Test Your Understanding\",\n      questions=[\n        {\n          question=\"Which process transforms liquid water into water vapor?\",\n          options=[\"Condensation\", \"Evaporation\", \"Precipitation\", \"Collection\"],\n          correct=1,\n          explanation=\"Evaporation is the process where heat energy causes liquid water to become invisible water vapor and rise into the atmosphere.\"\n        },\n        {\n          question=\"What causes water vapor to transform back into liquid droplets?\",\n          options=[\"Increased temperature\", \"Decreased temperature (cooling)\", \"Stronger sunlight\", \"Ocean movement\"],\n          correct=1,\n          explanation=\"Condensation occurs when water vapor cools in the upper atmosphere, losing energy and forming visible water droplets that cluster into clouds.\"\n        },\n        {\n          question=\"Which of the following is NOT a form of precipitation?\",\n          options=[\"Rain\", \"Snow\", \"Evaporation\", \"Hail\"],\n          correct=2,\n          explanation=\"Evaporation is not precipitation. Evaporation is the process that sends water upward into the atmosphere, while precipitation brings water down to Earth as rain, snow, sleet, or hail.\"\n        }\n      ],\n      pass_score=70,\n      accent=\"#3b82f6\"\n    )\n  ]\n)\n</a2ui>"
+}

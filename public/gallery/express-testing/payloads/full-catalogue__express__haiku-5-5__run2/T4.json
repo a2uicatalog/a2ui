@@ -1,0 +1,78 @@
+{
+ "label": "full-catalogue__express__haiku-5-5__run2",
+ "task": "T4",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/a-full.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "filterable_list",
+      "title": "Release checklist",
+      "filter_field": "status",
+      "show_counts": true,
+      "empty_text": "No tasks match this status.",
+      "colors": {
+       "open": "#f59e0b",
+       "in_progress": "#3b82f6",
+       "done": "#10b981"
+      },
+      "items": [
+       {
+        "title": "Freeze feature branch",
+        "detail": "No new features merged after Friday 17:00.",
+        "status": "done"
+       },
+       {
+        "title": "Run regression suite",
+        "detail": "Full suite passing on the release candidate build.",
+        "status": "done"
+       },
+       {
+        "title": "Update API documentation",
+        "detail": "Two new endpoints still lack parameter tables.",
+        "status": "in_progress"
+       },
+       {
+        "title": "Security review of auth flow",
+        "detail": "Reviewer assigned; findings expected Tuesday.",
+        "status": "in_progress"
+       },
+       {
+        "title": "Prepare migration script",
+        "detail": "Script drafted; dry run against staging not yet done.",
+        "status": "open"
+       },
+       {
+        "title": "Confirm rollback plan",
+        "detail": "Rollback steps written but not rehearsed.",
+        "status": "open"
+       },
+       {
+        "title": "Notify beta customers",
+        "detail": "Email template approved, send date not set.",
+        "status": "open"
+       },
+       {
+        "title": "Tag release version",
+        "detail": "Waiting on the final sign-off from QA.",
+        "status": "open"
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

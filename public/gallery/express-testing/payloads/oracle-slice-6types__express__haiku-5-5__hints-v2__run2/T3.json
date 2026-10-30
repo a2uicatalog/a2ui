@@ -1,0 +1,98 @@
+{
+ "label": "oracle-slice-6types__express__haiku-5-5__hints-v2__run2",
+ "task": "T3",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/d-t3.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "hero",
+      "component": "gradient_hero",
+      "title": "Ship faster with Lumen",
+      "subtitle": "Turn raw product events into clear decisions in minutes, not weeks.",
+      "badge": "New in 2026",
+      "align": "center",
+      "cta_label": "Start free trial",
+      "cta_url": "https://example.com/signup"
+     },
+     {
+      "id": "features",
+      "component": "feature_grid",
+      "heading": "Why teams choose Lumen",
+      "description": "Everything you need to measure, understand, and act on usage.",
+      "columns": 3,
+      "features": [
+       {
+        "icon": "\u26a1",
+        "title": "Real-time dashboards",
+        "description": "See metrics update as events arrive, with no refresh needed.",
+        "badge": "Live",
+        "color": "#4f46e5"
+       },
+       {
+        "icon": "\ud83d\udd17",
+        "title": "300+ integrations",
+        "description": "Connect your warehouse, billing, and support tools in a few clicks.",
+        "badge": "Easy",
+        "color": "#8b5cf6"
+       },
+       {
+        "icon": "\ud83d\udee1\ufe0f",
+        "title": "Privacy by default",
+        "description": "Field-level controls and automatic PII masking keep data safe.",
+        "badge": "Secure",
+        "color": "#0ea5e9"
+       }
+      ]
+     },
+     {
+      "id": "testimonial",
+      "component": "blockquote_with_avatar",
+      "quote": "Lumen replaced three dashboards for us. Our product reviews now take an afternoon instead of a week.",
+      "author_name": "Priya Raman",
+      "author_title": "Head of Product, Northwind",
+      "avatar_url": "https://example.com/avatars/priya.jpg"
+     },
+     {
+      "id": "cta",
+      "component": "cta_button",
+      "url": "https://example.com/signup",
+      "label": "Start your free trial"
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "2rem",
+      "align": "stretch",
+      "items": [
+       {
+        "blocks": [
+         "hero",
+         "features"
+        ]
+       },
+       {
+        "blocks": [
+         "testimonial",
+         "cta"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

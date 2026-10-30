@@ -1,0 +1,73 @@
+{
+ "label": "rule-slice__express__haiku-5-5__run2",
+ "task": "T4",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/b-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "filterable_list",
+      "title": "Project checklist",
+      "items": [
+       {
+        "title": "Set up CI pipeline",
+        "detail": "Builds and tests run on every push.",
+        "status": "done"
+       },
+       {
+        "title": "Write API reference",
+        "detail": "Endpoints documented for v2, pending review.",
+        "status": "in progress"
+       },
+       {
+        "title": "Migrate user database",
+        "detail": "Blocked until the staging schema is frozen.",
+        "status": "blocked"
+       },
+       {
+        "title": "Add rate limiting",
+        "detail": "Design agreed; implementation not yet started.",
+        "status": "not started"
+       },
+       {
+        "title": "Upgrade logging library",
+        "detail": "Replacement merged and running in staging.",
+        "status": "done"
+       },
+       {
+        "title": "Load test checkout flow",
+        "detail": "Scripts written; waiting on test environment.",
+        "status": "in progress"
+       },
+       {
+        "title": "Rotate API credentials",
+        "detail": "Waiting on security sign-off before rotation.",
+        "status": "blocked"
+       },
+       {
+        "title": "Update onboarding emails",
+        "detail": "Copy drafted; design not yet started.",
+        "status": "not started"
+       }
+      ],
+      "filter_field": "status",
+      "show_counts": true,
+      "empty_text": "No items match this status."
+     }
+    ]
+   }
+  }
+ ]
+}

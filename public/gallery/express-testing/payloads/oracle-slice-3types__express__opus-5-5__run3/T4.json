@@ -1,0 +1,167 @@
+{
+ "label": "oracle-slice-3types__express__opus-5-5__run3",
+ "task": "T4",
+ "format": "express",
+ "model_id": "claude-opus-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "status-list-surface",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "status-list-surface",
+    "components": [
+     {
+      "id": "title",
+      "component": "heading",
+      "text": "Release Tasks"
+     },
+     {
+      "id": "intro",
+      "component": "body",
+      "text": "Eight tasks for the v2.4 release. Choose a status to filter the list."
+     },
+     {
+      "id": "filter",
+      "component": "segmented_control",
+      "options": [
+       {
+        "label": "All (8)",
+        "value": "all"
+       },
+       {
+        "label": "Open (2)",
+        "value": "open"
+       },
+       {
+        "label": "In progress (2)",
+        "value": "in_progress"
+       },
+       {
+        "label": "Blocked (2)",
+        "value": "blocked"
+       },
+       {
+        "label": "Done (2)",
+        "value": "done"
+       }
+      ],
+      "selected_value": "all",
+      "name": "status_filter"
+     },
+     {
+      "id": "legend",
+      "component": "lozenge",
+      "items": [
+       {
+        "text": "Open",
+        "appearance": "new"
+       },
+       {
+        "text": "In progress",
+        "appearance": "inprogress"
+       },
+       {
+        "text": "Blocked",
+        "appearance": "removed"
+       },
+       {
+        "text": "Done",
+        "appearance": "success"
+       }
+      ]
+     },
+     {
+      "id": "items",
+      "component": "entity_list",
+      "items": [
+       {
+        "name": "Finalize API schema",
+        "subtitle": "Lock request and response contracts for public endpoints.",
+        "icon": "\ud83d\udcd0",
+        "status": "In progress",
+        "meta": "Due Mar 14"
+       },
+       {
+        "name": "Migrate user database",
+        "subtitle": "Move accounts to the new cluster with zero downtime.",
+        "icon": "\ud83d\uddc4\ufe0f",
+        "status": "Blocked",
+        "meta": "Waiting on infra"
+       },
+       {
+        "name": "Update onboarding flow",
+        "subtitle": "Add a welcome checklist and product tour.",
+        "icon": "\ud83e\udded",
+        "status": "Open",
+        "meta": "Due Mar 18"
+       },
+       {
+        "name": "Write release notes",
+        "subtitle": "Summarize new features and breaking changes.",
+        "icon": "\ud83d\udcdd",
+        "status": "Open",
+        "meta": "Due Mar 20"
+       },
+       {
+        "name": "Security audit",
+        "subtitle": "Third-party penetration test of the auth service.",
+        "icon": "\ud83d\udd12",
+        "status": "Done",
+        "meta": "Completed Mar 8"
+       },
+       {
+        "name": "Performance tuning",
+        "subtitle": "Cut dashboard load time below two seconds.",
+        "icon": "\u26a1",
+        "status": "In progress",
+        "meta": "Due Mar 15"
+       },
+       {
+        "name": "Localization pass",
+        "subtitle": "Translate new strings into French and German.",
+        "icon": "\ud83c\udf0d",
+        "status": "Blocked",
+        "meta": "Waiting on vendor"
+       },
+       {
+        "name": "Set up monitoring alerts",
+        "subtitle": "Configure error-rate and latency alerts.",
+        "icon": "\ud83d\udcc8",
+        "status": "Done",
+        "meta": "Completed Mar 10"
+       }
+      ]
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "title",
+         "intro",
+         "filter",
+         "legend"
+        ]
+       },
+       {
+        "blocks": [
+         "items"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,132 @@
+{
+ "label": "oracle-slice-3types__json__gemini-3.5-flash__thinking-on_first-run-timing-invalid__run1",
+ "task": "T4",
+ "format": "json",
+ "model_id": "gemini-3.5-flash",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "deliverables-tracker-surface",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "deliverables-tracker-surface",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "2rem",
+      "items": [
+       {
+        "blocks": [
+         {
+          "id": "filter-title",
+          "component": "heading",
+          "text": "Filter Deliverables"
+         },
+         {
+          "id": "status-filter-control",
+          "component": "segmented_control",
+          "name": "status_filter",
+          "options": "[{\"label\": \"All\", \"value\": \"all\"}, {\"label\": \"Active\", \"value\": \"active\"}, {\"label\": \"Pending\", \"value\": \"pending\"}, {\"label\": \"Completed\", \"value\": \"completed\"}]",
+          "selected_value": "all"
+         },
+         {
+          "id": "stat-total",
+          "component": "stat_card",
+          "value": "8",
+          "label": "Total Tracked Items",
+          "accent": "#3B82F6"
+         },
+         {
+          "id": "stat-active",
+          "component": "stat_card",
+          "value": "3",
+          "label": "Active Status",
+          "accent": "#10B981"
+         }
+        ]
+       },
+       {
+        "blocks": [
+         {
+          "id": "list-title",
+          "component": "heading",
+          "text": "Project Deliverables"
+         },
+         {
+          "id": "deliverables-list",
+          "component": "entity_list",
+          "items": [
+           {
+            "name": "Homepage Redesign",
+            "subtitle": "Implement the new hero section and navigation menu",
+            "status": "Active",
+            "icon": "\ud83c\udfa8",
+            "meta": "Priority: High"
+           },
+           {
+            "name": "Database Migration",
+            "subtitle": "Upgrade PostgreSQL cluster to version 15",
+            "status": "Completed",
+            "icon": "\ud83d\uddc4\ufe0f",
+            "meta": "Completed Oct 10"
+           },
+           {
+            "name": "OAuth2 Integration",
+            "subtitle": "Add Google and GitHub sign-in options",
+            "status": "Pending",
+            "icon": "\ud83d\udd11",
+            "meta": "Priority: Medium"
+           },
+           {
+            "name": "API Rate Limiting",
+            "subtitle": "Apply Redis-backed rate limiting to public endpoints",
+            "status": "Active",
+            "icon": "\u26a1",
+            "meta": "Priority: High"
+           },
+           {
+            "name": "Billing System Audit",
+            "subtitle": "Reconcile Stripe transactions for Q3",
+            "status": "Completed",
+            "icon": "\ud83d\udcca",
+            "meta": "Completed Oct 15"
+           },
+           {
+            "name": "Mobile Push Notifications",
+            "subtitle": "Configure APNS and FCM credentials",
+            "status": "Pending",
+            "icon": "\ud83d\udcf1",
+            "meta": "Priority: Low"
+           },
+           {
+            "name": "User Analytics Dashboard",
+            "subtitle": "Set up Mixpanel tracking for key user journeys",
+            "status": "Active",
+            "icon": "\ud83d\udcc8",
+            "meta": "Priority: Medium"
+           },
+           {
+            "name": "GDPR Compliance Review",
+            "subtitle": "Update privacy policy and cookie banners",
+            "status": "Pending",
+            "icon": "\u2696\ufe0f",
+            "meta": "Priority: High"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

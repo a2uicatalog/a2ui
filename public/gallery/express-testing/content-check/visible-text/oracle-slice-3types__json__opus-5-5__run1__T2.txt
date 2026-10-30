@@ -1,0 +1,34 @@
+Key Metrics — Q2
+ $ 482K ↑ 
+ Revenue
+ +12.4% vs Q1
+ 12,940 ↑ 
+ Active Users
+ +8.1% vs Q1
+ 3.1 % ↓ 
+ Churn Rate
+ -0.6 pts vs Q1
+ 212 ms ↑ 
+ Avg Response Time
+ +18 ms vs Q1
+ Monthly Revenue: 2025 vs 2024 ($K)
+ 2024 
+ 2025 
+ 0
+ 50
+ 100
+ 150
+ 200
+ Jan
+ Feb
+ Mar
+ Apr
+ May
+ Jun
+ Category 2024 2025 
+ Jan 128 138 
+ Feb 134 142 
+ Mar 139 149 
+ Apr 141 155 
+ May 147 161 
+ Jun 150 166

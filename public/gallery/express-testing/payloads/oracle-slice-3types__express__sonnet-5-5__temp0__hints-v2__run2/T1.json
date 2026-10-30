@@ -1,0 +1,146 @@
+{
+ "label": "oracle-slice-3types__express__sonnet-5-5__temp0__hints-v2__run2",
+ "task": "T1",
+ "format": "express",
+ "model_id": "claude-sonnet-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "water-cycle-lesson",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "water-cycle-lesson",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "2rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         {
+          "type": "page_header",
+          "title": "The Water Cycle",
+          "subtitle": "How water moves between the oceans, the air and the land",
+          "icon": "\ud83d\udca7",
+          "tag": "Earth Science",
+          "accent": "#0284c7"
+         },
+         {
+          "type": "heading",
+          "text": "1. Evaporation"
+         },
+         {
+          "type": "body",
+          "text": "The sun warms water in oceans, lakes, rivers and puddles. Heated water changes from a liquid into an invisible gas called water vapor and rises into the air. Plants also release vapor through their leaves, which is called transpiration."
+         },
+         {
+          "type": "heading",
+          "text": "2. Condensation"
+         },
+         {
+          "type": "body",
+          "text": "As water vapor rises, the air gets colder. The vapor cools and turns back into tiny liquid droplets around dust particles. Millions of these droplets gather to form clouds."
+         },
+         {
+          "type": "heading",
+          "text": "3. Precipitation and Collection"
+         },
+         {
+          "type": "body",
+          "text": "When cloud droplets merge and grow heavy, they fall as rain, snow, sleet or hail. This water runs into rivers, soaks into the ground or fills lakes and oceans, where it is ready to evaporate again and restart the cycle."
+         },
+         {
+          "type": "case_study_card",
+          "title": "Worked Example: The Disappearing Puddle",
+          "situation": "After a rainstorm, a puddle covers 1 square metre of a playground and is 5 mm deep. The day is sunny and warm. Follow the water to see where it goes.",
+          "data_points": [
+           {
+            "label": "Puddle volume",
+            "value": "5 L",
+            "note": "1 m\u00b2 \u00d7 5 mm deep"
+           },
+           {
+            "label": "Evaporation rate",
+            "value": "about 5 mm/day",
+            "note": "typical for a sunny day"
+           },
+           {
+            "label": "Time to dry",
+            "value": "about 1 day",
+            "note": "5 mm \u00f7 5 mm per day"
+           }
+          ],
+          "questions": [
+           "Which stage of the water cycle makes the puddle shrink?",
+           "Where does the water go once it leaves the puddle?",
+           "How could that same water return to the ground?"
+          ],
+          "model_answer": "Evaporation makes the puddle shrink: the sun's heat turns the liquid into water vapor. The vapor rises into the cooler air, condenses into cloud droplets, and may travel many kilometres. It later falls as precipitation, possibly far away, and the cycle begins again.",
+          "accent": "#0284c7"
+         }
+        ]
+       },
+       {
+        "blocks": [
+         {
+          "type": "heading",
+          "text": "Self-Check Quiz"
+         },
+         {
+          "type": "quiz_set",
+          "title": "Water Cycle Check",
+          "questions": [
+           {
+            "question": "Which process turns liquid water into water vapor?",
+            "options": [
+             "Condensation",
+             "Evaporation",
+             "Precipitation",
+             "Collection"
+            ],
+            "correct": 1,
+            "explanation": "Evaporation is when heat from the sun turns liquid water into a gas."
+           },
+           {
+            "question": "What forms when water vapor cools and turns back into droplets?",
+            "options": [
+             "Clouds",
+             "Groundwater",
+             "Glaciers",
+             "Rivers"
+            ],
+            "correct": 0,
+            "explanation": "Condensation of vapor into tiny droplets forms clouds."
+           },
+           {
+            "question": "Which of these is a form of precipitation?",
+            "options": [
+             "Fog on the ground only",
+             "Water vapor",
+             "Snow",
+             "Transpiration"
+            ],
+            "correct": 2,
+            "explanation": "Precipitation is any water that falls from clouds: rain, snow, sleet or hail."
+           }
+          ],
+          "pass_score": 70,
+          "accent": "#0284c7"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

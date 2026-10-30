@@ -1,0 +1,43 @@
+{
+ "task": "T2",
+ "condition": "C_gemini-3.5-flash",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 32768,
+ "model_id": "gemini-3.5-flash",
+ "hints": false,
+ "label": "oracle-slice-3types__express__gemini-3.5-flash__thinking-off__run1",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 16421,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 2.9,
+ "usage": {
+  "input_tokens": 4602,
+  "output_tokens": 535
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "metric_row",
+  "stacked_area",
+  "columns",
+  "heading"
+ ],
+ "score": {
+  "precision": 0.5,
+  "recall": 0.667,
+  "f1": 0.571,
+  "slot_hits": {
+   "KPI tile (x4)": true,
+   "trend (required only if metric_row was chosen; stat_card's own delta already satisfies it)": false,
+   "comparison chart": true
+  }
+ },
+ "reply": "<a2ui>\n# Target the main dashboard surface\nsurface(\"dashboard-metrics-overview\")\n\n# Define the KPI Metrics Data directly for the metric_row component\nkpi_metrics = [\n    {value: \"$124,500\", label: \"Monthly Revenue\", sub: \"vs last month\", trend: \"up\", accent: \"#10B981\"},\n    {value: \"1,420\", label: \"Active Subscriptions\", sub: \"+12% increase\", trend: \"up\", accent: \"#3B82F6\"},\n    {value: \"98.2%\", label: \"SLA Compliance\", sub: \"Target 99%\", trend: \"down\", accent: \"#EF4444\"},\n    {value: \"4.8m\", label: \"Average Response Time\", sub: \"Steady\", trend: \"up\", accent: \"#10B981\"}\n]\n\n# Create the KPI metric row using 4 columns\nkpis = metric_row(4, \"#3B82F6\", kpi_metrics)\n\n# Create a trend/comparison chart utilizing stacked_area to display growth across categories\nchart_labels = [\"Jan\", \"Feb\", \"Mar\", \"Apr\", \"May\", \"Jun\"]\nchart_series = [\n    {\"label\": \"Enterprise\", \"data\": [40, 45, 55, 68, 80, 95], \"color\": \"#3B82F6\"},\n    {\"label\": \"Professional\", \"data\": [30, 35, 40, 45, 48, 52], \"color\": \"#10B981\"},\n    {\"label\": \"Standard\", \"data\": [15, 18, 22, 24, 23, 25], \"color\": \"#F59E0B\"}\n]\ncomparison_chart = stacked_area(\"Revenue Growth Breakdown (USD k)\", chart_labels, chart_series, \"area\")\n\n# Arrange the workspace layout with heading, metrics row, and comparison chart\nroot = columns(\n    1,\n    \"2rem\",\n    \"top\",\n    [\n        {blocks: [heading(\"Operations & Revenue Overview\")]},\n        {blocks: [kpis]},\n        {blocks: [comparison_chart]}\n    ]\n)\n</a2ui>"
+}

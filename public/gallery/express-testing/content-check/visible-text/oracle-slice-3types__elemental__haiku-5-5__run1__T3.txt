@@ -1,0 +1,18 @@
+Ship faster with less overhead
+ One platform to build, deploy, and scale your product without the complexity.
+ Start free trial 
+ Core capabilities that help your team move quickly.
+ ⚡
+ Lightning-fast builds Speed 
+ Incremental builds cut your feedback loop from minutes to seconds.
+ 🔒
+ Secure by default Security 
+ Built-in access controls, audit logs, and encryption at rest and in transit.
+ 📈
+ Scales with you Scale 
+ From prototype to millions of requests with automatic capacity management.
+ ★ ★ ★ ★ ★ 
+ “We cut our release cycle in half in the first month. The platform just gets out of the way.” M
+ Maya Chen
+ VP of Engineering, Northwind
+ Get started today

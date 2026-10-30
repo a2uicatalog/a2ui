@@ -1,0 +1,166 @@
+{
+ "label": "rule-slice__express__haiku-4-5__run3",
+ "task": "T6",
+ "format": "express",
+ "model_id": null,
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/b-learning.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "2rem",
+      "items": [
+       {
+        "blocks": [
+         "_inline_1",
+         "_inline_2",
+         "_inline_3",
+         "_inline_4"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_5",
+         "_inline_6",
+         "_inline_7",
+         "_inline_8",
+         "_inline_9",
+         "_inline_10",
+         "_inline_11"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "_inline_1",
+      "component": "heading",
+      "text": "Vocabulary Review"
+     },
+     {
+      "id": "_inline_2",
+      "component": "body",
+      "text": "Master these 10 essential terms. Click each card to reveal the definition."
+     },
+     {
+      "id": "_inline_3",
+      "component": "spacer",
+      "height": "1.5rem"
+     },
+     {
+      "id": "_inline_4",
+      "component": "flashcard_deck",
+      "cards": [
+       {
+        "front": "Ephemeral",
+        "back": "Lasting for a very short time; transitory"
+       },
+       {
+        "front": "Ubiquitous",
+        "back": "Present, appearing, or found everywhere"
+       },
+       {
+        "front": "Perspicacious",
+        "back": "Having keen insight or discernment; mentally sharp"
+       },
+       {
+        "front": "Obfuscate",
+        "back": "To deliberately make unclear or difficult to understand"
+       },
+       {
+        "front": "Mellifluous",
+        "back": "Sweet or musical; pleasing to the ear"
+       },
+       {
+        "front": "Serendipity",
+        "back": "The occurrence of events by chance in a happy or beneficial way"
+       },
+       {
+        "front": "Cognizant",
+        "back": "Aware or informed; having knowledge of"
+       },
+       {
+        "front": "Quintessential",
+        "back": "Representing the most perfect example of something"
+       },
+       {
+        "front": "Sanguine",
+        "back": "Optimistic or positive, especially about the future"
+       },
+       {
+        "front": "Perspicacity",
+        "back": "The quality of having keen insight and understanding"
+       }
+      ],
+      "accent": "#4f46e5",
+      "label_front": "TERM",
+      "label_back": "DEFINITION"
+     },
+     {
+      "id": "_inline_5",
+      "component": "heading",
+      "text": "Progress Tracker"
+     },
+     {
+      "id": "_inline_6",
+      "component": "spacer",
+      "height": "1rem"
+     },
+     {
+      "id": "_inline_7",
+      "component": "course_progress_card",
+      "course_title": "Vocabulary Mastery",
+      "modules": [
+       {
+        "title": "Session Progress",
+        "lessons_total": 10,
+        "lessons_done": 0
+       }
+      ],
+      "accent": "#4f46e5"
+     },
+     {
+      "id": "_inline_8",
+      "component": "spacer",
+      "height": "2rem"
+     },
+     {
+      "id": "_inline_9",
+      "component": "highlight_box",
+      "title": "How to Use",
+      "text": "Click any flashcard to flip it and reveal the definition. Review each term carefully to build your vocabulary. Your progress is tracked as you review each card.",
+      "icon": "\ud83d\udcda",
+      "accent": "#4f46e5",
+      "style": "gradient"
+     },
+     {
+      "id": "_inline_10",
+      "component": "spacer",
+      "height": "1.5rem"
+     },
+     {
+      "id": "_inline_11",
+      "component": "key_takeaways",
+      "points": [
+       "Read the term on the front of each card",
+       "Click to reveal the definition on the back",
+       "Review all 10 terms to master this vocabulary set",
+       "Repeat cards that challenge you for better retention"
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

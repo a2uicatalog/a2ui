@@ -1,0 +1,34 @@
+{
+ "task": "T1",
+ "condition": "E",
+ "label": "wrong-domain-slice__express__haiku-4-5__run1",
+ "agent_type": "Data display",
+ "catalogue": "B-data-display.json",
+ "atoms_in_catalogue": 248,
+ "prompt_chars": 125436,
+ "slot_recall": [
+  3,
+  5
+ ],
+ "secs": 6.5,
+ "usage": {
+  "input_tokens": 36031,
+  "output_tokens": 679
+ },
+ "valid": false,
+ "error": "A2uiCompilationParseError: Failed to parse expression: Syntax error at line 6:12: mismatched input '=' expecting ':' (line 6) - Line 6, Col 12 - Help: Please correct the syntax error in your Express DSL.",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "title": false,
+   "concept sections (x3)": false,
+   "worked example": false,
+   "3-question quiz": false,
+   "quiz result": false
+  }
+ },
+ "reply": "<a2ui>\nroot = columns(\n  cols=1,\n  gap=\"2rem\",\n  items=[\n    {\n      blocks=[\n        heading(\"The Water Cycle\")\n      ]\n    },\n    {\n      blocks=[\n        heading(\"Key Concepts\"),\n        columns(\n          cols=3,\n          gap=\"1.5rem\",\n          items=[\n            {\n              blocks=[\n                highlight_box(\n                  title=\"Evaporation\",\n                  text=\"Water from oceans, lakes, and rivers turns into water vapor due to heat from the sun.\",\n                  icon=\"\u2600\ufe0f\",\n                  accent=\"#4f46e5\"\n                )\n              ]\n            },\n            {\n              blocks=[\n                highlight_box(\n                  title=\"Condensation\",\n                  text=\"Water vapor cools in the atmosphere and forms water droplets, creating clouds.\",\n                  icon=\"\u2601\ufe0f\",\n                  accent=\"#8b5cf6\"\n                )\n              ]\n            },\n            {\n              blocks=[\n                highlight_box(\n                  title=\"Precipitation\",\n                  text=\"Water falls back to Earth as rain, snow, or hail when cloud droplets become too heavy.\",\n                  icon=\"\ud83c\udf27\ufe0f\",\n                  accent=\"#06b6d4\"\n                )\n              ]\n            }\n          ]\n        )\n      ]\n    },\n    {\n      blocks=[\n        heading(\"Worked Example\"),\n        info_card(\n          title=\"Tracking a Water Droplet\",\n          text=\"**Day 1:** A droplet evaporates from the Pacific Ocean into water vapor.\\n\\n**Day 2:** The water vapor drifts over cooler mountains and condenses into a cloud.\\n\\n**Day 3:** The droplet joins millions of others and falls as rain on a forest.\\n\\n**Day 4:** The rain seeps into soil, is absorbed by plant roots, and later transpires back into the atmosphere through leaves.\\n\\nThe cycle continues!\"\n        )\n      ]\n    },\n    {\n      blocks=[\n        heading(\"Self-Check Quiz\"),\n        faq_accordion(\n          items=[\n            {\n              question=\"What is evaporation?\",\n              answer=\"Evaporation is the process where water from oceans, lakes, and rivers is heated by the sun and turns into water vapor, rising into the atmosphere.\"\n            },\n            {\n              question=\"How are clouds formed?\",\n              answer=\"Clouds form through condensation, when water vapor cools in the atmosphere and turns back into liquid water droplets that cluster together.\"\n            },\n            {\n              question=\"What causes precipitation?\",\n              answer=\"Precipitation occurs when water droplets in clouds become too heavy and fall back to Earth as rain, snow, hail, or sleet.\"\n            }\n          ]\n        )\n      ]\n    }\n  ]\n)\n</a2ui>"
+}

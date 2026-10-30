@@ -1,0 +1,146 @@
+{
+ "label": "rule-slice__express__haiku-4-5__temp0__hints-v2__run1",
+ "task": "T3",
+ "format": "express",
+ "model_id": "claude-haiku-4-5-20251001",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/b-marketing-commerce.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "hero",
+      "component": "gradient_hero",
+      "title": "Transform Your Workflow",
+      "subtitle": "Streamline your process with intelligent automation and seamless integration",
+      "cta_label": "Get Started",
+      "cta_url": "#"
+     },
+     {
+      "id": "feature_1",
+      "component": "highlight_box",
+      "title": "Smart Automation",
+      "text": "Reduce manual tasks and focus on what matters most",
+      "icon": "\u26a1",
+      "accent": "#4f46e5"
+     },
+     {
+      "id": "feature_2",
+      "component": "highlight_box",
+      "title": "Seamless Integration",
+      "text": "Connect with your favorite tools in minutes",
+      "icon": "\ud83d\udd17",
+      "accent": "#7c3aed"
+     },
+     {
+      "id": "feature_3",
+      "component": "highlight_box",
+      "title": "Real-time Analytics",
+      "text": "Track performance and optimize on the fly",
+      "icon": "\ud83d\udcca",
+      "accent": "#06b6d4"
+     },
+     {
+      "id": "features",
+      "component": "columns",
+      "cols": 3,
+      "items": [
+       {
+        "blocks": [
+         "feature_1"
+        ]
+       },
+       {
+        "blocks": [
+         "feature_2"
+        ]
+       },
+       {
+        "blocks": [
+         "feature_3"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "testimonial",
+      "component": "blockquote_with_avatar",
+      "quote": "This product completely transformed how our team works. We've cut our workflow time in half.",
+      "author_name": "Sarah Chen",
+      "author_title": "Product Manager at TechCorp",
+      "avatar_url": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop"
+     },
+     {
+      "id": "cta",
+      "component": "cta_section",
+      "heading": "Ready to get started?",
+      "body": "Join thousands of teams already using our platform to streamline their workflow.",
+      "primary_cta": {
+       "label": "Start Free Trial",
+       "url": "#"
+      },
+      "secondary_cta": {
+       "label": "Learn More",
+       "url": "#"
+      }
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "items": [
+       {
+        "blocks": [
+         "hero"
+        ]
+       },
+       {
+        "blocks": [
+         "features"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_1"
+        ]
+       },
+       {
+        "blocks": [
+         "testimonial"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_2"
+        ]
+       },
+       {
+        "blocks": [
+         "cta"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "_inline_1",
+      "component": "spacer",
+      "height": "2rem"
+     },
+     {
+      "id": "_inline_2",
+      "component": "spacer",
+      "height": "2rem"
+     }
+    ]
+   }
+  }
+ ]
+}

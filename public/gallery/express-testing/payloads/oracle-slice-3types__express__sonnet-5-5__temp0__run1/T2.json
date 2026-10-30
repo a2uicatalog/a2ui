@@ -1,0 +1,218 @@
+{
+ "label": "oracle-slice-3types__express__sonnet-5-5__temp0__run1",
+ "task": "T2",
+ "format": "express",
+ "model_id": "claude-sonnet-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "metrics-overview",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "metrics-overview",
+    "components": [
+     {
+      "id": "heading1",
+      "component": "heading",
+      "text": "Metrics Overview"
+     },
+     {
+      "id": "kpis",
+      "component": "metric_row",
+      "cols": 4,
+      "accent": "#4F46E5",
+      "metrics": [
+       {
+        "value": "$128.4K",
+        "label": "Revenue",
+        "trend": "up",
+        "sub": "+12.5% vs last month"
+       },
+       {
+        "value": "8,942",
+        "label": "Active Users",
+        "trend": "up",
+        "sub": "+6.2% vs last month"
+       },
+       {
+        "value": "3.1%",
+        "label": "Churn Rate",
+        "trend": "down",
+        "sub": "-0.4% vs last month"
+       },
+       {
+        "value": "231ms",
+        "label": "Avg Response Time",
+        "trend": "down",
+        "sub": "-18ms vs last month"
+       }
+      ]
+     },
+     {
+      "id": "chartHeading",
+      "component": "heading",
+      "text": "Revenue vs Target by Quarter"
+     },
+     {
+      "id": "chart",
+      "component": "chartjs_bar",
+      "labels": [
+       "Q1",
+       "Q2",
+       "Q3",
+       "Q4"
+      ],
+      "datasets": [
+       {
+        "label": "Revenue ($K)",
+        "data": [
+         95,
+         108,
+         121,
+         128
+        ]
+       },
+       {
+        "label": "Target ($K)",
+        "data": [
+         100,
+         105,
+         115,
+         125
+        ]
+       }
+      ]
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "1rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "heading1"
+        ]
+       },
+       {
+        "blocks": [
+         "kpis"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "metrics-overview",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "metrics-overview",
+    "components": [
+     {
+      "id": "title",
+      "component": "heading",
+      "text": "Metrics Overview"
+     },
+     {
+      "id": "kpis",
+      "component": "metric_row",
+      "cols": 4,
+      "accent": "#4F46E5",
+      "metrics": [
+       {
+        "value": "$128.4K",
+        "label": "Revenue",
+        "trend": "up",
+        "sub": "+12.5% vs last month"
+       },
+       {
+        "value": "8,942",
+        "label": "Active Users",
+        "trend": "up",
+        "sub": "+6.2% vs last month"
+       },
+       {
+        "value": "3.1%",
+        "label": "Churn Rate",
+        "trend": "down",
+        "sub": "-0.4% vs last month"
+       },
+       {
+        "value": "231ms",
+        "label": "Avg Response Time",
+        "trend": "down",
+        "sub": "-18ms vs last month"
+       }
+      ]
+     },
+     {
+      "id": "chartTitle",
+      "component": "heading",
+      "text": "Revenue vs Target by Quarter"
+     },
+     {
+      "id": "chart",
+      "component": "chartjs_bar",
+      "labels": [
+       "Q1",
+       "Q2",
+       "Q3",
+       "Q4"
+      ],
+      "datasets": [
+       {
+        "label": "Revenue ($K)",
+        "data": [
+         95,
+         108,
+         121,
+         128
+        ]
+       },
+       {
+        "label": "Target ($K)",
+        "data": [
+         100,
+         105,
+         115,
+         125
+        ]
+       }
+      ]
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "title",
+         "kpis",
+         "chartTitle",
+         "chart"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

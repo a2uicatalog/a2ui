@@ -1,0 +1,51 @@
+{
+ "task": "T1",
+ "condition": "D_haiku-5-5",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "oracle-slice-6types__express__haiku-5-5__run3",
+ "agent_type": "T1",
+ "catalogue": "D-t1.json",
+ "atoms_in_catalogue": 28,
+ "prompt_chars": 17769,
+ "slot_recall": [
+  5,
+  5
+ ],
+ "secs": 10.7,
+ "usage": {
+  "input_tokens": 6287,
+  "output_tokens": 2351
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "page_header",
+  "heading",
+  "body",
+  "heading",
+  "body",
+  "heading",
+  "body",
+  "concept_rung",
+  "quiz_set",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.9,
+  "recall": 0.8,
+  "f1": 0.847,
+  "slot_hits": {
+   "title": true,
+   "concept sections (x3)": true,
+   "worked example": true,
+   "3-question quiz": true,
+   "quiz result": false
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"water-cycle-lesson\")\n\ntitle = page_header(\"The Water Cycle\", \"How water moves through land, sea, and sky\", \"\ud83d\udca7\", \"Earth Science\")\n\nh1 = heading(\"1. Evaporation\")\nb1 = body(\"Heat from the sun warms liquid water in oceans, lakes, and rivers. As it warms, molecules gain enough energy to escape into the air as water vapour, an invisible gas.\")\n\nh2 = heading(\"2. Condensation\")\nb2 = body(\"Water vapour rises and cools. When it cools enough, it changes back into tiny liquid droplets that gather around dust particles, forming clouds.\")\n\nh3 = heading(\"3. Precipitation\")\nb3 = body(\"When cloud droplets grow heavy, they fall as rain, snow, sleet, or hail. Some water soaks into the ground, some runs off into rivers, and the cycle begins again.\")\n\nexample = concept_rung(\"EX\", \"example\", _, \"Worked example: a puddle disappears\", \"A puddle forms after a morning rain. By noon, sunlight has warmed it, so water evaporates into the air. The vapour cools higher up, condenses into a small cloud, and may later fall again as rain.\", _, _, \"The same water can move through every stage of the cycle.\")\n\nquiz = quiz_set(\"Self-check\", [\n  {question: \"What process turns liquid water into water vapour?\", options: [\"Condensation\", \"Precipitation\", \"Evaporation\", \"Collection\"], correct: 2, explanation: \"Evaporation happens when the sun's heat gives water molecules enough energy to escape as vapour.\"},\n  {question: \"Which stage forms clouds?\", options: [\"Evaporation\", \"Condensation\", \"Precipitation\", \"Runoff\"], correct: 1, explanation: \"Condensation occurs when water vapour cools and turns into tiny droplets that form clouds.\"},\n  {question: \"Rain, snow, sleet, and hail are all forms of what?\", options: [\"Evaporation\", \"Condensation\", \"Precipitation\", \"Transpiration\"], correct: 2, explanation: \"Precipitation is any water that falls from clouds to the ground.\"}\n], 70, \"#4f46e5\")\n\nleft = [title, h1, b1, h2, b2, h3, b3]\nright = [example, quiz]\n\nroot = columns(2, \"1.5rem\", \"top\", [{blocks: left}, {blocks: right}])\n</a2ui>"
+}

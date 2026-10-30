@@ -1,0 +1,118 @@
+{
+ "label": "oracle-slice-3types__express__gemini-3.5-flash__thinking-on_first-run-timing-invalid__run2",
+ "task": "T6",
+ "format": "express",
+ "model_id": "gemini-3.5-flash",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "vocabulary-deck-surface",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "vocabulary-deck-surface",
+    "components": [
+     {
+      "id": "header",
+      "component": "page_header",
+      "title": "**Academic Vocabulary Builder**",
+      "subtitle": "Elevate your lexical power. Review these 10 high-yield verbal reasoning terms designed to boost comprehension.",
+      "icon": "\ud83d\udcda",
+      "tag": "Set 1 of 5",
+      "accent": "#4f46e5"
+     },
+     {
+      "id": "prog",
+      "component": "progress_bar",
+      "value": 70,
+      "label": "Deck Review Progress",
+      "accent": "#4f46e5",
+      "show_percent": true,
+      "caption": "7 out of 10 terms successfully completed"
+     },
+     {
+      "id": "tips",
+      "component": "text_callout",
+      "variant": "info",
+      "title": "Study Strategy",
+      "description": "Look at the word on the front, recall its meaning, then tap the card to flip it over. Rate your internal recall before moving to the next term."
+     },
+     {
+      "id": "deck",
+      "component": "flashcard_deck",
+      "cards": [
+       {
+        "front": "Ephemeral",
+        "back": "Lasting for a very short time; transient, fleeting, or passing quickly."
+       },
+       {
+        "front": "Ubiquitous",
+        "back": "Present, appearing, or found everywhere at once; omnipresent."
+       },
+       {
+        "front": "Cacophony",
+        "back": "A harsh, discordant, and meaningless mixture of loud sounds."
+       },
+       {
+        "front": "Capricious",
+        "back": "Given to sudden and unaccountable changes of mood, behavior, or opinion."
+       },
+       {
+        "front": "Alacrity",
+        "back": "Brisk, cheerful, and eager readiness to respond or act."
+       },
+       {
+        "front": "Ennui",
+        "back": "A feeling of listlessness, boredom, and dissatisfaction arising from lack of excitement."
+       },
+       {
+        "front": "Fastidious",
+        "back": "Very attentive to detail, accuracy, and cleanliness; difficult to please."
+       },
+       {
+        "front": "Garrulous",
+        "back": "Excessively talkative, especially on trivial or unimportant matters; wordy."
+       },
+       {
+        "front": "Impervious",
+        "back": "Not allowing fluid to pass through; completely unaffected or undisturbed by external forces."
+       },
+       {
+        "front": "Nefarious",
+        "back": "Extremely wicked, villainous, or criminal in nature."
+       }
+      ],
+      "accent": "#4f46e5",
+      "label_front": "VOCABULARY WORD",
+      "label_back": "DEFINITION"
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "2rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "header",
+         "tips",
+         "prog"
+        ]
+       },
+       {
+        "blocks": [
+         "deck"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

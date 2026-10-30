@@ -1,0 +1,132 @@
+{
+ "label": "rule-slice__express__haiku-4-5__run1",
+ "task": "T2",
+ "format": "express",
+ "model_id": null,
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/b-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "2rem",
+      "items": [
+       {
+        "blocks": [
+         "_inline_1",
+         "_inline_2"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_3",
+         "_inline_4"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "_inline_1",
+      "component": "icon_stat_row",
+      "cols": 2,
+      "accent": "#4f46e5",
+      "stats": [
+       {
+        "icon": "\ud83d\udcc8",
+        "value": "1,234",
+        "label": "Revenue",
+        "prefix": "$",
+        "sub": "Monthly",
+        "trend": "up",
+        "accent": "#10b981"
+       },
+       {
+        "icon": "\ud83d\udc65",
+        "value": "5,678",
+        "label": "Users",
+        "sub": "Active",
+        "trend": "up",
+        "accent": "#10b981"
+       }
+      ]
+     },
+     {
+      "id": "_inline_2",
+      "component": "icon_stat_row",
+      "cols": 2,
+      "accent": "#4f46e5",
+      "stats": [
+       {
+        "icon": "\u23f1\ufe0f",
+        "value": "2.3s",
+        "label": "Avg Response",
+        "suffix": "ms",
+        "sub": "Performance",
+        "trend": "down",
+        "accent": "#10b981"
+       },
+       {
+        "icon": "\u2705",
+        "value": "99.8%",
+        "label": "Uptime",
+        "suffix": "%",
+        "sub": "Reliability",
+        "trend": "up",
+        "accent": "#10b981"
+       }
+      ]
+     },
+     {
+      "id": "_inline_3",
+      "component": "metric_comparison_card",
+      "label": "Conversion Rate",
+      "value": 8.5,
+      "previous": 7.2,
+      "lower_is_better": false
+     },
+     {
+      "id": "_inline_4",
+      "component": "chartjs_bar",
+      "labels": [
+       "Week 1",
+       "Week 2",
+       "Week 3",
+       "Week 4"
+      ],
+      "datasets": [
+       {
+        "label": "Current Period",
+        "data": [
+         65,
+         72,
+         68,
+         75
+        ]
+       },
+       {
+        "label": "Previous Period",
+        "data": [
+         58,
+         62,
+         60,
+         68
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

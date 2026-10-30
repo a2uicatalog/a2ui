@@ -1,0 +1,117 @@
+{
+ "label": "oracle-slice-3types__elemental__haiku-5-5__run1",
+ "task": "T1",
+ "format": "elemental",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "root",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning-elemental.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "root",
+    "components": [
+     {
+      "id": "title",
+      "component": "page_header",
+      "title": "The Water Cycle",
+      "subtitle": "How water moves continuously between the oceans, atmosphere, and land",
+      "icon": "\ud83d\udca7",
+      "tag": "Earth Science",
+      "accent": "#0ea5e9",
+      "theme": "light"
+     },
+     {
+      "id": "h-evap",
+      "component": "heading",
+      "text": "1. Evaporation and Condensation"
+     },
+     {
+      "id": "b-evap",
+      "component": "body",
+      "text": "The sun heats water in oceans, lakes, and rivers, turning it into water vapour. This process is called evaporation. As the vapour rises and cools, it changes back into tiny liquid droplets that gather into clouds. This change is called condensation."
+     },
+     {
+      "id": "h-precip",
+      "component": "heading",
+      "text": "2. Precipitation and Collection"
+     },
+     {
+      "id": "b-precip",
+      "component": "body",
+      "text": "When droplets in clouds merge and grow heavy enough, they fall as precipitation, in the form of rain, snow, sleet, or hail. Much of this water lands in oceans, but some collects in lakes, rivers, and glaciers."
+     },
+     {
+      "id": "h-infil",
+      "component": "heading",
+      "text": "3. Infiltration, Runoff, and Transpiration"
+     },
+     {
+      "id": "b-infil",
+      "component": "body",
+      "text": "Some precipitation soaks into the ground, a process called infiltration, and may later seep into groundwater. Water that does not soak in flows over the surface as runoff and returns to bodies of water. Plants also release water vapour through their leaves, a process called transpiration."
+     },
+     {
+      "id": "example",
+      "component": "callout",
+      "kind": "tip",
+      "title": "Worked example",
+      "text": "A 2 litre puddle sits on a warm pavement. Heat from the sun causes some water to evaporate into the air, leaving less water on the ground. The vapour later rises, cools, and condenses into a cloud. If that cloud grows heavy, it may return the water as rain somewhere else. The same water is cycling through every stage."
+     },
+     {
+      "id": "h-check",
+      "component": "heading",
+      "text": "Self-Check"
+     },
+     {
+      "id": "quiz",
+      "component": "quiz_set",
+      "title": "Water Cycle Self-Check",
+      "pass_score": 70,
+      "accent": "#0ea5e9",
+      "questions": [
+       {
+        "question": "What is the process by which water vapour changes back into liquid droplets in clouds?",
+        "options": [
+         "Evaporation",
+         "Condensation",
+         "Precipitation",
+         "Infiltration"
+        ],
+        "correct": 1,
+        "explanation": "Condensation occurs when rising water vapour cools and forms tiny liquid droplets that make up clouds."
+       },
+       {
+        "question": "Which process describes plants releasing water vapour through their leaves?",
+        "options": [
+         "Runoff",
+         "Transpiration",
+         "Infiltration",
+         "Precipitation"
+        ],
+        "correct": 1,
+        "explanation": "Transpiration is the release of water vapour from plant leaves into the atmosphere."
+       },
+       {
+        "question": "What happens to water that flows over the surface of the land instead of soaking in?",
+        "options": [
+         "It becomes runoff and returns to bodies of water",
+         "It turns directly into clouds",
+         "It becomes groundwater only",
+         "It stays frozen permanently"
+        ],
+        "correct": 0,
+        "explanation": "Water that does not infiltrate the ground flows over the surface as runoff and eventually reaches lakes, rivers, or oceans."
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

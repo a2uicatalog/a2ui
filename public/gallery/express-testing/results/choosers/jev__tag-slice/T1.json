@@ -1,0 +1,207 @@
+{
+ "task": "T1",
+ "condition": "G",
+ "slice_atoms_in_options": 235,
+ "picks": [
+  {
+   "slot": "A large heading at the top showing the lesson title, 'The Water Cycle', with a s #1",
+   "decomposer_line": "A large heading at the top showing the lesson title, 'The Water Cycle', with a short line naming the lesson's goal.",
+   "atom": "page_header",
+   "confidence": 0.76,
+   "top3": [
+    [
+     "page_header",
+     0.76
+    ],
+    [
+     "article_hero",
+     0.08
+    ],
+    [
+     "heading",
+     0.060000000000000005
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "A text block explaining the first concept, evaporation, where liquid water turns #2",
+   "decomposer_line": "A text block explaining the first concept, evaporation, where liquid water turns into vapor from oceans, lakes, and rivers as the sun heats it.",
+   "atom": "text_block",
+   "confidence": 0.79,
+   "top3": [
+    [
+     "text_block",
+     0.79
+    ],
+    [
+     "paragraph",
+     0.09
+    ],
+    [
+     "body",
+     0.05
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "A text block explaining the second concept, condensation, where water vapor cool #3",
+   "decomposer_line": "A text block explaining the second concept, condensation, where water vapor cools and gathers into tiny droplets that form clouds.",
+   "atom": "text_block",
+   "confidence": 0.81,
+   "top3": [
+    [
+     "text_block",
+     0.81
+    ],
+    [
+     "paragraph",
+     0.09
+    ],
+    [
+     "body",
+     0.05
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "A text block explaining the third concept, precipitation, where water falls back #4",
+   "decomposer_line": "A text block explaining the third concept, precipitation, where water falls back to the ground as rain, snow, sleet, or hail.",
+   "atom": "text_block",
+   "confidence": 0.86,
+   "top3": [
+    [
+     "text_block",
+     0.86
+    ],
+    [
+     "paragraph",
+     0.06999999999999999
+    ],
+    [
+     "body",
+     0.04
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "A worked example that walks through one drop of water's journey step by step, wi #5",
+   "decomposer_line": "A worked example that walks through one drop of water's journey step by step, with each step's explanation shown in order.",
+   "atom": "steps",
+   "confidence": 0.31,
+   "top3": [
+    [
+     "steps",
+     0.31
+    ],
+    [
+     "concept_rung",
+     0.25
+    ],
+    [
+     "step_reveal_sequence",
+     0.22
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "A quiz question asking the learner to put the stages of the cycle in order, with #6",
+   "decomposer_line": "A quiz question asking the learner to put the stages of the cycle in order, with several answer choices they can select and feedback showing whether the choice was correct.",
+   "atom": "sortable_list",
+   "confidence": 0.38,
+   "top3": [
+    [
+     "sortable_list",
+     0.38
+    ],
+    [
+     "quiz_question",
+     0.36
+    ],
+    [
+     "knowledge_check",
+     0.18000000000000002
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "A quiz question asking the learner to identify which stage forms clouds, with se #7",
+   "decomposer_line": "A quiz question asking the learner to identify which stage forms clouds, with several answer choices they can select and feedback showing whether the choice was correct.",
+   "atom": "quiz_question",
+   "confidence": 0.63,
+   "top3": [
+    [
+     "quiz_question",
+     0.63
+    ],
+    [
+     "knowledge_check",
+     0.33
+    ],
+    [
+     "form_checkbox_group",
+     0.02
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "A quiz question asking the learner to explain what happens to water after it fal #8",
+   "decomposer_line": "A quiz question asking the learner to explain what happens to water after it falls as precipitation, with a space to type an answer and a reveal that shows the model answer.",
+   "atom": "reflection_prompt",
+   "confidence": 0.35,
+   "top3": [
+    [
+     "reflection_prompt",
+     0.35000000000000003
+    ],
+    [
+     "quiz_question",
+     0.17
+    ],
+    [
+     "case_study_card",
+     0.12
+    ]
+   ],
+   "finalists": null
+  }
+ ],
+ "cost": {
+  "decomposer_input_tokens": 3243,
+  "decomposer_output_tokens": 901,
+  "decomposer_thinking_tokens": 0,
+  "jev_input_tokens": 74824,
+  "jev_output_tokens": 16679,
+  "jev_calls": 8
+ },
+ "error": null,
+ "atoms": [
+  "page_header",
+  "text_block",
+  "text_block",
+  "text_block",
+  "steps",
+  "sortable_list",
+  "quiz_question",
+  "reflection_prompt"
+ ],
+ "score": {
+  "precision": 0.75,
+  "recall": 0.8,
+  "f1": 0.774,
+  "slot_hits": {
+   "title": true,
+   "concept sections (x3)": true,
+   "worked example": true,
+   "3-question quiz": true,
+   "quiz result": false
+  }
+ },
+ "secs": 8.9
+}

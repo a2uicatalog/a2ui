@@ -1,0 +1,129 @@
+{
+ "label": "oracle-slice-6types__json__sonnet-5-5__temp0__run3",
+ "task": "T4",
+ "format": "json",
+ "model_id": "claude-sonnet-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "status-list",
+    "catalog_id": "https://a2uicatalog.ai/catalog/d-t4.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "status-list",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         {
+          "id": "list-heading",
+          "component": "heading",
+          "text": "Project items"
+         },
+         {
+          "id": "list-intro",
+          "component": "body",
+          "text": "Eight items. Filter by status to narrow the list."
+         },
+         {
+          "id": "status-filter",
+          "component": "chip_group",
+          "label": "Filter by status",
+          "layout": "wrap",
+          "chips": [
+           {
+            "label": "All (8)",
+            "active": true
+           },
+           {
+            "label": "Done (2)",
+            "color": "#2e9e5b"
+           },
+           {
+            "label": "In progress (3)",
+            "color": "#2f6fdb"
+           },
+           {
+            "label": "Blocked (1)",
+            "color": "#d64545"
+           },
+           {
+            "label": "Not started (2)",
+            "color": "#7a8394"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "blocks": [
+         {
+          "id": "items-table",
+          "component": "data_table_sortable",
+          "headers": [
+           "Title",
+           "Status",
+           "Detail"
+          ],
+          "rows": [
+           [
+            "Set up repository",
+            "Done",
+            "Repo created with CI and branch protection."
+           ],
+           [
+            "Design data model",
+            "Done",
+            "Schema reviewed and approved by the team."
+           ],
+           [
+            "Build API endpoints",
+            "In progress",
+            "Auth and list routes are done; search is pending."
+           ],
+           [
+            "Create dashboard UI",
+            "In progress",
+            "Layout is finished; charts are still being wired up."
+           ],
+           [
+            "Write integration tests",
+            "In progress",
+            "Covering the main user flows first."
+           ],
+           [
+            "Third-party payment setup",
+            "Blocked",
+            "Waiting on vendor credentials."
+           ],
+           [
+            "Performance audit",
+            "Not started",
+            "Scheduled once the API is feature-complete."
+           ],
+           [
+            "Launch checklist",
+            "Not started",
+            "To be drafted before the release candidate."
+           ]
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

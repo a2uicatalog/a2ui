@@ -1,0 +1,46 @@
+{
+ "task": "T5",
+ "condition": "C_gemini-3.5-flash",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 32768,
+ "model_id": "gemini-3.5-flash",
+ "hints": false,
+ "label": "oracle-slice-3types__express__gemini-3.5-flash__thinking-off__run1",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "C-marketing-commerce.json",
+ "atoms_in_catalogue": 23,
+ "prompt_chars": 12467,
+ "slot_recall": [
+  1,
+  1
+ ],
+ "secs": 2.6,
+ "usage": {
+  "input_tokens": 3402,
+  "output_tokens": 453
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "pricing_tier_group"
+ ],
+ "score": {
+  "per_approach": {
+   "tier_cards": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+   },
+   "comparison_table": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": null
+   }
+  },
+  "best_approach": "tier_cards",
+  "f1": 1.0
+ },
+ "reply": "```python\n<a2ui>\nsurface(\"subscription-tiers\")\n\n# Define subscription tiers configuration\ntiers_data = [\n    {\n        \"name\": \"Starter\",\n        \"price\": \"$9\",\n        \"period\": \"month\",\n        \"description\": \"Essential features for individuals getting started.\",\n        \"features\": [\n            \"Access to basic templates\",\n            \"1 active project\",\n            \"Community forum support\",\n            \"Standard export resolution\"\n        ],\n        \"button\": {\n            \"label\": \"Get Started\",\n            \"url\": \"https://example.com/signup/starter\"\n        },\n        \"highlighted\": false\n    },\n    {\n        \"name\": \"Professional\",\n        \"price\": \"$29\",\n        \"period\": \"month\",\n        \"description\": \"Advanced tools and unlimited projects for creators.\",\n        \"features\": [\n            \"Access to all templates\",\n            \"Unlimited active projects\",\n            \"Priority email support\",\n            \"4K export resolution\",\n            \"Team sharing controls\"\n        ],\n        \"button\": {\n            \"label\": \"Go Professional\",\n            \"url\": \"https://example.com/signup/professional\"\n        },\n        \"highlighted\": true\n    },\n    {\n        \"name\": \"Enterprise\",\n        \"price\": \"$99\",\n        \"period\": \"month\",\n        \"description\": \"Custom workflows, security, and dedicated support.\",\n        \"features\": [\n            \"Everything in Professional\",\n            \"Custom template builder\",\n            \"Dedicated account manager\",\n            \"SLA 99.9% uptime guarantee\",\n            \"SSO and advanced security\"\n        ],\n        \"button\": {\n            \"label\": \"Contact Sales\",\n            \"url\": \"https://example.com/signup/enterprise\"\n        },\n        \"highlighted\": false\n    }\n]\n\n# Set up the container layout\nroot = pricing_tier_group(tiers=tiers_data)\n</a2ui>\n```"
+}

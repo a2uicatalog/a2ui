@@ -1,0 +1,136 @@
+{
+ "label": "oracle-slice-3types__json__sonnet-5-5__temp0__run1",
+ "task": "T4",
+ "format": "json",
+ "model_id": "claude-sonnet-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "status-list",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "status-list",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "2rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         {
+          "type": "heading",
+          "component": "heading",
+          "id": "title",
+          "text": "Project Items"
+         },
+         {
+          "type": "body",
+          "component": "body",
+          "id": "intro",
+          "text": "Eight work items and where each one stands. Pick a status to narrow the list."
+         },
+         {
+          "type": "segmented_control",
+          "component": "segmented_control",
+          "id": "status-filter",
+          "name": "status_filter",
+          "selected_value": "all",
+          "options": [
+           {
+            "label": "All",
+            "value": "all"
+           },
+           {
+            "label": "Active",
+            "value": "active"
+           },
+           {
+            "label": "Pending",
+            "value": "pending"
+           },
+           {
+            "label": "Blocked",
+            "value": "blocked"
+           },
+           {
+            "label": "Done",
+            "value": "done"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "blocks": [
+         {
+          "type": "entity_list",
+          "component": "entity_list",
+          "id": "items-list",
+          "items": [
+           {
+            "name": "Design system audit",
+            "subtitle": "Review all components for accessibility gaps",
+            "icon": "\ud83c\udfa8",
+            "status": "Active"
+           },
+           {
+            "name": "API rate limiting",
+            "subtitle": "Add per-key throttling to public endpoints",
+            "icon": "\u2699\ufe0f",
+            "status": "Active"
+           },
+           {
+            "name": "Onboarding revamp",
+            "subtitle": "Waiting on copy approval from marketing",
+            "icon": "\ud83d\ude80",
+            "status": "Pending"
+           },
+           {
+            "name": "Billing migration",
+            "subtitle": "Move invoices to the new payment provider",
+            "icon": "\ud83d\udcb3",
+            "status": "Pending"
+           },
+           {
+            "name": "SSO integration",
+            "subtitle": "Blocked by missing identity provider credentials",
+            "icon": "\ud83d\udd10",
+            "status": "Blocked"
+           },
+           {
+            "name": "Mobile push alerts",
+            "subtitle": "Blocked pending platform certificate renewal",
+            "icon": "\ud83d\udd14",
+            "status": "Blocked"
+           },
+           {
+            "name": "Search indexing",
+            "subtitle": "Reindexed 2.4M records with zero downtime",
+            "icon": "\ud83d\udd0e",
+            "status": "Done"
+           },
+           {
+            "name": "Dashboard export",
+            "subtitle": "CSV and PDF export shipped to all users",
+            "icon": "\ud83d\udce4",
+            "status": "Done"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

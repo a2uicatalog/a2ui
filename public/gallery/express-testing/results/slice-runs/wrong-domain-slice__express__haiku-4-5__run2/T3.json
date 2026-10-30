@@ -1,0 +1,33 @@
+{
+ "task": "T3",
+ "condition": "E",
+ "label": "wrong-domain-slice__express__haiku-4-5__run2",
+ "agent_type": "Learning",
+ "catalogue": "B-learning.json",
+ "atoms_in_catalogue": 184,
+ "prompt_chars": 88519,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 4.8,
+ "usage": {
+  "input_tokens": 24766,
+  "output_tokens": 439
+ },
+ "valid": false,
+ "error": "A2uiCompilationParseError: Failed to parse expression: Syntax error at line 16:12: mismatched input '=' expecting ':' (line 16) - Line 16, Col 12 - Help: Please correct the syntax error in your Express DSL.",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "hero": false,
+   "feature columns (x3)": false,
+   "testimonial": false,
+   "CTA": false
+  }
+ },
+ "reply": "<a2ui>\nroot = [\n  gradient_hero(\n    title=\"Transform Your Workflow\",\n    subtitle=\"Experience the power of seamless integration and intelligent automation\",\n    badge=\"Product Launch\",\n    accent=\"#4f46e5\",\n    accent2=\"#8b5cf6\",\n    cta_label=\"Get Started Free\",\n    cta_url=\"/signup\"\n  ),\n  feature_grid(\n    heading=\"Why Choose Us\",\n    columns=3,\n    features=[\n      {\n        icon=\"\u26a1\",\n        title=\"Lightning Fast\",\n        description=\"Process data 10x faster with our optimized infrastructure and real-time updates.\"\n      },\n      {\n        icon=\"\ud83d\udd12\",\n        title=\"Enterprise Security\",\n        description=\"Bank-level encryption and compliance with SOC 2, GDPR, and HIPAA standards.\"\n      },\n      {\n        icon=\"\ud83e\udd1d\",\n        title=\"Seamless Integration\",\n        description=\"Connect with 500+ apps and services without writing a single line of code.\"\n      }\n    ]\n  ),\n  blockquote_with_avatar(\n    quote=\"This product has completely transformed how our team collaborates. We've saved countless hours and our productivity has skyrocketed.\",\n    author_name=\"Sarah Chen\",\n    author_title=\"VP of Product, TechCorp\",\n    avatar_url=\"https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah\"\n  ),\n  cta_section(\n    heading=\"Ready to Get Started?\",\n    body=\"Join thousands of teams already using our platform to streamline their workflow and boost productivity.\",\n    primary_cta={label: \"Start Your Free Trial\", url: \"/trial\"},\n    secondary_cta={label: \"Schedule a Demo\", url: \"/demo\"}\n  )\n]\n</a2ui>"
+}

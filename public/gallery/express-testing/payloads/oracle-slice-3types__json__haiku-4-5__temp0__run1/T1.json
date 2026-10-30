@@ -1,0 +1,153 @@
+{
+ "label": "oracle-slice-3types__json__haiku-4-5__temp0__run1",
+ "task": "T1",
+ "format": "json",
+ "model_id": "claude-haiku-4-5-20251001",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "water-cycle-lesson",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "water-cycle-lesson",
+    "components": [
+     {
+      "id": "root",
+      "component": "page_header",
+      "title": "The Water Cycle",
+      "subtitle": "Understanding how water moves through Earth's atmosphere, land, and oceans",
+      "icon": "\ud83d\udca7",
+      "tag": "Earth Science",
+      "accent": "#0ea5e9"
+     },
+     {
+      "id": "intro",
+      "component": "body",
+      "text": "The water cycle, also known as the hydrological cycle, is the continuous process by which water circulates through Earth's systems. This fundamental process is essential for life and shapes our climate and weather patterns."
+     },
+     {
+      "id": "concept-ladder",
+      "component": "columns",
+      "cols": 1,
+      "items": [
+       {
+        "blocks": [
+         {
+          "id": "evaporation-rung",
+          "component": "concept_rung",
+          "badge": "1",
+          "kind": "depth",
+          "title": "Evaporation",
+          "body": "Evaporation is the process where water from oceans, lakes, rivers, and soil surfaces transforms into water vapor due to heat from the sun. This invisible vapor rises into the atmosphere, carrying water from Earth's surface upward.",
+          "takeaway": "Heat energy from the sun drives water from liquid to gas state"
+         },
+         {
+          "id": "condensation-rung",
+          "component": "concept_rung",
+          "badge": "2",
+          "kind": "depth",
+          "title": "Condensation",
+          "body": "As water vapor rises and cools in the upper atmosphere, it undergoes condensation\u2014transforming back into liquid water droplets. These droplets cluster together to form clouds and fog, visible signs of water in the atmosphere.",
+          "takeaway": "Cooling causes water vapor to condense into liquid droplets"
+         },
+         {
+          "id": "precipitation-rung",
+          "component": "concept_rung",
+          "badge": "3",
+          "kind": "depth",
+          "title": "Precipitation",
+          "body": "When water droplets in clouds become heavy enough, they fall back to Earth as precipitation\u2014rain, snow, sleet, or hail. This water returns to the surface, replenishing freshwater sources and completing the cycle's return journey.",
+          "takeaway": "Accumulated droplets fall as precipitation, returning water to Earth"
+         },
+         {
+          "id": "worked-example",
+          "component": "concept_rung",
+          "badge": "EX",
+          "kind": "example",
+          "title": "A Day in the Life of a Water Droplet",
+          "body": "Imagine a water droplet in the Pacific Ocean. On a sunny morning, solar radiation heats the ocean surface. Our droplet evaporates, becoming invisible water vapor. It rises with warm air currents for several hours, traveling hundreds of kilometers eastward. As it reaches cooler air at 3,000 meters altitude, it condenses into a tiny cloud droplet. Over the next day, it collides with billions of other droplets, forming a visible cumulus cloud. When the cloud becomes saturated, precipitation begins\u2014our droplet falls as rain over the Sierra Nevada mountains. It lands on a pine tree, drips to the forest floor, and seeps into the soil, where it may be absorbed by plant roots or flow into a stream, eventually returning to the ocean to begin the cycle anew.",
+          "takeaway": "A single water molecule can cycle through all stages in days or years"
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "id": "knowledge-check",
+      "component": "knowledge_check",
+      "question": "Which process describes water transforming from a liquid to a gas?",
+      "options": [
+       "Condensation",
+       "Evaporation",
+       "Precipitation",
+       "Sublimation"
+      ],
+      "correct": 1,
+      "explanation": "Evaporation is the process where liquid water transforms into water vapor (gas) due to heat energy from the sun. Condensation is the reverse process."
+     },
+     {
+      "id": "quiz",
+      "component": "quiz_set",
+      "title": "Water Cycle Self-Check",
+      "accent": "#0ea5e9",
+      "questions": [
+       {
+        "question": "What is the primary energy source that drives the water cycle?",
+        "options": [
+         "Gravitational pull from the moon",
+         "Heat energy from the sun",
+         "Wind patterns in the atmosphere",
+         "Pressure from the ocean floor"
+        ],
+        "correct": 1,
+        "explanation": "The sun's heat energy is the primary driver of the water cycle. It provides the energy needed for evaporation and creates the temperature differences that drive atmospheric circulation."
+       },
+       {
+        "question": "Which of the following is NOT a form of precipitation?",
+        "options": [
+         "Rain",
+         "Snow",
+         "Evaporation",
+         "Hail"
+        ],
+        "correct": 2,
+        "explanation": "Evaporation is not a form of precipitation. Evaporation is the process where water transforms into vapor, while precipitation is when water falls from clouds to Earth's surface as rain, snow, sleet, or hail."
+       },
+       {
+        "question": "What happens to water vapor when it rises into cooler air in the atmosphere?",
+        "options": [
+         "It evaporates further",
+         "It condenses into liquid water droplets",
+         "It falls immediately as rain",
+         "It escapes into space"
+        ],
+        "correct": 1,
+        "explanation": "When water vapor rises into cooler air, it undergoes condensation, transforming back into liquid water droplets. These droplets form clouds and eventually lead to precipitation."
+       }
+      ],
+      "pass_score": 70,
+      "on_pass": {
+       "id": "pass-message",
+       "component": "text_callout",
+       "variant": "success",
+       "title": "Excellent!",
+       "description": "You've demonstrated a solid understanding of the water cycle. Great work!"
+      },
+      "on_fail": {
+       "id": "fail-message",
+       "component": "text_callout",
+       "variant": "warning",
+       "title": "Keep Learning",
+       "description": "Review the concept sections above and try the quiz again to strengthen your understanding."
+      }
+     }
+    ]
+   }
+  }
+ ]
+}

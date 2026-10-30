@@ -1,0 +1,43 @@
+{
+ "task": "T4",
+ "condition": "C_haiku-5-5H2",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": true,
+ "label": "oracle-slice-3types__express__haiku-5-5__hints-v2__run1",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 16421,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 7.5,
+ "usage": {
+  "input_tokens": 6368,
+  "output_tokens": 1465
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "heading",
+  "segmented_control",
+  "entity_list",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.5,
+  "recall": 0.667,
+  "f1": 0.571,
+  "slot_hits": {
+   "list": true,
+   "status indicator": false,
+   "filter control": true
+  }
+ },
+ "reply": "<a2ui>\nheading_title = heading(\"Work Items\")\n\nstatus_filter = segmented_control([{label: \"All\", value: \"all\"}, {label: \"Active\", value: \"active\"}, {label: \"Pending\", value: \"pending\"}, {label: \"Blocked\", value: \"blocked\"}, {label: \"Done\", value: \"done\"}], \"all\", \"status\")\n\nitem_list = entity_list([\n  {name: \"Migrate billing database\", subtitle: \"Move customer invoices to the new schema\", status: \"Active\"},\n  {name: \"Update onboarding emails\", subtitle: \"Rewrite welcome sequence for trial users\", status: \"Pending\"},\n  {name: \"Fix checkout timeout\", subtitle: \"Payment step times out under heavy load\", status: \"Blocked\"},\n  {name: \"Publish API v2 docs\", subtitle: \"Reference pages are complete and reviewed\", status: \"Done\"},\n  {name: \"Rotate service credentials\", subtitle: \"Replace keys for the reporting service\", status: \"Active\"},\n  {name: \"Audit access permissions\", subtitle: \"Review admin roles across all workspaces\", status: \"Pending\"},\n  {name: \"Resolve search indexing lag\", subtitle: \"Index updates trail by about 40 minutes\", status: \"Blocked\"},\n  {name: \"Archive legacy reports\", subtitle: \"Export and remove reports older than two years\", status: \"Done\"}\n])\n\nroot = columns(2, \"1.5rem\", \"top\", [{blocks: [heading_title, status_filter]}, {blocks: [item_list]}])\n</a2ui>"
+}

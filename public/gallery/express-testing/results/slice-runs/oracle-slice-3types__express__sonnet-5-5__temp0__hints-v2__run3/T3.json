@@ -1,0 +1,45 @@
+{
+ "task": "T3",
+ "condition": "CT_sonnet-5-5H2",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-sonnet-5-5",
+ "hints": true,
+ "label": "oracle-slice-3types__express__sonnet-5-5__temp0__hints-v2__run3",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "C-marketing-commerce.json",
+ "atoms_in_catalogue": 23,
+ "prompt_chars": 12467,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 12.4,
+ "usage": {
+  "input_tokens": 4812,
+  "output_tokens": 1475
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "gradient_hero",
+  "feature_grid",
+  "testimonial_card",
+  "cta_button",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.8,
+  "recall": 1.0,
+  "f1": 0.889,
+  "slot_hits": {
+   "hero": true,
+   "feature columns (x3)": true,
+   "testimonial": true,
+   "CTA": true
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"product-landing\")\nhero = gradient_hero(\"Ship products your customers love, faster\", \"Plan, build, and launch with one streamlined workspace that keeps your whole team in sync.\", \"New: Version 2.0\", \"#4f46e5\", \"#8b5cf6\", null, \"center\", \"Get started free\", \"https://example.com/signup\")\nfeatures = feature_grid(\"Everything you need to launch\", \"Three tools that take you from idea to release.\", 3, [{icon: \"\u26a1\", title: \"Lightning fast\", description: \"Cut setup time from days to minutes with smart templates and instant deployment.\"}, {icon: \"\ud83d\udd12\", title: \"Secure by default\", description: \"Enterprise-grade encryption and granular access controls protect your data.\"}, {icon: \"\ud83d\udcc8\", title: \"Actionable insights\", description: \"Real-time analytics show what is working so you can make confident decisions.\"}])\ntestimonial = testimonial_card(\"This platform cut our launch cycle in half. Our team finally has one place to plan, build, and ship together.\", \"Maria Alvarez\", \"VP of Product, Brightwave\", \"https://i.pravatar.cc/120?img=47\", 5)\ncta = cta_button(\"https://example.com/signup\", \"Start your free trial\", \"#4f46e5\", false)\nroot = columns(1, \"2.5rem\", \"stretch\", [{blocks: [hero]}, {blocks: [features]}, {blocks: [testimonial]}, {blocks: [cta]}])\n</a2ui>"
+}

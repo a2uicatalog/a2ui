@@ -1,0 +1,22 @@
+{
+ "task": "T6",
+ "label": "haiku-live3-r1",
+ "secs": 4.6,
+ "usage": {
+  "input_tokens": 84996,
+  "output_tokens": 338
+ },
+ "valid": false,
+ "error": "A2uiCompilationParseError: Failed to parse expression: Syntax error at line 9:14: mismatched input '=' expecting ':' (line 9) - Line 9, Col 14 - Help: Please correct the syntax error in your Express DSL.",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "flashcard deck": false,
+   "progress indicator": false
+  }
+ },
+ "reply": "<a2ui>\nroot = columns(cols=1, items=[\n  {blocks: [\n    heading(text=\"Vocabulary Review\"),\n    progress_bar(value=0, label=\"Progress\", show_percent=true)\n  ]},\n  {blocks: [\n    flashcard_deck(\n      cards=[\n        {front=\"Eloquent\", back=\"Fluent and persuasive in speaking or writing\"},\n        {front=\"Ephemeral\", back=\"Lasting for a very short time\"},\n        {front=\"Paradigm\", back=\"A typical example or pattern of something\"},\n        {front=\"Ubiquitous\", back=\"Present, appearing, or found everywhere\"},\n        {front=\"Serendipity\", back=\"The occurrence of events by chance in a happy or beneficial way\"},\n        {front=\"Pragmatic\", back=\"Dealing with things in a practical, realistic way\"},\n        {front=\"Meticulous\", back=\"Showing great attention to detail; very careful and precise\"},\n        {front=\"Benevolent\", back=\"Kind, generous, and charitable\"},\n        {front=\"Cacophony\", back=\"A harsh, discordant mixture of sounds\"},\n        {front=\"Aesthetic\", back=\"Concerned with beauty or the appreciation of beauty\"}\n      ],\n      accent=\"#4f46e5\",\n      label_front=\"WORD\",\n      label_back=\"DEFINITION\"\n    )\n  ]}\n])\n</a2ui>"
+}

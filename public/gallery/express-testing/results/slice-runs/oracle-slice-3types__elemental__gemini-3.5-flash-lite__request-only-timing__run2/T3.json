@@ -1,0 +1,39 @@
+{
+ "task": "T3",
+ "condition": "CX_gemini-3.5-flash-l",
+ "temperature_applied": false,
+ "format": "elemental",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash-lite",
+ "hints": false,
+ "label": "oracle-slice-3types__elemental__gemini-3.5-flash-lite__request-only-timing__run2",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "C-marketing-commerce.json",
+ "atoms_in_catalogue": 23,
+ "prompt_chars": 12612,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 2.1,
+ "usage": {
+  "input_tokens": 3640,
+  "output_tokens": 621
+ },
+ "valid": false,
+ "error": "A2uiCompilationValidationError: Unexpected characters at end of expression: ': 'Start Free Trial', 'url': '#signup'' - Help: Please correct the validation or syntax error in your Elemental XML/HTML.",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "hero": false,
+   "feature columns (x3)": false,
+   "testimonial": false,
+   "CTA": false
+  }
+ },
+ "reply": "<a2ui>\n  <body>\n    <script type=\"application/json\">\n      {\n        \"hero_data\": {\n          \"title\": \"Build Better Products, Faster\",\n          \"subtitle\": \"Streamline your workflow, collaborate in real-time, and ship high-quality software with our all-in-one platform.\"\n        },\n        \"feature_items\": [\n          {\n            \"icon\": \"\u26a1\",\n            \"title\": \"Lightning Fast\",\n            \"description\": \"Optimized performance ensures your team stays productive without frustrating lags.\"\n          },\n          {\n            \"icon\": \"\ud83d\udd12\",\n            \"title\": \"Enterprise Security\",\n            \"description\": \"Bank-grade encryption keeps your sensitive project data safe and compliant.\"\n          },\n          {\n            \"icon\": \"\ud83d\udcc8\",\n            \"title\": \"Advanced Analytics\",\n            \"description\": \"Gain deep insights into your team's velocity and identify bottlenecks instantly.\"\n          }\n        ]\n      }\n    </script>\n\n    <ui-gradient_hero id=\"root\" title=\"Build Better Products, Faster\" subtitle=\"Streamline your workflow, collaborate in real-time, and ship high-quality software with our all-in-one platform.\" badge=\"New v2.0\" cta_label=\"Get Started\" cta_url=\"#signup\" />\n\n    <ui-feature_grid heading=\"Everything you need to succeed\" description=\"Powerful features designed to help your team perform at their absolute best.\" columns=\"{3}\">\n      <script type=\"application/json\" slot=\"features\">[\n        {\n          \"icon\": \"\u26a1\",\n          \"title\": \"Lightning Fast\",\n          \"description\": \"Optimized performance ensures your team stays productive without frustrating lags.\"\n        },\n        {\n          \"icon\": \"\ud83d\udd12\",\n          \"title\": \"Enterprise Security\",\n          \"description\": \"Bank-grade encryption keeps your sensitive project data safe and compliant.\"\n        },\n        {\n          \"icon\": \"\ud83d\udcc8\",\n          \"title\": \"Advanced Analytics\",\n          \"description\": \"Gain deep insights into your team's velocity and identify bottlenecks instantly.\"\n        }\n      ]</script>\n    </ui-feature_grid>\n\n    <ui-testimonial_card id=\"testimonial\" text=\"This platform completely transformed how our engineering team operates. We shipped our last product two weeks ahead of schedule!\" author_name=\"Sarah Jenkins\" author_title=\"VP of Engineering at TechCorp\" rating=\"{5}\" />\n\n    <ui-cta_section id=\"cta\" heading=\"Ready to accelerate your workflow?\" body=\"Join thousands of teams already building the future with our platform.\" primary_cta=\"{ 'label': 'Start Free Trial', 'url': '#signup' }\" secondary_cta=\"{ 'label': 'Contact Sales', 'url': '#contact' }\" />\n  </body>\n</a2ui>"
+}

@@ -1,0 +1,124 @@
+{
+ "label": "oracle-slice-3types__express__sonnet-5-5__temp0__run2",
+ "task": "T4",
+ "format": "express",
+ "model_id": "claude-sonnet-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "status-list",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "status-list",
+    "components": [
+     {
+      "id": "filter",
+      "component": "segmented_control",
+      "options": [
+       {
+        "label": "All",
+        "value": "all"
+       },
+       {
+        "label": "Done",
+        "value": "done"
+       },
+       {
+        "label": "In progress",
+        "value": "in_progress"
+       },
+       {
+        "label": "Blocked",
+        "value": "blocked"
+       }
+      ],
+      "selected_value": "all",
+      "name": "status_filter"
+     },
+     {
+      "id": "items",
+      "component": "entity_list",
+      "items": [
+       {
+        "name": "Migrate billing database",
+        "subtitle": "Cutover completed with zero downtime",
+        "status": "Done"
+       },
+       {
+        "name": "Redesign onboarding flow",
+        "subtitle": "Prototype is in user testing this week",
+        "status": "In progress"
+       },
+       {
+        "name": "Upgrade payment gateway SDK",
+        "subtitle": "Waiting on vendor to release the sandbox keys",
+        "status": "Blocked"
+       },
+       {
+        "name": "Publish API v2 docs",
+        "subtitle": "Live on the developer portal since Monday",
+        "status": "Done"
+       },
+       {
+        "name": "Set up regional failover",
+        "subtitle": "Terraform modules are 70% written",
+        "status": "In progress"
+       },
+       {
+        "name": "Security audit remediation",
+        "subtitle": "Legal review is pending on the data-retention clause",
+        "status": "Blocked"
+       },
+       {
+        "name": "Mobile push notifications",
+        "subtitle": "Beta rolled out to 10% of users",
+        "status": "In progress"
+       },
+       {
+        "name": "Retire legacy login page",
+        "subtitle": "Redirects deployed and old routes removed",
+        "status": "Done"
+       }
+      ]
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "_inline_1",
+         "_inline_2",
+         "filter"
+        ]
+       },
+       {
+        "blocks": [
+         "items"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "_inline_1",
+      "component": "heading",
+      "text": "Project items"
+     },
+     {
+      "id": "_inline_2",
+      "component": "body",
+      "text": "Filter the eight items by status."
+     }
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,96 @@
+{
+ "label": "oracle-slice-6types__express__sonnet-5-5__temp0__hints-v2__run2",
+ "task": "T3",
+ "format": "express",
+ "model_id": "claude-sonnet-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "product-landing",
+    "catalog_id": "https://a2uicatalog.ai/catalog/d-t3.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "product-landing",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "2rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "_inline_1",
+         "_inline_2",
+         "_inline_3",
+         "_inline_4"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "_inline_1",
+      "component": "gradient_hero",
+      "title": "Ship your best work, faster",
+      "subtitle": "One workspace for planning, building, and launching products your customers will love.",
+      "badge": "New",
+      "accent": "#4f46e5",
+      "accent2": "#8b5cf6",
+      "align": "center",
+      "cta_label": "Get started free",
+      "cta_url": "https://example.com/signup"
+     },
+     {
+      "id": "_inline_2",
+      "component": "feature_grid",
+      "heading": "Everything you need",
+      "description": "Three tools that work together out of the box.",
+      "columns": 3,
+      "features": [
+       {
+        "icon": "\u26a1",
+        "title": "Lightning fast",
+        "description": "Automated workflows cut setup time from days to minutes.",
+        "color": "#f59e0b"
+       },
+       {
+        "icon": "\ud83d\udd12",
+        "title": "Secure by default",
+        "description": "Enterprise-grade encryption and access controls come standard.",
+        "color": "#10b981"
+       },
+       {
+        "icon": "\ud83d\udcc8",
+        "title": "Actionable insights",
+        "description": "Real-time dashboards show what is working and what is not.",
+        "color": "#6366f1"
+       }
+      ]
+     },
+     {
+      "id": "_inline_3",
+      "component": "testimonial_card",
+      "text": "This product transformed how our team works. We launched twice as fast with half the stress.",
+      "author_name": "Jordan Lee",
+      "author_title": "Head of Product, Acme Co.",
+      "author_avatar_url": "https://example.com/avatars/jordan.jpg",
+      "rating": 5
+     },
+     {
+      "id": "_inline_4",
+      "component": "cta_button",
+      "url": "https://example.com/signup",
+      "label": "Start your free trial",
+      "color": "#4f46e5",
+      "same_tab": false
+     }
+    ]
+   }
+  }
+ ]
+}

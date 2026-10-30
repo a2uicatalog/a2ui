@@ -1,0 +1,148 @@
+{
+ "label": "oracle-slice-3types__express__opus-5-5__run3",
+ "task": "T1",
+ "format": "express",
+ "model_id": "claude-opus-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "header",
+      "component": "page_header",
+      "title": "The Water Cycle",
+      "subtitle": "How water moves between the oceans, the air and the land, again and again.",
+      "icon": "\ud83d\udca7",
+      "tag": "Earth Science",
+      "accent": "#0ea5e9"
+     },
+     {
+      "id": "intro",
+      "component": "body",
+      "text": "Earth has had roughly the same amount of water for billions of years. It is not used up. It is recycled by the water cycle, which is powered by the Sun and pulled along by gravity. This lesson covers the three core stages, then works through an example."
+     },
+     {
+      "id": "concept1",
+      "component": "concept_rung",
+      "badge": "1",
+      "kind": "depth",
+      "title": "Evaporation",
+      "body": "Heat from the Sun gives water molecules at the surface of oceans, lakes and rivers enough energy to escape into the air as invisible water vapour.\n\nPlants add vapour too. Water drawn up through their roots exits their leaves in a process called `transpiration`. Together these are often called `evapotranspiration`.",
+      "takeaway": "Energy in \u2192 liquid water becomes vapour."
+     },
+     {
+      "id": "concept2",
+      "component": "concept_rung",
+      "badge": "2",
+      "kind": "depth",
+      "title": "Condensation",
+      "body": "Warm, moist air rises. As it rises it expands and cools. Cooler air cannot hold as much vapour, so the vapour condenses onto tiny particles of dust, salt or smoke. This forms droplets.\n\nBillions of these droplets together are what we see as clouds and fog.",
+      "takeaway": "Cooling \u2192 vapour turns back into liquid droplets."
+     },
+     {
+      "id": "concept3",
+      "component": "concept_rung",
+      "badge": "3",
+      "kind": "depth",
+      "title": "Precipitation & Collection",
+      "body": "Inside a cloud, droplets collide and merge. When they grow too heavy for rising air to hold them up, they fall as rain, snow, sleet or hail.\n\nOn the ground, water runs off into rivers, soaks into soil as `groundwater`, or is stored in ice and lakes. Eventually it returns to the oceans, and the cycle begins again.",
+      "takeaway": "Gravity \u2192 water returns to the surface and collects."
+     },
+     {
+      "id": "example",
+      "component": "concept_rung",
+      "kind": "example",
+      "title": "Worked example: Where does a puddle go?",
+      "body": "After a rainstorm, a puddle forms on a playground. By the next sunny afternoon it is gone. Let's trace one water molecule from that puddle through the cycle.",
+      "code": "Step 1  Sun warms puddle        -> molecule EVAPORATES into vapour\nStep 2  Warm air rises & cools  -> vapour CONDENSES on dust; cloud forms\nStep 3  Droplets merge, grow    -> molecule falls as PRECIPITATION (rain)\nStep 4  Rain hits a hillside    -> runs off into a stream (COLLECTION)\nStep 5  Stream reaches the sea  -> ready to evaporate again",
+      "code_caption": "The puddle did not vanish. Its water changed state and moved.",
+      "takeaway": "Every stage is a change of state or a change of place. Nothing is lost."
+     },
+     {
+      "id": "tip",
+      "component": "text_callout",
+      "variant": "info",
+      "title": "Remember",
+      "description": "Two forces drive the cycle. Energy from the Sun moves water up through evaporation. Gravity brings it back down through precipitation and runoff."
+     },
+     {
+      "id": "quiz",
+      "component": "quiz_set",
+      "title": "Self-Check: The Water Cycle",
+      "accent": "#0ea5e9",
+      "pass_score": 67,
+      "questions": [
+       {
+        "question": "What provides the energy that drives evaporation?",
+        "options": [
+         "The Moon's gravity",
+         "Heat from the Sun",
+         "Wind over the ocean",
+         "Heat from Earth's core"
+        ],
+        "correct": 1,
+        "explanation": "Solar energy heats surface water, so molecules escape as vapour."
+       },
+       {
+        "question": "Clouds form mainly because rising air...",
+        "options": [
+         "warms up and absorbs more vapour",
+         "cools, causing vapour to condense",
+         "loses its dust particles",
+         "becomes heavier than the air around it"
+        ],
+        "correct": 1,
+        "explanation": "Rising air expands and cools. The cooler air holds less vapour, so droplets condense on tiny particles."
+       },
+       {
+        "question": "Water released from plant leaves into the air is called:",
+        "options": [
+         "Transpiration",
+         "Precipitation",
+         "Infiltration",
+         "Runoff"
+        ],
+        "correct": 0,
+        "explanation": "Transpiration is the plant contribution to evaporation, together called evapotranspiration."
+       }
+      ]
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "2rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "header",
+         "intro",
+         "concept1",
+         "concept2",
+         "concept3",
+         "example",
+         "tip"
+        ]
+       },
+       {
+        "blocks": [
+         "quiz"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

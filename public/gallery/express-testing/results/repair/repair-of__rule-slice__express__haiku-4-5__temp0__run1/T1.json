@@ -1,0 +1,39 @@
+{
+ "task": "T1",
+ "condition": "BT",
+ "original_label": "rule-slice__express__haiku-4-5__temp0__run1",
+ "original_error": "A2uiCompilationParseError: Failed to parse expression: Syntax error at line 106:18: mismatched input '=' expecting ':' (line 106) - Line 106, Col 18 - Help: Please correct the syntax error in your Express DSL.",
+ "repaired_valid": true,
+ "produced": [
+  "color_section",
+  "gradient_heading",
+  "body",
+  "divider",
+  "heading",
+  "columns",
+  "highlight_box",
+  "highlight_box",
+  "highlight_box",
+  "divider",
+  "heading",
+  "concept_ladder",
+  "concept_rung",
+  "concept_rung",
+  "concept_rung",
+  "concept_rung",
+  "concept_rung",
+  "concept_rung",
+  "divider",
+  "heading",
+  "quiz_set"
+ ],
+ "f1_after": 0.727,
+ "prompt_chars": 16486,
+ "attempts": 1,
+ "usage": {
+  "input_tokens": 4460,
+  "output_tokens": 1373
+ },
+ "reply": "<a2ui>\nroot = color_section(\n  accent=\"#4f46e5\",\n  style=\"tint\",\n  blocks=[\n    gradient_heading(\n      text=\"The Water Cycle\",\n      gradient=\"linear-gradient(135deg, #4f46e5, #06b6d4)\",\n      size=\"3rem\"\n    ),\n    body(text=\"Water continuously moves between Earth's surface and the atmosphere in a never-ending cycle. Understanding this process is essential to comprehending weather, climate, and Earth's systems.\"),\n    \n    divider(),\n    \n    heading(text=\"Key Concepts\"),\n    \n    columns(\n      cols=3,\n      gap=\"1.5rem\",\n      items=[\n        {blocks: [\n          highlight_box(\n            title=\"Evaporation\",\n            text=\"Water from oceans, lakes, and rivers transforms into water vapor when heated by the sun. This invisible vapor rises into the atmosphere.\",\n            icon=\"\u2600\ufe0f\",\n            accent=\"#f59e0b\"\n          )\n        ]},\n        {blocks: [\n          highlight_box(\n            title=\"Condensation\",\n            text=\"As water vapor rises and cools in the upper atmosphere, it transforms back into liquid water droplets. These droplets form clouds.\",\n            icon=\"\u2601\ufe0f\",\n            accent=\"#38bdf8\"\n          )\n        ]},\n        {blocks: [\n          highlight_box(\n            title=\"Precipitation\",\n            text=\"When water droplets in clouds combine and become heavy, they fall to Earth as rain, snow, sleet, or hail. This returns water to the surface.\",\n            icon=\"\ud83c\udf27\ufe0f\",\n            accent=\"#34d399\"\n          )\n        ]}\n      ]\n    ),\n    \n    divider(),\n    \n    heading(text=\"Worked Example\"),\n    \n    concept_ladder(\n      title=\"Tracing a Water Droplet's Journey\",\n      hook=\"Imagine a single water droplet in the ocean. Follow its path through the complete water cycle.\",\n      model=\"Think of the water cycle as a continuous recycling system powered by the sun's energy.\",\n      rungs=[\n        concept_rung(\n          badge=\"1\",\n          kind=\"depth\",\n          title=\"Starting Point: Ocean Surface\",\n          body=\"Our water droplet begins in the Pacific Ocean. The sun's rays heat the surface water to 25\u00b0C.\"\n        ),\n        concept_rung(\n          badge=\"2\",\n          kind=\"depth\",\n          title=\"Evaporation Phase\",\n          body=\"The heat energy causes the droplet to transform into invisible water vapor. It rises into the atmosphere, joining billions of other vapor molecules.\"\n        ),\n        concept_rung(\n          badge=\"3\",\n          kind=\"depth\",\n          title=\"Condensation Phase\",\n          body=\"At 5,000 meters altitude, the temperature drops to -10\u00b0C. The water vapor cools and condenses into a tiny liquid droplet, joining a forming cloud.\"\n        ),\n        concept_rung(\n          badge=\"EX\",\n          kind=\"example\",\n          title=\"Real-World Example: Cumulus Cloud Formation\",\n          body=\"On a warm summer day, you observe puffy white clouds forming over a lake by mid-afternoon. This is condensation in action\u2014water vapor from the lake's surface has risen and cooled.\",\n          code=\"Temperature at surface: 28\u00b0C\\nTemperature at cloud level: 12\u00b0C\\nDew point reached: Condensation begins\",\n          takeaway=\"The greater the temperature difference between surface and altitude, the more dramatic the cloud formation.\"\n        ),\n        concept_rung(\n          badge=\"4\",\n          kind=\"depth\",\n          title=\"Precipitation Phase\",\n          body=\"The cloud droplets collide and merge, becoming heavier. After 48 hours, they fall as rain over the Rocky Mountains.\"\n        ),\n        concept_rung(\n          badge=\"5\",\n          kind=\"depth\",\n          title=\"Collection Phase\",\n          body=\"The rainwater flows downhill, collecting in streams and rivers. Some seeps into the ground as groundwater. Eventually, it reaches a lake, where the cycle begins again.\"\n        )\n      ],\n      closing_note=\"This cycle repeats endlessly\u2014the same water that fell as rain millions of years ago continues to cycle through our planet today.\"\n    ),\n    \n    divider(),\n    \n    heading(text=\"Check Your Understanding\"),\n    \n    quiz_set(\n      title=\"Water Cycle Self-Check\",\n      questions=[\n        {\n          question: \"What is the primary energy source that drives the water cycle?\",\n          options: [\"The moon's gravity\", \"The sun's heat\", \"Earth's rotation\", \"Ocean currents\"],\n          correct: 1,\n          explanation: \"The sun's energy heats water on Earth's surface, causing evaporation and powering the entire water cycle.\"\n        },\n        {\n          question: \"Which process describes water vapor turning into liquid water droplets?\",\n          options: [\"Evaporation\", \"Condensation\", \"Precipitation\", \"Sublimation\"],\n          correct: 1,\n          explanation: \"Condensation is the phase change from gas (water vapor) to liquid (water droplets), which occurs when air cools.\"\n        },\n        {\n          question: \"What happens to rainwater after it falls on land?\",\n          options: [\"It immediately evaporates\", \"It only flows into rivers\", \"It can flow into rivers, seep into soil, or be absorbed by plants\", \"It stays on the surface forever\"],\n          correct: 2,\n          explanation: \"Precipitation follows multiple pathways: some runs off into streams and rivers, some infiltrates the soil as groundwater, and some is absorbed by plants and soil.\"\n        }\n      ],\n      pass_score=70,\n      accent=\"#4f46e5\"\n    )\n  ]\n)\n</a2ui>",
+ "final_error": null
+}

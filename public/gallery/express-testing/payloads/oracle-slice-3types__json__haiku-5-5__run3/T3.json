@@ -1,0 +1,119 @@
+{
+ "label": "oracle-slice-3types__json__haiku-5-5__run3",
+ "task": "T3",
+ "format": "json",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "landing-page",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "landing-page",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "0",
+      "align": "stretch",
+      "items": [
+       {
+        "blocks": [
+         {
+          "id": "hero",
+          "component": "gradient_hero",
+          "badge": "New release",
+          "title": "Launch your product in days, not months",
+          "subtitle": "Everything you need to design, publish, and grow your product page, all in one place.",
+          "align": "center",
+          "accent": "#4f46e5",
+          "accent2": "#8b5cf6"
+         },
+         {
+          "id": "features",
+          "component": "columns",
+          "cols": 3,
+          "gap": "2rem",
+          "align": "top",
+          "items": [
+           {
+            "blocks": [
+             {
+              "id": "feature-1-title",
+              "component": "heading",
+              "text": "Fast setup"
+             },
+             {
+              "id": "feature-1-body",
+              "component": "body",
+              "text": "Go from sign-up to a live page in minutes with ready-made templates and guided onboarding."
+             }
+            ]
+           },
+           {
+            "blocks": [
+             {
+              "id": "feature-2-title",
+              "component": "heading",
+              "text": "Built to convert"
+             },
+             {
+              "id": "feature-2-body",
+              "component": "body",
+              "text": "Clear layouts, proven call-to-action patterns, and built-in A/B testing help visitors become customers."
+             }
+            ]
+           },
+           {
+            "blocks": [
+             {
+              "id": "feature-3-title",
+              "component": "heading",
+              "text": "Insights you can act on"
+             },
+             {
+              "id": "feature-3-body",
+              "component": "body",
+              "text": "Real-time analytics show what visitors read, click, and buy, so you always know what to improve next."
+             }
+            ]
+           }
+          ]
+         },
+         {
+          "id": "testimonial",
+          "component": "blockquote_with_avatar",
+          "quote": "We went from idea to a polished launch page in one afternoon. Our signups doubled in the first month.",
+          "author_name": "Maya Chen",
+          "author_title": "Founder, Brightline Labs"
+         },
+         {
+          "id": "cta",
+          "component": "cta_section",
+          "heading": "Ready to launch your product?",
+          "body": "Start your free trial today. No credit card required.",
+          "primary_cta": {
+           "label": "Start free trial",
+           "url": "https://example.com/signup"
+          },
+          "secondary_cta": {
+           "label": "Talk to sales",
+           "url": "https://example.com/contact"
+          },
+          "background": "#1e1b4b"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

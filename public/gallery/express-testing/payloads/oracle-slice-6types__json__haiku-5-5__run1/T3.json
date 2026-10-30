@@ -1,0 +1,91 @@
+{
+ "label": "oracle-slice-6types__json__haiku-5-5__run1",
+ "task": "T3",
+ "format": "json",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9",
+   "create_surface": {
+    "surface_id": "product-landing",
+    "catalog_id": "https://a2uicatalog.ai/catalog/d-t3.json"
+   }
+  },
+  {
+   "version": "v0.9",
+   "update_components": {
+    "surface_id": "product-landing",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "0",
+      "align": "stretch",
+      "items": [
+       {
+        "blocks": [
+         {
+          "id": "hero",
+          "component": "gradient_hero",
+          "badge": "New Release",
+          "title": "Ship Your Product Faster",
+          "subtitle": "Build, launch, and scale your product with tools designed for teams that move quickly.",
+          "accent": "#4f46e5",
+          "accent2": "#8b5cf6",
+          "align": "center",
+          "cta_label": "Get Started",
+          "cta_url": "#signup"
+         },
+         {
+          "id": "features",
+          "component": "feature_grid",
+          "heading": "Why Teams Choose Us",
+          "description": "Everything you need to go from idea to launch in one place.",
+          "columns": 3,
+          "features": [
+           {
+            "icon": "\u26a1",
+            "title": "Lightning Fast",
+            "description": "Deploy changes in seconds with our optimized pipeline.",
+            "color": "#4f46e5"
+           },
+           {
+            "icon": "\ud83d\udd12",
+            "title": "Secure by Default",
+            "description": "Enterprise-grade security and access controls built in.",
+            "color": "#8b5cf6"
+           },
+           {
+            "icon": "\ud83d\udcc8",
+            "title": "Built to Scale",
+            "description": "From first user to millions, the platform grows with you.",
+            "color": "#0ea5e9"
+           }
+          ]
+         },
+         {
+          "id": "testimonial",
+          "component": "testimonial_card",
+          "text": "We cut our release cycle in half in the first month. The team actually enjoys shipping now.",
+          "author_name": "Jordan Lee",
+          "author_title": "VP of Engineering, Northwind",
+          "rating": 5
+         },
+         {
+          "id": "cta",
+          "component": "cta_button",
+          "label": "Start Your Free Trial",
+          "url": "#signup",
+          "color": "#4f46e5",
+          "same_tab": true
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

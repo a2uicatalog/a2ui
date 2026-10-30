@@ -1,0 +1,41 @@
+{
+ "task": "T3",
+ "condition": "DN_haiku-5-5",
+ "temperature_applied": false,
+ "format": "json",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "oracle-slice-6types__json__haiku-5-5__run2",
+ "agent_type": "T3",
+ "catalogue": "D-t3.json",
+ "atoms_in_catalogue": 21,
+ "prompt_chars": 23591,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 11.2,
+ "usage": {
+  "input_tokens": 9076,
+  "output_tokens": 2491
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns"
+ ],
+ "score": {
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "hero": false,
+   "feature columns (x3)": false,
+   "testimonial": false,
+   "CTA": false
+  }
+ },
+ "reply": "I'll build the landing page as one surface. A full-width `columns` root (one column) holds the hero, the three-feature grid, the testimonial, and the closing call-to-action.\n\n<a2ui-json>\n[\n  {\n    \"version\": \"v0.9\",\n    \"createSurface\": {\n      \"surfaceId\": \"landing-page\",\n      \"catalogId\": \"https://a2uicatalog.ai/catalog/d-t3.json\"\n    }\n  },\n  {\n    \"version\": \"v0.9\",\n    \"updateComponents\": {\n      \"surfaceId\": \"landing-page\",\n      \"components\": [\n        {\n          \"id\": \"root\",\n          \"component\": \"columns\",\n          \"cols\": 1,\n          \"gap\": \"0\",\n          \"align\": \"stretch\",\n          \"items\": [\n            {\n              \"blocks\": [\n                {\n                  \"id\": \"hero\",\n                  \"component\": \"gradient_hero\",\n                  \"badge\": \"New for 2025\",\n                  \"title\": \"Ship faster with Acme\",\n                  \"subtitle\": \"Acme gives product teams one place to plan, build, and launch features without the busywork.\",\n                  \"align\": \"center\",\n                  \"accent\": \"#4f46e5\",\n                  \"accent2\": \"#8b5cf6\"\n                },\n                {\n                  \"id\": \"features\",\n                  \"component\": \"feature_grid\",\n                  \"heading\": \"Everything you need to launch\",\n                  \"description\": \"Three core capabilities that keep your team moving.\",\n                  \"columns\": 3,\n                  \"features\": [\n                    {\n                      \"icon\": \"\u26a1\",\n                      \"title\": \"Instant setup\",\n                      \"description\": \"Connect your repositories and start shipping in minutes, not days.\",\n                      \"color\": \"#4f46e5\"\n                    },\n                    {\n                      \"icon\": \"\ud83d\udd17\",\n                      \"title\": \"Seamless integrations\",\n                      \"description\": \"Works with the tools you already use, including GitHub, Slack, and Jira.\",\n                      \"color\": \"#8b5cf6\"\n                    },\n                    {\n                      \"icon\": \"\ud83d\udcca\",\n                      \"title\": \"Clear insights\",\n                      \"description\": \"Track progress and release health with dashboards that update in real time.\",\n                      \"color\": \"#0ea5e9\"\n                    }\n                  ]\n                },\n                {\n                  \"id\": \"testimonial\",\n                  \"component\": \"testimonial_card\",\n                  \"text\": \"Acme cut our release cycle in half. The team finally spends time building instead of coordinating.\",\n                  \"author_name\": \"Priya Raman\",\n                  \"author_title\": \"VP of Engineering, Northwind\",\n                  \"rating\": 5\n                },\n                {\n                  \"id\": \"cta\",\n                  \"component\": \"cta_section\",\n                  \"heading\": \"Ready to ship your next release?\",\n                  \"body\": \"Start your free 14-day trial today. No credit card required.\",\n                  \"primary_cta\": {\n                    \"label\": \"Start free trial\",\n                    \"url\": \"https://example.com/signup\"\n                  },\n                  \"secondary_cta\": {\n                    \"label\": \"Talk to sales\",\n                    \"url\": \"https://example.com/contact\"\n                  },\n                  \"background\": \"#4f46e5\"\n                }\n              ]\n            }\n          ]\n        }\n      ]\n    }\n  }\n]\n</a2ui-json>\n\nThe page uses the `gradient_hero` for the headline and subhead, `feature_grid` with three columns for the features, `testimonial_card` for the quote, and `cta_section` for the closing button. The `cta_section` has a primary button, which covers the call-to-action requirement."
+}

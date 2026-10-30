@@ -1,0 +1,108 @@
+{
+ "label": "oracle-slice-6types__json__haiku-5-5__run2",
+ "task": "T6",
+ "format": "json",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9",
+   "create_surface": {
+    "surface_id": "vocab-flashcards",
+    "catalog_id": "https://a2uicatalog.ai/catalog/d-t6.json"
+   }
+  },
+  {
+   "version": "v0.9",
+   "update_components": {
+    "surface_id": "vocab-flashcards",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         {
+          "id": "title",
+          "component": "heading",
+          "text": "Vocabulary Review"
+         },
+         {
+          "id": "intro",
+          "component": "body",
+          "text": "Flip each card to reveal its definition. Your progress updates as you review the deck."
+         },
+         {
+          "id": "progress",
+          "component": "progress_bar",
+          "value": 0,
+          "label": "Cards reviewed: 0 of 10",
+          "accent": "#4f46e5",
+          "show_percent": "true",
+          "caption": "Ten vocabulary words in total."
+         }
+        ]
+       },
+       {
+        "blocks": [
+         {
+          "id": "deck",
+          "component": "flashcard_deck",
+          "accent": "#4f46e5",
+          "label_front": "WORD",
+          "label_back": "DEFINITION",
+          "cards": [
+           {
+            "front": "Ephemeral",
+            "back": "Lasting for a very short time."
+           },
+           {
+            "front": "Ubiquitous",
+            "back": "Present or found everywhere."
+           },
+           {
+            "front": "Pragmatic",
+            "back": "Dealing with things sensibly and realistically, based on practical outcomes."
+           },
+           {
+            "front": "Meticulous",
+            "back": "Showing great attention to detail; very careful."
+           },
+           {
+            "front": "Resilient",
+            "back": "Able to recover quickly from difficulties."
+           },
+           {
+            "front": "Eloquent",
+            "back": "Fluent, persuasive, and expressive in speech or writing."
+           },
+           {
+            "front": "Ambiguous",
+            "back": "Open to more than one interpretation; unclear."
+           },
+           {
+            "front": "Candid",
+            "back": "Truthful and straightforward; frank."
+           },
+           {
+            "front": "Diligent",
+            "back": "Careful and persistent in work or effort."
+           },
+           {
+            "front": "Tenacious",
+            "back": "Holding firmly to a goal; persistent and determined."
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

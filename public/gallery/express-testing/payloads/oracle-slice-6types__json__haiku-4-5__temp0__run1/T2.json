@@ -1,0 +1,125 @@
+{
+ "label": "oracle-slice-6types__json__haiku-4-5__temp0__run1",
+ "task": "T2",
+ "format": "json",
+ "model_id": "claude-haiku-4-5-20251001",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "metrics-overview",
+    "catalog_id": "https://a2uicatalog.ai/catalog/d-t2.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "metrics-overview",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 4,
+      "gap": "1.5rem",
+      "items": [
+       {
+        "blocks": [
+         {
+          "id": "kpi-revenue",
+          "component": "metric_delta",
+          "label": "Revenue",
+          "current_value": "$125,430",
+          "delta_value": "+12.5%",
+          "delta_type": "increase",
+          "unit": "USD",
+          "previous_period_label": "vs. last month"
+         }
+        ]
+       },
+       {
+        "blocks": [
+         {
+          "id": "kpi-users",
+          "component": "metric_delta",
+          "label": "Active Users",
+          "current_value": "8,942",
+          "delta_value": "+5.2%",
+          "delta_type": "increase",
+          "previous_period_label": "vs. last month"
+         }
+        ]
+       },
+       {
+        "blocks": [
+         {
+          "id": "kpi-conversion",
+          "component": "metric_delta",
+          "label": "Conversion Rate",
+          "current_value": "3.24%",
+          "delta_value": "-0.8%",
+          "delta_type": "decrease",
+          "previous_period_label": "vs. last month"
+         }
+        ]
+       },
+       {
+        "blocks": [
+         {
+          "id": "kpi-churn",
+          "component": "metric_delta",
+          "label": "Churn Rate",
+          "current_value": "2.1%",
+          "delta_value": "-0.3%",
+          "delta_type": "decrease",
+          "previous_period_label": "vs. last month"
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "id": "chart-section",
+      "component": "heading",
+      "text": "Performance Comparison"
+     },
+     {
+      "id": "comparison-chart",
+      "component": "chartjs_bar",
+      "labels": [
+       "Jan",
+       "Feb",
+       "Mar",
+       "Apr",
+       "May",
+       "Jun"
+      ],
+      "datasets": [
+       {
+        "label": "Target",
+        "data": [
+         85,
+         88,
+         90,
+         92,
+         94,
+         96
+        ]
+       },
+       {
+        "label": "Actual",
+        "data": [
+         78,
+         82,
+         88,
+         91,
+         93,
+         95
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

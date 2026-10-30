@@ -1,0 +1,102 @@
+{
+ "label": "oracle-slice-3types__express__gemini-3.5-flash__thinking-on_first-run-timing-invalid__run3",
+ "task": "T5",
+ "format": "express",
+ "model_id": "gemini-3.5-flash",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "pricing_tier_group",
+      "tiers": [
+       {
+        "title": "Starter",
+        "name": "Starter",
+        "price": "$19",
+        "frequency": "/mo",
+        "interval": "month",
+        "description": "Essential features for individuals and small projects.",
+        "features": [
+         "Access to basic templates",
+         "Up to 5 active projects",
+         "Community support",
+         "10GB secure storage"
+        ],
+        "cta_label": "Start Free Trial",
+        "button_label": "Start Free Trial",
+        "button_text": "Start Free Trial",
+        "cta_url": "https://example.com/signup?plan=starter",
+        "button_url": "https://example.com/signup?plan=starter",
+        "url": "https://example.com/signup?plan=starter",
+        "popular": false,
+        "recommended": false,
+        "most_popular": false
+       },
+       {
+        "title": "Professional",
+        "name": "Professional",
+        "price": "$49",
+        "frequency": "/mo",
+        "interval": "month",
+        "description": "Perfect for growing teams and professional creators.",
+        "features": [
+         "Everything in Starter",
+         "Unlimited active projects",
+         "Priority 24/7 support",
+         "100GB secure storage",
+         "Advanced analytics dashboard",
+         "Custom domain integration"
+        ],
+        "cta_label": "Upgrade to Pro",
+        "button_label": "Upgrade to Pro",
+        "button_text": "Upgrade to Pro",
+        "cta_url": "https://example.com/signup?plan=pro",
+        "button_url": "https://example.com/signup?plan=pro",
+        "url": "https://example.com/signup?plan=pro",
+        "popular": true,
+        "recommended": true,
+        "most_popular": true
+       },
+       {
+        "title": "Enterprise",
+        "name": "Enterprise",
+        "price": "$149",
+        "frequency": "/mo",
+        "interval": "month",
+        "description": "Dedicated power and custom security for large scales.",
+        "features": [
+         "Everything in Professional",
+         "Dedicated account manager",
+         "SLA guaranteed uptime",
+         "Unlimited secure storage",
+         "SSO & advanced security",
+         "Custom API access"
+        ],
+        "cta_label": "Contact Sales",
+        "button_label": "Contact Sales",
+        "button_text": "Contact Sales",
+        "cta_url": "https://example.com/contact",
+        "button_url": "https://example.com/contact",
+        "url": "https://example.com/contact",
+        "popular": false,
+        "recommended": false,
+        "most_popular": false
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

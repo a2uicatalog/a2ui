@@ -1,0 +1,36 @@
+{
+ "model": "sonnet-5-5",
+ "cond": "G",
+ "format": "express",
+ "brief": "G2",
+ "repeat": 1,
+ "seq": 2,
+ "model_id": "claude-sonnet-5-5",
+ "utc": "2026-10-29T20:45:28Z",
+ "prompt_chars": 9759,
+ "prompt_sha256": "(removed for publication)",
+ "temperature_requested": null,
+ "temperature_sent": false,
+ "max_tokens": 32768,
+ "request_secs": 1.8,
+ "input_tokens": 3604,
+ "output_tokens": 66,
+ "stop_reason": "end_turn",
+ "usage": {
+  "input_tokens": 3604,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "cache_creation": {
+   "ephemeral_5m_input_tokens": 0,
+   "ephemeral_1h_input_tokens": 0
+  },
+  "output_tokens": 66,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "service_tier": "standard",
+  "inference_geo": "global",
+  "speed": "standard"
+ },
+ "reply": "<a2ui></a2ui>\nI can't build a login form, because I only make toy-brick models (such as a robot, a rocket, brick lettering or a brick sculpture) and have no form or input components."
+}

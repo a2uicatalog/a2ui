@@ -1,0 +1,79 @@
+{
+ "label": "full-catalogue__express__haiku-5-5__run3",
+ "task": "T4",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/a-full.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "filterable_list",
+      "title": "Work items",
+      "filter_field": "status",
+      "show_counts": true,
+      "empty_text": "No items match this status.",
+      "colors": {
+       "open": "#2563eb",
+       "in_progress": "#f59e0b",
+       "blocked": "#dc2626",
+       "done": "#16a34a"
+      },
+      "items": [
+       {
+        "title": "Set up CI pipeline",
+        "detail": "Build and test run on every push to main.",
+        "status": "done"
+       },
+       {
+        "title": "Draft API reference",
+        "detail": "Endpoint docs are written but need a review pass.",
+        "status": "in_progress"
+       },
+       {
+        "title": "Migrate user database",
+        "detail": "Blocked until the staging credentials are issued.",
+        "status": "blocked"
+       },
+       {
+        "title": "Write onboarding guide",
+        "detail": "Outline agreed; first draft not started.",
+        "status": "open"
+       },
+       {
+        "title": "Fix login timeout",
+        "detail": "Root cause identified; patch is merged and deployed.",
+        "status": "done"
+       },
+       {
+        "title": "Add rate limiting",
+        "detail": "Design chosen; implementation is under way.",
+        "status": "in_progress"
+       },
+       {
+        "title": "Audit third-party licences",
+        "detail": "Waiting on legal to confirm two packages.",
+        "status": "blocked"
+       },
+       {
+        "title": "Plan Q3 roadmap",
+        "detail": "Kickoff scheduled; no owner assigned yet.",
+        "status": "open"
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

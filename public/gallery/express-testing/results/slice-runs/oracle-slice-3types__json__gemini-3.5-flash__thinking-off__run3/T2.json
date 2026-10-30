@@ -1,0 +1,40 @@
+{
+ "task": "T2",
+ "condition": "CN_gemini-3.5-flash",
+ "temperature_applied": false,
+ "format": "json",
+ "temperature": null,
+ "max_tokens": 32768,
+ "model_id": "gemini-3.5-flash",
+ "hints": false,
+ "label": "oracle-slice-3types__json__gemini-3.5-flash__thinking-off__run3",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 31546,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 3.3,
+ "usage": {
+  "input_tokens": 7914,
+  "output_tokens": 863
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns"
+ ],
+ "score": {
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "KPI tile (x4)": false,
+   "trend (required only if metric_row was chosen; stat_card's own delta already satisfies it)": false,
+   "comparison chart": false
+  }
+ },
+ "reply": "Here is the metrics overview dashboard interface featuring four key performance indicator (KPI) tiles followed by a side-by-side benchmark comparison chart.\n\n<a2ui-json>\n{\n  \"version\": \"v0.9.1\",\n  \"createSurface\": {\n    \"surfaceId\": \"metrics-overview-dashboard\",\n    \"catalogId\": \"https://a2uicatalog.ai/catalog/c-data-display.json\"\n  }\n}\n</a2ui-json>\n\n<a2ui-json>\n{\n  \"version\": \"v0.9.1\",\n  \"updateComponents\": {\n    \"surfaceId\": \"metrics-overview-dashboard\",\n    \"components\": [\n      {\n        \"id\": \"root\",\n        \"component\": \"columns\",\n        \"cols\": 1,\n        \"gap\": \"1.5rem\",\n        \"items\": [\n          {\n            \"blocks\": [\n              {\n                \"id\": \"dashboard-heading\",\n                \"component\": \"heading\",\n                \"text\": \"Enterprise Performance Overview\"\n              },\n              {\n                \"id\": \"kpi-grid\",\n                \"component\": \"columns\",\n                \"cols\": 4,\n                \"gap\": \"1rem\",\n                \"items\": [\n                  {\n                    \"blocks\": [\n                      {\n                        \"id\": \"kpi-revenue\",\n                        \"component\": \"stat_card\",\n                        \"value\": \"$142.3K\",\n                        \"label\": \"Monthly Revenue\",\n                        \"delta\": \"+12.4%\",\n                        \"is_up\": \"true\",\n                        \"accent\": \"#10B981\"\n                      }\n                    ]\n                  },\n                  {\n                    \"blocks\": [\n                      {\n                        \"id\": \"kpi-conversion\",\n                        \"component\": \"stat_card\",\n                        \"value\": \"3.84%\",\n                        \"label\": \"Conversion Rate\",\n                        \"delta\": \"+0.5%\",\n                        \"is_up\": \"true\",\n                        \"accent\": \"#10B981\"\n                      }\n                    ]\n                  },\n                  {\n                    \"blocks\": [\n                      {\n                        \"id\": \"kpi-cac\",\n                        \"component\": \"stat_card\",\n                        \"value\": \"$42.10\",\n                        \"label\": \"Acquisition Cost\",\n                        \"delta\": \"-4.2%\",\n                        \"is_up\": \"false\",\n                        \"accent\": \"#EF4444\"\n                      }\n                    ]\n                  },\n                  {\n                    \"blocks\": [\n                      {\n                        \"id\": \"kpi-active-users\",\n                        \"component\": \"stat_card\",\n                        \"value\": \"12,480\",\n                        \"label\": \"Active Sessions\",\n                        \"delta\": \"+18.3%\",\n                        \"is_up\": \"true\",\n                        \"accent\": \"#10B981\"\n                      }\n                    ]\n                  }\n                ]\n              },\n              {\n                \"id\": \"chart-heading\",\n                \"component\": \"heading\",\n                \"text\": \"Performance vs Target Benchmarks\"\n              },\n              {\n                \"id\": \"benchmark-chart\",\n                \"component\": \"benchmark_comparison\",\n                \"items\": [\n                  {\n                    \"label\": \"Actual Performance (Q3)\",\n                    \"value\": \"94%\"\n                  },\n                  {\n                    \"label\": \"Target SLA Benchmark\",\n                    \"value\": \"90%\"\n                  },\n                  {\n                    \"label\": \"Industry Peer Average\",\n                    \"value\": \"85%\"\n                  }\n                ]\n              }\n            ]\n          }\n        ]\n      }\n    ]\n  }\n}\n</a2ui-json>"
+}

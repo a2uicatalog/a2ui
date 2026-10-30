@@ -1,0 +1,44 @@
+{
+ "task": "T4",
+ "condition": "C_gemini-3.5-flash",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 32768,
+ "model_id": "gemini-3.5-flash",
+ "hints": false,
+ "label": "oracle-slice-3types__express__gemini-3.5-flash__thinking-off__run1",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 16421,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 4.3,
+ "usage": {
+  "input_tokens": 4600,
+  "output_tokens": 818
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "chip_group",
+  "entity_list",
+  "columns",
+  "heading",
+  "body"
+ ],
+ "score": {
+  "precision": 0.4,
+  "recall": 0.667,
+  "f1": 0.5,
+  "slot_hits": {
+   "list": true,
+   "status indicator": false,
+   "filter control": true
+  }
+ },
+ "reply": "```python\n<a2ui>\n# Target the main dashboard surface\nsurface(\"filterable-list-surface\")\n\n# Initialize state data model\n$/filter/selected = \"All\"\n\n# Define the full dataset of eight items\n$/items = [\n    {\"title\": \"Database Migration\", \"status\": \"In Progress\", \"detail\": \"Moving legacy PostgreSQL cluster to managed cloud instance.\"},\n    {\"title\": \"OAuth2 Authentication\", \"status\": \"Completed\", \"detail\": \"Implemented secure single sign-on via Google Workspace.\"},\n    {\"title\": \"API Gateway Setup\", \"status\": \"In Progress\", \"detail\": \"Configuring rate limiting and routing policies in Kong.\"},\n    {\"title\": \"UI Kit Integration\", \"status\": \"Completed\", \"detail\": \"Imported and configured the new Tailwind-based token design system.\"},\n    {\"title\": \"Mobile App Release\", \"status\": \"Planned\", \"detail\": \"Submit build v1.2.0 to App Store and Google Play console.\"},\n    {\"title\": \"Telemetry & Alerts\", \"status\": \"Planned\", \"detail\": \"Set up Prometheus metrics and Alertmanager hooks for high latency.\"},\n    {\"title\": \"Billing Pipeline Refactor\", \"status\": \"Failed\", \"detail\": \"Stripe webhooks failing validation handshake due to key rotation.\"},\n    {\"title\": \"Audit Log Schema\", \"status\": \"Completed\", \"detail\": \"Finalized ClickHouse database schema for compliance storage.\"}\n]\n\n# Layout elements\nfilter_chips = chip_group(\n    label=\"Filter by Status\",\n    layout=\"wrap\",\n    same_tab=true,\n    chips=[\n        {\"label\": \"All\", \"active\": true},\n        {\"label\": \"Completed\", \"active\": false},\n        {\"label\": \"In Progress\", \"active\": false},\n        {\"label\": \"Planned\", \"active\": false},\n        {\"label\": \"Failed\", \"active\": false}\n    ]\n)\n\n# Active status indicators as entity rows\nlist_view = entity_list([\n    {\"name\": \"Database Migration\", \"subtitle\": \"Moving legacy PostgreSQL cluster to managed cloud instance.\", \"status\": \"In Progress\", \"meta\": \"Infrastructure\"},\n    {\"name\": \"OAuth2 Authentication\", \"subtitle\": \"Implemented secure single sign-on via Google Workspace.\", \"status\": \"Completed\", \"meta\": \"Security\"},\n    {\"name\": \"API Gateway Setup\", \"subtitle\": \"Configuring rate limiting and routing policies in Kong.\", \"status\": \"In Progress\", \"meta\": \"Infrastructure\"},\n    {\"name\": \"UI Kit Integration\", \"subtitle\": \"Imported and configured the new Tailwind-based token design system.\", \"status\": \"Completed\", \"meta\": \"Frontend\"},\n    {\"name\": \"Mobile App Release\", \"subtitle\": \"Submit build v1.2.0 to App Store and Google Play console.\", \"status\": \"Planned\", \"meta\": \"Mobile\"},\n    {\"name\": \"Telemetry & Alerts\", \"subtitle\": \"Set up Prometheus metrics and Alertmanager hooks for high latency.\", \"status\": \"Planned\", \"meta\": \"Ops\"},\n    {\"name\": \"Billing Pipeline Refactor\", \"subtitle\": \"Stripe webhooks failing validation handshake due to key rotation.\", \"status\": \"Failed\", \"meta\": \"Finance\"},\n    {\"name\": \"Audit Log Schema\", \"subtitle\": \"Finalized ClickHouse database schema for compliance storage.\", \"status\": \"Completed\", \"meta\": \"Data\"}\n])\n\nroot = columns(\n    cols=1,\n    items=[\n        {\"blocks\": [\n            heading(\"Task & Project Status Board\"),\n            body(\"Monitor, filter, and track progress across internal team deliverables and infrastructure updates.\"),\n            filter_chips,\n            list_view\n        ]}\n    ]\n)\n</a2ui>\n```"
+}

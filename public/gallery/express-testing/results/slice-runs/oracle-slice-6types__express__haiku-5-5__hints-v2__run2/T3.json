@@ -1,0 +1,45 @@
+{
+ "task": "T3",
+ "condition": "D_haiku-5-5H2",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": true,
+ "label": "oracle-slice-6types__express__haiku-5-5__hints-v2__run2",
+ "agent_type": "T3",
+ "catalogue": "D-t3.json",
+ "atoms_in_catalogue": 21,
+ "prompt_chars": 12164,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 8.4,
+ "usage": {
+  "input_tokens": 4708,
+  "output_tokens": 1676
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "gradient_hero",
+  "feature_grid",
+  "blockquote_with_avatar",
+  "cta_button",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.8,
+  "recall": 1.0,
+  "f1": 0.889,
+  "slot_hits": {
+   "hero": true,
+   "feature columns (x3)": true,
+   "testimonial": true,
+   "CTA": true
+  }
+ },
+ "reply": "<a2ui>\nhero = gradient_hero(\"Ship faster with Lumen\", \"Turn raw product events into clear decisions in minutes, not weeks.\", \"New in 2026\", _, _, _, \"center\", \"Start free trial\", \"https://example.com/signup\")\n\nfeatures = feature_grid(\"Why teams choose Lumen\", \"Everything you need to measure, understand, and act on usage.\", 3, [{icon: \"\u26a1\", title: \"Real-time dashboards\", description: \"See metrics update as events arrive, with no refresh needed.\", badge: \"Live\", color: \"#4f46e5\"}, {icon: \"\ud83d\udd17\", title: \"300+ integrations\", description: \"Connect your warehouse, billing, and support tools in a few clicks.\", badge: \"Easy\", color: \"#8b5cf6\"}, {icon: \"\ud83d\udee1\ufe0f\", title: \"Privacy by default\", description: \"Field-level controls and automatic PII masking keep data safe.\", badge: \"Secure\", color: \"#0ea5e9\"}])\n\ntestimonial = blockquote_with_avatar(\"Lumen replaced three dashboards for us. Our product reviews now take an afternoon instead of a week.\", \"Priya Raman\", \"Head of Product, Northwind\", \"https://example.com/avatars/priya.jpg\")\n\ncta = cta_button(\"https://example.com/signup\", \"Start your free trial\")\n\nroot = columns(2, \"2rem\", \"stretch\", [{blocks: [hero, features]}, {blocks: [testimonial, cta]}])\n</a2ui>"
+}

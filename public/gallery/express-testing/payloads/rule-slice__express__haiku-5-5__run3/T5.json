@@ -1,0 +1,78 @@
+{
+ "label": "rule-slice__express__haiku-5-5__run3",
+ "task": "T5",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/b-marketing-commerce.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "pricing_tier_group",
+      "tiers": [
+       {
+        "plan_name": "Starter",
+        "price": "9",
+        "currency": "$",
+        "frequency": "per month",
+        "features": [
+         "Up to 3 projects",
+         "Basic analytics",
+         "Email support",
+         "1 GB storage"
+        ],
+        "call_to_action_label": "Start free trial",
+        "call_to_action_url": "https://example.com/signup/starter",
+        "is_highlighted": false
+       },
+       {
+        "plan_name": "Professional",
+        "price": "29",
+        "currency": "$",
+        "frequency": "per month",
+        "features": [
+         "Unlimited projects",
+         "Advanced analytics",
+         "Priority support",
+         "50 GB storage",
+         "Team collaboration",
+         "Custom integrations"
+        ],
+        "call_to_action_label": "Get started",
+        "call_to_action_url": "https://example.com/signup/professional",
+        "is_highlighted": true
+       },
+       {
+        "plan_name": "Enterprise",
+        "price": "99",
+        "currency": "$",
+        "frequency": "per month",
+        "features": [
+         "Everything in Professional",
+         "Dedicated account manager",
+         "SSO and audit logs",
+         "Unlimited storage",
+         "99.9% uptime SLA",
+         "On-premise option"
+        ],
+        "call_to_action_label": "Contact sales",
+        "call_to_action_url": "https://example.com/contact",
+        "is_highlighted": false
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

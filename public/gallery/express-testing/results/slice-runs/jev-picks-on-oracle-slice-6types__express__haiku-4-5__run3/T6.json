@@ -1,0 +1,36 @@
+{
+ "task": "T6",
+ "condition": "JD",
+ "label": "jev-picks-on-oracle-slice-6types__express__haiku-4-5__run3",
+ "agent_type": "jev-narrowed",
+ "catalogue": "JD-T6.json",
+ "atoms_in_catalogue": 10,
+ "prompt_chars": 7642,
+ "slot_recall": [
+  2,
+  2
+ ],
+ "secs": 4.4,
+ "usage": {
+  "input_tokens": 2176,
+  "output_tokens": 383
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns",
+  "heading",
+  "progress_bar",
+  "flashcard_deck"
+ ],
+ "score": {
+  "precision": 0.5,
+  "recall": 1.0,
+  "f1": 0.667,
+  "slot_hits": {
+   "flashcard deck": true,
+   "progress indicator": true
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"flashcard-surface\")\n\nroot = columns(1, \"2rem\", \"top\", [\n  {blocks: [\n    heading(\"Vocabulary Review\"),\n    progress_bar(20, \"Progress\", \"#4f46e5\", true, \"2 of 10 cards reviewed\")\n  ]},\n  {blocks: [\n    flashcard_deck([\n      {front: \"Serendipity\", back: \"The occurrence of events by chance in a happy or beneficial way\"},\n      {front: \"Ephemeral\", back: \"Lasting for a very short time; transitory\"},\n      {front: \"Ubiquitous\", back: \"Present, appearing, or found everywhere\"},\n      {front: \"Mellifluous\", back: \"Sweet or musical; pleasant to hear\"},\n      {front: \"Sanguine\", back: \"Optimistic or positive, especially in an unjustifiably confident way\"},\n      {front: \"Taciturn\", back: \"Reserved or uncommunicative in speech; quiet\"},\n      {front: \"Perspicacious\", back: \"Having keen insight or understanding; mentally sharp\"},\n      {front: \"Obfuscate\", back: \"To deliberately make something unclear or harder to understand\"},\n      {front: \"Pellucid\", back: \"Translucently clear in style or meaning; easy to understand\"},\n      {front: \"Quixotic\", back: \"Exceedingly idealistic; unrealistic and impractical\"}\n    ], \"#4f46e5\", \"TERM\", \"DEFINITION\")\n  ]}\n])\n\n</a2ui>"
+}

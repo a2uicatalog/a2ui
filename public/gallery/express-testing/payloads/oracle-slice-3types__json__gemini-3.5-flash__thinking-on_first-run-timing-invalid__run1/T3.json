@@ -1,0 +1,73 @@
+{
+ "label": "oracle-slice-3types__json__gemini-3.5-flash__thinking-on_first-run-timing-invalid__run1",
+ "task": "T3",
+ "format": "json",
+ "model_id": "gemini-3.5-flash",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "product-landing-page",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "product-landing-page",
+    "components": [
+     {
+      "id": "root",
+      "component": "gradient_hero",
+      "title": "Build Your Next Project Faster",
+      "subtitle": "The ultimate boilerplate and design system for modern SaaS startups. Ship highly polished, responsive landing pages in record time.",
+      "badge": "Introducing SaaSify v1.0",
+      "cta_label": "Get Started Free",
+      "cta_url": "#signup"
+     },
+     {
+      "id": "features-section",
+      "component": "feature_grid",
+      "heading": "Designed for Growth",
+      "description": "Stop building from scratch. SaaSify provides everything you need to scale seamlessly.",
+      "columns": 3,
+      "features": [
+       {
+        "icon": "\u26a1",
+        "title": "Blazing Fast",
+        "description": "Fully optimized architecture guaranteeing sub-second load times and flawless SEO performance."
+       },
+       {
+        "icon": "\ud83c\udfa8",
+        "title": "Stunning Designs",
+        "description": "Pre-crafted elements designed by top tier creators to maximize your conversions."
+       },
+       {
+        "icon": "\ud83d\udee1\ufe0f",
+        "title": "Production Ready",
+        "description": "Out-of-the-box infrastructure integration allowing you to launch instantly."
+       }
+      ]
+     },
+     {
+      "id": "customer-testimonial",
+      "component": "testimonial_card",
+      "text": "SaaSify cut our development cycle in half. We launched our product beta in under a week and hit our target MRR within days!",
+      "author_name": "Sarah Jenkins",
+      "author_title": "Founder of LaunchPad",
+      "author_avatar_url": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150",
+      "rating": 5
+     },
+     {
+      "id": "final-cta",
+      "component": "shimmer_button",
+      "label": "Claim Your Free Trial",
+      "href": "#signup",
+      "size": "lg",
+      "description": "14-day free trial \u2022 No credit card required"
+     }
+    ]
+   }
+  }
+ ]
+}

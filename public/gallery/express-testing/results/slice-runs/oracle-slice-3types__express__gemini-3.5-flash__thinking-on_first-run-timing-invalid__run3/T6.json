@@ -1,0 +1,53 @@
+{
+ "task": "T6",
+ "condition": "C_gemini-3.5-flash",
+ "temperature_applied": false,
+ "format": "express",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash",
+ "hints": false,
+ "label": "oracle-slice-3types__express__gemini-3.5-flash__thinking-on_first-run-timing-invalid__run3",
+ "agent_type": "Learning",
+ "catalogue": "C-learning.json",
+ "atoms_in_catalogue": 36,
+ "prompt_chars": 21139,
+ "slot_recall": [
+  2,
+  2
+ ],
+ "secs": 49.9,
+ "usage": {
+  "input_tokens": 5726,
+  "output_tokens": 6657
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "page_header",
+  "xp_bar",
+  "progress_ring",
+  "callout",
+  "columns",
+  "spaced_repetition_card",
+  "spaced_repetition_card",
+  "spaced_repetition_card",
+  "spaced_repetition_card",
+  "spaced_repetition_card",
+  "spaced_repetition_card",
+  "spaced_repetition_card",
+  "spaced_repetition_card",
+  "spaced_repetition_card",
+  "spaced_repetition_card"
+ ],
+ "score": {
+  "precision": 0.8,
+  "recall": 1.0,
+  "f1": 0.889,
+  "slot_hits": {
+   "flashcard deck": true,
+   "progress indicator": true
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"vocab-learning\")\n\nheader = page_header(\n    \"### Vocabulary Mastery Dashboard\", \n    \"Active learning & recall workspace. Boost your lexicon with systematic reviews.\", \n    \"\ud83e\udde0\", \n    \"Daily Target\", \n    \"#4f46e5\", \n    \"light\"\n)\n\nxp_stats = xp_bar(\n    \"Level 4 \u2014 Linguistic Elite\", \n    750, \n    1000, \n    \"#4f46e5\", \n    true\n)\n\nprogress_stats = progress_ring(\n    70, \n    130, \n    10, \n    \"#10b981\", \n    \"#e2e8f0\", \n    \"Today's Review Progress (7/10 Cards)\", \n    true, \n    \"%\"\n)\n\nhelp_callout = callout(\n    \"tip\", \n    \"Spaced Repetition Method\", \n    \"Flip each card to test your recall. Use the buttons on the back to rate your confidence (1-5). Low ratings trigger sooner reviews, while high ratings schedule them further out to leverage memory retention curves.\"\n)\n\ncard_list = [\n    spaced_repetition_card(\"Ephemeral\", \"Lasting for a very short time; transient or fleeting.\", \"vocab_ephemeral\", \"#4f46e5\"),\n    spaced_repetition_card(\"Capricious\", \"Given to sudden and unpredictable changes of mood or behavior; fickle.\", \"vocab_capricious\", \"#8b5cf6\"),\n    spaced_repetition_card(\"Cacophony\", \"A harsh, discordant mixture of sounds; jarring noise.\", \"vocab_cacophony\", \"#4f46e5\"),\n    spaced_repetition_card(\"Alacrity\", \"Brisk, cheerful readiness and eager promptness.\", \"vocab_alacrity\", \"#8b5cf6\"),\n    spaced_repetition_card(\"Taciturn\", \"Reserved or uncommunicative in speech; saying very little.\", \"vocab_taciturn\", \"#4f46e5\"),\n    spaced_repetition_card(\"Pernicious\", \"Having a harmful effect, especially in a gradual or subtle way.\", \"vocab_pernicious\", \"#8b5cf6\"),\n    spaced_repetition_card(\"Mitigate\", \"To make less severe, serious, painful, or damaging.\", \"vocab_mitigate\", \"#4f46e5\"),\n    spaced_repetition_card(\"Loquacious\", \"Tending to talk a great deal; extremely talkative.\", \"vocab_loquacious\", \"#8b5cf6\"),\n    spaced_repetition_card(\"Anachronism\", \"A thing belonging or appropriate to a period other than that in which it exists.\", \"vocab_anachronism\", \"#4f46e5\"),\n    spaced_repetition_card(\"Nefarious\", \"Wicked, villainous, or criminal in nature.\", \"vocab_nefarious\", \"#8b5cf6\")\n]\n\nroot = columns(2, \"3rem\", \"top\", [\n    {blocks: [header, xp_stats, progress_stats, help_callout]},\n    {blocks: card_list}\n])\n</a2ui>"
+}

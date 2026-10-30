@@ -1,0 +1,41 @@
+{
+ "task": "T3",
+ "condition": "CN_haiku-5-5",
+ "temperature_applied": false,
+ "format": "json",
+ "temperature": null,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-5-5",
+ "hints": false,
+ "label": "oracle-slice-3types__json__haiku-5-5__run3",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "C-marketing-commerce.json",
+ "atoms_in_catalogue": 23,
+ "prompt_chars": 24557,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 12.3,
+ "usage": {
+  "input_tokens": 9464,
+  "output_tokens": 2879
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns"
+ ],
+ "score": {
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "hero": false,
+   "feature columns (x3)": false,
+   "testimonial": false,
+   "CTA": false
+  }
+ },
+ "reply": "I'll build the landing page as one surface. The catalog has no generic container, so the root is a single-column `columns` wrapper that holds the hero, the three-column feature section, the testimonial, and the CTA in order.\n\n<a2ui-json>\n[\n  {\n    \"version\": \"v0.9.1\",\n    \"createSurface\": {\n      \"surfaceId\": \"landing-page\",\n      \"catalogId\": \"https://a2uicatalog.ai/catalog/c-marketing-commerce.json\"\n    }\n  },\n  {\n    \"version\": \"v0.9.1\",\n    \"updateComponents\": {\n      \"surfaceId\": \"landing-page\",\n      \"components\": [\n        {\n          \"id\": \"root\",\n          \"component\": \"columns\",\n          \"cols\": 1,\n          \"gap\": \"0\",\n          \"align\": \"stretch\",\n          \"items\": [\n            {\n              \"blocks\": [\n                {\n                  \"id\": \"hero\",\n                  \"component\": \"gradient_hero\",\n                  \"badge\": \"New release\",\n                  \"title\": \"Launch your product in days, not months\",\n                  \"subtitle\": \"Everything you need to design, publish, and grow your product page, all in one place.\",\n                  \"align\": \"center\",\n                  \"accent\": \"#4f46e5\",\n                  \"accent2\": \"#8b5cf6\"\n                },\n                {\n                  \"id\": \"features\",\n                  \"component\": \"columns\",\n                  \"cols\": 3,\n                  \"gap\": \"2rem\",\n                  \"align\": \"top\",\n                  \"items\": [\n                    {\n                      \"blocks\": [\n                        {\n                          \"id\": \"feature-1-title\",\n                          \"component\": \"heading\",\n                          \"text\": \"Fast setup\"\n                        },\n                        {\n                          \"id\": \"feature-1-body\",\n                          \"component\": \"body\",\n                          \"text\": \"Go from sign-up to a live page in minutes with ready-made templates and guided onboarding.\"\n                        }\n                      ]\n                    },\n                    {\n                      \"blocks\": [\n                        {\n                          \"id\": \"feature-2-title\",\n                          \"component\": \"heading\",\n                          \"text\": \"Built to convert\"\n                        },\n                        {\n                          \"id\": \"feature-2-body\",\n                          \"component\": \"body\",\n                          \"text\": \"Clear layouts, proven call-to-action patterns, and built-in A/B testing help visitors become customers.\"\n                        }\n                      ]\n                    },\n                    {\n                      \"blocks\": [\n                        {\n                          \"id\": \"feature-3-title\",\n                          \"component\": \"heading\",\n                          \"text\": \"Insights you can act on\"\n                        },\n                        {\n                          \"id\": \"feature-3-body\",\n                          \"component\": \"body\",\n                          \"text\": \"Real-time analytics show what visitors read, click, and buy, so you always know what to improve next.\"\n                        }\n                      ]\n                    }\n                  ]\n                },\n                {\n                  \"id\": \"testimonial\",\n                  \"component\": \"blockquote_with_avatar\",\n                  \"quote\": \"We went from idea to a polished launch page in one afternoon. Our signups doubled in the first month.\",\n                  \"author_name\": \"Maya Chen\",\n                  \"author_title\": \"Founder, Brightline Labs\"\n                },\n                {\n                  \"id\": \"cta\",\n                  \"component\": \"cta_section\",\n                  \"heading\": \"Ready to launch your product?\",\n                  \"body\": \"Start your free trial today. No credit card required.\",\n                  \"primary_cta\": {\n                    \"label\": \"Start free trial\",\n                    \"url\": \"https://example.com/signup\"\n                  },\n                  \"secondary_cta\": {\n                    \"label\": \"Talk to sales\",\n                    \"url\": \"https://example.com/contact\"\n                  },\n                  \"background\": \"#1e1b4b\"\n                }\n              ]\n            }\n          ]\n        }\n      ]\n    }\n  }\n]\n</a2ui-json>"
+}

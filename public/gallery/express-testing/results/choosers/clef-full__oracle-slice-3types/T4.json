@@ -1,0 +1,184 @@
+{
+ "task": "T4",
+ "condition": "C",
+ "chooser": "clef",
+ "slice_atoms_in_options": 33,
+ "picks": [
+  {
+   "slot": "A vertical list showing eight stacked rows, one per item, each row displaying th #1",
+   "decomposer_line": "A vertical list showing eight stacked rows, one per item, each row displaying the item's title in bold at the top-left.",
+   "atom": "bullet_list",
+   "confidence": 0.243,
+   "top3": [
+    [
+     "bullet_list",
+     0.3721
+    ],
+    [
+     "entity_list",
+     0.2836
+    ],
+    [
+     "icon_list",
+     0.2096
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "On each row, a small status indicator or label showing the item's current status #2",
+   "decomposer_line": "On each row, a small status indicator or label showing the item's current status, placed beside the title so status is scannable at a glance.",
+   "atom": "status_pill",
+   "confidence": 0.2803,
+   "top3": [
+    [
+     "status_pill",
+     0.5086
+    ],
+    [
+     "badge",
+     0.152
+    ],
+    [
+     "entity_list",
+     0.089
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "On each row, a single short line of detail text beneath the title giving a brief #3",
+   "decomposer_line": "On each row, a single short line of detail text beneath the title giving a brief description of the item.",
+   "atom": "entity_list",
+   "confidence": 0.3622,
+   "top3": [
+    [
+     "entity_list",
+     0.5905
+    ],
+    [
+     "icon_list",
+     0.1569
+    ],
+    [
+     "body",
+     0.0771
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "A row of filter controls above the list, offering the status options so the user #4",
+   "decomposer_line": "A row of filter controls above the list, offering the status options so the user can choose which status to show.",
+   "atom": "chip_group",
+   "confidence": 0.7594,
+   "top3": [
+    [
+     "chip_group",
+     0.874
+    ],
+    [
+     "segmented_control",
+     0.0464
+    ],
+    [
+     "form_select",
+     0.016
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "Behavior that, when a status filter is selected, hides rows whose status does no #5",
+   "decomposer_line": "Behavior that, when a status filter is selected, hides rows whose status does not match and shows only the matching items, updating the list immediately.",
+   "atom": "chip_group",
+   "confidence": 0.2836,
+   "top3": [
+    [
+     "chip_group",
+     0.4669
+    ],
+    [
+     "data_table_sortable",
+     0.285
+    ],
+    [
+     "table",
+     0.0408
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "A visible state for the active filter, so the user can tell which status is curr #6",
+   "decomposer_line": "A visible state for the active filter, so the user can tell which status is currently selected, plus a way to clear the filter and show all eight items again.",
+   "atom": "chip_group",
+   "confidence": 0.693,
+   "top3": [
+    [
+     "chip_group",
+     0.8364
+    ],
+    [
+     "segmented_control",
+     0.0314
+    ],
+    [
+     "tag_chip",
+     0.0285
+    ]
+   ],
+   "finalists": null
+  },
+  {
+   "slot": "An empty-state message that appears when the selected filter matches no items, s #7",
+   "decomposer_line": "An empty-state message that appears when the selected filter matches no items, so the list area is never blank without explanation.",
+   "atom": "body",
+   "confidence": 0.4787,
+   "top3": [
+    [
+     "body",
+     0.6982
+    ],
+    [
+     "icon_list",
+     0.0571
+    ],
+    [
+     "bullet_list",
+     0.0317
+    ]
+   ],
+   "finalists": null
+  }
+ ],
+ "cost": {
+  "decomposer_input_tokens": 0,
+  "decomposer_output_tokens": 0,
+  "decomposer_thinking_tokens": 0,
+  "jev_input_tokens": 8917,
+  "jev_output_tokens": 0,
+  "jev_calls": 7
+ },
+ "error": null,
+ "atoms": [
+  "bullet_list",
+  "status_pill",
+  "entity_list",
+  "chip_group",
+  "chip_group",
+  "chip_group",
+  "body"
+ ],
+ "score": {
+  "precision": 0.857,
+  "recall": 1.0,
+  "f1": 0.923,
+  "slot_hits": {
+   "list": true,
+   "status indicator": true,
+   "filter control": true
+  }
+ },
+ "secs": 2.3
+}

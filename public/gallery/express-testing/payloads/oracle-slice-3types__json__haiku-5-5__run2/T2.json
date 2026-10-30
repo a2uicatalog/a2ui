@@ -1,0 +1,114 @@
+{
+ "label": "oracle-slice-3types__json__haiku-5-5__run2",
+ "task": "T2",
+ "format": "json",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "metrics-overview",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "metrics-overview",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         {
+          "id": "overview-title",
+          "component": "heading",
+          "text": "Metrics overview"
+         },
+         {
+          "id": "kpi-tiles",
+          "component": "metric_row",
+          "cols": 2,
+          "metrics": [
+           {
+            "value": "482K",
+            "label": "Revenue",
+            "prefix": "$",
+            "sub": "+12% vs. last month",
+            "trend": "up"
+           },
+           {
+            "value": "12,840",
+            "label": "Active users",
+            "sub": "+4% vs. last month",
+            "trend": "up"
+           },
+           {
+            "value": "2.1",
+            "label": "Churn rate",
+            "suffix": "%",
+            "sub": "-0.3 pts vs. last month",
+            "trend": "down"
+           },
+           {
+            "value": "58",
+            "label": "NPS",
+            "sub": "-2 vs. last month",
+            "trend": "down"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "blocks": [
+         {
+          "id": "comparison-chart",
+          "component": "chartjs_bar",
+          "labels": [
+           "Jan",
+           "Feb",
+           "Mar",
+           "Apr",
+           "May",
+           "Jun"
+          ],
+          "datasets": [
+           {
+            "label": "This year",
+            "data": [
+             320,
+             358,
+             391,
+             412,
+             447,
+             482
+            ]
+           },
+           {
+            "label": "Last year",
+            "data": [
+             285,
+             296,
+             310,
+             329,
+             344,
+             361
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

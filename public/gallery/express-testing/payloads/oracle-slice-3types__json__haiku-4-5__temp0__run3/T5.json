@@ -1,0 +1,139 @@
+{
+ "label": "oracle-slice-3types__json__haiku-4-5__temp0__run3",
+ "task": "T5",
+ "format": "json",
+ "model_id": "claude-haiku-4-5-20251001",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "pricing_page",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "pricing_page",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 3,
+      "gap": "2rem",
+      "align": "stretch",
+      "items": [
+       {
+        "blocks": [
+         {
+          "id": "starter_badge",
+          "component": "badge",
+          "text": "Starter"
+         },
+         {
+          "id": "starter_title",
+          "component": "heading",
+          "text": "Starter"
+         },
+         {
+          "id": "starter_price",
+          "component": "body",
+          "text": "$29/month"
+         },
+         {
+          "id": "starter_desc",
+          "component": "body",
+          "text": "Perfect for individuals and small projects"
+         },
+         {
+          "id": "starter_cta",
+          "component": "cta_button",
+          "label": "Get Started",
+          "url": "#starter"
+         },
+         {
+          "id": "starter_features",
+          "component": "body",
+          "text": "\u2713 Up to 5 projects\n\u2713 10GB storage\n\u2713 Basic analytics\n\u2713 Community support\n\u2713 Monthly reports"
+         }
+        ]
+       },
+       {
+        "blocks": [
+         {
+          "id": "pro_recommended",
+          "component": "badge",
+          "text": "Recommended",
+          "color": "#4f46e5"
+         },
+         {
+          "id": "pro_title",
+          "component": "heading",
+          "text": "Professional"
+         },
+         {
+          "id": "pro_price",
+          "component": "body",
+          "text": "$79/month"
+         },
+         {
+          "id": "pro_desc",
+          "component": "body",
+          "text": "Ideal for growing teams and businesses"
+         },
+         {
+          "id": "pro_cta",
+          "component": "cta_button",
+          "label": "Start Free Trial",
+          "url": "#pro",
+          "color": "#4f46e5"
+         },
+         {
+          "id": "pro_features",
+          "component": "body",
+          "text": "\u2713 Unlimited projects\n\u2713 500GB storage\n\u2713 Advanced analytics\n\u2713 Priority email support\n\u2713 Weekly reports\n\u2713 Team collaboration\n\u2713 Custom integrations"
+         }
+        ]
+       },
+       {
+        "blocks": [
+         {
+          "id": "enterprise_badge",
+          "component": "badge",
+          "text": "Enterprise"
+         },
+         {
+          "id": "enterprise_title",
+          "component": "heading",
+          "text": "Enterprise"
+         },
+         {
+          "id": "enterprise_price",
+          "component": "body",
+          "text": "Custom pricing"
+         },
+         {
+          "id": "enterprise_desc",
+          "component": "body",
+          "text": "For large-scale operations and enterprises"
+         },
+         {
+          "id": "enterprise_cta",
+          "component": "cta_button",
+          "label": "Contact Sales",
+          "url": "#enterprise"
+         },
+         {
+          "id": "enterprise_features",
+          "component": "body",
+          "text": "\u2713 Everything in Professional\n\u2713 Unlimited storage\n\u2713 Real-time analytics\n\u2713 24/7 phone support\n\u2713 Dedicated account manager\n\u2713 SLA guarantee\n\u2713 Custom development"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

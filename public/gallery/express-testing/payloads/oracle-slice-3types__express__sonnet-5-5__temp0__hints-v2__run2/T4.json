@@ -1,0 +1,128 @@
+{
+ "label": "oracle-slice-3types__express__sonnet-5-5__temp0__hints-v2__run2",
+ "task": "T4",
+ "format": "express",
+ "model_id": "claude-sonnet-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "status-list",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "status-list",
+    "components": [
+     {
+      "id": "filter",
+      "component": "segmented_control",
+      "options": [
+       {
+        "label": "All",
+        "value": "all"
+       },
+       {
+        "label": "Active",
+        "value": "active"
+       },
+       {
+        "label": "Pending",
+        "value": "pending"
+       },
+       {
+        "label": "Blocked",
+        "value": "blocked"
+       },
+       {
+        "label": "Done",
+        "value": "done"
+       }
+      ],
+      "selected_value": "all",
+      "name": "status_filter"
+     },
+     {
+      "id": "list",
+      "component": "entity_list",
+      "items": [
+       {
+        "name": "Migrate billing service",
+        "subtitle": "Moving invoices to the new ledger API",
+        "status": "Active"
+       },
+       {
+        "name": "Update onboarding emails",
+        "subtitle": "Copy review is underway with marketing",
+        "status": "Pending"
+       },
+       {
+        "name": "Fix SSO redirect loop",
+        "subtitle": "Waiting on identity provider fix",
+        "status": "Blocked"
+       },
+       {
+        "name": "Publish Q3 report",
+        "subtitle": "Final PDF shared with stakeholders",
+        "status": "Done"
+       },
+       {
+        "name": "Refactor search indexer",
+        "subtitle": "Cutting reindex time by about 40%",
+        "status": "Active"
+       },
+       {
+        "name": "Renew TLS certificates",
+        "subtitle": "Scheduled for the next maintenance window",
+        "status": "Pending"
+       },
+       {
+        "name": "Provision staging database",
+        "subtitle": "Blocked by missing cloud quota approval",
+        "status": "Blocked"
+       },
+       {
+        "name": "Archive legacy logs",
+        "subtitle": "Retention job completed successfully",
+        "status": "Done"
+       }
+      ]
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "1.5rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         "_inline_1",
+         "filter"
+        ]
+       },
+       {
+        "blocks": [
+         "_inline_2",
+         "list"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "_inline_1",
+      "component": "heading",
+      "text": "Filter by status"
+     },
+     {
+      "id": "_inline_2",
+      "component": "heading",
+      "text": "Work items"
+     }
+    ]
+   }
+  }
+ ]
+}

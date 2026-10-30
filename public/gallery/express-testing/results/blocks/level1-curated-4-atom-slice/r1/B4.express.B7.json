@@ -1,0 +1,36 @@
+{
+ "model": "sonnet-5-5",
+ "cond": "B4",
+ "format": "express",
+ "brief": "B7",
+ "repeat": 1,
+ "seq": 13,
+ "model_id": "claude-sonnet-5-5",
+ "utc": "2026-10-29T19:52:43Z",
+ "prompt_chars": 12626,
+ "prompt_sha256": "(removed for publication)",
+ "temperature_requested": null,
+ "temperature_sent": false,
+ "max_tokens": 32768,
+ "request_secs": 11.26,
+ "input_tokens": 4674,
+ "output_tokens": 1179,
+ "stop_reason": "end_turn",
+ "usage": {
+  "input_tokens": 4674,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "cache_creation": {
+   "ephemeral_5m_input_tokens": 0,
+   "ephemeral_1h_input_tokens": 0
+  },
+  "output_tokens": 1179,
+  "output_tokens_details": {
+   "thinking_tokens": 926
+  },
+  "service_tier": "standard",
+  "inference_geo": "global",
+  "speed": "standard"
+ },
+ "reply": "<a2ui>\nsurface(\"small-table\")\nroot = brick_build_3d(null, null, null, \"animate\", null, 1, true, 420, null, true, true, true, null, null, false, [[\"3005\", -30, 0, -30, 0, 1], [\"3005\", 30, 0, -30, 0, 1], [\"3005\", -30, 0, 30, 0, 1], [\"3005\", 30, 0, 30, 0, 1], [\"3005\", -30, -24, -30, 0, 1], [\"3005\", 30, -24, -30, 0, 1], [\"3005\", -30, -24, 30, 0, 1], [\"3005\", 30, -24, 30, 0, 1], [\"3031\", 0, -32, 0, 0, 4]], \"studio\")\n</a2ui>"
+}

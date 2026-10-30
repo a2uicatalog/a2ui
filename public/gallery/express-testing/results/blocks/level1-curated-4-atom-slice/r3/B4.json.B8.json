@@ -1,0 +1,36 @@
+{
+ "model": "sonnet-5-5",
+ "cond": "B4",
+ "format": "json",
+ "brief": "B8",
+ "repeat": 3,
+ "seq": 48,
+ "model_id": "claude-sonnet-5-5",
+ "utc": "2026-10-29T19:58:26Z",
+ "prompt_chars": 19029,
+ "prompt_sha256": "(removed for publication)",
+ "temperature_requested": null,
+ "temperature_sent": false,
+ "max_tokens": 32768,
+ "request_secs": 12.25,
+ "input_tokens": 7255,
+ "output_tokens": 1598,
+ "stop_reason": "end_turn",
+ "usage": {
+  "input_tokens": 7255,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "cache_creation": {
+   "ephemeral_5m_input_tokens": 0,
+   "ephemeral_1h_input_tokens": 0
+  },
+  "output_tokens": 1598,
+  "output_tokens_details": {
+   "thinking_tokens": 688
+  },
+  "service_tier": "standard",
+  "inference_geo": "global",
+  "speed": "standard"
+ },
+ "reply": "The catalog has only brick components: no chart, text or layout containers. So I built the bar chart as a brick model, with one column per month and column height showing sales. A separate surface holds the title lettering.\n\n<a2ui-json>\n[\n  {\"version\":\"v0.9.1\",\"createSurface\":{\"surfaceId\":\"sales_title\",\"catalogId\":\"https://a2uicatalog.ai/catalog/blocks-b4.json\"}},\n  {\"version\":\"v0.9.1\",\"updateComponents\":{\"surfaceId\":\"sales_title\",\"components\":[\n    {\"id\":\"root\",\"component\":\"motion_bricks\",\"text\":\"SALES\",\"palette\":[\"#1e66f5\",\"#2f80ed\",\"#56a0f5\",\"#f2994a\",\"#eb5757\"],\"depth\":2,\"base\":\"none\",\"look\":\"studio\",\"angle\":10,\"elevation\":20,\"ratio\":\"16:9\",\"label\":\"Sales dashboard title\"}\n  ]}}\n]\n</a2ui-json>\n\n<a2ui-json>\n[\n  {\"version\":\"v0.9.1\",\"createSurface\":{\"surfaceId\":\"sales_chart\",\"catalogId\":\"https://a2uicatalog.ai/catalog/blocks-b4.json\"}},\n  {\"version\":\"v0.9.1\",\"updateComponents\":{\"surfaceId\":\"sales_chart\",\"components\":[\n    {\"id\":\"root\",\"component\":\"brick_build_3d\",\"look\":\"studio\",\"mode\":\"animate\",\"orbit\":true,\"height\":420,\"checks\":false,\"parts\":true,\"scrubber\":true,\"base\":\"#dfe6ee\",\n     \"bricks\":[\n       {\"x\":0,\"y\":0,\"z\":0,\"w\":2,\"d\":2,\"h\":3,\"c\":\"#9ec5fe\"},\n       {\"x\":3,\"y\":0,\"z\":0,\"w\":2,\"d\":2,\"h\":5,\"c\":\"#6ea8fe\"},\n       {\"x\":6,\"y\":0,\"z\":0,\"w\":2,\"d\":2,\"h\":4,\"c\":\"#3d8bfd\"},\n       {\"x\":9,\"y\":0,\"z\":0,\"w\":2,\"d\":2,\"h\":7,\"c\":\"#0d6efd\"},\n       {\"x\":12,\"y\":0,\"z\":0,\"w\":2,\"d\":2,\"h\":6,\"c\":\"#0a58ca\"},\n       {\"x\":15,\"y\":0,\"z\":0,\"w\":2,\"d\":2,\"h\":9,\"c\":\"#f2994a\"}\n     ]}\n  ]}}\n]\n</a2ui-json>\n\nThe six columns stand for Jan to Jun, with sample values of 3, 5, 4, 7, 6 and 9. June is orange as the peak month. You can drag to orbit the chart, and the scrubber toggles between the build animation and step-by-step instructions. The parts list shows how many bricks the chart uses."
+}

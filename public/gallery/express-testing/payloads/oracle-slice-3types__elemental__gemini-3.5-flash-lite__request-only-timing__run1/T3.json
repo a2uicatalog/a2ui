@@ -1,0 +1,89 @@
+{
+ "label": "oracle-slice-3types__elemental__gemini-3.5-flash-lite__request-only-timing__run1",
+ "task": "T3",
+ "format": "elemental",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce-elemental.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "gradient_hero",
+      "title": "Build Better Software Faster",
+      "subtitle": "Empower your engineering teams with unified deployment pipelines and real-time observability.",
+      "Badge": "New Release v2.0",
+      "align": "center"
+     },
+     {
+      "id": "features-section",
+      "component": "feature_grid",
+      "Heading": "Everything you need to scale",
+      "description": "Powerful features designed to streamline your development lifecycle from commit to production.",
+      "Columns": 3,
+      "features": [
+       {
+        "icon": "\u26a1",
+        "title": "Lightning Fast",
+        "description": "Optimized build caches and parallel execution cut your CI/CD times by up to 70%."
+       },
+       {
+        "icon": "\ud83d\udee1\ufe0f",
+        "title": "Enterprise Security",
+        "description": "Built-in vulnerability scanning and compliance checks keep your codebase secure at scale."
+       },
+       {
+        "icon": "\ud83d\udcca",
+        "title": "Deep Observability",
+        "description": "Real-time metrics, tracing, and logs give you complete visibility into production services."
+       }
+      ]
+     },
+     {
+      "id": "main-testimonial",
+      "component": "testimonial_card",
+      "text": "This platform completely transformed how our engineering organization ships code. Deployment frequency is up 3x and incidents are down.",
+      "rating": 5
+     },
+     {
+      "id": "bottom-cta",
+      "component": "cta_section",
+      "Heading": "Ready to accelerate your workflow?",
+      "Body": "Join thousands of high-performing engineering teams shipping better software today.",
+      "background": "#1e1b4b",
+      "primary_cta": {
+       "label": "Get Started Now",
+       "url": "/signup"
+      },
+      "secondary_cta": {
+       "label": "Contact Sales",
+       "url": "/contact"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_data_model": {
+    "surface_id": "main",
+    "path": "/",
+    "value": {
+     "hero_title": "Build Better Software Faster",
+     "hero_subtitle": "Empower your engineering teams with unified deployment pipelines and real-time observability.",
+     "cta_label": "Start Free Trial",
+     "cta_url": "/signup"
+    }
+   }
+  }
+ ]
+}

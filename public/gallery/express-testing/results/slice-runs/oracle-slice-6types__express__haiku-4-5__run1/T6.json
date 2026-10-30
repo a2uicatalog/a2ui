@@ -1,0 +1,37 @@
+{
+ "task": "T6",
+ "condition": "D",
+ "label": "oracle-slice-6types__express__haiku-4-5__run1",
+ "agent_type": "T6",
+ "catalogue": "D-t6.json",
+ "atoms_in_catalogue": 12,
+ "prompt_chars": 8305,
+ "slot_recall": [
+  2,
+  2
+ ],
+ "secs": 4.6,
+ "usage": {
+  "input_tokens": 2344,
+  "output_tokens": 389
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "columns",
+  "heading",
+  "body",
+  "heading",
+  "progress_bar"
+ ],
+ "score": {
+  "precision": 0.2,
+  "recall": 0.5,
+  "f1": 0.286,
+  "slot_hits": {
+   "flashcard deck": false,
+   "progress indicator": true
+  }
+ },
+ "reply": "<a2ui>\n# Initialize data model with flashcard state\n$/flashcards_reviewed = 0\n$/total_flashcards = 10\n\n# Define the flashcard deck\ncards = [\n  {front: \"Ephemeral\", back: \"Lasting for a very short time\"},\n  {front: \"Serendipity\", back: \"The occurrence of events by chance in a happy or beneficial way\"},\n  {front: \"Eloquent\", back: \"Fluent or persuasive in speaking or writing\"},\n  {front: \"Nostalgia\", back: \"Sentimental longing for the past\"},\n  {front: \"Pragmatic\", back: \"Dealing with things in a realistic and practical way\"},\n  {front: \"Benevolent\", back: \"Kind and generous\"},\n  {front: \"Ubiquitous\", back: \"Present, appearing, or found everywhere\"},\n  {front: \"Meticulous\", back: \"Showing great attention to detail; very careful and precise\"},\n  {front: \"Ambiguous\", back: \"Open to more than one interpretation; unclear\"},\n  {front: \"Mellifluous\", back: \"Sweet or musical; pleasant to hear\"}\n]\n\nroot = columns(2, \"2rem\", \"top\", [\n  {blocks: [\n    heading(\"Vocabulary Review\"),\n    body(\"Review vocabulary by flipping each card to see the definition.\")\n  ]},\n  {blocks: [\n    heading(\"Progress\"),\n    progress_bar(50, \"Cards Reviewed\", \"#4f46e5\", true, \"5 of 10 cards\")\n  ]}\n])\n</a2ui>"
+}

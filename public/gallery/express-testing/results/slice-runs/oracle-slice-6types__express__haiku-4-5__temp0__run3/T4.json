@@ -1,0 +1,35 @@
+{
+ "task": "T4",
+ "condition": "DT",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-4-5-20251001",
+ "label": "oracle-slice-6types__express__haiku-4-5__temp0__run3",
+ "agent_type": "T4",
+ "catalogue": "D-t4.json",
+ "atoms_in_catalogue": 20,
+ "prompt_chars": 10490,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 6.1,
+ "usage": {
+  "input_tokens": 2959,
+  "output_tokens": 614
+ },
+ "valid": false,
+ "error": "A2uiCompilationParseError: Failed to parse expression: Syntax error at line 19:34: mismatched input '=' expecting {',', ')'} (line 19) - Line 19, Col 34 - Help: Please correct the syntax error in your Express DSL.",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "list": false,
+   "status indicator": false,
+   "filter control": false
+  }
+ },
+ "reply": "<a2ui>\nsurface(\"list-surface\")\n\n// Initialize filter state\n$/filterStatus = \"all\"\n\n// Sample data\n$/items = [\n  {id: 1, title: \"Project Alpha\", status: \"active\", detail: \"Launching next quarter with full team\"},\n  {id: 2, title: \"Budget Review\", status: \"pending\", detail: \"Awaiting finance department approval\"},\n  {id: 3, title: \"Client Onboarding\", status: \"active\", detail: \"Three new enterprise accounts in progress\"},\n  {id: 4, title: \"Infrastructure Upgrade\", status: \"completed\", detail: \"Migration to cloud completed successfully\"},\n  {id: 5, title: \"Security Audit\", status: \"pending\", detail: \"Third-party assessment scheduled for March\"},\n  {id: 6, title: \"Team Training\", status: \"active\", detail: \"Quarterly skills development program underway\"},\n  {id: 7, title: \"Documentation Update\", status: \"completed\", detail: \"API docs and guides published to portal\"},\n  {id: 8, title: \"Performance Optimization\", status: \"pending\", detail: \"Database indexing strategy under review\"}\n]\n\n// Filter function to get visible items\nfilteredItems = if($/filterStatus == \"all\", $/items, filter($/items, item => item.status == $/filterStatus))\n\nroot = body([\n  heading(\"Items\"),\n  \n  segmented_control(\n    options=[\n      {label: \"All\", value: \"all\"},\n      {label: \"Active\", value: \"active\"},\n      {label: \"Pending\", value: \"pending\"},\n      {label: \"Completed\", value: \"completed\"}\n    ],\n    selected_value=$/filterStatus,\n    name=\"statusFilter\"\n  ),\n  \n  entity_list(\n    items=_template(filteredItems, itemTemplate)\n  )\n])\n\nitemTemplate = {\n  name: $title,\n  subtitle: $detail,\n  status: statusBadge($status),\n  icon: statusIcon($status)\n}\n\nstatusBadge(status) = if(status == \"active\", \n  lozenge(\"Active\", \"inprogress\"),\n  if(status == \"pending\",\n    lozenge(\"Pending\", \"moved\"),\n    lozenge(\"Completed\", \"success\")\n  )\n)\n\nstatusIcon(status) = if(status == \"active\",\n  \"\ud83d\udfe2\",\n  if(status == \"pending\",\n    \"\ud83d\udfe1\",\n    \"\u2705\"\n  )\n)\n</a2ui>"
+}

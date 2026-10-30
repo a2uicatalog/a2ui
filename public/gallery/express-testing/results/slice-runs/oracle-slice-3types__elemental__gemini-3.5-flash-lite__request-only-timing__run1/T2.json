@@ -1,0 +1,44 @@
+{
+ "task": "T2",
+ "condition": "CX_gemini-3.5-flash-l",
+ "temperature_applied": false,
+ "format": "elemental",
+ "temperature": null,
+ "max_tokens": 8192,
+ "model_id": "gemini-3.5-flash-lite",
+ "hints": false,
+ "label": "oracle-slice-3types__elemental__gemini-3.5-flash-lite__request-only-timing__run1",
+ "agent_type": "Data display",
+ "catalogue": "C-data-display.json",
+ "atoms_in_catalogue": 33,
+ "prompt_chars": 16902,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 1.4,
+ "usage": {
+  "input_tokens": 4995,
+  "output_tokens": 404
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "heading",
+  "metric_row",
+  "heading",
+  "benchmark_comparison",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.4,
+  "recall": 0.667,
+  "f1": 0.5,
+  "slot_hits": {
+   "KPI tile (x4)": true,
+   "trend (required only if metric_row was chosen; stat_card's own delta already satisfies it)": false,
+   "comparison chart": true
+  }
+ },
+ "reply": "<a2ui>\n  <body>\n    <script type=\"application/json\">\n      {\n        \"metrics\": [\n          { \"value\": \"$128,430\", \"label\": \"Total Revenue\", \"prefix\": \"$\", \"trend\": \"up\", \"accent\": \"#4CAF50\" },\n          { \"value\": \"1,429\", \"label\": \"Active Subscriptions\", \"prefix\": \"\", \"trend\": \"up\", \"accent\": \"#2196F3\" },\n          { \"value\": \"99.8%\", \"label\": \"System Uptime\", \"prefix\": \"\", \"trend\": \"up\", \"accent\": \"#9C27B0\" },\n          { \"value\": \"4.2%\", \"label\": \"Churn Rate\", \"prefix\": \"\", \"trend\": \"down\", \"accent\": \"#F44336\" }\n        ],\n        \"benchmarkItems\": [\n          { \"label\": \"Q1 Performance\", \"value\": 85 },\n          { \"label\": \"Q2 Performance\", \"value\": 92 },\n          { \"label\": \"Q3 Performance\", \"value\": 78 },\n          { \"label\": \"Q4 Projected\", \"value\": 95 }\n        ]\n      }\n    </script>\n    <ui-columns id=\"root\" cols=\"{1}\" gap=\"1.5rem\">\n      <ui-heading id=\"header\" text=\"Metrics Overview\" />\n      <ui-metric_row id=\"metrics-row\" cols=\"{4}\" metrics=\"{$/metrics}\" />\n      <ui-heading id=\"benchmark-header\" text=\"Quarterly Benchmark Comparison\" />\n      <ui-benchmark_comparison id=\"benchmark\" items=\"{$/benchmarkItems}\" />\n    </ui-columns>\n  </body>\n</a2ui>"
+}

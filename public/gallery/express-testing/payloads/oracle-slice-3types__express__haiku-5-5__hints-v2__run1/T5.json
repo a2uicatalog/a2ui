@@ -1,0 +1,62 @@
+{
+ "label": "oracle-slice-3types__express__haiku-5-5__hints-v2__run1",
+ "task": "T5",
+ "format": "express",
+ "model_id": "claude-haiku-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-marketing-commerce.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "root",
+      "component": "pricing_tier_group",
+      "tiers": [
+       {
+        "name": "Starter",
+        "price": "$9/mo",
+        "features": [
+         "1 project",
+         "5 GB storage",
+         "Email support"
+        ],
+        "recommended": false
+       },
+       {
+        "name": "Pro",
+        "price": "$29/mo",
+        "features": [
+         "Unlimited projects",
+         "100 GB storage",
+         "Priority support",
+         "Team collaboration"
+        ],
+        "recommended": true
+       },
+       {
+        "name": "Enterprise",
+        "price": "$99/mo",
+        "features": [
+         "Unlimited projects",
+         "1 TB storage",
+         "24/7 phone support",
+         "SSO and audit logs",
+         "Dedicated account manager"
+        ],
+        "recommended": false
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,42 @@
+{
+ "task": "T2",
+ "condition": "BTH2",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-4-5-20251001",
+ "label": "rule-slice__express__haiku-4-5__temp0__hints-v2__run1",
+ "agent_type": "Data display",
+ "catalogue": "B-data-display.json",
+ "atoms_in_catalogue": 248,
+ "prompt_chars": 125436,
+ "slot_recall": [
+  3,
+  3
+ ],
+ "secs": 3.6,
+ "usage": {
+  "input_tokens": 36277,
+  "output_tokens": 279
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "stat_card",
+  "stat_card",
+  "stat_card",
+  "stat_card",
+  "metric_comparison_card",
+  "columns"
+ ],
+ "score": {
+  "precision": 0.667,
+  "recall": 0.667,
+  "f1": 0.667,
+  "slot_hits": {
+   "KPI tile (x4)": true,
+   "trend (required only if metric_row was chosen; stat_card's own delta already satisfies it)": true,
+   "comparison chart": false
+  }
+ },
+ "reply": "<a2ui>\nkpi_1 = stat_card(value=\"$2.4M\", label=\"Total Revenue\", delta=\"+12%\", is_up=true, accent=\"#10b981\")\nkpi_2 = stat_card(value=\"8,432\", label=\"Active Users\", delta=\"+5%\", is_up=true, accent=\"#3b82f6\")\nkpi_3 = stat_card(value=\"94.2%\", label=\"Uptime\", delta=\"-0.3%\", is_up=false, accent=\"#f59e0b\")\nkpi_4 = stat_card(value=\"3.2s\", label=\"Avg Response Time\", delta=\"-8%\", is_up=true, accent=\"#8b5cf6\")\n\ncomparison = metric_comparison_card(label=\"Conversion Rate\", value=4.8, previous=4.2, lower_is_better=false)\n\nroot = columns(cols=2, items=[\n  {blocks: [kpi_1, kpi_2]},\n  {blocks: [kpi_3, kpi_4]},\n  {blocks: [comparison]}\n])\n</a2ui>"
+}

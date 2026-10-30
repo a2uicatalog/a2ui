@@ -1,0 +1,105 @@
+{
+ "label": "oracle-slice-3types__json__gemini-3.5-flash-lite__first-run-timing-invalid__run3",
+ "task": "T2",
+ "format": "json",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "metrics-overview",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display.json",
+    "theme": {
+     "primaryColor": "#3b82f6"
+    }
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "metrics-overview",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "1.5rem",
+      "items": [
+       {
+        "blocks": [
+         {
+          "id": "page-title",
+          "component": "heading",
+          "text": "Executive Metrics Overview"
+         },
+         {
+          "id": "subtitle",
+          "component": "body",
+          "text": "Real-time performance indicators and comparative benchmarks."
+         },
+         {
+          "id": "kpi-row",
+          "component": "metric_row",
+          "cols": 4,
+          "metrics": [
+           {
+            "value": "$48,250",
+            "label": "Monthly Revenue",
+            "prefix": "$",
+            "trend": "up"
+           },
+           {
+            "value": "1,420",
+            "label": "Active Users",
+            "trend": "up"
+           },
+           {
+            "value": "99.2%",
+            "label": "System Uptime",
+            "suffix": "%",
+            "trend": "up"
+           },
+           {
+            "value": "2.4s",
+            "label": "Avg Latency",
+            "suffix": "s",
+            "trend": "down"
+           }
+          ]
+         },
+         {
+          "id": "benchmark-section",
+          "component": "heading",
+          "text": "Q3 Performance Benchmark"
+         },
+         {
+          "id": "performance-comparison",
+          "component": "benchmark_comparison",
+          "items": [
+           {
+            "label": "Current Period",
+            "value": 85
+           },
+           {
+            "label": "Previous Period",
+            "value": 70
+           },
+           {
+            "label": "Industry Average",
+            "value": 65
+           },
+           {
+            "label": "Target Goal",
+            "value": 90
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

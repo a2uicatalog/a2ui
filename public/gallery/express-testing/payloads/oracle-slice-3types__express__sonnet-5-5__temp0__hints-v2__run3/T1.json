@@ -1,0 +1,123 @@
+{
+ "label": "oracle-slice-3types__express__sonnet-5-5__temp0__hints-v2__run3",
+ "task": "T1",
+ "format": "express",
+ "model_id": "claude-sonnet-5-5",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "water-cycle-lesson",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-learning.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "water-cycle-lesson",
+    "components": [
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 2,
+      "gap": "2rem",
+      "align": "top",
+      "items": [
+       {
+        "blocks": [
+         {
+          "type": "page_header",
+          "title": "The Water Cycle",
+          "subtitle": "How water moves between oceans, air, and land",
+          "icon": "\ud83d\udca7",
+          "tag": "Earth Science",
+          "accent": "#0284c7"
+         },
+         {
+          "type": "heading",
+          "text": "1. Evaporation"
+         },
+         {
+          "type": "body",
+          "text": "The Sun heats water in oceans, lakes, and rivers. Liquid water turns into invisible water vapour and rises into the air. Plants also release vapour through their leaves, which is called transpiration."
+         },
+         {
+          "type": "heading",
+          "text": "2. Condensation"
+         },
+         {
+          "type": "body",
+          "text": "As water vapour rises, it cools. Cooled vapour changes back into tiny liquid droplets around dust particles. Billions of these droplets gather to form clouds."
+         },
+         {
+          "type": "heading",
+          "text": "3. Precipitation and Collection"
+         },
+         {
+          "type": "body",
+          "text": "When cloud droplets grow heavy, they fall as rain, snow, sleet, or hail. This water runs into rivers, soaks into the ground, or fills lakes and oceans, and the cycle begins again."
+         }
+        ]
+       },
+       {
+        "blocks": [
+         {
+          "type": "concept_rung",
+          "badge": "EX",
+          "kind": "example",
+          "title": "Worked example: rain on a roof",
+          "body": "How much water does a 20 mm rainfall deliver to a roof with an area of 50 m\u00b2?\n\nOne millimetre of rain over one square metre equals exactly 1 litre of water.",
+          "code": "Rain per m\u00b2 = 20 mm x 1 L = 20 L\nTotal water = 20 L x 50 m\u00b2 = 1000 L",
+          "code_caption": "Step by step calculation",
+          "takeaway": "That roof collects about 1000 litres, or 1 cubic metre, of water."
+         },
+         {
+          "type": "quiz_set",
+          "title": "Self-check: the water cycle",
+          "pass_score": 67,
+          "accent": "#0284c7",
+          "questions": [
+           {
+            "question": "What drives evaporation in the water cycle?",
+            "options": [
+             "Heat from the Sun",
+             "The Moon's gravity",
+             "Ocean currents",
+             "Wind alone"
+            ],
+            "correct": 0,
+            "explanation": "Solar energy warms liquid water until it becomes vapour."
+           },
+           {
+            "question": "What happens during condensation?",
+            "options": [
+             "Liquid water freezes into ice",
+             "Water vapour cools into liquid droplets",
+             "Rain soaks into the ground",
+             "Plants absorb water"
+            ],
+            "correct": 1,
+            "explanation": "Cooling vapour changes into liquid droplets, which form clouds."
+           },
+           {
+            "question": "Which of these is a form of precipitation?",
+            "options": [
+             "Fog on the ground",
+             "Steam from a kettle",
+             "Snow",
+             "Dew on a leaf"
+            ],
+            "correct": 2,
+            "explanation": "Precipitation is water falling from clouds as rain, snow, sleet, or hail."
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

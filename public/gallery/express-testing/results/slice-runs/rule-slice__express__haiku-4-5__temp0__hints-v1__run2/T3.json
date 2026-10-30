@@ -1,0 +1,47 @@
+{
+ "task": "T3",
+ "condition": "BTH",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-haiku-4-5-20251001",
+ "label": "rule-slice__express__haiku-4-5__temp0__hints-v1__run2",
+ "agent_type": "Marketing/commerce",
+ "catalogue": "B-marketing-commerce.json",
+ "atoms_in_catalogue": 189,
+ "prompt_chars": 80817,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 5.5,
+ "usage": {
+  "input_tokens": 23261,
+  "output_tokens": 549
+ },
+ "valid": true,
+ "error": null,
+ "produced": [
+  "gradient_hero",
+  "highlight_box",
+  "highlight_box",
+  "highlight_box",
+  "columns",
+  "blockquote_with_avatar",
+  "cta_section",
+  "columns",
+  "spacer",
+  "spacer"
+ ],
+ "score": {
+  "precision": 0.3,
+  "recall": 0.75,
+  "f1": 0.429,
+  "slot_hits": {
+   "hero": true,
+   "feature columns (x3)": false,
+   "testimonial": true,
+   "CTA": true
+  }
+ },
+ "reply": "<a2ui>\nhero = gradient_hero(\n  title=\"Transform Your Workflow\",\n  subtitle=\"Streamline your process with intelligent automation and seamless integration\",\n  cta_label=\"Get Started\",\n  cta_url=\"#\"\n)\n\nfeature_1 = highlight_box(\n  title=\"Smart Automation\",\n  text=\"Reduce manual tasks and focus on what matters most with AI-powered workflows.\",\n  icon=\"\u26a1\",\n  accent=\"#4f46e5\"\n)\n\nfeature_2 = highlight_box(\n  title=\"Seamless Integration\",\n  text=\"Connect with your favorite tools and platforms in minutes, not hours.\",\n  icon=\"\ud83d\udd17\",\n  accent=\"#7c3aed\"\n)\n\nfeature_3 = highlight_box(\n  title=\"Real-time Analytics\",\n  text=\"Track performance and gain actionable insights with comprehensive dashboards.\",\n  icon=\"\ud83d\udcca\",\n  accent=\"#06b6d4\"\n)\n\nfeatures = columns(\n  cols=3,\n  items=[\n    {blocks: [feature_1]},\n    {blocks: [feature_2]},\n    {blocks: [feature_3]}\n  ]\n)\n\ntestimonial = blockquote_with_avatar(\n  quote=\"This platform completely transformed how our team works. We've cut our project timelines in half.\",\n  author_name=\"Sarah Chen\",\n  author_title=\"Product Manager at TechCorp\",\n  avatar_url=\"https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop\"\n)\n\ncta = cta_section(\n  heading=\"Ready to Get Started?\",\n  body=\"Join thousands of teams already transforming their workflow.\",\n  primary_cta={label: \"Start Free Trial\", url: \"#\"},\n  secondary_cta={label: \"View Pricing\", url: \"#\"}\n)\n\nroot = columns(\n  cols=1,\n  items=[\n    {blocks: [hero]},\n    {blocks: [features]},\n    {blocks: [spacer(height=\"2rem\")]},\n    {blocks: [testimonial]},\n    {blocks: [spacer(height=\"2rem\")]},\n    {blocks: [cta]}\n  ]\n)\n</a2ui>"
+}

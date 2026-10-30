@@ -1,0 +1,39 @@
+{
+ "task": "T3",
+ "condition": "DTN_sonnet-5-5",
+ "temperature_applied": false,
+ "format": "json",
+ "temperature": 0.0,
+ "max_tokens": 6000,
+ "model_id": "claude-sonnet-5-5",
+ "hints": false,
+ "label": "oracle-slice-6types__json__sonnet-5-5__temp0__run2",
+ "agent_type": "T3",
+ "catalogue": "D-t3.json",
+ "atoms_in_catalogue": 21,
+ "prompt_chars": 23591,
+ "slot_recall": [
+  4,
+  4
+ ],
+ "secs": 13.2,
+ "usage": {
+  "input_tokens": 9076,
+  "output_tokens": 1640
+ },
+ "valid": false,
+ "error": "A2uiIntegrityError: Component 'cta' is not reachable from 'root'",
+ "produced": [],
+ "score": {
+  "precision": null,
+  "recall": 0.0,
+  "f1": null,
+  "slot_hits": {
+   "hero": false,
+   "feature columns (x3)": false,
+   "testimonial": false,
+   "CTA": false
+  }
+ },
+ "reply": "<a2ui-json>\n[\n  {\n    \"version\": \"v0.9.1\",\n    \"createSurface\": {\n      \"surfaceId\": \"landing\",\n      \"catalogId\": \"https://a2uicatalog.ai/catalog/d-t3.json\"\n    }\n  },\n  {\n    \"version\": \"v0.9.1\",\n    \"updateComponents\": {\n      \"surfaceId\": \"landing\",\n      \"components\": [\n        {\n          \"id\": \"root\",\n          \"component\": \"gradient_hero\",\n          \"badge\": \"New: Flow 2.0\",\n          \"title\": \"Plan less. Ship more.\",\n          \"subtitle\": \"Flow brings your tasks, docs, and team conversations into one calm workspace, so projects move forward without the busywork.\",\n          \"align\": \"center\"\n        },\n        {\n          \"id\": \"features\",\n          \"component\": \"feature_grid\",\n          \"heading\": \"Everything your team needs\",\n          \"description\": \"Three tools that work together out of the box.\",\n          \"columns\": 3,\n          \"features\": [\n            {\n              \"icon\": \"\u26a1\",\n              \"title\": \"Fast by default\",\n              \"description\": \"Create tasks, assign owners, and set deadlines in seconds with keyboard-first shortcuts.\"\n            },\n            {\n              \"icon\": \"\ud83e\udd1d\",\n              \"title\": \"Built for collaboration\",\n              \"description\": \"Comment, share docs, and co-edit in real time without leaving the project.\"\n            },\n            {\n              \"icon\": \"\ud83d\udcca\",\n              \"title\": \"Clear progress\",\n              \"description\": \"Live dashboards show what's on track and what's blocked, so there are no status meetings.\"\n            }\n          ]\n        },\n        {\n          \"id\": \"testimonial\",\n          \"component\": \"testimonial_card\",\n          \"text\": \"We cut our weekly planning time in half after switching to Flow. The whole team actually enjoys using it.\",\n          \"author_name\": \"Priya Raman\",\n          \"author_title\": \"Head of Product, Brightside\",\n          \"rating\": 5\n        },\n        {\n          \"id\": \"cta\",\n          \"component\": \"cta_button\",\n          \"label\": \"Start your free trial\",\n          \"url\": \"https://example.com/signup\",\n          \"color\": \"#4f46e5\",\n          \"same_tab\": true\n        }\n      ]\n    }\n  }\n]\n</a2ui-json>\n\nThe catalog has no container component, so the page is a flat list in reading order: hero, three-column feature grid, testimonial, then the call-to-action button. The product name, copy, and signup URL are placeholders to replace with your own."
+}

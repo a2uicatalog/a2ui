@@ -1,0 +1,121 @@
+{
+ "label": "oracle-slice-3types__elemental__gemini-3.5-flash-lite__request-only-timing__run1",
+ "task": "T2",
+ "format": "elemental",
+ "model_id": "gemini-3.5-flash-lite",
+ "messages": [
+  {
+   "version": "v0.9.1",
+   "create_surface": {
+    "surface_id": "main",
+    "catalog_id": "https://a2uicatalog.ai/catalog/c-data-display-elemental.json"
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_components": {
+    "surface_id": "main",
+    "components": [
+     {
+      "id": "header",
+      "component": "heading",
+      "text": "Metrics Overview"
+     },
+     {
+      "id": "metrics-row",
+      "component": "metric_row",
+      "cols": 4,
+      "metrics": {
+       "path": "/metrics"
+      }
+     },
+     {
+      "id": "benchmark-header",
+      "component": "heading",
+      "text": "Quarterly Benchmark Comparison"
+     },
+     {
+      "id": "benchmark",
+      "component": "benchmark_comparison",
+      "items": {
+       "path": "/benchmarkItems"
+      }
+     },
+     {
+      "id": "root",
+      "component": "columns",
+      "cols": 1,
+      "gap": "1.5rem",
+      "items": [
+       {
+        "blocks": [
+         "header",
+         "metrics-row",
+         "benchmark-header",
+         "benchmark"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "version": "v0.9.1",
+   "update_data_model": {
+    "surface_id": "main",
+    "path": "/",
+    "value": {
+     "metrics": [
+      {
+       "value": "$128,430",
+       "label": "Total Revenue",
+       "prefix": "$",
+       "trend": "up",
+       "accent": "#4CAF50"
+      },
+      {
+       "value": "1,429",
+       "label": "Active Subscriptions",
+       "prefix": "",
+       "trend": "up",
+       "accent": "#2196F3"
+      },
+      {
+       "value": "99.8%",
+       "label": "System Uptime",
+       "prefix": "",
+       "trend": "up",
+       "accent": "#9C27B0"
+      },
+      {
+       "value": "4.2%",
+       "label": "Churn Rate",
+       "prefix": "",
+       "trend": "down",
+       "accent": "#F44336"
+      }
+     ],
+     "benchmarkItems": [
+      {
+       "label": "Q1 Performance",
+       "value": 85
+      },
+      {
+       "label": "Q2 Performance",
+       "value": 92
+      },
+      {
+       "label": "Q3 Performance",
+       "value": 78
+      },
+      {
+       "label": "Q4 Projected",
+       "value": 95
+      }
+     ]
+    }
+   }
+  }
+ ]
+}
