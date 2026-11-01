@@ -21,6 +21,9 @@ import os
 import sys
 import yaml
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from pypi_flag import PYPI_PUBLISHED, PYPI_URL  # whether the Python package is on PyPI yet
+
 ROOT = os.path.join(os.path.dirname(__file__), "..")
 PUBLIC = os.path.join(ROOT, "public")
 SPEC = os.path.join(PUBLIC, "spec.json")
@@ -565,7 +568,7 @@ LLMS_TXT = """# A2UI Catalog (the A2UI Atomic Catalog)
 - [MCP server]({base}/mcp): Live JSON-RPC endpoint, no auth/signup required. GET with `Accept: application/json` returns a machine-readable server descriptor listing every tool.
 - [Documentation MCP server]({base}/mcp-docs): A separate MCP identity (`a2uicatalog-docs`) for questions FROM this product's own docs — `search_docs(query)` and `list_docs()`. The product server above takes actions (compose/render/publish); this one only answers doc questions.
 - [CLI / local MCP server (npm registry)](https://registry.npmjs.org/@a2uicatalog/mcp): `npx -p @a2uicatalog/mcp a2ui render page.json` renders a payload to HTML with no account and no MCP client. Also runs as a local MCP server (`a2uicatalog-mcp` bin) for Claude Desktop/Cursor, and deploys `training.md` to your own Google Apps Script web app via `build_app`. Source: `mcp/` in the [GitHub repository](https://github.com/a2uicatalog/a2ui). (npm's own package-page web UI 403s plain HTTP clients — the registry API link above is the one that resolves for a bot; `npm view @a2uicatalog/mcp` or a browser both work fine for a human.)
-- [Agent Skills](https://a2uicatalog.ai/.well-known/agent-skills/index.json): three `SKILL.md` files (`a2ui-catalog`, `a2ui-compose`, `a2ui-mcp` — picking atoms, composing/rendering a payload, connecting a new agent over MCP) installable via `npx skills add a2uicatalog/a2ui`. Source: `skills/` in the GitHub repository.
+{pylink}- [Agent Skills](https://a2uicatalog.ai/.well-known/agent-skills/index.json): three `SKILL.md` files (`a2ui-catalog`, `a2ui-compose`, `a2ui-mcp` — picking atoms, composing/rendering a payload, connecting a new agent over MCP) installable via `npx skills add a2uicatalog/a2ui`. Source: `skills/` in the GitHub repository.
 - [Developer portal]({base}/developers/): Human and agent developer portal, integration guide, REST surfaces, code samples, and self-hosting runbooks.
 - [SDKs & client libraries]({base}/sdks/): Official SDK documentation, npm CLI package, Agent Skills, and client code generators.
 - [API docs]({base}/docs/): API documentation for REST endpoints (/api/render, /api/compose, /ask), request/response schemas, and error shapes.
@@ -745,7 +748,9 @@ def main():
 
     out2 = os.path.join(PUBLIC, "llms.txt")
     with open(out2, "w", encoding="utf-8") as f:
-        f.write(LLMS_TXT.format(n_atoms=n_atoms, base=BASE))
+        pylink = (f"- [Python client (PyPI)]({PYPI_URL}): `pip install a2uicatalog`, a thin typed client for compose, render, batch render, search and local validation. Source `sdk/python/` in the GitHub repository.\n"
+                  if PYPI_PUBLISHED else "")
+        f.write(LLMS_TXT.format(n_atoms=n_atoms, base=BASE, pylink=pylink))
     print(f"wrote {out2}")
 
     wk = os.path.join(PUBLIC, ".well-known")

@@ -22,6 +22,7 @@ import sys
 
 ROOT = os.path.join(os.path.dirname(__file__), "..")
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from pypi_flag import PYPI_PUBLISHED, PYPI_URL  # whether the Python package is on PyPI yet
 import generate_atom_pages as _site  # the site's shared chrome: header, tokens, theme JS (one definition)
 
 # Which top-nav item is current for each page. The developer/API docs live under "Docs";
@@ -89,6 +90,12 @@ def _n():
 
 
 def pages(n):
+    PY_HTML = (f'''<h2>3. Python SDK (a2uicatalog)</h2>
+<p>A thin, dependency-free Python client for the REST API: compose, render, batch render, catalogue search and local payload validation.</p>
+<pre style="background:#0e1116;color:#c7d1e0;padding:14px 16px;border-radius:8px;overflow-x:auto;"><code>pip install a2uicatalog</code></pre>
+<p>Package page: <a href="{PYPI_URL}">a2uicatalog on PyPI</a>. Source: <code>sdk/python/</code> in the <a href="{REPO}">GitHub repository</a>.</p>
+
+''' if PYPI_PUBLISHED else "")
     return {
         "developers": dict(
             title="Developer Portal",
@@ -361,10 +368,10 @@ npx @a2uicatalog/mcp</code></pre>
 <pre style="background:#0e1116;color:#c7d1e0;padding:14px 16px;border-radius:8px;overflow-x:auto;"><code>npx skills add a2uicatalog/a2ui</code></pre>
 <p>Includes skills for catalog discovery (<code>a2ui-catalog</code>), composition (<code>a2ui-compose</code>), and MCP server connection (<code>a2ui-mcp</code>).</p>
 
-<h2>3. Python &amp; A2A SDK Integration</h2>
+{PY_HTML}<h2>{3 + bool(PYPI_PUBLISHED)}. Python &amp; A2A SDK Integration</h2>
 <p>For Python applications using Google's A2A protocol (<code>a2a-sdk</code>), connect over JSON-RPC or use the typed extension wrappers in the open-source repository (<code>renderers/a2a_extension.py</code>).</p>
 
-<h2>4. Generating Typed SDKs from OpenAPI</h2>
+<h2>{4 + bool(PYPI_PUBLISHED)}. Generating Typed SDKs from OpenAPI</h2>
 <p>Generate native client SDKs for any language (TypeScript, Python, Go, Java, Swift) using OpenAPI Generator and our OpenAPI 3.1 specification:</p>
 <pre style="background:#0e1116;color:#c7d1e0;padding:14px 16px;border-radius:8px;overflow-x:auto;"><code>npx @openapitools/openapi-generator-cli generate \\
   -i https://a2uicatalog.ai/openapi.json \\
@@ -753,6 +760,9 @@ Maintained by Curtis Krygier — {LINKEDIN}
         f.write(index_md)
     print("wrote public/index.md")
 
+    PY_MD = (f"- **Python client**: [`a2uicatalog`]({PYPI_URL}) on PyPI (`pip install a2uicatalog`); source `sdk/python/` in the GitHub repo\n" if PYPI_PUBLISHED else "")
+    PY_LLMS = ("- Python SDK: `a2uicatalog` on PyPI (`pip install a2uicatalog`) (" + PYPI_URL + ")\n" if PYPI_PUBLISHED else "")
+
     # Markdown SDK guide
     sdk_md = f"""---
 title: A2UI Atomic Catalog — SDK & Client Libraries
@@ -770,7 +780,7 @@ Official client libraries, SDK packages, CLI tools, and agent integrations for t
   - Direct render: `npx -p @a2uicatalog/mcp a2ui render page.json`
   - Local MCP server: `npx @a2uicatalog/mcp`
 - **Agent Skills**: `npx skills add a2uicatalog/a2ui` (skills index at `{BASE}/.well-known/agent-skills/index.json`)
-- **Python / A2A Extension**: `renderers/a2a_extension.py` in the GitHub repo for A2A SDK interop.
+{PY_MD}- **Python / A2A Extension**: `renderers/a2a_extension.py` in the GitHub repo for A2A SDK interop.
 
 ## Generating Native Client SDKs
 
@@ -799,7 +809,7 @@ Generate typed client SDKs in any language from our OpenAPI 3.1 specification:
 
     sdk_dir = os.path.join(PUBLIC, "sdks")
     os.makedirs(sdk_dir, exist_ok=True)
-    sdks_llms_txt = """# A2UI Atomic Catalog — SDKs
+    sdks_llms_txt = f"""# A2UI Atomic Catalog — SDKs
 
 > Scoped context for SDKs, CLI tools, and client packages. For the full site overview,
 > see https://a2uicatalog.ai/llms.txt instead.
@@ -807,7 +817,7 @@ Generate typed client SDKs in any language from our OpenAPI 3.1 specification:
 ## Packages
 
 - npm / CLI SDK: `@a2uicatalog/mcp` on npm (`npx -p @a2uicatalog/mcp a2ui render page.json`)
-- Agent Skills: `npx skills add a2uicatalog/a2ui` (https://a2uicatalog.ai/.well-known/agent-skills/index.json)
+{PY_LLMS}- Agent Skills: `npx skills add a2uicatalog/a2ui` (https://a2uicatalog.ai/.well-known/agent-skills/index.json)
 - Remote MCP server: https://a2uicatalog.ai/mcp
 - OpenAPI 3.1 specification: https://a2uicatalog.ai/openapi.json
 

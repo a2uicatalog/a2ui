@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "a2uicatalog"
+version = "0.1.0"
+description = "Official Python client for the A2UI Atomic Catalog: 573-atom vocabulary, compose, render and validate."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Curtis Krygier" }]
+keywords = ["a2ui", "ui", "agents", "llm", "catalog", "mcp", "generative-ui"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Typing :: Typed",
+]
+dependencies = []
+
+[project.urls]
+Homepage = "https://a2uicatalog.ai"
+Repository = "https://github.com/a2uicatalog/a2ui"
+Documentation = "https://a2uicatalog.ai/developers/"
+Issues = "https://github.com/a2uicatalog/a2ui/issues"
+
+[project.optional-dependencies]
+test = ["pytest>=7"]
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+a2uicatalog = ["py.typed"]
+
+[tool.pytest.ini_options]
+markers = ["live: calls https://a2uicatalog.ai (set A2UI_LIVE=1)"]
+testpaths = ["tests"]

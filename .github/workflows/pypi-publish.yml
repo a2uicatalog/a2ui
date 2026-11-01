@@ -1,0 +1,53 @@
+name: Python SDK
+# Tests sdk/python on every push or PR that touches it. A tag py-v<version> builds the package and publishes
+# it to PyPI by trusted publishing (OIDC): no token is stored anywhere. One-time owner setup is in
+# sdk/python/PUBLISHING.md.
+on:
+  push:
+    branches: [main]
+    paths: ['sdk/python/**', '.github/workflows/pypi-publish.yml']
+    tags: ['py-v*']
+  pull_request:
+    paths: ['sdk/python/**', '.github/workflows/pypi-publish.yml']
+  workflow_dispatch: {}
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.10', '3.12']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '${{ matrix.python-version }}' }
+      - run: python -m pip install ./sdk/python pytest tomli
+      - run: python -m pytest sdk/python/tests -q
+  build:
+    if: startsWith(github.ref, 'refs/tags/py-v')
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - name: The tag must match the package version
+        run: |
+          v=$(python -c "import tomllib;print(tomllib.load(open('sdk/python/pyproject.toml','rb'))['project']['version'])")
+          [ "py-v$v" = "${GITHUB_REF_NAME}" ] || { echo "tag ${GITHUB_REF_NAME} does not match version $v"; exit 1; }
+      - run: python -m pip install build twine
+      - run: python -m build sdk/python
+      - run: python -m twine check sdk/python/dist/*
+      - uses: actions/upload-artifact@v4
+        with: { name: dist, path: sdk/python/dist/ }
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with: { name: dist, path: dist/ }
+      - uses: pypa/gh-action-pypi-publish@release/v1
