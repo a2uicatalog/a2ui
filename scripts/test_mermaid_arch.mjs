@@ -882,3 +882,31 @@ test('accessibility: every output (plain, numbered, film) carries the full text 
   assert.match(r.payload.blocks[1].rows[0][1], /long edge label of some words/);
   assert.deepEqual(r.payload.blocks[2].rows[0], ['1', 'a rather long payload text, in full', 'a to b']);
 });
+
+// ------------------------------------------------------------------ review round 2: S1 (D2 must not misdraw silently)
+test('D2: dotted keys ending in a reserved word set a property of the object and never create stray shapes', () => {
+  const p = parseD2('g: Old { z }\ng.label: Group\nb\nb.shape: person\nb.style.fill: red\nc.style.stroke-dash: 3\na -> b\nb -> c\nc -> a').graph;
+  assert.deepEqual(p.nodes.map((n) => n.id).sort(), ['a', 'b', 'c', 'z']);
+  assert.equal(p.groups[0].label, 'Group');
+  assert.equal(p.nodes.find((n) => n.id === 'b').kind, 'user');
+  const q = parseD2('x\nx.label: Renamed\ny\nx -> y').graph;
+  assert.deepEqual(q.nodes.map((n) => [n.id, n.label]), [['x', 'Renamed'], ['y', 'y']]);
+});
+test('D2: unsupported or ambiguous syntax is an error that names the line', () => {
+  assert.match(d2err('a\nb\na->b'), /line 3: .*put spaces around the arrow/);
+  assert.match(d2err('a <->b: x'), /line 1|put spaces/);
+  assert.match(d2err('a\n"""\nnotes\n"""\nb'), /line 2: block comments/);
+  assert.match(d2err('a\nb\n*.style.fill: red'), /line 3: .*globs/);
+  assert.match(d2err('a -> b\n(a -> b)[0].style.stroke: red'), /line 2: references to a connection/);
+  assert.match(d2err('a\n...@other'), /line 2: .*imports/);
+  assert.match(d2err('a: @file'), /line 1: imports/);
+  assert.match(d2err('t: { shape: sql_table }'), /line 1: shape: sql_table is not supported/);
+  assert.match(d2err('t.shape: class'), /line 1: shape: class is not supported/);
+  assert.equal(d2err('my-node -> other-node: calls'), null, 'hyphenated names still fine');
+});
+test('D2: HTML tags are stripped from labels like Mermaid, <br> splits label and sub', () => {
+  const p = parseD2('a: "<b>Bold</b> name<br/>second <i>line</i>"\nb\na -> b: "<script>x</script>sends <u>data</u>"').graph;
+  assert.equal(p.nodes[0].label, 'Bold name');
+  assert.equal(p.nodes[0].sub, 'second line');
+  assert.equal(p.edges[0].label, 'xsends data');
+});

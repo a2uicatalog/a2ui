@@ -257,8 +257,10 @@ checks it.
 | `direction: right/left/down/up` | LR / RL / TB / BT |
 | `# title:`, `# msg:`, `# numbered:`, `# step:`, `# pace:`, `# duration:` | the same directives as `%%` in Mermaid |
 
-Operators must have spaces around them. Not supported: markdown/code blocks, `classes`, `vars`, layers,
-scenarios, sql_table/class shapes, edges to a whole container, icons, globs.
+Operators must have spaces around them (`a->b` is an error). `g.label: X`, `b.shape: person` and `a.style.fill: red` set properties of the
+object. Not supported, each an error naming the line: markdown/code blocks, `"""` block comments, `classes`, `vars`, layers,
+scenarios, sql_table/class shapes, edges to a whole container, `(a -> b)[0]` references, imports (`...@file`, `a: @file`), icons, globs.
+HTML tags in labels are dropped, as in Mermaid.
 
 ## Honest limitations
 

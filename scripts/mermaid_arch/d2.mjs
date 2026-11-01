@@ -75,7 +75,9 @@ export function parseD2(text, opts = {}) {
     }
   }
   // a reference: dotted path of segments, quoted or bare
+  let refRaw = '';
   function readRef() {
+    const start0 = i;
     const segs = []; let cur = '', quoted = false;
     for (;;) {
       const c = peek();
@@ -91,7 +93,17 @@ export function parseD2(text, opts = {}) {
       cur += adv();
     }
     segs.push(cur);
+    refRaw = src.slice(start0, i);
     return segs.filter((s) => s !== '' || quoted);
+  }
+  const skipLine = () => { while (peek() !== undefined && peek() !== '\n') adv(); };
+  // D2 syntax this subset does not read, or reads differently, must be an error that names the line, never a wrong picture
+  function badRef(ln) {
+    const raw = refRaw, bare = !raw.includes('"');
+    if (bare && /->|<-|--/.test(raw)) { fail(`"${raw}": put spaces around the arrow, for example  a -> b  (without spaces D2 would read it as one shape name)`, ln); return true; }
+    if (bare && raw.includes('*')) { fail(`"${raw}": globs (*) are not supported in this D2 subset; name the shapes one by one`, ln); return true; }
+    if (raw.startsWith('...') || raw.startsWith('@')) { fail(`"${raw}": imports (...@file, @file) are not supported in this D2 subset; paste the content in`, ln); return true; }
+    return false;
   }
   function readValue() {       // after ':'
     skipSpace(false);
@@ -102,6 +114,7 @@ export function parseD2(text, opts = {}) {
       if (peek() !== '"') fail('a quote is never closed; add a closing "'); else adv();
       return t;
     }
+    if (peek() === '@') { fail('imports (a: @file) are not supported in this D2 subset; paste the content in'); while (peek() !== undefined && peek() !== '\n') adv(); return ''; }
     if (peek() === '|') { fail('markdown/code blocks ("|md ... |") are not supported; use a plain label'); while (peek() !== undefined && peek() !== '\n') adv(); return ''; }
     while (peek() !== undefined && !/[\n;{}]/.test(peek()) && !(peek() === '#' && /\s/.test(src[i - 1] || ' '))) t += adv();
     return t.trim();
@@ -123,8 +136,11 @@ export function parseD2(text, opts = {}) {
     }
     return n;
   }
+  // like Mermaid: <br> splits a node label into label and sub-label, any other tag is dropped (labels are plain text)
+  const stripTags = (t) => String(t).replace(/<[^>]+>/g, '').replace(/[ \t]+/g, ' ').trim();
+  const edgeText = (t) => stripTags(String(t).replace(/<br\s*\/?>/gi, ' ')) || undefined;
   function setLabel(n, v) {
-    const parts = v.split('\n').map((x) => x.trim()).filter(Boolean);
+    const parts = v.replace(/<br\s*\/?>/gi, '\n').split('\n').map(stripTags).map((x) => x.trim()).filter(Boolean);
     n.label = parts[0] || n.leaf; n.sub = parts.length > 1 ? parts.slice(1).join(' ') : undefined;
   }
   function parseBlock(scope, top, depth = 0) {
@@ -135,7 +151,10 @@ export function parseD2(text, opts = {}) {
       if (c === undefined) { if (!top) fail('a "{" is never closed; add a closing "}"'); return; }
       if (c === '}') { if (top) { fail('"}" without a matching "{"'); adv(); continue; } adv(); return; }
       const ln = line;
+      if (src.startsWith('"""', i)) { const e = src.indexOf('"""', i + 3); fail('block comments (""" ... """) are not supported in this D2 subset; use # line comments', ln); if (e < 0) { i = src.length; } else { while (i < e + 3) adv(); } continue; }
+      if (peek() === '(') { fail('references to a connection, such as  (a -> b)[0].style...,  are not supported in this D2 subset', ln); skipLine(); continue; }
       const segs = readRef();
+      if (badRef(ln)) { skipLine(); continue; }
       if (!segs.length) { fail(`cannot read "${src.slice(i, i + 20).split('\n')[0]}"; expected a shape name or a connection`, ln); while (peek() !== undefined && peek() !== '\n') adv(); continue; }
       const op = readOp();
       if (op) { connection(scope, segs, op, ln); continue; }
@@ -146,6 +165,14 @@ export function parseD2(text, opts = {}) {
       const first = segs[0].toLowerCase();
       if (UNSUPPORTED.has(first)) { fail(`"${segs[0]}" is not supported in this D2 subset`, ln); skipBlock(); continue; }
       if (scope.stylePrefix) { attribute(scope, segs, val, ln); continue; }
+      const cut = scope.type === 'edge' ? -1 : segs.findIndex((x, k) => k >= 1 && RESERVED.has(x.toLowerCase()));
+      if (cut >= 1) {   // `g.label: X`, `b.shape: person`, `a.style.fill: red`: a property of the object `g` / `b` / `a`, not a new shape
+        const opath = keyOf(scope, segs.slice(0, cut)), owner = ensureNode(opath, ln), prop = segs.slice(cut);
+        const sc = { type: 'node', path: opath.split('.'), owner };
+        attribute(sc, prop, val, ln);
+        if (peek() === '{') { adv(); parseBlock({ ...sc, stylePrefix: prop[0].toLowerCase() === 'style' }, false, depth + 1); }
+        continue;
+      }
       if (RESERVED.has(first) && (scope.type !== 'root' || ['direction', 'title'].includes(first) || segs.length > 1 || scope.owner)) {
         attribute(scope, segs, val, ln);
         if (peek() === '{') { adv(); parseBlock({ ...scope, stylePrefix: first === 'style' }, false, depth + 1); }
@@ -171,9 +198,12 @@ export function parseD2(text, opts = {}) {
       return;
     }
     if (key.startsWith('style.')) return;
-    if (isEdge) { if (key === 'label' && val !== undefined) owner.label = val; return; }
+    if (isEdge) { if (key === 'label' && val !== undefined) owner.label = edgeText(val); return; }
     if (key === 'label') { if (val !== undefined) setLabel(owner, val); }
-    else if (key === 'shape') { if (val) owner.shape = val.toLowerCase(); }
+    else if (key === 'shape') {
+      if (val && ['sql_table', 'class'].includes(val.trim().toLowerCase())) fail(`shape: ${val.trim()} is not supported in this D2 subset (tables and classes have rows); draw it as a plain shape with a label`, ln);
+      else if (val) owner.shape = val.toLowerCase();
+    }
     else if (key === 'class' || key === 'kind') { if (val) owner.hints.push(val.trim().toLowerCase()); }
   }
   function connection(scope, firstSegs, op0, ln) {
@@ -181,6 +211,7 @@ export function parseD2(text, opts = {}) {
     for (;;) {
       skipSpace(false);
       const segs = readRef();
+      if (badRef(ln)) { skipLine(); return; }
       if (!segs.length) { fail('a connection needs a shape on both sides of the arrow', ln); return; }
       refs.push(segs);
       const op = readOp();
@@ -189,7 +220,7 @@ export function parseD2(text, opts = {}) {
     }
     skipSpace(false);
     let label;
-    if (peek() === ':') { adv(); label = readValue(); }
+    if (peek() === ':') { adv(); label = edgeText(readValue()); }
     skipSpace(false);
     const made = [];
     for (let k = 0; k < ops.length; k++) {
