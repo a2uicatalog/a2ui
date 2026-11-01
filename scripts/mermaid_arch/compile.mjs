@@ -141,9 +141,13 @@ export function compileGraph(graph, opts = {}) {
     const { at } = worstChipFit(sched.schedule, D);
     if (at >= 0) {
       // the smallest whole number of seconds at which every step's chips fit (the edge-draw time moves with the duration, so test, do not extrapolate)
+      const textMin = buildSchedule(info.map((st) => ({ ...st, chips: 0, rides: [] })), { pace }).minimumSeconds;   // minimum without any chip
       let hint = Math.ceil(duration);
       const bad = (h) => { try { return worstChipFit(buildSchedule(info, { pace, duration: h }).schedule, h).at >= 0; } catch { return true; } };
       while (hint < 600 && bad(hint)) hint++;
+      // the film as a whole is too short (the text's own minimum), not one step's chips: the chips add nothing beyond it
+      const totalCause = duration < textMin - 1e-9 && hint === Math.ceil(textMin);
+      if (totalCause) throw new ArchError([`duration ${duration} s is shorter than the film's minimum (${textMin.toFixed(1)} s at the fast pace). Raise the duration to at least ${hint} s, or remove steps or messages.`]);
       throw new ArchError([`duration ${duration} s is too short for the ${info[at].chips} message chips on step ${sched.schedule[at].step}: each chip needs at least its minimum ride (1.35 s or more, longer for long text) inside its step. Raise the duration to at least ${hint} s, or remove messages.`]);
     }
   }
@@ -357,7 +361,7 @@ export function validateBlock(b) {
     }
     if (e.label_at !== undefined && !(e.label_at.x >= 0 && e.label_at.x <= 100 && e.label_at.y >= 0 && e.label_at.y <= 100)) errs.push(`edge ${i} label_at outside the frame`);
     if (e.label && e.label.length > 48) errs.push(`edge ${i} label too long`);
-    if (e.label2 !== undefined && (!e.label || e.label2.length > 48)) errs.push(`edge ${i} label2 too long or without a label`);
+    if (e.label2 !== undefined && (!e.label || Array.from(e.label2).length > 48)) errs.push(`edge ${i} label2 too long or without a label`);
     if (e.at < 0 || e.at > 1 || e.dur < 0.01 || e.dur > 1 || e.at + e.dur > 1.0001) errs.push(`edge ${i} timing outside 0-1`);
   });
   msgs.forEach((m, i) => {

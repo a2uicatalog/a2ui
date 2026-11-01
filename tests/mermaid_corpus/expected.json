@@ -175,15 +175,21 @@
   }
  },
  "20_long_labels.mmd": {
-  "outcome": "ok",
+  "outcome": "ok_with_warnings",
   "counts": {
    "nodes": 2,
    "edges": 1,
    "groups": 0
   },
+  "warning": "cut",
   "labels": [
-   "A very long node label that goes well beyond the limit",
    "Short"
+  ],
+  "known_gap": [
+   {
+    "kind": "readability",
+    "reason": "an 84-character node label does not fit two lines of 40, so it is cut with a warning (the full text stays in the Steps table); the two-line node plus a two-line edge label make the diagram wide, so the text is about 9 px on a phone column"
+   }
   ]
  },
  "20b_labels_beyond_two_lines.mmd": {

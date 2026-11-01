@@ -1352,3 +1352,55 @@ test('backward compatibility: a graph with no long labels gives the same block a
   assert.ok(!('label2' in r.block.edges[0]));
   assert.ok(!('sub' in r.block.nodes[0]));
 });
+
+// ---- review fixes: nested tag smuggling, titles, decomposed Unicode ids
+const SMUG = ['<<script>script>', '#lt;#lt;script#gt;script#gt;', '<scr<b>ipt>', '#lt;scr#lt;b#gt;ipt#gt;'];
+test('tag smuggling: nested or decoded tags never survive in label, sub, edge label, group title or message text', () => {
+  for (const sm of SMUG) {
+    const r = parseMermaid(`flowchart LR\nsubgraph G1 ["${sm}Grp"]\na["${sm}Lab<br/>${sm}Sub"]\nend\na -->|"${sm}Edge"| b\n%% msg: a->b "${sm}Msg"`);
+    const j = JSON.stringify(r.graph);
+    assert.doesNotMatch(j, /<[\/A-Za-z!]/, sm);
+    assert.doesNotMatch(j, /<script|<scr|<\/?b>/i, sm);
+    assert.ok(r.warnings.includes('HTML tags were removed from a label.'));
+  }
+  const r = parseMermaid('flowchart LR\na["<<script>script>Lab<br/><<script>script>Sub"] -->|<<script>script>Edge| b');
+  assert.equal(r.graph.nodes[0].label, 'Lab'); assert.equal(r.graph.nodes[0].sub, 'Sub'); assert.equal(r.graph.edges[0].label, 'Edge');
+  const g2 = parseMermaid('flowchart LR\nsubgraph G1 ["<<script>script>Grp"]\na\nend\n%% msg: a->b "<<script>script>Msg"\na-->b').graph;
+  assert.equal(g2.groups[0].label, 'Grp'); assert.equal(g2.messages[0].text, 'Msg');
+  assert.equal(g('a["Cost < 5 > 2"]\na-->b').nodes[0].label, 'Cost < 5 > 2');
+});
+test('tag smuggling in D2: nested tags are gone from labels, edge labels, containers and message text', () => {
+  const r = parseD2('# msg: a->b "<<script>script>Msg"\ng: "<<script>script>Grp" { a: "<<script>script>Lab" }\nb\na -> b: "<<script>script>Edge"');
+  const j = JSON.stringify(r.graph);
+  assert.doesNotMatch(j, /<[\/A-Za-z!]/);
+  assert.equal(r.graph.messages[0].text, 'Msg'); assert.equal(r.graph.edges[0].label, 'Edge');
+});
+test('titles are stripped of tags (nested too) with one warning, Mermaid and D2', () => {
+  for (const src of ['---\ntitle: <img src=x onerror=alert(1)>Hi\n---\nflowchart LR\na-->b', 'flowchart LR\n%% title: <<script>script>Hi\na-->b', 'flowchart LR\n%% title: <a href="javascript:x">Hi</a>\na-->b']) {
+    const r = parseMermaid(src);
+    assert.doesNotMatch(r.graph.title, /</); assert.match(r.graph.title, /Hi/);
+    assert.equal(r.warnings.filter((w) => w === 'HTML tags were removed from the title.').length, 1);
+    assert.doesNotMatch(JSON.stringify(mermaidToArch(src, { film: true }).block), /<(script|img|a )/i);
+  }
+  const d = parseD2('# title: <<script>script>Hi\na -> b');
+  assert.equal(d.graph.title, 'Hi'); assert.equal(d.warnings.filter((w) => /from the title/.test(w)).length, 1);
+  assert.equal(parseMermaid('flowchart LR\n%% title: Cost < 5\na-->b').graph.title, 'Cost < 5');
+});
+test('decomposed and composed accents are the same node; Devanagari and Thai ids parse', () => {
+  const dec = parseMermaid('flowchart LR\ncafé --> x\ncafé --> y').graph;
+  assert.equal(dec.nodes.length, 3);
+  for (const id of ['नमस्ते', 'สวัสดี', 'क्षेत्र']) {
+    const r = parseMermaid(`flowchart LR\n${id} --> b\n${id}2 --> b`).graph;
+    assert.equal(r.nodes.length, 3, id);
+    assert.equal(new Set(nodeIds(r)).size, 3);
+    nodeIds(r).forEach((x) => assert.match(x, /^[a-z][a-z0-9_-]{0,31}$/));
+  }
+  const d2 = parseD2('café -> x\ncafé -> y').graph;
+  assert.equal(d2.nodes.length, 3);
+});
+test('duration below the film minimum: the message says to raise the total, not blame one step', () => {
+  const body = 'flowchart LR\na -->|one| b\nb -->|two| c\nc -->|three| d\nd -->|four| e\n%% msg: d->e "x"';
+  let m;
+  assert.throws(() => mermaidToArch('%% duration: 6\n' + body, { film: true }), (e) => { m = /minimum.*at least (\d+) s/.exec(e.errors.join()); return e instanceof ArchError && !!m && !/message chips on step/.test(e.errors.join()); });
+  assert.doesNotThrow(() => mermaidToArch(`%% duration: ${m[1]}\n` + body, { film: true }));   // the advice is true
+});

@@ -5,7 +5,7 @@
 // comment directives `# title: ...`, `# msg: a->b "text"`, `# numbered: on`, `# pace: slow`, `# duration: 40`,
 // `# step: a->b 2`. Operators must be surrounded by spaces. See docs/mermaid_arch.md.
 import { ArchError, resolveKind, didYouMean, PACES, LIMITS } from './graph.mjs';
-import { makeIdMapper, MAX_INPUT_CHARS, MAX_LINE_CHARS } from './mermaid.mjs';
+import { stripTagsDeep, makeIdMapper, MAX_INPUT_CHARS, MAX_LINE_CHARS } from './mermaid.mjs';
 
 const MAX_DEPTH = 8, MAX_SEGMENTS = 8, MAX_ERRORS = 20;
 
@@ -22,7 +22,7 @@ export function parseD2(text, opts = {}) {
   const errors = [], warnings = [];
   if (typeof text !== 'string') throw new ArchError(['input must be D2 text (a string)']);
   if (text.length > MAX_INPUT_CHARS) throw new ArchError([`input is ${text.length} characters; the most this converter reads is ${MAX_INPUT_CHARS}. A diagram this atom can show is far smaller.`]);
-  const src = text.replace(/^﻿/, '').replace(/\r\n?/g, '\n');
+  const src = text.replace(/^﻿/, '').normalize('NFC').replace(/\r\n?/g, '\n');
   const lineLens = src.split('\n');
   const longLine = lineLens.findIndex((l) => l.length > MAX_LINE_CHARS);
   if (longLine >= 0) throw new ArchError([`line ${longLine + 1}: ${lineLens[longLine].length} characters; the most one line may hold is ${MAX_LINE_CHARS}. Split it over several lines.`]);
@@ -30,7 +30,7 @@ export function parseD2(text, opts = {}) {
   const nodes = new Map();           // path -> {path, leaf, label, sub, shape, hints, parent, order, line, children:0}
   const edges = [];                  // {from(path), to(path), label, style, both, line}
   const msgs = [], stepDirs = [];
-  let title, numbered, pace, duration, relationColumn, relationName, direction = 'LR', openWarned = false;
+  let titleTagged = false, title, numbered, pace, duration, relationColumn, relationName, direction = 'LR', openWarned = false;
   const relDirs = [];
   // every error goes through here; after MAX_ERRORS we stop reading (a hostile paste must not cost seconds)
   const addErr = (m) => { errors.push(m); if (errors.length >= MAX_ERRORS) throw new ArchError(errors.slice(0, MAX_ERRORS), warnings); };
@@ -55,10 +55,10 @@ export function parseD2(text, opts = {}) {
     const m = /^(title|msg|numbered|pace|duration|step|relation-column|relation-name|rel)\s*:\s*(.*)$/i.exec(body);
     if (!m) return;
     const k = m[1].toLowerCase(), v = m[2].trim();
-    if (k === 'title') { if (v) title = v; }
+    if (k === 'title') { if (v) { const tt = stripTagsDeep(v, () => { titleTagged = true; }, /<[^<>]*>/g).replace(/\s+/g, ' ').trim(); if (tt) title = tt; } }
     else if (k === 'msg') {
       const mm = /^(\S+?)\s*->\s*(\S+?)\s+"([^"]*)"(?:\s+(back))?\s*$/.exec(v);
-      if (!mm) fail('bad "# msg:" directive; write it as  # msg: fromId->toId "payload text"', ln); else msgs.push({ line: ln, from: mm[1], to: mm[2], text: mm[3], back: !!mm[4] });
+      if (!mm) fail('bad "# msg:" directive; write it as  # msg: fromId->toId "payload text"', ln); else msgs.push({ line: ln, from: mm[1], to: mm[2], text: stripTagsDeep(mm[3], null, /<[^<>]*>/g).replace(/\s+/g, ' ').trim(), back: !!mm[4] });
     } else if (k === 'numbered') {
       const b = v.toLowerCase(); if (['on', 'true', 'yes'].includes(b)) numbered = true; else if (['off', 'false', 'no'].includes(b)) numbered = false; else fail('"# numbered:" must be on or off', ln);
     } else if (k === 'pace') { if (Object.hasOwn(PACES, v.toLowerCase())) pace = v.toLowerCase(); else fail(`"# pace:" must be one of ${Object.keys(PACES).join(', ')}`, ln); }
@@ -139,7 +139,7 @@ export function parseD2(text, opts = {}) {
     return n;
   }
   // like Mermaid: <br> splits a node label into label and sub-label, any other tag is dropped (labels are plain text)
-  const stripTags = (t) => String(t).replace(/<[^>]+>/g, '').replace(/[ \t]+/g, ' ').trim();
+  const stripTags = (t) => stripTagsDeep(t, null, /<[^<>]*>/g).replace(/[ \t]+/g, ' ').trim();
   const edgeText = (t) => stripTags(String(t).replace(/<br\s*\/?>/gi, ' ')) || undefined;
   function setLabel(n, v) {
     const parts = v.replace(/<br\s*\/?>/gi, '\n').split('\n').map(stripTags).map((x) => x.trim()).filter(Boolean);
@@ -316,6 +316,7 @@ export function parseD2(text, opts = {}) {
   if (numbered !== undefined) graph.numbered = numbered;
   if (pace) graph.pace = pace;
   if (duration !== undefined) graph.duration = duration;
+  if (titleTagged) warnings.push('HTML tags were removed from the title.');
   const ttl = opts.title || title;
   if (ttl) graph.title = ttl;
   return { graph, warnings };

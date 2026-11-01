@@ -54,7 +54,7 @@ const AT_SHAPES = {
   diamond: 'diamond', decision: 'diamond', question: 'diamond',
 };
 
-const ID_CHAR = /^[\p{L}\p{N}_]$/u;   // Mermaid accepts any letter or digit in an id, not just ASCII
+const ID_CHAR = /^[\p{L}\p{M}\p{N}_]$/u;   // Mermaid accepts any letter or digit in an id, not just ASCII
 const SLASH_NAME = { '//': 'parallelogram', '\\\\': 'parallelogram (alt)', '/\\': 'trapezoid', '\\/': 'trapezoid (alt)' };
 
 // **bold**, __bold__, *italic*, _italic_ inside a Mermaid markdown string (the text between backquotes)
@@ -85,14 +85,23 @@ function decodeEntities(s) {
 function withLine(o, line) { Object.defineProperty(o, 'line', { value: line, enumerable: false }); return o; }
 
 // Set when stripping tags changed a label; parseMermaid reads it once to warn (parsing is synchronous).
-let tagsStripped = false;
+let tagsStripped = false, titleStripped = false;
 const TAG = /<\/?[A-Za-z!][^>]*>/g;
-function stripTags(t) {
-  return t.replace(TAG, () => { tagsStripped = true; return ''; });
+// Repeats until nothing changes (capped), so "<<script>script>" cannot leave a tag behind once the inner one is gone.
+export function stripTagsDeep(t, onChange, re = TAG) {
+  let cur = String(t);
+  for (let k = 0; k < 8; k++) {
+    const next = cur.replace(re, () => { if (onChange) onChange(); return ''; });
+    if (next === cur) break;
+    cur = next;
+  }
+  return cur;
 }
+function stripTags(t) { return stripTagsDeep(t, () => { tagsStripped = true; }); }
 // one line of label text: drop tags, decode entities, drop any tag the decoding made, tidy spaces
-function tidy(p) {
-  return stripTags(decodeEntities(stripTags(p))).replace(/\s+/g, ' ').trim();
+function tidy(p, isTitle = false) {
+  const st = isTitle ? (t) => stripTagsDeep(t, () => { titleStripped = true; }) : stripTags;
+  return st(decodeEntities(st(p))).replace(/\s+/g, ' ').trim();
 }
 
 // "Agent runtime<br/>on ADK" -> {label:'Agent runtime', sub:'on ADK'}
@@ -152,14 +161,14 @@ export function makeIdMapper() {
 
 export const MAX_INPUT_CHARS = 20000, MAX_LINE_CHARS = 500;   // keeps backtracking in matchLink and the & cross product bounded
 export function parseMermaid(text, opts = {}) {
-  tagsStripped = false;
+  tagsStripped = false; titleStripped = false;
   let styleLine = 0, clickLine = 0;
   const errors = [], warnings = [];
   const fail = (line, msg) => errors.push(`line ${line}: ${msg}`);
   const warn = (line, msg) => warnings.push(`line ${line}: ${msg}`);
   if (typeof text !== 'string') throw new ArchError(['input must be Mermaid text (a string)']);
   if (text.length > MAX_INPUT_CHARS) throw new ArchError([`input is ${text.length} characters; the most this converter reads is ${MAX_INPUT_CHARS}. A diagram this atom can show is far smaller.`]);
-  const lines = text.replace(/^﻿/, '').replace(/\r\n?/g, '\n').split('\n');
+  const lines = text.replace(/^﻿/, '').normalize('NFC').replace(/\r\n?/g, '\n').split('\n');
   const longLine = lines.findIndex((l) => l.length > MAX_LINE_CHARS);
   if (longLine >= 0) throw new ArchError([`line ${longLine + 1}: ${lines[longLine].length} characters; the most one line may hold is ${MAX_LINE_CHARS}. Split it over several lines.`]);
 
@@ -337,7 +346,7 @@ export function parseMermaid(text, opts = {}) {
     else {
       for (let k = firstReal + 1; k < e; k++) {
         const m = /^\s*title\s*:\s*(.+?)\s*$/.exec(lines[k]);
-        if (m) title = stripQuotes(m[1]);
+        if (m) title = tidy(stripQuotes(m[1]), true);
       }
       li = e + 1;
     }
@@ -349,7 +358,7 @@ export function parseMermaid(text, opts = {}) {
     if (line.startsWith('%%')) {
       const d = /^%%\s*(title|msg|numbered|pace|duration|step|relation-column|relation-name|rel)\s*:\s*(.*)$/i.exec(line);
       const key = d && d[1].toLowerCase();
-      if (key === 'title') { if (d[2].trim()) title = d[2].trim(); }
+      if (key === 'title') { if (d[2].trim()) title = tidy(d[2].trim(), true); }
       else if (key === 'msg') {
         const m = /^(\S+?)\s*->\s*(\S+?)\s+"([^"]*)"(?:\s+(back))?\s*$/.exec(d[2].trim());
         if (!m) fail(L(), `bad "%% msg:" directive; write it as  %% msg: fromId->toId "payload text"  (add the word back at the end for a reply)`);
@@ -447,6 +456,7 @@ export function parseMermaid(text, opts = {}) {
   if (styleLine) warnings.push('Colours and styles (classDef, style, linkStyle) are not drawn; the diagram uses its own colours by node kind.' + (clickLine ? ' click/link statements are ignored too.' : ''));
   else if (clickLine) warn(clickLine, 'click/link statements are ignored.');
   if (tagsStripped) warnings.push('HTML tags were removed from a label.');
+  if (titleStripped) warnings.push('HTML tags were removed from the title.');
 
   // class statements -> hints
   for (const cs of classStmts) {
