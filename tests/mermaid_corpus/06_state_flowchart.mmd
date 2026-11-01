@@ -1,0 +1,8 @@
+flowchart LR
+    Idle --> Connecting
+    Connecting -->|ok| Ready
+    Connecting -->|timeout| Retry
+    Retry --> Connecting
+    Ready -->|close| Idle
+    Ready -->|error| Failed
+    Failed --> Idle

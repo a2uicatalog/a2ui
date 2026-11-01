@@ -1,0 +1,9 @@
+flowchart LR
+    classDef good fill:#d4f4dd,stroke:#2e7d32,color:#111
+    classDef bad fill:#fde0e0,stroke:#c62828
+    A[Start]:::good --> B[Check]
+    B --> C[Fail]:::bad
+    class B good
+    style A fill:#fff,stroke:#333,stroke-width:2px
+    linkStyle 0 stroke:#f00,stroke-width:3px
+    click A "https://example.com" "Open docs"

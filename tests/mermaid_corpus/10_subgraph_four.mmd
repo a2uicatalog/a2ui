@@ -1,0 +1,14 @@
+flowchart LR
+    subgraph s1[Edge]
+        a1[CDN]
+    end
+    subgraph s2[Web]
+        a2[Frontend]
+    end
+    subgraph s3[Core]
+        a3[API]
+    end
+    subgraph s4[Data]
+        a4[(Store)]
+    end
+    a1 --> a2 --> a3 --> a4

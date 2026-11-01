@@ -1,0 +1,9 @@
+flowchart TD
+    U([User]) -->|opens app| App[Web app]
+    App -->|redirect| IdP[Identity provider]
+    IdP -->|login form| U
+    U -->|credentials| IdP
+    IdP -->|auth code| App
+    App -->|exchange code| Tok[Token endpoint]
+    Tok -->|access token| App
+    App -->|call API| API[Resource API]

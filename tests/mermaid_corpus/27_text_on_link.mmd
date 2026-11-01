@@ -1,0 +1,6 @@
+flowchart LR
+    a -- sends --> b
+    b -. polls .-> c
+    c == commits ==> d
+    d -->|plain bars| e
+    e -- stores --- f

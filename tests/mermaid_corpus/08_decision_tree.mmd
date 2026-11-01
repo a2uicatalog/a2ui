@@ -1,0 +1,7 @@
+flowchart TD
+    Start([Start]) --> Q1{Is the user signed in?}
+    Q1 -->|Yes| Q2{Has a paid plan?}
+    Q1 -->|No| Login[Show login]
+    Q2 -->|Yes| Dash[Open dashboard]
+    Q2 -->|No| Up[Show upgrade page]
+    Login --> Q1

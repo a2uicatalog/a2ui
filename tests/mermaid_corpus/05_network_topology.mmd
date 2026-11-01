@@ -1,0 +1,8 @@
+graph TB
+    Net((Internet)) --> FW[Firewall]
+    FW --> LB[Load balancer]
+    LB --> W1[Web 1]
+    LB --> W2[Web 2]
+    W1 --> DB[(Primary DB)]
+    W2 --> DB
+    DB -.->|replicates| DB2[(Replica DB)]

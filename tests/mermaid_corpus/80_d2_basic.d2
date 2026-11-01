@@ -1,0 +1,7 @@
+direction: right
+user: User { shape: person }
+api: API
+db: Database { shape: cylinder }
+user -> api: request
+api -> db: query
+db -> api: rows

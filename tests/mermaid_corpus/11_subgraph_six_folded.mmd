@@ -1,0 +1,20 @@
+flowchart LR
+    subgraph g1[One]
+        n1[A1] --> n2[A2]
+    end
+    subgraph g2[Two]
+        n3[B1]
+    end
+    subgraph g3[Three]
+        n4[C1]
+    end
+    subgraph g4[Four]
+        n5[D1]
+    end
+    subgraph g5[Five]
+        n6[E1]
+    end
+    subgraph g6[Six]
+        n7[F1]
+    end
+    n2 --> n3 --> n4 --> n5 --> n6 --> n7

@@ -1,0 +1,7 @@
+flowchart LR
+    subgraph Data layer
+        db[(Store)]
+        cache[(Cache)]
+    end
+    app[App] --> db
+    app --> cache

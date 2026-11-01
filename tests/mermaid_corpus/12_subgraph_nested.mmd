@@ -1,0 +1,9 @@
+flowchart TB
+    subgraph cloud[Cloud]
+        subgraph vpc[VPC]
+            app[App server]
+            db[(Database)]
+        end
+        lb[Load balancer]
+    end
+    user([User]) --> lb --> app --> db

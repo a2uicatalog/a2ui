@@ -1,0 +1,9 @@
+flowchart LR
+    GW[API gateway] --> Orders[Order service]
+    GW --> Users[User service]
+    Orders --> Q{{Order queue}}
+    Q --> Pay[Payment worker]
+    Q --> Ship[Shipping worker]
+    Orders --> ODB[(Orders DB)]
+    Users --> UDB[(Users DB)]
+    Pay -.-> Bank[Bank API]

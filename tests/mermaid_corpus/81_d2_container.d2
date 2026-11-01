@@ -1,0 +1,7 @@
+backend: Backend {
+  api: API
+  db: Database { shape: cylinder }
+  api -> db
+}
+client: Client
+client -> backend.api: call

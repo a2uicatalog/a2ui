@@ -1,0 +1,8 @@
+flowchart LR
+    Src1[(CRM)] --> Ing[Ingest]
+    Src2[(Web logs)] --> Ing
+    Ing --> Raw[(Raw zone)]
+    Raw --> Clean[Clean and dedupe]
+    Clean --> Model[Model]
+    Model --> WH[(Warehouse)]
+    WH --> BI[Dashboards]

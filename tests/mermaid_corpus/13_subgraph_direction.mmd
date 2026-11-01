@@ -1,0 +1,7 @@
+flowchart LR
+    subgraph pipe[Pipeline]
+        direction TB
+        p1[Fetch] --> p2[Parse] --> p3[Store]
+    end
+    In([Input]) --> p1
+    p3 --> Out([Output])

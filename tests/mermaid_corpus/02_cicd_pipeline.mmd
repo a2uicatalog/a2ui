@@ -1,0 +1,9 @@
+graph LR
+    Dev[Developer] --> Git[(Git repo)]
+    Git --> CI[CI runner]
+    CI --> Build[Build]
+    Build --> Test[Test]
+    Test --> Scan[Security scan]
+    Scan --> Reg[(Image registry)]
+    Reg --> Deploy[Deploy]
+    Deploy --> Prod((Production))

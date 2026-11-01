@@ -1,0 +1,713 @@
+{
+ "01_oauth_login.mmd": {
+  "outcome": "ok",
+  "counts": {
+   "nodes": 5,
+   "edges": 8,
+   "groups": 0
+  }
+ },
+ "02_cicd_pipeline.mmd": {
+  "outcome": "ok",
+  "counts": {
+   "nodes": 9,
+   "edges": 8,
+   "groups": 0
+  }
+ },
+ "03_microservices_queue.mmd": {
+  "outcome": "ok",
+  "counts": {
+   "nodes": 9,
+   "edges": 8,
+   "groups": 0
+  },
+  "known_gap": [
+   {
+    "kind": "readability",
+    "reason": "text is drawn at about 8 px on a 343 px phone column; a 9-node diagram this common should fit at 10 px or more (smaller size or wrap)"
+   }
+  ]
+ },
+ "04_data_pipeline.mmd": {
+  "outcome": "ok",
+  "counts": {
+   "nodes": 8,
+   "edges": 7,
+   "groups": 0
+  }
+ },
+ "05_network_topology.mmd": {
+  "outcome": "ok",
+  "counts": {
+   "nodes": 7,
+   "edges": 7,
+   "groups": 0
+  }
+ },
+ "06_state_flowchart.mmd": {
+  "outcome": "ok",
+  "counts": {
+   "nodes": 5,
+   "edges": 7,
+   "groups": 0
+  }
+ },
+ "07_org_chart.mmd": {
+  "outcome": "ok",
+  "counts": {
+   "nodes": 7,
+   "edges": 6,
+   "groups": 0
+  }
+ },
+ "08_decision_tree.mmd": {
+  "outcome": "ok",
+  "counts": {
+   "nodes": 6,
+   "edges": 6,
+   "groups": 0
+  }
+ },
+ "09_subgraph_single.mmd": {
+  "outcome": "ok",
+  "counts": {
+   "nodes": 3,
+   "edges": 2,
+   "groups": 1
+  }
+ },
+ "10_subgraph_four.mmd": {
+  "outcome": "ok",
+  "counts": {
+   "nodes": 4,
+   "edges": 3,
+   "groups": 4
+  }
+ },
+ "11_subgraph_six_folded.mmd": {
+  "outcome": "ok_with_warnings",
+  "counts": {
+   "nodes": 7,
+   "edges": 6,
+   "groups": 4
+  },
+  "warning": "groups"
+ },
+ "12_subgraph_nested.mmd": {
+  "outcome": "ok_with_warnings",
+  "counts": {
+   "nodes": 4,
+   "edges": 3,
+   "groups": 1
+  },
+  "warning": "nested"
+ },
+ "13_subgraph_direction.mmd": {
+  "outcome": "ok_with_warnings",
+  "counts": {
+   "nodes": 5,
+   "edges": 4,
+   "groups": 1
+  },
+  "warning": "direction"
+ },
+ "14_subgraph_empty.mmd": {
+  "outcome": "ok_with_warnings",
+  "counts": {
+   "nodes": 2,
+   "edges": 1,
+   "groups": 0
+  },
+  "warning": "no nodes"
+ },
+ "15_styles_and_classes.mmd": {
+  "outcome": "ok_with_warnings",
+  "counts": {
+   "nodes": 3,
+   "edges": 2,
+   "groups": 0
+  },
+  "warning": "classDef",
+  "known_gap": [
+   {
+    "kind": "warnings",
+    "reason": "classDef, class, style and linkStyle are dropped silently; only click is warned about, so author colours vanish with no notice"
+   }
+  ]
+ },
+ "16_kind_hints.mmd": {
+  "outcome": "ok",
+  "counts": {
+   "nodes": 4,
+   "edges": 3,
+   "groups": 0
+  }
+ },
+ "17_markdown_labels.mmd": {
+  "outcome": "ok",
+  "counts": {
+   "nodes": 3,
+   "edges": 2,
+   "groups": 0
+  },
+  "labels": [
+   "Bold start",
+   "Italic end",
+   "Plain mix of text"
+  ],
+  "known_gap": [
+   {
+    "kind": "labels",
+    "reason": "markdown-string labels keep their ** and _ markers literally; the backquote wrapper is stripped but the markdown is not rendered or removed"
+   }
+  ]
+ },
+ "18_html_in_labels.mmd": {
+  "outcome": "ok",
+  "counts": {
+   "nodes": 4,
+   "edges": 3,
+   "groups": 0
+  },
+  "labels": [
+   "Line one",
+   "Bold name",
+   "Alpha",
+   "Self"
+  ]
+ },
+ "19_emoji_unicode.mmd": {
+  "outcome": "ok",
+  "counts": {
+   "nodes": 5,
+   "edges": 4,
+   "groups": 0
+  }
+ },
+ "20_long_labels.mmd": {
+  "outcome": "ok_with_warnings",
+  "counts": {
+   "nodes": 2,
+   "edges": 1,
+   "groups": 0
+  },
+  "warning": "will be cut",
+  "labels": [
+   "A very long node label that goes well beyond the forty character node limit for sure",
+   "Short"
+  ],
+  "known_gap": [
+   {
+    "kind": "labels",
+    "reason": "node label cut to 40 characters with an ellipsis (warned), edge label to 48; full text only survives in the step table"
+   },
+   {
+    "kind": "readability",
+    "reason": "two long labels push the text to about 8 px on a phone column; wrapping long labels onto two lines would keep it legible"
+   }
+  ]
+ },
+ "21_entity_codes.mmd": {
+  "outcome": "ok",
+  "counts": {
+   "nodes": 4,
+   "edges": 3,
+   "groups": 0
+  },
+  "labels": [
+   "Tom & Jerry",
+   "Cost < 5 > 2",
+   "Say \"hi\"",
+   "Price #5"
+  ],
+  "known_gap": [
+   {
+    "kind": "labels",
+    "reason": "named entity codes #amp; #lt; #gt; are left as typed; only #quot; and numeric codes are decoded"
+   }
+  ]
+ },
+ "22_all_shapes.mmd": {
+  "outcome": "ok",
+  "counts": {
+   "nodes": 8,
+   "edges": 7,
+   "groups": 0
+  }
+ },
+ "23_shape_asymmetric.mmd": {
+  "outcome": "error",
+  "message": "shape",
+  "line_relevant": true
+ },
+ "24_shape_parallelogram.mmd": {
+  "outcome": "error",
+  "message": "shape",
+  "line_relevant": true
+ },
+ "25_shape_double_circle.mmd": {
+  "outcome": "error",
+  "message": "double circles",
+  "line_relevant": true
+ },
+ "26_link_types.mmd": {
+  "outcome": "ok_with_warnings",
+  "counts": {
+   "nodes": 7,
+   "edges": 6,
+   "groups": 0
+  },
+  "warning": "arrowhead"
+ },
+ "27_text_on_link.mmd": {
+  "outcome": "ok_with_warnings",
+  "counts": {
+   "nodes": 6,
+   "edges": 5,
+   "groups": 0
+  },
+  "warning": "arrowhead"
+ },
+ "28_chains_and_ampersand.mmd": {
+  "outcome": "ok",
+  "counts": {
+   "nodes": 7,
+   "edges": 7,
+   "groups": 0
+  }
+ },
+ "29_comments_directives.mmd": {
+  "outcome": "ok",
+  "counts": {
+   "nodes": 2,
+   "edges": 1,
+   "groups": 0
+  }
+ },
+ "30_frontmatter.mmd": {
+  "outcome": "ok",
+  "counts": {
+   "nodes": 3,
+   "edges": 2,
+   "groups": 0
+  }
+ },
+ "31_crlf.mmd": {
+  "outcome": "ok",
+  "counts": {
+   "nodes": 3,
+   "edges": 2,
+   "groups": 0
+  }
+ },
+ "32_tabs_trailing.mmd": {
+  "outcome": "ok",
+  "counts": {
+   "nodes": 3,
+   "edges": 2,
+   "groups": 0
+  }
+ },
+ "33_unicode_ids.mmd": {
+  "outcome": "ok",
+  "counts": {
+   "nodes": 3,
+   "edges": 2,
+   "groups": 0
+  },
+  "known_gap": [
+   {
+    "kind": "outcome",
+    "reason": "non-ASCII node ids (cafe with accent, kanji) are rejected with \"cannot read ...\" and the id is split mid-word; Mermaid accepts them"
+   }
+  ]
+ },
+ "34_duplicate_edges.mmd": {
+  "outcome": "ok_with_warnings",
+  "counts": {
+   "nodes": 2,
+   "edges": 3,
+   "groups": 0
+  },
+  "warning": "duplicates"
+ },
+ "34b_self_loop.mmd": {
+  "outcome": "error",
+  "message": "points at itself",
+  "line_relevant": true,
+  "known_gap": [
+   {
+    "kind": "error_line",
+    "reason": "self-loop error says \"edge 2\" but not the source line, unlike parser errors"
+   }
+  ]
+ },
+ "34c_edge_to_undefined.mmd": {
+  "outcome": "ok",
+  "counts": {
+   "nodes": 3,
+   "edges": 2,
+   "groups": 0
+  }
+ },
+ "35_graph_td_minimal.mmd": {
+  "outcome": "ok",
+  "counts": {
+   "nodes": 2,
+   "edges": 1,
+   "groups": 0
+  }
+ },
+ "36_no_header.mmd": {
+  "outcome": "error",
+  "message": "first line",
+  "line_relevant": true
+ },
+ "37_empty.mmd": {
+  "outcome": "error",
+  "message": "empty input",
+  "line_relevant": false
+ },
+ "38_unclosed_subgraph.mmd": {
+  "outcome": "error",
+  "message": "never closed",
+  "line_relevant": true
+ },
+ "39_bad_arrow.mmd": {
+  "outcome": "error",
+  "message": "not supported",
+  "line_relevant": true
+ },
+ "40_html_script.mmd": {
+  "outcome": "ok",
+  "counts": {
+   "nodes": 3,
+   "edges": 2,
+   "groups": 0
+  },
+  "labels": [
+   "alert(1)",
+   "B",
+   "Safe"
+  ]
+ },
+ "41_quote_unclosed.mmd": {
+  "outcome": "error",
+  "message": "never closed",
+  "line_relevant": true
+ },
+ "42_edge_id.mmd": {
+  "outcome": "error",
+  "message": "edge ids",
+  "line_relevant": true
+ },
+ "43_semicolons.mmd": {
+  "outcome": "ok",
+  "counts": {
+   "nodes": 4,
+   "edges": 3,
+   "groups": 0
+  }
+ },
+ "44_no_spaces_chain.mmd": {
+  "outcome": "ok",
+  "counts": {
+   "nodes": 3,
+   "edges": 3,
+   "groups": 0
+  }
+ },
+ "45_subgraph_plain_title.mmd": {
+  "outcome": "ok",
+  "counts": {
+   "nodes": 3,
+   "edges": 2,
+   "groups": 1
+  }
+ },
+ "46_invisible_and_long_links.mmd": {
+  "outcome": "error",
+  "message": "invisible",
+  "line_relevant": true,
+  "known_gap": [
+   {
+    "kind": "error_message",
+    "reason": "invisible link ~~~ is rejected with a generic \"cannot read\" message instead of saying invisible links are not supported"
+   }
+  ]
+ },
+ "47_circle_cross_ends.mmd": {
+  "outcome": "error",
+  "message": "not supported",
+  "line_relevant": true
+ },
+ "48_label_variants.mmd": {
+  "outcome": "ok_with_warnings",
+  "counts": {
+   "nodes": 5,
+   "edges": 4,
+   "groups": 0
+  },
+  "warning": "arrowhead"
+ },
+ "49_end_as_id_and_keywords.mmd": {
+  "outcome": "ok",
+  "counts": {
+   "nodes": 4,
+   "edges": 3,
+   "groups": 0
+  }
+ },
+ "49b_cycle.mmd": {
+  "outcome": "ok",
+  "counts": {
+   "nodes": 3,
+   "edges": 3,
+   "groups": 0
+  }
+ },
+ "49c_bt_rl.mmd": {
+  "outcome": "ok",
+  "counts": {
+   "nodes": 3,
+   "edges": 2,
+   "groups": 0
+  }
+ },
+ "49d_node_ids_reused_labels.mmd": {
+  "outcome": "ok",
+  "counts": {
+   "nodes": 3,
+   "edges": 2,
+   "groups": 0
+  }
+ },
+ "49e_parens_in_quotes.mmd": {
+  "outcome": "ok",
+  "counts": {
+   "nodes": 3,
+   "edges": 2,
+   "groups": 0
+  }
+ },
+ "49f_semi_long_unquoted.mmd": {
+  "outcome": "error",
+  "message": "missing closing",
+  "line_relevant": true
+ },
+ "49g_numeric_ids.mmd": {
+  "outcome": "ok",
+  "counts": {
+   "nodes": 3,
+   "edges": 2,
+   "groups": 0
+  }
+ },
+ "50_sequence.mmd": {
+  "outcome": "error",
+  "message": [
+   "sequenceDiagram",
+   "only flowcharts are"
+  ],
+  "line_relevant": true
+ },
+ "51_class.mmd": {
+  "outcome": "error",
+  "message": [
+   "classDiagram",
+   "only flowcharts are"
+  ],
+  "line_relevant": true
+ },
+ "52_state.mmd": {
+  "outcome": "error",
+  "message": [
+   "stateDiagram-v2",
+   "only flowcharts are"
+  ],
+  "line_relevant": true
+ },
+ "53_er.mmd": {
+  "outcome": "error",
+  "message": [
+   "erDiagram",
+   "only flowcharts are"
+  ],
+  "line_relevant": true
+ },
+ "54_gantt.mmd": {
+  "outcome": "error",
+  "message": [
+   "gantt",
+   "only flowcharts are"
+  ],
+  "line_relevant": true
+ },
+ "55_pie.mmd": {
+  "outcome": "error",
+  "message": [
+   "pie",
+   "only flowcharts are"
+  ],
+  "line_relevant": true
+ },
+ "56_mindmap.mmd": {
+  "outcome": "error",
+  "message": [
+   "mindmap",
+   "only flowcharts are"
+  ],
+  "line_relevant": true
+ },
+ "57_journey.mmd": {
+  "outcome": "error",
+  "message": [
+   "journey",
+   "only flowcharts are"
+  ],
+  "line_relevant": true
+ },
+ "58_gitgraph.mmd": {
+  "outcome": "error",
+  "message": [
+   "gitGraph",
+   "only flowcharts are"
+  ],
+  "line_relevant": true
+ },
+ "59_sequence_after_frontmatter.mmd": {
+  "outcome": "error",
+  "message": [
+   "sequenceDiagram",
+   "only flowcharts are"
+  ],
+  "line_relevant": true
+ },
+ "60_limit_12_nodes.mmd": {
+  "outcome": "ok",
+  "counts": {
+   "nodes": 12,
+   "edges": 11,
+   "groups": 0
+  }
+ },
+ "61_limit_13_nodes.mmd": {
+  "outcome": "error",
+  "message": "13 nodes",
+  "line_relevant": false
+ },
+ "62_limit_16_edges.mmd": {
+  "outcome": "ok",
+  "counts": {
+   "nodes": 8,
+   "edges": 16,
+   "groups": 0
+  }
+ },
+ "63_limit_17_edges.mmd": {
+  "outcome": "error",
+  "message": "17 edges",
+  "line_relevant": false
+ },
+ "64_limit_4_groups.mmd": {
+  "outcome": "ok",
+  "counts": {
+   "nodes": 4,
+   "edges": 3,
+   "groups": 4
+  }
+ },
+ "65_limit_5_groups_folded.mmd": {
+  "outcome": "ok_with_warnings",
+  "counts": {
+   "nodes": 5,
+   "edges": 4,
+   "groups": 4
+  },
+  "warning": "groups"
+ },
+ "66_limit_12_messages.mmd": {
+  "outcome": "ok",
+  "counts": {
+   "nodes": 2,
+   "edges": 1,
+   "groups": 0
+  }
+ },
+ "67_limit_13_messages.mmd": {
+  "outcome": "error",
+  "message": "13 messages",
+  "line_relevant": false
+ },
+ "68_limit_20000_chars.mmd": {
+  "outcome": "ok",
+  "counts": {
+   "nodes": 2,
+   "edges": 1,
+   "groups": 0
+  }
+ },
+ "69_limit_20001_chars.mmd": {
+  "outcome": "error",
+  "message": "20001 characters",
+  "line_relevant": false
+ },
+ "70_limit_line_500.mmd": {
+  "outcome": "ok",
+  "counts": {
+   "nodes": 2,
+   "edges": 1,
+   "groups": 0
+  }
+ },
+ "71_limit_line_501.mmd": {
+  "outcome": "error",
+  "message": "501 characters",
+  "line_relevant": true
+ },
+ "80_d2_basic.d2": {
+  "outcome": "ok",
+  "counts": {
+   "nodes": 3,
+   "edges": 3,
+   "groups": 0
+  }
+ },
+ "81_d2_container.d2": {
+  "outcome": "ok",
+  "counts": {
+   "nodes": 3,
+   "edges": 2,
+   "groups": 1
+  }
+ },
+ "82_d2_unsupported_layers.d2": {
+  "outcome": "error",
+  "message": "layers",
+  "line_relevant": true
+ },
+ "83_d2_bad_operator.d2": {
+  "outcome": "error",
+  "message": "spaces around",
+  "line_relevant": true
+ },
+ "90_graph_basic.json": {
+  "outcome": "ok",
+  "counts": {
+   "nodes": 2,
+   "edges": 1,
+   "groups": 0
+  }
+ },
+ "91_graph_bad_edge.json": {
+  "outcome": "error",
+  "message": "is not a node id",
+  "line_relevant": false
+ },
+ "92_graph_not_json.json": {
+  "outcome": "error",
+  "message": "JSON",
+  "line_relevant": false
+ }
+}

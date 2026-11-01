@@ -1,0 +1,1 @@
+{"direction":"LR","groups":[],"nodes":[{"id":"a","label":"Client"}],"edges":[{"from":"a","to":"zzz","style":"sync"}],"messages":[]}
