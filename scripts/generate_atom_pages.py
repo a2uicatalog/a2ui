@@ -508,7 +508,7 @@ label:has(input[type=radio]:focus-visible),label:has(input[type=checkbox]:focus-
 .site-nav{display:flex;gap:4px;margin-right:auto;margin-left:12px}
 .site-nav a{font-size:13px;font-weight:600;text-decoration:none;color:var(--muted);padding:5px 11px;border-radius:7px;transition:color .15s,background .15s}
 .site-nav a:hover{color:var(--text);background:var(--surface-2)}
-.site-nav a[aria-current="page"]{color:var(--accent);background:var(--accent-soft-bg)}
+.site-nav a[aria-current="page"]{color:var(--accent-text);background:var(--accent-soft-bg)}
 .theme-btn{font:inherit;font-size:14px;line-height:1;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 9px;cursor:pointer;color:var(--text)}
 .theme-btn:hover{border-color:var(--border-strong)}
 .gh-pill{font-size:12px;font-weight:650;color:var(--text);text-decoration:none;border:1px solid var(--border);border-radius:8px;padding:6px 12px;background:var(--surface);white-space:nowrap}
@@ -537,20 +537,31 @@ footer a{color:var(--accent-2-text);text-decoration:underline;text-underline-off
 @media(max-width:560px){.announce{font-size:12.5px;align-items:flex-start;
  border-radius:14px;padding:9px 12px}.announce-go{display:none}}
 
-/* Mobile nav: this used to be `.site-nav{display:none}`, which left phone
-   visitors with only the wordmark, theme toggle and GitHub pill — every
-   destination unreachable, with no hamburger substituting for it (confirmed
-   live: 0/4 links visible at 390px). The nav now drops to its own full-width
-   row under the wordmark and scrolls horizontally if the labels overflow,
-   so nothing is lost and no JS menu is needed. */
-@media(max-width:700px){
- .hdr-in{flex-wrap:wrap;padding:9px 16px;row-gap:0}
- .site-nav{order:3;width:100%;margin:7px 0 1px;gap:2px;
-  overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
- .site-nav::-webkit-scrollbar{display:none}
- .site-nav a{white-space:nowrap;font-size:12.5px;padding:5px 9px}
+/* Design pass (1 Nov 2026, direction C). Header: the full nav row from 861 px; below it, with JS, the nav folds behind a Menu button and
+   Search becomes an icon link; without JS the nav stays a wrapping row, so no destination is ever lost. Touch targets are 44 px on phones. */
+.hdr-search,.menu-btn{display:none}
+.hdr-search,.menu-btn,.theme-btn{align-items:center;justify-content:center;color:var(--text)}
+.menu-btn{gap:6px;font:700 14px/1 inherit;border:1px solid var(--border-strong);border-radius:10px;background:var(--surface);cursor:pointer;padding:0 14px}
+.theme-btn svg{display:block}
+@media(max-width:860px){
+ .hdr-in{flex-wrap:wrap;padding:8px 16px;row-gap:0}
  .wordmark{margin-right:auto}
+ .gh-pill{display:none}
+ .hdr-search{display:flex;min-width:44px;min-height:44px;border-radius:10px}
+ .theme-btn{display:flex;min-width:44px;min-height:44px;border-radius:10px}
+ .site-nav{order:3;width:100%;margin:6px 0 2px;gap:2px;flex-wrap:wrap}
+ .site-nav a{white-space:nowrap;font-size:14px;padding:11px 12px;min-height:44px;display:flex;align-items:center}
+ .js .menu-btn{display:flex;min-height:44px}
+ .js .site-nav{display:none;flex-direction:column;align-items:stretch;border-top:1px solid var(--border);padding-top:6px}
+ .js .site-nav.open{display:flex}
 }
+@media(min-width:861px){.theme-btn{display:flex;min-width:36px;min-height:36px;border-radius:8px}}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+/* "Pause all motion" / per-preview Pause (WCAG 2.2.2): stops CSS animation; film clocks are paused by the page script */
+.motion-paused .stage-inner *,.preview-box.paused *{animation-play-state:paused!important}
+.pause-btn{display:inline-flex;align-items:center;gap:6px;min-width:44px;min-height:44px;padding:0 14px;border:1px solid var(--border-strong);border-radius:10px;background:var(--surface);color:var(--text);font:600 14px/1 inherit;cursor:pointer}
+.pause-btn[aria-pressed="true"]{background:var(--accent-soft-bg);border-color:var(--accent);color:var(--accent-text)}
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 /* cursor_glow ships dark-tuned (screen blend ≈ invisible over a white ground);
    in the light default, re-blend the orb — it is the only direct body child
@@ -563,15 +574,25 @@ footer a{color:var(--accent-2-text);text-decoration:underline;text-underline-off
 # the MCP Apps view (opaque origin — gap G4); it degrades to session-only.
 SITE_HEAD_JS = """<script>
 (function(){var t='light';try{var s=localStorage.getItem('a2ui-theme');if(s==='dark'||s==='light')t=s}catch(e){}
-document.documentElement.setAttribute('data-theme',t)})();
+document.documentElement.setAttribute('data-theme',t);document.documentElement.classList.add('js')})();
 </script>"""
 
 SITE_FOOT_JS = """<script>
+function themeLabel(){var d=document.documentElement.getAttribute('data-theme')==='dark';
+  document.querySelectorAll('.theme-btn').forEach(function(b){b.setAttribute('aria-label',d?'Switch to light theme':'Switch to dark theme')})}
+themeLabel();
 document.addEventListener('click',function(e){
+  var m=e.target.closest('.menu-btn');
+  if(m){var n=document.getElementById(m.getAttribute('aria-controls')),o=m.getAttribute('aria-expanded')!=='true';
+    m.setAttribute('aria-expanded',String(o));if(n)n.classList.toggle('open',o);return}
   var b=e.target.closest('.theme-btn');if(!b)return;
   var r=document.documentElement,t=r.getAttribute('data-theme')==='dark'?'light':'dark';
-  r.setAttribute('data-theme',t);
+  r.setAttribute('data-theme',t);themeLabel();
   try{localStorage.setItem('a2ui-theme',t)}catch(err){}
+});
+document.addEventListener('keydown',function(e){
+  if(e.key!=='Escape')return;var m=document.querySelector('.menu-btn[aria-expanded="true"]');if(!m)return;
+  m.setAttribute('aria-expanded','false');var n=document.getElementById(m.getAttribute('aria-controls'));if(n)n.classList.remove('open');m.focus()
 });
 // WebMCP (W3C draft, Chrome 157+): register any [toolname]-tagged form on
 // this page as an in-page tool. Feature-guarded (navigator.modelContext is
@@ -602,23 +623,27 @@ document.addEventListener('click',function(e){
 
 
 def site_header(active=""):
-    """Shared sticky glass header — identical on every surface (the v0.3 nav fix)."""
+    """Shared sticky glass header -- identical on every surface (the v0.3 nav fix). Design pass (1 Nov): under 860 px the nav folds behind a Menu button
+    (aria-expanded/aria-controls); without JS the nav stays a wrapping row. Search is an icon link on phones. 'Atoms' is current only on /atoms/ pages."""
     def cur(k):
         return ' aria-current="page"' if k == active else ""
+    full = os.environ.get("A2UI_CATALOG_FULL") == "1"
     return f"""<header class="site-header"><div class="hdr-in">
-    <a class="wordmark" href="/">{BRAND_LOGO_HTML}</a>
-    <nav class="site-nav">
+    <a class="wordmark" href="/" aria-label="A2UI Catalog home">{BRAND_LOGO_HTML}</a>
+    <nav class="site-nav" id="site-menu" aria-label="Main">
       <a href="/what-is-a2ui/"{cur('guide')}>What is A2UI?</a>
-      <a href="/"{cur('atoms')}>Atoms</a>
-      {'<a href="/templates"' + cur('templates') + '>Templates</a>' if os.environ.get("A2UI_CATALOG_FULL") == "1" else ''}
+      <a href="/atoms/"{cur('atoms')}>Atoms</a>
+      {'<a href="/templates"' + cur('templates') + '>Templates</a>' if full else ''}
       <a href="/surfaces/mcp-apps"{cur('playground')}>MCP Playground</a>
       <a href="/docs"{cur('docs')}>Docs</a>
       <a href="/renderer"{cur('renderer')}>Apps Script Renderer</a>
-      <a href="{'/blog/drafts' if os.environ.get('A2UI_CATALOG_FULL') == '1' else '/blog'}"{cur('blog')}>Blog</a>
-      {'<a href="/authoring"' + cur('authoring') + '>Authoring</a>' if os.environ.get("A2UI_CATALOG_FULL") == "1" else ''}
+      <a href="{'/blog/drafts' if full else '/blog'}"{cur('blog')}>Blog</a>
+      {'<a href="/authoring"' + cur('authoring') + '>Authoring</a>' if full else ''}
     </nav>
-    <button class="theme-btn" type="button" aria-label="Toggle light/dark theme">◐</button>
+    <a class="hdr-search" href="/atoms/#hub-q" aria-label="Search atoms"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg></a>
+    <button class="theme-btn" type="button" aria-label="Switch to dark theme"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 4v16a8 8 0 0 0 0-16z" fill="currentColor"/></svg></button>
     <a class="gh-pill" href="https://github.com/a2uicatalog/a2ui">GitHub ↗</a>
+    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="site-menu"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>Menu</button>
   </div></header>"""
 
 
@@ -646,13 +671,38 @@ nav.atom-pager kbd{display:inline-block;min-width:1.6em;padding:1px 6px;border:1
 /* I160 atom likes: the heart sits beside the title; hidden until /api/likes answers, so a dead endpoint leaves no dead button */
 .title-row{display:flex;align-items:center;gap:6px 16px;flex-wrap:wrap}
 .title-row h1{margin-bottom:8px}
-.like-btn{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border:1px solid var(--border-strong);border-radius:999px;background:var(--surface);color:var(--text);font:600 15px/1.2 inherit;cursor:pointer}
+.like-btn{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 12px;border:1px solid var(--border-strong);border-radius:999px;background:var(--surface);color:var(--text);font:600 14px/1.2 inherit;cursor:pointer}
 .like-btn[hidden]{display:none}
-.like-btn:hover{border-color:var(--accent-2-text)}
-.like-btn:focus-visible{outline:2px solid var(--accent-2-text);outline-offset:2px}
-.like-btn .like-heart{font-size:17px;line-height:1;color:var(--muted)}
-.like-btn[aria-pressed="true"]{border-color:var(--accent-2-text);background:var(--accent-soft-bg);color:var(--accent-2-text)}
-.like-btn[aria-pressed="true"] .like-heart{color:var(--accent-2-text)}
+.like-btn:hover{border-color:var(--accent)}
+.like-btn .like-heart{display:block;fill:none;stroke:currentColor;stroke-width:2;stroke-linejoin:round;color:var(--text-muted)}
+.like-btn[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft-bg);color:var(--accent-text)}
+.like-btn[aria-pressed="true"] .like-heart{fill:var(--accent);stroke:var(--accent);color:var(--accent)}
+@media(max-width:700px){.like-btn{min-height:44px}}
+.type-code{font:13px ui-monospace,'SF Mono',Monaco,monospace;color:var(--accent-2-text);margin-left:8px}
+.cat-chip{background:var(--accent-soft-bg);color:var(--accent-text)}
+.label-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}
+.label-row .label{margin:0}
+.copy-btn,.export-btn,.export-cancel{min-height:36px;padding:0 14px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text);font:600 13px/1 inherit;cursor:pointer}
+.copy-btn:hover,.export-btn:hover,.export-cancel:hover{border-color:var(--accent)}
+.export-btn:disabled{opacity:.5;cursor:default}
+@media(max-width:700px){.copy-btn,.export-btn,.export-cancel{min-height:44px}}
+.preview-tools{display:flex;justify-content:flex-end;margin-top:8px}
+.export-row{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;margin:-24px 0 36px;font-size:13px;color:var(--text-muted)}
+.export-row[hidden],.export-nod[hidden],.export-prog[hidden]{display:none}
+.export-btns{display:flex;gap:8px;flex-wrap:wrap}
+.export-note{margin-left:auto}
+.export-nod{display:flex;align-items:center;gap:6px}
+.export-prog{flex:1 1 100%;display:flex;align-items:center;gap:12px}
+.export-track{flex:1;height:8px;border-radius:99px;background:var(--surface-2);border:1px solid var(--border);overflow:hidden}
+.export-bar{display:block;height:100%;width:0;background:var(--accent)}
+.fields{margin:12px 0 24px;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;background:var(--surface)}
+.field-row{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,2fr) auto;gap:4px 16px;padding:10px 14px;border-bottom:1px solid var(--border);align-items:baseline}
+.field-row:last-child{border-bottom:0}
+.fields dt{font:600 14px ui-monospace,'SF Mono',Monaco,monospace;color:var(--text);overflow-wrap:anywhere}
+.fields dd{margin:0;font-size:14px;color:var(--text-muted);overflow-wrap:anywhere}
+.fields .f-req{font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.fields .f-required{color:var(--accent-text)}
+@media(max-width:600px){.field-row{grid-template-columns:1fr;padding:12px 14px}.fields .f-req{justify-self:start}}
 .like-n:empty{display:none}
 .hub-likes{font-size:13px;font-weight:600;color:var(--muted);margin-left:8px;white-space:nowrap}
 .hub-likes:empty{display:none}
@@ -674,6 +724,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 .try-btn{display:inline-block;margin-top:32px;margin-left:12px;font-size:13px;font-weight:700;color:var(--accent-contrast);background:var(--accent);border:none;border-radius:8px;padding:9px 18px;text-decoration:none;letter-spacing:.03em;cursor:pointer;transition:filter .15s,box-shadow .15s}
 .try-btn:hover{filter:brightness(1.08);box-shadow:var(--glow)}
 .preview-box{background:#fff;border:1px solid var(--border);border-radius:10px;padding:24px;margin-top:8px;color:#1a1a1a;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;line-height:1.6}
+.preview-box{position:relative;overflow-x:auto}
 .preview-box *{max-width:100%}
 .preview-box p,.preview-box li,.preview-box td,.preview-box th,.preview-box td:first-child,.preview-box code{color:inherit;font-family:inherit}
 .preview-box pre{background:#f4f4f4;border:1px solid #e0e0e0}
@@ -703,16 +754,18 @@ def surface_badges(atom):
 
 
 def fields_table(atom):
+    """Fields as a definition list: three columns on a wide screen, stacked on a phone (a table at 390 px scrolled sideways)."""
     fields = atom.get("fields", {})
     if not fields:
         return "<p style='color:var(--muted)'>No configurable fields.</p>"
     rows = ""
     for name, ftype in fields.items():
         optional = "optional" in str(ftype).lower()
-        type_clean = str(ftype).replace(" (optional)", "").replace(" (Optional)", "")
+        type_clean = html.escape(str(ftype).replace(" (optional)", "").replace(" (Optional)", ""))
         req = "optional" if optional else "required"
-        rows += f"<tr><td>{name}</td><td>{type_clean}</td><td>{req}</td></tr>"
-    return f"<table><thead><tr><th>Field</th><th>Type</th><th>Required</th></tr></thead><tbody>{rows}</tbody></table>"
+        rows += (f'<div class="field-row"><dt>{html.escape(str(name))}</dt><dd class="f-type">{type_clean}</dd>'
+                 f'<dd class="f-req f-{req}">{req}</dd></div>')
+    return f'<dl class="fields">{rows}</dl>'
 
 
 def _infer_list(name, atom_type):
@@ -987,6 +1040,10 @@ def _infer_string(name, atom_type):
 def example_payload(atom):
     atom_type = atom.get("type", "")
     fields    = atom.get("fields") or {}
+    # A hand-written example is what the live preview already uses; the heuristic below reads "int" inside "items (4-12 ...)" and printed
+    # {"type": "treemap", "items": 1}, which the schema rejects (found by the design pass, 1 Nov).
+    if atom_type in _EXAMPLE_BLOCKS:
+        return json.dumps(_EXAMPLE_BLOCKS[atom_type], indent=2, ensure_ascii=False)
     example   = {"type": atom_type}
     for name, ftype in fields.items():
         ft = str(ftype).lower()
@@ -1115,10 +1172,14 @@ def live_preview(atom):
     # checkbox_group atom's checkboxes) have no real submit behavior behind
     # them though, so per-control labels would be fabricated; giving the
     # whole demo region one accurate group name is the honest fix.
+    moving = bool(re.search(r"@keyframes|animation\s*:|<script|requestAnimationFrame|__a2uiMotion", html))
+    pause = (f'<button type="button" class="pause-btn" id="pause-preview" aria-pressed="false" aria-label="Pause {_esc_attr(str(display))}">'
+             f'<span aria-hidden="true">\u23f8</span> Pause</button>') if moving else ""
     return f"""
 <div class="section">
   <div class="label">Live preview</div>
   <div class="preview-box" role="group" aria-label="Live preview of {_esc_attr(str(display))}">{html}</div>
+  {('<div class="preview-tools">' + pause + '</div>') if pause else ''}
 </div>"""
 
 
@@ -1249,13 +1310,14 @@ ATOM_CATALOG = _load_atom_catalogs()
 
 
 def catalog_chip(atom_type):
-    """The atom's catalog as a link to /atoms/ filtered to that catalog."""
+    """The atom's catalog as a chip linking to /atoms/ filtered to that catalog, then the type name in mono (design pass: chip + type)."""
     slug = ATOM_CATALOG.get(atom_type)
+    code = f'<code class="type-code">{html.escape(atom_type)}</code>'
     if not slug:
-        return ""
+        return f'<p class="cat-line">{code}</p>'
     label = html.escape(CATALOG_LABELS.get(slug, slug.replace("-", " ").title()))
-    return (f'<p class="cat-line">Category: <a class="cat-chip" href="/atoms/?catalog={slug}" '
-            f'title="All atoms in the a2ui-{slug}-v1 catalog">{label}</a></p>')
+    return (f'<p class="cat-line"><span class="sr-only">Category: </span><a class="cat-chip" href="/atoms/?catalog={slug}" '
+            f'title="All atoms in the a2ui-{slug}-v1 catalog">{label}</a> {code}</p>')
 
 
 # type -> (prev, next) in the /atoms/ hub's A-Z order; filled by main() before the pages render.
@@ -1315,8 +1377,98 @@ def like_button(atom_type, display_name):
     """The heart beside the title. Hidden until the counts load (LIKES_JS); the accessible name is 'Like <Title>' and the count is its description."""
     name = html.escape(display_name, quote=True)
     return (f'<button type="button" class="like-btn" data-like="{atom_type}" aria-pressed="false" aria-label="Like {name}" '
-            f'aria-describedby="like-n" hidden><span class="like-heart" aria-hidden="true">\u2665</span>'
+            f'aria-describedby="like-n" hidden><svg class="like-heart" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5S3.5 15.3 3.5 9.2A4.7 4.7 0 0 1 12 6.6a4.7 4.7 0 0 1 8.5 2.6c0 6.1-8.5 11.3-8.5 11.3z"/></svg>'
             f'<span class="like-n" id="like-n"></span></button>')
+
+
+EXPORT_JS = ROOT / "public" / "vendors" / "client-export" / "atom_export.js"
+
+# Export row (I161 page side). It is emitted only when the exporter (window.AtomExport, ck-70's atom_export.js) is part of this checkout, so a build
+# without it ships no dead buttons. The exporter is fetched when the page is idle or on first interaction with the row, whichever comes first;
+# formats(root) then decides which buttons exist (no WebCodecs: GIF and PNG; no film clock: PNG only; nothing exportable: no row).
+EXPORT_JS_BLOCK = """<script>
+(function(){
+  var row = document.getElementById('export-row'); if (!row) return;
+  var box = document.querySelector('.preview-box'); if (!box) return;
+  var atom = row.getAttribute('data-atom'), btns = row.querySelector('.export-btns'), nodBox = row.querySelector('.export-nod'),
+      nod = row.querySelector('#export-nod'), prog = row.querySelector('.export-prog'), bar = row.querySelector('.export-bar'),
+      lab = row.querySelector('.export-lab'), live = row.querySelector('.export-live'), cancel = row.querySelector('.export-cancel'),
+      loading = null, ctl = null, lastBucket = -1;
+  function load(){
+    if (loading) return loading;
+    loading = new Promise(function(ok, no){
+      var s = document.createElement('script'); s.src = '/vendors/client-export/atom_export.js'; s.onload = ok; s.onerror = no; document.head.appendChild(s);
+    }).then(function(){ return window.AtomExport; });
+    return loading;
+  }
+  function setup(){
+    load().then(function(X){
+      var f = (X && X.formats(box)) || []; if (!f.length) return;
+      btns.textContent = '';
+      f.forEach(function(k){
+        var b = document.createElement('button'); b.type = 'button'; b.className = 'export-btn'; b.textContent = k.toUpperCase();
+        b.setAttribute('data-fmt', k); b.addEventListener('click', function(){ run(X, k, b); }); btns.appendChild(b);
+      });
+      nodBox.hidden = !(f.indexOf('mp4') > -1 || f.indexOf('gif') > -1);
+      row.hidden = false;
+    }).catch(function(){});
+  }
+  function busy(on){ btns.querySelectorAll('button').forEach(function(b){ b.disabled = on; }); prog.hidden = !on; }
+  function run(X, k, b){
+    ctl = new AbortController(); lastBucket = -1; busy(true); bar.style.width = '0%';
+    var opts = { el: box, atom: atom, nod: !!(nod && nod.checked), signal: ctl.signal, onProgress: function(fr, ph){
+      var pc = Math.round(fr * 100); bar.style.width = pc + '%'; prog.setAttribute('aria-valuenow', String(pc));
+      lab.textContent = (ph === 'finishing' ? 'Finishing ' : ph === 'preparing' ? 'Preparing ' : 'Encoding ') + k.toUpperCase() + ' \u00b7 ' + pc + '%';
+      var bk = Math.floor(pc / 10); if (bk !== lastBucket) { lastBucket = bk; live.textContent = lab.textContent; }
+    } };
+    if (k === 'gif') opts.maxSeconds = 6;
+    var p = k === 'png' ? X.png(box, { signal: ctl.signal }).then(function(bl){ return { blob: bl, name: atom + '-a2uicatalog.png' }; }) : X.run(k, opts);
+    p.then(function(r){ X.download(r); live.textContent = 'Export ready: ' + r.name; })
+     .catch(function(e){ live.textContent = (e && e.name === 'AbortError') ? 'Export cancelled.' : String((e && e.message) || 'Export failed.'); })
+     .then(function(){ busy(false); b.focus(); });
+  }
+  cancel.addEventListener('click', function(){ if (ctl) ctl.abort(); });
+  row.addEventListener('pointerenter', load, { once: true }); row.addEventListener('focusin', load, { once: true });
+  (window.requestIdleCallback || function(f){ setTimeout(f, 2500); })(setup, { timeout: 5000 });
+})();
+</script>"""
+
+
+def export_row(atom):
+    """The export row under the live preview; '' when the exporter is not part of this build or the atom has no live preview."""
+    if not EXPORT_JS.exists() or atom.get("type") not in _RENDERER_TYPES:
+        return ""
+    t = atom.get("type", "")
+    return (f'<div class="export-row" id="export-row" data-atom="{t}" hidden>'
+            '<div class="export-btns" role="group" aria-label="Export this preview"></div>'
+            '<label class="export-nod" hidden><input type="checkbox" id="export-nod"> Add a small a2uicatalog.ai mark in the last second</label>'
+            '<span class="export-note">Runs in your browser. Nothing is uploaded.</span>'
+            '<div class="export-prog" role="progressbar" aria-label="Export progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" hidden>'
+            '<span class="export-lab">Preparing</span><span class="export-track"><span class="export-bar"></span></span>'
+            '<button type="button" class="export-cancel">Cancel</button></div>'
+            '<p class="sr-only export-live" aria-live="polite"></p></div>')
+
+
+PREVIEW_JS = """<script>
+(function(){
+  var b = document.getElementById('pause-preview'); if (b) {
+    var box = document.querySelector('.preview-box');
+    b.addEventListener('click', function(){
+      var on = b.getAttribute('aria-pressed') !== 'true'; b.setAttribute('aria-pressed', String(on));
+      b.lastChild.textContent = on ? ' Paused' : ' Pause'; box.classList.toggle('paused', on);
+      var m = window.__a2uiMotion || {}; Object.keys(m).forEach(function(k){ try { on ? m[k].pause() : m[k].play(); } catch (e) {} });
+    });
+    if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) b.click();
+  }
+  var c = document.getElementById('copy-payload');
+  if (c) c.addEventListener('click', function(){
+    var t = document.getElementById('payload-code').textContent, done = function(ok){ c.textContent = ok ? 'Copied' : 'Select and copy'; setTimeout(function(){ c.textContent = 'Copy payload'; }, 1800); };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(function(){ done(true); }, function(){ select(); done(false); });
+    else { select(); done(false); }
+    function select(){ var r = document.createRange(); r.selectNodeContents(document.getElementById('payload-code')); var g = getSelection(); g.removeAllRanges(); g.addRange(r); }
+  });
+})();
+</script>"""
 
 
 def atom_pager(atom_type):
@@ -1388,12 +1540,23 @@ def render_page(atom):
   <link rel="icon" href="/favicon.ico" sizes="32x32">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <link rel="manifest" href="/site.webmanifest">
-  <meta name="theme-color" content="#6366f1">
+  <meta name="theme-color" content="#5051cf">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>{display_name} — A2UI Atomic Catalog</title>
   <meta name="description" content="{meta_description(desc or compact)}">
   <link rel="canonical" href="https://a2uicatalog.ai/atoms/{atom_type}/">
   <link rel="alternate" type="text/markdown" href="/atoms/{atom_type}.md">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="A2UI Catalog">
+  <meta property="og:title" content="{display_name}: A2UI atom">
+  <meta property="og:description" content="{meta_description(desc or compact)}">
+  <meta property="og:url" content="https://a2uicatalog.ai/atoms/{atom_type}/">
+  <meta property="og:image" content="https://a2uicatalog.ai/brand/og-card.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{display_name}: A2UI atom">
+  <meta name="twitter:description" content="{meta_description(desc or compact)}">
   <script type="application/ld+json">
   {{
     "@context": "https://schema.org",
@@ -1422,8 +1585,17 @@ def render_page(atom):
   {catalog_chip(atom_type)}
 
   {preview}
+  {export_row(atom)}
 
-  <p class="desc">{desc or compact}</p>
+  <div class="section">
+    <div class="label-row"><div class="label">Example payload</div><button type="button" class="copy-btn" id="copy-payload">Copy payload</button></div>
+    <pre tabindex="0"><code id="payload-code">{html.escape(example_payload(atom), quote=False)}</code></pre>
+  </div>
+
+  <div class="section">
+    <div class="label">What it is</div>
+    <p class="desc">{desc or compact}</p>
+  </div>
 
   <div class="section">
     <div class="label">Surfaces</div>
@@ -1437,11 +1609,6 @@ def render_page(atom):
   <div class="section">
     <div class="label">Fields</div>
     {fields_table(atom)}
-  </div>
-
-  <div class="section">
-    <div class="label">Example payload</div>
-    <pre tabindex="0"><code>{example_payload(atom)}</code></pre>
   </div>
 
   <div class="section">
@@ -1463,7 +1630,7 @@ clasp push &amp;&amp; clasp deploy</code></pre>
 
   <footer>
     <span>A2UI Atomic Catalog · <a href="https://github.com/a2uicatalog/a2ui">github.com/a2uicatalog/a2ui</a> · Maintained by <a href="https://www.linkedin.com/in/curtiskrygier" rel="me author">Curtis Krygier</a></span>
-    <span>Independent, unofficial catalog — not affiliated with, endorsed by, or sponsored by Google, Anthropic or OpenAI. A2UI is Google's protocol; official spec at <a href="https://a2ui.org">a2ui.org</a>. MCP is Anthropic's protocol; Claude, the Claude logo and Anthropic are trademarks of Anthropic PBC. ChatGPT and OpenAI are trademarks of OpenAI, L.L.C. All other marks belong to their respective owners.</span>
+    <span><strong>A2UI is an open protocol (a2ui.org). a2uicatalog.ai is an independent catalogue of components built on it.</strong> Independent, unofficial catalog — not affiliated with, endorsed by, or sponsored by Google, Anthropic or OpenAI. A2UI is Google's protocol; official spec at <a href="https://a2ui.org">a2ui.org</a>. MCP is Anthropic's protocol; Claude, the Claude logo and Anthropic are trademarks of Anthropic PBC. ChatGPT and OpenAI are trademarks of OpenAI, L.L.C. All other marks belong to their respective owners.</span>
     <span>MIT License</span>
     <!-- Registry backlink. Smithery verifies a listing by finding a link to it
          on the site or in the README, so this is the reciprocal half of that
@@ -1474,6 +1641,8 @@ clasp push &amp;&amp; clasp deploy</code></pre>
   {SITE_FOOT_JS}
   {PAGER_JS}
   {LIKES_JS}
+  {PREVIEW_JS}
+  {EXPORT_JS_BLOCK if export_row(atom) else ''}
 {_cursor_glow_html()}
 </body>
 </html>"""
@@ -1482,8 +1651,8 @@ clasp push &amp;&amp; clasp deploy</code></pre>
 INDEX_CSS = """
 <style>""" + SITE_BASE_CSS + """
 header.hero{margin-bottom:36px;position:relative}
-.halo{position:absolute;inset:-90px -10% auto;height:260px;pointer-events:none;background:radial-gradient(ellipse 55% 100% at 50% 0%,oklch(58% 0.19 277 / .10),transparent 70%)}
-:root[data-theme="dark"] .halo{background:radial-gradient(ellipse 55% 100% at 50% 0%,oklch(72% 0.16 277 / .14),transparent 70%)}
+.halo{position:absolute;inset:-90px 0 auto;height:260px;pointer-events:none;background:radial-gradient(ellipse 55% 100% at 50% 0%,rgba(80,81,207,.10),transparent 70%)}
+:root[data-theme="dark"] .halo{background:radial-gradient(ellipse 55% 100% at 50% 0%,rgba(141,152,255,.14),transparent 70%)}
 h1{position:relative;font-size:2.6rem;font-weight:800;letter-spacing:-1.5px;margin-bottom:2px;text-wrap:balance}
 .tagline{position:relative;font-size:1.15rem;font-weight:700;margin-bottom:6px;letter-spacing:-.01em;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;width:fit-content}
 .sub{position:relative;color:var(--muted);font-size:1rem;margin-bottom:14px}
@@ -1580,7 +1749,8 @@ h1{position:relative;font-size:2.6rem;font-weight:800;letter-spacing:-1.5px;marg
 .stage-inner *{max-width:100%}
 @keyframes stagein{from{opacity:0}to{opacity:1}}
 @media(prefers-reduced-motion:reduce){.stage-inner{animation:none}}
-.stage-empty{display:grid;place-items:center}
+.stage-empty{display:grid;place-items:center;align-content:center;gap:8px;padding:10px;text-align:center;background-color:var(--stage-bg,#fff);background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:18px 18px}
+.schema-pill{font-size:11px;font-weight:700;letter-spacing:.02em;color:var(--accent-text);background:var(--accent-soft-bg);border-radius:999px;padding:3px 10px;max-width:100%}
 .stage-empty code{font-family:ui-monospace,'SF Mono',Monaco,monospace;font-size:12px;color:var(--text-muted);background:var(--surface-2);border:1px solid var(--border);border-radius:6px;padding:4px 10px}
 .card-meta{padding:12px 15px 13px;display:flex;flex-direction:column;flex:1}
 .atom-card h3{font-size:13.5px;font-weight:700;color:var(--text);margin-bottom:3px}
@@ -1596,6 +1766,15 @@ h1{position:relative;font-size:2.6rem;font-weight:800;letter-spacing:-1.5px;marg
 .hidden{display:none}
 </style>
 """
+
+PAUSE_ALL_JS = """<script>
+(function(){
+  var b = document.getElementById('pause-all'); if (!b) return;
+  function set(on){ b.setAttribute('aria-pressed', String(on)); document.documentElement.classList.toggle('motion-paused', on); }
+  b.addEventListener('click', function(){ set(b.getAttribute('aria-pressed') !== 'true'); });
+  if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) set(true);
+})();
+</script>"""
 
 INDEX_JS = """
 <script>
@@ -1670,6 +1849,17 @@ _preview_stats = {"rendered": 0, "no_renderer": 0, "script": 0, "oversize": 0, "
 _STAGES = {}
 
 
+def _card_label(atom, has_preview):
+    """Text alternative for a card thumbnail: what the still shows, from the atom's own one-line description."""
+    atom_type = atom.get("type", "")
+    name = atom.get("displayName") or atom_type.replace("_", " ").title()
+    line = " ".join((atom.get("compact_description") or atom.get("description") or "").split())
+    line = re.split(r"(?<=[.!?])\s+", line)[0][:140] if line else ""
+    if has_preview:
+        return f"Preview of {name}" + (f": {line}" if line else "")
+    return f"{name}: no live thumbnail yet, schema card" + (f". {line}" if line else "")
+
+
 def card_stage(atom):
     atom_type = atom.get("type", "")
     reason = None
@@ -1698,7 +1888,11 @@ def card_stage(atom):
                 reason = "error"
     if reason:
         _preview_stats[reason] += 1
-        return f'<div class="stage stage-empty"><code>{atom_type}</code></div>'
+        # Schema card (design pass): the designed fallback for an atom with no thumbnail -- the shape of its payload, and a pill saying where
+        # the live preview is. It is a real text alternative, not a blank box.
+        return (f'<div class="stage stage-empty schema-card" role="img" aria-label="{_esc_attr(_card_label(atom, False))}">'
+                f'<code>{{ "type": "{_esc_attr(atom_type)}", \u2026 }}</code>'
+                f'<span class="schema-pill">Schema card \u00b7 open for live preview</span></div>')
     # The whole card is an <a>; nested anchors are illegal HTML and make the
     # parser close the card early (meta spills out unstyled). Previews are
     # pointer-events:none decoration — neutralize links to spans.
@@ -1716,7 +1910,7 @@ def card_stage(atom):
     # controls. Confirmed via audit, 2026-07-31: this is the source of most of
     # a scan's "unlabeled form controls" finding on the homepage.
     _STAGES[atom_type] = f'<div class="stage-inner" aria-hidden="true" inert>{html}</div>'
-    return f'<div class="stage" data-stage="{atom_type}" aria-hidden="true"></div>'
+    return f'<div class="stage" data-stage="{atom_type}" role="img" aria-label="{_esc_attr(_card_label(atom, True))}"></div>'
 
 
 def _agent_sketchpad_sequence_html(strokes, view_box, caption, delay_ms=1500):
@@ -2181,7 +2375,7 @@ def generate_index(atoms):
   <link rel="icon" href="/favicon.ico" sizes="32x32">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <link rel="manifest" href="/site.webmanifest">
-  <meta name="theme-color" content="#6366f1">
+  <meta name="theme-color" content="#5051cf">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>A2UI Atomic Catalog — A2UI Components for AI Agents &amp; MCP</title>
   <meta name="description" content="A2UI Atomic Catalog (a2uicatalog): {atom_count_rounded} typed A2UI components for AI agents. MCP-ready, no model-written HTML; renders on web, Meet, Chat, Android, Slides.">
@@ -2339,7 +2533,7 @@ def generate_index(atoms):
   {LANDING_FILM_CSS}
 </head>
 <body>
-  {site_header("atoms")}
+  {site_header("")}
   {_landing_film}
   <main class="wrap">
   <header class="hero">
@@ -2401,6 +2595,7 @@ def generate_index(atoms):
     <div class="controls">
       <input id="search" type="search" placeholder="Search atoms…" autocomplete="off" aria-label="Search atoms">
       <div class="filters">{filter_pills}</div>
+      <button type="button" class="pause-btn" id="pause-all" aria-pressed="false"><span aria-hidden="true">\u23f8</span> Pause all motion</button>
       <span class="count" id="count">{atom_count_rounded} atoms</span>
     </div>
   </header>
@@ -2411,7 +2606,7 @@ def generate_index(atoms):
 {cards_html}  </div>
   <footer>
     <span>A2UI Atomic Catalog · <a href="/atoms/">All atoms A–Z</a> · <a href="/docs/">API Documentation</a> · <a href="/developers/">Developers</a> · <a href="https://github.com/a2uicatalog/a2ui">GitHub</a> · Maintained by <a href="https://www.linkedin.com/in/curtiskrygier" rel="me author">Curtis Krygier</a></span>
-    <span>Independent, unofficial catalog — not affiliated with, endorsed by, or sponsored by Google, Anthropic or OpenAI. A2UI is Google's protocol; official spec at <a href="https://a2ui.org">a2ui.org</a>. MCP is Anthropic's protocol; Claude, the Claude logo and Anthropic are trademarks of Anthropic PBC. ChatGPT and OpenAI are trademarks of OpenAI, L.L.C. All other marks belong to their respective owners.</span>
+    <span><strong>A2UI is an open protocol (a2ui.org). a2uicatalog.ai is an independent catalogue of components built on it.</strong> Independent, unofficial catalog — not affiliated with, endorsed by, or sponsored by Google, Anthropic or OpenAI. A2UI is Google's protocol; official spec at <a href="https://a2ui.org">a2ui.org</a>. MCP is Anthropic's protocol; Claude, the Claude logo and Anthropic are trademarks of Anthropic PBC. ChatGPT and OpenAI are trademarks of OpenAI, L.L.C. All other marks belong to their respective owners.</span>
     <span><a href="/.well-known/ard.json">ARD discovery catalog (JSON)</a></span>
     <!-- Registry backlink — the reciprocal half of the Smithery listing,
          which verifies by finding a link to it on this site. Not decoration:
@@ -2420,6 +2615,7 @@ def generate_index(atoms):
   </footer>
   </main>
   {INDEX_JS}
+  {PAUSE_ALL_JS}
   {LANDING_FILM_JS}
   {SITE_FOOT_JS}
 {_cursor_glow_html()}
@@ -3081,7 +3277,7 @@ MCP_APPS_PLAY_HTML = """<!DOCTYPE html>
   <link rel="icon" href="/favicon.ico" sizes="32x32">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <link rel="manifest" href="/site.webmanifest">
-  <meta name="theme-color" content="#6366f1">
+  <meta name="theme-color" content="#5051cf">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>A2UI Live Renderer — the catalog playground for MCP Apps</title>
   <meta name="description" content="Full-screen A2UI renderer running as a spec-conformant MCP Apps View. Paste a payload, or open a #p= link minted by scripts/make_url.py.">
@@ -3311,7 +3507,7 @@ document.addEventListener('click', function (e) {{
   <link rel="icon" href="/favicon.ico" sizes="32x32">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <link rel="manifest" href="/site.webmanifest">
-  <meta name="theme-color" content="#6366f1">
+  <meta name="theme-color" content="#5051cf">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>{html.escape(seo_title)}</title>
   <meta name="description" content="{html.escape(seo_desc, quote=True)}">
@@ -3330,7 +3526,7 @@ document.addEventListener('click', function (e) {{
   </style>
 </head>
 <body>
-  {site_header("playground" if surface == "mcp-apps" else "atoms")}
+  {site_header("playground" if surface == "mcp-apps" else "")}
   <div class="wrap">
   <nav class="crumb">
     <a href="/">A2UI Catalog</a> / surfaces / {surface}
@@ -3344,7 +3540,7 @@ document.addEventListener('click', function (e) {{
 
   <footer>
     <span>A2UI Atomic Catalog · <a href="https://github.com/a2uicatalog/a2ui">github.com/a2uicatalog/a2ui</a> · Maintained by <a href="https://www.linkedin.com/in/curtiskrygier" rel="me author">Curtis Krygier</a></span>
-    <span>Independent, unofficial catalog — not affiliated with, endorsed by, or sponsored by Google, Anthropic or OpenAI. A2UI is Google's protocol; official spec at <a href="https://a2ui.org">a2ui.org</a>. MCP is Anthropic's protocol; Claude, the Claude logo and Anthropic are trademarks of Anthropic PBC. ChatGPT and OpenAI are trademarks of OpenAI, L.L.C. All other marks belong to their respective owners.</span>
+    <span><strong>A2UI is an open protocol (a2ui.org). a2uicatalog.ai is an independent catalogue of components built on it.</strong> Independent, unofficial catalog — not affiliated with, endorsed by, or sponsored by Google, Anthropic or OpenAI. A2UI is Google's protocol; official spec at <a href="https://a2ui.org">a2ui.org</a>. MCP is Anthropic's protocol; Claude, the Claude logo and Anthropic are trademarks of Anthropic PBC. ChatGPT and OpenAI are trademarks of OpenAI, L.L.C. All other marks belong to their respective owners.</span>
     <span><a href="/.well-known/ai-catalog.json">ARD catalog JSON</a></span>
   </footer>
   </div>
@@ -3544,7 +3740,7 @@ def render_templates_page(atoms):
   <link rel="icon" href="/favicon.ico" sizes="32x32">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <link rel="manifest" href="/site.webmanifest">
-  <meta name="theme-color" content="#6366f1">
+  <meta name="theme-color" content="#5051cf">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>Templates — A2UI Atomic Catalog</title>
   <meta name="description" content="Every ComponentId/ChildList-eligible atom — {len(template_atoms)} templates whose children are independently addressable by ComponentId, per the A2UI v1.0 wire format.">
@@ -3581,7 +3777,7 @@ def render_templates_page(atoms):
 
   <footer>
     <span>A2UI Atomic Catalog · <a href="https://github.com/a2uicatalog/a2ui">github.com/a2uicatalog/a2ui</a> · Maintained by <a href="https://www.linkedin.com/in/curtiskrygier" rel="me author">Curtis Krygier</a></span>
-    <span>Independent, unofficial catalog — not affiliated with, endorsed by, or sponsored by Google, Anthropic or OpenAI. A2UI is Google's protocol; official spec at <a href="https://a2ui.org">a2ui.org</a>. MCP is Anthropic's protocol; Claude, the Claude logo and Anthropic are trademarks of Anthropic PBC. ChatGPT and OpenAI are trademarks of OpenAI, L.L.C. All other marks belong to their respective owners.</span>
+    <span><strong>A2UI is an open protocol (a2ui.org). a2uicatalog.ai is an independent catalogue of components built on it.</strong> Independent, unofficial catalog — not affiliated with, endorsed by, or sponsored by Google, Anthropic or OpenAI. A2UI is Google's protocol; official spec at <a href="https://a2ui.org">a2ui.org</a>. MCP is Anthropic's protocol; Claude, the Claude logo and Anthropic are trademarks of Anthropic PBC. ChatGPT and OpenAI are trademarks of OpenAI, L.L.C. All other marks belong to their respective owners.</span>
     <span>MIT License</span>
     <!-- Registry backlink. Smithery verifies a listing by finding a link to it
          on the site or in the README, so this is the reciprocal half of that
@@ -3602,7 +3798,7 @@ def render_try_page(atom_count):
   <link rel="icon" href="/favicon.ico" sizes="32x32">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <link rel="manifest" href="/site.webmanifest">
-  <meta name="theme-color" content="#6366f1">
+  <meta name="theme-color" content="#5051cf">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>Try it — A2UI Atomic Catalog</title>
   <meta name="description" content="Type a plain-English UI request and watch the free-tier Cloudflare Workers AI router pick real atoms from the A2UI catalog.">
@@ -3643,7 +3839,7 @@ def render_try_page(atom_count):
 
   <footer>
     <span>A2UI Atomic Catalog · <a href="https://github.com/a2uicatalog/a2ui">github.com/a2uicatalog/a2ui</a> · Maintained by <a href="https://www.linkedin.com/in/curtiskrygier" rel="me author">Curtis Krygier</a></span>
-    <span>Independent, unofficial catalog — not affiliated with, endorsed by, or sponsored by Google, Anthropic or OpenAI. A2UI is Google's protocol; official spec at <a href="https://a2ui.org">a2ui.org</a>. MCP is Anthropic's protocol; Claude, the Claude logo and Anthropic are trademarks of Anthropic PBC. ChatGPT and OpenAI are trademarks of OpenAI, L.L.C. All other marks belong to their respective owners.</span>
+    <span><strong>A2UI is an open protocol (a2ui.org). a2uicatalog.ai is an independent catalogue of components built on it.</strong> Independent, unofficial catalog — not affiliated with, endorsed by, or sponsored by Google, Anthropic or OpenAI. A2UI is Google's protocol; official spec at <a href="https://a2ui.org">a2ui.org</a>. MCP is Anthropic's protocol; Claude, the Claude logo and Anthropic are trademarks of Anthropic PBC. ChatGPT and OpenAI are trademarks of OpenAI, L.L.C. All other marks belong to their respective owners.</span>
     <span>MIT License</span>
     <!-- Registry backlink. Smithery verifies a listing by finding a link to it
          on the site or in the README, so this is the reciprocal half of that
@@ -3872,7 +4068,7 @@ def render_frugal_ai_ops_page():
   <link rel="icon" href="/favicon.ico" sizes="32x32">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <link rel="manifest" href="/site.webmanifest">
-  <meta name="theme-color" content="#6366f1">
+  <meta name="theme-color" content="#5051cf">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>Frugal AI Ops — A2UI Atomic Catalog</title>
   <meta name="description" content="A live demo of frugal AI ops: a small free-tier model extracts, deterministic code structures the result, and a second pass flags anything ungrounded instead of hiding it.">
@@ -3937,7 +4133,7 @@ def render_frugal_ai_ops_page():
 
   <footer>
     <span>A2UI Atomic Catalog · <a href="https://github.com/a2uicatalog/a2ui">github.com/a2uicatalog/a2ui</a> · Maintained by <a href="https://www.linkedin.com/in/curtiskrygier" rel="me author">Curtis Krygier</a></span>
-    <span>Independent, unofficial catalog — not affiliated with, endorsed by, or sponsored by Google, Anthropic or OpenAI. A2UI is Google's protocol; official spec at <a href="https://a2ui.org">a2ui.org</a>. MCP is Anthropic's protocol; Claude, the Claude logo and Anthropic are trademarks of Anthropic PBC. ChatGPT and OpenAI are trademarks of OpenAI, L.L.C. All other marks belong to their respective owners.</span>
+    <span><strong>A2UI is an open protocol (a2ui.org). a2uicatalog.ai is an independent catalogue of components built on it.</strong> Independent, unofficial catalog — not affiliated with, endorsed by, or sponsored by Google, Anthropic or OpenAI. A2UI is Google's protocol; official spec at <a href="https://a2ui.org">a2ui.org</a>. MCP is Anthropic's protocol; Claude, the Claude logo and Anthropic are trademarks of Anthropic PBC. ChatGPT and OpenAI are trademarks of OpenAI, L.L.C. All other marks belong to their respective owners.</span>
     <span>MIT License</span>
     <!-- Registry backlink. Smithery verifies a listing by finding a link to it
          on the site or in the README, so this is the reciprocal half of that
@@ -4225,7 +4421,7 @@ def render_atoms_hub(atoms):
   <link rel="icon" href="/favicon.ico" sizes="32x32">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <link rel="manifest" href="/site.webmanifest">
-  <meta name="theme-color" content="#6366f1">
+  <meta name="theme-color" content="#5051cf">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>{html.escape(title)}</title>
   <meta name="description" content="{html.escape(desc, quote=True)}">
@@ -4274,7 +4470,7 @@ def render_atoms_hub(atoms):
 
   <footer>
     <span>A2UI Atomic Catalog · <a href="/docs/">API Documentation</a> · <a href="https://github.com/a2uicatalog/a2ui">github.com/a2uicatalog/a2ui</a> · Maintained by <a href="https://www.linkedin.com/in/curtiskrygier" rel="me author">Curtis Krygier</a></span>
-    <span>Independent, unofficial catalog — not affiliated with, endorsed by, or sponsored by Google, Anthropic or OpenAI. A2UI is Google's protocol; official spec at <a href="https://a2ui.org">a2ui.org</a>. MCP is Anthropic's protocol; Claude, the Claude logo and Anthropic are trademarks of Anthropic PBC. ChatGPT and OpenAI are trademarks of OpenAI, L.L.C. All other marks belong to their respective owners.</span>
+    <span><strong>A2UI is an open protocol (a2ui.org). a2uicatalog.ai is an independent catalogue of components built on it.</strong> Independent, unofficial catalog — not affiliated with, endorsed by, or sponsored by Google, Anthropic or OpenAI. A2UI is Google's protocol; official spec at <a href="https://a2ui.org">a2ui.org</a>. MCP is Anthropic's protocol; Claude, the Claude logo and Anthropic are trademarks of Anthropic PBC. ChatGPT and OpenAI are trademarks of OpenAI, L.L.C. All other marks belong to their respective owners.</span>
     <span><a href="/.well-known/ard.json">ARD discovery catalog (JSON)</a> · <a href="/atoms.md">This list as Markdown</a></span>
   </footer>
   </div>
@@ -4284,6 +4480,7 @@ def render_atoms_hub(atoms):
 (function(){{
   var q = document.getElementById('hub-q');
   if (!q) return;
+  if (location.hash === '#hub-q') q.focus();
   var cat = new URLSearchParams(location.search).get('catalog') || '';
   var btns = document.querySelectorAll('.hub-cat');
   function apply(){{

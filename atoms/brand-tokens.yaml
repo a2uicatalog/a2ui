@@ -19,53 +19,60 @@ wordmark:
 font_stack: -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif
 mono_stack: ui-monospace,'SF Mono',Monaco,monospace
 light:
-  bg: oklch(98% 0.006 255)
-  surface: oklch(100% 0 0)
-  surface-2: oklch(96.5% 0.008 255)
-  border: oklch(90% 0.01 255)
-  border-strong: oklch(82% 0.02 255)
-  text: oklch(22% 0.02 255)
-  text-muted: oklch(46% 0.02 255)
-  accent: oklch(51% 0.19 277)
-  accent-contrast: oklch(100% 0 0)
-  accent-soft-bg: oklch(94% 0.03 277)
-  accent-2: oklch(62% 0.13 202)
-  accent-2-text: oklch(49.5% 0.13 202)
-  positive: oklch(58% 0.15 146)
-  negative: oklch(55% 0.18 25)
-  warn: oklch(70% 0.15 87)
-  code-bg: oklch(96% 0.01 255)
+  bg: '#f6f9fd'
+  surface: '#ffffff'
+  surface-2: '#eef2f8'
+  border: '#dadee5'
+  border-strong: '#c3c9d3'
+  text: '#141b24'
+  text-2: '#2c343f'
+  text-muted: '#515963'
+  accent: '#5051cf'
+  accent-text: '#3a3bb0'
+  accent-contrast: '#ffffff'
+  accent-soft-bg: '#e6eaff'
+  accent-2: '#009ca7'
+  accent-2-text: '#007581'
+  focus: '#5051cf'
+  positive: '#2f913e'
+  negative: '#c53637'
+  warn: '#c69600'
+  code-bg: '#f1f4f9'
   radius: 12px
-  shadow: 0 1px 2px oklch(0% 0 0 / .05),0 8px 24px oklch(0% 0 0 / .05)
-  glow: 0 4px 24px oklch(58% 0.19 277 / .14)
-  header-glass: oklch(100% 0 0 / .72)
-  grad: linear-gradient(120deg,oklch(58% 0.19 277),oklch(70% 0.14 202))
+  shadow: 0 1px 2px rgba(20,27,36,.05),0 10px 30px rgba(20,27,36,.07)
+  glow: 0 4px 24px rgba(80,81,207,.16)
+  header-glass: rgba(255,255,255,.78)
+  grad: linear-gradient(120deg,#6267e7,#00b7c3)
 dark:
-  bg: oklch(27% 0.025 255)
-  surface: oklch(33% 0.025 255)
-  surface-2: oklch(30% 0.02 255)
-  border: oklch(42% 0.02 255)
-  border-strong: oklch(50% 0.02 255)
-  text: oklch(95% 0.01 255)
-  text-muted: oklch(72% 0.02 255)
-  accent: oklch(72% 0.16 277)
-  accent-contrast: oklch(15% 0.02 255)
-  accent-soft-bg: oklch(33% 0.06 277)
-  accent-2: oklch(75% 0.12 202)
-  accent-2-text: oklch(75% 0.12 202)
-  positive: oklch(72% 0.15 146)
-  negative: oklch(68% 0.17 25)
-  warn: oklch(85% 0.17 87)
-  code-bg: oklch(23% 0.02 255)
-  shadow: 0 1px 2px oklch(0% 0 0 / .3),0 8px 24px oklch(0% 0 0 / .28)
-  glow: 0 4px 28px oklch(72% 0.16 277 / .22)
-  header-glass: oklch(33% 0.025 255 / .72)
-  grad: linear-gradient(120deg,oklch(72% 0.16 277),oklch(80% 0.13 202))
+  bg: '#1e2733'
+  surface: '#2d3642'
+  surface-2: '#1a222d'
+  border: '#4a5361'
+  border-strong: '#6b7684'
+  text: '#eaeff5'
+  text-2: '#d5dbe3'
+  text-muted: '#a9b2be'
+  accent: '#8d98ff'
+  accent-text: '#c7cdff'
+  accent-contrast: '#141b24'
+  accent-soft-bg: '#2f3463'
+  accent-2: '#2ac4ce'
+  accent-2-text: '#2ac4ce'
+  focus: '#8d98ff'
+  positive: '#5cc46c'
+  negative: '#ff7d7e'
+  warn: '#e6b800'
+  code-bg: '#1a222d'
+  shadow: 0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.28)
+  glow: 0 4px 28px rgba(141,152,255,.24)
+  header-glass: rgba(45,54,66,.78)
+  grad: linear-gradient(120deg,#8d98ff,#2ac4ce)
 aliases:
   card: var(--surface)
   muted: var(--text-muted)
   cyan: var(--accent-2)
   green: var(--positive)
+  accent-soft: var(--accent-soft-bg)
 logo:
   viewBox: 0 0 24 24
   elements:
