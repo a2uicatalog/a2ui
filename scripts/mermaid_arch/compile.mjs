@@ -99,7 +99,11 @@ export function compileGraph(graph, opts = {}) {
     if (drawn[i]) o.label = clip(drawn[i], LIMITS.edgeLabel);
     o.style = e.style === 'sync' || e.style === undefined ? 'solid' : 'dashed';
     if (e.both) o.both = true;
-    if (lay.curves[i]) o.curve = lay.curves[i];
+    const rt = lay.routes && lay.routes[i];
+    if (rt) {
+      o.points = rt.points.map((q) => ({ x: r2((q[0] / W) * 100), y: r2((q[1] / H) * 100) }));
+      if (rt.label) o.label_at = { x: r2(((rt.label.x + rt.label.w / 2) / W) * 100), y: r2(((rt.label.y + rt.label.h / 2) / H) * 100) };
+    } else if (lay.curves[i]) o.curve = lay.curves[i];
     o.at = r4(st.start / D); o.dur = pd(edgeSec(st), D);
     return o;
   });
@@ -125,6 +129,7 @@ export function compileGraph(graph, opts = {}) {
   });
 
   const block = { type: 'motion_arch', label: clip(graph.title || 'Architecture diagram', LIMITS.title), w: W, h: H, size, nodes, edges };
+  if (lay.routes) { block.radius = clamp(Math.round(size * 0.55), 6, 14); warnings.push(...lay.routeWarnings); }
   if (groups.length) block.groups = groups;
   if (messages.length) block.messages = messages;
 
@@ -214,6 +219,7 @@ export function validateBlock(b) {
   if (!(b.w >= 200 && b.w <= 2000)) errs.push(`w ${b.w} outside 200-2000`);
   if (!(b.h >= 120 && b.h <= 2000)) errs.push(`h ${b.h} outside 120-2000`);
   if (!(b.size >= 8 && b.size <= 40)) errs.push(`size ${b.size} outside 8-40`);
+  if (b.radius !== undefined && !(b.radius >= 0 && b.radius <= 60)) errs.push(`radius ${b.radius} outside 0-60`);
   const nodes = b.nodes || [], edges = b.edges || [], groups = b.groups || [], msgs = b.messages || [];
   if (nodes.length > LIMITS.nodes) errs.push('too many nodes');
   if (edges.length > LIMITS.edges) errs.push('too many edges');
@@ -231,6 +237,11 @@ export function validateBlock(b) {
   edges.forEach((e, i) => {
     if (!ids.has(e.from) || !ids.has(e.to)) errs.push(`edge ${i} dangling`);
     if (e.curve !== undefined && (e.curve < -100 || e.curve > 100)) errs.push(`edge ${i} curve`);
+    if (e.points !== undefined) {
+      if (!Array.isArray(e.points) || e.points.length < 2 || e.points.length > 10) errs.push(`edge ${i} points: 2 to 10 needed`);
+      else if (e.points.some((q) => !(q.x >= 0 && q.x <= 100 && q.y >= 0 && q.y <= 100))) errs.push(`edge ${i} points outside the frame`);
+    }
+    if (e.label_at !== undefined && !(e.label_at.x >= 0 && e.label_at.x <= 100 && e.label_at.y >= 0 && e.label_at.y <= 100)) errs.push(`edge ${i} label_at outside the frame`);
     if (e.label && e.label.length > 48) errs.push(`edge ${i} label too long`);
     if (e.at < 0 || e.at > 1 || e.dur < 0.01 || e.dur > 1 || e.at + e.dur > 1.0001) errs.push(`edge ${i} timing outside 0-1`);
   });

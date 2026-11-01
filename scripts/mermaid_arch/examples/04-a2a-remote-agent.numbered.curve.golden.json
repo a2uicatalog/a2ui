@@ -1,0 +1,280 @@
+{
+ "theme": "dark",
+ "blocks": [
+  {
+   "type": "motion_arch",
+   "label": "A2A: one agent hands work to another",
+   "w": 994,
+   "h": 298,
+   "size": 17,
+   "nodes": [
+    {
+     "id": "user",
+     "kind": "user",
+     "label": "User",
+     "x": 6.94,
+     "y": 57.26,
+     "w": 9.46,
+     "h": 17.11,
+     "at": 0.0128,
+     "dur": 0.011
+    },
+    {
+     "id": "orch",
+     "kind": "app",
+     "label": "Orchestrator on ADK",
+     "x": 27.72,
+     "y": 60.95,
+     "w": 23.84,
+     "h": 17.11,
+     "at": 0.0157,
+     "dur": 0.011
+    },
+    {
+     "id": "card",
+     "kind": "store",
+     "label": "Agent Card",
+     "x": 53.27,
+     "y": 43.84,
+     "w": 15.19,
+     "h": 17.11,
+     "at": 0.007,
+     "dur": 0.011
+    },
+    {
+     "id": "remote",
+     "kind": "server",
+     "label": "Remote agent",
+     "x": 71.63,
+     "y": 43.84,
+     "w": 17.1,
+     "h": 17.11,
+     "at": 0.0099,
+     "dur": 0.011
+    },
+    {
+     "id": "task",
+     "kind": "store",
+     "label": "Task state",
+     "x": 54.38,
+     "y": 78.06,
+     "w": 15.19,
+     "h": 17.11,
+     "at": 0.0186,
+     "dur": 0.011
+    },
+    {
+     "id": "rllm",
+     "kind": "model",
+     "label": "Remote LLM",
+     "x": 71.78,
+     "y": 78.06,
+     "w": 15.19,
+     "h": 17.11,
+     "at": 0.0216,
+     "dur": 0.011
+    },
+    {
+     "id": "rtools",
+     "kind": "tool",
+     "label": "MCP tools",
+     "x": 88.73,
+     "y": 78.06,
+     "w": 14.29,
+     "h": 17.11,
+     "at": 0.0245,
+     "dur": 0.011
+    }
+   ],
+   "edges": [
+    {
+     "from": "user",
+     "to": "orch",
+     "label": "1 asks",
+     "style": "solid",
+     "curve": -100,
+     "at": 0.035,
+     "dur": 0.0117
+    },
+    {
+     "from": "orch",
+     "to": "card",
+     "label": "2 discovers skills",
+     "style": "solid",
+     "curve": -80,
+     "at": 0.1189,
+     "dur": 0.0117
+    },
+    {
+     "from": "orch",
+     "to": "remote",
+     "label": "3 SendStreamingMessage JSON-RPC",
+     "style": "solid",
+     "curve": -100,
+     "at": 0.2297,
+     "dur": 0.0117
+    },
+    {
+     "from": "remote",
+     "to": "task",
+     "label": "4 creates task",
+     "style": "solid",
+     "at": 0.3405,
+     "dur": 0.0117
+    },
+    {
+     "from": "remote",
+     "to": "rllm",
+     "label": "5 prompt",
+     "style": "solid",
+     "curve": -65,
+     "at": 0.4423,
+     "dur": 0.0117
+    },
+    {
+     "from": "remote",
+     "to": "rtools",
+     "label": "6 tool calls",
+     "style": "solid",
+     "curve": 50,
+     "at": 0.5263,
+     "dur": 0.0117
+    },
+    {
+     "from": "remote",
+     "to": "orch",
+     "label": "7 status, artifacts, A2UI in a DataPart, over S…",
+     "style": "dashed",
+     "curve": 80,
+     "at": 0.6281,
+     "dur": 0.0117
+    },
+    {
+     "from": "orch",
+     "to": "user",
+     "label": "8 answer",
+     "style": "solid",
+     "curve": -100,
+     "at": 0.8461,
+     "dur": 0.0117
+    }
+   ],
+   "groups": [
+    {
+     "label": "Our system",
+     "x": 13.88,
+     "y": 39.31,
+     "w": 27.67,
+     "h": 35.91,
+     "at": 0,
+     "dur": 0.011
+    },
+    {
+     "label": "Partner system",
+     "x": 43.76,
+     "y": 22.19,
+     "w": 54.02,
+     "h": 70.13,
+     "at": 0,
+     "dur": 0.011
+    }
+   ],
+   "messages": [
+    {
+     "edge": 1,
+     "text": "GET agent card",
+     "at": 0.1317,
+     "dur": 0.028
+    },
+    {
+     "edge": 2,
+     "text": "SendStreamingMessage",
+     "at": 0.2425,
+     "dur": 0.028
+    },
+    {
+     "edge": 6,
+     "text": "artifact",
+     "at": 0.6409,
+     "dur": 0.028
+    }
+   ]
+  },
+  {
+   "type": "table",
+   "caption": "Steps",
+   "headers": [
+    "Step",
+    "From",
+    "To",
+    "What",
+    "Kind"
+   ],
+   "rows": [
+    [
+     "1",
+     "User",
+     "Orchestrator on ADK",
+     "asks",
+     "sync"
+    ],
+    [
+     "2",
+     "Orchestrator on ADK",
+     "Agent Card",
+     "discovers skills",
+     "sync"
+    ],
+    [
+     "3",
+     "Orchestrator on ADK",
+     "Remote agent",
+     "SendStreamingMessage JSON-RPC",
+     "sync"
+    ],
+    [
+     "4",
+     "Remote agent",
+     "Task state",
+     "creates task",
+     "sync"
+    ],
+    [
+     "5",
+     "Remote agent",
+     "Remote LLM",
+     "prompt",
+     "sync"
+    ],
+    [
+     "6",
+     "Remote agent",
+     "MCP tools",
+     "tool calls",
+     "sync"
+    ],
+    [
+     "7",
+     "Remote agent",
+     "Orchestrator on ADK",
+     "status, artifacts, A2UI in a DataPart, over SSE",
+     "async"
+    ],
+    [
+     "8",
+     "Orchestrator on ADK",
+     "User",
+     "answer",
+     "sync"
+    ]
+   ],
+   "col_widths": [
+    "9%",
+    "25%",
+    "25%",
+    "28%",
+    "13%"
+   ]
+  }
+ ]
+}

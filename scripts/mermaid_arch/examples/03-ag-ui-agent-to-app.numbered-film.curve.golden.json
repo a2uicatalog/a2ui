@@ -1,0 +1,705 @@
+{
+ "theme": "dark",
+ "blocks": [
+  {
+   "type": "motion_timeline",
+   "title": "AG-UI: streaming an agent run into an app",
+   "aspect": "4:3",
+   "duration": 61.367,
+   "loop": true,
+   "autoplay": true,
+   "controls": true,
+   "theme": "dark",
+   "poster": 60.87,
+   "blocks": [
+    {
+     "type": "motion_arch",
+     "label": "AG-UI: streaming an agent run into an app",
+     "w": 1046,
+     "h": 258,
+     "size": 10,
+     "nodes": [
+      {
+       "id": "user",
+       "kind": "user",
+       "label": "User",
+       "x": 3.87,
+       "y": 40.36,
+       "w": 5.26,
+       "h": 11.63,
+       "at": 0.0049,
+       "dur": 0.011
+      },
+      {
+       "id": "app",
+       "kind": "app",
+       "label": "Frontend app",
+       "x": 19.6,
+       "y": 45.59,
+       "w": 9.56,
+       "h": 11.63,
+       "at": 0.0069,
+       "dur": 0.011
+      },
+      {
+       "id": "client",
+       "kind": "tool",
+       "label": "AG-UI client",
+       "x": 30.4,
+       "y": 45.59,
+       "w": 9.56,
+       "h": 11.63,
+       "at": 0.009,
+       "dur": 0.011
+      },
+      {
+       "id": "agent",
+       "kind": "app",
+       "label": "Agent runtime on ADK",
+       "x": 55.4,
+       "y": 33.53,
+       "w": 13.86,
+       "h": 11.63,
+       "at": 0.011,
+       "dur": 0.011
+      },
+      {
+       "id": "llm",
+       "kind": "model",
+       "label": "LLM",
+       "x": 74,
+       "y": 25.19,
+       "w": 4.97,
+       "h": 11.63,
+       "at": 0.013,
+       "dur": 0.011
+      },
+      {
+       "id": "tools",
+       "kind": "tool",
+       "label": "Backend tools",
+       "x": 74,
+       "y": 41.86,
+       "w": 10.13,
+       "h": 11.63,
+       "at": 0.0151,
+       "dur": 0.011
+      },
+      {
+       "id": "state",
+       "kind": "store",
+       "label": "Shared state",
+       "x": 93.98,
+       "y": 44.53,
+       "w": 9.56,
+       "h": 11.63,
+       "at": 0.0171,
+       "dur": 0.011
+      }
+     ],
+     "edges": [
+      {
+       "from": "user",
+       "to": "app",
+       "label": "1 message",
+       "style": "solid",
+       "at": 0.0244,
+       "dur": 0.011
+      },
+      {
+       "from": "app",
+       "to": "client",
+       "label": "2 run input",
+       "style": "solid",
+       "curve": -50,
+       "at": 0.0848,
+       "dur": 0.011
+      },
+      {
+       "from": "client",
+       "to": "agent",
+       "label": "3 POST run over HTTP",
+       "style": "solid",
+       "at": 0.1667,
+       "dur": 0.011
+      },
+      {
+       "from": "agent",
+       "to": "llm",
+       "label": "4 prompt",
+       "style": "solid",
+       "at": 0.2917,
+       "dur": 0.011
+      },
+      {
+       "from": "agent",
+       "to": "tools",
+       "label": "5 tool call",
+       "style": "solid",
+       "at": 0.3664,
+       "dur": 0.011
+      },
+      {
+       "from": "agent",
+       "to": "client",
+       "label": "6 events, SSE by default",
+       "style": "dashed",
+       "curve": 24,
+       "at": 0.4626,
+       "dur": 0.011
+      },
+      {
+       "from": "client",
+       "to": "app",
+       "label": "7 dispatches events",
+       "style": "solid",
+       "curve": 100,
+       "at": 0.5876,
+       "dur": 0.011
+      },
+      {
+       "from": "app",
+       "to": "user",
+       "label": "8 streamed UI",
+       "style": "solid",
+       "curve": 36,
+       "at": 0.6695,
+       "dur": 0.011
+      },
+      {
+       "from": "agent",
+       "to": "state",
+       "label": "9 reads and writes",
+       "style": "solid",
+       "both": true,
+       "curve": 50,
+       "at": 0.7442,
+       "dur": 0.011
+      },
+      {
+       "from": "app",
+       "to": "state",
+       "label": "10 reads and writes",
+       "style": "solid",
+       "both": true,
+       "curve": 65,
+       "at": 0.8549,
+       "dur": 0.011
+      }
+     ],
+     "groups": [
+      {
+       "label": "Browser",
+       "x": 13.77,
+       "y": 25.44,
+       "w": 22.47,
+       "h": 29.84,
+       "at": 0,
+       "dur": 0.011
+      },
+      {
+       "label": "Backend",
+       "x": 47.42,
+       "y": 5.04,
+       "w": 32.7,
+       "h": 46.51,
+       "at": 0,
+       "dur": 0.011
+      }
+     ],
+     "messages": [
+      {
+       "edge": 2,
+       "text": "run input",
+       "at": 0.1785,
+       "dur": 0.0196
+      },
+      {
+       "edge": 5,
+       "text": "TEXT_MESSAGE_CONTENT",
+       "at": 0.4745,
+       "dur": 0.0196
+      },
+      {
+       "edge": 5,
+       "text": "STATE_DELTA",
+       "at": 0.4965,
+       "dur": 0.0196
+      }
+     ],
+     "id": "arch",
+     "place": {
+      "x": 2,
+      "y": 2.67,
+      "w": 96,
+      "h": 31.57,
+      "z": 1
+     }
+    },
+    {
+     "type": "motion_text",
+     "id": "head",
+     "text": "STEP  FROM → TO: WHAT",
+     "size": 21,
+     "font": "mono",
+     "weight": "bold",
+     "mode": "block",
+     "reveal": "fade",
+     "color": "#9ca5b1",
+     "place": {
+      "x": 3,
+      "y": 36.91,
+      "w": 94,
+      "z": 2
+     }
+    },
+    {
+     "type": "motion_shape",
+     "id": "hl",
+     "shape": "rect",
+     "draw": "none",
+     "fill": "#8d98ff",
+     "radius": 8,
+     "place": {
+      "x": 1.8,
+      "y": 42.02,
+      "w": 96.4,
+      "h": 4.89,
+      "z": 1
+     }
+    },
+    {
+     "type": "motion_text",
+     "id": "row1",
+     "text": "*1*  User → Frontend app: message",
+     "size": 24,
+     "font": "mono",
+     "weight": "regular",
+     "mode": "block",
+     "reveal": "fade",
+     "place": {
+      "x": 3,
+      "y": 42.46,
+      "w": 94,
+      "z": 2
+     }
+    },
+    {
+     "type": "motion_text",
+     "id": "row2",
+     "text": "*2*  Frontend app → AG-UI client: run input",
+     "size": 24,
+     "font": "mono",
+     "weight": "regular",
+     "mode": "block",
+     "reveal": "fade",
+     "place": {
+      "x": 3,
+      "y": 47.57,
+      "w": 94,
+      "z": 2
+     }
+    },
+    {
+     "type": "motion_text",
+     "id": "row3",
+     "text": "*3*  AG-UI client → Agent runtime on ADK: POST run over HTTP",
+     "size": 24,
+     "font": "mono",
+     "weight": "regular",
+     "mode": "block",
+     "reveal": "fade",
+     "place": {
+      "x": 3,
+      "y": 52.68,
+      "w": 94,
+      "z": 2
+     }
+    },
+    {
+     "type": "motion_text",
+     "id": "row4",
+     "text": "*4*  Agent runtime on ADK → LLM: prompt",
+     "size": 24,
+     "font": "mono",
+     "weight": "regular",
+     "mode": "block",
+     "reveal": "fade",
+     "place": {
+      "x": 3,
+      "y": 57.79,
+      "w": 94,
+      "z": 2
+     }
+    },
+    {
+     "type": "motion_text",
+     "id": "row5",
+     "text": "*5*  Agent runtime on ADK → Backend tools: tool call",
+     "size": 24,
+     "font": "mono",
+     "weight": "regular",
+     "mode": "block",
+     "reveal": "fade",
+     "place": {
+      "x": 3,
+      "y": 62.91,
+      "w": 94,
+      "z": 2
+     }
+    },
+    {
+     "type": "motion_text",
+     "id": "row6",
+     "text": "*6*  Agent runtime on ADK → AG-UI client: events, SSE by de…",
+     "size": 24,
+     "font": "mono",
+     "weight": "regular",
+     "mode": "block",
+     "reveal": "fade",
+     "place": {
+      "x": 3,
+      "y": 68.02,
+      "w": 94,
+      "z": 2
+     }
+    },
+    {
+     "type": "motion_text",
+     "id": "row7",
+     "text": "*7*  AG-UI client → Frontend app: dispatches events",
+     "size": 24,
+     "font": "mono",
+     "weight": "regular",
+     "mode": "block",
+     "reveal": "fade",
+     "place": {
+      "x": 3,
+      "y": 73.13,
+      "w": 94,
+      "z": 2
+     }
+    },
+    {
+     "type": "motion_text",
+     "id": "row8",
+     "text": "*8*  Frontend app → User: streamed UI",
+     "size": 24,
+     "font": "mono",
+     "weight": "regular",
+     "mode": "block",
+     "reveal": "fade",
+     "place": {
+      "x": 3,
+      "y": 78.24,
+      "w": 94,
+      "z": 2
+     }
+    },
+    {
+     "type": "motion_text",
+     "id": "row9",
+     "text": "*9*  Agent runtime on ADK → Shared state: reads and writes",
+     "size": 24,
+     "font": "mono",
+     "weight": "regular",
+     "mode": "block",
+     "reveal": "fade",
+     "place": {
+      "x": 3,
+      "y": 83.35,
+      "w": 94,
+      "z": 2
+     }
+    },
+    {
+     "type": "motion_text",
+     "id": "row10",
+     "text": "*10*  Frontend app → Shared state: reads and writes",
+     "size": 24,
+     "font": "mono",
+     "weight": "regular",
+     "mode": "block",
+     "reveal": "fade",
+     "place": {
+      "x": 3,
+      "y": 88.46,
+      "w": 94,
+      "z": 2
+     }
+    }
+   ],
+   "tracks": [
+    {
+     "target": "arch",
+     "keys": [
+      {
+       "t": 0,
+       "p": 0
+      },
+      {
+       "t": 61.367,
+       "p": 1,
+       "ease": "linear"
+      }
+     ]
+    },
+    {
+     "target": "row1",
+     "keys": [
+      {
+       "t": 0,
+       "opacity": 0
+      },
+      {
+       "t": 1.5,
+       "opacity": 0
+      },
+      {
+       "t": 1.8,
+       "opacity": 1,
+       "ease": "standard"
+      }
+     ]
+    },
+    {
+     "target": "row2",
+     "keys": [
+      {
+       "t": 0,
+       "opacity": 0
+      },
+      {
+       "t": 5.203,
+       "opacity": 0
+      },
+      {
+       "t": 5.5,
+       "opacity": 1,
+       "ease": "standard"
+      }
+     ]
+    },
+    {
+     "target": "row3",
+     "keys": [
+      {
+       "t": 0,
+       "opacity": 0
+      },
+      {
+       "t": 10.228,
+       "opacity": 0
+      },
+      {
+       "t": 10.53,
+       "opacity": 1,
+       "ease": "standard"
+      }
+     ]
+    },
+    {
+     "target": "row4",
+     "keys": [
+      {
+       "t": 0,
+       "opacity": 0
+      },
+      {
+       "t": 17.899,
+       "opacity": 0
+      },
+      {
+       "t": 18.2,
+       "opacity": 1,
+       "ease": "standard"
+      }
+     ]
+    },
+    {
+     "target": "row5",
+     "keys": [
+      {
+       "t": 0,
+       "opacity": 0
+      },
+      {
+       "t": 22.484,
+       "opacity": 0
+      },
+      {
+       "t": 22.78,
+       "opacity": 1,
+       "ease": "standard"
+      }
+     ]
+    },
+    {
+     "target": "row6",
+     "keys": [
+      {
+       "t": 0,
+       "opacity": 0
+      },
+      {
+       "t": 28.391,
+       "opacity": 0
+      },
+      {
+       "t": 28.69,
+       "opacity": 1,
+       "ease": "standard"
+      }
+     ]
+    },
+    {
+     "target": "row7",
+     "keys": [
+      {
+       "t": 0,
+       "opacity": 0
+      },
+      {
+       "t": 36.061,
+       "opacity": 0
+      },
+      {
+       "t": 36.36,
+       "opacity": 1,
+       "ease": "standard"
+      }
+     ]
+    },
+    {
+     "target": "row8",
+     "keys": [
+      {
+       "t": 0,
+       "opacity": 0
+      },
+      {
+       "t": 41.087,
+       "opacity": 0
+      },
+      {
+       "t": 41.39,
+       "opacity": 1,
+       "ease": "standard"
+      }
+     ]
+    },
+    {
+     "target": "row9",
+     "keys": [
+      {
+       "t": 0,
+       "opacity": 0
+      },
+      {
+       "t": 45.671,
+       "opacity": 0
+      },
+      {
+       "t": 45.97,
+       "opacity": 1,
+       "ease": "standard"
+      }
+     ]
+    },
+    {
+     "target": "row10",
+     "keys": [
+      {
+       "t": 0,
+       "opacity": 0
+      },
+      {
+       "t": 52.46,
+       "opacity": 0
+      },
+      {
+       "t": 52.76,
+       "opacity": 1,
+       "ease": "standard"
+      }
+     ]
+    },
+    {
+     "target": "hl",
+     "keys": [
+      {
+       "t": 0,
+       "y": 42.02,
+       "opacity": 0
+      },
+      {
+       "t": 1.5,
+       "y": 42.02,
+       "opacity": 0,
+       "ease": "hold"
+      },
+      {
+       "t": 1.8,
+       "opacity": 0.22,
+       "ease": "standard"
+      },
+      {
+       "t": 5.203,
+       "y": 47.13,
+       "opacity": 0.22,
+       "ease": "hold"
+      },
+      {
+       "t": 10.228,
+       "y": 52.24,
+       "opacity": 0.22,
+       "ease": "hold"
+      },
+      {
+       "t": 17.899,
+       "y": 57.35,
+       "opacity": 0.22,
+       "ease": "hold"
+      },
+      {
+       "t": 22.484,
+       "y": 62.46,
+       "opacity": 0.22,
+       "ease": "hold"
+      },
+      {
+       "t": 28.391,
+       "y": 67.57,
+       "opacity": 0.22,
+       "ease": "hold"
+      },
+      {
+       "t": 36.061,
+       "y": 72.68,
+       "opacity": 0.22,
+       "ease": "hold"
+      },
+      {
+       "t": 41.087,
+       "y": 77.79,
+       "opacity": 0.22,
+       "ease": "hold"
+      },
+      {
+       "t": 45.671,
+       "y": 82.91,
+       "opacity": 0.22,
+       "ease": "hold"
+      },
+      {
+       "t": 52.46,
+       "y": 88.02,
+       "opacity": 0.22,
+       "ease": "hold"
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,281 @@
+{
+ "theme": "dark",
+ "blocks": [
+  {
+   "type": "motion_arch",
+   "label": "MCP Apps: a tool result becomes an inline UI",
+   "w": 1010,
+   "h": 630,
+   "size": 23,
+   "nodes": [
+    {
+     "id": "user",
+     "kind": "user",
+     "label": "User",
+     "x": 50,
+     "y": 10.24,
+     "w": 12.57,
+     "h": 10.95,
+     "at": 0.0066,
+     "dur": 0.011
+    },
+    {
+     "id": "host",
+     "kind": "app",
+     "label": "Chat host",
+     "x": 14.95,
+     "y": 46.35,
+     "w": 19.01,
+     "h": 10.95,
+     "at": 0.0131,
+     "dur": 0.011
+    },
+    {
+     "id": "llm",
+     "kind": "model",
+     "label": "LLM",
+     "x": 80.59,
+     "y": 38.49,
+     "w": 11.88,
+     "h": 10.95,
+     "at": 0.0098,
+     "dur": 0.011
+    },
+    {
+     "id": "frame",
+     "kind": "surface",
+     "label": "Sandboxed iframe",
+     "x": 80.59,
+     "y": 54.21,
+     "w": 27.92,
+     "h": 10.95,
+     "at": 0.0164,
+     "dur": 0.011
+    },
+    {
+     "id": "tool",
+     "kind": "tool",
+     "label": "Tool with ui:// link",
+     "x": 32.62,
+     "y": 86.11,
+     "w": 33.07,
+     "h": 10.95,
+     "at": 0.0197,
+     "dur": 0.011
+    },
+    {
+     "id": "resource",
+     "kind": "store",
+     "label": "ui:// HTML resource",
+     "x": 68.02,
+     "y": 86.11,
+     "w": 31.78,
+     "h": 10.95,
+     "at": 0.023,
+     "dur": 0.011
+    }
+   ],
+   "edges": [
+    {
+     "from": "user",
+     "to": "host",
+     "label": "1 asks",
+     "style": "solid",
+     "at": 0.0328,
+     "dur": 0.011
+    },
+    {
+     "from": "host",
+     "to": "llm",
+     "label": "2 prompt + tools",
+     "style": "solid",
+     "at": 0.1032,
+     "dur": 0.011
+    },
+    {
+     "from": "llm",
+     "to": "host",
+     "label": "3 tool call",
+     "style": "solid",
+     "curve": 24,
+     "at": 0.2071,
+     "dur": 0.011
+    },
+    {
+     "from": "host",
+     "to": "tool",
+     "label": "4 tools/call",
+     "style": "solid",
+     "at": 0.2942,
+     "dur": 0.011
+    },
+    {
+     "from": "tool",
+     "to": "host",
+     "label": "5 tool result",
+     "style": "solid",
+     "curve": 100,
+     "at": 0.3898,
+     "dur": 0.011
+    },
+    {
+     "from": "host",
+     "to": "resource",
+     "label": "6 resources/read",
+     "style": "solid",
+     "at": 0.502,
+     "dur": 0.011
+    },
+    {
+     "from": "host",
+     "to": "frame",
+     "label": "7 mounts HTML, sends tool result",
+     "style": "solid",
+     "at": 0.5892,
+     "dur": 0.011
+    },
+    {
+     "from": "frame",
+     "to": "host",
+     "label": "8 tools/call via postMessage",
+     "style": "dashed",
+     "curve": 100,
+     "at": 0.735,
+     "dur": 0.011
+    },
+    {
+     "from": "frame",
+     "to": "user",
+     "label": "9 interactive UI",
+     "style": "solid",
+     "curve": 12,
+     "at": 0.8473,
+     "dur": 0.011
+    }
+   ],
+   "groups": [
+    {
+     "label": "Host",
+     "x": 2.97,
+     "y": 26.67,
+     "w": 94.06,
+     "h": 36.67,
+     "at": 0,
+     "dur": 0.011
+    },
+    {
+     "label": "MCP server",
+     "x": 13.61,
+     "y": 74.29,
+     "w": 72.77,
+     "h": 20.95,
+     "at": 0,
+     "dur": 0.011
+    }
+   ],
+   "messages": [
+    {
+     "edge": 2,
+     "text": "tool call",
+     "at": 0.2192,
+     "dur": 0.0262
+    },
+    {
+     "edge": 3,
+     "text": "tools/call",
+     "at": 0.3063,
+     "dur": 0.0262
+    },
+    {
+     "edge": 5,
+     "text": "resources/read ui://",
+     "at": 0.5141,
+     "dur": 0.0262
+    }
+   ]
+  },
+  {
+   "type": "table",
+   "caption": "Steps",
+   "headers": [
+    "Step",
+    "From",
+    "To",
+    "What",
+    "Kind"
+   ],
+   "rows": [
+    [
+     "1",
+     "User",
+     "Chat host",
+     "asks",
+     "sync"
+    ],
+    [
+     "2",
+     "Chat host",
+     "LLM",
+     "prompt + tools",
+     "sync"
+    ],
+    [
+     "3",
+     "LLM",
+     "Chat host",
+     "tool call",
+     "sync"
+    ],
+    [
+     "4",
+     "Chat host",
+     "Tool with ui:// link",
+     "tools/call",
+     "sync"
+    ],
+    [
+     "5",
+     "Tool with ui:// link",
+     "Chat host",
+     "tool result",
+     "sync"
+    ],
+    [
+     "6",
+     "Chat host",
+     "ui:// HTML resource",
+     "resources/read",
+     "sync"
+    ],
+    [
+     "7",
+     "Chat host",
+     "Sandboxed iframe",
+     "mounts HTML, sends tool result",
+     "sync"
+    ],
+    [
+     "8",
+     "Sandboxed iframe",
+     "Chat host",
+     "tools/call via postMessage",
+     "async"
+    ],
+    [
+     "9",
+     "Sandboxed iframe",
+     "User",
+     "interactive UI",
+     "sync"
+    ]
+   ],
+   "col_widths": [
+    "9%",
+    "25%",
+    "25%",
+    "28%",
+    "13%"
+   ]
+  }
+ ]
+}

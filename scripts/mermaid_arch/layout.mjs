@@ -9,6 +9,7 @@
 // routeCurves() is the ONLY place that decides how an edge bends. A better router
 // can replace it without touching anything else.
 import { LIMITS } from './graph.mjs';
+import { routeEdges } from './route.mjs';
 
 const CHAR_SANS = 0.56;     // bold system-ui, em per character (calibrated, see docs)
 const CHAR_MONO = 0.62;    // mono, em per character
@@ -55,10 +56,10 @@ function spaceOut(desired, minDist) {
 // ---------------------------------------------------------------- layered core
 // items: [{key,w,h}]; edges: [{a,b,lw}] directed between item keys; axis 'x'|'y' is the rank axis.
 // returns {pos: Map key -> {x,y} top-left, w, h, rank: Map}
-export function layered(items, edges, axis, s, samePairs = []) {
+export function layered(items, edges, axis, s, samePairs = [], laneGap = 0, extraGap = 0) {
   const n = items.length;
   const idx = new Map(items.map((it, i) => [it.key, i]));
-  const E = edges.filter((e) => idx.has(e.a) && idx.has(e.b) && e.a !== e.b).map((e) => ({ a: idx.get(e.a), b: idx.get(e.b), lw: e.lw || 0, lh: e.lh || 0 }));
+  const E = edges.filter((e) => idx.has(e.a) && idx.has(e.b) && e.a !== e.b).map((e) => ({ a: idx.get(e.a), b: idx.get(e.b), lw: e.lw || 0, lh: e.lh || 0, n: e.n || 1 }));
   // optional same-rank pairs (union-find): used so a labelled request/response pair runs side by side
   const rep = Array.from({ length: n }, (_, i) => i);
   const find = (x) => { while (rep[x] !== x) { rep[x] = rep[rep[x]]; x = rep[x]; } return x; };
@@ -185,6 +186,17 @@ export function layered(items, edges, axis, s, samePairs = []) {
       const lo = Math.min(rank[e.oa], rank[e.ob]), hi = Math.max(rank[e.oa], rank[e.ob]);
       if (lo === r && hi === r + 1) g = Math.max(g, axis === 'x' ? e.lw + 1.6 * s : e.lh + 1.4 * s);
     }
+    if (laneGap) {
+      // orthogonal routing: every edge that runs through this channel takes its own lane
+      const through = Eorig.filter((e) => Math.min(rank[e.oa], rank[e.ob]) <= r && Math.max(rank[e.oa], rank[e.ob]) >= r + 1).reduce((a, e) => a + e.n, 0);
+      g += Math.max(0, through - 1) * laneGap;
+      if (axis === 'y') {
+        // top-to-bottom: labels sit beside the vertical stretches inside this channel, so give them height to stack in
+        const lh = Eorig.filter((e) => Math.min(rank[e.oa], rank[e.ob]) <= r && Math.max(rank[e.oa], rank[e.ob]) >= r + 1 && e.lh).reduce((a, e) => a + e.lh + 4, 0);
+        g = Math.max(g, 0.55 * lh + 1.4 * s);
+      }
+      g += extraGap;
+    }
     gaps.push(Math.round(g));
   }
   const rankPos = [];
@@ -246,7 +258,7 @@ function labelledPairs(edges, keyOf) {
   return out;
 }
 
-export function clusterLayout(graph, s, flows, pairMode = false) {
+export function clusterLayout(graph, s, flows, pairMode = false, laneGap = 0, extraGap = 0) {
   const outerAxis = graph.direction === 'LR' || graph.direction === 'RL' ? 'x' : 'y';
   const nodeById = new Map(graph.nodes.map((n) => [n.id, n]));
   const box = new Map(graph.nodes.map((n) => [n.id, nodeBox(n, s)]));
@@ -276,7 +288,7 @@ export function clusterLayout(graph, s, flows, pairMode = false) {
       const items = members.map((id) => ({ key: id, ...box.get(id) }));
       const innerEdges = graph.edges.filter((e) => members.includes(e.from) && members.includes(e.to)).map(edgeOf);
       const innerPairs = pairMode && flow === 'y' ? labelledPairs(graph.edges.filter((e) => members.includes(e.from) && members.includes(e.to)), (x) => x) : [];
-      const lay = layered(items, innerEdges, flow, s, innerPairs);
+      const lay = layered(items, innerEdges, flow, s, innerPairs, laneGap, extraGap);
       const gl = graph.groups.find((g) => g.id === gid);
       const w = Math.max(lay.w + 2 * padX, groupLabelWidth(gl.label, s));
       const h = lay.h + padTop + padBottom;
@@ -293,10 +305,10 @@ export function clusterLayout(graph, s, flows, pairMode = false) {
     const k = a + '>' + b;
     const o = edgeOf(e);
     const prev = ce.get(k);
-    if (prev) { prev.lw = Math.max(prev.lw, o.lw); prev.lh = Math.max(prev.lh, o.lh); } else ce.set(k, { a, b, lw: o.lw, lh: o.lh });
+    if (prev) { prev.lw = Math.max(prev.lw, o.lw); prev.lh = Math.max(prev.lh, o.lh); prev.n++; } else ce.set(k, { a, b, lw: o.lw, lh: o.lh, n: 1 });
   }
   const topPairs = pairMode && outerAxis === 'y' ? labelledPairs(graph.edges, (x) => clusterOfNode.get(x)) : [];
-  const top = layered(clusters, [...ce.values()], outerAxis, s, topPairs);
+  const top = layered(clusters, [...ce.values()], outerAxis, s, topPairs, laneGap, extraGap);
   const nodes = [], groups = [];
   for (const c of clusters) {
     const p = top.pos.get(c.key);
@@ -454,24 +466,100 @@ function score(graph, layout, curves, fit) {
   return wu * wW + hu * hW + m.crossings * 7 + m.throughBoxes * 12 + m.labelsOnBoxes * 10 + m.labelOverlaps * 40 + (m.edgeLength / s) * 0.06;
 }
 
+// text px on a 343 px column for a drawing of this size: the smallest text is size - 4 (edge labels)
+const phonePx = (w, s) => ((s - 4) * 343) / Math.max(w, 1);
+// a quick shape score used to pick which layouts are worth routing: legible on a phone, not absurdly tall, short edges
+function shapeScore(graph, layout, fit) {
+  const s = layout.s, W = layout.w, H = layout.h;
+  const byId = new Map(layout.nodes.map((n) => [n.id, n]));
+  let len = 0;
+  for (const e of graph.edges) { const a = byId.get(e.from), b = byId.get(e.to); if (a && b) len += Math.abs(a.x + a.w / 2 - b.x - b.w / 2) + Math.abs(a.y + a.h / 2 - b.y - b.h / 2); }
+  const phone = fit === 'wide' ? 0 : 14 * Math.max(0, 9 - phonePx(W, s)) + 30 * Math.max(0, H / W - 1.7);
+  return phone + (W / s) * 0.15 + (H / s) * 0.15 + (len / s) * 0.35;
+}
+
 export function chooseLayout(graph, s, fit = 'balanced') {
+  return rankLayouts(graph, s, fit, 1, 0)[0];
+}
+
+// All candidate layouts (cluster flow directions x request/response pairing), best first by the cheap curve score.
+export function rankLayouts(graph, s, fit = 'balanced', keep = 3, laneGap = 0, shapeOnly = false, extraGap = 0) {
   const multi = graph.groups.filter((g) => graph.nodes.filter((n) => n.group === g.id).length >= 2).map((g) => g.id);
-  let best = null;
+  const list = [];
   const total = 1 << multi.length;
   for (let mask = 0; mask < total; mask++) {
     for (const pairMode of [false, true]) {
       const flows = new Map(multi.map((id, i) => [id, mask & (1 << i) ? 'cross' : 'same']));
-      const lay = clusterLayout(graph, s, flows, pairMode);
+      const lay = clusterLayout(graph, s, flows, pairMode, laneGap, extraGap);
+      if (shapeOnly) { list.push({ layout: lay, curves: null, score: shapeScore(graph, lay, fit), flows, pairMode }); continue; }
       const curves = routeCurves(graph, lay);
-      const sc = score(graph, lay, curves, fit);
-      if (!best || sc < best.score - 1e-9) best = { layout: lay, curves, score: sc, flows, pairMode };
+      list.push({ layout: lay, curves, score: score(graph, lay, curves, fit), flows, pairMode });
     }
   }
-  return best;
+  return list.map((v, i) => ({ v, i })).sort((a, b) => (Math.abs(a.v.score - b.v.score) < 1e-9 ? a.i - b.i : a.v.score - b.v.score)).slice(0, keep).map((x) => x.v);
 }
 
 // ---------------------------------------------------------------- framing: size choice and viewBox
 export function layoutGraph(graph, opts = {}) {
+  return opts.routing === 'curve' ? layoutCurve(graph, opts) : layoutOrthogonal(graph, opts);
+}
+
+// ---------------------------------------------------------------- orthogonal routing: size, orientation, framing
+function orthoScore(fr, fit) {
+  const m = fr.metrics, s = fr.size;
+  const phone = fit === 'wide' ? 0 : 14 * Math.max(0, 9 - phonePx(fr.W, s)) + 30 * Math.max(0, fr.H / fr.W - 1.7);
+  return phone + (fr.W / s) * 0.15 + (fr.H / s) * 0.15 + m.crossings * 8 + (m.throughBoxes + m.titleHits) * 40 + m.labelNode * 20 + m.labelLabel * 40 + m.labelTitle * 30
+    + m.labelOnLine * 9 + m.bends * 0.5 + (m.length / s) * 0.04 + fr.failed * 50;
+}
+
+function orthoAt(gr, s, fit) {
+  const laneGap = Math.round(0.55 * s);
+  let best = null;
+  // if some label has no free place, give every channel more room and route again (twice at most)
+  for (const extra of [0, 1.0, 2.0]) {
+    for (const v of rankLayouts(gr, s, fit, 4, laneGap, true, Math.round(extra * s))) {
+      const rt = routeEdges(gr, { nodes: v.layout.nodes, groups: v.layout.groups, s }, {});
+      const fr = frameRouted(gr, v, rt, s);
+      fr.score = orthoScore(fr, fit);
+      if (!best || fr.score < best.score - 1e-9) best = fr;
+    }
+    const m = best.metrics;
+    if (best.failed === 0 && m.labelLabel + m.labelNode + m.labelTitle + m.throughBoxes + m.titleHits === 0 && m.labelOnLine <= 1) break;
+  }
+  return best;
+}
+
+function layoutOrthogonal(graph, opts = {}) {
+  const fit = opts.fit || 'balanced';
+  const targetW = opts.targetW || 1000, maxH = opts.maxH || 1100;
+  const one = (gr) => {
+    let s = opts.size ? Math.max(8, Math.min(40, Math.round(opts.size))) : 18;
+    let res = orthoAt(gr, s, fit);
+    if (!opts.size) {
+      for (let it = 0; it < 3; it++) {
+        const k = Math.min(targetW / res.W, maxH / res.H);
+        const ns = Math.max(10, Math.min(40, Math.round(s * k)));
+        if (ns === s || (k > 0.88 && k < 1.12)) break;
+        s = ns; res = orthoAt(gr, s, fit);
+      }
+    }
+    while ((res.W > 2000 || res.H > 2000) && s > 8) { s -= 1; res = orthoAt(gr, s, fit); }
+    res.fits = res.W <= 2000 && res.H <= 2000;
+    res.direction = gr.direction;
+    return res;
+  };
+  let res = one(graph);
+  if (!opts.forceDirection) {
+    const horizontal = graph.direction === 'LR' || graph.direction === 'RL';
+    const alt = one({ ...graph, direction: horizontal ? 'TB' : 'LR' });
+    // the other axis wins when its text is clearly bigger on a phone and it is not messier
+    // legibility and shape are already part of the score (see orthoScore)
+    if (alt.fits && alt.score < res.score - 1) res = alt;
+  }
+  return res;
+}
+
+function layoutCurve(graph, opts = {}) {
   const fit = opts.fit || 'balanced';
   const targetW = opts.targetW || 1000, maxH = opts.maxH || 1100;
   const sized = (gr) => {
@@ -528,5 +616,26 @@ function frame(graph, best, s) {
     W, H, size: s,
     nodes: layout.nodes.map(shift), groups: layout.groups.map(shift), curves,
     direction: best.direction || graph.direction, flows: [...best.flows.entries()], metrics: measure(graph, { ...layout, nodes: layout.nodes.map(shift), groups: layout.groups.map(shift) }, curves),
+  };
+}
+
+function frameRouted(graph, best, rt, s) {
+  const { layout } = best;
+  const margin = Math.round(1.3 * s);
+  let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+  const take = (x, y, w = 0, h = 0) => { x0 = Math.min(x0, x); y0 = Math.min(y0, y); x1 = Math.max(x1, x + w); y1 = Math.max(y1, y + h); };
+  layout.nodes.forEach((n) => take(n.x, n.y, n.w, n.h));
+  layout.groups.forEach((g) => take(g.x, g.y, g.w, g.h));
+  rt.routes.forEach((r) => { if (!r) return; r.points.forEach((p) => take(p[0] - 2, p[1] - 2, 4, 4)); if (r.label) take(r.label.x, r.label.y, r.label.w, r.label.h); });
+  if (!isFinite(x0)) { x0 = y0 = 0; x1 = y1 = 100; }
+  const dx = margin - x0, dy = margin - y0;
+  const W = Math.max(200, Math.ceil(x1 - x0 + 2 * margin)), H = Math.max(120, Math.ceil(y1 - y0 + 2 * margin));
+  const shift = (o) => ({ ...o, x: o.x + dx, y: o.y + dy });
+  const routes = rt.routes.map((r) => (r ? { ...r, points: r.points.map((p) => [p[0] + dx, p[1] + dy]), label: r.label ? shift(r.label) : null } : null));
+  const failed = graph.edges.filter((e, i) => !routes[i] && e.from !== e.to).length;
+  return {
+    W, H, size: s, routing: 'orthogonal', routes, routeWarnings: rt.warnings, failed,
+    nodes: layout.nodes.map(shift), groups: layout.groups.map(shift), curves: graph.edges.map(() => 0),
+    direction: graph.direction, flows: [...best.flows.entries()], metrics: rt.metrics,
   };
 }

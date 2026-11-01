@@ -423,6 +423,18 @@ for (const f of examples) {
   });
 }
 
+// the stage-1 curve drawing stays available and byte-identical (routing: 'curve')
+for (const f of examples) {
+  for (const [suf, o] of [['.curve.golden.json', {}], ['.numbered.curve.golden.json', { numbered: true }], ['.numbered-film.curve.golden.json', { numbered: true, film: true }]]) {
+    test('golden curve payload ' + suf + ': ' + f, () => {
+      const out = JSON.stringify(mermaidToArch(readFileSync(join(EX, f), 'utf8'), { ...o, routing: 'curve' }).payload, null, 1) + '\n';
+      const gp = join(EX, f.replace(/\.mmd$/, suf));
+      if (process.env.UPDATE_GOLDEN || !existsSync(gp)) writeFileSync(gp, out);
+      assert.equal(out, readFileSync(gp, 'utf8'), `${f}: curve payload changed; if intended run UPDATE_GOLDEN=1 node scripts/test_mermaid_arch.mjs`);
+    });
+  }
+}
+
 // ------------------------------------------------------------------ numbered flows, steps table, pacing
 const N3 = 'flowchart LR\na[Alpha] -->|first call| b[Beta]\nb -->|second| c[Gamma]\nc -.-> a';
 test('numbered: labels get the step number, in source order; unlabelled edges get just the number', () => {
@@ -652,4 +664,65 @@ print(json.dumps(bad))
   const goldens = examples.flatMap((f) => ['.golden.json', '.numbered.golden.json', '.numbered-film.golden.json'].map((x) => join(EX, f.replace(/\.mmd$/, x))));
   const out = JSON.parse(execFileSync('python3', ['-W', 'ignore', '-c', code, ...goldens], { encoding: 'utf8', cwd: root }));
   assert.deepEqual(out, []);
+});
+
+// ------------------------------------------------------------------ orthogonal router (route.mjs)
+const px = (b) => ({
+  boxes: b.nodes.map((n) => ({ id: n.id, x: ((n.x - n.w / 2) / 100) * b.w, y: ((n.y - n.h / 2) / 100) * b.h, w: (n.w / 100) * b.w, h: (n.h / 100) * b.h })),
+  pts: (e) => e.points.map((q) => [(q.x / 100) * b.w, (q.y / 100) * b.h]),
+});
+const onRim = (p, r) => {
+  const t = 0.8, inX = p[0] >= r.x - t && p[0] <= r.x + r.w + t, inY = p[1] >= r.y - t && p[1] <= r.y + r.h + t;
+  return (inX && (Math.abs(p[1] - r.y) <= t || Math.abs(p[1] - r.y - r.h) <= t)) || (inY && (Math.abs(p[0] - r.x) <= t || Math.abs(p[0] - r.x - r.w) <= t));
+};
+for (const f of examples) {
+  test('router: ' + f + ' every edge is a right-angle route from rim to rim, with no box, title or label collision', () => {
+    const src = readFileSync(join(EX, f), 'utf8');
+    const r = mermaidToArch(src, { numbered: true });
+    const b = r.block, { boxes, pts } = px(b);
+    assert.deepEqual(validateBlock(b), []);
+    assert.ok(b.radius >= 6 && b.radius <= 14);
+    b.edges.forEach((e, i) => {
+      assert.ok(e.points && e.points.length >= 2 && e.points.length <= 10, `edge ${i + 1} has 2-10 points`);
+      assert.equal(e.curve, undefined, 'a routed edge carries no curve');
+      const P = pts(e);
+      for (let k = 0; k + 1 < P.length; k++) assert.ok(Math.abs(P[k][0] - P[k + 1][0]) < 0.6 || Math.abs(P[k][1] - P[k + 1][1]) < 0.6, `edge ${i + 1} segment ${k} is axis-aligned`);
+      const fb = boxes.find((x) => x.id === e.from), tb = boxes.find((x) => x.id === e.to);
+      assert.ok(onRim(P[0], fb), `edge ${i + 1} starts on the rim of ${e.from}`);
+      assert.ok(onRim(P[P.length - 1], tb), `edge ${i + 1} ends on the rim of ${e.to}`);
+      const last = P.length - 1, ln = Math.abs(P[last][0] - P[last - 1][0]) + Math.abs(P[last][1] - P[last - 1][1]);
+      assert.ok(ln >= 13, `edge ${i + 1}: the last stretch (${ln.toFixed(1)} px) leaves room for the arrowhead`);
+      assert.ok(e.label.startsWith(String(i + 1) + ' ') || e.label === String(i + 1) || r.steps.length, 'numbered label keeps its number');
+    });
+    const m = r.layout.metrics;
+    assert.equal(m.throughBoxes, 0, 'no edge runs through a box');
+    assert.equal(m.titleHits, 0, 'no edge crosses a group title');
+    assert.equal(m.labelNode + m.labelLabel + m.labelTitle, 0, 'no label sits on a box, a title or another label');
+    r.block.edges.forEach((e) => { if (e.label) assert.ok(e.label_at && e.label_at.x >= 0 && e.label_at.x <= 100 && e.label_at.y >= 0 && e.label_at.y <= 100); });
+  });
+}
+
+test('router: the output is byte-stable', () => {
+  const src = readFileSync(join(EX, examples[1]), 'utf8');
+  assert.equal(JSON.stringify(mermaidToArch(src, { numbered: true }).payload), JSON.stringify(mermaidToArch(src, { numbered: true }).payload));
+});
+
+test("router: routing 'curve' keeps the stage-1 drawing (no points, no label_at, no radius)", () => {
+  const r = mermaidToArch(readFileSync(join(EX, examples[0]), 'utf8'), { routing: 'curve' });
+  assert.ok(r.block.edges.every((e) => e.points === undefined && e.label_at === undefined));
+  assert.equal(r.block.radius, undefined);
+});
+
+test('router: goes round a box that stands in the way, and a request/response pair takes two lanes', () => {
+  const src = 'flowchart LR\n a[Alpha] -->|req| c[Gamma]\n c -->|resp| a\n b[Blocker]\n a --> d[Delta]\n b --> d';
+  const r = mermaidToArch(src, { direction: 'LR', size: 18 });
+  const { boxes, pts } = px(r.block);
+  r.block.edges.forEach((e, i) => { for (const bx of boxes) if (bx.id !== e.from && bx.id !== e.to) { const P = pts(e); for (let k = 0; k + 1 < P.length; k++) { const x0 = Math.min(P[k][0], P[k + 1][0]), x1 = Math.max(P[k][0], P[k + 1][0]), y0 = Math.min(P[k][1], P[k + 1][1]), y1 = Math.max(P[k][1], P[k + 1][1]); assert.ok(!(x1 > bx.x && x0 < bx.x + bx.w && y1 > bx.y && y0 < bx.y + bx.h), `edge ${i} through ${bx.id}`); } } });
+  const a = r.block.edges[0].points, c = r.block.edges[1].points;
+  assert.notDeepEqual(a.map((q) => [q.x, q.y]), c.map((q) => [q.x, q.y]).reverse(), 'the two directions do not share one line');
+});
+
+test('router: a diagram that is too crowded for the label to fit is warned about, not silently shortened', () => {
+  const r = mermaidToArch('flowchart LR\n a[A] -->|a very very long edge label that cannot possibly sit between two close boxes| b[B]', { size: 30 });
+  assert.ok(r.block.edges[0].label.length > 20, 'the label text is untouched');
 });

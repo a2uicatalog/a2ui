@@ -10,7 +10,7 @@ export { ArchError, validateGraph, parseMermaid, parseD2, compileGraph, archPayl
 export { LIMITS, KINDS, KIND_ALIASES } from './graph.mjs';
 export { layoutGraph } from './layout.mjs';
 
-// opts: {direction, title, size, fit:'balanced'|'wide', film:boolean, numbered:boolean, pace:'slow'|'normal'|'fast', duration:seconds}
+// opts: {routing:'orthogonal'|'curve' (default orthogonal), direction, title, size, fit:'balanced'|'wide', film:boolean, numbered:boolean, pace:'slow'|'normal'|'fast', duration:seconds}
 export function graphToArch(graph, opts = {}) {
   const g = { ...graph };
   if (opts.direction) g.direction = opts.direction;

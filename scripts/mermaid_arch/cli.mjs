@@ -12,6 +12,7 @@ const HELP = `usage: node cli.mjs <file.mmd | file.d2 | file.json | -> [options]
   --numbered               prefix every edge label with its step number and add the steps table
   --pace slow|normal|fast  reading pace of the film (1.4x / 1.0x / 0.75x per-step time); default normal
   --duration SECONDS       fix the total film length (warns when shorter than the fast reading time)
+  --routing orthogonal|curve  how edges are drawn: routed right-angle lines with placed labels (default) or the atom's single curve
   --fit wide               tune the layout for a wide screen instead of a phone column
   --size N                 label size in px (8-40); default is chosen from the diagram
   --title TEXT             override the title
@@ -33,12 +34,14 @@ function main(argv) {
     else if (a === '--graph') asGraph = true;
     else if (a === '--d2') opts.syntax = 'd2';
     else if (a === '--fit') opts.fit = argv[++i];
+    else if (a === '--routing') opts.routing = argv[++i];
     else if (a === '--size') opts.size = Number(argv[++i]);
     else if (a === '--title') opts.title = argv[++i];
     else if (a.startsWith('--')) { console.error(`unknown option ${a}\n${HELP}`); return 2; }
     else file = a;
   }
   if (!file) { console.error(HELP); return 2; }
+  if (opts.routing && !['orthogonal', 'curve'].includes(opts.routing)) { console.error('--routing must be orthogonal or curve'); return 2; }
   if (opts.pace && !['slow', 'normal', 'fast'].includes(opts.pace)) { console.error('--pace must be slow, normal or fast'); return 2; }
   if (opts.duration !== undefined && !(opts.duration >= 2 && opts.duration <= 120)) { console.error('--duration must be 2 to 120 seconds'); return 2; }
   if (opts.direction && !['LR', 'RL', 'TB', 'BT'].includes(opts.direction)) { console.error('--direction must be LR, RL, TB (or TD) or BT'); return 2; }

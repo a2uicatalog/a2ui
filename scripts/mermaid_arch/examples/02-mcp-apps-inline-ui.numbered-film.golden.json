@@ -4,7 +4,7 @@
   {
    "type": "motion_timeline",
    "title": "MCP Apps: a tool result becomes an inline UI",
-   "aspect": "1:1",
+   "aspect": "9:16",
    "duration": 45.747,
    "loop": true,
    "autoplay": true,
@@ -15,18 +15,18 @@
     {
      "type": "motion_arch",
      "label": "MCP Apps: a tool result becomes an inline UI",
-     "w": 1010,
-     "h": 630,
-     "size": 23,
+     "w": 929,
+     "h": 988,
+     "size": 26,
      "nodes": [
       {
        "id": "user",
        "kind": "user",
        "label": "User",
-       "x": 50,
-       "y": 10.24,
-       "w": 12.57,
-       "h": 10.95,
+       "x": 49.35,
+       "y": 7.39,
+       "w": 15.5,
+       "h": 7.89,
        "at": 0.0066,
        "dur": 0.011
       },
@@ -34,32 +34,32 @@
        "id": "host",
        "kind": "app",
        "label": "Chat host",
-       "x": 14.95,
-       "y": 46.35,
-       "w": 19.01,
-       "h": 10.95,
-       "at": 0.0131,
+       "x": 44.4,
+       "y": 34.01,
+       "w": 23.36,
+       "h": 7.89,
+       "at": 0.0098,
        "dur": 0.011
       },
       {
        "id": "llm",
        "kind": "model",
        "label": "LLM",
-       "x": 80.59,
-       "y": 38.49,
-       "w": 11.88,
-       "h": 10.95,
-       "at": 0.0098,
+       "x": 30.36,
+       "y": 59.31,
+       "w": 14.53,
+       "h": 7.89,
+       "at": 0.0131,
        "dur": 0.011
       },
       {
        "id": "frame",
        "kind": "surface",
        "label": "Sandboxed iframe",
-       "x": 80.59,
-       "y": 54.21,
-       "w": 27.92,
-       "h": 10.95,
+       "x": 58.45,
+       "y": 59.31,
+       "w": 34.34,
+       "h": 7.89,
        "at": 0.0164,
        "dur": 0.011
       },
@@ -67,10 +67,10 @@
        "id": "tool",
        "kind": "tool",
        "label": "Tool with ui:// link",
-       "x": 32.62,
-       "y": 86.11,
-       "w": 33.07,
-       "h": 10.95,
+       "x": 28.04,
+       "y": 89.98,
+       "w": 40.58,
+       "h": 7.89,
        "at": 0.0197,
        "dur": 0.011
       },
@@ -78,10 +78,10 @@
        "id": "resource",
        "kind": "store",
        "label": "ui:// HTML resource",
-       "x": 68.02,
-       "y": 86.11,
-       "w": 31.78,
-       "h": 10.95,
+       "x": 71.47,
+       "y": 89.98,
+       "w": 38.97,
+       "h": 7.89,
        "at": 0.023,
        "dur": 0.011
       }
@@ -92,6 +92,20 @@
        "to": "host",
        "label": "1 asks",
        "style": "solid",
+       "points": [
+        {
+         "x": 49.09,
+         "y": 11.34
+        },
+        {
+         "x": 49.09,
+         "y": 30.06
+        }
+       ],
+       "label_at": {
+        "x": 54.47,
+        "y": 20.7
+       },
        "at": 0.0328,
        "dur": 0.011
       },
@@ -100,6 +114,20 @@
        "to": "llm",
        "label": "2 prompt + tools",
        "style": "solid",
+       "points": [
+        {
+         "x": 35.52,
+         "y": 37.96
+        },
+        {
+         "x": 35.52,
+         "y": 55.36
+        }
+       ],
+       "label_at": {
+        "x": 22.82,
+        "y": 46.66
+       },
        "at": 0.1032,
        "dur": 0.011
       },
@@ -108,7 +136,24 @@
        "to": "host",
        "label": "3 tool call",
        "style": "solid",
-       "curve": 24,
+       "points": [
+        {
+         "x": 31,
+         "y": 55.36
+        },
+        {
+         "x": 31,
+         "y": 35.32
+        },
+        {
+         "x": 32.72,
+         "y": 35.32
+        }
+       ],
+       "label_at": {
+        "x": 21.96,
+        "y": 42.91
+       },
        "at": 0.2071,
        "dur": 0.011
       },
@@ -117,6 +162,32 @@
        "to": "tool",
        "label": "4 tools/call",
        "style": "solid",
+       "points": [
+        {
+         "x": 32.72,
+         "y": 33.91
+        },
+        {
+         "x": 18.95,
+         "y": 33.91
+        },
+        {
+         "x": 18.95,
+         "y": 80.67
+        },
+        {
+         "x": 24.97,
+         "y": 80.67
+        },
+        {
+         "x": 24.97,
+         "y": 86.03
+        }
+       ],
+       "label_at": {
+        "x": 34.77,
+        "y": 83.35
+       },
        "at": 0.2942,
        "dur": 0.011
       },
@@ -125,7 +196,28 @@
        "to": "host",
        "label": "5 tool result",
        "style": "solid",
-       "curve": 100,
+       "points": [
+        {
+         "x": 7.75,
+         "y": 87.75
+        },
+        {
+         "x": 3.88,
+         "y": 87.75
+        },
+        {
+         "x": 3.88,
+         "y": 32.49
+        },
+        {
+         "x": 32.72,
+         "y": 32.49
+        }
+       ],
+       "label_at": {
+        "x": 18.3,
+        "y": 30.62
+       },
        "at": 0.3898,
        "dur": 0.011
       },
@@ -134,6 +226,28 @@
        "to": "resource",
        "label": "6 resources/read",
        "style": "solid",
+       "points": [
+        {
+         "x": 40.04,
+         "y": 37.96
+        },
+        {
+         "x": 40.04,
+         "y": 80.67
+        },
+        {
+         "x": 53.61,
+         "y": 80.67
+        },
+        {
+         "x": 53.61,
+         "y": 86.03
+        }
+       ],
+       "label_at": {
+        "x": 66.31,
+        "y": 83.35
+       },
        "at": 0.502,
        "dur": 0.011
       },
@@ -142,6 +256,20 @@
        "to": "frame",
        "label": "7 mounts HTML, sends tool result",
        "style": "solid",
+       "points": [
+        {
+         "x": 44.56,
+         "y": 37.96
+        },
+        {
+         "x": 44.56,
+         "y": 55.36
+        }
+       ],
+       "label_at": {
+        "x": 69,
+        "y": 46.66
+       },
        "at": 0.5892,
        "dur": 0.011
       },
@@ -150,7 +278,20 @@
        "to": "host",
        "label": "8 tools/call via postMessage",
        "style": "dashed",
-       "curve": 100,
+       "points": [
+        {
+         "x": 53.61,
+         "y": 55.36
+        },
+        {
+         "x": 53.61,
+         "y": 37.96
+        }
+       ],
+       "label_at": {
+        "x": 75.13,
+        "y": 50.3
+       },
        "at": 0.735,
        "dur": 0.011
       },
@@ -159,27 +300,45 @@
        "to": "user",
        "label": "9 interactive UI",
        "style": "solid",
-       "curve": 12,
+       "points": [
+        {
+         "x": 59.63,
+         "y": 55.36
+        },
+        {
+         "x": 59.63,
+         "y": 9.82
+        },
+        {
+         "x": 57.1,
+         "y": 9.82
+        }
+       ],
+       "label_at": {
+        "x": 72.34,
+        "y": 32.59
+       },
        "at": 0.8473,
        "dur": 0.011
       }
      ],
+     "radius": 14,
      "groups": [
       {
        "label": "Host",
-       "x": 2.97,
-       "y": 26.67,
-       "w": 94.06,
-       "h": 36.67,
+       "x": 19.97,
+       "y": 25.91,
+       "w": 58.77,
+       "h": 39.98,
        "at": 0,
        "dur": 0.011
       },
       {
        "label": "MCP server",
-       "x": 13.61,
-       "y": 74.29,
-       "w": 72.77,
-       "h": 20.95,
+       "x": 4.63,
+       "y": 81.88,
+       "w": 89.45,
+       "h": 14.68,
        "at": 0,
        "dur": 0.011
       }
@@ -206,10 +365,10 @@
      ],
      "id": "arch",
      "place": {
-      "x": 12.81,
-      "y": 2.4,
-      "w": 74.39,
-      "h": 46.4,
+      "x": 2,
+      "y": 1.88,
+      "w": 96,
+      "h": 57.43,
       "z": 1
      }
     },
@@ -217,7 +376,7 @@
      "type": "motion_text",
      "id": "head",
      "text": "STEP  FROM → TO: WHAT",
-     "size": 21,
+     "size": 15,
      "font": "mono",
      "weight": "bold",
      "mode": "block",
@@ -225,7 +384,7 @@
      "color": "#9ca5b1",
      "place": {
       "x": 3,
-      "y": 51.2,
+      "y": 61.18,
       "w": 94,
       "z": 2
      }
@@ -239,9 +398,9 @@
      "radius": 8,
      "place": {
       "x": 1.8,
-      "y": 55.8,
+      "y": 63.84,
       "w": 96.4,
-      "h": 4.4,
+      "h": 2.5,
       "z": 1
      }
     },
@@ -249,14 +408,14 @@
      "type": "motion_text",
      "id": "row1",
      "text": "*1*  User → Chat host: asks",
-     "size": 24,
+     "size": 18,
      "font": "mono",
      "weight": "regular",
      "mode": "block",
      "reveal": "fade",
      "place": {
       "x": 3,
-      "y": 56.2,
+      "y": 64.15,
       "w": 94,
       "z": 2
      }
@@ -265,14 +424,14 @@
      "type": "motion_text",
      "id": "row2",
      "text": "*2*  Chat host → LLM: prompt + tools",
-     "size": 24,
+     "size": 18,
      "font": "mono",
      "weight": "regular",
      "mode": "block",
      "reveal": "fade",
      "place": {
       "x": 3,
-      "y": 60.8,
+      "y": 66.8,
       "w": 94,
       "z": 2
      }
@@ -281,14 +440,14 @@
      "type": "motion_text",
      "id": "row3",
      "text": "*3*  LLM → Chat host: tool call",
-     "size": 24,
+     "size": 18,
      "font": "mono",
      "weight": "regular",
      "mode": "block",
      "reveal": "fade",
      "place": {
       "x": 3,
-      "y": 65.4,
+      "y": 69.46,
       "w": 94,
       "z": 2
      }
@@ -297,14 +456,14 @@
      "type": "motion_text",
      "id": "row4",
      "text": "*4*  Chat host → Tool with ui:// link: tools/call",
-     "size": 24,
+     "size": 18,
      "font": "mono",
      "weight": "regular",
      "mode": "block",
      "reveal": "fade",
      "place": {
       "x": 3,
-      "y": 70,
+      "y": 72.12,
       "w": 94,
       "z": 2
      }
@@ -313,14 +472,14 @@
      "type": "motion_text",
      "id": "row5",
      "text": "*5*  Tool with ui:// link → Chat host: tool result",
-     "size": 24,
+     "size": 18,
      "font": "mono",
      "weight": "regular",
      "mode": "block",
      "reveal": "fade",
      "place": {
       "x": 3,
-      "y": 74.6,
+      "y": 74.77,
       "w": 94,
       "z": 2
      }
@@ -329,14 +488,14 @@
      "type": "motion_text",
      "id": "row6",
      "text": "*6*  Chat host → ui:// HTML resource: resources/read",
-     "size": 24,
+     "size": 18,
      "font": "mono",
      "weight": "regular",
      "mode": "block",
      "reveal": "fade",
      "place": {
       "x": 3,
-      "y": 79.2,
+      "y": 77.43,
       "w": 94,
       "z": 2
      }
@@ -345,14 +504,14 @@
      "type": "motion_text",
      "id": "row7",
      "text": "*7*  Chat host → Sandboxed iframe: mounts HTML, sends tool…",
-     "size": 24,
+     "size": 18,
      "font": "mono",
      "weight": "regular",
      "mode": "block",
      "reveal": "fade",
      "place": {
       "x": 3,
-      "y": 83.8,
+      "y": 80.09,
       "w": 94,
       "z": 2
      }
@@ -361,14 +520,14 @@
      "type": "motion_text",
      "id": "row8",
      "text": "*8*  Sandboxed iframe → Chat host: tools/call via postMessa…",
-     "size": 24,
+     "size": 18,
      "font": "mono",
      "weight": "regular",
      "mode": "block",
      "reveal": "fade",
      "place": {
       "x": 3,
-      "y": 88.4,
+      "y": 82.74,
       "w": 94,
       "z": 2
      }
@@ -377,14 +536,14 @@
      "type": "motion_text",
      "id": "row9",
      "text": "*9*  Sandboxed iframe → User: interactive UI",
-     "size": 24,
+     "size": 18,
      "font": "mono",
      "weight": "regular",
      "mode": "block",
      "reveal": "fade",
      "place": {
       "x": 3,
-      "y": 93,
+      "y": 85.4,
       "w": 94,
       "z": 2
      }
@@ -572,12 +731,12 @@
      "keys": [
       {
        "t": 0,
-       "y": 55.8,
+       "y": 63.84,
        "opacity": 0
       },
       {
        "t": 1.5,
-       "y": 55.8,
+       "y": 63.84,
        "opacity": 0,
        "ease": "hold"
       },
@@ -588,49 +747,49 @@
       },
       {
        "t": 4.72,
-       "y": 60.4,
+       "y": 66.49,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
        "t": 9.473,
-       "y": 65,
+       "y": 69.15,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
        "t": 13.46,
-       "y": 69.6,
+       "y": 71.8,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
        "t": 17.83,
-       "y": 74.2,
+       "y": 74.46,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
        "t": 22.967,
-       "y": 78.8,
+       "y": 77.12,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
        "t": 26.953,
-       "y": 83.4,
+       "y": 79.77,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
        "t": 33.623,
-       "y": 88,
+       "y": 82.43,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
        "t": 38.76,
-       "y": 92.6,
+       "y": 85.09,
        "opacity": 0.22,
        "ease": "hold"
       }

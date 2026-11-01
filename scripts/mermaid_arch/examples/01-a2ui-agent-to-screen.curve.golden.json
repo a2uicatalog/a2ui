@@ -1,0 +1,206 @@
+{
+ "theme": "dark",
+ "blocks": [
+  {
+   "type": "motion_arch",
+   "label": "A2UI v0.9: from prompt to native screen",
+   "w": 967,
+   "h": 298,
+   "size": 14,
+   "nodes": [
+    {
+     "id": "user",
+     "kind": "user",
+     "label": "User",
+     "x": 5.89,
+     "y": 50,
+     "w": 8.07,
+     "h": 14.09,
+     "at": 0.006,
+     "dur": 0.011
+    },
+    {
+     "id": "client",
+     "kind": "app",
+     "label": "Client app",
+     "x": 31.9,
+     "y": 25.84,
+     "w": 12.93,
+     "h": 14.09,
+     "at": 0.0089,
+     "dur": 0.011
+    },
+    {
+     "id": "renderer",
+     "kind": "surface",
+     "label": "A2UI renderer",
+     "x": 31.9,
+     "y": 54.03,
+     "w": 15.31,
+     "h": 14.09,
+     "at": 0.0119,
+     "dur": 0.011
+    },
+    {
+     "id": "catalog",
+     "kind": "store",
+     "label": "Trusted catalogue",
+     "x": 31.9,
+     "y": 82.21,
+     "w": 18.51,
+     "h": 14.09,
+     "at": 0.0149,
+     "dur": 0.011
+    },
+    {
+     "id": "agent",
+     "kind": "app",
+     "label": "ADK agent",
+     "x": 73.68,
+     "y": 54.03,
+     "w": 12.1,
+     "h": 14.09,
+     "at": 0.0179,
+     "dur": 0.011
+    },
+    {
+     "id": "llm",
+     "kind": "model",
+     "label": "LLM",
+     "x": 92.81,
+     "y": 54.03,
+     "w": 7.55,
+     "h": 14.09,
+     "at": 0.0209,
+     "dur": 0.011
+    }
+   ],
+   "edges": [
+    {
+     "from": "user",
+     "to": "client",
+     "label": "types prompt",
+     "style": "solid",
+     "at": 0.0298,
+     "dur": 0.011
+    },
+    {
+     "from": "client",
+     "to": "agent",
+     "label": "prompt",
+     "style": "solid",
+     "at": 0.5114,
+     "dur": 0.011
+    },
+    {
+     "from": "agent",
+     "to": "llm",
+     "label": "plan",
+     "style": "solid",
+     "at": 0.7758,
+     "dur": 0.011
+    },
+    {
+     "from": "llm",
+     "to": "agent",
+     "label": "A2UI JSON",
+     "style": "solid",
+     "curve": 50,
+     "at": 0.8493,
+     "dur": 0.011
+    },
+    {
+     "from": "agent",
+     "to": "client",
+     "label": "createSurface, updateComponents",
+     "style": "dashed",
+     "curve": 24,
+     "at": 0.5937,
+     "dur": 0.011
+    },
+    {
+     "from": "client",
+     "to": "renderer",
+     "label": "A2UI messages",
+     "style": "solid",
+     "at": 0.1209,
+     "dur": 0.011
+    },
+    {
+     "from": "renderer",
+     "to": "catalog",
+     "label": "looks up components",
+     "style": "solid",
+     "at": 0.394,
+     "dur": 0.011
+    },
+    {
+     "from": "renderer",
+     "to": "user",
+     "label": "native UI",
+     "style": "solid",
+     "at": 0.2207,
+     "dur": 0.011
+    },
+    {
+     "from": "renderer",
+     "to": "client",
+     "label": "action",
+     "style": "dashed",
+     "curve": 65,
+     "at": 0.3117,
+     "dur": 0.011
+    },
+    {
+     "from": "client",
+     "to": "agent",
+     "label": "action",
+     "style": "dashed",
+     "curve": 36,
+     "at": 0.6935,
+     "dur": 0.011
+    }
+   ],
+   "groups": [
+    {
+     "label": "Client",
+     "x": 21.1,
+     "y": 6.04,
+     "w": 21.61,
+     "h": 87.92,
+     "at": 0,
+     "dur": 0.011
+    },
+    {
+     "label": "Agent",
+     "x": 66.08,
+     "y": 34.23,
+     "w": 32.06,
+     "h": 31.54,
+     "at": 0,
+     "dur": 0.011
+    }
+   ],
+   "messages": [
+    {
+     "edge": 1,
+     "text": "prompt",
+     "at": 0.5234,
+     "dur": 0.0238
+    },
+    {
+     "edge": 4,
+     "text": "updateComponents",
+     "at": 0.6057,
+     "dur": 0.0238
+    },
+    {
+     "edge": 8,
+     "text": "action",
+     "at": 0.3237,
+     "dur": 0.0238
+    }
+   ]
+  }
+ ]
+}
