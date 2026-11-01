@@ -643,6 +643,19 @@ nav.atom-pager .pg-all{font-size:14px;color:var(--accent-2-text);text-decoration
 nav.atom-pager kbd{display:inline-block;min-width:1.6em;padding:1px 6px;border:1px solid var(--border-strong);border-bottom-width:2px;border-radius:5px;background:var(--surface-2);color:var(--text);font:600 15px/1.4 ui-monospace,'SF Mono',Monaco,monospace;text-align:center;text-transform:none;letter-spacing:0}
 @media (hover:none){.pg-hint,nav.atom-pager .pg-dir kbd{display:none}}
 @media (max-width:520px){nav.atom-pager{grid-template-columns:1fr 1fr}nav.atom-pager .pg-all{grid-column:1/-1;grid-row:2;justify-self:center}}
+/* I160 atom likes: the heart sits beside the title; hidden until /api/likes answers, so a dead endpoint leaves no dead button */
+.title-row{display:flex;align-items:center;gap:6px 16px;flex-wrap:wrap}
+.title-row h1{margin-bottom:8px}
+.like-btn{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border:1px solid var(--border-strong);border-radius:999px;background:var(--surface);color:var(--text);font:600 15px/1.2 inherit;cursor:pointer}
+.like-btn[hidden]{display:none}
+.like-btn:hover{border-color:var(--accent-2-text)}
+.like-btn:focus-visible{outline:2px solid var(--accent-2-text);outline-offset:2px}
+.like-btn .like-heart{font-size:17px;line-height:1;color:var(--muted)}
+.like-btn[aria-pressed="true"]{border-color:var(--accent-2-text);background:var(--accent-soft-bg);color:var(--accent-2-text)}
+.like-btn[aria-pressed="true"] .like-heart{color:var(--accent-2-text)}
+.like-n:empty{display:none}
+.hub-likes{font-size:13px;font-weight:600;color:var(--muted);margin-left:8px;white-space:nowrap}
+.hub-likes:empty{display:none}
 h1{font-size:2.2rem;font-weight:800;letter-spacing:-1px;margin-bottom:8px}
 .desc{font-size:1.1rem;color:var(--muted);margin-bottom:32px;line-height:1.7}
 .label{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:12px}
@@ -1264,6 +1277,48 @@ PAGER_JS = """<script>
 </script>"""
 
 
+# The like counter (I160). One script for the atom page (a heart button) and the /atoms/ hub (read-only counts). It
+# reads GET /api/likes once; if that fails the button stays hidden and the page is exactly what it was. The pressed
+# state lives in localStorage only (try/catch: it can be blocked), never sent anywhere.
+LIKES_JS = """<script>
+(function(){
+  var KEY = 'a2ui-liked', counts = null;
+  function liked(){ try { return JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) { return {}; } }
+  function remember(t, on){ try { var m = liked(); if (on) m[t] = 1; else delete m[t]; localStorage.setItem(KEY, JSON.stringify(m)); } catch (e) {} }
+  function show(btn, n){ var s = btn.querySelector('.like-n'); if (s) s.textContent = n > 0 ? String(n) : ''; }
+  fetch('/api/likes').then(function(r){ if (!r.ok) throw 0; return r.json(); }).then(function(c){
+    counts = c;
+    var mine = liked();
+    document.querySelectorAll('.hub-likes[data-like]').forEach(function(el){
+      var n = c[el.getAttribute('data-like')] || 0; el.textContent = n > 0 ? '\u2665 ' + n : '';
+    });
+    var btn = document.querySelector('.like-btn[data-like]');
+    if (!btn) return;
+    var t = btn.getAttribute('data-like');
+    btn.setAttribute('aria-pressed', mine[t] ? 'true' : 'false');
+    show(btn, c[t] || 0);
+    btn.hidden = false;
+    btn.addEventListener('click', function(){
+      var on = btn.getAttribute('aria-pressed') !== 'true', d = on ? 1 : -1, before = counts[t] || 0;
+      btn.setAttribute('aria-pressed', String(on)); counts[t] = Math.max(0, before + d); show(btn, counts[t]); remember(t, on);
+      fetch('/api/likes/' + t, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ delta: d }) })
+        .then(function(r){ if (!r.ok) throw 0; return r.json(); })
+        .then(function(j){ counts[t] = j.count; show(btn, j.count); })
+        .catch(function(){ btn.setAttribute('aria-pressed', String(!on)); counts[t] = before; show(btn, before); remember(t, !on); });
+    });
+  }).catch(function(){});
+})();
+</script>"""
+
+
+def like_button(atom_type, display_name):
+    """The heart beside the title. Hidden until the counts load (LIKES_JS); the accessible name is 'Like <Title>' and the count is its description."""
+    name = html.escape(display_name, quote=True)
+    return (f'<button type="button" class="like-btn" data-like="{atom_type}" aria-pressed="false" aria-label="Like {name}" '
+            f'aria-describedby="like-n" hidden><span class="like-heart" aria-hidden="true">\u2665</span>'
+            f'<span class="like-n" id="like-n"></span></button>')
+
+
 def atom_pager(atom_type):
     """Previous / all / next buttons under the breadcrumb; the arrow keys follow the same links (PAGER_JS)."""
     prev, nxt = _NEIGHBOURS.get(atom_type, (None, None))
@@ -1363,7 +1418,7 @@ def render_page(atom):
   </nav>
   {atom_pager(atom_type)}
 
-  <h1>{display_name}</h1>
+  <div class="title-row"><h1>{display_name}</h1>{like_button(atom_type, display_name)}</div>
   {catalog_chip(atom_type)}
 
   {preview}
@@ -1418,6 +1473,7 @@ clasp push &amp;&amp; clasp deploy</code></pre>
   </div>
   {SITE_FOOT_JS}
   {PAGER_JS}
+  {LIKES_JS}
 {_cursor_glow_html()}
 </body>
 </html>"""
@@ -4159,7 +4215,7 @@ def render_atoms_hub(atoms):
     for k, items in groups.items():
         lis = "".join(
             f'<li data-q="{html.escape((t + " " + line).lower(), quote=True)}" data-c="{ATOM_CATALOG.get(t, "")}"><a href="/atoms/{t}/">{html.escape(name)}</a>'
-            f' <code>{t}</code><span>{html.escape(line)}</span></li>'
+            f' <code>{t}</code><em class="hub-likes" data-like="{t}" title="likes"></em><span>{html.escape(line)}</span></li>'
             for t, name, line in items)
         sections += f'\n  <section class="hub-group" id="{k.lower()}"><h2>{k}</h2><ul>{lis}</ul></section>'
     return f"""<!DOCTYPE html>
@@ -4187,6 +4243,7 @@ def render_atoms_hub(atoms):
   .hub-group li{{padding:10px 0;border-bottom:1px solid var(--border)}}
   .hub-group li a{{font-weight:600;color:var(--text);text-decoration:none}}
   .hub-group li a:hover{{color:var(--accent)}}
+    .hub-group li em{{font-style:normal}}
   .hub-group li code{{font-size:12px;color:var(--muted);margin-left:6px}}
   .hub-group li span{{display:block;font-size:14px;color:var(--muted);margin-top:2px}}
   .hub-group[hidden],.hub-group li[hidden]{{display:none}}
@@ -4222,6 +4279,7 @@ def render_atoms_hub(atoms):
   </footer>
   </div>
   {SITE_FOOT_JS}
+  {LIKES_JS}
 <script>
 (function(){{
   var q = document.getElementById('hub-q');
