@@ -5,7 +5,9 @@
 // comment directives `# title: ...`, `# msg: a->b "text"`, `# numbered: on`, `# pace: slow`, `# duration: 40`,
 // `# step: a->b 2`. Operators must be surrounded by spaces. See docs/mermaid_arch.md.
 import { ArchError, resolveKind, didYouMean, PACES, LIMITS } from './graph.mjs';
-import { makeIdMapper } from './mermaid.mjs';
+import { makeIdMapper, MAX_INPUT_CHARS, MAX_LINE_CHARS } from './mermaid.mjs';
+
+const MAX_DEPTH = 8, MAX_SEGMENTS = 8, MAX_ERRORS = 20;
 
 export const D2_SHAPE_KIND = Object.freeze({
   cylinder: 'store', stored_data: 'store', queue: 'tool', person: 'user', circle: 'model', oval: 'model',
@@ -19,14 +21,20 @@ const DIRS = { right: 'LR', left: 'RL', down: 'TB', up: 'BT' };
 export function parseD2(text, opts = {}) {
   const errors = [], warnings = [];
   if (typeof text !== 'string') throw new ArchError(['input must be D2 text (a string)']);
+  if (text.length > MAX_INPUT_CHARS) throw new ArchError([`input is ${text.length} characters; the most this converter reads is ${MAX_INPUT_CHARS}. A diagram this atom can show is far smaller.`]);
   const src = text.replace(/^﻿/, '').replace(/\r\n?/g, '\n');
+  const lineLens = src.split('\n');
+  const longLine = lineLens.findIndex((l) => l.length > MAX_LINE_CHARS);
+  if (longLine >= 0) throw new ArchError([`line ${longLine + 1}: ${lineLens[longLine].length} characters; the most one line may hold is ${MAX_LINE_CHARS}. Split it over several lines.`]);
   let i = 0, line = 1;
   const nodes = new Map();           // path -> {path, leaf, label, sub, shape, hints, parent, order, line, children:0}
   const edges = [];                  // {from(path), to(path), label, style, both, line}
   const msgs = [], stepDirs = [];
   let title, numbered, pace, duration, relationColumn, relationName, direction = 'LR', openWarned = false;
   const relDirs = [];
-  const fail = (m, ln = line) => errors.push(`line ${ln}: ${m}`);
+  // every error goes through here; after MAX_ERRORS we stop reading (a hostile paste must not cost seconds)
+  const addErr = (m) => { errors.push(m); if (errors.length >= MAX_ERRORS) throw new ArchError(errors.slice(0, MAX_ERRORS), warnings); };
+  const fail = (m, ln = line) => addErr(`line ${ln}: ${m}`);
   const warn = (m, ln = line) => warnings.push(`line ${ln}: ${m}`);
 
   const peek = () => src[i];
@@ -53,7 +61,7 @@ export function parseD2(text, opts = {}) {
       if (!mm) fail('bad "# msg:" directive; write it as  # msg: fromId->toId "payload text"', ln); else msgs.push({ line: ln, from: mm[1], to: mm[2], text: mm[3], back: !!mm[4] });
     } else if (k === 'numbered') {
       const b = v.toLowerCase(); if (['on', 'true', 'yes'].includes(b)) numbered = true; else if (['off', 'false', 'no'].includes(b)) numbered = false; else fail('"# numbered:" must be on or off', ln);
-    } else if (k === 'pace') { if (v.toLowerCase() in PACES) pace = v.toLowerCase(); else fail(`"# pace:" must be one of ${Object.keys(PACES).join(', ')}`, ln); }
+    } else if (k === 'pace') { if (Object.hasOwn(PACES, v.toLowerCase())) pace = v.toLowerCase(); else fail(`"# pace:" must be one of ${Object.keys(PACES).join(', ')}`, ln); }
     else if (k === 'duration') { const d = Number(v.replace(/\s*s$/i, '')); if (Number.isFinite(d) && d >= 2 && d <= 120) duration = d; else fail('"# duration:" must be a number of seconds from 2 to 120', ln); }
     else if (k === 'relation-column') { const b = v.toLowerCase(); if (['on', 'true', 'yes'].includes(b)) relationColumn = true; else if (['off', 'false', 'no'].includes(b)) relationColumn = false; else fail('"# relation-column:" must be on or off', ln); }
     else if (k === 'relation-name') { if (v && v.length <= LIMITS.relation) relationName = v; else fail(`"# relation-name:" must be 1 to ${LIMITS.relation} characters`, ln); }
@@ -78,7 +86,7 @@ export function parseD2(text, opts = {}) {
         if (peek() !== '"') { fail('a quote is never closed; add a closing "'); break; }
         adv(); cur += t; quoted = true; continue;
       }
-      if (c === '.') { adv(); segs.push(cur); cur = ''; continue; }
+      if (c === '.') { adv(); segs.push(cur); cur = ''; if (segs.length >= MAX_SEGMENTS) throw new ArchError([`line ${line}: a dotted path may have at most ${MAX_SEGMENTS} parts; shorten it`]); continue; }
       if (/[\s:;{}#]/.test(c)) break;
       cur += adv();
     }
@@ -119,7 +127,8 @@ export function parseD2(text, opts = {}) {
     const parts = v.split('\n').map((x) => x.trim()).filter(Boolean);
     n.label = parts[0] || n.leaf; n.sub = parts.length > 1 ? parts.slice(1).join(' ') : undefined;
   }
-  function parseBlock(scope, top) {
+  function parseBlock(scope, top, depth = 0) {
+    if (depth > MAX_DEPTH) throw new ArchError([`line ${line}: braces are nested more than ${MAX_DEPTH} deep; flatten the diagram`]);
     for (;;) {
       skipSpace(true);
       const c = peek();
@@ -139,14 +148,14 @@ export function parseD2(text, opts = {}) {
       if (scope.stylePrefix) { attribute(scope, segs, val, ln); continue; }
       if (RESERVED.has(first) && (scope.type !== 'root' || ['direction', 'title'].includes(first) || segs.length > 1 || scope.owner)) {
         attribute(scope, segs, val, ln);
-        if (peek() === '{') { adv(); parseBlock({ ...scope, stylePrefix: first === 'style' }, false); }
+        if (peek() === '{') { adv(); parseBlock({ ...scope, stylePrefix: first === 'style' }, false, depth + 1); }
         continue;
       }
       if (scope.type === 'root' && first === 'direction') { attribute(scope, segs, val, ln); continue; }
       const path = keyOf(scope, segs);
       const n = ensureNode(path, ln);
       if (val !== undefined && val !== '') setLabel(n, val);
-      if (peek() === '{') { adv(); parseBlock({ type: 'node', path: path.split('.'), owner: n }, false); }
+      if (peek() === '{') { adv(); parseBlock({ type: 'node', path: path.split('.'), owner: n }, false, depth + 1); }
     }
   }
   function skipBlock() { skipSpace(false); if (peek() !== '{') return; let d = 0; do { const c = adv(); if (c === '{') d++; else if (c === '}') d--; } while (d > 0 && peek() !== undefined); }
@@ -195,7 +204,7 @@ export function parseD2(text, opts = {}) {
     if (peek() === '{') {
       adv();
       const sub = { type: 'edge', path: scope.path, owner: { set style(v) { made.forEach((e) => { e.style = v; }); }, get style() { return made[0].style; }, set label(v) { made.forEach((e) => { e.label = v || undefined; }); }, get label() { return made[0].label; } } };
-      parseBlock(sub, false);
+      parseBlock(sub, false, 1);
     }
   }
 
@@ -236,7 +245,7 @@ export function parseD2(text, opts = {}) {
   const eOut = [];
   for (const e of edges) {
     const f = idOf(e.from), t = idOf(e.to);
-    if (!f || !t) { errors.push(`line ${e.line}: "${!f ? e.from : e.to}" is a container, not a shape. Edges to a whole container are not supported; connect to a shape inside it.`); continue; }
+    if (!f || !t) { addErr(`line ${e.line}: "${!f ? e.from : e.to}" is a container, not a shape. Edges to a whole container are not supported; connect to a shape inside it.`); continue; }
     const o = { from: f, to: t, style: e.style };
     if (e.label) o.label = e.label;
     if (e.both) o.both = true;
@@ -246,7 +255,7 @@ export function parseD2(text, opts = {}) {
     const cand = [...byPath.values()].filter((n) => n.path === ref || n.leaf === ref || origOf(n) === ref || n.leaf.toLowerCase() === ref.toLowerCase());
     if (cand.length) return mapNode(origOf(cand[0]));
     const names = [...byPath.values()].map((n) => n.leaf);
-    errors.push(`line ${ln}: "${ref}" is not a shape` + (didYouMean(ref, names) ? ` (did you mean "${didYouMean(ref, names)}"?)` : ''));
+    addErr(`line ${ln}: "${ref}" is not a shape` + (didYouMean(ref, names) ? ` (did you mean "${didYouMean(ref, names)}"?)` : ''));
     return undefined;
   };
   const mOut = [];
@@ -256,7 +265,7 @@ export function parseD2(text, opts = {}) {
     const f = findId(d.from, d.line), t = findId(d.to, d.line);
     if (!f || !t) continue;
     const idx = eOut.findIndex((e, k) => e.from === f && e.to === t && !taken.has(k));
-    if (idx < 0) { errors.push(`line ${d.line}: step directive: there is no (further) edge from "${d.from}" to "${d.to}"`); continue; }
+    if (idx < 0) { addErr(`line ${d.line}: step directive: there is no (further) edge from "${d.from}" to "${d.to}"`); continue; }
     taken.add(idx); eOut[idx].step = d.step;
   }
   const relTaken = new Set();
@@ -264,7 +273,7 @@ export function parseD2(text, opts = {}) {
     const f = findId(d.from, d.line), t = findId(d.to, d.line);
     if (!f || !t) continue;
     const idx = eOut.findIndex((e, k) => e.from === f && e.to === t && !relTaken.has(k));
-    if (idx < 0) { errors.push(`line ${d.line}: rel directive: there is no (further) edge from "${d.from}" to "${d.to}"`); continue; }
+    if (idx < 0) { addErr(`line ${d.line}: rel directive: there is no (further) edge from "${d.from}" to "${d.to}"`); continue; }
     relTaken.add(idx); eOut[idx].relation = d.text;
   }
   if (errors.length) throw new ArchError(errors.slice(0, 20), warnings);

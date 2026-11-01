@@ -18,6 +18,7 @@ export const words = (t) => (String(t || '').trim() ? String(t).trim().split(/\s
 // steps: [{words, chips}] in playing order (words = words in the step's sentence)
 export function buildSchedule(steps, { pace = 'normal', duration } = {}) {
   const warnings = [];
+  if (!Object.hasOwn(PACES, pace)) throw Object.assign(new Error(`pace "${String(pace)}" is not one of ${Object.keys(PACES).join(', ')}`), { archMessage: true });
   const mult = PACES[pace];
   const n = steps.length;
   const crowd = n > 9 ? 1.1 * 1.1 : n > 6 ? 1.1 : 1;

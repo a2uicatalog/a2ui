@@ -37,7 +37,7 @@ flow order, then edges, then the message chips.
 
 Try it live: open `scripts/mermaid_arch/playground.html` (one file, no external scripts; it loads the
 renderer bundle from `public/surfaces/mcp-apps/renderer-bundle.html` by relative path, so open it from
-a checkout, or pass `?bundle=<url>` when it is served over http(s); the URL must be on the same origin, anything else is ignored). Input is capped at 20,000 characters and 500 per line. Rebuild it after code changes with
+a checkout, or pass `?bundle=<url>` when it is served over http(s); the URL must be on the same origin, anything else is ignored). Input is capped at 20,000 characters and 500 per line, for both Mermaid and D2 (D2 also allows at most 8 nested braces and 8 parts in a dotted path, and stops reading after 20 errors). Rebuild it after code changes with
 `node scripts/mermaid_arch/build_playground.mjs`.
 
 ## Numbered flows, the steps table and pacing

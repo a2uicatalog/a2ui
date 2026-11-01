@@ -119,7 +119,7 @@ export function makeIdMapper() {
   };
 }
 
-const MAX_INPUT_CHARS = 20000, MAX_LINE_CHARS = 500;   // keeps backtracking in matchLink and the & cross product bounded
+export const MAX_INPUT_CHARS = 20000, MAX_LINE_CHARS = 500;   // keeps backtracking in matchLink and the & cross product bounded
 export function parseMermaid(text, opts = {}) {
   const errors = [], warnings = [];
   const fail = (line, msg) => errors.push(`line ${line}: ${msg}`);
@@ -326,7 +326,7 @@ export function parseMermaid(text, opts = {}) {
         else fail(L(), '"%% numbered:" must be on or off');
       } else if (key === 'pace') {
         const v = d[2].trim().toLowerCase();
-        if (v in PACES) pace = v; else fail(L(), `"%% pace:" must be one of ${Object.keys(PACES).join(', ')}`);
+        if (Object.hasOwn(PACES, v)) pace = v; else fail(L(), `"%% pace:" must be one of ${Object.keys(PACES).join(', ')}`);
       } else if (key === 'duration') {
         const v = Number(d[2].trim().replace(/\s*s$/i, ''));
         if (Number.isFinite(v) && v >= 2 && v <= 120) duration = v; else fail(L(), '"%% duration:" must be a number of seconds from 2 to 120, for example %% duration: 40');

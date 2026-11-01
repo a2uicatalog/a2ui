@@ -838,3 +838,25 @@ test('input caps: a long line or a huge paste is refused fast, not parsed', () =
   assert.throws(() => mermaidToArch('flowchart LR\n' + 'A-->B\n'.repeat(5000)), /most this converter reads/);
   assert.ok(Date.now() - t0 < 1000);
 });
+
+// ------------------------------------------------------------------ review round 2: B1 / B2
+const refuses = (fn, re) => { const t0 = Date.now(); assert.throws(fn, (e) => e instanceof ArchError && re.test(e.errors.join('\n')), 'clear ArchError'); assert.ok(Date.now() - t0 < 1000, 'refused in under 1 s'); };
+test('D2 input caps: size, line length, brace depth, dotted-path length, error flood all refuse fast with an ArchError', () => {
+  refuses(() => parseD2('a{'.repeat(5000) + 'x' + '}'.repeat(5000)), /most one line may hold/);
+  refuses(() => parseD2('a{\n'.repeat(5000) + 'x\n' + '}\n'.repeat(5000)), /most this converter reads/);
+  refuses(() => parseD2('a{\n'.repeat(500) + 'x\n' + '}\n'.repeat(500)), /nested more than 8/);
+  refuses(() => parseD2(Array.from({ length: 4000 }, (_, i) => 's' + i).join('.')), /most (one line may hold|this converter reads)/);
+  refuses(() => parseD2(Array.from({ length: 100 }, (_, i) => 's' + (i % 10)).join('.')), /at most 8 parts/);
+  const flood = Array.from({ length: 900 }, (_, i) => 'n' + i).join('\n') + '\n' + '# msg: x->y "t"\n'.repeat(800);
+  refuses(() => parseD2(flood), /is not a shape/);
+  const bad = parseD2.bind(null, 'a\n' + '# msg: nonsense\n'.repeat(1000));
+  try { bad(); assert.fail('should throw'); } catch (e) { assert.ok(e instanceof ArchError && e.errors.length <= 20); }
+});
+test('prototype keys are not paces: Mermaid, D2, graph JSON and the library option all refuse them', () => {
+  for (const k of ['__proto__', 'constructor', 'toString', 'hasOwnProperty']) {
+    assert.throws(() => mermaidToArch(`flowchart LR\n%% pace: ${k}\nA-->B`), (e) => e instanceof ArchError && /pace/.test(e.errors.join()), 'mermaid ' + k);
+    assert.throws(() => parseD2(`# pace: ${k}\na -> b`), (e) => e instanceof ArchError && /pace/.test(e.errors.join()), 'd2 ' + k);
+    assert.throws(() => mermaidToArch('flowchart LR\nA-->B', { pace: k }), (e) => e instanceof ArchError && /pace/.test(e.errors.join()), 'option ' + k);
+    assert.throws(() => graphToArch({ nodes: [{ id: 'a' }, { id: 'b' }], edges: [{ from: 'a', to: 'b' }], pace: k }), (e) => e instanceof ArchError, 'graph ' + k);
+  }
+});

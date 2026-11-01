@@ -226,7 +226,7 @@ export function validateGraph(g) {
   });
   if (g.relationName !== undefined && (typeof g.relationName !== 'string' || !g.relationName.trim() || g.relationName.length > LIMITS.relation)) errors.push(`relationName must be 1 to ${LIMITS.relation} characters`);
   if (g.relationColumn !== undefined && typeof g.relationColumn !== 'boolean') errors.push('relationColumn must be true or false');
-  if (g.pace !== undefined && !(g.pace in PACES)) errors.push(`pace "${g.pace}" is not one of ${Object.keys(PACES).join(', ')}`);
+  if (g.pace !== undefined && !Object.hasOwn(PACES, g.pace)) errors.push(`pace "${g.pace}" is not one of ${Object.keys(PACES).join(', ')}`);
   if (g.duration !== undefined && !(typeof g.duration === 'number' && g.duration >= 2 && g.duration <= 120)) errors.push(`duration "${g.duration}" must be a number of seconds from 2 to 120`);
   if (g.numbered || edges.some((e) => e && e.step !== undefined)) {
     if (!errors.some((e) => /^edge \d+: "/.test(e))) errors.push(...assignSteps(g).errors);
