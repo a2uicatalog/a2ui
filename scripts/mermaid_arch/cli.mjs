@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // node scripts/mermaid_arch/cli.mjs file.mmd [--direction LR|RL|TB|BT] [--json-graph] [--check] [--film] [--fit wide] [--size N] [--title T]
 import { readFileSync } from 'fs';
-import { graphToArch, parseMermaid, parseD2, validateGraph, ArchError } from './index.mjs';
+import { foldGroups, graphToArch, parseMermaid, parseD2, validateGraph, ArchError } from './index.mjs';
 
 const HELP = `usage: node cli.mjs <file.mmd | file.d2 | file.json | -> [options]
   --direction LR|RL|TB|BT  force the flow direction (otherwise the one written in the file, switched
@@ -57,12 +57,12 @@ function main(argv) {
   try {
     let graph, warnings = [];
     if (asGraph || file.endsWith('.json')) {
-      graph = JSON.parse(text);
+      const f = foldGroups(JSON.parse(text)); graph = f.graph;
       const v = validateGraph(graph);
       if (v.errors.length) throw new ArchError(v.errors, v.warnings);
-      warnings = v.warnings;
+      warnings = [...f.warnings, ...v.warnings];
     } else {
-      const p = (file.endsWith('.d2') || opts.syntax === 'd2') ? parseD2(text, opts) : parseMermaid(text, opts); graph = p.graph; warnings = p.warnings;
+      const p = (file.endsWith('.d2') || opts.syntax === 'd2') ? parseD2(text, opts) : parseMermaid(text, opts); const f = foldGroups(p.graph); graph = f.graph; warnings = [...p.warnings, ...f.warnings];
       const v = validateGraph(graph);
       warnings = [...warnings, ...v.warnings];
       if (v.errors.length) throw new ArchError(v.errors, warnings);

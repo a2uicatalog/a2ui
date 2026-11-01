@@ -35,7 +35,7 @@ export function compileGraph(graph, opts = {}) {
   const lay = layoutGraph(g2, opts);
   if (!lay.fits) throw new ArchError([`the diagram does not fit in the atom's 2000 x 2000 frame even at the smallest text size; shorten the labels or split the diagram`]);
   if (lay.direction !== graph.direction) {
-    warnings.push(`drawn ${lay.direction === 'TB' ? 'top-to-bottom' : 'left-to-right'} instead of ${graph.direction}: that keeps the text about ${(lay.size * 343 / lay.W).toFixed(0)} px on a 343 px phone column. Pass --direction ${graph.direction} to force the written direction.`);
+    warnings.push(`drawn ${lay.direction === 'TB' ? 'top-to-bottom' : 'left-to-right'} instead of ${graph.direction}: that keeps the text about ${(lay.size * 343 / lay.W).toFixed(0)} px on a 343 px phone column. ${opts.hint === 'web' ? 'You can switch the Layout menu to the written direction.' : `Pass --direction ${graph.direction} to force the written direction.`}`);
   }
   const { W, H, size } = lay;
   const horizontal = lay.direction === 'LR' || lay.direction === 'RL';

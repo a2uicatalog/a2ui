@@ -42,7 +42,7 @@ flowchart LR
   api -.->|enqueue| worker
   worker --> db</textarea>
 <div class="row">
-  <label>Direction <select id="dir"><option value="">as written (auto)</option><option>LR</option><option>TB</option><option>RL</option><option>BT</option></select></label>
+  <label>Layout <select id="dir"><option value="">as written (auto)</option><option>LR</option><option>TB</option><option>RL</option><option>BT</option></select></label>
   <label><input type="checkbox" id="film" checked> play as a film</label>
   <label><input type="checkbox" id="num" checked> numbered steps</label>
   <label><input type="checkbox" id="rel"> Show relation column</label>
@@ -84,7 +84,7 @@ flowchart LR
   function fit(asp) { frame.style.height = Math.round(frame.clientWidth * asp + 84) + 'px'; }
   function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
   function convert() {
-    var msgs = document.getElementById('msgs'), opts = { film: document.getElementById('film').checked, numbered: document.getElementById('num').checked, pace: document.getElementById('pace').value, routing: document.getElementById('routing').value, relationColumn: document.getElementById('rel').checked };
+    var msgs = document.getElementById('msgs'), opts = { hint: 'web', film: document.getElementById('film').checked, numbered: document.getElementById('num').checked, pace: document.getElementById('pace').value, routing: document.getElementById('routing').value, relationColumn: document.getElementById('rel').checked };
     var d = document.getElementById('dir').value; if (d) opts.direction = d;
     try {
       var r = mermaidToArch(document.getElementById('src').value, opts);

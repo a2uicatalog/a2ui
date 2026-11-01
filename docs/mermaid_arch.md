@@ -184,8 +184,15 @@ replaces other characters with `_`, prefixes `n` if the id starts with a digit, 
 
 The atom's own limits: 12 nodes, 16 edges, 4 groups, 12 messages; labels 40 characters, sub-labels 40,
 edge labels 48, message text 40, group labels 40 (drawn in capitals), title 80. **Nothing is dropped
-silently.** Over a cap is an error that says how to split (it names the groups and their sizes). Text
-over a limit is cut with an ellipsis and a warning.
+silently.** Over a cap is an error that says how to split (it names the groups and their sizes), with one
+exception: **groups beyond 4 are folded, not refused.** The converter (Mermaid, D2 and graph JSON alike, after
+nested groups are flattened) turns the smallest groups into plain nodes, fewest members first and, on a tie,
+the later one in the source first, until 4 remain. A folded group loses its box and title; its nodes stay. Its
+title is added as the sub-label of each member that has none, when the title fits 40 characters. One warning
+says what happened, for example `Drew 4 of 5 groups: "5. Mail" was shown without its box (the diagram can draw at
+most 4).` Text over a limit is cut with an ellipsis and a warning. The layout warning (drawn top-to-bottom
+instead of the written direction) ends with the CLI hint by default; `hint: 'web'` swaps it for "You can switch
+the Layout menu to the written direction." (the playground passes it).
 
 Checks and their wording (numbers are 1-based):
 

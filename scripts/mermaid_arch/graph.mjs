@@ -35,6 +35,29 @@ export const KIND_ALIASES = Object.freeze({
   person: 'user', actor: 'user', human: 'user', user: 'user',
 });
 
+// When a graph has more groups than the atom draws, the smallest are shown without their boxes.
+// Fewest member nodes first; ties: the later one in source order goes first. A folded group's title
+// moves to the sub-label of each member that has no sub-label, if it fits. Returns {graph, warnings}.
+export function foldGroups(graph) {
+  const groups = graph && Array.isArray(graph.groups) ? graph.groups : [];
+  if (groups.length <= LIMITS.groups || !Array.isArray(graph.nodes)) return { graph, warnings: [] };
+  const size = (gr) => graph.nodes.filter((n) => n && n.group === gr.id).length;
+  const order = groups.map((gr, i) => ({ gr, i, c: size(gr) })).sort((a, b) => a.c - b.c || b.i - a.i);
+  const fold = new Map(order.slice(0, groups.length - LIMITS.groups).map((o) => [o.gr.id, o.gr]));
+  const nodes = graph.nodes.map((n) => {
+    if (!n || !fold.has(n.group)) return n;
+    const { group, ...rest } = n;
+    const t = String(fold.get(group).label ?? group).trim();
+    if ((rest.sub === undefined || rest.sub === null || rest.sub === '') && t && t.length <= LIMITS.sub) rest.sub = t;
+    return rest;
+  });
+  const kept = groups.filter((gr) => !fold.has(gr.id));
+  const names = groups.filter((gr) => fold.has(gr.id)).map((gr) => `"${gr.label || gr.id}"`);
+  const list = names.length === 1 ? names[0] : names.slice(0, -1).join(', ') + ' and ' + names[names.length - 1];
+  const warning = `Drew ${kept.length} of ${groups.length} groups: ${list} ${names.length === 1 ? 'was' : 'were'} shown without ${names.length === 1 ? 'its box' : 'their boxes'} (the diagram can draw at most ${LIMITS.groups}).`;
+  return { graph: { ...graph, groups: kept, nodes }, warnings: [warning] };
+}
+
 export class ArchError extends Error {
   constructor(errors, warnings = []) {
     const list = Array.isArray(errors) ? errors : [errors];

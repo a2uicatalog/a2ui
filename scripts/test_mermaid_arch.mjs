@@ -201,11 +201,109 @@ test('error: more than 16 edges', () => {
   for (let i = 0; i < 17; i++) lines.push(`a -->|e${i}| b`);
   assert.match(err(lines.join('\n')), /17 edges; the atom draws at most 16/);
 });
-test('error: more than 4 groups', () => {
+const LOGIN5 = `flowchart LR
+subgraph s1["1. Sign-in page"]
+  form[Login form]
+end
+subgraph s2["2. Credential check"]
+  api[Auth API]
+  db[(User store)]
+end
+subgraph s3["3. Session"]
+  sess[Session service]
+end
+subgraph s4["4. Audit"]
+  log[Audit log]
+end
+subgraph s5["5. Mail"]
+  mail[Mailer]
+end
+form --> api
+api --> db
+api --> sess
+sess --> log
+sess --> mail
+`;
+const foldWarns = (r) => r.warnings.filter((w) => /^Drew \d+ of \d+ groups/.test(w));
+test('5 subgraphs fold the smallest into plain nodes with one warning', () => {
+  const r = mermaidToArch(LOGIN5);
+  assert.equal(foldWarns(r).length, 1);
+  assert.equal(foldWarns(r)[0], 'Drew 4 of 5 groups: "5. Mail" was shown without its box (the diagram can draw at most 4).');
+  assert.equal(r.block.groups.length, 4);
+  assert.equal(r.block.nodes.length, 6);
+  assert.deepEqual(validateBlock(r.block), []);
+  assert.equal(r.graph.nodes.find((n) => n.id === 'mail').group, undefined);
+  assert.equal(r.graph.nodes.find((n) => n.id === 'mail').sub, '5. Mail');
+});
+test('6 and 8 groups fold down to 4', () => {
+  for (const k of [6, 8]) {
+    const lines = ['flowchart LR'];
+    for (let i = 0; i < k; i++) lines.push(`subgraph s${i}[Tier ${i}]`, `n${i}`, ...(i === 0 ? ['x0'] : []), 'end');
+    lines.push('n0 --> n1');
+    const r = mermaidToArch(lines.join('\n'));
+    assert.equal(r.block.groups.length, 4);
+    assert.equal(foldWarns(r).length, 1);
+    assert.match(foldWarns(r)[0], new RegExp(`^Drew 4 of ${k} groups: `));
+    assert.equal(r.block.nodes.length, k + 1);
+    assert.equal(r.graph.groups[0].id, 's0');   // the 2-node group is never folded
+  }
+});
+test('fold ties: the later group goes first', () => {
   const lines = ['flowchart LR'];
-  for (let i = 0; i < 5; i++) lines.push(`subgraph s${i}[S${i}]`, `n${i}`, 'end');
-  lines.push('n0 --> n1');
-  assert.match(err(lines.join('\n')), /5 groups; the atom draws at most 4/);
+  for (let i = 0; i < 6; i++) lines.push(`subgraph s${i}[T${i}]`, `n${i}`, 'end');
+  const r = mermaidToArch(lines.join('\n'));
+  assert.deepEqual(r.graph.groups.map((x) => x.id), ['s0', 's1', 's2', 's3']);
+  assert.match(foldWarns(r)[0], /"T4" and "T5" were shown without their boxes/);
+});
+test('fold: existing sub-label stays, long titles are skipped, never crashes', () => {
+  const nodes = [];
+  for (let i = 1; i <= 4; i++) nodes.push({ id: 'a' + i, label: 'A' + i, group: 'g' + i }, { id: 'b' + i, label: 'B' + i, group: 'g' + i });
+  nodes.push({ id: 'e', label: 'E', group: 'g5', sub: 'mine' }, { id: 'f', label: 'F', group: 'g6' });
+  const gr = { direction: 'LR', groups: [1, 2, 3, 4, 5, 6].map((i) => ({ id: 'g' + i, label: i === 6 ? 'L'.repeat(41) : 'G' + i })), nodes, edges: [], messages: [] };
+  const r = graphToArch(gr);
+  assert.equal(foldWarns(r).length, 1);
+  assert.equal(r.block.groups.length, 4);
+  assert.equal(r.graph.nodes.find((n) => n.id === 'e').sub, 'mine');
+  assert.equal(r.graph.nodes.find((n) => n.id === 'f').sub, undefined);   // title over the sub limit: skipped
+  const r2 = graphToArch({ ...gr, groups: gr.groups.map((x) => (x.id === 'g6' ? { ...x, label: 'G6' } : x)) });
+  assert.equal(r2.graph.nodes.find((n) => n.id === 'f').sub, 'G6');
+  assert.equal(r2.graph.nodes.find((n) => n.id === 'e').sub, 'mine');
+});
+test('fold works for the graph JSON input and D2 containers', () => {
+  const r = graphToArch({ direction: 'LR', groups: [1, 2, 3, 4, 5].map((i) => ({ id: 'g' + i, label: 'G' + i })),
+    nodes: [1, 2, 3, 4, 5].map((i) => ({ id: 'n' + i, label: 'N' + i, group: 'g' + i })), edges: [], messages: [] });
+  assert.equal(foldWarns(r).length, 1);
+  assert.equal(r.block.groups.length, 4);
+  const d2 = [1, 2, 3, 4, 5].map((i) => `c${i}: "C${i}" {\n  n${i}: N${i}\n}`).join('\n') + '\nc1.n1 -> c2.n2\n';
+  const r2 = d2ToArch(d2);
+  assert.equal(foldWarns(r2).length, 1);
+  assert.equal(r2.block.groups.length, 4);
+  assert.equal(r2.block.nodes.length, 5);
+  assert.deepEqual(validateBlock(r2.block), []);
+});
+test('fold counts groups after nested ones are flattened', () => {
+  const lines = ['flowchart LR'];
+  for (let i = 0; i < 4; i++) lines.push(`subgraph s${i}[T${i}]`, `n${i}`, ...(i === 0 ? ['subgraph inner[Inner]', 'deep', 'end'] : []), 'end');
+  const r = mermaidToArch(lines.join('\n'));
+  assert.equal(foldWarns(r).length, 0);
+  assert.ok(r.warnings.some((w) => /nested groups are flattened/.test(w)));
+  assert.equal(r.block.groups.length, 4);
+});
+test('folding still leaves other errors reported', () => {
+  const lines = ['flowchart LR'];
+  for (let i = 0; i < 5; i++) lines.push(`subgraph s${i}[S${i}]`, `n${i}`, `m${i}`, 'end');
+  lines.push('x1', 'x2', 'x3');
+  assert.match(err(lines.join('\n')), /13 nodes; the atom draws at most 12/);
+  assert.doesNotMatch(err(lines.join('\n')), /groups/);
+});
+test('layout warning: CLI hint by default, Layout menu hint for the web', () => {
+  const src = 'flowchart LR\n' + ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'].map((x, i, a) => (i ? `${a[i - 1]}[Long label number ${i}] --> ${x}[Long label ${x}]` : '')).join('\n');
+  const w = (o) => mermaidToArch(src, o).warnings.filter((x) => /^drawn /.test(x));
+  const cli = w(), web = w({ hint: 'web' });
+  assert.equal(cli.length, 1);
+  assert.match(cli[0], /Pass --direction LR to force the written direction\.$/);
+  assert.match(web[0], /You can switch the Layout menu to the written direction\.$/);
+  assert.doesNotMatch(web[0], /--direction/);
 });
 test('error: more than 12 messages', () => {
   const lines = ['flowchart LR', 'a --> b'];

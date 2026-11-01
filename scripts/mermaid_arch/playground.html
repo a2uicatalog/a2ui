@@ -42,7 +42,7 @@ flowchart LR
   api -.->|enqueue| worker
   worker --> db</textarea>
 <div class="row">
-  <label>Direction <select id="dir"><option value="">as written (auto)</option><option>LR</option><option>TB</option><option>RL</option><option>BT</option></select></label>
+  <label>Layout <select id="dir"><option value="">as written (auto)</option><option>LR</option><option>TB</option><option>RL</option><option>BT</option></select></label>
   <label><input type="checkbox" id="film" checked> play as a film</label>
   <label><input type="checkbox" id="num" checked> numbered steps</label>
   <label><input type="checkbox" id="rel"> Show relation column</label>
@@ -94,6 +94,29 @@ const KIND_ALIASES = Object.freeze({
   external: 'surface', ui: 'surface', screen: 'surface', renderer: 'surface', surface: 'surface',
   person: 'user', actor: 'user', human: 'user', user: 'user',
 });
+
+// When a graph has more groups than the atom draws, the smallest are shown without their boxes.
+// Fewest member nodes first; ties: the later one in source order goes first. A folded group's title
+// moves to the sub-label of each member that has no sub-label, if it fits. Returns {graph, warnings}.
+function foldGroups(graph) {
+  const groups = graph && Array.isArray(graph.groups) ? graph.groups : [];
+  if (groups.length <= LIMITS.groups || !Array.isArray(graph.nodes)) return { graph, warnings: [] };
+  const size = (gr) => graph.nodes.filter((n) => n && n.group === gr.id).length;
+  const order = groups.map((gr, i) => ({ gr, i, c: size(gr) })).sort((a, b) => a.c - b.c || b.i - a.i);
+  const fold = new Map(order.slice(0, groups.length - LIMITS.groups).map((o) => [o.gr.id, o.gr]));
+  const nodes = graph.nodes.map((n) => {
+    if (!n || !fold.has(n.group)) return n;
+    const { group, ...rest } = n;
+    const t = String(fold.get(group).label ?? group).trim();
+    if ((rest.sub === undefined || rest.sub === null || rest.sub === '') && t && t.length <= LIMITS.sub) rest.sub = t;
+    return rest;
+  });
+  const kept = groups.filter((gr) => !fold.has(gr.id));
+  const names = groups.filter((gr) => fold.has(gr.id)).map((gr) => `"${gr.label || gr.id}"`);
+  const list = names.length === 1 ? names[0] : names.slice(0, -1).join(', ') + ' and ' + names[names.length - 1];
+  const warning = `Drew ${kept.length} of ${groups.length} groups: ${list} ${names.length === 1 ? 'was' : 'were'} shown without ${names.length === 1 ? 'its box' : 'their boxes'} (the diagram can draw at most ${LIMITS.groups}).`;
+  return { graph: { ...graph, groups: kept, nodes }, warnings: [warning] };
+}
 
 class ArchError extends Error {
   constructor(errors, warnings = []) {
@@ -2089,7 +2112,7 @@ function compileGraph(graph, opts = {}) {
   const lay = layoutGraph(g2, opts);
   if (!lay.fits) throw new ArchError([`the diagram does not fit in the atom's 2000 x 2000 frame even at the smallest text size; shorten the labels or split the diagram`]);
   if (lay.direction !== graph.direction) {
-    warnings.push(`drawn ${lay.direction === 'TB' ? 'top-to-bottom' : 'left-to-right'} instead of ${graph.direction}: that keeps the text about ${(lay.size * 343 / lay.W).toFixed(0)} px on a 343 px phone column. Pass --direction ${graph.direction} to force the written direction.`);
+    warnings.push(`drawn ${lay.direction === 'TB' ? 'top-to-bottom' : 'left-to-right'} instead of ${graph.direction}: that keeps the text about ${(lay.size * 343 / lay.W).toFixed(0)} px on a 343 px phone column. ${opts.hint === 'web' ? 'You can switch the Layout menu to the written direction.' : `Pass --direction ${graph.direction} to force the written direction.`}`);
   }
   const { W, H, size } = lay;
   const horizontal = lay.direction === 'LR' || lay.direction === 'RL';
@@ -2410,19 +2433,22 @@ function checkOptions(opts = {}) {
   if (o.routing != null && !['orthogonal', 'curve'].includes(o.routing)) e.push(`routing ${JSON.stringify(o.routing)} must be orthogonal or curve`);
   if (o.pace != null && !(typeof o.pace === 'string' && Object.hasOwn(PACES, o.pace))) e.push(`pace ${JSON.stringify(o.pace)} must be one of ${Object.keys(PACES).join(', ')}`);
   if (o.duration != null && !(typeof o.duration === 'number' && o.duration >= 2 && o.duration <= 120)) e.push(`duration ${JSON.stringify(o.duration)} must be a number of seconds from 2 to 120`);
+  if (o.hint != null && !['cli', 'web'].includes(o.hint)) e.push(`hint ${JSON.stringify(o.hint)} must be cli or web`);
   if (o.direction != null && !['LR', 'RL', 'TB', 'BT'].includes(normDirection(o.direction))) e.push(`direction ${JSON.stringify(o.direction)} must be LR, RL, TB (or TD) or BT`);
   if (e.length) throw new ArchError(e);
 }
 
-// opts: {routing:'orthogonal'|'curve' (default orthogonal), direction, title, size, fit:'balanced'|'wide', film:boolean, numbered:boolean, pace:'slow'|'normal'|'fast', duration:seconds, relationColumn:boolean, relationName:string}
+// opts: {hint:'cli'|'web' (wording of the layout warning, default cli), routing:'orthogonal'|'curve' (default orthogonal), direction, title, size, fit:'balanced'|'wide', film:boolean, numbered:boolean, pace:'slow'|'normal'|'fast', duration:seconds, relationColumn:boolean, relationName:string}
 function graphToArch(graph, opts = {}) {
   checkOptions(opts);
-  const g = { ...graph };
+  const folded = foldGroups(graph);
+  const g = { ...folded.graph };
   if (opts.direction) g.direction = normDirection(opts.direction);
   if (g.direction) g.direction = normDirection(g.direction);
   if (opts.title) g.title = opts.title;
   if (!g.direction) g.direction = 'LR';
-  const { errors, warnings } = validateGraph(g);
+  const v = validateGraph(g);
+  const errors = v.errors, warnings = [...folded.warnings, ...v.warnings];
   if (errors.length) throw new ArchError(errors, warnings);
   const lopts = { ...opts, forceDirection: !!opts.direction, direction: normDirection(opts.direction) };
   const c = compileGraph(g, lopts);
@@ -2476,7 +2502,7 @@ function d2ToArch(text, opts = {}) {
   function fit(asp) { frame.style.height = Math.round(frame.clientWidth * asp + 84) + 'px'; }
   function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
   function convert() {
-    var msgs = document.getElementById('msgs'), opts = { film: document.getElementById('film').checked, numbered: document.getElementById('num').checked, pace: document.getElementById('pace').value, routing: document.getElementById('routing').value, relationColumn: document.getElementById('rel').checked };
+    var msgs = document.getElementById('msgs'), opts = { hint: 'web', film: document.getElementById('film').checked, numbered: document.getElementById('num').checked, pace: document.getElementById('pace').value, routing: document.getElementById('routing').value, relationColumn: document.getElementById('rel').checked };
     var d = document.getElementById('dir').value; if (d) opts.direction = d;
     try {
       var r = mermaidToArch(document.getElementById('src').value, opts);
