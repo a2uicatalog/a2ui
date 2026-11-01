@@ -1,0 +1,24 @@
+%% title: A2A: one agent hands work to another
+%% msg: orch->card "GET agent card"
+%% msg: orch->remote "SendStreamingMessage"
+%% msg: remote->orch "artifact"
+flowchart LR
+  user([User]):::user
+  subgraph ours[Our system]
+    orch[Orchestrator on ADK]:::app
+  end
+  subgraph partner[Partner system]
+    card[(Agent Card)]:::store
+    remote[Remote agent]:::server
+    task[(Task state)]:::store
+    rllm[Remote LLM]:::model
+    rtools[[MCP tools]]:::tool
+  end
+  user -->|asks| orch
+  orch -->|discovers skills| card
+  orch -->|SendStreamingMessage JSON-RPC| remote
+  remote -->|creates task| task
+  remote -->|prompt| rllm
+  remote -->|tool calls| rtools
+  remote -.->|"status, artifacts, A2UI in a DataPart, over SSE"| orch
+  orch -->|answer| user

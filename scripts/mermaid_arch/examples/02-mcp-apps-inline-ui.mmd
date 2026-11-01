@@ -1,0 +1,24 @@
+%% title: MCP Apps: a tool result becomes an inline UI
+%% msg: llm->host "tool call"
+%% msg: host->tool "tools/call"
+%% msg: host->resource "resources/read ui://"
+flowchart LR
+  user([User]):::user
+  subgraph hostside[Host]
+    host[Chat host]:::app
+    llm[LLM]:::model
+    frame[Sandboxed iframe]:::surface
+  end
+  subgraph mcpserver[MCP server]
+    tool[[Tool with ui:// link]]:::tool
+    resource[(ui:// HTML resource)]:::store
+  end
+  user -->|asks| host
+  host -->|prompt + tools| llm
+  llm -->|tool call| host
+  host -->|tools/call| tool
+  tool -->|tool result| host
+  host -->|resources/read| resource
+  host -->|mounts HTML, sends tool result| frame
+  frame -.->|tools/call via postMessage| host
+  frame -->|interactive UI| user

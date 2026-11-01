@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mermaid to motion_arch playground</title>
+<style>
+:root{color-scheme:dark;--bg:#12171f;--fg:#e8edf4;--mut:#9ca5b1;--line:#2c3644;--acc:#8d98ff;--err:#ff8a80;--warn:#f0b45a}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 system-ui,sans-serif}
+header{padding:14px 16px;border-bottom:1px solid var(--line)}h1{font-size:18px;margin:0 0 4px}header p{margin:0;color:var(--mut);font-size:13px}
+main{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:16px;padding:16px;max-width:1400px;margin:0 auto}
+@media(max-width:860px){main{grid-template-columns:1fr}}
+textarea{width:100%;min-height:340px;background:#0d1117;color:var(--fg);border:1px solid var(--line);border-radius:10px;padding:12px;font:13px/1.5 ui-monospace,Menlo,monospace;resize:vertical}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:8px 0;color:var(--mut);font-size:13px}
+select,button{background:#1c2430;color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:6px 12px;font:inherit}button{cursor:pointer}button:hover{border-color:var(--acc)}
+#msgs{font-size:13px;white-space:pre-wrap}.err{color:var(--err)}.warn{color:var(--warn)}.ok{color:var(--mut)}
+iframe{width:100%;border:0;border-radius:12px;background:#05070f;display:block;min-height:420px}
+details{margin-top:10px}pre{background:#0d1117;border:1px solid var(--line);border-radius:10px;padding:12px;overflow:auto;max-height:260px;font:12px/1.5 ui-monospace,Menlo,monospace;margin:6px 0}
+</style>
+</head>
+<body>
+<header><h1>Mermaid to motion_arch playground</h1>
+<p>Paste a Mermaid flowchart. The converter (this page, no network) lays it out and writes a <code>motion_arch</code> payload; the real MCP Apps renderer bundle plays it. See docs/mermaid_arch.md.</p></header>
+<main>
+<section>
+<textarea id="src" spellcheck="false" aria-label="Mermaid flowchart">%% title: Order service
+%% msg: client->api "GET /orders"
+%% msg: api->db "SELECT"
+flowchart LR
+  client([Browser]):::device
+  subgraph backend[Backend]
+    api[API gateway]
+    worker[[Job worker]]
+    db[(Postgres)]
+  end
+  client -->|HTTPS| api
+  api -->|query| db
+  api -.->|enqueue| worker
+  worker --> db</textarea>
+<div class="row">
+  <label>Direction <select id="dir"><option value="">as written (auto)</option><option>LR</option><option>TB</option><option>RL</option><option>BT</option></select></label>
+  <label><input type="checkbox" id="film" checked> play as a film</label>
+  <button id="go">Convert</button><button id="copy">Copy payload</button>
+</div>
+<div id="msgs" class="ok"></div>
+<details><summary>Payload JSON</summary><pre id="json"></pre></details>
+</section>
+<section><iframe id="view" title="A2UI renderer" scrolling="no"></iframe>
+<div class="row"><span id="note"></span></div></section>
+</main>
+<script>
+/*__MODULES__*/
+</script>
+<script>
+(function () {
+  var BUNDLE = (location.search.match(/[?&]bundle=([^&]+)/) || [])[1] || '../../public/surfaces/mcp-apps/renderer-bundle.html';
+  var frame = document.getElementById('view'), ready = false, pending = null, last = null;
+  function post(m) { frame.contentWindow.postMessage(m, '*'); }
+  function send() { if (ready && pending) { post({ jsonrpc: '2.0', method: 'ui/notifications/tool-result', params: { content: [], structuredContent: pending } }); } }
+  window.addEventListener('message', function (ev) {
+    if (ev.source !== frame.contentWindow) return;
+    var m = ev.data; if (!m || m.jsonrpc !== '2.0') return;
+    if (m.method === 'ui/initialize') { post({ jsonrpc: '2.0', id: m.id, result: { protocolVersion: '2026-01-26', hostInfo: { name: 'mermaid-arch-playground', version: '1' }, hostCapabilities: {}, hostContext: { theme: 'dark', displayMode: 'inline' } } }); return; }
+    if (m.method === 'ui/notifications/initialized') { ready = true; send(); return; }
+    if (m.method === 'ui/request-display-mode' && m.id) post({ jsonrpc: '2.0', id: m.id, result: { mode: 'inline' } });
+  });
+  frame.addEventListener('load', function () { setTimeout(function () { ready = true; send(); }, 700); });
+  frame.src = BUNDLE;
+  function fit(asp) { frame.style.height = Math.round(frame.clientWidth * asp + 84) + 'px'; }
+  function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
+  function convert() {
+    var msgs = document.getElementById('msgs'), opts = { film: document.getElementById('film').checked };
+    var d = document.getElementById('dir').value; if (d) opts.direction = d;
+    try {
+      var r = mermaidToArch(document.getElementById('src').value, opts);
+      last = r.payload;
+      var b = r.block, html = '<span class="ok">ok: ' + b.nodes.length + ' nodes, ' + b.edges.length + ' edges, ' + (b.groups || []).length + ' groups, ' + (b.messages || []).length + ' messages; frame ' + b.w + 'x' + b.h + ', text ' + b.size + ' px (about ' + (b.size * 343 / b.w).toFixed(1) + ' px in a 343 px phone column)</span>';
+      r.warnings.forEach(function (w) { html += '\n<span class="warn">warning: ' + esc(w) + '</span>'; });
+      msgs.innerHTML = html;
+      document.getElementById('json').textContent = JSON.stringify(r.payload, null, 1);
+      var t = r.payload.blocks[0];
+      fit(opts.film ? { '16:9': 9 / 16, '4:3': 3 / 4, '1:1': 1, '9:16': 16 / 9 }[t.aspect] : b.h / b.w);
+      pending = r.payload; send();
+      document.getElementById('note').textContent = opts.film ? 'Playing in the renderer’s own film controls.' : 'Standalone block: the finished diagram, no animation.';
+    } catch (e) {
+      if (e && e.errors) msgs.innerHTML = e.errors.map(function (m) { return '<span class="err">error: ' + esc(m) + '</span>'; }).join('\n');
+      else msgs.innerHTML = '<span class="err">internal error: ' + esc(e && e.message) + '</span>';
+    }
+  }
+  document.getElementById('go').onclick = convert;
+  document.getElementById('src').addEventListener('input', function () { clearTimeout(convert.t); convert.t = setTimeout(convert, 500); });
+  document.getElementById('dir').onchange = convert; document.getElementById('film').onchange = convert;
+  document.getElementById('copy').onclick = function () { if (last && navigator.clipboard) navigator.clipboard.writeText(JSON.stringify(last)); };
+  convert();
+})();
+</script>
+</body>
+</html>

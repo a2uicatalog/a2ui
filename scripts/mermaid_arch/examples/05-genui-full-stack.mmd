@@ -1,0 +1,31 @@
+%% title: GenUI stack, one possible composition (A2UI v0.9)
+%% msg: app->agent "AG-UI run"
+%% msg: remote->agent "A2UI JSON"
+%% msg: mcp->agent "ui:// HTML"
+flowchart LR
+  user([User]):::user
+  subgraph browser[Browser]
+    app[Frontend app]:::app
+    ui[A2UI renderer]:::surface
+    mcpapp[MCP App iframe]:::surface
+  end
+  subgraph backend[Agent backend]
+    agent[ADK agent]:::app
+    llm[LLM]:::model
+  end
+  subgraph services[Services]
+    mcp[[MCP server]]:::tool
+    remote[Remote agent over A2A]:::server
+  end
+  user -->|asks| app
+  app -->|AG-UI run| agent
+  agent -->|prompt| llm
+  agent -->|tools/call, resources/read| mcp
+  mcp -->|tool result + ui:// HTML| agent
+  agent -->|A2A message| remote
+  remote -->|A2UI JSON| agent
+  agent -.->|AG-UI events: A2UI + MCP App HTML| app
+  app -->|A2UI messages| ui
+  app -->|sandboxed iframe| mcpapp
+  ui -.->|action| app
+  mcpapp -.->|tools/call via postMessage| app

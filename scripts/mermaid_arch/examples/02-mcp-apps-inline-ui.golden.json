@@ -1,0 +1,197 @@
+{
+ "theme": "dark",
+ "blocks": [
+  {
+   "type": "motion_arch",
+   "label": "MCP Apps: a tool result becomes an inline UI",
+   "w": 1030,
+   "h": 655,
+   "size": 24,
+   "nodes": [
+    {
+     "id": "user",
+     "kind": "user",
+     "label": "User",
+     "x": 50,
+     "y": 10.23,
+     "w": 12.91,
+     "h": 10.99,
+     "at": 0.1,
+     "dur": 0.08
+    },
+    {
+     "id": "host",
+     "kind": "app",
+     "label": "Chat host",
+     "x": 15.24,
+     "y": 46.34,
+     "w": 19.42,
+     "h": 10.99,
+     "at": 0.195,
+     "dur": 0.08
+    },
+    {
+     "id": "llm",
+     "kind": "model",
+     "label": "LLM",
+     "x": 80.19,
+     "y": 38.47,
+     "w": 12.14,
+     "h": 10.99,
+     "at": 0.174,
+     "dur": 0.08
+    },
+    {
+     "id": "frame",
+     "kind": "surface",
+     "label": "Sandboxed iframe",
+     "x": 80.19,
+     "y": 54.2,
+     "w": 28.54,
+     "h": 10.99,
+     "at": 0.216,
+     "dur": 0.08
+    },
+    {
+     "id": "tool",
+     "kind": "tool",
+     "label": "Tool with ui:// link",
+     "x": 32.23,
+     "y": 86.11,
+     "w": 33.79,
+     "h": 10.99,
+     "at": 0.3,
+     "dur": 0.08
+    },
+    {
+     "id": "resource",
+     "kind": "store",
+     "label": "ui:// HTML resource",
+     "x": 68.4,
+     "y": 86.11,
+     "w": 32.52,
+     "h": 10.99,
+     "at": 0.3,
+     "dur": 0.08
+    }
+   ],
+   "edges": [
+    {
+     "from": "user",
+     "to": "host",
+     "label": "asks",
+     "style": "solid",
+     "at": 0.34,
+     "dur": 0.1
+    },
+    {
+     "from": "host",
+     "to": "llm",
+     "label": "prompt + tools",
+     "style": "solid",
+     "at": 0.369,
+     "dur": 0.1
+    },
+    {
+     "from": "llm",
+     "to": "host",
+     "label": "tool call",
+     "style": "solid",
+     "curve": 24,
+     "at": 0.398,
+     "dur": 0.1
+    },
+    {
+     "from": "host",
+     "to": "tool",
+     "label": "tools/call",
+     "style": "solid",
+     "at": 0.513,
+     "dur": 0.1
+    },
+    {
+     "from": "tool",
+     "to": "host",
+     "label": "tool result",
+     "style": "solid",
+     "curve": 80,
+     "at": 0.542,
+     "dur": 0.1
+    },
+    {
+     "from": "host",
+     "to": "resource",
+     "label": "resources/read",
+     "style": "solid",
+     "at": 0.571,
+     "dur": 0.1
+    },
+    {
+     "from": "host",
+     "to": "frame",
+     "label": "mounts HTML, sends tool result",
+     "style": "solid",
+     "at": 0.427,
+     "dur": 0.1
+    },
+    {
+     "from": "frame",
+     "to": "host",
+     "label": "tools/call via postMessage",
+     "style": "dashed",
+     "curve": -24,
+     "at": 0.456,
+     "dur": 0.1
+    },
+    {
+     "from": "frame",
+     "to": "user",
+     "label": "interactive UI",
+     "style": "solid",
+     "at": 0.484,
+     "dur": 0.1
+    }
+   ],
+   "groups": [
+    {
+     "label": "Host",
+     "x": 3.01,
+     "y": 26.72,
+     "w": 93.98,
+     "h": 36.64,
+     "at": 0,
+     "dur": 0.1
+    },
+    {
+     "label": "MCP server",
+     "x": 12.82,
+     "y": 74.35,
+     "w": 74.37,
+     "h": 20.92,
+     "at": 0,
+     "dur": 0.1
+    }
+   ],
+   "messages": [
+    {
+     "edge": 2,
+     "text": "tool call",
+     "at": 0.62,
+     "dur": 0.1
+    },
+    {
+     "edge": 3,
+     "text": "tools/call",
+     "at": 0.74,
+     "dur": 0.1
+    },
+    {
+     "edge": 5,
+     "text": "resources/read ui://",
+     "at": 0.86,
+     "dur": 0.1
+    }
+   ]
+  }
+ ]
+}

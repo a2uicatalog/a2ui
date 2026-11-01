@@ -1,0 +1,25 @@
+%% title: A2UI v0.9: from prompt to native screen
+%% msg: client->agent "prompt"
+%% msg: agent->client "updateComponents"
+%% msg: renderer->client "action"
+flowchart LR
+  user([User]):::user
+  subgraph clientside[Client]
+    client[Client app]:::app
+    renderer[A2UI renderer]:::surface
+    catalog[(Trusted catalogue)]:::store
+  end
+  subgraph agentside[Agent]
+    agent[ADK agent]:::app
+    llm[LLM]:::model
+  end
+  user -->|types prompt| client
+  client -->|prompt| agent
+  agent -->|plan| llm
+  llm -->|A2UI JSON| agent
+  agent -.->|createSurface, updateComponents| client
+  client -->|A2UI messages| renderer
+  renderer -->|looks up components| catalog
+  renderer -->|native UI| user
+  renderer -.->|action| client
+  client -.->|action| agent

@@ -1,0 +1,26 @@
+%% title: AG-UI: streaming an agent run into an app
+%% msg: client->agent "run input"
+%% msg: agent->client "TEXT_MESSAGE_CONTENT"
+%% msg: agent->client "STATE_DELTA"
+flowchart LR
+  user([User]):::user
+  subgraph browser[Browser]
+    app[Frontend app]:::app
+    client[AG-UI client]:::tool
+  end
+  subgraph backend[Backend]
+    agent[Agent runtime on ADK]:::app
+    llm[LLM]:::model
+    tools[Backend tools]:::tool
+  end
+  state[(Shared state)]:::store
+  user -->|message| app
+  app -->|run input| client
+  client -->|POST run over HTTP| agent
+  agent -->|prompt| llm
+  agent -->|tool call| tools
+  agent -.->|events, SSE by default| client
+  client -->|dispatches events| app
+  app -->|streamed UI| user
+  agent <-->|reads and writes| state
+  app <-->|reads and writes| state

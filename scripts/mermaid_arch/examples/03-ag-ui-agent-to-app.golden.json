@@ -1,0 +1,219 @@
+{
+ "theme": "dark",
+ "blocks": [
+  {
+   "type": "motion_arch",
+   "label": "AG-UI: streaming an agent run into an app",
+   "w": 991,
+   "h": 891,
+   "size": 27,
+   "nodes": [
+    {
+     "id": "user",
+     "kind": "user",
+     "label": "User",
+     "x": 50,
+     "y": 8.47,
+     "w": 15.14,
+     "h": 9.09,
+     "at": 0.1,
+     "dur": 0.08
+    },
+    {
+     "id": "app",
+     "kind": "app",
+     "label": "Frontend app",
+     "x": 21.34,
+     "y": 31.37,
+     "w": 27.35,
+     "h": 9.09,
+     "at": 0.155,
+     "dur": 0.08
+    },
+    {
+     "id": "client",
+     "kind": "tool",
+     "label": "AG-UI client",
+     "x": 78.66,
+     "y": 31.37,
+     "w": 27.35,
+     "h": 9.09,
+     "at": 0.155,
+     "dur": 0.08
+    },
+    {
+     "id": "agent",
+     "kind": "app",
+     "label": "Agent runtime on ADK",
+     "x": 26.34,
+     "y": 63.8,
+     "w": 39.56,
+     "h": 9.09,
+     "at": 0.233,
+     "dur": 0.08
+    },
+    {
+     "id": "llm",
+     "kind": "model",
+     "label": "LLM",
+     "x": 79.01,
+     "y": 57.3,
+     "w": 14.13,
+     "h": 9.09,
+     "at": 0.218,
+     "dur": 0.08
+    },
+    {
+     "id": "tools",
+     "kind": "tool",
+     "label": "Backend tools",
+     "x": 79.01,
+     "y": 70.31,
+     "w": 28.86,
+     "h": 9.09,
+     "at": 0.249,
+     "dur": 0.08
+    },
+    {
+     "id": "state",
+     "kind": "store",
+     "label": "Shared state",
+     "x": 50,
+     "y": 91.53,
+     "w": 27.35,
+     "h": 9.09,
+     "at": 0.3,
+     "dur": 0.08
+    }
+   ],
+   "edges": [
+    {
+     "from": "user",
+     "to": "app",
+     "label": "message",
+     "style": "solid",
+     "at": 0.34,
+     "dur": 0.1
+    },
+    {
+     "from": "app",
+     "to": "client",
+     "label": "run input",
+     "style": "solid",
+     "at": 0.366,
+     "dur": 0.1
+    },
+    {
+     "from": "client",
+     "to": "agent",
+     "label": "POST run over HTTP",
+     "style": "solid",
+     "at": 0.444,
+     "dur": 0.1
+    },
+    {
+     "from": "agent",
+     "to": "llm",
+     "label": "prompt",
+     "style": "solid",
+     "at": 0.47,
+     "dur": 0.1
+    },
+    {
+     "from": "agent",
+     "to": "tools",
+     "label": "tool call",
+     "style": "solid",
+     "at": 0.522,
+     "dur": 0.1
+    },
+    {
+     "from": "agent",
+     "to": "client",
+     "label": "events, SSE by default",
+     "style": "dashed",
+     "curve": -50,
+     "at": 0.496,
+     "dur": 0.1
+    },
+    {
+     "from": "client",
+     "to": "app",
+     "label": "dispatches events",
+     "style": "solid",
+     "curve": 24,
+     "at": 0.392,
+     "dur": 0.1
+    },
+    {
+     "from": "app",
+     "to": "user",
+     "label": "streamed UI",
+     "style": "solid",
+     "curve": -50,
+     "at": 0.418,
+     "dur": 0.1
+    },
+    {
+     "from": "agent",
+     "to": "state",
+     "label": "reads and writes",
+     "style": "solid",
+     "both": true,
+     "at": 0.548,
+     "dur": 0.1
+    },
+    {
+     "from": "app",
+     "to": "state",
+     "label": "reads and writes",
+     "style": "solid",
+     "both": true,
+     "curve": -80,
+     "at": 0.574,
+     "dur": 0.1
+    }
+   ],
+   "groups": [
+    {
+     "label": "Browser",
+     "x": 4.64,
+     "y": 22.11,
+     "w": 90.72,
+     "h": 16.84,
+     "at": 0,
+     "dur": 0.1
+    },
+    {
+     "label": "Backend",
+     "x": 3.53,
+     "y": 48.04,
+     "w": 92.94,
+     "h": 29.85,
+     "at": 0,
+     "dur": 0.1
+    }
+   ],
+   "messages": [
+    {
+     "edge": 2,
+     "text": "run input",
+     "at": 0.62,
+     "dur": 0.1
+    },
+    {
+     "edge": 5,
+     "text": "TEXT_MESSAGE_CONTENT",
+     "at": 0.74,
+     "dur": 0.1
+    },
+    {
+     "edge": 5,
+     "text": "STATE_DELTA",
+     "at": 0.86,
+     "dur": 0.1
+    }
+   ]
+  }
+ ]
+}

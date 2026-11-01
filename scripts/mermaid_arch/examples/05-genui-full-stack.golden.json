@@ -1,0 +1,255 @@
+{
+ "theme": "dark",
+ "blocks": [
+  {
+   "type": "motion_arch",
+   "label": "GenUI stack, one possible composition (A2UI v0.9)",
+   "w": 1043,
+   "h": 897,
+   "size": 25,
+   "nodes": [
+    {
+     "id": "user",
+     "kind": "user",
+     "label": "User",
+     "x": 50,
+     "y": 7.86,
+     "w": 13.33,
+     "h": 8.36,
+     "at": 0.1,
+     "dur": 0.08
+    },
+    {
+     "id": "app",
+     "kind": "app",
+     "label": "Frontend app",
+     "x": 17.88,
+     "y": 35.17,
+     "w": 24.07,
+     "h": 8.36,
+     "at": 0.167,
+     "dur": 0.08
+    },
+    {
+     "id": "ui",
+     "kind": "surface",
+     "label": "A2UI renderer",
+     "x": 80.78,
+     "y": 29.15,
+     "w": 25.41,
+     "h": 8.36,
+     "at": 0.152,
+     "dur": 0.08
+    },
+    {
+     "id": "mcpapp",
+     "kind": "surface",
+     "label": "MCP App iframe",
+     "x": 80.78,
+     "y": 41.19,
+     "w": 26.75,
+     "h": 8.36,
+     "at": 0.182,
+     "dur": 0.08
+    },
+    {
+     "id": "agent",
+     "kind": "app",
+     "label": "ADK agent",
+     "x": 37.54,
+     "y": 65.27,
+     "w": 20.04,
+     "h": 8.36,
+     "at": 0.241,
+     "dur": 0.08
+    },
+    {
+     "id": "llm",
+     "kind": "model",
+     "label": "LLM",
+     "x": 66.25,
+     "y": 65.27,
+     "w": 12.46,
+     "h": 8.36,
+     "at": 0.241,
+     "dur": 0.08
+    },
+    {
+     "id": "mcp",
+     "kind": "tool",
+     "label": "MCP server",
+     "x": 30.35,
+     "y": 89.35,
+     "w": 21.38,
+     "h": 8.36,
+     "at": 0.3,
+     "dur": 0.08
+    },
+    {
+     "id": "remote",
+     "kind": "server",
+     "label": "Remote agent over A2A",
+     "x": 62.27,
+     "y": 89.35,
+     "w": 36.15,
+     "h": 8.36,
+     "at": 0.3,
+     "dur": 0.08
+    }
+   ],
+   "edges": [
+    {
+     "from": "user",
+     "to": "app",
+     "label": "asks",
+     "style": "solid",
+     "at": 0.34,
+     "dur": 0.1
+    },
+    {
+     "from": "app",
+     "to": "agent",
+     "label": "AG-UI run",
+     "style": "solid",
+     "at": 0.448,
+     "dur": 0.1
+    },
+    {
+     "from": "agent",
+     "to": "llm",
+     "label": "prompt",
+     "style": "solid",
+     "at": 0.47,
+     "dur": 0.1
+    },
+    {
+     "from": "agent",
+     "to": "mcp",
+     "label": "tools/call, resources/read",
+     "style": "solid",
+     "at": 0.513,
+     "dur": 0.1
+    },
+    {
+     "from": "mcp",
+     "to": "agent",
+     "label": "tool result + ui:// HTML",
+     "style": "solid",
+     "curve": -12,
+     "at": 0.535,
+     "dur": 0.1
+    },
+    {
+     "from": "agent",
+     "to": "remote",
+     "label": "A2A message",
+     "style": "solid",
+     "curve": 50,
+     "at": 0.557,
+     "dur": 0.1
+    },
+    {
+     "from": "remote",
+     "to": "agent",
+     "label": "A2UI JSON",
+     "style": "solid",
+     "curve": 50,
+     "at": 0.578,
+     "dur": 0.1
+    },
+    {
+     "from": "agent",
+     "to": "app",
+     "label": "AG-UI events: A2UI + MCP App HTML",
+     "style": "dashed",
+     "curve": 65,
+     "at": 0.492,
+     "dur": 0.1
+    },
+    {
+     "from": "app",
+     "to": "ui",
+     "label": "A2UI messages",
+     "style": "solid",
+     "at": 0.362,
+     "dur": 0.1
+    },
+    {
+     "from": "app",
+     "to": "mcpapp",
+     "label": "sandboxed iframe",
+     "style": "solid",
+     "at": 0.405,
+     "dur": 0.1
+    },
+    {
+     "from": "ui",
+     "to": "app",
+     "label": "action",
+     "style": "dashed",
+     "curve": 24,
+     "at": 0.383,
+     "dur": 0.1
+    },
+    {
+     "from": "mcpapp",
+     "to": "app",
+     "label": "tools/call via postMessage",
+     "style": "dashed",
+     "curve": -24,
+     "at": 0.427,
+     "dur": 0.1
+    }
+   ],
+   "groups": [
+    {
+     "label": "Browser",
+     "x": 3.16,
+     "y": 20.4,
+     "w": 93.67,
+     "h": 27.76,
+     "at": 0,
+     "dur": 0.1
+    },
+    {
+     "label": "Agent backend",
+     "x": 24.83,
+     "y": 56.52,
+     "w": 50.34,
+     "h": 15.72,
+     "at": 0,
+     "dur": 0.1
+    },
+    {
+     "label": "Services",
+     "x": 16.97,
+     "y": 80.6,
+     "w": 66.06,
+     "h": 15.72,
+     "at": 0,
+     "dur": 0.1
+    }
+   ],
+   "messages": [
+    {
+     "edge": 1,
+     "text": "AG-UI run",
+     "at": 0.62,
+     "dur": 0.1
+    },
+    {
+     "edge": 6,
+     "text": "A2UI JSON",
+     "at": 0.74,
+     "dur": 0.1
+    },
+    {
+     "edge": 4,
+     "text": "ui:// HTML",
+     "at": 0.86,
+     "dur": 0.1
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,1467 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mermaid to motion_arch playground</title>
+<style>
+:root{color-scheme:dark;--bg:#12171f;--fg:#e8edf4;--mut:#9ca5b1;--line:#2c3644;--acc:#8d98ff;--err:#ff8a80;--warn:#f0b45a}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 system-ui,sans-serif}
+header{padding:14px 16px;border-bottom:1px solid var(--line)}h1{font-size:18px;margin:0 0 4px}header p{margin:0;color:var(--mut);font-size:13px}
+main{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:16px;padding:16px;max-width:1400px;margin:0 auto}
+@media(max-width:860px){main{grid-template-columns:1fr}}
+textarea{width:100%;min-height:340px;background:#0d1117;color:var(--fg);border:1px solid var(--line);border-radius:10px;padding:12px;font:13px/1.5 ui-monospace,Menlo,monospace;resize:vertical}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:8px 0;color:var(--mut);font-size:13px}
+select,button{background:#1c2430;color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:6px 12px;font:inherit}button{cursor:pointer}button:hover{border-color:var(--acc)}
+#msgs{font-size:13px;white-space:pre-wrap}.err{color:var(--err)}.warn{color:var(--warn)}.ok{color:var(--mut)}
+iframe{width:100%;border:0;border-radius:12px;background:#05070f;display:block;min-height:420px}
+details{margin-top:10px}pre{background:#0d1117;border:1px solid var(--line);border-radius:10px;padding:12px;overflow:auto;max-height:260px;font:12px/1.5 ui-monospace,Menlo,monospace;margin:6px 0}
+</style>
+</head>
+<body>
+<header><h1>Mermaid to motion_arch playground</h1>
+<p>Paste a Mermaid flowchart. The converter (this page, no network) lays it out and writes a <code>motion_arch</code> payload; the real MCP Apps renderer bundle plays it. See docs/mermaid_arch.md.</p></header>
+<main>
+<section>
+<textarea id="src" spellcheck="false" aria-label="Mermaid flowchart">%% title: Order service
+%% msg: client->api "GET /orders"
+%% msg: api->db "SELECT"
+flowchart LR
+  client([Browser]):::device
+  subgraph backend[Backend]
+    api[API gateway]
+    worker[[Job worker]]
+    db[(Postgres)]
+  end
+  client -->|HTTPS| api
+  api -->|query| db
+  api -.->|enqueue| worker
+  worker --> db</textarea>
+<div class="row">
+  <label>Direction <select id="dir"><option value="">as written (auto)</option><option>LR</option><option>TB</option><option>RL</option><option>BT</option></select></label>
+  <label><input type="checkbox" id="film" checked> play as a film</label>
+  <button id="go">Convert</button><button id="copy">Copy payload</button>
+</div>
+<div id="msgs" class="ok"></div>
+<details><summary>Payload JSON</summary><pre id="json"></pre></details>
+</section>
+<section><iframe id="view" title="A2UI renderer" scrolling="no"></iframe>
+<div class="row"><span id="note"></span></div></section>
+</main>
+<script>
+// ---- graph.mjs
+// Canonical architecture graph + validator. Pure ES module, no dependencies.
+//
+// graph = {
+//   title?: string,
+//   direction: 'LR' | 'RL' | 'TB' | 'BT',
+//   groups:   [{id, label}],
+//   nodes:    [{id, label, kind?, sub?, group?}],
+//   edges:    [{from, to, label?, style: 'sync'|'async'|'optional', both?}],
+//   messages: [{from, to, text, back?}],
+// }
+//
+// Limits are the motion_arch atom's own (atoms/schema.yaml, renderers/web_article.py).
+
+const LIMITS = Object.freeze({
+  nodes: 12, edges: 16, groups: 4, messages: 12,
+  label: 40, sub: 40, groupLabel: 40, edgeLabel: 48, msgText: 40, title: 80,
+});
+const KINDS = Object.freeze(['device', 'app', 'server', 'tool', 'model', 'store', 'surface', 'user']);
+const STYLES = Object.freeze(['sync', 'async', 'optional']);
+const DIRECTIONS = Object.freeze(['LR', 'RL', 'TB', 'BT']);
+const ID_RE = /^[a-z][a-z0-9_-]{0,31}$/;
+
+// Friendly names that map onto the 8 atom kinds.
+const KIND_ALIASES = Object.freeze({
+  client: 'device', browser: 'device', phone: 'device', mobile: 'device', laptop: 'device', device: 'device',
+  db: 'store', database: 'store', cache: 'store', bucket: 'store', storage: 'store', datastore: 'store', store: 'store',
+  queue: 'tool', mcp: 'tool', auth: 'tool', tool: 'tool',
+  gateway: 'server', cdn: 'server', proxy: 'server', backend: 'server', server: 'server', worker: 'server',
+  service: 'app', agent: 'app', app: 'app', application: 'app', frontend: 'app',
+  llm: 'model', ai: 'model', model: 'model',
+  external: 'surface', ui: 'surface', screen: 'surface', renderer: 'surface', surface: 'surface',
+  person: 'user', actor: 'user', human: 'user', user: 'user',
+});
+
+class ArchError extends Error {
+  constructor(errors, warnings = []) {
+    const list = Array.isArray(errors) ? errors : [errors];
+    super(list.join('\n'));
+    this.name = 'ArchError';
+    this.errors = list;
+    this.warnings = warnings;
+  }
+}
+
+function resolveKind(name) {
+  if (typeof name !== 'string') return undefined;
+  return KIND_ALIASES[name.trim().toLowerCase()];
+}
+
+function levenshtein(a, b) {
+  const m = a.length, n = b.length;
+  if (!m) return n;
+  if (!n) return m;
+  let prev = Array.from({ length: n + 1 }, (_, j) => j);
+  for (let i = 1; i <= m; i++) {
+    const cur = [i];
+    for (let j = 1; j <= n; j++) {
+      cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+    }
+    prev = cur;
+  }
+  return prev[n];
+}
+
+// Closest candidate, or undefined when nothing is plausibly a typo.
+function didYouMean(word, candidates) {
+  const w = String(word).toLowerCase();
+  let best, bestD = Infinity;
+  for (const c of candidates) {
+    const d = levenshtein(w, String(c).toLowerCase());
+    if (d < bestD) { bestD = d; best = c; }
+  }
+  const limit = Math.max(1, Math.min(3, Math.floor(Math.max(w.length, 3) / 3)));
+  return bestD <= limit ? best : undefined;
+}
+
+function hint(word, candidates) {
+  const s = didYouMean(word, candidates);
+  return s !== undefined ? ` (did you mean "${s}"?)` : '';
+}
+
+function plural(n, one, many) { return n + ' ' + (n === 1 ? one : many); }
+
+// Returns {errors:[string], warnings:[string]}. Numbering in messages is 1-based.
+function validateGraph(g) {
+  const errors = [], warnings = [];
+  if (!g || typeof g !== 'object') return { errors: ['graph must be an object with nodes and edges'], warnings };
+  const nodes = Array.isArray(g.nodes) ? g.nodes : [];
+  const edges = Array.isArray(g.edges) ? g.edges : [];
+  const groups = Array.isArray(g.groups) ? g.groups : [];
+  const messages = Array.isArray(g.messages) ? g.messages : [];
+
+  if (g.direction !== undefined && !DIRECTIONS.includes(g.direction)) {
+    errors.push(`direction "${g.direction}" is not one of ${DIRECTIONS.join(', ')}`);
+  }
+  if (!nodes.length) errors.push('the graph has no nodes; add at least one node');
+
+  // groups
+  const groupIds = new Set();
+  groups.forEach((gr, i) => {
+    if (!gr || typeof gr.id !== 'string' || !gr.id) { errors.push(`group ${i + 1}: needs an id`); return; }
+    if (groupIds.has(gr.id)) errors.push(`group ${i + 1}: id "${gr.id}" is used twice; group ids must be unique`);
+    groupIds.add(gr.id);
+    if (typeof gr.label !== 'string' || !gr.label.trim()) errors.push(`group ${i + 1} ("${gr.id}"): needs a label`);
+    else if (gr.label.length > LIMITS.groupLabel) {
+      warnings.push(`group "${gr.id}": label is ${gr.label.length} characters; the atom shows at most ${LIMITS.groupLabel}, so it will be cut. Shorten it.`);
+    }
+  });
+
+  // nodes
+  const ids = new Set();
+  nodes.forEach((n, i) => {
+    const at = `node ${i + 1}`;
+    if (!n || typeof n.id !== 'string' || !n.id) { errors.push(`${at}: needs an id`); return; }
+    if (!ID_RE.test(n.id)) {
+      errors.push(`${at}: id "${n.id}" is not valid; use a lowercase letter first, then lowercase letters, digits, "_" or "-", up to 32 characters`);
+    }
+    if (ids.has(n.id)) errors.push(`${at}: id "${n.id}" is used twice; node ids must be unique`);
+    ids.add(n.id);
+    if (typeof n.label !== 'string' || !n.label.trim()) errors.push(`${at} ("${n.id}"): needs a label`);
+    else if (n.label.length > LIMITS.label) {
+      warnings.push(`node "${n.id}": label is ${n.label.length} characters; the atom shows at most ${LIMITS.label}, so it will be cut. Shorten it or move detail into the sub-label.`);
+    }
+    if (n.sub !== undefined && String(n.sub).length > LIMITS.sub) {
+      warnings.push(`node "${n.id}": sub-label is ${String(n.sub).length} characters; the atom shows at most ${LIMITS.sub}.`);
+    }
+    if (n.kind !== undefined && !KINDS.includes(n.kind)) {
+      errors.push(`node "${n.id}": kind "${n.kind}" is not one of ${KINDS.join(', ')}` + (resolveKind(n.kind) ? ` (did you mean "${resolveKind(n.kind)}"?)` : hint(n.kind, KINDS)));
+    }
+    if (n.group !== undefined && !groupIds.has(n.group)) {
+      errors.push(`node "${n.id}": group "${n.group}" is not a group id` + hint(n.group, [...groupIds]));
+    }
+  });
+
+  // edges
+  const ndList = [...ids];
+  const touched = new Set();
+  edges.forEach((e, i) => {
+    const at = `edge ${i + 1}`;
+    if (!e || typeof e !== 'object') { errors.push(`${at}: must be an object with from and to`); return; }
+    let bad = false;
+    for (const end of ['from', 'to']) {
+      if (typeof e[end] !== 'string' || !ids.has(e[end])) {
+        errors.push(`${at}: "${e[end]}" is not a node id${hint(e[end] ?? '', ndList)}`);
+        bad = true;
+      }
+    }
+    if (bad) return;
+    if (e.from === e.to) { errors.push(`${at}: "${e.from}" points at itself; the atom cannot draw self-loops. Remove the edge or add a second node.`); return; }
+    if (e.style !== undefined && !STYLES.includes(e.style)) {
+      errors.push(`${at}: style "${e.style}" is not one of ${STYLES.join(', ')}`);
+    }
+    if (e.label !== undefined && String(e.label).length > LIMITS.edgeLabel) {
+      warnings.push(`${at}: label is ${String(e.label).length} characters; the atom shows at most ${LIMITS.edgeLabel}.`);
+    }
+    touched.add(e.from); touched.add(e.to);
+  });
+  const seen = new Map();
+  edges.forEach((e, i) => {
+    if (!e || e.from === e.to) return;
+    const k = e.from + '>' + e.to + '|' + (e.style || 'sync') + '|' + (e.label || '');
+    if (seen.has(k)) warnings.push(`edge ${i + 1}: duplicates edge ${seen.get(k)} (${e.from} -> ${e.to}); consider merging them into one labelled edge.`);
+    else seen.set(k, i + 1);
+  });
+  nodes.forEach((n) => {
+    if (n && ids.has(n.id) && !touched.has(n.id) && nodes.length > 1) {
+      warnings.push(`node "${n.id}" has no edges; it will sit on its own in the layout. Connect it or remove it.`);
+    }
+  });
+
+  // messages
+  messages.forEach((m, i) => {
+    const at = `message ${i + 1}`;
+    if (!m || typeof m !== 'object') { errors.push(`${at}: must be an object with from, to and text`); return; }
+    let bad = false;
+    for (const end of ['from', 'to']) {
+      if (typeof m[end] !== 'string' || !ids.has(m[end])) {
+        errors.push(`${at}: "${m[end]}" is not a node id${hint(m[end] ?? '', ndList)}`);
+        bad = true;
+      }
+    }
+    if (bad) return;
+    if (typeof m.text !== 'string' || !m.text.trim()) { errors.push(`${at}: needs text (the payload chip)`); return; }
+    if (m.text.length > LIMITS.msgText) warnings.push(`${at}: text is ${m.text.length} characters; the atom shows at most ${LIMITS.msgText}.`);
+    const fwd = edges.some((e) => e && e.from === m.from && e.to === m.to);
+    const rev = edges.some((e) => e && e.from === m.to && e.to === m.from);
+    if (!fwd && !rev) {
+      errors.push(`${at}: there is no edge between "${m.from}" and "${m.to}" for the chip to ride; add that edge or fix the ids`);
+    } else if (!fwd && rev) {
+      warnings.push(`${at}: only the edge ${m.to} -> ${m.from} exists, so the chip "${m.text}" rides it backwards (reply direction).`);
+    }
+  });
+
+  // caps: never truncate silently, tell the user how to split
+  const groupSizes = groups.map((gr) => [gr.label || gr.id, nodes.filter((n) => n && n.group === gr.id).length]).sort((a, b) => b[1] - a[1]);
+  if (nodes.length > LIMITS.nodes) {
+    const over = nodes.length - LIMITS.nodes;
+    let how = 'Split it into two diagrams (one per subsystem), or merge small nodes into one.';
+    if (groupSizes.length > 1) how = `Split it by group: ${groupSizes.slice(0, 4).map(([l, c]) => `"${l}" has ${plural(c, 'node', 'nodes')}`).join(', ')}; draw one diagram per group, or collapse a group into a single node.`;
+    errors.push(`the graph has ${nodes.length} nodes; the atom draws at most ${LIMITS.nodes} (${over} over). ${how}`);
+  }
+  if (edges.length > LIMITS.edges) {
+    errors.push(`the graph has ${edges.length} edges; the atom draws at most ${LIMITS.edges}. Remove the ${edges.length - LIMITS.edges} least important, merge duplicate calls into one labelled edge, or split into two diagrams.`);
+  }
+  if (groups.length > LIMITS.groups) {
+    errors.push(`the graph has ${groups.length} groups; the atom draws at most ${LIMITS.groups}. Merge related groups, or turn the smallest into plain nodes.`);
+  }
+  if (messages.length > LIMITS.messages) {
+    errors.push(`the graph has ${messages.length} messages; the atom animates at most ${LIMITS.messages}. Keep the ${LIMITS.messages} that tell the story.`);
+  }
+  if (g.title !== undefined && String(g.title).length > LIMITS.title) {
+    warnings.push(`title is ${String(g.title).length} characters; the atom keeps at most ${LIMITS.title} for the accessible name.`);
+  }
+  return { errors, warnings };
+}
+
+// ---- mermaid.mjs
+// Mermaid flowchart subset -> canonical graph. Pure ES module, no dependencies.
+// See docs/mermaid_arch.md for the supported syntax. Unsupported input gives a
+// plain error naming the line; the parser never throws anything but ArchError.
+
+const OTHER_DIAGRAMS = {
+  sequencediagram: 'Draw each participant as a node and each message as an edge in a flowchart.',
+  classdiagram: 'Draw each class as a node and each relation as an edge in a flowchart.',
+  statediagram: 'Draw each state as a node and each transition as an edge in a flowchart.',
+  'statediagram-v2': 'Draw each state as a node and each transition as an edge in a flowchart.',
+  erdiagram: 'Draw each entity as a node and each relation as an edge in a flowchart.',
+  gantt: 'Gantt charts are timelines, not architecture; use a flowchart of the components instead.',
+  pie: 'Pie charts are not architecture diagrams.',
+  journey: 'User journeys are not supported; use a flowchart.',
+  gitgraph: 'Git graphs are not supported; use a flowchart.',
+  mindmap: 'Mind maps are not supported; use a flowchart.',
+  timeline: 'Timelines are not supported; use a flowchart.',
+  c4context: 'C4 diagrams are not supported; use a flowchart with subgraphs for the boundaries.',
+  c4container: 'C4 diagrams are not supported; use a flowchart with subgraphs for the boundaries.',
+  c4component: 'C4 diagrams are not supported; use a flowchart with subgraphs for the boundaries.',
+  'architecture-beta': 'architecture-beta is not supported; use a flowchart with subgraphs for the groups.',
+  'block-beta': 'block-beta is not supported; use a flowchart.',
+  'sankey-beta': 'Sankey diagrams are not supported; use a flowchart.',
+  'xychart-beta': 'Charts are not supported; use a flowchart.',
+  quadrantchart: 'Quadrant charts are not supported; use a flowchart.',
+  requirementdiagram: 'Requirement diagrams are not supported; use a flowchart.',
+  kanban: 'Kanban boards are not supported; use a flowchart.',
+  packet: 'Packet diagrams are not supported; use a flowchart.',
+};
+
+// shape delimiters, longest opener first
+const SHAPES = [
+  ['((', '))', 'circle'], ['([', '])', 'stadium'], ['[(', ')]', 'cylinder'], ['[[', ']]', 'subroutine'],
+  ['{{', '}}', 'hexagon'], ['(', ')', 'round'], ['[', ']', 'rect'], ['{', '}', 'diamond'],
+];
+// default kind per shape (documented in docs/mermaid_arch.md)
+const SHAPE_KIND = Object.freeze({
+  cylinder: 'store', subroutine: 'tool', stadium: 'device', circle: 'model', hexagon: 'app',
+  round: 'app', diamond: 'tool', rect: 'server', plain: 'server',
+});
+// Mermaid 11 "@{ shape: x }" names -> our shape classes
+const AT_SHAPES = {
+  cyl: 'cylinder', cylinder: 'cylinder', 'lin-cyl': 'cylinder', 'h-cyl': 'cylinder', 'das': 'cylinder', database: 'cylinder', db: 'cylinder',
+  circle: 'circle', circ: 'circle', 'sm-circ': 'circle', 'dbl-circ': 'circle',
+  stadium: 'stadium', terminal: 'stadium', pill: 'stadium',
+  subproc: 'subroutine', subroutine: 'subroutine', 'fr-rect': 'subroutine',
+  hex: 'hexagon', hexagon: 'hexagon', prepare: 'hexagon',
+  rounded: 'round', event: 'round',
+  rect: 'rect', rectangle: 'rect', proc: 'rect', process: 'rect', square: 'rect',
+  diamond: 'diamond', decision: 'diamond', question: 'diamond',
+};
+
+const ID_START = /[A-Za-z0-9_]/;
+
+function stripQuotes(s) {
+  let t = s.trim();
+  if (t.length >= 2 && t[0] === '"' && t[t.length - 1] === '"') t = t.slice(1, -1);
+  else if (t.length >= 2 && t[0] === '`' && t[t.length - 1] === '`') t = t.slice(1, -1);
+  return t;
+}
+
+function decodeEntities(s) {
+  return s
+    .replace(/#quot;/g, '"').replace(/&quot;/g, '"').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+    .replace(/#(\d+);/g, (_, n) => String.fromCharCode(+n));
+}
+
+// "Agent runtime<br/>on ADK" -> {label:'Agent runtime', sub:'on ADK'}
+function splitLabel(raw) {
+  const t = decodeEntities(stripQuotes(raw));
+  const parts = t.split(/<br\s*\/?>/i).map((p) => p.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim()).filter(Boolean);
+  if (!parts.length) return { label: '' };
+  return parts.length === 1 ? { label: parts[0] } : { label: parts[0], sub: parts.slice(1).join(' ') };
+}
+
+function cleanText(raw) {
+  const t = decodeEntities(stripQuotes(raw)).split(/<br\s*\/?>/i).map((p) => p.replace(/<[^>]+>/g, '')).join(' ');
+  return t.replace(/\s+/g, ' ').trim();
+}
+
+// split a line at ';' outside quotes
+function splitStatements(line) {
+  const out = []; let cur = ''; let q = false;
+  for (const ch of line) {
+    if (ch === '"') q = !q;
+    if (ch === ';' && !q) { out.push(cur); cur = ''; } else cur += ch;
+  }
+  out.push(cur);
+  return out.map((s) => s.trim()).filter(Boolean);
+}
+
+// remove a trailing "%% comment" that sits outside quotes
+function stripTrailingComment(s) {
+  let q = false;
+  for (let i = 0; i < s.length - 1; i++) {
+    if (s[i] === '"') q = !q;
+    if (!q && s[i] === '%' && s[i + 1] === '%' && (i === 0 || /\s/.test(s[i - 1]))) return s.slice(0, i).trimEnd();
+  }
+  return s;
+}
+
+function slug(s) {
+  return s.toLowerCase().replace(/[^a-z0-9_-]+/g, '_').replace(/^_+|_+$/g, '') || 'x';
+}
+
+// deterministic, collision-safe map to the atom id rule ^[a-z][a-z0-9_-]{0,31}$
+function makeIdMapper() {
+  const used = new Set();
+  const byOrig = new Map();
+  return (orig) => {
+    if (byOrig.has(orig)) return byOrig.get(orig);
+    let base = orig.toLowerCase().replace(/[^a-z0-9_-]/g, '_');
+    if (!/^[a-z]/.test(base)) base = 'n' + base;
+    base = base.slice(0, 32);
+    let id = base, k = 2;
+    while (used.has(id)) { const suf = '_' + k++; id = base.slice(0, 32 - suf.length) + suf; }
+    used.add(id); byOrig.set(orig, id);
+    return id;
+  };
+}
+
+function parseMermaid(text, opts = {}) {
+  const errors = [], warnings = [];
+  const fail = (line, msg) => errors.push(`line ${line}: ${msg}`);
+  const warn = (line, msg) => warnings.push(`line ${line}: ${msg}`);
+  if (typeof text !== 'string') throw new ArchError(['input must be Mermaid text (a string)']);
+  const lines = text.replace(/^﻿/, '').replace(/\r\n?/g, '\n').split('\n');
+
+  const nodes = new Map();          // orig -> {orig,label,sub,shape,hints:[],group,order,line}
+  const edges = [];                 // {from,to,label,style,both,line}
+  const groupsByKey = new Map();    // key -> {key,label,order}
+  const groupStack = [];            // [{key,label,nested}]
+  const classStmts = [];            // {line, ids, cls}
+  const msgDirectives = [];         // {line, from, to, text, back}
+  let title, direction = 'TB', headerSeen = false, openLinkWarned = false;
+
+  function touchNode(orig, line) {
+    let n = nodes.get(orig);
+    if (!n) { n = { orig, label: undefined, sub: undefined, shape: undefined, hints: [], group: undefined, order: nodes.size, line }; nodes.set(orig, n); }
+    if (groupStack.length) {
+      const outer = groupStack[0].key;
+      if (n.group === undefined) n.group = outer;
+      else if (n.group !== outer) warn(line, `node "${orig}" is listed in more than one subgraph; keeping it in "${groupsByKey.get(n.group).label}".`);
+    }
+    return n;
+  }
+
+  // ---- node reference: id [shape text] [@{..}] [:::class]
+  function parseNodeRef(s, i0, line) {
+    let i = i0;
+    while (s[i] === ' ' || s[i] === '\t') i++;
+    const start = i;
+    while (i < s.length) {
+      const c = s[i];
+      if (ID_START.test(c)) i++;
+      else if (c === '-' && i + 1 < s.length && /[A-Za-z0-9_]/.test(s[i + 1]) && i > start) i++;
+      else break;
+    }
+    if (i === start) {
+      fail(line, `expected a node id at "${s.slice(i0).trim().slice(0, 20)}"; node ids are letters, digits and underscores (write A[Label] or A --> B)`);
+      return null;
+    }
+    const orig = s.slice(start, i);
+    const ref = { orig, hints: [] };
+    // unsupported shape openers
+    if (s.startsWith('[/', i) || s.startsWith('[\\', i) || s[i] === '>') {
+      fail(line, `node "${orig}": this shape (parallelogram/trapezoid/asymmetric) is not supported; use [text], (text), ([text]), [[text]], [(text)], ((text)), {{text}} or {text}`);
+      return null;
+    }
+    if (s.startsWith('(((', i)) { fail(line, `node "${orig}": double circles "(((text)))" are not supported; use ((text))`); return null; }
+    for (const [open, close, shape] of SHAPES) {
+      if (!s.startsWith(open, i)) continue;
+      let j = i + open.length;
+      while (s[j] === ' ') j++;
+      let txt;
+      if (s[j] === '"') {
+        const e = s.indexOf('"', j + 1);
+        if (e < 0) { fail(line, `node "${orig}": the quote opened here is never closed; add a closing "`); return null; }
+        txt = s.slice(j + 1, e);
+        let k = e + 1;
+        while (s[k] === ' ') k++;
+        if (!s.startsWith(close, k)) { fail(line, `node "${orig}": expected "${close}" after the quoted text`); return null; }
+        i = k + close.length;
+      } else {
+        const e = s.indexOf(close, j);
+        if (e < 0) { fail(line, `node "${orig}": missing closing "${close}"; if the text contains brackets or parentheses, wrap it in quotes: ${orig}["text (like this)"]`); return null; }
+        txt = s.slice(j, e);
+        i = e + close.length;
+      }
+      ref.shape = shape;
+      Object.assign(ref, splitLabel(txt));
+      break;
+    }
+    // Mermaid 11: A@{ shape: cyl, label: "x" }
+    if (s.startsWith('@{', i)) {
+      const e = s.indexOf('}', i);
+      if (e < 0) { fail(line, `node "${orig}": "@{" is never closed with "}"`); return null; }
+      const body = s.slice(i + 2, e);
+      const sm = body.match(/shape\s*:\s*([\w-]+)/);
+      const lm = body.match(/label\s*:\s*("([^"]*)"|[^,]+)/);
+      if (sm) {
+        const sh = AT_SHAPES[sm[1].toLowerCase()];
+        if (sh) ref.shape = sh;
+        else { ref.shape = 'rect'; warn(line, `node "${orig}": shape "${sm[1]}" is not known; treated as a plain box.`); }
+      }
+      if (lm) Object.assign(ref, splitLabel(lm[2] !== undefined ? lm[2] : lm[1]));
+      i = e + 1;
+    }
+    // :::class (also "A:::user" right after the id)
+    while (s.startsWith(':::', i)) {
+      const m = /^:::([A-Za-z0-9_-]+)/.exec(s.slice(i));
+      if (!m) { fail(line, `node "${orig}": ":::" must be followed by a class name, for example ${orig}:::server`); return null; }
+      ref.hints.push(m[1]); i += m[0].length;
+    }
+    ref.end = i;
+    return ref;
+  }
+
+  function applyRef(ref, line) {
+    const n = touchNode(ref.orig, line);
+    if (ref.label !== undefined && ref.label !== '') { n.label = ref.label; n.sub = ref.sub; }
+    if (ref.shape) n.shape = ref.shape;
+    n.hints.push(...ref.hints);
+    return n;
+  }
+
+  // ---- links
+  function matchLink(rest) {
+    let m;
+    // text inside the line: -- text -->, -. text .->, == text ==>
+    if ((m = /^(<?)--\s+(.+?)\s+(-{2,}>|-{3,})(?=\s|$|[A-Za-z0-9_])/.exec(rest)) && !/^(<?)--\s*>/.test(rest)) {
+      return { len: m[0].length, both: !!m[1] && m[3].endsWith('>'), style: 'sync', open: !m[3].endsWith('>'), label: m[2] };
+    }
+    if ((m = /^(<?)-\.\s+(.+?)\s+(\.-+>?)(?=\s|$|[A-Za-z0-9_])/.exec(rest))) {
+      return { len: m[0].length, both: !!m[1] && m[3].endsWith('>'), style: 'async', open: !m[3].endsWith('>'), label: m[2] };
+    }
+    if ((m = /^(<?)==\s+(.+?)\s+(={2,}>|={3,})(?=\s|$|[A-Za-z0-9_])/.exec(rest)) ) {
+      return { len: m[0].length, both: !!m[1] && m[3].endsWith('>'), style: 'sync', open: !m[3].endsWith('>'), label: m[2] };
+    }
+    if ((m = /^(<?)(-\.+-+>?)/.exec(rest))) return { len: m[0].length, both: !!m[1] && m[2].endsWith('>'), style: 'async', open: !m[2].endsWith('>') };
+    if ((m = /^(<?)(-{2,}>|-{3,})/.exec(rest))) return { len: m[0].length, both: !!m[1] && m[2].endsWith('>'), style: 'sync', open: !m[2].endsWith('>') };
+    if ((m = /^(<?)(={2,}>|={3,})/.exec(rest))) return { len: m[0].length, both: !!m[1] && m[2].endsWith('>'), style: 'sync', open: !m[2].endsWith('>') };
+    return null;
+  }
+
+  function parseChain(s, line) {
+    let i = 0;
+    const readGroup = () => {
+      const refs = [];
+      for (;;) {
+        const ref = parseNodeRef(s, i, line);
+        if (!ref) return null;
+        refs.push(ref); i = ref.end;
+        while (s[i] === ' ' || s[i] === '\t') i++;
+        if (s[i] === '&' ) { i++; continue; }
+        break;
+      }
+      return refs;
+    };
+    let prev = readGroup();
+    if (!prev) return;
+    prev.forEach((r) => applyRef(r, line));
+    for (;;) {
+      while (s[i] === ' ' || s[i] === '\t') i++;
+      if (i >= s.length) return;
+      const rest = s.slice(i);
+      if (/^[A-Za-z0-9_-]+@(-|=|<)/.test(rest)) { fail(line, 'edge ids ("e1@-->") are not supported; remove the "e1@" part'); return; }
+      if (/^(-{2,}|={2,}|-\.+)[xo](\s|$)/.test(rest)) { fail(line, 'arrows ending in x or o ("--x", "--o") are not supported; use -->'); return; }
+      const lk = matchLink(rest);
+      if (!lk) { fail(line, `cannot read "${rest.slice(0, 24)}"; expected an arrow such as -->, -.->, ==> or --- between nodes`); return; }
+      i += lk.len;
+      let label = lk.label;
+      const pm = /^\s*\|([^|]*)\|/.exec(s.slice(i));
+      if (pm) { if (label !== undefined) { fail(line, 'an edge has its label written twice (in the line and in |bars|); keep one'); return; } label = pm[1]; i += pm[0].length; }
+      if (lk.open && !openLinkWarned) { openLinkWarned = true; warn(line, '"---" lines have no arrowhead in Mermaid, but motion_arch always draws one; the edge is drawn as an arrow.'); }
+      const next = readGroup();
+      if (!next) return;
+      next.forEach((r) => applyRef(r, line));
+      const lab = label !== undefined ? cleanText(label) : '';
+      for (const a of prev) for (const b of next) {
+        edges.push({ from: a.orig, to: b.orig, label: lab || undefined, style: lk.style, both: lk.both || undefined, line });
+      }
+      prev = next;
+    }
+  }
+
+  // ---- header
+  let li = 0;
+  const L = () => li + 1;
+  // front matter
+  const firstReal = lines.findIndex((l) => l.trim() !== '');
+  if (firstReal >= 0 && lines[firstReal].trim() === '---') {
+    let e = -1;
+    for (let k = firstReal + 1; k < lines.length; k++) if (lines[k].trim() === '---') { e = k; break; }
+    if (e < 0) fail(firstReal + 1, 'front matter starts with "---" but is never closed; add a closing "---" line');
+    else {
+      for (let k = firstReal + 1; k < e; k++) {
+        const m = /^\s*title\s*:\s*(.+?)\s*$/.exec(lines[k]);
+        if (m) title = stripQuotes(m[1]);
+      }
+      li = e + 1;
+    }
+  }
+
+  for (; li < lines.length; li++) {
+    let line = lines[li].trim();
+    if (!line) continue;
+    if (line.startsWith('%%')) {
+      const d = /^%%\s*(title|msg)\s*:\s*(.*)$/i.exec(line);
+      if (d && d[1].toLowerCase() === 'title') { if (d[2].trim()) title = d[2].trim(); }
+      else if (d) {
+        const m = /^(\S+?)\s*->\s*(\S+?)\s+"([^"]*)"(?:\s+(back))?\s*$/.exec(d[2].trim());
+        if (!m) fail(L(), `bad "%% msg:" directive; write it as  %% msg: fromId->toId "payload text"  (add the word back at the end for a reply)`);
+        else msgDirectives.push({ line: L(), from: m[1], to: m[2], text: m[3], back: !!m[4] });
+      }
+      continue;
+    }
+    line = stripTrailingComment(line);
+    if (!headerSeen) {
+      const hm = /^(flowchart|graph)(?:-elk)?(?:\s+(LR|RL|TB|TD|BT))?\s*;?$/i.exec(line);
+      if (hm) {
+        headerSeen = true;
+        const d = (hm[2] || 'TB').toUpperCase();
+        direction = d === 'TD' ? 'TB' : d;
+        continue;
+      }
+      const word = (/^([A-Za-z][\w-]*)/.exec(line) || [])[1] || line.slice(0, 20);
+      const k = word.toLowerCase();
+      if (/^(flowchart|graph)/i.test(line)) {
+        fail(L(), `cannot read the header "${line}"; write "flowchart LR" (or TD, TB, RL, BT)`);
+      } else if (OTHER_DIAGRAMS[k]) {
+        fail(L(), `"${word}" diagrams are not supported; only flowcharts are. ${OTHER_DIAGRAMS[k]}`);
+      } else if (line.startsWith('%%{')) { continue; }
+      else {
+        fail(L(), `expected "flowchart LR" (or "graph TD") on the first line, found "${line.slice(0, 30)}"`);
+      }
+      break;
+    }
+    for (const stmt of splitStatements(line)) {
+      let m;
+      if (/^%%\{.*\}%%$/.test(stmt)) continue;
+      if ((m = /^subgraph\b\s*(.*)$/.exec(stmt))) {
+        let rest = m[1].trim(), key, label;
+        let mm;
+        if ((mm = /^([A-Za-z0-9_-]+)\s*\[\s*(.*?)\s*\]$/.exec(rest))) { key = mm[1]; label = cleanText(mm[2]); }
+        else if ((mm = /^"(.*)"$/.exec(rest))) { label = cleanText(mm[1]); key = slug(label); }
+        else if (rest) { label = cleanText(rest); key = rest.includes(' ') ? slug(rest) : rest; }
+        else { fail(L(), 'a subgraph needs a name; write: subgraph id[Title]'); key = 'sg' + groupsByKey.size; label = key; }
+        const nested = groupStack.length > 0;
+        if (nested) {
+          warn(L(), `subgraph "${label}" is inside "${groupStack[0].label}"; nested groups are flattened, its nodes are drawn in the outer group "${groupStack[0].label}".`);
+        } else if (!groupsByKey.has(key)) {
+          groupsByKey.set(key, { key, label, order: groupsByKey.size, line: L() });
+        } else {
+          warn(L(), `subgraph "${key}" is declared twice; the second block adds to the first.`);
+        }
+        groupStack.push({ key: nested ? groupStack[0].key : key, label: nested ? groupStack[0].label : label, nested });
+        continue;
+      }
+      if (/^end$/i.test(stmt)) {
+        if (!groupStack.length) fail(L(), '"end" without a matching "subgraph"; remove it or add the subgraph line above');
+        else groupStack.pop();
+        continue;
+      }
+      if (/^direction\b/i.test(stmt)) { warn(L(), `"${stmt}" inside a subgraph is ignored; the whole diagram uses the direction on the first line.`); continue; }
+      if (/^(classDef|style|linkStyle|accTitle|accDescr)\b/.test(stmt)) continue;
+      if ((m = /^class\s+([^\s]+)\s+([A-Za-z0-9_-]+)$/.exec(stmt))) { classStmts.push({ line: L(), ids: m[1].split(',').filter(Boolean), cls: m[2] }); continue; }
+      if (/^class\b/.test(stmt)) { fail(L(), 'write class statements as: class nodeId kind  (for example: class db store)'); continue; }
+      if (/^click\b/.test(stmt)) { warn(L(), 'click/link statements are ignored.'); continue; }
+      parseChain(stmt, L());
+    }
+  }
+  if (!headerSeen && !errors.length) fail(1, 'empty input; start with "flowchart LR" and add nodes and arrows');
+  if (groupStack.length) fail(lines.length, `${groupStack.length} "subgraph" block(s) are never closed; add an "end" line for each`);
+
+  // class statements -> hints
+  for (const cs of classStmts) {
+    for (const id of cs.ids) {
+      const n = nodes.get(id);
+      if (n) n.hints.push(cs.cls);
+      else warn(cs.line, `class statement names "${id}", which is not a node` + (didYouMean(id, [...nodes.keys()]) ? ` (did you mean "${didYouMean(id, [...nodes.keys()])}"?)` : '') + '; ignored.');
+    }
+  }
+
+  if (errors.length) throw new ArchError(errors.slice(0, 20), warnings);
+
+  // ---- build canonical graph
+  const mapNode = makeIdMapper();
+  const mapGroup = makeIdMapper();
+  const groups = [...groupsByKey.values()].sort((a, b) => a.order - b.order);
+  const usedGroups = new Set([...nodes.values()].map((n) => n.group).filter((g) => g !== undefined));
+  const gOut = [];
+  for (const g of groups) {
+    if (!usedGroups.has(g.key)) { warn(g.line, `subgraph "${g.label}" has no nodes; it is dropped.`); continue; }
+    gOut.push({ id: mapGroup(g.key), label: g.label });
+  }
+  const nOut = [];
+  for (const n of [...nodes.values()].sort((a, b) => a.order - b.order)) {
+    let kind;
+    for (const h of n.hints) { const k = resolveKind(h); if (k) kind = k; }
+    if (!kind) kind = SHAPE_KIND[n.shape || 'plain'];
+    const label = n.label !== undefined ? n.label : n.orig;
+    const o = { id: mapNode(n.orig), label, kind };
+    if (n.sub) o.sub = n.sub;
+    if (n.group !== undefined && groupsByKey.has(n.group)) o.group = mapGroup(n.group);
+    nOut.push(o);
+  }
+  const lookup = (k) => (nodes.has(k) ? k : [...nodes.keys()].find((x) => x.toLowerCase() === k.toLowerCase()));
+  const eOut = edges.map((e) => {
+    const o = { from: mapNode(e.from), to: mapNode(e.to), style: e.style };
+    if (e.label) o.label = e.label;
+    if (e.both) o.both = true;
+    return o;
+  });
+  // subgraph ids used as edge endpoints would have become nodes; catch that clearly
+  for (const e of edges) {
+    if (groupsByKey.has(e.from) || groupsByKey.has(e.to)) {
+      const which = groupsByKey.has(e.from) ? e.from : e.to;
+      const n = nodes.get(which);
+      if (n && n.group === undefined && n.label === undefined) {
+        errors.push(`line ${e.line}: "${which}" is a subgraph, not a node. Edges to a whole subgraph are not supported; connect to a node inside it.`);
+      }
+    }
+  }
+  const mOut = [];
+  for (const d of msgDirectives) {
+    const f = lookup(d.from), t = lookup(d.to);
+    const names = [...nodes.keys()];
+    if (!f) { errors.push(`line ${d.line}: message endpoint "${d.from}" is not a node` + (didYouMean(d.from, names) ? ` (did you mean "${didYouMean(d.from, names)}"?)` : '')); continue; }
+    if (!t) { errors.push(`line ${d.line}: message endpoint "${d.to}" is not a node` + (didYouMean(d.to, names) ? ` (did you mean "${didYouMean(d.to, names)}"?)` : '')); continue; }
+    const m = { from: mapNode(f), to: mapNode(t), text: d.text };
+    if (d.back) m.back = true;
+    mOut.push(m);
+  }
+  if (errors.length) throw new ArchError(errors.slice(0, 20), warnings);
+
+  const graph = { direction: opts.direction || direction, groups: gOut, nodes: nOut, edges: eOut, messages: mOut };
+  const ttl = opts.title || title;
+  if (ttl) graph.title = ttl;
+  return { graph, warnings };
+}
+
+// ---- layout.mjs
+// Deterministic layered layout for the canonical graph. Pure ES module.
+//
+// Everything is computed in pixels of the SVG viewBox the atom draws in, then
+// compile.mjs turns it into the atom's percent coordinates. Same input gives the
+// same output (no randomness, no object-key order dependence: all tie-breaks
+// use the input order).
+//
+// Pipeline:  clusterLayout() -> chooseOrientation() -> routeCurves() -> frame()
+// routeCurves() is the ONLY place that decides how an edge bends. A better router
+// can replace it without touching anything else.
+
+const CHAR_SANS = 0.56;     // bold system-ui, em per character (calibrated, see docs)
+const CHAR_MONO = 0.62;    // mono, em per character
+
+// ---------------------------------------------------------------- measuring
+function nodeBox(n, s) {
+  const nh = Math.round(3.0 * s);
+  const lab = Math.min(String(n.label).length, LIMITS.label);
+  const sub = n.sub ? Math.min(String(n.sub).length, LIMITS.sub) : 0;
+  const textW = Math.max(lab * CHAR_SANS * s, sub * CHAR_MONO * (s - 5));
+  const nw = Math.max(Math.round(0.76 * nh + textW + 0.34 * nh), Math.round(5.2 * s));
+  return { w: nw, h: nh };
+}
+function edgeLabelSize(text, s) {
+  const t = Math.min(String(text).length, LIMITS.edgeLabel);
+  return { w: Math.round(t * (s - 4) * CHAR_MONO + 12), h: Math.round((s - 4) * 1.15 + 6) };
+}
+function groupLabelWidth(label, s) {
+  const t = Math.min(String(label).length, LIMITS.groupLabel);
+  return Math.round(t * (s - 5) * (CHAR_MONO + 0.12) + 36);
+}
+
+// ---------------------------------------------------------------- isotonic spacing
+// Choose centres closest to `desired` while keeping `minDist[i]` between neighbours i,i+1.
+function spaceOut(desired, minDist) {
+  const n = desired.length;
+  const off = [0];
+  for (let i = 1; i < n; i++) off[i] = off[i - 1] + minDist[i - 1];
+  const blocks = [];
+  for (let i = 0; i < n; i++) {
+    blocks.push({ sum: desired[i] - off[i], cnt: 1, from: i, to: i });
+    while (blocks.length > 1) {
+      const b = blocks[blocks.length - 1], a = blocks[blocks.length - 2];
+      if (a.sum / a.cnt <= b.sum / b.cnt) break;
+      blocks.pop();
+      a.sum += b.sum; a.cnt += b.cnt; a.to = b.to;
+    }
+  }
+  const out = new Array(n);
+  for (const b of blocks) for (let i = b.from; i <= b.to; i++) out[i] = b.sum / b.cnt + off[i];
+  return out;
+}
+
+// ---------------------------------------------------------------- layered core
+// items: [{key,w,h}]; edges: [{a,b,lw}] directed between item keys; axis 'x'|'y' is the rank axis.
+// returns {pos: Map key -> {x,y} top-left, w, h, rank: Map}
+function layered(items, edges, axis, s, samePairs = []) {
+  const n = items.length;
+  const idx = new Map(items.map((it, i) => [it.key, i]));
+  const E = edges.filter((e) => idx.has(e.a) && idx.has(e.b) && e.a !== e.b).map((e) => ({ a: idx.get(e.a), b: idx.get(e.b), lw: e.lw || 0, lh: e.lh || 0 }));
+  // optional same-rank pairs (union-find): used so a labelled request/response pair runs side by side
+  const rep = Array.from({ length: n }, (_, i) => i);
+  const find = (x) => { while (rep[x] !== x) { rep[x] = rep[rep[x]]; x = rep[x]; } return x; };
+  const pairIdx = [];
+  for (const [ka, kb] of samePairs) {
+    if (!idx.has(ka) || !idx.has(kb)) continue;
+    const ra = find(idx.get(ka)), rb = find(idx.get(kb));
+    if (ra !== rb) rep[Math.max(ra, rb)] = Math.min(ra, rb);
+    pairIdx.push([idx.get(ka), idx.get(kb)]);
+  }
+  const Eorig = E.map((e) => ({ ...e, oa: e.a, ob: e.b }));
+  E.splice(0, E.length, ...Eorig.map((e) => ({ ...e, oa: e.a, ob: e.b, a: find(e.a), b: find(e.b) })).filter((e) => e.a !== e.b));
+  // 1. break cycles deterministically: DFS from sources, then the rest, in input order
+  const out = Array.from({ length: n }, () => []);
+  const inc = Array(n).fill(0);
+  E.forEach((e, i) => { out[e.a].push(i); inc[e.b]++; });
+  const state = Array(n).fill(0); // 0 new, 1 on stack, 2 done
+  const rev = new Set();
+  const visit = (v) => {
+    state[v] = 1;
+    for (const ei of out[v]) {
+      const w = E[ei].b;
+      if (state[w] === 1) rev.add(ei);
+      else if (state[w] === 0) visit(w);
+    }
+    state[v] = 2;
+  };
+  for (let v = 0; v < n; v++) if (!inc[v] && state[v] === 0) visit(v);
+  for (let v = 0; v < n; v++) if (state[v] === 0) visit(v);
+  const D = E.map((e, i) => (rev.has(i) ? { ...e, a: e.b, b: e.a } : e));
+  // 2. longest-path ranks
+  const dout = Array.from({ length: n }, () => []), din = Array.from({ length: n }, () => []);
+  D.forEach((e) => { dout[e.a].push(e.b); din[e.b].push(e.a); });
+  const rank = Array(n).fill(0);
+  const indeg = din.map((l) => l.length);
+  const queue = [];
+  for (let v = 0; v < n; v++) if (!indeg[v]) queue.push(v);
+  for (let qi = 0; qi < queue.length; qi++) {
+    const v = queue[qi];
+    for (const w of dout[v]) { rank[w] = Math.max(rank[w], rank[v] + 1); if (--indeg[w] === 0) queue.push(w); }
+  }
+  // pull sources next to their nearest successor (shorter edges)
+  for (let v = 0; v < n; v++) if (!din[v].length && dout[v].length) rank[v] = Math.max(0, Math.min(...dout[v].map((w) => rank[w])) - 1);
+  for (let v = 0; v < n; v++) rank[v] = rank[find(v)];
+  const R = (rank.length ? Math.max(...rank) : 0) + 1;
+  // 3. order within ranks: barycentre sweeps, keep best by crossings
+  const layersOf = () => {
+    const L = Array.from({ length: R }, () => []);
+    for (let v = 0; v < n; v++) L[rank[v]].push(v);
+    return L;
+  };
+  let L = layersOf();
+  const nbr = Array.from({ length: n }, () => []);
+  Eorig.forEach((e) => { nbr[e.oa].push(e.ob); nbr[e.ob].push(e.oa); });
+  const keepPairs = (layer) => {
+    for (const [a, b] of pairIdx) {
+      const ia = layer.indexOf(a), ib = layer.indexOf(b);
+      if (ia < 0 || ib < 0) continue;
+      const [first, second] = ia < ib ? [a, b] : [b, a];
+      layer.splice(layer.indexOf(second), 1);
+      layer.splice(layer.indexOf(first) + 1, 0, second);
+    }
+  };
+  const frac = () => {
+    const f = Array(n).fill(0);
+    L.forEach((layer) => layer.forEach((v, i) => { f[v] = (i + 0.5) / layer.length; }));
+    return f;
+  };
+  const crossings = () => {
+    // count crossings of straight rank-fraction lines (long edges included)
+    const f = frac();
+    const segs = Eorig.map((e) => [rank[e.oa], f[e.oa], rank[e.ob], f[e.ob]]).map(([r1, p1, r2, p2]) => (r1 <= r2 ? [r1, p1, r2, p2] : [r2, p2, r1, p1]));
+    let c = 0;
+    for (let i = 0; i < segs.length; i++) for (let j = i + 1; j < segs.length; j++) {
+      const [a1, p1, a2, p2] = segs[i], [b1, q1, b2, q2] = segs[j];
+      const lo = Math.max(a1, b1), hi = Math.min(a2, b2);
+      if (hi <= lo) continue;
+      const at = (r1, v1, r2, v2, r) => (r2 === r1 ? v1 : v1 + (v2 - v1) * (r - r1) / (r2 - r1));
+      const d1 = at(a1, p1, a2, p2, lo) - at(b1, q1, b2, q2, lo), d2 = at(a1, p1, a2, p2, hi) - at(b1, q1, b2, q2, hi);
+      if (d1 * d2 < 0) c++;
+    }
+    return c;
+  };
+  let best = L.map((l) => l.slice()), bestC = crossings();
+  for (let it = 0; it < 8; it++) {
+    const f = frac();
+    const down = it % 2 === 0;
+    const order = down ? [...L.keys()] : [...L.keys()].reverse();
+    for (const r of order) {
+      const key = new Map();
+      L[r].forEach((v, i) => {
+        const ns = nbr[v].filter((w) => (down ? rank[w] < r : rank[w] > r));
+        const use = ns.length ? ns : nbr[v].filter((w) => rank[w] !== r);
+        key.set(v, use.length ? use.reduce((a, w) => a + f[w], 0) / use.length : f[v]);
+      });
+      const before = new Map(L[r].map((v, i) => [v, i]));
+      L[r].sort((a, b) => key.get(a) - key.get(b) || before.get(a) - before.get(b));
+      keepPairs(L[r]);
+      L[r].forEach((v, i) => { f[v] = (i + 0.5) / L[r].length; });
+    }
+    const c = crossings();
+    if (c < bestC) { bestC = c; best = L.map((l) => l.slice()); }
+  }
+  L = best;
+  // 4. coordinates
+  const ext = (v) => (axis === 'x' ? { r: items[v].w, c: items[v].h } : { r: items[v].h, c: items[v].w });
+  const thick = L.map((layer) => Math.max(0, ...layer.map((v) => ext(v).r)));
+  const gaps = [];
+  for (let r = 0; r + 1 < R; r++) {
+    let g = axis === 'x' ? 2.7 * s : 3.0 * s;
+    for (const e of Eorig) {
+      const lo = Math.min(rank[e.oa], rank[e.ob]), hi = Math.max(rank[e.oa], rank[e.ob]);
+      if (lo === r && hi === r + 1) g = Math.max(g, axis === 'x' ? e.lw + 1.6 * s : e.lh + 1.4 * s);
+    }
+    gaps.push(Math.round(g));
+  }
+  const rankPos = [];
+  let acc = 0;
+  for (let r = 0; r < R; r++) { rankPos.push(acc); acc += thick[r] + (gaps[r] || 0); }
+  const crossGap = Math.round(1.3 * s);
+  const cpos = Array(n).fill(0);
+  L.forEach((layer) => {
+    let t = 0;
+    layer.forEach((v) => { cpos[v] = t + ext(v).c / 2; t += ext(v).c + crossGap; });
+    const total = t - crossGap;
+    layer.forEach((v) => { cpos[v] -= total / 2; });
+  });
+  for (let pass = 0; pass < 8; pass++) {
+    const down = pass % 2 === 0;
+    const order = down ? [...L.keys()] : [...L.keys()].reverse();
+    for (const r of order) {
+      const layer = L[r];
+      const desired = layer.map((v) => {
+        const ns = nbr[v];
+        return ns.length ? ns.reduce((a, w) => a + cpos[w], 0) / ns.length : cpos[v];
+      });
+      const md = layer.slice(1).map((v, i) => (ext(layer[i]).c + ext(v).c) / 2 + crossGap);
+      const placed = spaceOut(desired, md);
+      layer.forEach((v, i) => { cpos[v] = placed[i]; });
+    }
+  }
+  let lo = Infinity, hi = -Infinity;
+  for (let v = 0; v < n; v++) { lo = Math.min(lo, cpos[v] - ext(v).c / 2); hi = Math.max(hi, cpos[v] + ext(v).c / 2); }
+  if (!n) { lo = 0; hi = 0; }
+  const pos = new Map(), rk = new Map();
+  for (let v = 0; v < n; v++) {
+    const rc = rankPos[rank[v]] + thick[rank[v]] / 2;      // rank-axis centre
+    const cc = cpos[v] - lo;                                  // cross-axis centre
+    const cx = axis === 'x' ? rc : cc, cy = axis === 'x' ? cc : rc;
+    pos.set(items[v].key, { x: cx - items[v].w / 2, y: cy - items[v].h / 2 });
+    rk.set(items[v].key, rank[v]);
+  }
+  const mainLen = acc;
+  const crossLen = hi - lo;
+  return { pos, rank: rk, w: Math.round(axis === 'x' ? mainLen : crossLen), h: Math.round(axis === 'x' ? crossLen : mainLen) };
+}
+
+// ---------------------------------------------------------------- compound layout
+function otherAxis(a) { return a === 'x' ? 'y' : 'x'; }
+
+// graph: validated canonical graph; flows: Map groupId -> 'same'|'cross'
+// labelled request/response pairs (a->b and b->a, both labelled): returns [[a,b],...] over keys
+function labelledPairs(edges, keyOf) {
+  const out = [], seen = new Set();
+  for (const e of edges) {
+    if (!e.label) continue;
+    const a = keyOf(e.from), b = keyOf(e.to);
+    if (a === b) continue;
+    const k = a < b ? a + '|' + b : b + '|' + a;
+    if (seen.has(k)) continue;
+    if (edges.some((f) => f.label && keyOf(f.from) === b && keyOf(f.to) === a)) { seen.add(k); out.push([a, b]); }
+  }
+  return out;
+}
+
+function clusterLayout(graph, s, flows, pairMode = false) {
+  const outerAxis = graph.direction === 'LR' || graph.direction === 'RL' ? 'x' : 'y';
+  const nodeById = new Map(graph.nodes.map((n) => [n.id, n]));
+  const box = new Map(graph.nodes.map((n) => [n.id, nodeBox(n, s)]));
+  const edgeOf = (e) => {
+    const lab = e.label ? edgeLabelSize(e.label, s) : { w: 0, h: 0 };
+    return { a: e.from, b: e.to, lw: lab.w, lh: lab.h };
+  };
+  const padX = Math.round(1.1 * s), padBottom = Math.round(1.0 * s);
+  const padTop = Math.round(24 + 0.3 * (s - 5) + 11);
+  const clusters = [];            // top-level items
+  const clusterOfNode = new Map();
+  const inner = new Map();        // clusterKey -> {layout, items}
+  const groupOrder = graph.groups.map((g) => g.id);
+  // clusters ordered by first member's input position (stable)
+  const firstSeen = new Map();
+  graph.nodes.forEach((n, i) => { const k = n.group ? 'g:' + n.group : 'n:' + n.id; if (!firstSeen.has(k)) firstSeen.set(k, i); });
+  const keys = [...firstSeen.keys()];
+  for (const k of keys) {
+    if (k.startsWith('n:')) {
+      const id = k.slice(2), b = box.get(id);
+      clusters.push({ key: k, w: b.w, h: b.h, members: [id] });
+      clusterOfNode.set(id, k);
+    } else {
+      const gid = k.slice(2);
+      const members = graph.nodes.filter((n) => n.group === gid).map((n) => n.id);
+      const flow = flows.get(gid) === 'cross' ? otherAxis(outerAxis) : outerAxis;
+      const items = members.map((id) => ({ key: id, ...box.get(id) }));
+      const innerEdges = graph.edges.filter((e) => members.includes(e.from) && members.includes(e.to)).map(edgeOf);
+      const innerPairs = pairMode && flow === 'y' ? labelledPairs(graph.edges.filter((e) => members.includes(e.from) && members.includes(e.to)), (x) => x) : [];
+      const lay = layered(items, innerEdges, flow, s, innerPairs);
+      const gl = graph.groups.find((g) => g.id === gid);
+      const w = Math.max(lay.w + 2 * padX, groupLabelWidth(gl.label, s));
+      const h = lay.h + padTop + padBottom;
+      inner.set(k, { lay, w, h, gid, offX: Math.round((w - lay.w) / 2), offY: padTop });
+      clusters.push({ key: k, w, h, members });
+      members.forEach((m) => clusterOfNode.set(m, k));
+    }
+  }
+  // cluster-level edges (deduplicated, inter-cluster only)
+  const ce = new Map();
+  for (const e of graph.edges) {
+    const a = clusterOfNode.get(e.from), b = clusterOfNode.get(e.to);
+    if (a === b) continue;
+    const k = a + '>' + b;
+    const o = edgeOf(e);
+    const prev = ce.get(k);
+    if (prev) { prev.lw = Math.max(prev.lw, o.lw); prev.lh = Math.max(prev.lh, o.lh); } else ce.set(k, { a, b, lw: o.lw, lh: o.lh });
+  }
+  const topPairs = pairMode && outerAxis === 'y' ? labelledPairs(graph.edges, (x) => clusterOfNode.get(x)) : [];
+  const top = layered(clusters, [...ce.values()], outerAxis, s, topPairs);
+  const nodes = [], groups = [];
+  for (const c of clusters) {
+    const p = top.pos.get(c.key);
+    const inn = inner.get(c.key);
+    if (!inn) { const id = c.members[0]; nodes.push({ id, x: p.x, y: p.y, w: c.w, h: c.h }); continue; }
+    groups.push({ id: inn.gid, x: p.x, y: p.y, w: c.w, h: c.h });
+    for (const id of c.members) {
+      const q = inn.lay.pos.get(id), b = box.get(id);
+      nodes.push({ id, x: p.x + inn.offX + q.x, y: p.y + inn.offY + q.y, w: b.w, h: b.h });
+    }
+  }
+  const order = new Map(graph.nodes.map((n, i) => [n.id, i]));
+  nodes.sort((a, b) => order.get(a.id) - order.get(b.id));
+  groups.sort((a, b) => groupOrder.indexOf(a.id) - groupOrder.indexOf(b.id));
+  // mirror for RL / BT
+  const W = top.w, H = top.h;
+  if (graph.direction === 'RL') { nodes.forEach((n) => { n.x = W - n.x - n.w; }); groups.forEach((g) => { g.x = W - g.x - g.w; }); }
+  if (graph.direction === 'BT') { nodes.forEach((n) => { n.y = H - n.y - n.h; }); groups.forEach((g) => { g.y = H - g.y - g.h; }); }
+  return { nodes, groups, w: W, h: H, s };
+}
+
+// ---------------------------------------------------------------- geometry shared with the renderer
+function rim(b, dx, dy) {
+  const hw = b.w / 2, hh = b.h / 2;
+  const t = Math.min(dx === 0 ? 1e9 : hw / Math.abs(dx), dy === 0 ? 1e9 : hh / Math.abs(dy));
+  return [b.cx + dx * t, b.cy + dy * t];
+}
+// the atom's quadratic curve for an edge (renderers/web_article.py, _render_motion_arch)
+function edgeCurve(fb, tb, curve) {
+  const dx = tb.cx - fb.cx, dy = tb.cy - fb.cy;
+  const ln = Math.sqrt(dx * dx + dy * dy) || 1;
+  const bend = curve / 100;
+  const a = rim(fb, dx, dy), z = rim(tb, -dx, -dy);
+  const mx = (a[0] + z[0]) / 2, my = (a[1] + z[1]) / 2;
+  const c = [mx - (dy / ln) * bend * ln * 0.5, my + (dx / ln) * bend * ln * 0.5];
+  return [a, c, z];
+}
+const quad = (P, t) => [(1 - t) * (1 - t) * P[0][0] + 2 * (1 - t) * t * P[1][0] + t * t * P[2][0], (1 - t) * (1 - t) * P[0][1] + 2 * (1 - t) * t * P[1][1] + t * t * P[2][1]];
+function labelRect(P, text, s) {
+  const sz = edgeLabelSize(text, s);
+  const lx = 0.25 * P[0][0] + 0.5 * P[1][0] + 0.25 * P[2][0];
+  const ly = 0.25 * P[0][1] + 0.5 * P[1][1] + 0.25 * P[2][1] - 10;
+  const fs = s - 4;
+  return { x: lx - sz.w / 2, y: ly - fs * 0.85 - 2, w: sz.w, h: sz.h };
+}
+const overlap = (a, b) => a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
+const inside = (p, b, m = 0) => p[0] > b.x - m && p[0] < b.x + b.w + m && p[1] > b.y - m && p[1] < b.y + b.h + m;
+
+function segCross(p1, p2, p3, p4) {
+  const d = (a, b, c) => (b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0]);
+  const d1 = d(p3, p4, p1), d2 = d(p3, p4, p2), d3 = d(p1, p2, p3), d4 = d(p1, p2, p4);
+  return d1 * d2 < 0 && d3 * d4 < 0;
+}
+
+function asBoxes(layout) {
+  const m = new Map();
+  for (const n of layout.nodes) m.set(n.id, { ...n, cx: n.x + n.w / 2, cy: n.y + n.h / 2 });
+  return m;
+}
+
+// ---------------------------------------------------------------- the curve step (replaceable router)
+// Picks an integer `curve` (-100..100) for each edge so that, as far as the atom's
+// one-bend curve allows, edges do not cross other boxes, edge labels do not sit on
+// boxes or on each other, and two edges between the same pair do not coincide.
+function routeCurves(graph, layout) {
+  const s = layout.s;
+  const boxes = asBoxes(layout);
+  const list = [...boxes.values()];
+  const cands = [0, 12, -12, 24, -24, 36, -36, 50, -50, 65, -65, 80, -80, 100, -100];
+  const glabels = layout.groups.map((g) => {
+    const gl = graph.groups.find((x) => x.id === g.id);
+    return { x: g.x + 12, y: g.y + 6, w: groupLabelWidth(gl.label, s) - 20, h: 24 };
+  });
+  const chosen = [];                 // {P, rect}
+  const curves = [];
+  graph.edges.forEach((e, i) => {
+    const fb = boxes.get(e.from), tb = boxes.get(e.to);
+    let bestC = 0, bestCost = Infinity, bestGeo = null;
+    for (const c of cands) {
+      const P = edgeCurve(fb, tb, c);
+      let cost = Math.abs(c) * 0.04;
+      // samples against third-party boxes
+      for (let k = 1; k < 24; k++) {
+        const pt = quad(P, k / 24);
+        for (const b of list) {
+          if (b === fb || b === tb) continue;
+          if (inside(pt, { x: b.x, y: b.y, w: b.w, h: b.h }, 3)) cost += 6;
+        }
+      }
+      // endpoint boxes: a curve that bows back through its own end boxes
+      for (let k = 2; k < 22; k++) {
+        const pt = quad(P, k / 24);
+        if (inside(pt, fb, -1) || inside(pt, tb, -1)) cost += 2;
+      }
+      let rect = null;
+      if (e.label) {
+        rect = labelRect(P, e.label, s);
+        for (const b of list) if (overlap(rect, { x: b.x - 2, y: b.y - 2, w: b.w + 4, h: b.h + 4 })) cost += 40;
+        for (const gl of glabels) if (overlap(rect, gl)) cost += 25;
+        for (const o of chosen) if (o.rect && overlap(rect, o.rect)) cost += 30;
+        for (const o of chosen) for (let k = 1; k < 8; k++) { const pt = quad(o.P, k / 8); if (inside(pt, rect, 2)) cost += 3; }
+      }
+      // do not lie on top of an earlier edge
+      for (const o of chosen) {
+        let close = 0;
+        for (let k = 2; k <= 10; k += 2) { const a = quad(P, k / 12), b = quad(o.P, k / 12); if (Math.hypot(a[0] - b[0], a[1] - b[1]) < 18) close++; }
+        if (close >= 2) cost += 12 * close;
+        if (segCross(P[0], P[2], o.P[0], o.P[2])) cost += 1.5;
+      }
+      if (cost < bestCost - 1e-9) { bestCost = cost; bestC = c; bestGeo = { P, rect }; }
+    }
+    curves[i] = bestC;
+    chosen.push(bestGeo);
+  });
+  return curves;
+}
+
+// ---------------------------------------------------------------- quality metrics
+function measure(graph, layout, curves) {
+  const boxes = asBoxes(layout);
+  const list = [...boxes.values()];
+  let crossings = 0, throughBoxes = 0, labelsOnBoxes = 0, labelOverlaps = 0, len = 0;
+  const rects = [];
+  const geo = graph.edges.map((e, i) => edgeCurve(boxes.get(e.from), boxes.get(e.to), curves ? curves[i] : 0));
+  geo.forEach((P, i) => {
+    len += Math.hypot(P[2][0] - P[0][0], P[2][1] - P[0][1]);
+    const e = graph.edges[i];
+    for (const b of list) {
+      if (b.id === e.from || b.id === e.to) continue;
+      let hit = false;
+      for (let k = 1; k < 24; k++) if (inside(quad(P, k / 24), b, 0)) hit = true;
+      if (hit) throughBoxes++;
+    }
+    if (e.label) {
+      const r = labelRect(P, e.label, layout.s);
+      if (list.some((b) => overlap(r, b))) labelsOnBoxes++;
+      for (const o of rects) if (overlap(r, o)) labelOverlaps++;
+      rects.push(r);
+    }
+    for (let j = i + 1; j < geo.length; j++) {
+      const f = graph.edges[j];
+      if (f.from === e.from || f.from === e.to || f.to === e.from || f.to === e.to) continue;
+      if (segCross(P[0], P[2], geo[j][0], geo[j][2])) crossings++;
+    }
+  });
+  return { crossings, throughBoxes, labelsOnBoxes, labelOverlaps, edgeLength: Math.round(len) };
+}
+
+// ---------------------------------------------------------------- orientation search
+function score(graph, layout, curves, fit) {
+  const m = measure(graph, layout, curves);
+  const s = layout.s;
+  const wu = layout.w / s, hu = layout.h / s;
+  const wW = fit === 'wide' ? 0.35 : 1.5, hW = 0.35;
+  return wu * wW + hu * hW + m.crossings * 7 + m.throughBoxes * 12 + m.labelsOnBoxes * 10 + m.labelOverlaps * 40 + (m.edgeLength / s) * 0.06;
+}
+
+function chooseLayout(graph, s, fit = 'balanced', autoDirection = false) {
+  if (autoDirection) {
+    const horizontal = graph.direction === 'LR' || graph.direction === 'RL';
+    const alt = { ...graph, direction: horizontal ? 'TB' : 'LR' };
+    const a = chooseLayout(graph, s, fit, false), b = chooseLayout(alt, s, fit, false);
+    // keep the written direction unless the other one is clearly better
+    return b.score < a.score * 0.8 ? { ...b, direction: alt.direction } : { ...a, direction: graph.direction };
+  }
+  const multi = graph.groups.filter((g) => graph.nodes.filter((n) => n.group === g.id).length >= 2).map((g) => g.id);
+  let best = null;
+  const total = 1 << multi.length;
+  for (let mask = 0; mask < total; mask++) {
+    for (const pairMode of [false, true]) {
+      const flows = new Map(multi.map((id, i) => [id, mask & (1 << i) ? 'cross' : 'same']));
+      const lay = clusterLayout(graph, s, flows, pairMode);
+      const curves = routeCurves(graph, lay);
+      const sc = score(graph, lay, curves, fit);
+      if (!best || sc < best.score - 1e-9) best = { layout: lay, curves, score: sc, flows, pairMode };
+    }
+  }
+  return best;
+}
+
+// ---------------------------------------------------------------- framing: size choice and viewBox
+function layoutGraph(graph, opts = {}) {
+  const fit = opts.fit || 'balanced';
+  const targetW = opts.targetW || 1000, maxH = opts.maxH || 1100;
+  const tryS = (s) => {
+    const b = chooseLayout(graph, s, fit, opts.autoDirection !== false && !opts.forceDirection);
+    return frame(graph, b, s);
+  };
+  let s = opts.size ? Math.max(8, Math.min(40, Math.round(opts.size))) : 18;
+  let res = tryS(s);
+  if (!opts.size) {
+    const k = Math.min(targetW / res.W, maxH / res.H);
+    s = Math.max(10, Math.min(40, Math.floor(s * k)));
+    res = tryS(s);
+  }
+  while ((res.W > 2000 || res.H > 2000) && s > 8) { s -= 1; res = tryS(s); }
+  res.fits = res.W <= 2000 && res.H <= 2000;
+  return res;
+}
+
+function frame(graph, best, s) {
+  const { layout, curves } = best;
+  const boxes = asBoxes(layout);
+  const margin = Math.round(1.3 * s);
+  // content bounds: boxes, groups, edge labels, curve points
+  let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+  const take = (x, y, w = 0, h = 0) => { x0 = Math.min(x0, x); y0 = Math.min(y0, y); x1 = Math.max(x1, x + w); y1 = Math.max(y1, y + h); };
+  layout.nodes.forEach((n) => take(n.x, n.y, n.w, n.h));
+  layout.groups.forEach((g) => take(g.x, g.y, g.w, g.h));
+  graph.edges.forEach((e, i) => {
+    const P = edgeCurve(boxes.get(e.from), boxes.get(e.to), curves[i]);
+    for (let k = 0; k <= 8; k++) { const q = quad(P, k / 8); take(q[0] - 2, q[1] - 2, 4, 4); }
+    if (e.label) { const r = labelRect(P, e.label, s); take(r.x, r.y, r.w, r.h); }
+  });
+  if (!isFinite(x0)) { x0 = y0 = 0; x1 = y1 = 100; }
+  const dx = margin - x0, dy = margin - y0;
+  const W = Math.max(200, Math.ceil(x1 - x0 + 2 * margin)), H = Math.max(120, Math.ceil(y1 - y0 + 2 * margin));
+  const shift = (o) => ({ ...o, x: o.x + dx, y: o.y + dy });
+  return {
+    W, H, size: s,
+    nodes: layout.nodes.map(shift), groups: layout.groups.map(shift), curves,
+    direction: best.direction || graph.direction, flows: [...best.flows.entries()], metrics: measure(graph, { ...layout, nodes: layout.nodes.map(shift), groups: layout.groups.map(shift) }, curves),
+  };
+}
+
+// ---- compile.mjs
+// Canonical graph + layout -> a motion_arch block (and the payload around it).
+
+
+const r2 = (x) => Math.round(x * 100) / 100;
+const r3 = (x) => Math.round(x * 1000) / 1000;
+const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
+
+function clip(str, max) {
+  const t = String(str).trim();
+  return t.length <= max ? t : t.slice(0, max - 1).trimEnd() + '…';
+}
+
+// graph -> {block, layout, warnings}. The graph must already be valid.
+function compileGraph(graph, opts = {}) {
+  const warnings = [];
+  const lay = layoutGraph(graph, opts);
+  if (!lay.fits) throw new ArchError([`the diagram does not fit in the atom's 2000 x 2000 frame even at the smallest text size; shorten the labels or split the diagram`]);
+  if (lay.direction !== graph.direction) {
+    warnings.push(`drawn ${lay.direction === 'TB' ? 'top-to-bottom' : 'left-to-right'} instead of ${graph.direction}: that keeps the text about ${(lay.size * 343 / lay.W).toFixed(0)} px on a 343 px phone column. Pass --direction ${graph.direction} to force the written direction.`);
+  }
+  const { W, H, size } = lay;
+  const horizontal = lay.direction === 'LR' || lay.direction === 'RL';
+  const rev = lay.direction === 'RL' || lay.direction === 'BT';
+  const byId = new Map(lay.nodes.map((n) => [n.id, n]));
+  const gnodes = new Map(graph.nodes.map((n) => [n.id, n]));
+
+  // --- timing: groups, then nodes in flow order, then edges, then messages
+  const main = (n) => (horizontal ? n.x + n.w / 2 : n.y + n.h / 2);
+  const mains = lay.nodes.map(main);
+  const lo = Math.min(...mains), hi = Math.max(...mains);
+  const nodeAt = new Map();
+  for (const n of lay.nodes) {
+    let t = hi > lo ? (main(n) - lo) / (hi - lo) : 0;
+    if (rev) t = 1 - t;
+    nodeAt.set(n.id, r3(0.1 + 0.2 * t));
+  }
+  const NODE_DUR = 0.08;
+  const nodeEnd = (id) => nodeAt.get(id) + NODE_DUR;
+
+  const nodes = graph.nodes.map((gn) => {
+    const b = byId.get(gn.id);
+    const o = { id: gn.id, kind: gn.kind || 'server', label: clip(gn.label, LIMITS.label) };
+    if (gn.sub) o.sub = clip(gn.sub, LIMITS.sub);
+    o.x = r2(((b.x + b.w / 2) / W) * 100); o.y = r2(((b.y + b.h / 2) / H) * 100);
+    o.w = r2(clamp((b.w / W) * 100, 4, 100)); o.h = r2(clamp((b.h / H) * 100, 4, 100));
+    o.at = nodeAt.get(gn.id); o.dur = NODE_DUR;
+    return o;
+  });
+
+  const edgeOrder = graph.edges.map((e, i) => i).sort((a, b) => {
+    const ea = Math.max(nodeAt.get(graph.edges[a].from), nodeAt.get(graph.edges[a].to));
+    const eb = Math.max(nodeAt.get(graph.edges[b].from), nodeAt.get(graph.edges[b].to));
+    return ea - eb || a - b;
+  });
+  const E = Math.max(1, graph.edges.length);
+  const EDGE_DUR = 0.1;
+  const edgeAt = [];
+  edgeOrder.forEach((ei, k) => {
+    const e = graph.edges[ei];
+    const base = 0.34 + (k / E) * 0.26;
+    edgeAt[ei] = r3(Math.max(base, nodeEnd(e.from), nodeEnd(e.to)));
+  });
+  const edges = graph.edges.map((e, i) => {
+    const o = { from: e.from, to: e.to };
+    if (e.label) o.label = clip(e.label, LIMITS.edgeLabel);
+    o.style = e.style === 'sync' || e.style === undefined ? 'solid' : 'dashed';
+    if (e.both) o.both = true;
+    if (lay.curves[i]) o.curve = lay.curves[i];
+    o.at = edgeAt[i]; o.dur = EDGE_DUR;
+    return o;
+  });
+
+  // --- messages: resolve from/to to an edge index (first match), stagger in time
+  const M = graph.messages.length;
+  const msgDur0 = 0.1;
+  const lastOnEdge = new Map();
+  const step = M > 1 ? Math.min(0.12, 0.28 / (M - 1)) : 0;
+  const messages = graph.messages.map((m, j) => {
+    let idx = graph.edges.findIndex((e) => e.from === m.from && e.to === m.to);
+    let back = !!m.back;
+    if (idx < 0) { idx = graph.edges.findIndex((e) => e.from === m.to && e.to === m.from); back = !back; }
+    if (idx < 0) throw new ArchError([`message ${j + 1}: no edge between "${m.from}" and "${m.to}"`]);
+    let dur = msgDur0;
+    let at = Math.max(0.62 + j * step, edgeAt[idx] + EDGE_DUR);
+    if (lastOnEdge.has(idx)) at = Math.max(at, lastOnEdge.get(idx));
+    if (at + dur > 1) { at = 1 - dur; }
+    lastOnEdge.set(idx, at + dur);
+    const o = { edge: idx, text: clip(m.text, LIMITS.msgText) };
+    if (back) o.back = true;
+    o.at = r3(at); o.dur = dur;
+    return o;
+  });
+
+  const groups = lay.groups.map((g) => {
+    const gg = graph.groups.find((x) => x.id === g.id);
+    return { label: clip(gg.label, LIMITS.groupLabel), x: r2((g.x / W) * 100), y: r2((g.y / H) * 100), w: r2((g.w / W) * 100), h: r2((g.h / H) * 100), at: 0, dur: 0.1 };
+  });
+
+  const block = { type: 'motion_arch', label: clip(graph.title || 'Architecture diagram', LIMITS.title), w: W, h: H, size, nodes, edges };
+  if (groups.length) block.groups = groups;
+  if (messages.length) block.messages = messages;
+  return { block, layout: lay, warnings };
+}
+
+const STAGES = [['16:9', 1280, 720], ['4:3', 1200, 900], ['1:1', 1000, 1000], ['9:16', 720, 1280]];
+
+// Wrap the finished-diagram block in a motion_timeline so it plays (draws itself, chips ride).
+function filmPayload(block, opts = {}) {
+  const duration = opts.duration || 9;
+  const ratio = block.w / block.h;
+  let best = STAGES[0], bd = Infinity;
+  for (const st of STAGES) { const d = Math.abs(Math.log(ratio / (st[1] / st[2]))); if (d < bd) { bd = d; best = st; } }
+  const [aspect, sw, sh] = best;
+  const scale = Math.min(sw / block.w, sh / block.h) * 0.96;
+  const pw = (block.w * scale) / sw * 100, ph = (block.h * scale) / sh * 100;
+  const arch = { ...block, id: 'arch', place: { x: r2((100 - pw) / 2), y: r2((100 - ph) / 2), w: r2(pw), h: r2(ph) } };
+  return {
+    theme: 'dark',
+    blocks: [{
+      type: 'motion_timeline', title: block.label, aspect, duration, loop: true, autoplay: true, controls: true, theme: 'dark',
+      blocks: [arch],
+      tracks: [{ target: 'arch', keys: [{ t: 0, p: 0 }, { t: 0.5, p: 0 }, { t: duration - 1.5, p: 1, ease: 'linear' }] }],
+    }],
+  };
+}
+
+function archPayload(block) {
+  return { theme: 'dark', blocks: [block] };
+}
+
+// Validate the compiled block against the atom's own limits.
+function validateBlock(b) {
+  const errs = [];
+  if (b.type !== 'motion_arch') errs.push('type must be motion_arch');
+  if (!(b.w >= 200 && b.w <= 2000)) errs.push(`w ${b.w} outside 200-2000`);
+  if (!(b.h >= 120 && b.h <= 2000)) errs.push(`h ${b.h} outside 120-2000`);
+  if (!(b.size >= 8 && b.size <= 40)) errs.push(`size ${b.size} outside 8-40`);
+  const nodes = b.nodes || [], edges = b.edges || [], groups = b.groups || [], msgs = b.messages || [];
+  if (nodes.length > LIMITS.nodes) errs.push('too many nodes');
+  if (edges.length > LIMITS.edges) errs.push('too many edges');
+  if (groups.length > LIMITS.groups) errs.push('too many groups');
+  if (msgs.length > LIMITS.messages) errs.push('too many messages');
+  const ids = new Set();
+  for (const n of nodes) {
+    if (!/^[a-z][a-z0-9_-]{0,31}$/.test(n.id)) errs.push(`node id ${n.id} invalid`);
+    ids.add(n.id);
+    if (n.x < 0 || n.x > 100 || n.y < 0 || n.y > 100) errs.push(`node ${n.id} centre outside 0-100`);
+    if (n.w < 4 || n.h < 4) errs.push(`node ${n.id} too small`);
+    if (n.label.length > 40 || (n.sub && n.sub.length > 40)) errs.push(`node ${n.id} text too long`);
+    if (n.at < 0 || n.at > 1 || n.dur < 0.01 || n.dur > 1) errs.push(`node ${n.id} timing outside 0-1`);
+  }
+  edges.forEach((e, i) => {
+    if (!ids.has(e.from) || !ids.has(e.to)) errs.push(`edge ${i} dangling`);
+    if (e.curve !== undefined && (e.curve < -100 || e.curve > 100)) errs.push(`edge ${i} curve`);
+    if (e.label && e.label.length > 48) errs.push(`edge ${i} label too long`);
+  });
+  msgs.forEach((m, i) => {
+    if (!(m.edge >= 0 && m.edge < edges.length)) errs.push(`message ${i} edge index`);
+    if (m.text.length > 40) errs.push(`message ${i} text too long`);
+    if (m.at + m.dur > 1.0001) errs.push(`message ${i} runs past the end of the film`);
+  });
+  groups.forEach((g, i) => {
+    if (g.x < 0 || g.y < 0 || g.w < 1 || g.h < 1 || g.x + g.w > 100.01 || g.y + g.h > 100.01) errs.push(`group ${i} outside frame`);
+  });
+  return errs;
+}
+
+// ---- index.mjs
+// Library entry: mermaidToArch(text, opts) -> {payload, graph, warnings}
+
+
+
+
+
+
+// opts: {direction, title, size, fit:'balanced'|'wide', film:boolean, duration}
+function graphToArch(graph, opts = {}) {
+  const g = { ...graph };
+  if (opts.direction) g.direction = opts.direction;
+  if (opts.title) g.title = opts.title;
+  if (!g.direction) g.direction = 'LR';
+  const { errors, warnings } = validateGraph(g);
+  if (errors.length) throw new ArchError(errors, warnings);
+  const lopts = { ...opts, forceDirection: !!opts.direction };
+  const { block, layout, warnings: w2 } = compileGraph(g, lopts);
+  const bad = validateBlock(block);
+  if (bad.length) throw new ArchError(['internal: compiled block breaks the atom limits: ' + bad.join('; ')], warnings);
+  const payload = opts.film ? filmPayload(block, opts) : archPayload(block);
+  return { payload, graph: g, warnings: [...warnings, ...w2], block, layout };
+}
+
+function mermaidToArch(text, opts = {}) {
+  const parsed = parseMermaid(text, opts);
+  const r = graphToArch(parsed.graph, { ...opts, direction: opts.direction });
+  r.warnings = [...parsed.warnings, ...r.warnings];
+  return r;
+}
+
+</script>
+<script>
+(function () {
+  var BUNDLE = (location.search.match(/[?&]bundle=([^&]+)/) || [])[1] || '../../public/surfaces/mcp-apps/renderer-bundle.html';
+  var frame = document.getElementById('view'), ready = false, pending = null, last = null;
+  function post(m) { frame.contentWindow.postMessage(m, '*'); }
+  function send() { if (ready && pending) { post({ jsonrpc: '2.0', method: 'ui/notifications/tool-result', params: { content: [], structuredContent: pending } }); } }
+  window.addEventListener('message', function (ev) {
+    if (ev.source !== frame.contentWindow) return;
+    var m = ev.data; if (!m || m.jsonrpc !== '2.0') return;
+    if (m.method === 'ui/initialize') { post({ jsonrpc: '2.0', id: m.id, result: { protocolVersion: '2026-01-26', hostInfo: { name: 'mermaid-arch-playground', version: '1' }, hostCapabilities: {}, hostContext: { theme: 'dark', displayMode: 'inline' } } }); return; }
+    if (m.method === 'ui/notifications/initialized') { ready = true; send(); return; }
+    if (m.method === 'ui/request-display-mode' && m.id) post({ jsonrpc: '2.0', id: m.id, result: { mode: 'inline' } });
+  });
+  frame.addEventListener('load', function () { setTimeout(function () { ready = true; send(); }, 700); });
+  frame.src = BUNDLE;
+  function fit(asp) { frame.style.height = Math.round(frame.clientWidth * asp + 84) + 'px'; }
+  function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
+  function convert() {
+    var msgs = document.getElementById('msgs'), opts = { film: document.getElementById('film').checked };
+    var d = document.getElementById('dir').value; if (d) opts.direction = d;
+    try {
+      var r = mermaidToArch(document.getElementById('src').value, opts);
+      last = r.payload;
+      var b = r.block, html = '<span class="ok">ok: ' + b.nodes.length + ' nodes, ' + b.edges.length + ' edges, ' + (b.groups || []).length + ' groups, ' + (b.messages || []).length + ' messages; frame ' + b.w + 'x' + b.h + ', text ' + b.size + ' px (about ' + (b.size * 343 / b.w).toFixed(1) + ' px in a 343 px phone column)</span>';
+      r.warnings.forEach(function (w) { html += '\n<span class="warn">warning: ' + esc(w) + '</span>'; });
+      msgs.innerHTML = html;
+      document.getElementById('json').textContent = JSON.stringify(r.payload, null, 1);
+      var t = r.payload.blocks[0];
+      fit(opts.film ? { '16:9': 9 / 16, '4:3': 3 / 4, '1:1': 1, '9:16': 16 / 9 }[t.aspect] : b.h / b.w);
+      pending = r.payload; send();
+      document.getElementById('note').textContent = opts.film ? 'Playing in the renderer’s own film controls.' : 'Standalone block: the finished diagram, no animation.';
+    } catch (e) {
+      if (e && e.errors) msgs.innerHTML = e.errors.map(function (m) { return '<span class="err">error: ' + esc(m) + '</span>'; }).join('\n');
+      else msgs.innerHTML = '<span class="err">internal error: ' + esc(e && e.message) + '</span>';
+    }
+  }
+  document.getElementById('go').onclick = convert;
+  document.getElementById('src').addEventListener('input', function () { clearTimeout(convert.t); convert.t = setTimeout(convert, 500); });
+  document.getElementById('dir').onchange = convert; document.getElementById('film').onchange = convert;
+  document.getElementById('copy').onclick = function () { if (last && navigator.clipboard) navigator.clipboard.writeText(JSON.stringify(last)); };
+  convert();
+})();
+</script>
+</body>
+</html>
