@@ -4,8 +4,8 @@
 //   title?: string,
 //   direction: 'LR' | 'RL' | 'TB' | 'BT',
 //   groups:   [{id, label}],
-//   nodes:    [{id, label, kind?, sub?, group?}],
-//   edges:    [{from, to, label?, style: 'sync'|'async'|'optional', both?, step?, relation?}],
+//   nodes:    [{id, label, kind?, sub?, group?, line?}],   (line = source line, set by the Mermaid parser; errors then say "line N")
+//   edges:    [{from, to, label?, style: 'sync'|'async'|'optional', both?, step?, relation?, line?}],
 //   messages: [{from, to, text, back?}],
 //   numbered?, pace?, duration?, relationColumn?: boolean, relationName?: string (max 20, default 'Relation'),
 // }
@@ -57,6 +57,9 @@ export function foldGroups(graph) {
   const warning = `Drew ${kept.length} of ${groups.length} groups: ${list} ${names.length === 1 ? 'was' : 'were'} shown without ${names.length === 1 ? 'its box' : 'their boxes'} (the diagram can draw at most ${LIMITS.groups}).`;
   return { graph: { ...graph, groups: kept, nodes }, warnings: [warning] };
 }
+
+// "line 3: " for a node or edge that came from a source line, else nothing
+const at = (x) => (x && Number.isInteger(x.line) ? `line ${x.line}: ` : '');
 
 export class ArchError extends Error {
   constructor(errors, warnings = []) {
@@ -165,14 +168,14 @@ export function validateGraph(g) {
   // nodes
   const ids = new Set();
   nodes.forEach((n, i) => {
-    const at = `node ${i + 1}`;
-    if (!n || typeof n.id !== 'string' || !n.id) { errors.push(`${at}: needs an id`); return; }
+    const where = at(n), nm = `node ${i + 1}`;
+    if (!n || typeof n.id !== 'string' || !n.id) { errors.push(`${where}${nm}: needs an id`); return; }
     if (!ID_RE.test(n.id)) {
-      errors.push(`${at}: id "${n.id}" is not valid; use a lowercase letter first, then lowercase letters, digits, "_" or "-", up to 32 characters`);
+      errors.push(`${where}${nm}: id "${n.id}" is not valid; use a lowercase letter first, then lowercase letters, digits, "_" or "-", up to 32 characters`);
     }
-    if (ids.has(n.id)) errors.push(`${at}: id "${n.id}" is used twice; node ids must be unique`);
+    if (ids.has(n.id)) errors.push(`${where}${nm}: id "${n.id}" is used twice; node ids must be unique`);
     ids.add(n.id);
-    if (typeof n.label !== 'string' || !n.label.trim()) errors.push(`${at} ("${n.id}"): needs a label`);
+    if (typeof n.label !== 'string' || !n.label.trim()) errors.push(`${where}${nm} ("${n.id}"): needs a label`);
     else if (n.label.length > LIMITS.label) {
       warnings.push(`node "${n.id}": label is ${n.label.length} characters; the atom shows at most ${LIMITS.label}, so it will be cut. Shorten it or move detail into the sub-label.`);
     }
@@ -180,10 +183,10 @@ export function validateGraph(g) {
       warnings.push(`node "${n.id}": sub-label is ${String(n.sub).length} characters; the atom shows at most ${LIMITS.sub}.`);
     }
     if (n.kind !== undefined && !KINDS.includes(n.kind)) {
-      errors.push(`node "${n.id}": kind "${n.kind}" is not one of ${KINDS.join(', ')}` + (resolveKind(n.kind) ? ` (did you mean "${resolveKind(n.kind)}"?)` : hint(n.kind, KINDS)));
+      errors.push(`${where}node "${n.id}": kind "${n.kind}" is not one of ${KINDS.join(', ')}` + (resolveKind(n.kind) ? ` (did you mean "${resolveKind(n.kind)}"?)` : hint(n.kind, KINDS)));
     }
     if (n.group !== undefined && !groupIds.has(n.group)) {
-      errors.push(`node "${n.id}": group "${n.group}" is not a group id` + hint(n.group, [...groupIds]));
+      errors.push(`${where}node "${n.id}": group "${n.group}" is not a group id` + hint(n.group, [...groupIds]));
     }
   });
 
@@ -191,22 +194,22 @@ export function validateGraph(g) {
   const ndList = [...ids];
   const touched = new Set();
   edges.forEach((e, i) => {
-    const at = `edge ${i + 1}`;
-    if (!e || typeof e !== 'object') { errors.push(`${at}: must be an object with from and to`); return; }
+    const where = at(e), nm = `edge ${i + 1}`;
+    if (!e || typeof e !== 'object') { errors.push(`${where}${nm}: must be an object with from and to`); return; }
     let bad = false;
     for (const end of ['from', 'to']) {
       if (typeof e[end] !== 'string' || !ids.has(e[end])) {
-        errors.push(`${at}: "${e[end]}" is not a node id${hint(e[end] ?? '', ndList)}`);
+        errors.push(`${where}${nm}: "${e[end]}" is not a node id${hint(e[end] ?? '', ndList)}`);
         bad = true;
       }
     }
     if (bad) return;
-    if (e.from === e.to) { errors.push(`${at}: "${e.from}" points at itself; the atom cannot draw self-loops. Remove the edge or add a second node.`); return; }
+    if (e.from === e.to) { errors.push(`${where}${nm}: "${e.from}" points at itself; the atom cannot draw self-loops. Remove the edge or add a second node.`); return; }
     if (e.style !== undefined && !STYLES.includes(e.style)) {
-      errors.push(`${at}: style "${e.style}" is not one of ${STYLES.join(', ')}`);
+      errors.push(`${where}${nm}: style "${e.style}" is not one of ${STYLES.join(', ')}`);
     }
     if (e.label !== undefined && String(e.label).length > LIMITS.edgeLabel) {
-      warnings.push(`${at}: label is ${String(e.label).length} characters; the atom shows at most ${LIMITS.edgeLabel}.`);
+      warnings.push(`${nm}: label is ${String(e.label).length} characters; the atom shows at most ${LIMITS.edgeLabel}.`);
     }
     touched.add(e.from); touched.add(e.to);
   });

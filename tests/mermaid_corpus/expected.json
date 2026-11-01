@@ -128,13 +128,7 @@
    "edges": 2,
    "groups": 0
   },
-  "warning": "classDef",
-  "known_gap": [
-   {
-    "kind": "warnings",
-    "reason": "classDef, class, style and linkStyle are dropped silently; only click is warned about, so author colours vanish with no notice"
-   }
-  ]
+  "warning": "classDef"
  },
  "16_kind_hints.mmd": {
   "outcome": "ok",
@@ -155,16 +149,10 @@
    "Bold start",
    "Italic end",
    "Plain mix of text"
-  ],
-  "known_gap": [
-   {
-    "kind": "labels",
-    "reason": "markdown-string labels keep their ** and _ markers literally; the backquote wrapper is stripped but the markdown is not rendered or removed"
-   }
   ]
  },
  "18_html_in_labels.mmd": {
-  "outcome": "ok",
+  "outcome": "ok_with_warnings",
   "counts": {
    "nodes": 4,
    "edges": 3,
@@ -175,7 +163,8 @@
    "Bold name",
    "Alpha",
    "Self"
-  ]
+  ],
+  "warning": "HTML tags were removed"
  },
  "19_emoji_unicode.mmd": {
   "outcome": "ok",
@@ -220,12 +209,6 @@
    "Cost < 5 > 2",
    "Say \"hi\"",
    "Price #5"
-  ],
-  "known_gap": [
-   {
-    "kind": "labels",
-    "reason": "named entity codes #amp; #lt; #gt; are left as typed; only #quot; and numeric codes are decoded"
-   }
   ]
  },
  "22_all_shapes.mmd": {
@@ -237,19 +220,31 @@
   }
  },
  "23_shape_asymmetric.mmd": {
-  "outcome": "error",
-  "message": "shape",
-  "line_relevant": true
+  "outcome": "ok_with_warnings",
+  "counts": {
+   "nodes": 3,
+   "edges": 2,
+   "groups": 0
+  },
+  "warning": "asymmetric"
  },
  "24_shape_parallelogram.mmd": {
-  "outcome": "error",
-  "message": "shape",
-  "line_relevant": true
+  "outcome": "ok_with_warnings",
+  "counts": {
+   "nodes": 3,
+   "edges": 2,
+   "groups": 0
+  },
+  "warning": "parallelogram"
  },
  "25_shape_double_circle.mmd": {
-  "outcome": "error",
-  "message": "double circles",
-  "line_relevant": true
+  "outcome": "ok_with_warnings",
+  "counts": {
+   "nodes": 2,
+   "edges": 1,
+   "groups": 0
+  },
+  "warning": "double circle"
  },
  "26_link_types.mmd": {
   "outcome": "ok_with_warnings",
@@ -315,13 +310,7 @@
    "nodes": 3,
    "edges": 2,
    "groups": 0
-  },
-  "known_gap": [
-   {
-    "kind": "outcome",
-    "reason": "non-ASCII node ids (cafe with accent, kanji) are rejected with \"cannot read ...\" and the id is split mid-word; Mermaid accepts them"
-   }
-  ]
+  }
  },
  "34_duplicate_edges.mmd": {
   "outcome": "ok_with_warnings",
@@ -335,13 +324,7 @@
  "34b_self_loop.mmd": {
   "outcome": "error",
   "message": "points at itself",
-  "line_relevant": true,
-  "known_gap": [
-   {
-    "kind": "error_line",
-    "reason": "self-loop error says \"edge 2\" but not the source line, unlike parser errors"
-   }
-  ]
+  "line_relevant": true
  },
  "34c_edge_to_undefined.mmd": {
   "outcome": "ok",
@@ -380,7 +363,7 @@
   "line_relevant": true
  },
  "40_html_script.mmd": {
-  "outcome": "ok",
+  "outcome": "ok_with_warnings",
   "counts": {
    "nodes": 3,
    "edges": 2,
@@ -390,7 +373,8 @@
    "alert(1)",
    "B",
    "Safe"
-  ]
+  ],
+  "warning": "HTML tags were removed"
  },
  "41_quote_unclosed.mmd": {
   "outcome": "error",
@@ -429,13 +413,7 @@
  "46_invisible_and_long_links.mmd": {
   "outcome": "error",
   "message": "invisible",
-  "line_relevant": true,
-  "known_gap": [
-   {
-    "kind": "error_message",
-    "reason": "invisible link ~~~ is rejected with a generic \"cannot read\" message instead of saying invisible links are not supported"
-   }
-  ]
+  "line_relevant": true
  },
  "47_circle_cross_ends.mmd": {
   "outcome": "error",

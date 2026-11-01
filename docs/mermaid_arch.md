@@ -134,12 +134,22 @@ the number is part of the label text.
 | `-->\|label\|`, `-- label -->`, `-. label .->`, `== label ==>` | edge label |
 | `A --> B --> C`, `A & B --> C & D` | chains and fan-in/fan-out |
 | `subgraph id[Title] ... end` | a group box. Nested subgraphs are flattened into the outermost one (warning) |
-| `:::kind`, `class a,b kind` | kind hint (see below). Other class names and `classDef`, `style`, `linkStyle` are styling and ignored |
+| `:::kind`, `class a,b kind` | kind hint (see below). `classDef`, `style`, `linkStyle` and other class names are not drawn: one warning per diagram, "Colours and styles (classDef, style, linkStyle) are not drawn; the diagram uses its own colours by node kind." (a `click` line is ignored and mentioned in the same line) |
+| `id>text]`, `id[/text/]`, `id[\text\]`, `id[/text\]`, `id(((text)))` | **degraded, not refused**: drawn as a rectangle (asymmetric, parallelogram, trapezoid) or a circle (double circle), with the warning `Node "X" uses a shape the atom cannot draw (asymmetric); drawn as a rectangle.` |
+| markdown string (quoted text wrapped in backquotes) with `**bold**`, `__bold__`, `*italic*`, `_italic_` | the `**`, `__`, `*`, `_` markers are removed; the text stays |
+| `#amp; #lt; #gt; #quot; #apos; #nbsp;`, `#35;` (also `&amp;` and `&#35;` forms) | decoded in labels. Tags are stripped; a tag formed by decoding is stripped too, so none survives |
+| `<b>`, `<script>` and other HTML tags in a label | removed (`<br/>` is a line break); one warning per diagram, `HTML tags were removed from a label.`; a label left empty falls back to the node id |
 | `%% comment`, `;` between statements, front matter `title:` | accepted |
 
+Degraded with a warning instead of an error (the try-it is forgiving): the shapes above, `classDef`/`style`/
+`linkStyle`/`click`, HTML tags, nested subgraphs, `direction` inside a subgraph, `---` arrowheads, groups
+beyond 4.
+
 Not supported (clear error with the line number): other diagram types (`sequenceDiagram` and the
-rest), edge ids (`e1@-->`), `--x`/`--o` arrow ends, parallelogram/trapezoid/asymmetric shapes, double
-circles, edges that point at a whole subgraph.
+rest), edge ids (`e1@-->`), invisible links (`A ~~~ B`: "invisible links (~~~) are not supported; remove the
+line or use a normal arrow."), cross and circle arrow ends (`--x`, `--o`, `x--x`, `o--o`), edges that point
+at a whole subgraph. Errors raised by the graph checks (self loop, unknown endpoint) also say `line N` when the
+node or edge came from a source line.
 
 ### Directives (ordinary comments to Mermaid, so the file stays valid Mermaid)
 
@@ -176,7 +186,8 @@ surface user`, or an alias), else the shape default.
 
 ### Ids
 
-Mermaid ids are case-sensitive; the atom's are `^[a-z][a-z0-9_-]{0,31}$`. The converter lower-cases,
+Mermaid ids are case-sensitive and may use any Unicode letter or digit (`café`, `日本`); the atom's are
+`^[a-z][a-z0-9_-]{0,31}$`. The converter drops accents (`é` becomes `e`), lower-cases,
 replaces other characters with `_`, prefixes `n` if the id starts with a digit, cuts to 32, and adds
 `_2`, `_3` on a collision, in order of first appearance. The same input always gives the same ids.
 
@@ -191,7 +202,7 @@ the later one in the source first, until 4 remain. A folded group loses its box 
 title is added as the sub-label of each member that has none, when the title fits 40 characters. One warning
 says what happened, for example `Drew 4 of 5 groups: "5. Mail" was shown without its box (the diagram can draw at
 most 4).` Text over a limit is cut with an ellipsis and a warning. The layout warning (drawn top-to-bottom
-instead of the written direction) ends with the CLI hint by default; `hint: 'web'` swaps it for "You can switch
+instead of the written direction, given only when the other axis makes the text at least 25% bigger) ends with the CLI hint by default; `hint: 'web'` swaps it for "You can switch
 the Layout menu to the written direction." (the playground passes it).
 
 Checks and their wording (numbers are 1-based):
@@ -237,7 +248,7 @@ router is a public JS module in the converter, not in the Python or Apps Script 
 **Direction and shape.** With routing on, the converter lays the diagram out both ways (and several group
 arrangements), routes each, and keeps the one with the best score: text size on a 343 px phone column (every px
 under 9 costs), not more than about 1.7 times taller than wide, then crossings, label collisions, bends and length.
-When it picks the other axis it says so (warning). Force the written direction with `--direction`.
+It picks the other axis only when that scores better and the text is at least 25% larger on a phone column; otherwise the written direction stays and nothing is said. When it does flip it says so (warning, informational). Force the written direction with `--direction`.
 
 **Frame and text size.** The frame (`w`, `h`) is the layout's natural size, aimed at about 1000 wide
 and no more than about 1100 tall; `size` (label px) is chosen with it. What matters on a phone is

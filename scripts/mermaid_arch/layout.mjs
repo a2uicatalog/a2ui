@@ -505,6 +505,7 @@ export function layoutGraph(graph, opts = {}) {
 }
 
 // ---------------------------------------------------------------- orthogonal routing: size, orientation, framing
+export const FLIP_GAIN = 1.25;
 function orthoScore(fr, fit) {
   const m = fr.metrics, s = fr.size;
   const phone = fit === 'wide' ? 0 : 24 * Math.max(0, 9 - phonePx(fr.W, s)) + 40 * Math.max(0, fr.H / fr.W - 1.3);
@@ -552,9 +553,9 @@ function layoutOrthogonal(graph, opts = {}) {
   if (!opts.forceDirection) {
     const horizontal = graph.direction === 'LR' || graph.direction === 'RL';
     const alt = one({ ...graph, direction: horizontal ? 'TB' : 'LR' });
-    // the other axis wins when its text is clearly bigger on a phone and it is not messier
-    // legibility and shape are already part of the score (see orthoScore)
-    if (alt.fits && alt.score < res.score - 1) res = alt;
+    // the other axis wins only when it scores better (legibility and shape are part of the score, see orthoScore)
+    // AND its text is at least 25% bigger on a phone; a small gain is not worth ignoring the written direction
+    if (alt.fits && alt.score < res.score - 1 && alt.size / alt.W >= FLIP_GAIN * (res.size / res.W)) res = alt;
   }
   return res;
 }

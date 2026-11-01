@@ -118,9 +118,69 @@ test('class statement and classDef', () => {
   assert.equal(gr.nodes[0].kind, 'store');
   assert.equal(gr.nodes[1].kind, 'tool');          // later statement wins
 });
-test('style, linkStyle, click are ignored', () => {
-  const r = parseMermaid('flowchart LR\na-->b\nstyle a fill:#f00\nlinkStyle 0 stroke:#f00\nclick a href "http://x"');
+test('style, linkStyle, click are ignored, with one calm warning', () => {
+  const r = parseMermaid('flowchart LR\na-->b\nstyle a fill:#f00\nlinkStyle 0 stroke:#f00\nclassDef x fill:#fff\nclick a href "http://x"');
   assert.equal(r.graph.nodes.length, 2);
+  assert.equal(r.warnings.length, 1);
+  assert.match(r.warnings[0], /^Colours and styles \(classDef, style, linkStyle\) are not drawn; the diagram uses its own colours by node kind\./);
+  assert.match(r.warnings[0], /click\/link statements are ignored too\./);
+});
+test('click alone keeps its own warning; no style lines, no warning', () => {
+  assert.deepEqual(parseMermaid('flowchart LR\na-->b\nclick a href "http://x"').warnings, ['line 3: click/link statements are ignored.']);
+  assert.deepEqual(parseMermaid('flowchart LR\na-->b').warnings, []);
+  assert.equal(parseMermaid('flowchart LR\na[A]\nclass a db').warnings.length, 0);   // a kind name is honoured, nothing dropped
+});
+test('unicode node ids: accents, kanji, no silent merge when the safe ids collide', () => {
+  const r = parseMermaid('flowchart LR\ncafé[Café] --> cafe[Cafe]\n日本 --> 中国\nnaïve --> 日本');
+  assert.equal(r.graph.nodes.length, 5);
+  assert.equal(new Set(r.graph.nodes.map((n) => n.id)).size, 5);   // café and cafe both map to "cafe"; the second gets a suffix
+  assert.deepEqual(r.graph.nodes.slice(2, 4).map((n) => n.label), ['日本', '中国']);
+  assert.ok(r.graph.nodes.every((n) => /^[a-z][a-z0-9_-]*$/.test(n.id)));
+  assert.ok(mermaidToArch('flowchart LR\ncafé --> 日本').payload);
+});
+test('markdown strings: bold and italic markers are removed, snake_case is kept', () => {
+  const gr = g('a["`**Bold** and __also__ and *it* and _it2_ here`"]\nb["`keep my_var_name`"]\na-->b');
+  assert.equal(gr.nodes[0].label, 'Bold and also and it and it2 here');
+  assert.equal(gr.nodes[1].label, 'keep my_var_name');
+});
+test('entity codes: named and numeric decoded, no tag survives', () => {
+  const gr = g('a["Tom #amp; Jerry #lt; #gt; #apos;x#apos; #nbsp;y #35;5 #amp;lt;"]\nb["#lt;script#gt;alert(1)#lt;/script#gt;"]\na-->b');
+  assert.equal(gr.nodes[0].label, "Tom & Jerry < > 'x' y #5 &lt;");
+  assert.doesNotMatch(gr.nodes[1].label, /</);
+  assert.equal(gr.nodes[1].label, 'alert(1)');
+});
+test('HTML tags removed from a label: one warning per diagram', () => {
+  const r = parseMermaid('flowchart LR\na["<b>x</b>"] --> b["<i>y</i>"]\nb -->|<u>z</u>| c["<script></script>"]');
+  assert.equal(r.warnings.filter((w) => w === 'HTML tags were removed from a label.').length, 1);
+  assert.equal(r.graph.nodes[2].label, 'c');   // emptied label falls back to the id
+  assert.equal(parseMermaid('flowchart LR\na[One<br/>Two] --> b').warnings.length, 0);   // <br> is a line break, not a removal
+});
+test('shapes the atom cannot draw degrade to the nearest shape with one warning each', () => {
+  const cases = [['a>Flag]', 'asymmetric', 'rectangle', 'rect'], ['a[/In/]', 'parallelogram', 'rectangle', 'rect'], ['a[\\In\\]', 'parallelogram (alt)', 'rectangle', 'rect'],
+    ['a[/In\\]', 'trapezoid', 'rectangle', 'rect'], ['a(((Fin)))', 'double circle', 'circle', 'model']];
+  for (const [src, name, as, kindOf] of cases) {
+    const r = parseMermaid('flowchart LR\n' + src + ' --> b');
+    assert.equal(r.warnings.length, 1, src);
+    assert.ok(r.warnings[0].endsWith(`Node "a" uses a shape the atom cannot draw (${name}); drawn as a ${as}.`), r.warnings[0]);
+    assert.equal(r.graph.nodes[0].kind, kindOf === 'rect' ? 'server' : 'model');
+    assert.ok(mermaidToArch('flowchart LR\n' + src + ' --> b').payload);
+  }
+  assert.equal(parseMermaid('flowchart LR\na["/api/v1"] --> b').warnings.length, 0);
+  assert.equal(parseMermaid('flowchart LR\na[/api] --> b').graph.nodes[0].label, '/api');
+});
+test('graph errors name the source line of the node or edge', () => {
+  const e = err('flowchart LR\na[A] --> b[B]\nb --> b');
+  assert.match(e, /^line 3: edge 2: "b" points at itself/);
+  assert.match(validateGraph({ direction: 'LR', groups: [], nodes: [{ id: 'a', label: 'A', line: 7 }], edges: [{ from: 'a', to: 'a', style: 'sync', line: 7 }], messages: [] }).errors.join(), /^line 7: edge 1/);
+  assert.match(validateGraph({ direction: 'LR', groups: [], nodes: [{ id: 'a', label: 'A' }], edges: [{ from: 'a', to: 'a', style: 'sync' }], messages: [] }).errors.join(), /^edge 1:/);
+});
+test('canonical graph does not carry the hidden line numbers into JSON', () => {
+  assert.doesNotMatch(JSON.stringify(parseMermaid('flowchart LR\na-->b').graph), /line/);
+});
+test('layout flip: a small text gain keeps the written direction and says nothing', () => {
+  const r = mermaidToArch('graph TD\nA[Start] --> B[End]', { hint: 'web' });
+  assert.equal(r.warnings.filter((w) => /^drawn /.test(w)).length, 0);
+  assert.equal(r.layout.direction, 'TB');
 });
 test('comments and directives', () => {
   const r = parseMermaid('%% title: My title\n%% msg: a->b "hello"\n%% msg: b->a "reply" back\n%% a plain comment\nflowchart LR\na-->b %% trailing\n');
@@ -171,12 +231,13 @@ const BAD = [
   ['garbage after node', 'flowchart LR\na b', /line 2: cannot read "b"/],
   ['edge id', 'flowchart LR\na e1@--> b', /edge ids/],
   ['unsupported arrow end', 'flowchart LR\na --x b', /not supported/],
-  ['parallelogram', 'flowchart LR\na[/x/] --> b', /not supported/],
-  ['double circle', 'flowchart LR\na(((x))) --> b', /double circles/],
+  ['invisible link', 'flowchart LR\na ~~~ b', /line 2: invisible links \(~~~\) are not supported; remove the line or use a normal arrow\./],
+  ['circle end', 'flowchart LR\na --o b', /line 2: arrows with a cross or circle end/],
+  ['both-ends cross', 'flowchart LR\na x--x b', /line 2: arrows with a cross or circle end/],
   ['bad msg directive', '%% msg: nonsense\nflowchart LR\na-->b', /bad "%% msg:" directive/],
   ['msg to unknown node (did you mean)', '%% msg: wrker->db "x"\nflowchart LR\nworker --> db', /"wrker" is not a node \(did you mean "worker"\?\)/],
   ['edge to a subgraph', 'flowchart LR\nsubgraph s[S]\n a\nend\nb --> s', /subgraph, not a node/],
-  ['self loop', 'flowchart LR\na --> a', /edge 1: "a" points at itself/],
+  ['self loop', 'flowchart LR\na --> a', /line 2: edge 1: "a" points at itself/],
   ['msg without edge', '%% msg: a->c "x"\nflowchart LR\na-->b\nc', /no edge between "a" and "c"/],
   ['label twice', 'flowchart LR\na -- x --> b', null],
 ];

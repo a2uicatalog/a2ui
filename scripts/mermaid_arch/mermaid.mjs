@@ -29,7 +29,11 @@ const OTHER_DIAGRAMS = {
 };
 
 // shape delimiters, longest opener first
+// A fourth item names a shape the atom cannot draw; it is degraded to the shape in position three
+// (a rectangle or a circle) with a warning. A close may be a list (trapezoids close with either slash).
 const SHAPES = [
+  ['(((', ')))', 'circle', 'double circle'], ['[/', ['/]', '\\]'], 'rect', null], ['[\\', ['\\]', '/]'], 'rect', null],
+  ['>', ']', 'rect', 'asymmetric'],
   ['((', '))', 'circle'], ['([', '])', 'stadium'], ['[(', ')]', 'cylinder'], ['[[', ']]', 'subroutine'],
   ['{{', '}}', 'hexagon'], ['(', ')', 'round'], ['[', ']', 'rect'], ['{', '}', 'diamond'],
 ];
@@ -50,32 +54,56 @@ const AT_SHAPES = {
   diamond: 'diamond', decision: 'diamond', question: 'diamond',
 };
 
-const ID_START = /[A-Za-z0-9_]/;
+const ID_CHAR = /^[\p{L}\p{N}_]$/u;   // Mermaid accepts any letter or digit in an id, not just ASCII
+const SLASH_NAME = { '//': 'parallelogram', '\\\\': 'parallelogram (alt)', '/\\': 'trapezoid', '\\/': 'trapezoid (alt)' };
+
+// **bold**, __bold__, *italic*, _italic_ inside a Mermaid markdown string (the text between backquotes)
+function stripMarkdown(t) {
+  return t.replace(/\*\*(.+?)\*\*/g, '$1').replace(/__(.+?)__/g, '$1')
+    .replace(/\*(.+?)\*/g, '$1').replace(/(^|[^\p{L}\p{N}_])_(.+?)_(?![\p{L}\p{N}_])/gu, '$1$2');
+}
 
 function stripQuotes(s) {
   let t = s.trim();
-  if (t.length >= 2 && t[0] === '"' && t[t.length - 1] === '"') t = t.slice(1, -1);
-  else if (t.length >= 2 && t[0] === '`' && t[t.length - 1] === '`') t = t.slice(1, -1);
+  if (t.length >= 2 && t[0] === '"' && t[t.length - 1] === '"') t = t.slice(1, -1).trim();
+  if (t.length >= 2 && t[0] === '`' && t[t.length - 1] === '`') t = stripMarkdown(t.slice(1, -1));
   return t;
 }
 
+const NAMED = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: ' ' };
+// Named (#amp; or &amp;) and numeric (#35; &#35; &#x23;) entity codes, decoded in one pass so "&amp;lt;" stays "&lt;".
 function decodeEntities(s) {
-  return s
-    .replace(/#quot;/g, '"').replace(/&quot;/g, '"').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
-    .replace(/#(\d+);/g, (_, n) => String.fromCharCode(+n));
+  return s.replace(/(?:#|&)(amp|lt|gt|quot|apos|nbsp);|(?:#|&#)(\d{1,7});|&#x([0-9a-f]{1,6});/gi, (m, name, dec, hex) => {
+    if (name) return NAMED[name.toLowerCase()];
+    const cp = dec !== undefined ? +dec : parseInt(hex, 16);
+    return cp >= 32 && cp <= 0x10ffff && !(cp >= 0xd800 && cp <= 0xdfff) && !(cp >= 0x7f && cp < 0xa0) ? String.fromCodePoint(cp) : '';
+  });
+}
+
+// The source line rides on each node and edge as a hidden (non-enumerable) property, so graph errors can say
+// "line N" while the canonical graph, its JSON and the D2 parity stay unchanged.
+function withLine(o, line) { Object.defineProperty(o, 'line', { value: line, enumerable: false }); return o; }
+
+// Set when stripping tags changed a label; parseMermaid reads it once to warn (parsing is synchronous).
+let tagsStripped = false;
+const TAG = /<\/?[A-Za-z!][^>]*>/g;
+function stripTags(t) {
+  return t.replace(TAG, () => { tagsStripped = true; return ''; });
+}
+// one line of label text: drop tags, decode entities, drop any tag the decoding made, tidy spaces
+function tidy(p) {
+  return stripTags(decodeEntities(stripTags(p))).replace(/\s+/g, ' ').trim();
 }
 
 // "Agent runtime<br/>on ADK" -> {label:'Agent runtime', sub:'on ADK'}
 function splitLabel(raw) {
-  const t = decodeEntities(stripQuotes(raw));
-  const parts = t.split(/<br\s*\/?>/i).map((p) => p.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim()).filter(Boolean);
+  const parts = stripQuotes(raw).split(/<br\s*\/?>/i).map(tidy).filter(Boolean);
   if (!parts.length) return { label: '' };
   return parts.length === 1 ? { label: parts[0] } : { label: parts[0], sub: parts.slice(1).join(' ') };
 }
 
 function cleanText(raw) {
-  const t = decodeEntities(stripQuotes(raw)).split(/<br\s*\/?>/i).map((p) => p.replace(/<[^>]+>/g, '')).join(' ');
-  return t.replace(/\s+/g, ' ').trim();
+  return stripQuotes(raw).split(/<br\s*\/?>/i).map(tidy).filter((x) => x !== '').join(' ');
 }
 
 // split a line at ';' outside quotes
@@ -109,7 +137,7 @@ export function makeIdMapper() {
   const byOrig = new Map();
   return (orig) => {
     if (byOrig.has(orig)) return byOrig.get(orig);
-    let base = orig.toLowerCase().replace(/[^a-z0-9_-]/g, '_');
+    let base = orig.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase().replace(/[^a-z0-9_-]/g, '_');
     if (!/^[a-z]/.test(base)) base = 'n' + base;
     base = base.slice(0, 32);
     let id = base, k = 2;
@@ -121,6 +149,8 @@ export function makeIdMapper() {
 
 export const MAX_INPUT_CHARS = 20000, MAX_LINE_CHARS = 500;   // keeps backtracking in matchLink and the & cross product bounded
 export function parseMermaid(text, opts = {}) {
+  tagsStripped = false;
+  let styleLine = 0, clickLine = 0;
   const errors = [], warnings = [];
   const fail = (line, msg) => errors.push(`line ${line}: ${msg}`);
   const warn = (line, msg) => warnings.push(`line ${line}: ${msg}`);
@@ -157,9 +187,9 @@ export function parseMermaid(text, opts = {}) {
     while (s[i] === ' ' || s[i] === '\t') i++;
     const start = i;
     while (i < s.length) {
-      const c = s[i];
-      if (ID_START.test(c)) i++;
-      else if (c === '-' && i + 1 < s.length && /[A-Za-z0-9_]/.test(s[i + 1]) && i > start) i++;
+      const cp = String.fromCodePoint(s.codePointAt(i));
+      if (ID_CHAR.test(cp)) i += cp.length;
+      else if (cp === '-' && i + 1 < s.length && ID_CHAR.test(String.fromCodePoint(s.codePointAt(i + 1))) && i > start) i++;
       else break;
     }
     if (i === start) {
@@ -168,14 +198,10 @@ export function parseMermaid(text, opts = {}) {
     }
     const orig = s.slice(start, i);
     const ref = { orig, hints: [] };
-    // unsupported shape openers
-    if (s.startsWith('[/', i) || s.startsWith('[\\', i) || s[i] === '>') {
-      fail(line, `node "${orig}": this shape (parallelogram/trapezoid/asymmetric) is not supported; use [text], (text), ([text]), [[text]], [(text)], ((text)), {{text}} or {text}`);
-      return null;
-    }
-    if (s.startsWith('(((', i)) { fail(line, `node "${orig}": double circles "(((text)))" are not supported; use ((text))`); return null; }
-    for (const [open, close, shape] of SHAPES) {
+    for (const [open, closes, shape, degraded] of SHAPES) {
       if (!s.startsWith(open, i)) continue;
+      const closeList = Array.isArray(closes) ? closes : [closes];
+      let close = closeList[0];
       let j = i + open.length;
       while (s[j] === ' ') j++;
       let txt;
@@ -185,15 +211,20 @@ export function parseMermaid(text, opts = {}) {
         txt = s.slice(j + 1, e);
         let k = e + 1;
         while (s[k] === ' ') k++;
+        close = closeList.find((c) => s.startsWith(c, k)) ?? close;
         if (!s.startsWith(close, k)) { fail(line, `node "${orig}": expected "${close}" after the quoted text`); return null; }
         i = k + close.length;
       } else {
-        const e = s.indexOf(close, j);
+        let e = -1;
+        for (const c of closeList) { const x = s.indexOf(c, j); if (x >= 0 && (e < 0 || x < e)) { e = x; close = c; } }
+        if (e < 0 && open[0] === '[' && open.length === 2 && '/\\'.includes(open[1])) continue;   // "[/path]" is a plain box
         if (e < 0) { fail(line, `node "${orig}": missing closing "${close}"; if the text contains brackets or parentheses, wrap it in quotes: ${orig}["text (like this)"]`); return null; }
         txt = s.slice(j, e);
         i = e + close.length;
       }
       ref.shape = shape;
+      const name = degraded || (open.length === 2 && open[0] === '[' && '/\\'.includes(open[1]) ? SLASH_NAME[open[1] + close[0]] : null);
+      if (name) warn(line, `Node "${orig}" uses a shape the atom cannot draw (${name}); drawn as a ${shape === 'circle' ? 'circle' : 'rectangle'}.`);
       Object.assign(ref, splitLabel(txt));
       break;
     }
@@ -271,7 +302,8 @@ export function parseMermaid(text, opts = {}) {
       if (i >= s.length) return;
       const rest = s.slice(i);
       if (/^[A-Za-z0-9_-]+@(-|=|<)/.test(rest)) { fail(line, 'edge ids ("e1@-->") are not supported; remove the "e1@" part'); return; }
-      if (/^(-{2,}|={2,}|-\.+)[xo](\s|$)/.test(rest)) { fail(line, 'arrows ending in x or o ("--x", "--o") are not supported; use -->'); return; }
+      if (/^~{3,}/.test(rest)) { fail(line, 'invisible links (~~~) are not supported; remove the line or use a normal arrow.'); return; }
+      if (/^(<?)(-{2,}|={2,}|-\.+-*)[xo](\s|$)/.test(rest) || /^[xo](-{2,}|={2,}|-\.+-*)[xo]?(\s|$)/.test(rest)) { fail(line, 'arrows with a cross or circle end ("--x", "--o", "x--x", "o--o") are not supported; use --> or <-->.'); return; }
       const lk = matchLink(rest);
       if (!lk) { fail(line, `cannot read "${rest.slice(0, 24)}"; expected an arrow such as -->, -.->, ==> or --- between nodes`); return; }
       i += lk.len;
@@ -398,15 +430,20 @@ export function parseMermaid(text, opts = {}) {
         continue;
       }
       if (/^direction\b/i.test(stmt)) { warn(L(), `"${stmt}" inside a subgraph is ignored; the whole diagram uses the direction on the first line.`); continue; }
-      if (/^(classDef|style|linkStyle|accTitle|accDescr)\b/.test(stmt)) continue;
-      if ((m = /^class\s+([^\s]+)\s+([A-Za-z0-9_-]+)$/.exec(stmt))) { classStmts.push({ line: L(), ids: m[1].split(',').filter(Boolean), cls: m[2] }); continue; }
+      if (/^(classDef|style|linkStyle)\b/.test(stmt)) { styleLine = styleLine || L(); continue; }
+      if (/^(accTitle|accDescr)\b/.test(stmt)) continue;
+      if ((m = /^class\s+([^\s]+)\s+([A-Za-z0-9_-]+)$/.exec(stmt))) { if (!resolveKind(m[2])) styleLine = styleLine || L(); classStmts.push({ line: L(), ids: m[1].split(',').filter(Boolean), cls: m[2] }); continue; }
       if (/^class\b/.test(stmt)) { fail(L(), 'write class statements as: class nodeId kind  (for example: class db store)'); continue; }
-      if (/^click\b/.test(stmt)) { warn(L(), 'click/link statements are ignored.'); continue; }
+      if (/^click\b/.test(stmt)) { clickLine = clickLine || L(); continue; }
       parseChain(stmt, L());
     }
   }
   if (!headerSeen && !errors.length) fail(1, 'empty input; start with "flowchart LR" and add nodes and arrows');
   if (groupStack.length) fail(lines.length, `${groupStack.length} "subgraph" block(s) are never closed; add an "end" line for each`);
+
+  if (styleLine) warnings.push('Colours and styles (classDef, style, linkStyle) are not drawn; the diagram uses its own colours by node kind.' + (clickLine ? ' click/link statements are ignored too.' : ''));
+  else if (clickLine) warn(clickLine, 'click/link statements are ignored.');
+  if (tagsStripped) warnings.push('HTML tags were removed from a label.');
 
   // class statements -> hints
   for (const cs of classStmts) {
@@ -435,14 +472,14 @@ export function parseMermaid(text, opts = {}) {
     for (const h of n.hints) { const k = resolveKind(h); if (k) kind = k; }
     if (!kind) kind = SHAPE_KIND[Object.hasOwn(SHAPE_KIND, n.shape || 'plain') ? (n.shape || 'plain') : 'plain'];
     const label = n.label !== undefined ? n.label : n.orig;
-    const o = { id: mapNode(n.orig), label, kind };
+    const o = withLine({ id: mapNode(n.orig), label, kind }, n.line);
     if (n.sub) o.sub = n.sub;
     if (n.group !== undefined && groupsByKey.has(n.group)) o.group = mapGroup(n.group);
     nOut.push(o);
   }
   const lookup = (k) => (nodes.has(k) ? k : [...nodes.keys()].find((x) => x.toLowerCase() === k.toLowerCase()));
   const eOut = edges.map((e) => {
-    const o = { from: mapNode(e.from), to: mapNode(e.to), style: e.style };
+    const o = withLine({ from: mapNode(e.from), to: mapNode(e.to), style: e.style }, e.line);
     if (e.label) o.label = e.label;
     if (e.both) o.both = true;
     return o;
