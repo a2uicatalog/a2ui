@@ -53,3 +53,10 @@
 /docs/sdks /sdks/ 301
 /ard.json /.well-known/ard.json 301
 /.well-known/ard /.well-known/ard.json 301
+
+# Short links typed from videos (owner 2026-11-01: no link in the LinkedIn post body; the address is shown on
+# screen). 302 so a destination can change later; the utm tags let Use Pulse count each video separately.
+/mermaid-motion /atoms/motion_arch/?utm_source=video&utm_campaign=mermaid-motion 302
+/mermaid /atoms/motion_arch/?utm_source=video&utm_campaign=mermaid-motion 302
+/d1 /blog/019-d3-chart-atoms-morph/?utm_source=video&utm_campaign=atom-drop&utm_content=d1 302
+/d2 /atoms/motion_bricks/?utm_source=video&utm_campaign=atom-drop&utm_content=d2 302
