@@ -120,6 +120,18 @@ footer a{color:var(--accent-2-text);text-decoration:underline;text-underline-off
 nav.crumb{font-size:12px;color:var(--muted);margin-bottom:28px;font-family:ui-monospace,'SF Mono',Monaco,monospace}
 nav.crumb a{color:var(--accent-2-text);text-decoration:underline;text-underline-offset:2px}
 nav.crumb a:hover{text-decoration:underline}
+nav.atom-pager{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;margin:-12px 0 28px}
+nav.atom-pager .pg-btn{display:flex;flex-direction:column;gap:2px;padding:10px 14px;border:1px solid var(--border-strong);border-radius:10px;background:var(--surface);color:var(--text);text-decoration:none;min-width:0}
+nav.atom-pager .pg-btn:hover,nav.atom-pager .pg-btn:focus-visible{border-color:var(--accent-2-text);background:var(--accent-soft-bg)}
+nav.atom-pager .pg-next{text-align:right;justify-self:end}
+nav.atom-pager .pg-prev{justify-self:start}
+.pg-dir{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted)}
+.pg-name{font-size:16px;font-weight:700;color:var(--accent-2-text);overflow-wrap:anywhere}
+nav.atom-pager .pg-all{font-size:14px;color:var(--accent-2-text);text-decoration:underline;text-underline-offset:2px}
+.pg-hint{grid-column:1/-1;text-align:center;font-size:17px;font-weight:600;color:var(--text);margin:8px 0 0}
+nav.atom-pager kbd{display:inline-block;min-width:1.6em;padding:1px 6px;border:1px solid var(--border-strong);border-bottom-width:2px;border-radius:5px;background:var(--surface-2);color:var(--text);font:600 15px/1.4 ui-monospace,'SF Mono',Monaco,monospace;text-align:center;text-transform:none;letter-spacing:0}
+@media (hover:none){.pg-hint,nav.atom-pager .pg-dir kbd{display:none}}
+@media (max-width:520px){nav.atom-pager{grid-template-columns:1fr 1fr}nav.atom-pager .pg-all{grid-column:1/-1;grid-row:2;justify-self:center}}
 h1{font-size:2.2rem;font-weight:800;letter-spacing:-1px;margin-bottom:8px}
 .desc{font-size:1.1rem;color:var(--muted);margin-bottom:32px;line-height:1.7}
 .label{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:12px}
@@ -172,8 +184,16 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
     <a href="/">A2UI Catalog</a> /
     <a href="/atoms/">atoms</a> / scenario_branch
   </nav>
+  <nav class="atom-pager" aria-label="Browse atoms"><a class="pg-btn pg-prev" rel="prev" href="/atoms/scatter_trend/" aria-keyshortcuts="ArrowLeft"><span class="pg-dir"><kbd>←</kbd> Previous</span><span class="pg-name">Scatter Trend</span></a><a class="pg-all" href="/atoms/">All atoms</a><a class="pg-btn pg-next" rel="next" href="/atoms/scene_stage/" aria-keyshortcuts="ArrowRight"><span class="pg-dir">Next <kbd>→</kbd></span><span class="pg-name">Scene Stage</span></a><p class="pg-hint">Press <kbd>←</kbd> or <kbd>→</kbd> on your keyboard to move between atoms.</p></nav>
 
   <h1>Scenario Branch</h1>
+
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of scenario_branch"><div style="font-family:'Inter',system-ui,sans-serif;border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;border:1px solid rgba(255,255,255,0.08);"><div style="padding:20px 24px;background:rgba(245,158,11,0.06);border-bottom:1px solid rgba(255,255,255,0.06);"><div style="font-size:0.6rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#9e6506;margin-bottom:8px;">🎭 Scenario</div><div style="font-size:0.92rem;font-weight:600;color:#4674a3;line-height:1.5;">Success path</div></div><div style="padding:20px 24px;"><div style="font-size:0.62rem;color:#475569;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:12px;">What do you do?</div><button id="sb-f8a33bc0" onclick="sb-f8a33bpick(0)" data-consequence="" data-outcome="neutral" data-next-url="node-a" style="display:block;width:100%;text-align:left;padding:12px 16px;border-radius:10px;margin-bottom:8px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.09);color:#59779b;font-size:0.8rem;font-weight:500;cursor:pointer;transition:all 0.15s;" onmouseover="if(!this.disabled){this.style.background='rgba(245,158,11,0.07)';this.style.borderColor='rgba(245,158,11,0.22)';}" onmouseout="if(!this.disabled){this.style.background='rgba(255,255,255,0.03)';this.style.borderColor='rgba(255,255,255,0.09)';}"><span style="color:#9e6506;font-weight:700;font-size:0.68rem;margin-right:8px;">A</span>Path A</button><button id="sb-f8a33bc1" onclick="sb-f8a33bpick(1)" data-consequence="" data-outcome="neutral" data-next-url="node-b" style="display:block;width:100%;text-align:left;padding:12px 16px;border-radius:10px;margin-bottom:8px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.09);color:#59779b;font-size:0.8rem;font-weight:500;cursor:pointer;transition:all 0.15s;" onmouseover="if(!this.disabled){this.style.background='rgba(245,158,11,0.07)';this.style.borderColor='rgba(245,158,11,0.22)';}" onmouseout="if(!this.disabled){this.style.background='rgba(255,255,255,0.03)';this.style.borderColor='rgba(255,255,255,0.09)';}"><span style="color:#9e6506;font-weight:700;font-size:0.68rem;margin-right:8px;">B</span>Path B</button></div><div id="sb-f8a33bres" style="display:none;"></div><script>(function(){var nChoices=2;window["sb-f8a33bpick"]=function(idx){for(var j=0;j<nChoices;j++){var b=document.getElementById("sb-f8a33bc"+j);if(b){b.disabled=true;b.onmouseover=null;b.onmouseout=null;b.style.opacity=j===idx?"1":"0.3";}}var activeBtn=document.getElementById("sb-f8a33bc"+idx);if(!activeBtn)return;var outcome=activeBtn.getAttribute("data-outcome")||"neutral";var consequence=activeBtn.getAttribute("data-consequence")||"";var nextUrl=activeBtn.getAttribute("data-next-url")||"";var col=outcome==="good"?"#34d399":outcome==="bad"?"#f87171":"#9e6506";var icon=outcome==="good"?"✅":outcome==="bad"?"❌":"⚠️";var bg=outcome==="good"?"rgba(52,211,153,0.07)":outcome==="bad"?"rgba(248,113,113,0.07)":"rgba(245,158,11,0.07)";var _E=function(s){return String(s==null?"":s).replace(/[&<>"\']/g,function(x){return "&#"+x.charCodeAt(0)+";";});};var res=document.getElementById("sb-f8a33bres");if(res){res.style.display="block";res.style.padding="20px 24px";res.style.borderTop="1px solid rgba(255,255,255,0.06)";res.style.background=bg;var hdr='<div style="font-size:0.68rem;font-weight:700;color:'+col+';margin-bottom:8px;">'+icon+' Outcome</div>';var body='<div style="font-size:0.82rem;color:#59779b;line-height:1.6;">'+_E(consequence)+'</div>';var nav=nextUrl?'<a href="'+_E(nextUrl)+'" target="_top" style="display:inline-block;margin-top:14px;padding:9px 18px;border-radius:9px;background:'+col+';color:#0f172a;font-size:0.75rem;font-weight:700;text-decoration:none;">Continue →</a>':'<button onclick="sb-f8a33brst()" style="margin-top:14px;padding:9px 18px;border-radius:9px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:var(--muted,#5f6368);font-size:0.75rem;cursor:pointer;">↩ Try again</button>';res.innerHTML=hdr+body+nav;}};window["sb-f8a33brst"]=function(){var res=document.getElementById("sb-f8a33bres");if(res)res.style.display="none";for(var j=0;j<nChoices;j++){var b=document.getElementById("sb-f8a33bc"+j);if(b){b.disabled=false;b.style.opacity="1";}}};})();</script></div></div>
+</div>
+
   <p class="desc">Narrative branching learning atom. Presents a real-world situation with 2-4 labelled choices. Each choice reveals a consequence with good/neutral/bad outcome styling (green/amber/red). Includes a "try again" reset on non-linked consequences. Ideal for compliance, leadership, and soft-skills training.</p>
 
   <div class="section">
@@ -182,12 +202,6 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   </div>
 
   
-
-  
-<div class="section">
-  <div class="label">Live preview</div>
-  <div class="preview-box" role="group" aria-label="Live preview of scenario_branch"><div style="font-family:'Inter',system-ui,sans-serif;border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;border:1px solid rgba(255,255,255,0.08);"><div style="padding:20px 24px;background:rgba(245,158,11,0.06);border-bottom:1px solid rgba(255,255,255,0.06);"><div style="font-size:0.6rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#9e6506;margin-bottom:8px;">🎭 Scenario</div><div style="font-size:0.92rem;font-weight:600;color:#4674a3;line-height:1.5;">Success path</div></div><div style="padding:20px 24px;"><div style="font-size:0.62rem;color:#475569;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:12px;">What do you do?</div><button id="sb-f8a33bc0" onclick="sb-f8a33bpick(0)" data-consequence="" data-outcome="neutral" data-next-url="node-a" style="display:block;width:100%;text-align:left;padding:12px 16px;border-radius:10px;margin-bottom:8px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.09);color:#59779b;font-size:0.8rem;font-weight:500;cursor:pointer;transition:all 0.15s;" onmouseover="if(!this.disabled){this.style.background='rgba(245,158,11,0.07)';this.style.borderColor='rgba(245,158,11,0.22)';}" onmouseout="if(!this.disabled){this.style.background='rgba(255,255,255,0.03)';this.style.borderColor='rgba(255,255,255,0.09)';}"><span style="color:#9e6506;font-weight:700;font-size:0.68rem;margin-right:8px;">A</span>Path A</button><button id="sb-f8a33bc1" onclick="sb-f8a33bpick(1)" data-consequence="" data-outcome="neutral" data-next-url="node-b" style="display:block;width:100%;text-align:left;padding:12px 16px;border-radius:10px;margin-bottom:8px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.09);color:#59779b;font-size:0.8rem;font-weight:500;cursor:pointer;transition:all 0.15s;" onmouseover="if(!this.disabled){this.style.background='rgba(245,158,11,0.07)';this.style.borderColor='rgba(245,158,11,0.22)';}" onmouseout="if(!this.disabled){this.style.background='rgba(255,255,255,0.03)';this.style.borderColor='rgba(255,255,255,0.09)';}"><span style="color:#9e6506;font-weight:700;font-size:0.68rem;margin-right:8px;">B</span>Path B</button></div><div id="sb-f8a33bres" style="display:none;"></div><script>(function(){var nChoices=2;window["sb-f8a33bpick"]=function(idx){for(var j=0;j<nChoices;j++){var b=document.getElementById("sb-f8a33bc"+j);if(b){b.disabled=true;b.onmouseover=null;b.onmouseout=null;b.style.opacity=j===idx?"1":"0.3";}}var activeBtn=document.getElementById("sb-f8a33bc"+idx);if(!activeBtn)return;var outcome=activeBtn.getAttribute("data-outcome")||"neutral";var consequence=activeBtn.getAttribute("data-consequence")||"";var nextUrl=activeBtn.getAttribute("data-next-url")||"";var col=outcome==="good"?"#34d399":outcome==="bad"?"#f87171":"#9e6506";var icon=outcome==="good"?"✅":outcome==="bad"?"❌":"⚠️";var bg=outcome==="good"?"rgba(52,211,153,0.07)":outcome==="bad"?"rgba(248,113,113,0.07)":"rgba(245,158,11,0.07)";var _E=function(s){return String(s==null?"":s).replace(/[&<>"\']/g,function(x){return "&#"+x.charCodeAt(0)+";";});};var res=document.getElementById("sb-f8a33bres");if(res){res.style.display="block";res.style.padding="20px 24px";res.style.borderTop="1px solid rgba(255,255,255,0.06)";res.style.background=bg;var hdr='<div style="font-size:0.68rem;font-weight:700;color:'+col+';margin-bottom:8px;">'+icon+' Outcome</div>';var body='<div style="font-size:0.82rem;color:#59779b;line-height:1.6;">'+_E(consequence)+'</div>';var nav=nextUrl?'<a href="'+_E(nextUrl)+'" target="_top" style="display:inline-block;margin-top:14px;padding:9px 18px;border-radius:9px;background:'+col+';color:#0f172a;font-size:0.75rem;font-weight:700;text-decoration:none;">Continue →</a>':'<button onclick="sb-f8a33brst()" style="margin-top:14px;padding:9px 18px;border-radius:9px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:var(--muted,#5f6368);font-size:0.75rem;cursor:pointer;">↩ Try again</button>';res.innerHTML=hdr+body+nav;}};window["sb-f8a33brst"]=function(){var res=document.getElementById("sb-f8a33bres");if(res)res.style.display="none";for(var j=0;j<nChoices;j++){var b=document.getElementById("sb-f8a33bc"+j);if(b){b.disabled=false;b.style.opacity="1";}}};})();</script></div></div>
-</div>
 
   
 
@@ -289,6 +303,20 @@ document.addEventListener('click',function(e){
         }
       });
     }catch(err){/* draft API shape may still be moving -- never break the page over it */}
+  });
+})();
+</script>
+  <script>
+(function(){
+  // Left/right arrow keys page between atoms, unless the key is meant for something else:
+  // a form field, a widget whose role uses arrows (slider, tabs, listbox...), a key the page already handled, or a modifier.
+  document.addEventListener('keydown', function(e){
+    if (e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+    var t = e.target;
+    if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName) || (t.closest && t.closest('iframe,[role=slider],[role=tablist],[role=tab],[role=listbox],[role=menu],[role=menubar],[role=radiogroup],[role=spinbutton],[role=grid],[role=tree]')))) return;
+    var a = document.querySelector('nav.atom-pager a[rel="' + (e.key === 'ArrowLeft' ? 'prev' : 'next') + '"]');
+    if (a) location.href = a.href;
   });
 })();
 </script>

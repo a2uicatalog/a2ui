@@ -628,6 +628,18 @@ PAGE_CSS = """
 nav.crumb{font-size:12px;color:var(--muted);margin-bottom:28px;font-family:ui-monospace,'SF Mono',Monaco,monospace}
 nav.crumb a{color:var(--accent-2-text);text-decoration:underline;text-underline-offset:2px}
 nav.crumb a:hover{text-decoration:underline}
+nav.atom-pager{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;margin:-12px 0 28px}
+nav.atom-pager .pg-btn{display:flex;flex-direction:column;gap:2px;padding:10px 14px;border:1px solid var(--border-strong);border-radius:10px;background:var(--surface);color:var(--text);text-decoration:none;min-width:0}
+nav.atom-pager .pg-btn:hover,nav.atom-pager .pg-btn:focus-visible{border-color:var(--accent-2-text);background:var(--accent-soft-bg)}
+nav.atom-pager .pg-next{text-align:right;justify-self:end}
+nav.atom-pager .pg-prev{justify-self:start}
+.pg-dir{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted)}
+.pg-name{font-size:16px;font-weight:700;color:var(--accent-2-text);overflow-wrap:anywhere}
+nav.atom-pager .pg-all{font-size:14px;color:var(--accent-2-text);text-decoration:underline;text-underline-offset:2px}
+.pg-hint{grid-column:1/-1;text-align:center;font-size:17px;font-weight:600;color:var(--text);margin:8px 0 0}
+nav.atom-pager kbd{display:inline-block;min-width:1.6em;padding:1px 6px;border:1px solid var(--border-strong);border-bottom-width:2px;border-radius:5px;background:var(--surface-2);color:var(--text);font:600 15px/1.4 ui-monospace,'SF Mono',Monaco,monospace;text-align:center;text-transform:none;letter-spacing:0}
+@media (hover:none){.pg-hint,nav.atom-pager .pg-dir kbd{display:none}}
+@media (max-width:520px){nav.atom-pager{grid-template-columns:1fr 1fr}nav.atom-pager .pg-all{grid-column:1/-1;grid-row:2;justify-self:center}}
 h1{font-size:2.2rem;font-weight:800;letter-spacing:-1px;margin-bottom:8px}
 .desc{font-size:1.1rem;color:var(--muted);margin-bottom:32px;line-height:1.7}
 .label{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:12px}
@@ -1200,6 +1212,42 @@ def meta_description(text, limit=160):
     return html.escape(text, quote=True)
 
 
+# type -> (prev, next) in the /atoms/ hub's A-Z order; filled by main() before the pages render.
+_NEIGHBOURS = {}
+
+PAGER_JS = """<script>
+(function(){
+  // Left/right arrow keys page between atoms, unless the key is meant for something else:
+  // a form field, a widget whose role uses arrows (slider, tabs, listbox...), a key the page already handled, or a modifier.
+  document.addEventListener('keydown', function(e){
+    if (e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+    var t = e.target;
+    if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName) || (t.closest && t.closest('iframe,[role=slider],[role=tablist],[role=tab],[role=listbox],[role=menu],[role=menubar],[role=radiogroup],[role=spinbutton],[role=grid],[role=tree]')))) return;
+    var a = document.querySelector('nav.atom-pager a[rel="' + (e.key === 'ArrowLeft' ? 'prev' : 'next') + '"]');
+    if (a) location.href = a.href;
+  });
+})();
+</script>"""
+
+
+def atom_pager(atom_type):
+    """Previous / all / next buttons under the breadcrumb; the arrow keys follow the same links (PAGER_JS)."""
+    prev, nxt = _NEIGHBOURS.get(atom_type, (None, None))
+    if not prev and not nxt:
+        return ""
+    def link(t, rel):
+        name = html.escape(t.replace("_", " ").title())
+        key, word = ("ArrowLeft", "<kbd>←</kbd> Previous") if rel == "prev" else ("ArrowRight", "Next <kbd>→</kbd>")
+        return (f'<a class="pg-btn pg-{rel}" rel="{rel}" href="/atoms/{t}/" aria-keyshortcuts="{key}">'
+                f'<span class="pg-dir">{word}</span><span class="pg-name">{name}</span></a>')
+    return ('<nav class="atom-pager" aria-label="Browse atoms">'
+            + (link(prev, "prev") if prev else "<span></span>")
+            + '<a class="pg-all" href="/atoms/">All atoms</a>'
+            + (link(nxt, "next") if nxt else "<span></span>")
+            + '<p class="pg-hint">Press <kbd>←</kbd> or <kbd>→</kbd> on your keyboard to move between atoms.</p></nav>')
+
+
 def render_page(atom):
     atom_type    = atom.get("type", "")
     desc         = atom.get("description", "")
@@ -1280,8 +1328,12 @@ def render_page(atom):
     <a href="/">A2UI Catalog</a> /
     <a href="/atoms/">atoms</a> / {atom_type}
   </nav>
+  {atom_pager(atom_type)}
 
   <h1>{display_name}</h1>
+
+  {preview}
+
   <p class="desc">{desc or compact}</p>
 
   <div class="section">
@@ -1290,8 +1342,6 @@ def render_page(atom):
   </div>
 
   {degraded_notes(atom)}
-
-  {preview}
 
   {templates}
 
@@ -1333,6 +1383,7 @@ clasp push &amp;&amp; clasp deploy</code></pre>
   </footer>
   </div>
   {SITE_FOOT_JS}
+  {PAGER_JS}
 {_cursor_glow_html()}
 </body>
 </html>"""
@@ -4180,6 +4231,11 @@ def main():
             unique.append(block)
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+
+    order = [t for items in _hub_groups(unique).values() for t, _, _ in items]
+    _NEIGHBOURS.clear()
+    _NEIGHBOURS.update({t: (order[i - 1] if i else None, order[i + 1] if i + 1 < len(order) else None)
+                        for i, t in enumerate(order)})
 
     count = 0
     for atom in unique:

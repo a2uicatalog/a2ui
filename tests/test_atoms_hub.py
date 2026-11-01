@@ -50,3 +50,16 @@ def test_atom_page_breadcrumb_points_at_the_hub():
         crumbs = next(g for g in ld["@graph"] if g["@type"] == "BreadcrumbList")["itemListElement"]
         assert [c["item"] for c in crumbs] == ["https://a2uicatalog.ai/", "https://a2uicatalog.ai/atoms/",
                                                f"https://a2uicatalog.ai/atoms/{t}/"]
+
+
+def test_atom_pages_page_through_the_hub_order_with_prev_and_next():
+    # Owner 2026-11-01: a "next" shortcut on the atom pages, ideally on the keyboard.
+    # The pager follows the hub's A-Z list, so walking next from the first atom visits every atom once.
+    order = re.findall(r'<li data-q="[^"]*"><a href="/atoms/([a-z0-9_]+)/">', HUB.read_text())
+    for i, t in enumerate(order):
+        s = (ROOT / "public" / "atoms" / t / "index.html").read_text()
+        prev = re.search(r'<a [^>]*rel="prev" href="/atoms/([a-z0-9_]+)/"', s)
+        nxt = re.search(r'<a [^>]*rel="next" href="/atoms/([a-z0-9_]+)/"', s)
+        assert (prev.group(1) if prev else None) == (order[i - 1] if i else None), t
+        assert (nxt.group(1) if nxt else None) == (order[i + 1] if i + 1 < len(order) else None), t
+        assert "ArrowRight" in s and 'nav.atom-pager a[rel="' in s, t

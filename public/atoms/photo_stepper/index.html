@@ -120,6 +120,18 @@ footer a{color:var(--accent-2-text);text-decoration:underline;text-underline-off
 nav.crumb{font-size:12px;color:var(--muted);margin-bottom:28px;font-family:ui-monospace,'SF Mono',Monaco,monospace}
 nav.crumb a{color:var(--accent-2-text);text-decoration:underline;text-underline-offset:2px}
 nav.crumb a:hover{text-decoration:underline}
+nav.atom-pager{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;margin:-12px 0 28px}
+nav.atom-pager .pg-btn{display:flex;flex-direction:column;gap:2px;padding:10px 14px;border:1px solid var(--border-strong);border-radius:10px;background:var(--surface);color:var(--text);text-decoration:none;min-width:0}
+nav.atom-pager .pg-btn:hover,nav.atom-pager .pg-btn:focus-visible{border-color:var(--accent-2-text);background:var(--accent-soft-bg)}
+nav.atom-pager .pg-next{text-align:right;justify-self:end}
+nav.atom-pager .pg-prev{justify-self:start}
+.pg-dir{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted)}
+.pg-name{font-size:16px;font-weight:700;color:var(--accent-2-text);overflow-wrap:anywhere}
+nav.atom-pager .pg-all{font-size:14px;color:var(--accent-2-text);text-decoration:underline;text-underline-offset:2px}
+.pg-hint{grid-column:1/-1;text-align:center;font-size:17px;font-weight:600;color:var(--text);margin:8px 0 0}
+nav.atom-pager kbd{display:inline-block;min-width:1.6em;padding:1px 6px;border:1px solid var(--border-strong);border-bottom-width:2px;border-radius:5px;background:var(--surface-2);color:var(--text);font:600 15px/1.4 ui-monospace,'SF Mono',Monaco,monospace;text-align:center;text-transform:none;letter-spacing:0}
+@media (hover:none){.pg-hint,nav.atom-pager .pg-dir kbd{display:none}}
+@media (max-width:520px){nav.atom-pager{grid-template-columns:1fr 1fr}nav.atom-pager .pg-all{grid-column:1/-1;grid-row:2;justify-self:center}}
 h1{font-size:2.2rem;font-weight:800;letter-spacing:-1px;margin-bottom:8px}
 .desc{font-size:1.1rem;color:var(--muted);margin-bottom:32px;line-height:1.7}
 .label{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:12px}
@@ -172,8 +184,16 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
     <a href="/">A2UI Catalog</a> /
     <a href="/atoms/">atoms</a> / photo_stepper
   </nav>
+  <nav class="atom-pager" aria-label="Browse atoms"><a class="pg-btn pg-prev" rel="prev" href="/atoms/photo_grid/" aria-keyshortcuts="ArrowLeft"><span class="pg-dir"><kbd>←</kbd> Previous</span><span class="pg-name">Photo Grid</span></a><a class="pg-all" href="/atoms/">All atoms</a><a class="pg-btn pg-next" rel="next" href="/atoms/pipeline/" aria-keyshortcuts="ArrowRight"><span class="pg-dir">Next <kbd>→</kbd></span><span class="pg-name">Pipeline</span></a><p class="pg-hint">Press <kbd>←</kbd> or <kbd>→</kbd> on your keyboard to move between atoms.</p></nav>
 
   <h1>Photo Stepper</h1>
+
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of photo_stepper"><p style="color:#617592;font-style:italic;">Nothing to show yet.</p></div>
+</div>
+
   <p class="desc">A full-viewport, one-photo-at-a-time lightbox with prev/next and a vote button per slide — the sibling photo_grid does not cover: reviewing options ONE AT A TIME with full attention, immersively, rather than scanning a grid. Neither replaces the other; pick per use case, or offer both. Renders closed as a compact trigger card (first photo + label); clicking it opens the full takeover.
 The takeover itself is a pure-CSS checkbox toggle — the SAME `#checkbox:checked ~ .overlay{display:...}` pattern the `css_modal` atom already uses for its own position:fixed;inset:0 overlay, not a new mechanism. Paging within the open overlay is the SAME pure-CSS radio-input trick the existing `carousel` atom already uses (sibling :checked selectors drive the slide transform) — no JS-tracked index to go stale, and critically, nothing for a live data refresh to disturb: `carousel` never had a live-update wire to worry about, but this atom does, and the radio's own browser-owned :checked state surviving a vote untouched is what stops "vote on photo 12, get silently bounced back to photo 1" from ever being possible in the first place — not a bug that was fixed, a failure mode the design does not have. Same reasoning protects open/closed state: the checkbox is the browser's own state too, so a live update cannot close the overlay out from under you either.
 That is also why this atom's live-update path (_a2uiUpdatePhotoStepper) is NOT a rebuild like photo_grid's own _a2uiUpdatePhotoGrid — it patches each slide's badge/vote-button/voter-line IN PLACE, matched by candidate id (not array position), and touches nothing else. Matching by id, specifically, because the typical consumer of this atom (a live vote board) re-sorts its candidate list by vote count on every read while voting is open — so a candidate's position in the incoming array can move the instant ANY vote lands, including the one just cast on the slide currently open; patching by position against a reordered array would silently swap a different candidate's photo/name into the slide the radio's :checked state still has open. A consequence worth knowing before using this atom: because the update path patches EXISTING slide elements rather than creating them, the caller should populate the initial `images` prop with real data at render time (server-side), not rely purely on the `rows` wire to populate an empty first paint — an update arriving before any slide exists to patch has nothing to act on.
@@ -188,12 +208,6 @@ Reuses photo_grid's click contract exactly for the vote button (same data-row-js
 <div class="section">
   <div class="label">Degraded on</div>
   <table><thead><tr><th>Surface</th><th>Note</th></tr></thead><tbody><tr><td>web</td><td>Renders as a static, non-paging stack of slides; no Python renderer exists for this atom yet, and CSS-only paging still needs the radio inputs' sibling-selector behaviour a static article render does not exercise interactively either way.</td></tr></tbody></table>
-</div>
-
-  
-<div class="section">
-  <div class="label">Live preview</div>
-  <div class="preview-box" role="group" aria-label="Live preview of photo_stepper"><p style="color:#617592;font-style:italic;">Nothing to show yet.</p></div>
 </div>
 
   
@@ -284,6 +298,20 @@ document.addEventListener('click',function(e){
         }
       });
     }catch(err){/* draft API shape may still be moving -- never break the page over it */}
+  });
+})();
+</script>
+  <script>
+(function(){
+  // Left/right arrow keys page between atoms, unless the key is meant for something else:
+  // a form field, a widget whose role uses arrows (slider, tabs, listbox...), a key the page already handled, or a modifier.
+  document.addEventListener('keydown', function(e){
+    if (e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+    var t = e.target;
+    if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName) || (t.closest && t.closest('iframe,[role=slider],[role=tablist],[role=tab],[role=listbox],[role=menu],[role=menubar],[role=radiogroup],[role=spinbutton],[role=grid],[role=tree]')))) return;
+    var a = document.querySelector('nav.atom-pager a[rel="' + (e.key === 'ArrowLeft' ? 'prev' : 'next') + '"]');
+    if (a) location.href = a.href;
   });
 })();
 </script>

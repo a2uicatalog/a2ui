@@ -120,6 +120,18 @@ footer a{color:var(--accent-2-text);text-decoration:underline;text-underline-off
 nav.crumb{font-size:12px;color:var(--muted);margin-bottom:28px;font-family:ui-monospace,'SF Mono',Monaco,monospace}
 nav.crumb a{color:var(--accent-2-text);text-decoration:underline;text-underline-offset:2px}
 nav.crumb a:hover{text-decoration:underline}
+nav.atom-pager{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;margin:-12px 0 28px}
+nav.atom-pager .pg-btn{display:flex;flex-direction:column;gap:2px;padding:10px 14px;border:1px solid var(--border-strong);border-radius:10px;background:var(--surface);color:var(--text);text-decoration:none;min-width:0}
+nav.atom-pager .pg-btn:hover,nav.atom-pager .pg-btn:focus-visible{border-color:var(--accent-2-text);background:var(--accent-soft-bg)}
+nav.atom-pager .pg-next{text-align:right;justify-self:end}
+nav.atom-pager .pg-prev{justify-self:start}
+.pg-dir{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted)}
+.pg-name{font-size:16px;font-weight:700;color:var(--accent-2-text);overflow-wrap:anywhere}
+nav.atom-pager .pg-all{font-size:14px;color:var(--accent-2-text);text-decoration:underline;text-underline-offset:2px}
+.pg-hint{grid-column:1/-1;text-align:center;font-size:17px;font-weight:600;color:var(--text);margin:8px 0 0}
+nav.atom-pager kbd{display:inline-block;min-width:1.6em;padding:1px 6px;border:1px solid var(--border-strong);border-bottom-width:2px;border-radius:5px;background:var(--surface-2);color:var(--text);font:600 15px/1.4 ui-monospace,'SF Mono',Monaco,monospace;text-align:center;text-transform:none;letter-spacing:0}
+@media (hover:none){.pg-hint,nav.atom-pager .pg-dir kbd{display:none}}
+@media (max-width:520px){nav.atom-pager{grid-template-columns:1fr 1fr}nav.atom-pager .pg-all{grid-column:1/-1;grid-row:2;justify-self:center}}
 h1{font-size:2.2rem;font-weight:800;letter-spacing:-1px;margin-bottom:8px}
 .desc{font-size:1.1rem;color:var(--muted);margin-bottom:32px;line-height:1.7}
 .label{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:12px}
@@ -172,8 +184,16 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
     <a href="/">A2UI Catalog</a> /
     <a href="/atoms/">atoms</a> / stance
   </nav>
+  <nav class="atom-pager" aria-label="Browse atoms"><a class="pg-btn pg-prev" rel="prev" href="/atoms/stagger_list/" aria-keyshortcuts="ArrowLeft"><span class="pg-dir"><kbd>←</kbd> Previous</span><span class="pg-name">Stagger List</span></a><a class="pg-all" href="/atoms/">All atoms</a><a class="pg-btn pg-next" rel="next" href="/atoms/star_rating_display/" aria-keyshortcuts="ArrowRight"><span class="pg-dir">Next <kbd>→</kbd></span><span class="pg-name">Star Rating Display</span></a><p class="pg-hint">Press <kbd>←</kbd> or <kbd>→</kbd> on your keyboard to move between atoms.</p></nav>
 
   <h1>Stance</h1>
+
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of stance"><div data-cb="node" data-key="Claim" style="margin:1rem 0;border-radius:16px;padding:32px 36px;background:#0b0d12;color:#f1f5f9;border:1px solid #1f2430;"><div style="font-size:0.7rem;letter-spacing:0.14em;text-transform:uppercase;color:#94a3b8;margin-bottom:14px;">stance</div><div id="st-t-f3dabe" style="font-family:system-ui,-apple-system,Segoe UI,Helvetica Neue,Arial,sans-serif;font-weight:600;font-size:2.20rem;letter-spacing:0.00em;opacity:0.80;line-height:1.12;transition:font-size 0.25s,letter-spacing 0.25s,opacity 0.25s,font-weight 0.25s;">Claim</div><div style="margin-top:18px;height:3px;background:#1f2430;border-radius:2px;overflow:hidden;"><div id="st-r-f3dabe" style="height:100%;width:50%;background:#38bdf8;transition:width 0.25s;"></div></div><div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:8px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:0.72rem;color:#94a3b8;"><span id="st-l-f3dabe">confidence 50%</span><label style="display:flex;align-items:center;gap:8px;"><span>try it</span><input id="st-s-f3dabe" type="range" min="0" max="100" value="50" aria-label="confidence" style="width:120px;accent-color:#38bdf8;"></label></div><script>(function(){var s=document.getElementById("st-s-f3dabe"),t=document.getElementById("st-t-f3dabe"),r=document.getElementById("st-r-f3dabe"),l=document.getElementById("st-l-f3dabe");if(!s||!t)return;function pad(n){return n<10?"0"+n:""+n;}function ap(p){var w=300+Math.floor((p*6+50)/100)*100,sh=140+Math.floor(p*16/10),ls=2-Math.floor(p*5/100),op=60+Math.floor(p*4/10);t.style.fontWeight=w;t.style.fontSize=Math.floor(sh/100)+"."+pad(sh%100)+"rem";t.style.letterSpacing=(ls<0?"-0."+pad(-ls):"0."+pad(ls))+"em";t.style.opacity=op>=100?"1":"0."+pad(op);if(r)r.style.width=p+"%";if(l)l.textContent="confidence "+p+"%";}s.addEventListener("input",function(){ap(parseInt(s.value,10)||0);});})();</script></div></div>
+</div>
+
   <p class="desc">A claim whose typography IS its calibration. The agent states a claim and a confidence 0-1; the type sets itself from it -- weight from 300 (a hunch) to 900 (a conviction), size from 1.4rem to 3rem, tracking tightening and opacity rising with confidence -- under a thin confidence rail. Optional "because" (the reason) and "unless" (what would change the agent's mind, the line most opinion cards forget). A small slider lets the reader drag the confidence and watch the claim reset, which makes the mapping legible and honest. Same integer arithmetic on the server and in the slider script.</p>
 
   <div class="section">
@@ -185,12 +205,6 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 <div class="section">
   <div class="label">Degraded on</div>
   <table><thead><tr><th>Surface</th><th>Note</th></tr></thead><tbody><tr><td>google-chat</td><td>Renders as a plain text card; typographic weighting and animation are lost</td></tr></tbody></table>
-</div>
-
-  
-<div class="section">
-  <div class="label">Live preview</div>
-  <div class="preview-box" role="group" aria-label="Live preview of stance"><div data-cb="node" data-key="Claim" style="margin:1rem 0;border-radius:16px;padding:32px 36px;background:#0b0d12;color:#f1f5f9;border:1px solid #1f2430;"><div style="font-size:0.7rem;letter-spacing:0.14em;text-transform:uppercase;color:#94a3b8;margin-bottom:14px;">stance</div><div id="st-t-f3dabe" style="font-family:system-ui,-apple-system,Segoe UI,Helvetica Neue,Arial,sans-serif;font-weight:600;font-size:2.20rem;letter-spacing:0.00em;opacity:0.80;line-height:1.12;transition:font-size 0.25s,letter-spacing 0.25s,opacity 0.25s,font-weight 0.25s;">Claim</div><div style="margin-top:18px;height:3px;background:#1f2430;border-radius:2px;overflow:hidden;"><div id="st-r-f3dabe" style="height:100%;width:50%;background:#38bdf8;transition:width 0.25s;"></div></div><div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:8px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:0.72rem;color:#94a3b8;"><span id="st-l-f3dabe">confidence 50%</span><label style="display:flex;align-items:center;gap:8px;"><span>try it</span><input id="st-s-f3dabe" type="range" min="0" max="100" value="50" aria-label="confidence" style="width:120px;accent-color:#38bdf8;"></label></div><script>(function(){var s=document.getElementById("st-s-f3dabe"),t=document.getElementById("st-t-f3dabe"),r=document.getElementById("st-r-f3dabe"),l=document.getElementById("st-l-f3dabe");if(!s||!t)return;function pad(n){return n<10?"0"+n:""+n;}function ap(p){var w=300+Math.floor((p*6+50)/100)*100,sh=140+Math.floor(p*16/10),ls=2-Math.floor(p*5/100),op=60+Math.floor(p*4/10);t.style.fontWeight=w;t.style.fontSize=Math.floor(sh/100)+"."+pad(sh%100)+"rem";t.style.letterSpacing=(ls<0?"-0."+pad(-ls):"0."+pad(ls))+"em";t.style.opacity=op>=100?"1":"0."+pad(op);if(r)r.style.width=p+"%";if(l)l.textContent="confidence "+p+"%";}s.addEventListener("input",function(){ap(parseInt(s.value,10)||0);});})();</script></div></div>
 </div>
 
   
@@ -286,6 +300,20 @@ document.addEventListener('click',function(e){
         }
       });
     }catch(err){/* draft API shape may still be moving -- never break the page over it */}
+  });
+})();
+</script>
+  <script>
+(function(){
+  // Left/right arrow keys page between atoms, unless the key is meant for something else:
+  // a form field, a widget whose role uses arrows (slider, tabs, listbox...), a key the page already handled, or a modifier.
+  document.addEventListener('keydown', function(e){
+    if (e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+    var t = e.target;
+    if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName) || (t.closest && t.closest('iframe,[role=slider],[role=tablist],[role=tab],[role=listbox],[role=menu],[role=menubar],[role=radiogroup],[role=spinbutton],[role=grid],[role=tree]')))) return;
+    var a = document.querySelector('nav.atom-pager a[rel="' + (e.key === 'ArrowLeft' ? 'prev' : 'next') + '"]');
+    if (a) location.href = a.href;
   });
 })();
 </script>

@@ -120,6 +120,18 @@ footer a{color:var(--accent-2-text);text-decoration:underline;text-underline-off
 nav.crumb{font-size:12px;color:var(--muted);margin-bottom:28px;font-family:ui-monospace,'SF Mono',Monaco,monospace}
 nav.crumb a{color:var(--accent-2-text);text-decoration:underline;text-underline-offset:2px}
 nav.crumb a:hover{text-decoration:underline}
+nav.atom-pager{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;margin:-12px 0 28px}
+nav.atom-pager .pg-btn{display:flex;flex-direction:column;gap:2px;padding:10px 14px;border:1px solid var(--border-strong);border-radius:10px;background:var(--surface);color:var(--text);text-decoration:none;min-width:0}
+nav.atom-pager .pg-btn:hover,nav.atom-pager .pg-btn:focus-visible{border-color:var(--accent-2-text);background:var(--accent-soft-bg)}
+nav.atom-pager .pg-next{text-align:right;justify-self:end}
+nav.atom-pager .pg-prev{justify-self:start}
+.pg-dir{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted)}
+.pg-name{font-size:16px;font-weight:700;color:var(--accent-2-text);overflow-wrap:anywhere}
+nav.atom-pager .pg-all{font-size:14px;color:var(--accent-2-text);text-decoration:underline;text-underline-offset:2px}
+.pg-hint{grid-column:1/-1;text-align:center;font-size:17px;font-weight:600;color:var(--text);margin:8px 0 0}
+nav.atom-pager kbd{display:inline-block;min-width:1.6em;padding:1px 6px;border:1px solid var(--border-strong);border-bottom-width:2px;border-radius:5px;background:var(--surface-2);color:var(--text);font:600 15px/1.4 ui-monospace,'SF Mono',Monaco,monospace;text-align:center;text-transform:none;letter-spacing:0}
+@media (hover:none){.pg-hint,nav.atom-pager .pg-dir kbd{display:none}}
+@media (max-width:520px){nav.atom-pager{grid-template-columns:1fr 1fr}nav.atom-pager .pg-all{grid-column:1/-1;grid-row:2;justify-self:center}}
 h1{font-size:2.2rem;font-weight:800;letter-spacing:-1px;margin-bottom:8px}
 .desc{font-size:1.1rem;color:var(--muted);margin-bottom:32px;line-height:1.7}
 .label{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:12px}
@@ -172,8 +184,16 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
     <a href="/">A2UI Catalog</a> /
     <a href="/atoms/">atoms</a> / floating_particles
   </nav>
+  <nav class="atom-pager" aria-label="Browse atoms"><a class="pg-btn pg-prev" rel="prev" href="/atoms/floating_orbs/" aria-keyshortcuts="ArrowLeft"><span class="pg-dir"><kbd>←</kbd> Previous</span><span class="pg-name">Floating Orbs</span></a><a class="pg-all" href="/atoms/">All atoms</a><a class="pg-btn pg-next" rel="next" href="/atoms/flow_connector/" aria-keyshortcuts="ArrowRight"><span class="pg-dir">Next <kbd>→</kbd></span><span class="pg-name">Flow Connector</span></a><p class="pg-hint">Press <kbd>←</kbd> or <kbd>→</kbd> on your keyboard to move between atoms.</p></nav>
 
   <h1>Floating Particles</h1>
+
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of floating_particles"><div style="position:relative;height:240px;margin:1rem 0;border-radius:16px;overflow:hidden;background:#0f172a;"><canvas id="fp-15bdf4" aria-hidden="true" style="position:absolute;top:0;left:0;width:100%;height:100%;display:block;"></canvas><script>window._a2uiCK=window._a2uiCK||(function(){var P=new Uint8Array(512);(function(){var s=1337,i,j,k;for(i=0;i<256;i++)P[i]=i;for(i=255;i>0;i--){s=(s*16807)%2147483647;j=s%(i+1);k=P[i];P[i]=P[j];P[j]=k;}for(i=0;i<256;i++)P[i+256]=P[i];})();function hs(x,y,z){return P[(P[(P[x&255]+y)&255]+z)&255]/255;}function fd(v){return v*v*(3-2*v);}function L(a,b,v){return a+(b-a)*v;}function noise(x,y,z){var X=Math.floor(x),Y=Math.floor(y),Z=Math.floor(z);x-=X;y-=Y;z-=Z;var u=fd(x),v=fd(y),w=fd(z);return L(L(L(hs(X,Y,Z),hs(X+1,Y,Z),u),L(hs(X,Y+1,Z),hs(X+1,Y+1,Z),u),v),L(L(hs(X,Y,Z+1),hs(X+1,Y,Z+1),u),L(hs(X,Y+1,Z+1),hs(X+1,Y+1,Z+1),u),v),w);}function fitText(ctx,lines,maxW,maxH,font,weight){var lo=8,hi=400;while(hi-lo>1){var m=(lo+hi)/2;ctx.font=weight+" "+m+"px "+font;var w=0;for(var i=0;i<lines.length;i++)w=Math.max(w,ctx.measureText(lines[i]).width);if(w<=maxW&&m*1.1*lines.length<=maxH)lo=m;else hi=m;}return lo;}function mount(id,o){var c=document.getElementById(id);if(!c)return;var ctx=c.getContext("2d");if(!ctx)return;var k={c:c,ctx:ctx,W:0,H:0,t:0,mx:null,my:null,noise:noise,dpr:Math.min(window.devicePixelRatio||1,2)},raf=0,vis=true;var RM=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;function resize(){var w=c.clientWidth||600,h=c.clientHeight||360;if(w===k.W&&h===k.H)return;k.W=w;k.H=h;c.width=Math.round(w*k.dpr);c.height=Math.round(h*k.dpr);ctx.setTransform(k.dpr,0,0,k.dpr,0,0);if(o.init)o.init(k);}function step(){k.t+=0.0028*(o.speed||1);o.draw(k);}function loop(){if(!vis){raf=0;return;}step();raf=requestAnimationFrame(loop);}resize();if(RM){var n=o.still||220;for(var i=0;i<n;i++)step();return;}window.addEventListener("resize",resize);if(o.interactive!==false){var box=c.parentNode;box.addEventListener("pointermove",function(e){var r=c.getBoundingClientRect();k.mx=e.clientX-r.left;k.my=e.clientY-r.top;});box.addEventListener("pointerleave",function(){k.mx=null;k.my=null;});}if(window.IntersectionObserver){new IntersectionObserver(function(es){vis=es[0].isIntersecting;if(vis&&!raf)loop();}).observe(c);}raf=requestAnimationFrame(loop);}return {noise:noise,mount:mount,fitText:fitText};})();(function(){var C={n:120,spd:1,pal:["99,102,241","139,92,246","236,72,153","6,182,212"],bg:"#0f172a",inter:true};var pts=[],N=0;function spawn(p,k,fresh){p.x=Math.random()*k.W;p.y=fresh?Math.random()*k.H:k.H+10;p.z=0.3+Math.random()*0.7;p.r=(1.5+Math.random()*3.5)*p.z;p.v=(0.15+Math.random()*0.35)*p.z;p.ci=Math.floor(Math.random()*C.pal.length);p.a=0.25+p.z*0.55;return p;}function init(k){N=Math.round(C.n*Math.min(2,Math.max(0.35,(k.W*k.H)/288000)));pts=[];for(var i=0;i<N;i++)pts.push(spawn({},k,true));}function draw(k){var ctx=k.ctx,W=k.W,H=k.H,t=k.t;ctx.globalCompositeOperation="source-over";ctx.fillStyle=C.bg;ctx.fillRect(0,0,W,H);ctx.globalCompositeOperation="lighter";for(var i=0;i<N;i++){var p=pts[i],sway=(k.noise(p.x*0.004,p.y*0.004,t*2)-0.5)*1.6*p.z;p.x+=sway*C.spd;p.y-=p.v*C.spd;if(k.mx!==null){var dx=p.x-k.mx,dy=p.y-k.my,d=Math.sqrt(dx*dx+dy*dy);if(d<120&&d>0.5){var f=(1-d/120)*2.2*p.z;p.x+=dx/d*f;p.y+=dy/d*f;}}if(p.y<-12||p.x<-12||p.x>W+12)spawn(p,k,false);var g=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r*3);g.addColorStop(0,"rgba("+C.pal[p.ci]+","+p.a+")");g.addColorStop(0.5,"rgba("+C.pal[p.ci]+","+(p.a*0.35)+")");g.addColorStop(1,"rgba("+C.pal[p.ci]+",0)");ctx.fillStyle=g;ctx.beginPath();ctx.arc(p.x,p.y,p.r*3,0,6.2832);ctx.fill();}}_a2uiCK.mount("fp-15bdf4",{init:init,draw:draw,speed:C.spd,interactive:C.inter,still:1});})();</script></div></div>
+</div>
+
   <p class="desc">Soft bokeh particle field on canvas: dozens of luminous, depth-sized orbs drift upward, swaying on a slow noise field, drawn additively so they glow where they overlap; the pointer nudges them aside. Optional eyebrow/title/body copy centred over the field behind a readability veil. Honours prefers-reduced-motion (one static frame), pauses offscreen, DPR-aware. Was a "canvas fallback placeholder" until 2026-09-19 (a grey box on GAS and MCP Apps); now a real atom on the same kit as flow_field, identical on every renderer. Every option is an enum or a clamped int; colours must be #rrggbb.</p>
 
   <div class="section">
@@ -185,12 +205,6 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 <div class="section">
   <div class="label">Degraded on</div>
   <table><thead><tr><th>Surface</th><th>Note</th></tr></thead><tbody><tr><td>pdf</td><td>Renders as a plain dark panel with the copy; the canvas is empty without JavaScript</td></tr><tr><td>google-chat</td><td>Inline script not supported; renders as a solid dark panel with the copy</td></tr></tbody></table>
-</div>
-
-  
-<div class="section">
-  <div class="label">Live preview</div>
-  <div class="preview-box" role="group" aria-label="Live preview of floating_particles"><div style="position:relative;height:240px;margin:1rem 0;border-radius:16px;overflow:hidden;background:#0f172a;"><canvas id="fp-15bdf4" aria-hidden="true" style="position:absolute;top:0;left:0;width:100%;height:100%;display:block;"></canvas><script>window._a2uiCK=window._a2uiCK||(function(){var P=new Uint8Array(512);(function(){var s=1337,i,j,k;for(i=0;i<256;i++)P[i]=i;for(i=255;i>0;i--){s=(s*16807)%2147483647;j=s%(i+1);k=P[i];P[i]=P[j];P[j]=k;}for(i=0;i<256;i++)P[i+256]=P[i];})();function hs(x,y,z){return P[(P[(P[x&255]+y)&255]+z)&255]/255;}function fd(v){return v*v*(3-2*v);}function L(a,b,v){return a+(b-a)*v;}function noise(x,y,z){var X=Math.floor(x),Y=Math.floor(y),Z=Math.floor(z);x-=X;y-=Y;z-=Z;var u=fd(x),v=fd(y),w=fd(z);return L(L(L(hs(X,Y,Z),hs(X+1,Y,Z),u),L(hs(X,Y+1,Z),hs(X+1,Y+1,Z),u),v),L(L(hs(X,Y,Z+1),hs(X+1,Y,Z+1),u),L(hs(X,Y+1,Z+1),hs(X+1,Y+1,Z+1),u),v),w);}function fitText(ctx,lines,maxW,maxH,font,weight){var lo=8,hi=400;while(hi-lo>1){var m=(lo+hi)/2;ctx.font=weight+" "+m+"px "+font;var w=0;for(var i=0;i<lines.length;i++)w=Math.max(w,ctx.measureText(lines[i]).width);if(w<=maxW&&m*1.1*lines.length<=maxH)lo=m;else hi=m;}return lo;}function mount(id,o){var c=document.getElementById(id);if(!c)return;var ctx=c.getContext("2d");if(!ctx)return;var k={c:c,ctx:ctx,W:0,H:0,t:0,mx:null,my:null,noise:noise,dpr:Math.min(window.devicePixelRatio||1,2)},raf=0,vis=true;var RM=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;function resize(){var w=c.clientWidth||600,h=c.clientHeight||360;if(w===k.W&&h===k.H)return;k.W=w;k.H=h;c.width=Math.round(w*k.dpr);c.height=Math.round(h*k.dpr);ctx.setTransform(k.dpr,0,0,k.dpr,0,0);if(o.init)o.init(k);}function step(){k.t+=0.0028*(o.speed||1);o.draw(k);}function loop(){if(!vis){raf=0;return;}step();raf=requestAnimationFrame(loop);}resize();if(RM){var n=o.still||220;for(var i=0;i<n;i++)step();return;}window.addEventListener("resize",resize);if(o.interactive!==false){var box=c.parentNode;box.addEventListener("pointermove",function(e){var r=c.getBoundingClientRect();k.mx=e.clientX-r.left;k.my=e.clientY-r.top;});box.addEventListener("pointerleave",function(){k.mx=null;k.my=null;});}if(window.IntersectionObserver){new IntersectionObserver(function(es){vis=es[0].isIntersecting;if(vis&&!raf)loop();}).observe(c);}raf=requestAnimationFrame(loop);}return {noise:noise,mount:mount,fitText:fitText};})();(function(){var C={n:120,spd:1,pal:["99,102,241","139,92,246","236,72,153","6,182,212"],bg:"#0f172a",inter:true};var pts=[],N=0;function spawn(p,k,fresh){p.x=Math.random()*k.W;p.y=fresh?Math.random()*k.H:k.H+10;p.z=0.3+Math.random()*0.7;p.r=(1.5+Math.random()*3.5)*p.z;p.v=(0.15+Math.random()*0.35)*p.z;p.ci=Math.floor(Math.random()*C.pal.length);p.a=0.25+p.z*0.55;return p;}function init(k){N=Math.round(C.n*Math.min(2,Math.max(0.35,(k.W*k.H)/288000)));pts=[];for(var i=0;i<N;i++)pts.push(spawn({},k,true));}function draw(k){var ctx=k.ctx,W=k.W,H=k.H,t=k.t;ctx.globalCompositeOperation="source-over";ctx.fillStyle=C.bg;ctx.fillRect(0,0,W,H);ctx.globalCompositeOperation="lighter";for(var i=0;i<N;i++){var p=pts[i],sway=(k.noise(p.x*0.004,p.y*0.004,t*2)-0.5)*1.6*p.z;p.x+=sway*C.spd;p.y-=p.v*C.spd;if(k.mx!==null){var dx=p.x-k.mx,dy=p.y-k.my,d=Math.sqrt(dx*dx+dy*dy);if(d<120&&d>0.5){var f=(1-d/120)*2.2*p.z;p.x+=dx/d*f;p.y+=dy/d*f;}}if(p.y<-12||p.x<-12||p.x>W+12)spawn(p,k,false);var g=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r*3);g.addColorStop(0,"rgba("+C.pal[p.ci]+","+p.a+")");g.addColorStop(0.5,"rgba("+C.pal[p.ci]+","+(p.a*0.35)+")");g.addColorStop(1,"rgba("+C.pal[p.ci]+",0)");ctx.fillStyle=g;ctx.beginPath();ctx.arc(p.x,p.y,p.r*3,0,6.2832);ctx.fill();}}_a2uiCK.mount("fp-15bdf4",{init:init,draw:draw,speed:C.spd,interactive:C.inter,still:1});})();</script></div></div>
 </div>
 
   
@@ -282,6 +296,20 @@ document.addEventListener('click',function(e){
         }
       });
     }catch(err){/* draft API shape may still be moving -- never break the page over it */}
+  });
+})();
+</script>
+  <script>
+(function(){
+  // Left/right arrow keys page between atoms, unless the key is meant for something else:
+  // a form field, a widget whose role uses arrows (slider, tabs, listbox...), a key the page already handled, or a modifier.
+  document.addEventListener('keydown', function(e){
+    if (e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+    var t = e.target;
+    if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName) || (t.closest && t.closest('iframe,[role=slider],[role=tablist],[role=tab],[role=listbox],[role=menu],[role=menubar],[role=radiogroup],[role=spinbutton],[role=grid],[role=tree]')))) return;
+    var a = document.querySelector('nav.atom-pager a[rel="' + (e.key === 'ArrowLeft' ? 'prev' : 'next') + '"]');
+    if (a) location.href = a.href;
   });
 })();
 </script>

@@ -120,6 +120,18 @@ footer a{color:var(--accent-2-text);text-decoration:underline;text-underline-off
 nav.crumb{font-size:12px;color:var(--muted);margin-bottom:28px;font-family:ui-monospace,'SF Mono',Monaco,monospace}
 nav.crumb a{color:var(--accent-2-text);text-decoration:underline;text-underline-offset:2px}
 nav.crumb a:hover{text-decoration:underline}
+nav.atom-pager{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;margin:-12px 0 28px}
+nav.atom-pager .pg-btn{display:flex;flex-direction:column;gap:2px;padding:10px 14px;border:1px solid var(--border-strong);border-radius:10px;background:var(--surface);color:var(--text);text-decoration:none;min-width:0}
+nav.atom-pager .pg-btn:hover,nav.atom-pager .pg-btn:focus-visible{border-color:var(--accent-2-text);background:var(--accent-soft-bg)}
+nav.atom-pager .pg-next{text-align:right;justify-self:end}
+nav.atom-pager .pg-prev{justify-self:start}
+.pg-dir{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted)}
+.pg-name{font-size:16px;font-weight:700;color:var(--accent-2-text);overflow-wrap:anywhere}
+nav.atom-pager .pg-all{font-size:14px;color:var(--accent-2-text);text-decoration:underline;text-underline-offset:2px}
+.pg-hint{grid-column:1/-1;text-align:center;font-size:17px;font-weight:600;color:var(--text);margin:8px 0 0}
+nav.atom-pager kbd{display:inline-block;min-width:1.6em;padding:1px 6px;border:1px solid var(--border-strong);border-bottom-width:2px;border-radius:5px;background:var(--surface-2);color:var(--text);font:600 15px/1.4 ui-monospace,'SF Mono',Monaco,monospace;text-align:center;text-transform:none;letter-spacing:0}
+@media (hover:none){.pg-hint,nav.atom-pager .pg-dir kbd{display:none}}
+@media (max-width:520px){nav.atom-pager{grid-template-columns:1fr 1fr}nav.atom-pager .pg-all{grid-column:1/-1;grid-row:2;justify-self:center}}
 h1{font-size:2.2rem;font-weight:800;letter-spacing:-1px;margin-bottom:8px}
 .desc{font-size:1.1rem;color:var(--muted);margin-bottom:32px;line-height:1.7}
 .label{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:12px}
@@ -172,8 +184,16 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
     <a href="/">A2UI Catalog</a> /
     <a href="/atoms/">atoms</a> / surface_map
   </nav>
+  <nav class="atom-pager" aria-label="Browse atoms"><a class="pg-btn pg-prev" rel="prev" href="/atoms/sunburst/" aria-keyshortcuts="ArrowLeft"><span class="pg-dir"><kbd>←</kbd> Previous</span><span class="pg-name">Sunburst</span></a><a class="pg-all" href="/atoms/">All atoms</a><a class="pg-btn pg-next" rel="next" href="/atoms/surface_unlocked/" aria-keyshortcuts="ArrowRight"><span class="pg-dir">Next <kbd>→</kbd></span><span class="pg-name">Surface Unlocked</span></a><p class="pg-hint">Press <kbd>←</kbd> or <kbd>→</kbd> on your keyboard to move between atoms.</p></nav>
 
   <h1>Surface Map</h1>
+
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of surface_map"><div style="margin:1.5rem 0;"><div style="font-size:0.72rem;font-weight:700;color:var(--muted,#5f6368);text-transform:uppercase;letter-spacing:0.12em;text-align:center;margin-bottom:16px;">One schema. Three surfaces.</div><div style="display:flex;align-items:center;justify-content:center;gap:0;flex-wrap:wrap;"><div style="padding:14px 20px;background:#0f172a;border-radius:10px;text-align:center;margin-right:8px;"><div style="font-size:0.65rem;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px;">Schema</div><div style="font-family:monospace;font-size:0.72rem;color:#94a3b8;">{ blocks: […] }</div></div><div style="font-size:1.2rem;color:#4f46e5;margin-right:8px;" aria-hidden="true">→</div><div style="flex:1;min-width:120px;padding:16px 14px;background:#4f46e50d;border:2px solid #4f46e533;border-radius:10px;text-align:center;margin-right:8px;"><div style="margin-bottom:6px;display:flex;justify-content:center;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28" width="28" height="28" aria-hidden="true"><mask id="mgas"><rect width="28" height="28" rx="6" fill="white"/></mask><g mask="url(#mgas)"><rect width="14" height="14" fill="#4285F4"/><rect x="14" width="14" height="14" fill="#EA4335"/><rect y="14" width="14" height="14" fill="#FBBC04"/><rect x="14" y="14" width="14" height="14" fill="#34A853"/></g><path d="M10 9L6 14l4 5M18 9l4 5-4 5" stroke="white" stroke-width="2.2" stroke-linecap="round" fill="none"/></svg></div><div style="font-size:0.8rem;font-weight:700;color:#4f46e5;margin-bottom:4px;">GAS Web App</div><div style="font-size:0.7rem;color:var(--muted,#5f6368);line-height:1.5;">Live web app · GAS runtime · URL = content</div></div><div style="flex:1;min-width:120px;padding:16px 14px;background:#7f4bf50d;border:2px solid #7f4bf533;border-radius:10px;text-align:center;margin-right:8px;"><div style="margin-bottom:6px;display:flex;justify-content:center;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28" width="28" height="28" aria-hidden="true"><rect width="28" height="28" rx="6" fill="#FBBC04"/><rect x="4" y="9" width="14" height="10" rx="2" fill="white"/><path d="M18 12.5l6-3.5v10l-6-3.5z" fill="white"/></svg></div><div style="font-size:0.8rem;font-weight:700;color:#7f4bf5;margin-bottom:4px;">Meet Stage</div><div style="font-size:0.7rem;color:var(--muted,#5f6368);line-height:1.5;">Full-screen · Live demos · Audience view</div></div><div style="flex:1;min-width:120px;padding:16px 14px;background:#1268f40d;border:2px solid #1268f433;border-radius:10px;text-align:center;margin-right:8px;"><div style="margin-bottom:6px;display:flex;justify-content:center;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28" width="28" height="28" aria-hidden="true"><rect width="28" height="28" rx="6" fill="#4758B5"/><rect x="6" y="6" width="7" height="7" rx="1" fill="white"/><rect x="15" y="6" width="7" height="7" rx="1" fill="white"/><rect x="6" y="15" width="7" height="7" rx="1" fill="white"/><rect x="15" y="15" width="7" height="7" rx="1" fill="white"/></svg></div><div style="font-size:0.8rem;font-weight:700;color:#1268f4;margin-bottom:4px;">Google Sites HTML</div><div style="font-size:0.7rem;color:var(--muted,#5f6368);line-height:1.5;">Blog / docs · SEO · Static publish</div></div><div style="flex:1;min-width:120px;padding:16px 14px;background:#047d910d;border:2px solid #047d9133;border-radius:10px;text-align:center;"><div style="margin-bottom:6px;display:flex;justify-content:center;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28" width="28" height="28" aria-hidden="true"><rect width="28" height="28" rx="6" fill="#34A853"/><path d="M5 9a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-8l-4 3v-3H7a2 2 0 01-2-2z" fill="white"/></svg></div><div style="font-size:0.8rem;font-weight:700;color:#047d91;margin-bottom:4px;">Google Chat</div><div style="font-size:0.7rem;color:var(--muted,#5f6368);line-height:1.5;">Cards · Bots · Workspace native</div></div></div></div></div>
+</div>
+
   <p class="desc">Visual diagram showing the A2UI surfaces — schema feeds into each render target</p>
 
   <div class="section">
@@ -182,12 +202,6 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   </div>
 
   
-
-  
-<div class="section">
-  <div class="label">Live preview</div>
-  <div class="preview-box" role="group" aria-label="Live preview of surface_map"><div style="margin:1.5rem 0;"><div style="font-size:0.72rem;font-weight:700;color:var(--muted,#5f6368);text-transform:uppercase;letter-spacing:0.12em;text-align:center;margin-bottom:16px;">One schema. Three surfaces.</div><div style="display:flex;align-items:center;justify-content:center;gap:0;flex-wrap:wrap;"><div style="padding:14px 20px;background:#0f172a;border-radius:10px;text-align:center;margin-right:8px;"><div style="font-size:0.65rem;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px;">Schema</div><div style="font-family:monospace;font-size:0.72rem;color:#94a3b8;">{ blocks: […] }</div></div><div style="font-size:1.2rem;color:#4f46e5;margin-right:8px;" aria-hidden="true">→</div><div style="flex:1;min-width:120px;padding:16px 14px;background:#4f46e50d;border:2px solid #4f46e533;border-radius:10px;text-align:center;margin-right:8px;"><div style="margin-bottom:6px;display:flex;justify-content:center;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28" width="28" height="28" aria-hidden="true"><mask id="mgas"><rect width="28" height="28" rx="6" fill="white"/></mask><g mask="url(#mgas)"><rect width="14" height="14" fill="#4285F4"/><rect x="14" width="14" height="14" fill="#EA4335"/><rect y="14" width="14" height="14" fill="#FBBC04"/><rect x="14" y="14" width="14" height="14" fill="#34A853"/></g><path d="M10 9L6 14l4 5M18 9l4 5-4 5" stroke="white" stroke-width="2.2" stroke-linecap="round" fill="none"/></svg></div><div style="font-size:0.8rem;font-weight:700;color:#4f46e5;margin-bottom:4px;">GAS Web App</div><div style="font-size:0.7rem;color:var(--muted,#5f6368);line-height:1.5;">Live web app · GAS runtime · URL = content</div></div><div style="flex:1;min-width:120px;padding:16px 14px;background:#7f4bf50d;border:2px solid #7f4bf533;border-radius:10px;text-align:center;margin-right:8px;"><div style="margin-bottom:6px;display:flex;justify-content:center;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28" width="28" height="28" aria-hidden="true"><rect width="28" height="28" rx="6" fill="#FBBC04"/><rect x="4" y="9" width="14" height="10" rx="2" fill="white"/><path d="M18 12.5l6-3.5v10l-6-3.5z" fill="white"/></svg></div><div style="font-size:0.8rem;font-weight:700;color:#7f4bf5;margin-bottom:4px;">Meet Stage</div><div style="font-size:0.7rem;color:var(--muted,#5f6368);line-height:1.5;">Full-screen · Live demos · Audience view</div></div><div style="flex:1;min-width:120px;padding:16px 14px;background:#1268f40d;border:2px solid #1268f433;border-radius:10px;text-align:center;margin-right:8px;"><div style="margin-bottom:6px;display:flex;justify-content:center;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28" width="28" height="28" aria-hidden="true"><rect width="28" height="28" rx="6" fill="#4758B5"/><rect x="6" y="6" width="7" height="7" rx="1" fill="white"/><rect x="15" y="6" width="7" height="7" rx="1" fill="white"/><rect x="6" y="15" width="7" height="7" rx="1" fill="white"/><rect x="15" y="15" width="7" height="7" rx="1" fill="white"/></svg></div><div style="font-size:0.8rem;font-weight:700;color:#1268f4;margin-bottom:4px;">Google Sites HTML</div><div style="font-size:0.7rem;color:var(--muted,#5f6368);line-height:1.5;">Blog / docs · SEO · Static publish</div></div><div style="flex:1;min-width:120px;padding:16px 14px;background:#047d910d;border:2px solid #047d9133;border-radius:10px;text-align:center;"><div style="margin-bottom:6px;display:flex;justify-content:center;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28" width="28" height="28" aria-hidden="true"><rect width="28" height="28" rx="6" fill="#34A853"/><path d="M5 9a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-8l-4 3v-3H7a2 2 0 01-2-2z" fill="white"/></svg></div><div style="font-size:0.8rem;font-weight:700;color:#047d91;margin-bottom:4px;">Google Chat</div><div style="font-size:0.7rem;color:var(--muted,#5f6368);line-height:1.5;">Cards · Bots · Workspace native</div></div></div></div></div>
-</div>
 
   
 
@@ -277,6 +291,20 @@ document.addEventListener('click',function(e){
         }
       });
     }catch(err){/* draft API shape may still be moving -- never break the page over it */}
+  });
+})();
+</script>
+  <script>
+(function(){
+  // Left/right arrow keys page between atoms, unless the key is meant for something else:
+  // a form field, a widget whose role uses arrows (slider, tabs, listbox...), a key the page already handled, or a modifier.
+  document.addEventListener('keydown', function(e){
+    if (e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+    var t = e.target;
+    if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName) || (t.closest && t.closest('iframe,[role=slider],[role=tablist],[role=tab],[role=listbox],[role=menu],[role=menubar],[role=radiogroup],[role=spinbutton],[role=grid],[role=tree]')))) return;
+    var a = document.querySelector('nav.atom-pager a[rel="' + (e.key === 'ArrowLeft' ? 'prev' : 'next') + '"]');
+    if (a) location.href = a.href;
   });
 })();
 </script>

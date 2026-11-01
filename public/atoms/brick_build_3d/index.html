@@ -120,6 +120,18 @@ footer a{color:var(--accent-2-text);text-decoration:underline;text-underline-off
 nav.crumb{font-size:12px;color:var(--muted);margin-bottom:28px;font-family:ui-monospace,'SF Mono',Monaco,monospace}
 nav.crumb a{color:var(--accent-2-text);text-decoration:underline;text-underline-offset:2px}
 nav.crumb a:hover{text-decoration:underline}
+nav.atom-pager{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;margin:-12px 0 28px}
+nav.atom-pager .pg-btn{display:flex;flex-direction:column;gap:2px;padding:10px 14px;border:1px solid var(--border-strong);border-radius:10px;background:var(--surface);color:var(--text);text-decoration:none;min-width:0}
+nav.atom-pager .pg-btn:hover,nav.atom-pager .pg-btn:focus-visible{border-color:var(--accent-2-text);background:var(--accent-soft-bg)}
+nav.atom-pager .pg-next{text-align:right;justify-self:end}
+nav.atom-pager .pg-prev{justify-self:start}
+.pg-dir{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted)}
+.pg-name{font-size:16px;font-weight:700;color:var(--accent-2-text);overflow-wrap:anywhere}
+nav.atom-pager .pg-all{font-size:14px;color:var(--accent-2-text);text-decoration:underline;text-underline-offset:2px}
+.pg-hint{grid-column:1/-1;text-align:center;font-size:17px;font-weight:600;color:var(--text);margin:8px 0 0}
+nav.atom-pager kbd{display:inline-block;min-width:1.6em;padding:1px 6px;border:1px solid var(--border-strong);border-bottom-width:2px;border-radius:5px;background:var(--surface-2);color:var(--text);font:600 15px/1.4 ui-monospace,'SF Mono',Monaco,monospace;text-align:center;text-transform:none;letter-spacing:0}
+@media (hover:none){.pg-hint,nav.atom-pager .pg-dir kbd{display:none}}
+@media (max-width:520px){nav.atom-pager{grid-template-columns:1fr 1fr}nav.atom-pager .pg-all{grid-column:1/-1;grid-row:2;justify-self:center}}
 h1{font-size:2.2rem;font-weight:800;letter-spacing:-1px;margin-bottom:8px}
 .desc{font-size:1.1rem;color:var(--muted);margin-bottom:32px;line-height:1.7}
 .label{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:12px}
@@ -172,16 +184,9 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
     <a href="/">A2UI Catalog</a> /
     <a href="/atoms/">atoms</a> / brick_build_3d
   </nav>
+  <nav class="atom-pager" aria-label="Browse atoms"><a class="pg-btn pg-prev" rel="prev" href="/atoms/brevet_timeline/" aria-keyshortcuts="ArrowLeft"><span class="pg-dir"><kbd>←</kbd> Previous</span><span class="pg-name">Brevet Timeline</span></a><a class="pg-all" href="/atoms/">All atoms</a><a class="pg-btn pg-next" rel="next" href="/atoms/bullet_list/" aria-keyshortcuts="ArrowRight"><span class="pg-dir">Next <kbd>→</kbd></span><span class="pg-name">Bullet List</span></a><p class="pg-hint">Press <kbd>←</kbd> or <kbd>→</kbd> on your keyboard to move between atoms.</p></nav>
 
   <h1>Brick Build 3D</h1>
-  <p class="desc">Equation-driven toy-brick 3D model that assembles itself stud by stud, drawn in real brick proportions (8 mm pitch, 9.6 mm brick) with dependency-free WebGL — key-light shadows cast between parts, glossy plastic shading and an outline on every part edge, like an instruction-booklet render — and a canvas-2D fallback where WebGL is unavailable. Two kinds of model. Toy bricks (bricks or shape) are procedural boxes with studs, from a named shape (heart, sphere, torus, helix, pyramid, house) or an explicit bricks array. Real parts (partsModel) are baked geometry from the LDraw.org Parts Library, under CC BY. Every design is checked by deterministic geometry — collisions, every brick anchored through stud connections (real parts also through pins, hinges, axles and clips), connection count, centre of mass over the footprint — and the verdicts show beside the model. An instructions mode steps through the build layer by layer, and a parts list groups bricks by size and colour with an indicative cost. Known limit, each brick canvas holds two WebGL contexts and a page allows about 16, so keep to about 7 brick canvases per page. Not affiliated with or endorsed by the LEGO Group. LEGO is a trademark of the LEGO Group.</p>
-
-  <div class="section">
-    <div class="label">Surfaces</div>
-    <span class="badge bs">google-apps-script-web</span><span class="badge bs">web</span><span class="badge bs">mcp-apps</span><span class="badge bs">android</span>
-  </div>
-
-  
 
   
 <div class="section">
@@ -2436,6 +2441,15 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 })(),{"shape":"heart","bricks":null,"mode":"animate","step":1,"speed":1,"orbit":true,"bg":null,"scrubber":true,"checks":true,"parts":false,"models":[],"picker":false,"start":-1,"partsModel":[{"p":"3001","x":0,"y":-24,"z":-20,"r":0,"c":"#f2cd37","edge":"#333333"},{"p":"3001","x":0,"y":-24,"z":20,"r":0,"c":"#f2cd37","edge":"#333333"},{"p":"3001","x":-20,"y":-48,"z":0,"r":1,"c":"#f2cd37","edge":"#333333"},{"p":"3001","x":20,"y":-48,"z":0,"r":1,"c":"#f2cd37","edge":"#333333"},{"p":"3001","x":80,"y":-24,"z":20,"r":0,"c":"#1b2a34","edge":"#808080"},{"p":"3001","x":80,"y":-48,"z":20,"r":0,"c":"#1b2a34","edge":"#808080"},{"p":"3020","x":40,"y":-56,"z":20,"r":0,"c":"#c91a09","edge":"#333333"},{"p":"3001","x":-20,"y":-24,"z":80,"r":1,"c":"#1b2a34","edge":"#808080"},{"p":"3001","x":-20,"y":-48,"z":80,"r":1,"c":"#1b2a34","edge":"#808080"},{"p":"3020","x":-20,"y":-56,"z":40,"r":1,"c":"#c91a09","edge":"#333333"},{"p":"3001","x":-80,"y":-24,"z":-20,"r":0,"c":"#1b2a34","edge":"#808080"},{"p":"3001","x":-80,"y":-48,"z":-20,"r":0,"c":"#1b2a34","edge":"#808080"},{"p":"3020","x":-40,"y":-56,"z":-20,"r":0,"c":"#c91a09","edge":"#333333"},{"p":"3001","x":20,"y":-24,"z":-80,"r":1,"c":"#1b2a34","edge":"#808080"},{"p":"3001","x":20,"y":-48,"z":-80,"r":1,"c":"#1b2a34","edge":"#808080"},{"p":"3020","x":20,"y":-56,"z":-40,"r":1,"c":"#c91a09","edge":"#333333"},{"p":"3941","x":100,"y":-72,"z":20,"r":0,"c":"#c91a09","edge":"#333333"},{"p":"3941","x":-20,"y":-72,"z":100,"r":0,"c":"#d67923","edge":"#333333"},{"p":"3941","x":-100,"y":-72,"z":-20,"r":0,"c":"#0055bf","edge":"#333333"},{"p":"3941","x":20,"y":-72,"z":-100,"r":0,"c":"#c91a09","edge":"#333333"}],"look":"studio","base":null},"brk7b5487");window.addEventListener("message",function(e){var d=e.data;if(!d||d.a2uiControl!==1)return;if(d.action==="pause")__atom.set("speed",0);else if(d.action==="play"){__atom.setMode("animate");__atom.set("speed",1);}else if(d.action==="step"){__atom.set("speed",0);__atom.setMode("steps");__atom.setStep(+d.value||0);}else if(d.action==="replay")__atom.replay();else if(d.action==="resetView")__atom.resetView();else if(d.action==="recolor"&&d.value&&Array.isArray(d.value.idxs)&&/^#[0-9a-fA-F]{6}$/.test(d.value.to))__atom.recolor(d.value.to,d.value.idxs.filter(function(i){return Number.isInteger(i)&&i>=0;}));});})();</script></div>
 </div>
 
+  <p class="desc">Equation-driven toy-brick 3D model that assembles itself stud by stud, drawn in real brick proportions (8 mm pitch, 9.6 mm brick) with dependency-free WebGL — key-light shadows cast between parts, glossy plastic shading and an outline on every part edge, like an instruction-booklet render — and a canvas-2D fallback where WebGL is unavailable. Two kinds of model. Toy bricks (bricks or shape) are procedural boxes with studs, from a named shape (heart, sphere, torus, helix, pyramid, house) or an explicit bricks array. Real parts (partsModel) are baked geometry from the LDraw.org Parts Library, under CC BY. Every design is checked by deterministic geometry — collisions, every brick anchored through stud connections (real parts also through pins, hinges, axles and clips), connection count, centre of mass over the footprint — and the verdicts show beside the model. An instructions mode steps through the build layer by layer, and a parts list groups bricks by size and colour with an indicative cost. Known limit, each brick canvas holds two WebGL contexts and a page allows about 16, so keep to about 7 brick canvases per page. Not affiliated with or endorsed by the LEGO Group. LEGO is a trademark of the LEGO Group.</p>
+
+  <div class="section">
+    <div class="label">Surfaces</div>
+    <span class="badge bs">google-apps-script-web</span><span class="badge bs">web</span><span class="badge bs">mcp-apps</span><span class="badge bs">android</span>
+  </div>
+
+  
+
   
 
   <div class="section">
@@ -2524,6 +2538,20 @@ document.addEventListener('click',function(e){
         }
       });
     }catch(err){/* draft API shape may still be moving -- never break the page over it */}
+  });
+})();
+</script>
+  <script>
+(function(){
+  // Left/right arrow keys page between atoms, unless the key is meant for something else:
+  // a form field, a widget whose role uses arrows (slider, tabs, listbox...), a key the page already handled, or a modifier.
+  document.addEventListener('keydown', function(e){
+    if (e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+    var t = e.target;
+    if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName) || (t.closest && t.closest('iframe,[role=slider],[role=tablist],[role=tab],[role=listbox],[role=menu],[role=menubar],[role=radiogroup],[role=spinbutton],[role=grid],[role=tree]')))) return;
+    var a = document.querySelector('nav.atom-pager a[rel="' + (e.key === 'ArrowLeft' ? 'prev' : 'next') + '"]');
+    if (a) location.href = a.href;
   });
 })();
 </script>
