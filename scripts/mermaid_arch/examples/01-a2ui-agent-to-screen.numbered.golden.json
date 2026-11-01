@@ -1,0 +1,296 @@
+{
+ "theme": "dark",
+ "blocks": [
+  {
+   "type": "motion_arch",
+   "label": "A2UI v0.9: from prompt to native screen",
+   "w": 1005,
+   "h": 298,
+   "size": 14,
+   "nodes": [
+    {
+     "id": "user",
+     "kind": "user",
+     "label": "User",
+     "x": 5.67,
+     "y": 50,
+     "w": 7.76,
+     "h": 14.09,
+     "at": 0.006,
+     "dur": 0.011
+    },
+    {
+     "id": "client",
+     "kind": "app",
+     "label": "Client app",
+     "x": 31.99,
+     "y": 25.84,
+     "w": 12.44,
+     "h": 14.09,
+     "at": 0.0089,
+     "dur": 0.011
+    },
+    {
+     "id": "renderer",
+     "kind": "surface",
+     "label": "A2UI renderer",
+     "x": 31.99,
+     "y": 54.03,
+     "w": 14.73,
+     "h": 14.09,
+     "at": 0.0119,
+     "dur": 0.011
+    },
+    {
+     "id": "catalog",
+     "kind": "store",
+     "label": "Trusted catalogue",
+     "x": 31.99,
+     "y": 82.21,
+     "w": 17.81,
+     "h": 14.09,
+     "at": 0.0149,
+     "dur": 0.011
+    },
+    {
+     "id": "agent",
+     "kind": "app",
+     "label": "ADK agent",
+     "x": 73.48,
+     "y": 54.03,
+     "w": 11.64,
+     "h": 14.09,
+     "at": 0.0179,
+     "dur": 0.011
+    },
+    {
+     "id": "llm",
+     "kind": "model",
+     "label": "LLM",
+     "x": 93.08,
+     "y": 54.03,
+     "w": 7.26,
+     "h": 14.09,
+     "at": 0.0209,
+     "dur": 0.011
+    }
+   ],
+   "edges": [
+    {
+     "from": "user",
+     "to": "client",
+     "label": "1 types prompt",
+     "style": "solid",
+     "at": 0.0298,
+     "dur": 0.011
+    },
+    {
+     "from": "client",
+     "to": "agent",
+     "label": "2 prompt",
+     "style": "solid",
+     "at": 0.1209,
+     "dur": 0.011
+    },
+    {
+     "from": "agent",
+     "to": "llm",
+     "label": "3 plan",
+     "style": "solid",
+     "at": 0.2032,
+     "dur": 0.011
+    },
+    {
+     "from": "llm",
+     "to": "agent",
+     "label": "4 A2UI JSON",
+     "style": "solid",
+     "curve": 50,
+     "at": 0.2767,
+     "dur": 0.011
+    },
+    {
+     "from": "agent",
+     "to": "client",
+     "label": "5 createSurface, updateComponents",
+     "style": "dashed",
+     "curve": 24,
+     "at": 0.3678,
+     "dur": 0.011
+    },
+    {
+     "from": "client",
+     "to": "renderer",
+     "label": "6 A2UI messages",
+     "style": "solid",
+     "at": 0.4676,
+     "dur": 0.011
+    },
+    {
+     "from": "renderer",
+     "to": "catalog",
+     "label": "7 looks up components",
+     "style": "solid",
+     "at": 0.5674,
+     "dur": 0.011
+    },
+    {
+     "from": "renderer",
+     "to": "user",
+     "label": "8 native UI",
+     "style": "solid",
+     "at": 0.6847,
+     "dur": 0.011
+    },
+    {
+     "from": "renderer",
+     "to": "client",
+     "label": "9 action",
+     "style": "dashed",
+     "curve": 65,
+     "at": 0.7758,
+     "dur": 0.011
+    },
+    {
+     "from": "client",
+     "to": "agent",
+     "label": "10 action",
+     "style": "dashed",
+     "curve": 36,
+     "at": 0.8581,
+     "dur": 0.011
+    }
+   ],
+   "groups": [
+    {
+     "label": "Client",
+     "x": 21.59,
+     "y": 6.04,
+     "w": 20.8,
+     "h": 87.92,
+     "at": 0,
+     "dur": 0.011
+    },
+    {
+     "label": "Agent",
+     "x": 66.17,
+     "y": 34.23,
+     "w": 32.04,
+     "h": 31.54,
+     "at": 0,
+     "dur": 0.011
+    }
+   ],
+   "messages": [
+    {
+     "edge": 1,
+     "text": "prompt",
+     "at": 0.1329,
+     "dur": 0.0238
+    },
+    {
+     "edge": 4,
+     "text": "updateComponents",
+     "at": 0.3798,
+     "dur": 0.0238
+    },
+    {
+     "edge": 8,
+     "text": "action",
+     "at": 0.7878,
+     "dur": 0.0238
+    }
+   ]
+  },
+  {
+   "type": "table",
+   "caption": "Steps",
+   "headers": [
+    "Step",
+    "From",
+    "To",
+    "What",
+    "Kind"
+   ],
+   "rows": [
+    [
+     "1",
+     "User",
+     "Client app",
+     "types prompt",
+     "sync"
+    ],
+    [
+     "2",
+     "Client app",
+     "ADK agent",
+     "prompt",
+     "sync"
+    ],
+    [
+     "3",
+     "ADK agent",
+     "LLM",
+     "plan",
+     "sync"
+    ],
+    [
+     "4",
+     "LLM",
+     "ADK agent",
+     "A2UI JSON",
+     "sync"
+    ],
+    [
+     "5",
+     "ADK agent",
+     "Client app",
+     "createSurface, updateComponents",
+     "async"
+    ],
+    [
+     "6",
+     "Client app",
+     "A2UI renderer",
+     "A2UI messages",
+     "sync"
+    ],
+    [
+     "7",
+     "A2UI renderer",
+     "Trusted catalogue",
+     "looks up components",
+     "sync"
+    ],
+    [
+     "8",
+     "A2UI renderer",
+     "User",
+     "native UI",
+     "sync"
+    ],
+    [
+     "9",
+     "A2UI renderer",
+     "Client app",
+     "action",
+     "async"
+    ],
+    [
+     "10",
+     "Client app",
+     "ADK agent",
+     "action",
+     "async"
+    ]
+   ],
+   "col_widths": [
+    "9%",
+    "25%",
+    "25%",
+    "28%",
+    "13%"
+   ]
+  }
+ ]
+}

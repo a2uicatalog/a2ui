@@ -19,13 +19,16 @@ node scripts/mermaid_arch/cli.mjs diagram.d2               # D2 subset (see belo
 ```
 
 Options: `--direction LR|RL|TB|BT` (force the flow direction), `--size N` (label px, 8-40),
-`--title TEXT`, `--fit wide`, `--graph` (input is a canonical graph in JSON).
+`--title TEXT`, `--fit wide`, `--graph` (input is a canonical graph in JSON), `--numbered`,
+`--pace slow|normal|fast`, `--duration SECONDS`, `--d2` (read stdin as D2).
 
 ```js
 import { mermaidToArch } from './scripts/mermaid_arch/index.mjs';
-const { payload, graph, warnings } = mermaidToArch(text, { film: false, direction: undefined });
+const r = mermaidToArch(text, { film: false, numbered: false, pace: 'normal' });
+// r = { payload, graph, warnings, block, steps, schedule, durationSeconds, pace, numbered }
 // errors throw ArchError with .errors (array of plain sentences) and .warnings
 ```
+`d2ToArch(text, opts)` does the same for D2.
 
 `payload` is `{"theme":"dark","blocks":[{"type":"motion_arch", ...}]}`: standalone it is the finished
 diagram. With `film: true` it is a `motion_timeline` that plays the diagram in: groups, then nodes in
@@ -35,6 +38,52 @@ Try it live: open `scripts/mermaid_arch/playground.html` (one file, no external 
 renderer bundle from `public/surfaces/mcp-apps/renderer-bundle.html` by relative path, so open it from
 a checkout, or pass `?bundle=<url>`). Rebuild it after code changes with
 `node scripts/mermaid_arch/build_playground.mjs`.
+
+## Numbered flows, the steps table and pacing
+
+Turn on `numbered` (`--numbered`, `opts.numbered`, or `%% numbered: on`; off by default in the library,
+on in the review page and the playground). Every edge label gets its step number ("1 prompt", an
+unlabelled edge just "1"). Steps follow the order of the edges in the source. To change it:
+
+```
+%% step: agent->client 3
+```
+
+That edge becomes step 3 and the other edges take the lowest free numbers in source order. A number used
+twice, a number above the edge count (a gap) or an edge that does not exist is a plain error. If the
+number pushes a label over the atom's 48 characters you get a warning and the label is cut with an
+ellipsis.
+
+The library returns `steps` (`{step, from, to, label, style}`, in order). The payload carries the same
+table:
+
+- **standalone** (`film: false`): the finished `motion_arch` followed by the repo's existing `table` atom
+  (Step, From, To, What, Kind);
+- **film** (`film: true`): ONE `motion_timeline` holds the diagram and the table, so both run on one
+  clock. Each row is a `motion_text` that fades in when its step's edge starts drawing, a translucent
+  `motion_shape` bar steps to the row of the step that is playing, and the poster frame is the finished
+  table. Rows are one line of at most 60 characters, so a long row is cut with an ellipsis (the `table`
+  atom has the full text). Twelve steps is the most a film carries (the timeline holds 24 children).
+
+**Pacing** (timing only; no atom change). Every step gets reading time:
+
+```
+dwell(step) = max(2.5 s, (words in the edge label + words in its table row) / 3 + 0.8 s)
+              x 1.15 above 6 steps, x 1.15 again above 9 steps, x pace (slow 1.4, normal 1.0, fast 0.75)
+total       = 1.5 s lead-in (groups and nodes pop) + sum of the dwells + 3 s hold on the finished diagram
+```
+
+Edges draw and message chips ride inside their own step, one after another (a step with several chips is
+stretched to fit them); row n appears at the instant edge n starts. `--pace`, `opts.pace` or
+`%% pace: slow` pick the multiplier; `%% duration: 40` (or `--duration`) fixes the total and scales the
+dwells to fit, with a warning if it is under the time the steps need at the fast pace. The result carries
+`schedule` (`[{step, start, end}]` in seconds) and `durationSeconds`. The film never exceeds the atom's
+120 s timeline limit. The atom keeps every window at 1% of the film or longer, so a very long film cannot
+have very short pops. Without `numbered` the film uses the same schedule (edges in flow order) and has no
+table.
+
+A proper number badge on the edge would need a small additive change to the `motion_arch` atom; today
+the number is part of the label text.
 
 ## Supported Mermaid
 
@@ -62,6 +111,9 @@ circles, edges that point at a whole subgraph.
 %% msg: client->agent "run input"
 %% msg: agent->client "STATE_DELTA" back
 ```
+
+`title` becomes the accessible name. Also: `%% numbered: on|off`, `%% step: from->to N`,
+`%% pace: slow|normal|fast`, `%% duration: SECONDS`.
 
 `title` becomes the accessible name. `msg` adds a payload chip that rides the first edge from `from`
 to `to` (ids as written in the Mermaid file; case-insensitive). Add `back` to send it from the end to
@@ -112,7 +164,7 @@ line 1: "sequenceDiagram" diagrams are not supported; only flowcharts are. Draw 
 
 Deterministic (same input, byte-identical output). Each group is laid out as a block and the blocks are
 laid out in ranks (longest path, cycles broken in input order, barycentre ordering), so group boxes
-never overlap and never contain a node that is not a member. Inside a group the converter tries
+never overlap and never contain a node that is not a member. Edges that skip a rank get a reserved lane in the ranks they cross, so they are not drawn through the boxes in between. Inside a group the converter tries
 running the members across or along the flow and keeps the tidier result. Ungrouped nodes are placed
 between and beside the groups. Box sizes come from label lengths (calibrated against the atom's fonts
 on one machine; other fonts may differ by some percent, the boxes carry slack for that).
@@ -128,14 +180,30 @@ it the other way and says so (warning). Force the written direction with `--dire
 **Frame and text size.** The frame (`w`, `h`) is the layout's natural size, aimed at about 1000 wide
 and no more than about 1100 tall; `size` (label px) is chosen with it. What matters on a phone is
 `size x 343 / w`. All sizes are single-line labels (the atom does not wrap text), so wide labels and
-many ranks make small text. The five example diagrams give 4 to 9 px (table in the project notes);
+many ranks make small text. The five example diagrams measure 4.3 to 8.2 px (the flat left-to-right ones are the worst);
 a diagram with short labels, or a vertical one, reads better.
 
 ## D2 (subset)
 
-`node scripts/mermaid_arch/cli.mjs file.d2` reads a small subset of D2 and produces the same canonical
-graph, so everything above applies. See `scripts/mermaid_arch/d2.mjs` for the subset; the parser is
-written from the D2 syntax documentation and shares no code with D2 (MPL-2.0).
+`node scripts/mermaid_arch/cli.mjs file.d2` (or `d2ToArch`) reads a small subset of D2 and produces the same
+canonical graph, so everything above applies. The parser is written from the D2 syntax documentation and
+shares no code with D2 (MPL-2.0). The same 9-node example written in Mermaid and in D2
+(`scripts/mermaid_arch/examples/equiv/`) gives an identical canonical graph and identical payload; a test
+checks it.
+
+| D2 | Result |
+|---|---|
+| `a`, `a: Label`, `a: { label: X }` | shape; `\n` in a quoted label gives label + sub-label |
+| `shape: cylinder` / `queue` / `person` / `circle` / `hexagon` / `cloud` / `rectangle` | kind store / tool / user / model / app / surface / server |
+| `kind: store` or `class: db` | explicit kind (same names and aliases as Mermaid); wins over `shape` |
+| `g: Title { a; b }`, `g.a` | container = group box (nested containers flattened, warning) |
+| `a -> b`, `<-`, `<->`, `--`, chains, `: label` | edges (`--` still draws an arrowhead; warning) |
+| `style.stroke-dash: 3` (inline, or in `style: { ... }`, on an edge) | dashed = async |
+| `direction: right/left/down/up` | LR / RL / TB / BT |
+| `# title:`, `# msg:`, `# numbered:`, `# step:`, `# pace:`, `# duration:` | the same directives as `%%` in Mermaid |
+
+Operators must have spaces around them. Not supported: markdown/code blocks, `classes`, `vars`, layers,
+scenarios, sql_table/class shapes, edges to a whole container, icons, globs.
 
 ## Honest limitations
 
@@ -152,7 +220,7 @@ written from the D2 syntax documentation and shares no code with D2 (MPL-2.0).
 
 ## Tests
 
-`node scripts/test_mermaid_arch.mjs` (parser tables, error messages, layout invariants on the example
+`node scripts/test_mermaid_arch.mjs` (parser tables for Mermaid and D2, error messages, numbering and pacing, layout invariants on the example
 diagrams in `scripts/mermaid_arch/examples/` and on synthetic graphs, compile checks, golden payloads,
 and the Python web renderer drawing every golden payload). After an intended change:
 `UPDATE_GOLDEN=1 node scripts/test_mermaid_arch.mjs`.

@@ -104,15 +104,26 @@ export function layered(items, edges, axis, s, samePairs = []) {
   for (let v = 0; v < n; v++) if (!din[v].length && dout[v].length) rank[v] = Math.max(0, Math.min(...dout[v].map((w) => rank[w])) - 1);
   for (let v = 0; v < n; v++) rank[v] = rank[find(v)];
   const R = (rank.length ? Math.max(...rank) : 0) + 1;
+  // 2b. long edges (more than one rank) get a dummy vertex in every rank they cross, so the ordering
+  //     and the coordinates leave a lane for them instead of running them through boxes
+  let N = n;
+  const chain = [];
+  for (const e of Eorig) {
+    let a = e.oa, b = e.ob;
+    if (rank[a] > rank[b]) [a, b] = [b, a];
+    let prev = a;
+    for (let r = rank[a] + 1; r < rank[b]; r++) { const d = N++; rank[d] = r; chain.push([prev, d]); prev = d; }
+    chain.push([prev, b]);
+  }
   // 3. order within ranks: barycentre sweeps, keep best by crossings
   const layersOf = () => {
     const L = Array.from({ length: R }, () => []);
-    for (let v = 0; v < n; v++) L[rank[v]].push(v);
+    for (let v = 0; v < N; v++) L[rank[v]].push(v);
     return L;
   };
   let L = layersOf();
-  const nbr = Array.from({ length: n }, () => []);
-  Eorig.forEach((e) => { nbr[e.oa].push(e.ob); nbr[e.ob].push(e.oa); });
+  const nbr = Array.from({ length: N }, () => []);
+  chain.forEach(([u, v]) => { nbr[u].push(v); nbr[v].push(u); });
   const keepPairs = (layer) => {
     for (const [a, b] of pairIdx) {
       const ia = layer.indexOf(a), ib = layer.indexOf(b);
@@ -123,14 +134,14 @@ export function layered(items, edges, axis, s, samePairs = []) {
     }
   };
   const frac = () => {
-    const f = Array(n).fill(0);
+    const f = Array(N).fill(0);
     L.forEach((layer) => layer.forEach((v, i) => { f[v] = (i + 0.5) / layer.length; }));
     return f;
   };
   const crossings = () => {
     // count crossings of straight rank-fraction lines (long edges included)
     const f = frac();
-    const segs = Eorig.map((e) => [rank[e.oa], f[e.oa], rank[e.ob], f[e.ob]]).map(([r1, p1, r2, p2]) => (r1 <= r2 ? [r1, p1, r2, p2] : [r2, p2, r1, p1]));
+    const segs = chain.map(([u, v]) => [rank[u], f[u], rank[v], f[v]]).map(([r1, p1, r2, p2]) => (r1 <= r2 ? [r1, p1, r2, p2] : [r2, p2, r1, p1]));
     let c = 0;
     for (let i = 0; i < segs.length; i++) for (let j = i + 1; j < segs.length; j++) {
       const [a1, p1, a2, p2] = segs[i], [b1, q1, b2, q2] = segs[j];
@@ -164,7 +175,8 @@ export function layered(items, edges, axis, s, samePairs = []) {
   }
   L = best;
   // 4. coordinates
-  const ext = (v) => (axis === 'x' ? { r: items[v].w, c: items[v].h } : { r: items[v].h, c: items[v].w });
+  const lane = Math.round(0.8 * s);
+  const ext = (v) => (v >= n ? { r: 0, c: lane } : axis === 'x' ? { r: items[v].w, c: items[v].h } : { r: items[v].h, c: items[v].w });
   const thick = L.map((layer) => Math.max(0, ...layer.map((v) => ext(v).r)));
   const gaps = [];
   for (let r = 0; r + 1 < R; r++) {
@@ -179,7 +191,7 @@ export function layered(items, edges, axis, s, samePairs = []) {
   let acc = 0;
   for (let r = 0; r < R; r++) { rankPos.push(acc); acc += thick[r] + (gaps[r] || 0); }
   const crossGap = Math.round(1.3 * s);
-  const cpos = Array(n).fill(0);
+  const cpos = Array(N).fill(0);
   L.forEach((layer) => {
     let t = 0;
     layer.forEach((v) => { cpos[v] = t + ext(v).c / 2; t += ext(v).c + crossGap; });

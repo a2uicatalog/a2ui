@@ -17,6 +17,7 @@ export const LIMITS = Object.freeze({
 });
 export const KINDS = Object.freeze(['device', 'app', 'server', 'tool', 'model', 'store', 'surface', 'user']);
 export const STYLES = Object.freeze(['sync', 'async', 'optional']);
+export const PACES = Object.freeze({ slow: 1.4, normal: 1.0, fast: 0.75 });
 export const DIRECTIONS = Object.freeze(['LR', 'RL', 'TB', 'BT']);
 export const ID_RE = /^[a-z][a-z0-9_-]{0,31}$/;
 
@@ -80,6 +81,34 @@ function hint(word, candidates) {
 }
 
 function plural(n, one, many) { return n + ' ' + (n === 1 ? one : many); }
+
+// Step numbers for the edges. Default: the order of the edges in the source. An edge may carry `step`
+// (from a `%% step: a->b 3` line) to override; the other edges then take the lowest unused numbers in
+// source order. Returns {steps: number[] (per edge), errors: string[]}.
+export function assignSteps(graph) {
+  const edges = Array.isArray(graph.edges) ? graph.edges : [];
+  const n = edges.length, errors = [], steps = new Array(n).fill(0);
+  const owner = new Map();
+  edges.forEach((e, i) => {
+    if (e.step === undefined) return;
+    const d = `edge ${i + 1} (${e.from} -> ${e.to})`;
+    if (!Number.isInteger(e.step) || e.step < 1) { errors.push(`${d}: step must be a whole number from 1 to ${n}`); return; }
+    if (e.step > n) { errors.push(`${d}: step ${e.step} is larger than the number of edges (${n}); steps must run 1 to ${n} with no gaps`); return; }
+    if (owner.has(e.step)) { errors.push(`step ${e.step} is given to both edge ${owner.get(e.step) + 1} and edge ${i + 1}; each step number can be used once`); return; }
+    owner.set(e.step, i); steps[i] = e.step;
+  });
+  let next = 1;
+  edges.forEach((e, i) => {
+    if (steps[i]) return;
+    if (e.step !== undefined) return;
+    while (owner.has(next)) next++;
+    owner.set(next, i); steps[i] = next;
+  });
+  if (!errors.length) {
+    for (let k = 1; k <= n; k++) if (!owner.has(k)) errors.push(`step ${k} is missing; steps must run 1 to ${n} with no gaps`);
+  }
+  return { steps, errors };
+}
 
 // Returns {errors:[string], warnings:[string]}. Numbering in messages is 1-based.
 export function validateGraph(g) {
@@ -191,6 +220,11 @@ export function validateGraph(g) {
     }
   });
 
+  if (g.pace !== undefined && !(g.pace in PACES)) errors.push(`pace "${g.pace}" is not one of ${Object.keys(PACES).join(', ')}`);
+  if (g.duration !== undefined && !(typeof g.duration === 'number' && g.duration >= 2 && g.duration <= 120)) errors.push(`duration "${g.duration}" must be a number of seconds from 2 to 120`);
+  if (g.numbered || edges.some((e) => e && e.step !== undefined)) {
+    if (!errors.some((e) => /^edge \d+: "/.test(e))) errors.push(...assignSteps(g).errors);
+  }
   // caps: never truncate silently, tell the user how to split
   const groupSizes = groups.map((gr) => [gr.label || gr.id, nodes.filter((n) => n && n.group === gr.id).length]).sort((a, b) => b[1] - a[1]);
   if (nodes.length > LIMITS.nodes) {

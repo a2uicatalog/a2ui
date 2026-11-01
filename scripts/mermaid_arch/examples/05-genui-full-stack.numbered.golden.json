@@ -1,0 +1,359 @@
+{
+ "theme": "dark",
+ "blocks": [
+  {
+   "type": "motion_arch",
+   "label": "GenUI stack, one possible composition (A2UI v0.9)",
+   "w": 1031,
+   "h": 967,
+   "size": 24,
+   "nodes": [
+    {
+     "id": "user",
+     "kind": "user",
+     "label": "User",
+     "x": 50,
+     "y": 6.93,
+     "w": 12.9,
+     "h": 7.45,
+     "at": 0.0042,
+     "dur": 0.011
+    },
+    {
+     "id": "app",
+     "kind": "app",
+     "label": "Frontend app",
+     "x": 17.17,
+     "y": 31.39,
+     "w": 23.28,
+     "h": 7.45,
+     "at": 0.0072,
+     "dur": 0.011
+    },
+    {
+     "id": "ui",
+     "kind": "surface",
+     "label": "A2UI renderer",
+     "x": 81.52,
+     "y": 26.06,
+     "w": 24.64,
+     "h": 7.45,
+     "at": 0.0057,
+     "dur": 0.011
+    },
+    {
+     "id": "mcpapp",
+     "kind": "surface",
+     "label": "MCP App iframe",
+     "x": 81.52,
+     "y": 36.71,
+     "w": 25.9,
+     "h": 7.45,
+     "at": 0.0086,
+     "dur": 0.011
+    },
+    {
+     "id": "agent",
+     "kind": "app",
+     "label": "ADK agent",
+     "x": 36.71,
+     "y": 58.32,
+     "w": 19.4,
+     "h": 7.45,
+     "at": 0.0101,
+     "dur": 0.011
+    },
+    {
+     "id": "llm",
+     "kind": "model",
+     "label": "LLM",
+     "x": 66.93,
+     "y": 58.32,
+     "w": 12.12,
+     "h": 7.45,
+     "at": 0.0116,
+     "dur": 0.011
+    },
+    {
+     "id": "mcp",
+     "kind": "tool",
+     "label": "MCP server",
+     "x": 50,
+     "y": 79.94,
+     "w": 20.76,
+     "h": 7.45,
+     "at": 0.0131,
+     "dur": 0.011
+    },
+    {
+     "id": "remote",
+     "kind": "server",
+     "label": "Remote agent over A2A",
+     "x": 50,
+     "y": 90.59,
+     "w": 35.01,
+     "h": 7.45,
+     "at": 0.0146,
+     "dur": 0.011
+    }
+   ],
+   "edges": [
+    {
+     "from": "user",
+     "to": "app",
+     "label": "1 asks",
+     "style": "solid",
+     "at": 0.0209,
+     "dur": 0.011
+    },
+    {
+     "from": "app",
+     "to": "agent",
+     "label": "2 AG-UI run",
+     "style": "solid",
+     "at": 0.0724,
+     "dur": 0.011
+    },
+    {
+     "from": "agent",
+     "to": "llm",
+     "label": "3 prompt",
+     "style": "solid",
+     "at": 0.1423,
+     "dur": 0.011
+    },
+    {
+     "from": "agent",
+     "to": "mcp",
+     "label": "4 tools/call, resources/read",
+     "style": "solid",
+     "at": 0.1939,
+     "dur": 0.011
+    },
+    {
+     "from": "mcp",
+     "to": "agent",
+     "label": "5 tool result + ui:// HTML",
+     "style": "solid",
+     "curve": 100,
+     "at": 0.2638,
+     "dur": 0.011
+    },
+    {
+     "from": "agent",
+     "to": "remote",
+     "label": "6 A2A message",
+     "style": "solid",
+     "curve": -65,
+     "at": 0.3705,
+     "dur": 0.011
+    },
+    {
+     "from": "remote",
+     "to": "agent",
+     "label": "7 A2UI JSON",
+     "style": "solid",
+     "curve": -100,
+     "at": 0.4528,
+     "dur": 0.011
+    },
+    {
+     "from": "agent",
+     "to": "app",
+     "label": "8 AG-UI events: A2UI + MCP App HTML",
+     "style": "dashed",
+     "curve": 65,
+     "at": 0.535,
+     "dur": 0.011
+    },
+    {
+     "from": "app",
+     "to": "ui",
+     "label": "9 A2UI messages",
+     "style": "solid",
+     "at": 0.6662,
+     "dur": 0.011
+    },
+    {
+     "from": "app",
+     "to": "mcpapp",
+     "label": "10 sandboxed iframe",
+     "style": "solid",
+     "at": 0.7362,
+     "dur": 0.011
+    },
+    {
+     "from": "ui",
+     "to": "app",
+     "label": "11 action",
+     "style": "dashed",
+     "curve": 24,
+     "at": 0.8123,
+     "dur": 0.011
+    },
+    {
+     "from": "mcpapp",
+     "to": "app",
+     "label": "12 tools/call via postMessage",
+     "style": "dashed",
+     "curve": -24,
+     "at": 0.8699,
+     "dur": 0.011
+    }
+   ],
+   "groups": [
+    {
+     "label": "Browser",
+     "x": 3.01,
+     "y": 18.1,
+     "w": 93.99,
+     "h": 24.82,
+     "at": 0,
+     "dur": 0.011
+    },
+    {
+     "label": "Agent backend",
+     "x": 24.49,
+     "y": 50.36,
+     "w": 51.02,
+     "h": 14.17,
+     "at": 0,
+     "dur": 0.011
+    },
+    {
+     "label": "Services",
+     "x": 29.97,
+     "y": 71.98,
+     "w": 40.06,
+     "h": 24.82,
+     "at": 0,
+     "dur": 0.011
+    }
+   ],
+   "messages": [
+    {
+     "edge": 1,
+     "text": "AG-UI run",
+     "at": 0.0841,
+     "dur": 0.0167
+    },
+    {
+     "edge": 6,
+     "text": "A2UI JSON",
+     "at": 0.4645,
+     "dur": 0.0167
+    },
+    {
+     "edge": 4,
+     "text": "ui:// HTML",
+     "at": 0.2755,
+     "dur": 0.0167
+    }
+   ]
+  },
+  {
+   "type": "table",
+   "caption": "Steps",
+   "headers": [
+    "Step",
+    "From",
+    "To",
+    "What",
+    "Kind"
+   ],
+   "rows": [
+    [
+     "1",
+     "User",
+     "Frontend app",
+     "asks",
+     "sync"
+    ],
+    [
+     "2",
+     "Frontend app",
+     "ADK agent",
+     "AG-UI run",
+     "sync"
+    ],
+    [
+     "3",
+     "ADK agent",
+     "LLM",
+     "prompt",
+     "sync"
+    ],
+    [
+     "4",
+     "ADK agent",
+     "MCP server",
+     "tools/call, resources/read",
+     "sync"
+    ],
+    [
+     "5",
+     "MCP server",
+     "ADK agent",
+     "tool result + ui:// HTML",
+     "sync"
+    ],
+    [
+     "6",
+     "ADK agent",
+     "Remote agent over A2A",
+     "A2A message",
+     "sync"
+    ],
+    [
+     "7",
+     "Remote agent over A2A",
+     "ADK agent",
+     "A2UI JSON",
+     "sync"
+    ],
+    [
+     "8",
+     "ADK agent",
+     "Frontend app",
+     "AG-UI events: A2UI + MCP App HTML",
+     "async"
+    ],
+    [
+     "9",
+     "Frontend app",
+     "A2UI renderer",
+     "A2UI messages",
+     "sync"
+    ],
+    [
+     "10",
+     "Frontend app",
+     "MCP App iframe",
+     "sandboxed iframe",
+     "sync"
+    ],
+    [
+     "11",
+     "A2UI renderer",
+     "Frontend app",
+     "action",
+     "async"
+    ],
+    [
+     "12",
+     "MCP App iframe",
+     "Frontend app",
+     "tools/call via postMessage",
+     "async"
+    ]
+   ],
+   "col_widths": [
+    "9%",
+    "25%",
+    "25%",
+    "28%",
+    "13%"
+   ]
+  }
+ ]
+}

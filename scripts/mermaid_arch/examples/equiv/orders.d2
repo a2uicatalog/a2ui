@@ -1,0 +1,24 @@
+# title: Orders
+# msg: browser->cdn "GET /orders"
+direction: right
+browser: Browser { shape: person }
+edge: Edge {
+  cdn: CDN
+  gw: API gateway
+}
+vpc: VPC {
+  auth: Auth { kind: tool }
+  queue: Job queue { shape: queue }
+  worker: Worker
+  pg: Postgres { shape: cylinder }
+  s3: Object store { shape: cylinder }
+}
+browser -> edge.cdn: HTTPS
+edge.cdn -> edge.gw: /api
+edge.gw -> vpc.auth: verify JWT
+edge.gw -> vpc.pg: query
+edge.gw -> vpc.queue: enqueue { style.stroke-dash: 3 }
+vpc.queue -> vpc.worker { style: { stroke-dash: 3 } }
+vpc.worker -> vpc.pg
+edge.cdn -> vpc.s3: cache miss { style.stroke-dash: 3 }
+vpc.worker -> vpc.s3: put file

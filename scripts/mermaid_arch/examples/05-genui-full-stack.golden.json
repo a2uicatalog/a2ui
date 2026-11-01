@@ -16,8 +16,8 @@
      "y": 7.86,
      "w": 13.33,
      "h": 8.36,
-     "at": 0.1,
-     "dur": 0.08
+     "at": 0.0042,
+     "dur": 0.011
     },
     {
      "id": "app",
@@ -27,8 +27,8 @@
      "y": 35.17,
      "w": 24.07,
      "h": 8.36,
-     "at": 0.167,
-     "dur": 0.08
+     "at": 0.0072,
+     "dur": 0.011
     },
     {
      "id": "ui",
@@ -38,8 +38,8 @@
      "y": 29.15,
      "w": 25.41,
      "h": 8.36,
-     "at": 0.152,
-     "dur": 0.08
+     "at": 0.0057,
+     "dur": 0.011
     },
     {
      "id": "mcpapp",
@@ -49,8 +49,8 @@
      "y": 41.19,
      "w": 26.75,
      "h": 8.36,
-     "at": 0.182,
-     "dur": 0.08
+     "at": 0.0086,
+     "dur": 0.011
     },
     {
      "id": "agent",
@@ -60,8 +60,8 @@
      "y": 65.27,
      "w": 20.04,
      "h": 8.36,
-     "at": 0.241,
-     "dur": 0.08
+     "at": 0.0101,
+     "dur": 0.011
     },
     {
      "id": "llm",
@@ -71,8 +71,8 @@
      "y": 65.27,
      "w": 12.46,
      "h": 8.36,
-     "at": 0.241,
-     "dur": 0.08
+     "at": 0.0116,
+     "dur": 0.011
     },
     {
      "id": "mcp",
@@ -82,8 +82,8 @@
      "y": 89.35,
      "w": 21.38,
      "h": 8.36,
-     "at": 0.3,
-     "dur": 0.08
+     "at": 0.0131,
+     "dur": 0.011
     },
     {
      "id": "remote",
@@ -93,8 +93,8 @@
      "y": 89.35,
      "w": 36.15,
      "h": 8.36,
-     "at": 0.3,
-     "dur": 0.08
+     "at": 0.0146,
+     "dur": 0.011
     }
    ],
    "edges": [
@@ -103,32 +103,32 @@
      "to": "app",
      "label": "asks",
      "style": "solid",
-     "at": 0.34,
-     "dur": 0.1
+     "at": 0.0209,
+     "dur": 0.011
     },
     {
      "from": "app",
      "to": "agent",
      "label": "AG-UI run",
      "style": "solid",
-     "at": 0.448,
-     "dur": 0.1
+     "at": 0.3644,
+     "dur": 0.011
     },
     {
      "from": "agent",
      "to": "llm",
      "label": "prompt",
      "style": "solid",
-     "at": 0.47,
-     "dur": 0.1
+     "at": 0.5656,
+     "dur": 0.011
     },
     {
      "from": "agent",
      "to": "mcp",
      "label": "tools/call, resources/read",
      "style": "solid",
-     "at": 0.513,
-     "dur": 0.1
+     "at": 0.6172,
+     "dur": 0.011
     },
     {
      "from": "mcp",
@@ -136,8 +136,8 @@
      "label": "tool result + ui:// HTML",
      "style": "solid",
      "curve": -12,
-     "at": 0.535,
-     "dur": 0.1
+     "at": 0.6871,
+     "dur": 0.011
     },
     {
      "from": "agent",
@@ -145,8 +145,8 @@
      "label": "A2A message",
      "style": "solid",
      "curve": 50,
-     "at": 0.557,
-     "dur": 0.1
+     "at": 0.7938,
+     "dur": 0.011
     },
     {
      "from": "remote",
@@ -154,8 +154,8 @@
      "label": "A2UI JSON",
      "style": "solid",
      "curve": 50,
-     "at": 0.578,
-     "dur": 0.1
+     "at": 0.876,
+     "dur": 0.011
     },
     {
      "from": "agent",
@@ -163,24 +163,24 @@
      "label": "AG-UI events: A2UI + MCP App HTML",
      "style": "dashed",
      "curve": 65,
-     "at": 0.492,
-     "dur": 0.1
+     "at": 0.4344,
+     "dur": 0.011
     },
     {
      "from": "app",
      "to": "ui",
      "label": "A2UI messages",
      "style": "solid",
-     "at": 0.362,
-     "dur": 0.1
+     "at": 0.0724,
+     "dur": 0.011
     },
     {
      "from": "app",
      "to": "mcpapp",
      "label": "sandboxed iframe",
      "style": "solid",
-     "at": 0.405,
-     "dur": 0.1
+     "at": 0.2,
+     "dur": 0.011
     },
     {
      "from": "ui",
@@ -188,8 +188,8 @@
      "label": "action",
      "style": "dashed",
      "curve": 24,
-     "at": 0.383,
-     "dur": 0.1
+     "at": 0.1423,
+     "dur": 0.011
     },
     {
      "from": "mcpapp",
@@ -197,8 +197,8 @@
      "label": "tools/call via postMessage",
      "style": "dashed",
      "curve": -24,
-     "at": 0.427,
-     "dur": 0.1
+     "at": 0.2761,
+     "dur": 0.011
     }
    ],
    "groups": [
@@ -209,7 +209,7 @@
      "w": 93.67,
      "h": 27.76,
      "at": 0,
-     "dur": 0.1
+     "dur": 0.011
     },
     {
      "label": "Agent backend",
@@ -218,7 +218,7 @@
      "w": 50.34,
      "h": 15.72,
      "at": 0,
-     "dur": 0.1
+     "dur": 0.011
     },
     {
      "label": "Services",
@@ -227,27 +227,27 @@
      "w": 66.06,
      "h": 15.72,
      "at": 0,
-     "dur": 0.1
+     "dur": 0.011
     }
    ],
    "messages": [
     {
      "edge": 1,
      "text": "AG-UI run",
-     "at": 0.62,
-     "dur": 0.1
+     "at": 0.3761,
+     "dur": 0.0167
     },
     {
      "edge": 6,
      "text": "A2UI JSON",
-     "at": 0.74,
-     "dur": 0.1
+     "at": 0.8877,
+     "dur": 0.0167
     },
     {
      "edge": 4,
      "text": "ui:// HTML",
-     "at": 0.86,
-     "dur": 0.1
+     "at": 0.6988,
+     "dur": 0.0167
     }
    ]
   }

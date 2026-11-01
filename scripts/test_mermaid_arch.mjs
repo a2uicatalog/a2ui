@@ -13,7 +13,7 @@ import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import {
-  mermaidToArch, graphToArch, parseMermaid, validateGraph, validateBlock, ArchError, LIMITS, layoutGraph,
+  mermaidToArch, d2ToArch, parseD2, graphToArch, parseMermaid, validateGraph, validateBlock, ArchError, LIMITS, layoutGraph,
 } from './mermaid_arch/index.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -284,8 +284,8 @@ function checkInvariants(src, opts, label) {
   }));
   // timing: edges start after their nodes; messages after their edge; all inside the film
   const at = new Map(b.nodes.map((n) => [n.id, n.at + n.dur]));
-  b.edges.forEach((e, i) => assert.ok(e.at + 1e-9 >= Math.max(at.get(e.from), at.get(e.to)), `${label}: edge ${i} draws before its nodes`));
-  (b.messages || []).forEach((m, i) => assert.ok(m.at + 1e-9 >= b.edges[m.edge].at + b.edges[m.edge].dur, `${label}: message ${i} leaves before its edge is drawn`));
+  b.edges.forEach((e, i) => assert.ok(e.at + 3e-4 >= Math.max(at.get(e.from), at.get(e.to)), `${label}: edge ${i} draws before its nodes`));
+  (b.messages || []).forEach((m, i) => assert.ok(m.at + 3e-4 >= b.edges[m.edge].at + b.edges[m.edge].dur, `${label}: message ${i} leaves before its edge is drawn`));
   (b.groups || []).forEach((gr) => assert.equal(gr.at, 0));
   return r;
 }
@@ -364,14 +364,14 @@ test('compile: kinds, styles, both, groups first, then nodes, edges, messages', 
   assert.deepEqual(b.nodes.map((n) => n.kind), ['device', 'store']);
   assert.equal(b.edges[0].style, 'dashed'); assert.equal(b.edges[1].style, 'solid'); assert.equal(b.edges[1].both, true);
   assert.equal(b.groups[0].at, 0);
-  assert.ok(Math.min(...b.nodes.map((n) => n.at)) >= b.groups[0].at + b.groups[0].dur - 1e-9);
+  assert.ok(Math.min(...b.nodes.map((n) => n.at)) >= b.groups[0].at + b.groups[0].dur - 3e-4);
   assert.ok(Math.min(...b.edges.map((e) => e.at)) >= Math.min(...b.nodes.map((n) => n.at + n.dur)));
   assert.equal(b.messages[0].edge, 0);
 });
 test('compile: two messages on one edge are staggered, never overlapping', () => {
   const r = mermaidToArch('%% msg: a->b "one"\n%% msg: a->b "two"\nflowchart LR\na --> b');
   const [m1, m2] = r.block.messages;
-  assert.ok(m2.at >= m1.at + m1.dur - 1e-9, JSON.stringify([m1, m2]));
+  assert.ok(m2.at >= m1.at + m1.dur - 3e-4, JSON.stringify([m1, m2]));
 });
 test('compile: message resolves to the first matching edge; back flag is kept', () => {
   const r = mermaidToArch('%% msg: a->b "x" back\nflowchart LR\na -->|first| b\na -->|second| b');
@@ -406,6 +406,220 @@ for (const f of examples) {
   });
 }
 
+for (const f of examples) {
+  test('golden numbered standalone payload (diagram + table atom): ' + f, () => {
+    const out = JSON.stringify(mermaidToArch(readFileSync(join(EX, f), 'utf8'), { numbered: true }).payload, null, 1) + '\n';
+    const gp = join(EX, f.replace(/\.mmd$/, '.numbered.golden.json'));
+    if (process.env.UPDATE_GOLDEN || !existsSync(gp)) writeFileSync(gp, out);
+    assert.equal(out, readFileSync(gp, 'utf8'), `${f}: numbered payload changed; if intended run UPDATE_GOLDEN=1 node scripts/test_mermaid_arch.mjs`);
+  });
+}
+for (const f of examples) {
+  test('golden numbered film payload: ' + f, () => {
+    const out = JSON.stringify(mermaidToArch(readFileSync(join(EX, f), 'utf8'), { numbered: true, film: true }).payload, null, 1) + '\n';
+    const gp = join(EX, f.replace(/\.mmd$/, '.numbered-film.golden.json'));
+    if (process.env.UPDATE_GOLDEN || !existsSync(gp)) writeFileSync(gp, out);
+    assert.equal(out, readFileSync(gp, 'utf8'), `${f}: numbered film changed; if intended run UPDATE_GOLDEN=1 node scripts/test_mermaid_arch.mjs`);
+  });
+}
+
+// ------------------------------------------------------------------ numbered flows, steps table, pacing
+const N3 = 'flowchart LR\na[Alpha] -->|first call| b[Beta]\nb -->|second| c[Gamma]\nc -.-> a';
+test('numbered: labels get the step number, in source order; unlabelled edges get just the number', () => {
+  const r = mermaidToArch(N3, { numbered: true });
+  assert.deepEqual(r.block.edges.map((e) => e.label), ['1 first call', '2 second', '3']);
+  assert.deepEqual(r.steps.map((s) => s.step), [1, 2, 3]);
+});
+test('numbered: off by default in the library; directive turns it on; opts win over the directive', () => {
+  assert.equal(mermaidToArch(N3).block.edges[0].label, 'first call');
+  assert.equal(mermaidToArch('%% numbered: on\n' + N3).block.edges[0].label, '1 first call');
+  assert.equal(mermaidToArch('%% numbered: on\n' + N3, { numbered: false }).block.edges[0].label, 'first call');
+  assert.deepEqual(mermaidToArch(N3).steps, []);
+});
+test('numbered: %% step override reorders; other edges take the lowest free numbers', () => {
+  const r = mermaidToArch('%% step: c->a 1\n' + N3, { numbered: true });
+  assert.deepEqual(r.block.edges.map((e) => e.label), ['2 first call', '3 second', '1']);
+  assert.deepEqual(r.steps.map((s) => s.from + '>' + s.to), ['Gamma>Alpha', 'Alpha>Beta', 'Beta>Gamma']);
+});
+test('numbered: step errors are plain (duplicate, gap/out of range, unknown edge, bad directive)', () => {
+  assert.match(err('%% step: a->b 2\n%% step: b->c 2\n' + N3.replace('flowchart LR', 'flowchart LR') + '\n') || '', /^$|./); // parse ok, validated below
+  assert.match(errN('%% step: a->b 2\n%% step: b->c 2\n' + N3), /step 2 is given to both edge 1 and edge 2/);
+  assert.match(errN('%% step: a->b 9\n' + N3), /step 9 is larger than the number of edges \(3\)/);
+  assert.match(errN('%% step: a->c 1\n' + N3), /no \(further\) edge from "a" to "c"/);
+  assert.match(errN('%% step: nonsense\n' + N3), /bad "%% step:" directive/);
+  assert.match(errN('%% step: a->zz 1\n' + N3), /"zz", which is not a node/);
+});
+function errN(src) { try { mermaidToArch(src, { numbered: true }); } catch (e) { if (e instanceof ArchError) return e.errors.join('\n'); throw e; } return ''; }
+test('numbered: a prefix that pushes a label over 48 characters warns and is cut with an ellipsis', () => {
+  const r = mermaidToArch('flowchart LR\na -->|' + 'w'.repeat(47) + '| b', { numbered: true });
+  assert.ok(r.warnings.some((w) => /step number pushes the label to 49 characters/.test(w)));
+  assert.ok(r.block.edges[0].label.length <= 48);
+});
+test('steps table matches the edges (standalone payload carries a table atom)', () => {
+  for (const f of examples) {
+    const r = mermaidToArch(readFileSync(join(EX, f), 'utf8'), { numbered: true });
+    const t = r.payload.blocks[1];
+    assert.equal(t.type, 'table');
+    assert.equal(t.rows.length, r.block.edges.length);
+    const label = new Map(r.graph.nodes.map((n) => [n.id, n.label]));
+    r.graph.edges.forEach((e, i) => {
+      const row = t.rows[r.steps.findIndex((s) => s.from === label.get(e.from) && s.to === label.get(e.to) && s.label === (e.label || ''))];
+      assert.ok(row, 'row for edge ' + i);
+      assert.deepEqual(row.slice(1), [label.get(e.from), label.get(e.to), e.label || '-', e.style]);
+    });
+    assert.deepEqual(r.steps.map((s) => s.step), r.steps.map((_, i) => i + 1));
+  }
+});
+test('film: one timeline carries diagram and rows on one clock; rows reveal at their step', () => {
+  const r = mermaidToArch(readFileSync(join(EX, examples[0]), 'utf8'), { numbered: true, film: true });
+  const tl = r.payload.blocks[0];
+  assert.equal(tl.type, 'motion_timeline');
+  assert.equal(tl.duration, r.durationSeconds);
+  assert.ok(tl.blocks.length <= 24 && tl.tracks.length <= 40);
+  const arch = tl.blocks.find((b) => b.type === 'motion_arch');
+  r.schedule.forEach((st, k) => {
+    const tr = tl.tracks.find((t) => t.target === 'row' + (k + 1));
+    assert.ok(tr, 'row track ' + (k + 1));
+    assert.equal(tr.keys[1].t, st.start); assert.equal(tr.keys[1].opacity, 0);       // hidden until its step starts
+    assert.equal(tr.keys[2].opacity, 1);
+    const stepEdge = arch.edges[r.graph.edges.findIndex((_, i) => r.block.edges[i].label.startsWith(String(st.step) + ' ') || r.block.edges[i].label === String(st.step))];
+    assert.ok(Math.abs(stepEdge.at * tl.duration - st.start) < 0.02, 'edge draws when its row appears');
+  });
+  const hl = tl.tracks.find((t) => t.target === 'hl');
+  assert.ok(hl.keys.filter((k) => k.ease === 'hold').length === r.schedule.length);
+  assert.ok(tl.poster >= r.schedule[r.schedule.length - 1].end, 'poster shows the finished table');
+  assert.equal(tl.tracks.find((t) => t.target === 'arch').keys[1].p, 1);
+});
+const P3 = 'flowchart LR\na -->|one| b\nb -->|two| c\nc -->|three| d';
+test('pacing: step dwell follows the formula (min 2.5 s, 3 words per second + 0.8 s)', () => {
+  const r = mermaidToArch(P3, { numbered: true });
+  assert.equal(r.schedule[0].start, 1.5);                                        // lead-in
+  r.schedule.forEach((s) => assert.ok(s.end - s.start >= 2.5 - 1e-9));
+  const long = mermaidToArch('flowchart LR\na[Alpha service] -->|' + 'word '.repeat(9).trim() + '| b[Beta service]', { numbered: true });
+  const w = 9, row = 2 + 2 + 9 + 1;
+  assert.ok(Math.abs((long.schedule[0].end - long.schedule[0].start) - ((w + row) / 3 + 0.8)) < 2e-3);
+  assert.equal(r.durationSeconds, +(r.schedule[2].end + 3).toFixed(3));           // 3 s hold at the end
+});
+test('pacing: more steps and more words never make the film shorter; crowded films get +15% / +30%', () => {
+  const chain = (n, lbl = 'x') => 'flowchart LR\n' + Array.from({ length: n }, (_, i) => `n${i} -->|${lbl}| n${i + 1}`).join('\n');
+  const d = (n, lbl) => mermaidToArch(chain(n, lbl), { numbered: true }).durationSeconds;
+  const ds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map((n) => d(n));
+  for (let i = 1; i < ds.length; i++) assert.ok(ds[i] > ds[i - 1], 'steps ' + (i + 1));
+  assert.ok(d(3, 'a long label with many words in it') > d(3, 'x'));
+  const per = (n) => { const r = mermaidToArch(chain(n), { numbered: true }); return r.schedule[0].end - r.schedule[0].start; };
+  assert.ok(Math.abs(per(7) / per(6) - 1.15) < 2e-3); assert.ok(Math.abs(per(10) / per(9) - 1.15) < 2e-3);
+});
+test('pacing: slow 1.4x, fast 0.75x of the dwell; directive and option agree', () => {
+  const dw = (o, pre = '') => { const r = mermaidToArch(pre + P3, { numbered: true, ...o }); return r.schedule[0].end - r.schedule[0].start; };
+  assert.ok(Math.abs(dw({ pace: 'slow' }) / dw({}) - 1.4) < 2e-3);
+  assert.ok(Math.abs(dw({ pace: 'fast' }) / dw({}) - 0.75) < 2e-3);
+  assert.equal(dw({}, '%% pace: slow\n'), dw({ pace: 'slow' }));
+  assert.match(errP('%% pace: crawling\n' + P3), /"%% pace:" must be one of slow, normal, fast/);
+});
+function errP(src) { try { mermaidToArch(src); } catch (e) { if (e instanceof ArchError) return e.errors.join('\n'); throw e; } return ''; }
+test('pacing: %% duration overrides the total; below the fast reading time it warns', () => {
+  const ok = mermaidToArch('%% duration: 40\n' + P3, { numbered: true });
+  assert.equal(ok.durationSeconds, 40); assert.equal(ok.warnings.filter((w) => /duration/.test(w)).length, 0);
+  assert.equal(ok.schedule[2].end + 3, 40);
+  const short = mermaidToArch('%% duration: 10\n' + P3, { numbered: true });
+  assert.ok(short.warnings.some((w) => /duration 10 s is shorter than the .* s the steps need at the fast pace/.test(w)));
+  assert.match(errP('%% duration: 3\n' + P3.replace('a -->|one| b', 'a -->|one| b\nb -->|x| a')), /leaves no time|duration/);
+});
+test('pacing: steps never overlap; chips ride inside their own step; film length is monotonic in pace', () => {
+  for (const f of examples) {
+    const src = readFileSync(join(EX, f), 'utf8');
+    const r = mermaidToArch(src, { numbered: true });
+    for (let i = 1; i < r.schedule.length; i++) assert.ok(r.schedule[i].start >= r.schedule[i - 1].end - 1e-9, f + ' step ' + i);
+    const D = r.durationSeconds;
+    r.block.messages.forEach((m, j) => {
+      const e = r.block.edges[m.edge];
+      const stepNo = r.steps.findIndex((s) => e.label === String(s.step) || e.label.startsWith(s.step + ' '));
+      const st = r.schedule[stepNo];
+      assert.ok(m.at * D >= st.start - 0.01 && (m.at + m.dur) * D <= st.end + 0.01, `${f}: chip ${j} outside its step ${st.step}`);
+    });
+    const d = ['fast', 'normal', 'slow'].map((pace) => mermaidToArch(src, { numbered: true, pace }).durationSeconds);
+    assert.ok(d[0] < d[1] && d[1] < d[2], f);
+    assert.ok(d[2] <= 120);
+  }
+});
+test('schedule is returned by the library: [{step,start,end}] and durationSeconds', () => {
+  const r = mermaidToArch(N3, { numbered: true });
+  assert.deepEqual(Object.keys(r.schedule[0]), ['step', 'start', 'end']);
+  assert.equal(typeof r.durationSeconds, 'number');
+});
+
+// ------------------------------------------------------------------ D2 adapter
+const d2 = (src, o) => parseD2(src, o).graph;
+const d2err = (src) => { try { parseD2(src); } catch (e) { if (e instanceof ArchError) return e.errors.join('\n'); throw e; } return null; };
+test('D2 and Mermaid: the same 9-node example gives the identical canonical graph and payload', () => {
+  const m = readFileSync(join(EX, 'equiv', 'orders.mmd'), 'utf8'), d = readFileSync(join(EX, 'equiv', 'orders.d2'), 'utf8');
+  assert.deepEqual(parseD2(d).graph, parseMermaid(m).graph);
+  assert.equal(JSON.stringify(d2ToArch(d).payload), JSON.stringify(mermaidToArch(m).payload));
+});
+const D2FORMS = [
+  ['bare shape', 'a', { label: 'a', kind: 'server' }],
+  ['label', 'a: Hello', { label: 'Hello' }],
+  ['quoted label with colon', 'a: "Hello: world"', { label: 'Hello: world' }],
+  ['block with label/shape', 'a: { label: Data; shape: cylinder }', { label: 'Data', kind: 'store' }],
+  ['shape queue', 'a: { shape: queue }', { kind: 'tool' }],
+  ['shape person', 'a: { shape: person }', { kind: 'user' }],
+  ['shape circle', 'a: { shape: circle }', { kind: 'model' }],
+  ['shape hexagon', 'a: { shape: hexagon }', { kind: 'app' }],
+  ['kind hint beats shape', 'a: { shape: cylinder; kind: user }', { kind: 'user' }],
+  ['class alias', 'a: { class: db }', { kind: 'store' }],
+  ['two-line label becomes label + sub', 'a: "Agent\\nruns on ADK"', { label: 'Agent', sub: 'runs on ADK' }],
+  ['semicolons and comments', 'a: A; b: B # trailing', { label: 'A' }],
+];
+for (const [name, src, want] of D2FORMS) {
+  test('D2 shape form: ' + name, () => {
+    const n = d2(src).nodes[0];
+    for (const [k, v] of Object.entries(want)) assert.equal(n[k], v, `${k} of ${JSON.stringify(n)}`);
+  });
+}
+const D2LINKS = [
+  ['->', 'a -> b', { style: 'sync' }],
+  ['<-', 'a <- b', { from: 'b', to: 'a' }],
+  ['<->', 'a <-> b', { both: true }],
+  ['--', 'a -- b', { style: 'sync' }],
+  ['label', 'a -> b: hello there', { label: 'hello there' }],
+  ['dashed inline', 'a -> b: x { style.stroke-dash: 3 }', { style: 'async' }],
+  ['dashed nested block', 'a -> b { style: { stroke-dash: 3 } }', { style: 'async' }],
+  ['label in block', 'a -> b { label: hi }', { label: 'hi' }],
+];
+for (const [name, src, want] of D2LINKS) {
+  test('D2 connection: ' + name, () => {
+    const e = d2(src).edges[0];
+    for (const [k, v] of Object.entries({ from: 'a', to: 'b', ...want })) assert.equal(e[k], v, `${k} of ${JSON.stringify(e)}`);
+  });
+}
+test('D2: chains, containers, dotted paths, nested containers, direction, directives', () => {
+  assert.equal(d2('a -> b -> c').edges.length, 2);
+  assert.equal(d2('a -> b -> c: lbl').edges.every((e) => e.label === 'lbl'), true);
+  const g = d2('direction: down\ng: Group {\n  a\n  b\n  a -> b\n}\nc\nc -> g.a');
+  assert.equal(g.direction, 'TB'); assert.deepEqual(g.groups, [{ id: 'g', label: 'Group' }]);
+  assert.equal(g.nodes.find((n) => n.id === 'a').group, 'g'); assert.equal(g.edges.length, 2);
+  const nested = parseD2('o: Outer {\n  i: Inner {\n    a\n  }\n  b\n}\na -> b');
+  assert.equal(nested.graph.groups.length, 1); assert.ok(nested.warnings.some((w) => /nested/.test(w)));
+  const r = d2ToArch('# numbered: on\n# pace: fast\n# step: b->a 1\na -> b\nb -> a');
+  assert.equal(r.pace, 'fast'); assert.deepEqual(r.steps.map((s) => s.from), ['b', 'a']);
+});
+test('D2 errors are plain and name the line', () => {
+  assert.match(d2err('a -> '), /line 1: a connection needs a shape on both sides/);
+  assert.match(d2err('a: { b'), /never closed/);
+  assert.match(d2err('}'), /without a matching/);
+  assert.match(d2err('a: "oops'), /never closed/);
+  assert.match(d2err('classes: { x: {} }'), /"classes" is not supported/);
+  assert.match(d2err('g: { a }\nb -> g'), /container, not a shape/);
+  assert.match(d2err(''), /no shapes found/);
+  assert.match(d2err('# msg: a->zz "x"\na -> b'), /"zz" is not a shape/);
+  assert.match(d2err('a: { shape: cylinder; kind: user }\n# pace: eternal'), /"# pace:" must be one of/);
+});
+test('D2: never crashes on odd input', () => {
+  for (const s of ['', '{', ':::', 'a ->', '->', 'a: {{{', '\u0000', 'x'.repeat(3000), 'a -> b -> ', '#', 'a: |md hi |']) {
+    try { d2ToArch(s); } catch (e) { assert.ok(e instanceof ArchError, `unexpected ${e && e.stack}`); }
+  }
+});
+
 // ------------------------------------------------------------------ the repo's own renderer accepts the payloads
 test('python renderer draws every golden payload (no dropped fields, all labels present)', (t) => {
   const root = join(HERE, '..');
@@ -420,12 +634,22 @@ for p in sys.argv[1:]:
     d = json.load(open(p)); b = d['blocks'][0]
     html = wa.render(d['blocks'], 'dark')
     if re.search(r'<!-- (a2ui|unknown)', html): bad.append(p + ': renderer dropped something')
+    if b['type'] == 'motion_timeline':
+        arch = [c for c in b['blocks'] if c['type'] == 'motion_arch'][0]
+        rows = [c for c in b['blocks'] if c.get('id', '').startswith('row')]
+        if len(rows) != len(arch['edges']): bad.append(p + ': row count')
+        for r in rows:
+            if r['text'].split('*')[2][:10].strip()[:3] not in html: bad.append(p + ': row text missing')
+        continue
+    if len(d['blocks']) > 1 and d['blocks'][1]['type'] == 'table':
+        for row in d['blocks'][1]['rows']:
+            if row[1] not in html: bad.append(p + ': table cell missing ' + row[1])
     for n in b['nodes']:
         if n['label'].replace('&','&amp;') not in html and n['label'] not in html: bad.append(p + ': label missing ' + n['label'])
     if html.count('<path') < len(b['edges']): bad.append(p + ': edges missing')
 print(json.dumps(bad))
 `;
-  const goldens = examples.map((f) => join(EX, f.replace(/\.mmd$/, '.golden.json')));
+  const goldens = examples.flatMap((f) => ['.golden.json', '.numbered.golden.json', '.numbered-film.golden.json'].map((x) => join(EX, f.replace(/\.mmd$/, x))));
   const out = JSON.parse(execFileSync('python3', ['-W', 'ignore', '-c', code, ...goldens], { encoding: 'utf8', cwd: root }));
   assert.deepEqual(out, []);
 });

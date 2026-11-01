@@ -1,0 +1,690 @@
+{
+ "theme": "dark",
+ "blocks": [
+  {
+   "type": "motion_timeline",
+   "title": "A2UI v0.9: from prompt to native screen",
+   "aspect": "4:3",
+   "duration": 50.347,
+   "loop": true,
+   "autoplay": true,
+   "controls": true,
+   "theme": "dark",
+   "poster": 49.85,
+   "blocks": [
+    {
+     "type": "motion_arch",
+     "label": "A2UI v0.9: from prompt to native screen",
+     "w": 1005,
+     "h": 298,
+     "size": 14,
+     "nodes": [
+      {
+       "id": "user",
+       "kind": "user",
+       "label": "User",
+       "x": 5.67,
+       "y": 50,
+       "w": 7.76,
+       "h": 14.09,
+       "at": 0.006,
+       "dur": 0.011
+      },
+      {
+       "id": "client",
+       "kind": "app",
+       "label": "Client app",
+       "x": 31.99,
+       "y": 25.84,
+       "w": 12.44,
+       "h": 14.09,
+       "at": 0.0089,
+       "dur": 0.011
+      },
+      {
+       "id": "renderer",
+       "kind": "surface",
+       "label": "A2UI renderer",
+       "x": 31.99,
+       "y": 54.03,
+       "w": 14.73,
+       "h": 14.09,
+       "at": 0.0119,
+       "dur": 0.011
+      },
+      {
+       "id": "catalog",
+       "kind": "store",
+       "label": "Trusted catalogue",
+       "x": 31.99,
+       "y": 82.21,
+       "w": 17.81,
+       "h": 14.09,
+       "at": 0.0149,
+       "dur": 0.011
+      },
+      {
+       "id": "agent",
+       "kind": "app",
+       "label": "ADK agent",
+       "x": 73.48,
+       "y": 54.03,
+       "w": 11.64,
+       "h": 14.09,
+       "at": 0.0179,
+       "dur": 0.011
+      },
+      {
+       "id": "llm",
+       "kind": "model",
+       "label": "LLM",
+       "x": 93.08,
+       "y": 54.03,
+       "w": 7.26,
+       "h": 14.09,
+       "at": 0.0209,
+       "dur": 0.011
+      }
+     ],
+     "edges": [
+      {
+       "from": "user",
+       "to": "client",
+       "label": "1 types prompt",
+       "style": "solid",
+       "at": 0.0298,
+       "dur": 0.011
+      },
+      {
+       "from": "client",
+       "to": "agent",
+       "label": "2 prompt",
+       "style": "solid",
+       "at": 0.1209,
+       "dur": 0.011
+      },
+      {
+       "from": "agent",
+       "to": "llm",
+       "label": "3 plan",
+       "style": "solid",
+       "at": 0.2032,
+       "dur": 0.011
+      },
+      {
+       "from": "llm",
+       "to": "agent",
+       "label": "4 A2UI JSON",
+       "style": "solid",
+       "curve": 50,
+       "at": 0.2767,
+       "dur": 0.011
+      },
+      {
+       "from": "agent",
+       "to": "client",
+       "label": "5 createSurface, updateComponents",
+       "style": "dashed",
+       "curve": 24,
+       "at": 0.3678,
+       "dur": 0.011
+      },
+      {
+       "from": "client",
+       "to": "renderer",
+       "label": "6 A2UI messages",
+       "style": "solid",
+       "at": 0.4676,
+       "dur": 0.011
+      },
+      {
+       "from": "renderer",
+       "to": "catalog",
+       "label": "7 looks up components",
+       "style": "solid",
+       "at": 0.5674,
+       "dur": 0.011
+      },
+      {
+       "from": "renderer",
+       "to": "user",
+       "label": "8 native UI",
+       "style": "solid",
+       "at": 0.6847,
+       "dur": 0.011
+      },
+      {
+       "from": "renderer",
+       "to": "client",
+       "label": "9 action",
+       "style": "dashed",
+       "curve": 65,
+       "at": 0.7758,
+       "dur": 0.011
+      },
+      {
+       "from": "client",
+       "to": "agent",
+       "label": "10 action",
+       "style": "dashed",
+       "curve": 36,
+       "at": 0.8581,
+       "dur": 0.011
+      }
+     ],
+     "groups": [
+      {
+       "label": "Client",
+       "x": 21.59,
+       "y": 6.04,
+       "w": 20.8,
+       "h": 87.92,
+       "at": 0,
+       "dur": 0.011
+      },
+      {
+       "label": "Agent",
+       "x": 66.17,
+       "y": 34.23,
+       "w": 32.04,
+       "h": 31.54,
+       "at": 0,
+       "dur": 0.011
+      }
+     ],
+     "messages": [
+      {
+       "edge": 1,
+       "text": "prompt",
+       "at": 0.1329,
+       "dur": 0.0238
+      },
+      {
+       "edge": 4,
+       "text": "updateComponents",
+       "at": 0.3798,
+       "dur": 0.0238
+      },
+      {
+       "edge": 8,
+       "text": "action",
+       "at": 0.7878,
+       "dur": 0.0238
+      }
+     ],
+     "id": "arch",
+     "place": {
+      "x": 5.31,
+      "y": 2.67,
+      "w": 89.37,
+      "h": 35.33,
+      "z": 1
+     }
+    },
+    {
+     "type": "motion_text",
+     "id": "head",
+     "text": "STEP  FROM → TO: WHAT",
+     "size": 21,
+     "font": "mono",
+     "weight": "bold",
+     "mode": "block",
+     "reveal": "fade",
+     "color": "#9ca5b1",
+     "place": {
+      "x": 3,
+      "y": 40.67,
+      "w": 94,
+      "z": 2
+     }
+    },
+    {
+     "type": "motion_shape",
+     "id": "hl",
+     "shape": "rect",
+     "draw": "none",
+     "fill": "#8d98ff",
+     "radius": 8,
+     "place": {
+      "x": 1.8,
+      "y": 45.78,
+      "w": 96.4,
+      "h": 4.89,
+      "z": 1
+     }
+    },
+    {
+     "type": "motion_text",
+     "id": "row1",
+     "text": "*1*  User → Client app: types prompt",
+     "size": 24,
+     "font": "mono",
+     "weight": "regular",
+     "mode": "block",
+     "reveal": "fade",
+     "place": {
+      "x": 3,
+      "y": 46.22,
+      "w": 94,
+      "z": 2
+     }
+    },
+    {
+     "type": "motion_text",
+     "id": "row2",
+     "text": "*2*  Client app → ADK agent: prompt",
+     "size": 24,
+     "font": "mono",
+     "weight": "regular",
+     "mode": "block",
+     "reveal": "fade",
+     "place": {
+      "x": 3,
+      "y": 51.33,
+      "w": 94,
+      "z": 2
+     }
+    },
+    {
+     "type": "motion_text",
+     "id": "row3",
+     "text": "*3*  ADK agent → LLM: plan",
+     "size": 24,
+     "font": "mono",
+     "weight": "regular",
+     "mode": "block",
+     "reveal": "fade",
+     "place": {
+      "x": 3,
+      "y": 56.44,
+      "w": 94,
+      "z": 2
+     }
+    },
+    {
+     "type": "motion_text",
+     "id": "row4",
+     "text": "*4*  LLM → ADK agent: A2UI JSON",
+     "size": 24,
+     "font": "mono",
+     "weight": "regular",
+     "mode": "block",
+     "reveal": "fade",
+     "place": {
+      "x": 3,
+      "y": 61.56,
+      "w": 94,
+      "z": 2
+     }
+    },
+    {
+     "type": "motion_text",
+     "id": "row5",
+     "text": "*5*  ADK agent → Client app: createSurface, updateComponent…",
+     "size": 24,
+     "font": "mono",
+     "weight": "regular",
+     "mode": "block",
+     "reveal": "fade",
+     "place": {
+      "x": 3,
+      "y": 66.67,
+      "w": 94,
+      "z": 2
+     }
+    },
+    {
+     "type": "motion_text",
+     "id": "row6",
+     "text": "*6*  Client app → A2UI renderer: A2UI messages",
+     "size": 24,
+     "font": "mono",
+     "weight": "regular",
+     "mode": "block",
+     "reveal": "fade",
+     "place": {
+      "x": 3,
+      "y": 71.78,
+      "w": 94,
+      "z": 2
+     }
+    },
+    {
+     "type": "motion_text",
+     "id": "row7",
+     "text": "*7*  A2UI renderer → Trusted catalogue: looks up components",
+     "size": 24,
+     "font": "mono",
+     "weight": "regular",
+     "mode": "block",
+     "reveal": "fade",
+     "place": {
+      "x": 3,
+      "y": 76.89,
+      "w": 94,
+      "z": 2
+     }
+    },
+    {
+     "type": "motion_text",
+     "id": "row8",
+     "text": "*8*  A2UI renderer → User: native UI",
+     "size": 24,
+     "font": "mono",
+     "weight": "regular",
+     "mode": "block",
+     "reveal": "fade",
+     "place": {
+      "x": 3,
+      "y": 82,
+      "w": 94,
+      "z": 2
+     }
+    },
+    {
+     "type": "motion_text",
+     "id": "row9",
+     "text": "*9*  A2UI renderer → Client app: action (async)",
+     "size": 24,
+     "font": "mono",
+     "weight": "regular",
+     "mode": "block",
+     "reveal": "fade",
+     "place": {
+      "x": 3,
+      "y": 87.11,
+      "w": 94,
+      "z": 2
+     }
+    },
+    {
+     "type": "motion_text",
+     "id": "row10",
+     "text": "*10*  Client app → ADK agent: action (async)",
+     "size": 24,
+     "font": "mono",
+     "weight": "regular",
+     "mode": "block",
+     "reveal": "fade",
+     "place": {
+      "x": 3,
+      "y": 92.22,
+      "w": 94,
+      "z": 2
+     }
+    }
+   ],
+   "tracks": [
+    {
+     "target": "arch",
+     "keys": [
+      {
+       "t": 0,
+       "p": 0
+      },
+      {
+       "t": 50.347,
+       "p": 1,
+       "ease": "linear"
+      }
+     ]
+    },
+    {
+     "target": "row1",
+     "keys": [
+      {
+       "t": 0,
+       "opacity": 0
+      },
+      {
+       "t": 1.5,
+       "opacity": 0
+      },
+      {
+       "t": 1.8,
+       "opacity": 1,
+       "ease": "standard"
+      }
+     ]
+    },
+    {
+     "target": "row2",
+     "keys": [
+      {
+       "t": 0,
+       "opacity": 0
+      },
+      {
+       "t": 6.085,
+       "opacity": 0
+      },
+      {
+       "t": 6.39,
+       "opacity": 1,
+       "ease": "standard"
+      }
+     ]
+    },
+    {
+     "target": "row3",
+     "keys": [
+      {
+       "t": 0,
+       "opacity": 0
+      },
+      {
+       "t": 10.229,
+       "opacity": 0
+      },
+      {
+       "t": 10.53,
+       "opacity": 1,
+       "ease": "standard"
+      }
+     ]
+    },
+    {
+     "target": "row4",
+     "keys": [
+      {
+       "t": 0,
+       "opacity": 0
+      },
+      {
+       "t": 13.932,
+       "opacity": 0
+      },
+      {
+       "t": 14.23,
+       "opacity": 1,
+       "ease": "standard"
+      }
+     ]
+    },
+    {
+     "target": "row5",
+     "keys": [
+      {
+       "t": 0,
+       "opacity": 0
+      },
+      {
+       "t": 18.516,
+       "opacity": 0
+      },
+      {
+       "t": 18.82,
+       "opacity": 1,
+       "ease": "standard"
+      }
+     ]
+    },
+    {
+     "target": "row6",
+     "keys": [
+      {
+       "t": 0,
+       "opacity": 0
+      },
+      {
+       "t": 23.542,
+       "opacity": 0
+      },
+      {
+       "t": 23.84,
+       "opacity": 1,
+       "ease": "standard"
+      }
+     ]
+    },
+    {
+     "target": "row7",
+     "keys": [
+      {
+       "t": 0,
+       "opacity": 0
+      },
+      {
+       "t": 28.567,
+       "opacity": 0
+      },
+      {
+       "t": 28.87,
+       "opacity": 1,
+       "ease": "standard"
+      }
+     ]
+    },
+    {
+     "target": "row8",
+     "keys": [
+      {
+       "t": 0,
+       "opacity": 0
+      },
+      {
+       "t": 34.474,
+       "opacity": 0
+      },
+      {
+       "t": 34.77,
+       "opacity": 1,
+       "ease": "standard"
+      }
+     ]
+    },
+    {
+     "target": "row9",
+     "keys": [
+      {
+       "t": 0,
+       "opacity": 0
+      },
+      {
+       "t": 39.059,
+       "opacity": 0
+      },
+      {
+       "t": 39.36,
+       "opacity": 1,
+       "ease": "standard"
+      }
+     ]
+    },
+    {
+     "target": "row10",
+     "keys": [
+      {
+       "t": 0,
+       "opacity": 0
+      },
+      {
+       "t": 43.203,
+       "opacity": 0
+      },
+      {
+       "t": 43.5,
+       "opacity": 1,
+       "ease": "standard"
+      }
+     ]
+    },
+    {
+     "target": "hl",
+     "keys": [
+      {
+       "t": 0,
+       "y": 45.78,
+       "opacity": 0
+      },
+      {
+       "t": 1.5,
+       "y": 45.78,
+       "opacity": 0,
+       "ease": "hold"
+      },
+      {
+       "t": 1.8,
+       "opacity": 0.22,
+       "ease": "standard"
+      },
+      {
+       "t": 6.085,
+       "y": 50.89,
+       "opacity": 0.22,
+       "ease": "hold"
+      },
+      {
+       "t": 10.229,
+       "y": 56,
+       "opacity": 0.22,
+       "ease": "hold"
+      },
+      {
+       "t": 13.932,
+       "y": 61.11,
+       "opacity": 0.22,
+       "ease": "hold"
+      },
+      {
+       "t": 18.516,
+       "y": 66.22,
+       "opacity": 0.22,
+       "ease": "hold"
+      },
+      {
+       "t": 23.542,
+       "y": 71.33,
+       "opacity": 0.22,
+       "ease": "hold"
+      },
+      {
+       "t": 28.567,
+       "y": 76.44,
+       "opacity": 0.22,
+       "ease": "hold"
+      },
+      {
+       "t": 34.474,
+       "y": 81.56,
+       "opacity": 0.22,
+       "ease": "hold"
+      },
+      {
+       "t": 39.059,
+       "y": 86.67,
+       "opacity": 0.22,
+       "ease": "hold"
+      },
+      {
+       "t": 43.203,
+       "y": 91.78,
+       "opacity": 0.22,
+       "ease": "hold"
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

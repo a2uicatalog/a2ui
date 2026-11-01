@@ -1,7 +1,7 @@
 // Mermaid flowchart subset -> canonical graph. Pure ES module, no dependencies.
 // See docs/mermaid_arch.md for the supported syntax. Unsupported input gives a
 // plain error naming the line; the parser never throws anything but ArchError.
-import { ArchError, KINDS, resolveKind, didYouMean, LIMITS } from './graph.mjs';
+import { ArchError, KINDS, resolveKind, didYouMean, LIMITS, PACES } from './graph.mjs';
 
 const OTHER_DIAGRAMS = {
   sequencediagram: 'Draw each participant as a node and each message as an edge in a flowchart.',
@@ -132,7 +132,8 @@ export function parseMermaid(text, opts = {}) {
   const groupStack = [];            // [{key,label,nested}]
   const classStmts = [];            // {line, ids, cls}
   const msgDirectives = [];         // {line, from, to, text, back}
-  let title, direction = 'TB', headerSeen = false, openLinkWarned = false;
+  const stepDirectives = [];         // {line, from, to, step}
+  let title, numbered, pace, duration, direction = 'TB', headerSeen = false, openLinkWarned = false;
 
   function touchNode(orig, line) {
     let n = nodes.get(orig);
@@ -306,12 +307,28 @@ export function parseMermaid(text, opts = {}) {
     let line = lines[li].trim();
     if (!line) continue;
     if (line.startsWith('%%')) {
-      const d = /^%%\s*(title|msg)\s*:\s*(.*)$/i.exec(line);
-      if (d && d[1].toLowerCase() === 'title') { if (d[2].trim()) title = d[2].trim(); }
-      else if (d) {
+      const d = /^%%\s*(title|msg|numbered|pace|duration|step)\s*:\s*(.*)$/i.exec(line);
+      const key = d && d[1].toLowerCase();
+      if (key === 'title') { if (d[2].trim()) title = d[2].trim(); }
+      else if (key === 'msg') {
         const m = /^(\S+?)\s*->\s*(\S+?)\s+"([^"]*)"(?:\s+(back))?\s*$/.exec(d[2].trim());
         if (!m) fail(L(), `bad "%% msg:" directive; write it as  %% msg: fromId->toId "payload text"  (add the word back at the end for a reply)`);
         else msgDirectives.push({ line: L(), from: m[1], to: m[2], text: m[3], back: !!m[4] });
+      } else if (key === 'numbered') {
+        const v = d[2].trim().toLowerCase();
+        if (v === 'on' || v === 'true' || v === 'yes') numbered = true;
+        else if (v === 'off' || v === 'false' || v === 'no') numbered = false;
+        else fail(L(), '"%% numbered:" must be on or off');
+      } else if (key === 'pace') {
+        const v = d[2].trim().toLowerCase();
+        if (v in PACES) pace = v; else fail(L(), `"%% pace:" must be one of ${Object.keys(PACES).join(', ')}`);
+      } else if (key === 'duration') {
+        const v = Number(d[2].trim().replace(/\s*s$/i, ''));
+        if (Number.isFinite(v) && v >= 2 && v <= 120) duration = v; else fail(L(), '"%% duration:" must be a number of seconds from 2 to 120, for example %% duration: 40');
+      } else if (key === 'step') {
+        const m = /^(\S+?)\s*->\s*(\S+?)\s+(\d+)\s*$/.exec(d[2].trim());
+        if (!m) fail(L(), 'bad "%% step:" directive; write it as  %% step: fromId->toId 3');
+        else stepDirectives.push({ line: L(), from: m[1], to: m[2], step: +m[3] });
       }
       continue;
     }
@@ -434,7 +451,20 @@ export function parseMermaid(text, opts = {}) {
   }
   if (errors.length) throw new ArchError(errors.slice(0, 20), warnings);
 
+  const taken = new Set();
+  for (const d of stepDirectives) {
+    const f = lookup(d.from), t = lookup(d.to);
+    const names = [...nodes.keys()];
+    if (!f || !t) { errors.push(`line ${d.line}: step directive names "${!f ? d.from : d.to}", which is not a node` + (didYouMean(!f ? d.from : d.to, names) ? ` (did you mean "${didYouMean(!f ? d.from : d.to, names)}"?)` : '')); continue; }
+    const idx = eOut.findIndex((e, i) => e.from === mapNode(f) && e.to === mapNode(t) && !taken.has(i));
+    if (idx < 0) { errors.push(`line ${d.line}: step directive: there is no (further) edge from "${d.from}" to "${d.to}"`); continue; }
+    taken.add(idx); eOut[idx].step = d.step;
+  }
+  if (errors.length) throw new ArchError(errors.slice(0, 20), warnings);
   const graph = { direction: opts.direction || direction, groups: gOut, nodes: nOut, edges: eOut, messages: mOut };
+  if (numbered !== undefined) graph.numbered = numbered;
+  if (pace) graph.pace = pace;
+  if (duration !== undefined) graph.duration = duration;
   const ttl = opts.title || title;
   if (ttl) graph.title = ttl;
   return { graph, warnings };

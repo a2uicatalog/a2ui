@@ -40,13 +40,15 @@ flowchart LR
 <div class="row">
   <label>Direction <select id="dir"><option value="">as written (auto)</option><option>LR</option><option>TB</option><option>RL</option><option>BT</option></select></label>
   <label><input type="checkbox" id="film" checked> play as a film</label>
+  <label><input type="checkbox" id="num" checked> numbered steps + table</label>
+  <label>pace <select id="pace"><option>slow</option><option selected>normal</option><option>fast</option></select></label>
   <button id="go">Convert</button><button id="copy">Copy payload</button>
 </div>
 <div id="msgs" class="ok"></div>
 <details><summary>Payload JSON</summary><pre id="json"></pre></details>
 </section>
 <section><iframe id="view" title="A2UI renderer" scrolling="no"></iframe>
-<div class="row"><span id="note"></span></div></section>
+<div class="row"><button id="pp">Pause</button><button id="rs">Replay</button><span id="dur"></span><span id="note"></span></div></section>
 </main>
 <script>
 // ---- graph.mjs
@@ -69,6 +71,7 @@ const LIMITS = Object.freeze({
 });
 const KINDS = Object.freeze(['device', 'app', 'server', 'tool', 'model', 'store', 'surface', 'user']);
 const STYLES = Object.freeze(['sync', 'async', 'optional']);
+const PACES = Object.freeze({ slow: 1.4, normal: 1.0, fast: 0.75 });
 const DIRECTIONS = Object.freeze(['LR', 'RL', 'TB', 'BT']);
 const ID_RE = /^[a-z][a-z0-9_-]{0,31}$/;
 
@@ -132,6 +135,34 @@ function hint(word, candidates) {
 }
 
 function plural(n, one, many) { return n + ' ' + (n === 1 ? one : many); }
+
+// Step numbers for the edges. Default: the order of the edges in the source. An edge may carry `step`
+// (from a `%% step: a->b 3` line) to override; the other edges then take the lowest unused numbers in
+// source order. Returns {steps: number[] (per edge), errors: string[]}.
+function assignSteps(graph) {
+  const edges = Array.isArray(graph.edges) ? graph.edges : [];
+  const n = edges.length, errors = [], steps = new Array(n).fill(0);
+  const owner = new Map();
+  edges.forEach((e, i) => {
+    if (e.step === undefined) return;
+    const d = `edge ${i + 1} (${e.from} -> ${e.to})`;
+    if (!Number.isInteger(e.step) || e.step < 1) { errors.push(`${d}: step must be a whole number from 1 to ${n}`); return; }
+    if (e.step > n) { errors.push(`${d}: step ${e.step} is larger than the number of edges (${n}); steps must run 1 to ${n} with no gaps`); return; }
+    if (owner.has(e.step)) { errors.push(`step ${e.step} is given to both edge ${owner.get(e.step) + 1} and edge ${i + 1}; each step number can be used once`); return; }
+    owner.set(e.step, i); steps[i] = e.step;
+  });
+  let next = 1;
+  edges.forEach((e, i) => {
+    if (steps[i]) return;
+    if (e.step !== undefined) return;
+    while (owner.has(next)) next++;
+    owner.set(next, i); steps[i] = next;
+  });
+  if (!errors.length) {
+    for (let k = 1; k <= n; k++) if (!owner.has(k)) errors.push(`step ${k} is missing; steps must run 1 to ${n} with no gaps`);
+  }
+  return { steps, errors };
+}
 
 // Returns {errors:[string], warnings:[string]}. Numbering in messages is 1-based.
 function validateGraph(g) {
@@ -243,6 +274,11 @@ function validateGraph(g) {
     }
   });
 
+  if (g.pace !== undefined && !(g.pace in PACES)) errors.push(`pace "${g.pace}" is not one of ${Object.keys(PACES).join(', ')}`);
+  if (g.duration !== undefined && !(typeof g.duration === 'number' && g.duration >= 2 && g.duration <= 120)) errors.push(`duration "${g.duration}" must be a number of seconds from 2 to 120`);
+  if (g.numbered || edges.some((e) => e && e.step !== undefined)) {
+    if (!errors.some((e) => /^edge \d+: "/.test(e))) errors.push(...assignSteps(g).errors);
+  }
   // caps: never truncate silently, tell the user how to split
   const groupSizes = groups.map((gr) => [gr.label || gr.id, nodes.filter((n) => n && n.group === gr.id).length]).sort((a, b) => b[1] - a[1]);
   if (nodes.length > LIMITS.nodes) {
@@ -265,6 +301,53 @@ function validateGraph(g) {
   }
   return { errors, warnings };
 }
+
+// ---- schedule.mjs
+// Pacing: how long each step of the film stays on screen. Timing only, derived from the content.
+//
+//   dwell(step) = max(2.5 s, (words in the edge label + words in its table row) / 3 + 0.8 s)
+//                 x 1.15 when the diagram has more than 6 steps, x 1.15 again above 9 steps
+//                 x pace (slow 1.4, normal 1.0, fast 0.75)
+//   a step with several message chips is stretched so every chip rides inside its own step
+//   total = LEAD_IN (1.5 s: groups and nodes pop) + sum of dwells + HOLD (3 s on the finished diagram)
+//
+// `duration` (seconds) overrides the total: the dwells are scaled to fit, with a warning when that is
+// shorter than the fast-pace reading time.
+
+const LEAD_IN = 1.5, HOLD = 3, MIN_DWELL = 2.5, WORDS_PER_SECOND = 3, CHIP_SECONDS = 1.2, CHIP_GAP = 0.15, CHIP_START = 0.55, CHIP_TAIL = 0.3;
+
+const words = (t) => (String(t || '').trim() ? String(t).trim().split(/\s+/).length : 0);
+
+// steps: [{labelWords, rowWords, chips}] in playing order
+function buildSchedule(steps, { pace = 'normal', duration } = {}) {
+  const warnings = [];
+  const mult = PACES[pace];
+  const n = steps.length;
+  const crowd = n > 9 ? 1.15 * 1.15 : n > 6 ? 1.15 : 1;
+  const base = (st, m) => {
+    let d = Math.max(MIN_DWELL, (st.labelWords + st.rowWords) / WORDS_PER_SECOND + 0.8) * crowd * m;
+    const need = CHIP_START + st.chips * CHIP_SECONDS + Math.max(0, st.chips - 1) * CHIP_GAP + CHIP_TAIL;
+    return Math.max(d, need);
+  };
+  let dwell = steps.map((st) => base(st, mult));
+  const fast = LEAD_IN + HOLD + steps.reduce((a, st) => a + base(st, PACES.fast), 0);
+  if (duration !== undefined) {
+    const room = duration - LEAD_IN - HOLD;
+    const sum = dwell.reduce((a, b) => a + b, 0);
+    if (room <= 0 || (n && room < 0.3 * n)) {
+      throw Object.assign(new Error(`duration ${duration} s leaves no time for ${n} steps after the ${LEAD_IN} s lead-in and ${HOLD} s hold`), { archMessage: true });
+    }
+    if (duration < fast - 1e-9) warnings.push(`duration ${duration} s is shorter than the ${fast.toFixed(1)} s the steps need at the fast pace; readers will not have time to take each step in. Raise it or drop %% duration.`);
+    const k = n ? room / sum : 1;
+    dwell = dwell.map((d) => d * k);
+  }
+  const schedule = [];
+  let t = LEAD_IN;
+  dwell.forEach((d, i) => { schedule.push({ step: i + 1, start: round(t), end: round(t + d) }); t += d; });
+  const total = duration !== undefined ? duration : round(t + HOLD);
+  return { schedule, durationSeconds: round(total), warnings, minimumSeconds: round(fast) };
+}
+const round = (x) => Math.round(x * 1000) / 1000;
 
 // ---- mermaid.mjs
 // Mermaid flowchart subset -> canonical graph. Pure ES module, no dependencies.
@@ -400,7 +483,8 @@ function parseMermaid(text, opts = {}) {
   const groupStack = [];            // [{key,label,nested}]
   const classStmts = [];            // {line, ids, cls}
   const msgDirectives = [];         // {line, from, to, text, back}
-  let title, direction = 'TB', headerSeen = false, openLinkWarned = false;
+  const stepDirectives = [];         // {line, from, to, step}
+  let title, numbered, pace, duration, direction = 'TB', headerSeen = false, openLinkWarned = false;
 
   function touchNode(orig, line) {
     let n = nodes.get(orig);
@@ -574,12 +658,28 @@ function parseMermaid(text, opts = {}) {
     let line = lines[li].trim();
     if (!line) continue;
     if (line.startsWith('%%')) {
-      const d = /^%%\s*(title|msg)\s*:\s*(.*)$/i.exec(line);
-      if (d && d[1].toLowerCase() === 'title') { if (d[2].trim()) title = d[2].trim(); }
-      else if (d) {
+      const d = /^%%\s*(title|msg|numbered|pace|duration|step)\s*:\s*(.*)$/i.exec(line);
+      const key = d && d[1].toLowerCase();
+      if (key === 'title') { if (d[2].trim()) title = d[2].trim(); }
+      else if (key === 'msg') {
         const m = /^(\S+?)\s*->\s*(\S+?)\s+"([^"]*)"(?:\s+(back))?\s*$/.exec(d[2].trim());
         if (!m) fail(L(), `bad "%% msg:" directive; write it as  %% msg: fromId->toId "payload text"  (add the word back at the end for a reply)`);
         else msgDirectives.push({ line: L(), from: m[1], to: m[2], text: m[3], back: !!m[4] });
+      } else if (key === 'numbered') {
+        const v = d[2].trim().toLowerCase();
+        if (v === 'on' || v === 'true' || v === 'yes') numbered = true;
+        else if (v === 'off' || v === 'false' || v === 'no') numbered = false;
+        else fail(L(), '"%% numbered:" must be on or off');
+      } else if (key === 'pace') {
+        const v = d[2].trim().toLowerCase();
+        if (v in PACES) pace = v; else fail(L(), `"%% pace:" must be one of ${Object.keys(PACES).join(', ')}`);
+      } else if (key === 'duration') {
+        const v = Number(d[2].trim().replace(/\s*s$/i, ''));
+        if (Number.isFinite(v) && v >= 2 && v <= 120) duration = v; else fail(L(), '"%% duration:" must be a number of seconds from 2 to 120, for example %% duration: 40');
+      } else if (key === 'step') {
+        const m = /^(\S+?)\s*->\s*(\S+?)\s+(\d+)\s*$/.exec(d[2].trim());
+        if (!m) fail(L(), 'bad "%% step:" directive; write it as  %% step: fromId->toId 3');
+        else stepDirectives.push({ line: L(), from: m[1], to: m[2], step: +m[3] });
       }
       continue;
     }
@@ -702,7 +802,20 @@ function parseMermaid(text, opts = {}) {
   }
   if (errors.length) throw new ArchError(errors.slice(0, 20), warnings);
 
+  const taken = new Set();
+  for (const d of stepDirectives) {
+    const f = lookup(d.from), t = lookup(d.to);
+    const names = [...nodes.keys()];
+    if (!f || !t) { errors.push(`line ${d.line}: step directive names "${!f ? d.from : d.to}", which is not a node` + (didYouMean(!f ? d.from : d.to, names) ? ` (did you mean "${didYouMean(!f ? d.from : d.to, names)}"?)` : '')); continue; }
+    const idx = eOut.findIndex((e, i) => e.from === mapNode(f) && e.to === mapNode(t) && !taken.has(i));
+    if (idx < 0) { errors.push(`line ${d.line}: step directive: there is no (further) edge from "${d.from}" to "${d.to}"`); continue; }
+    taken.add(idx); eOut[idx].step = d.step;
+  }
+  if (errors.length) throw new ArchError(errors.slice(0, 20), warnings);
   const graph = { direction: opts.direction || direction, groups: gOut, nodes: nOut, edges: eOut, messages: mOut };
+  if (numbered !== undefined) graph.numbered = numbered;
+  if (pace) graph.pace = pace;
+  if (duration !== undefined) graph.duration = duration;
   const ttl = opts.title || title;
   if (ttl) graph.title = ttl;
   return { graph, warnings };
@@ -814,15 +927,26 @@ function layered(items, edges, axis, s, samePairs = []) {
   for (let v = 0; v < n; v++) if (!din[v].length && dout[v].length) rank[v] = Math.max(0, Math.min(...dout[v].map((w) => rank[w])) - 1);
   for (let v = 0; v < n; v++) rank[v] = rank[find(v)];
   const R = (rank.length ? Math.max(...rank) : 0) + 1;
+  // 2b. long edges (more than one rank) get a dummy vertex in every rank they cross, so the ordering
+  //     and the coordinates leave a lane for them instead of running them through boxes
+  let N = n;
+  const chain = [];
+  for (const e of Eorig) {
+    let a = e.oa, b = e.ob;
+    if (rank[a] > rank[b]) [a, b] = [b, a];
+    let prev = a;
+    for (let r = rank[a] + 1; r < rank[b]; r++) { const d = N++; rank[d] = r; chain.push([prev, d]); prev = d; }
+    chain.push([prev, b]);
+  }
   // 3. order within ranks: barycentre sweeps, keep best by crossings
   const layersOf = () => {
     const L = Array.from({ length: R }, () => []);
-    for (let v = 0; v < n; v++) L[rank[v]].push(v);
+    for (let v = 0; v < N; v++) L[rank[v]].push(v);
     return L;
   };
   let L = layersOf();
-  const nbr = Array.from({ length: n }, () => []);
-  Eorig.forEach((e) => { nbr[e.oa].push(e.ob); nbr[e.ob].push(e.oa); });
+  const nbr = Array.from({ length: N }, () => []);
+  chain.forEach(([u, v]) => { nbr[u].push(v); nbr[v].push(u); });
   const keepPairs = (layer) => {
     for (const [a, b] of pairIdx) {
       const ia = layer.indexOf(a), ib = layer.indexOf(b);
@@ -833,14 +957,14 @@ function layered(items, edges, axis, s, samePairs = []) {
     }
   };
   const frac = () => {
-    const f = Array(n).fill(0);
+    const f = Array(N).fill(0);
     L.forEach((layer) => layer.forEach((v, i) => { f[v] = (i + 0.5) / layer.length; }));
     return f;
   };
   const crossings = () => {
     // count crossings of straight rank-fraction lines (long edges included)
     const f = frac();
-    const segs = Eorig.map((e) => [rank[e.oa], f[e.oa], rank[e.ob], f[e.ob]]).map(([r1, p1, r2, p2]) => (r1 <= r2 ? [r1, p1, r2, p2] : [r2, p2, r1, p1]));
+    const segs = chain.map(([u, v]) => [rank[u], f[u], rank[v], f[v]]).map(([r1, p1, r2, p2]) => (r1 <= r2 ? [r1, p1, r2, p2] : [r2, p2, r1, p1]));
     let c = 0;
     for (let i = 0; i < segs.length; i++) for (let j = i + 1; j < segs.length; j++) {
       const [a1, p1, a2, p2] = segs[i], [b1, q1, b2, q2] = segs[j];
@@ -874,7 +998,8 @@ function layered(items, edges, axis, s, samePairs = []) {
   }
   L = best;
   // 4. coordinates
-  const ext = (v) => (axis === 'x' ? { r: items[v].w, c: items[v].h } : { r: items[v].h, c: items[v].w });
+  const lane = Math.round(0.8 * s);
+  const ext = (v) => (v >= n ? { r: 0, c: lane } : axis === 'x' ? { r: items[v].w, c: items[v].h } : { r: items[v].h, c: items[v].w });
   const thick = L.map((layer) => Math.max(0, ...layer.map((v) => ext(v).r)));
   const gaps = [];
   for (let r = 0; r + 1 < R; r++) {
@@ -889,7 +1014,7 @@ function layered(items, edges, axis, s, samePairs = []) {
   let acc = 0;
   for (let r = 0; r < R; r++) { rankPos.push(acc); acc += thick[r] + (gaps[r] || 0); }
   const crossGap = Math.round(1.3 * s);
-  const cpos = Array(n).fill(0);
+  const cpos = Array(N).fill(0);
   L.forEach((layer) => {
     let t = 0;
     layer.forEach((v) => { cpos[v] = t + ext(v).c / 2; t += ext(v).c + crossGap; });
@@ -1152,14 +1277,7 @@ function score(graph, layout, curves, fit) {
   return wu * wW + hu * hW + m.crossings * 7 + m.throughBoxes * 12 + m.labelsOnBoxes * 10 + m.labelOverlaps * 40 + (m.edgeLength / s) * 0.06;
 }
 
-function chooseLayout(graph, s, fit = 'balanced', autoDirection = false) {
-  if (autoDirection) {
-    const horizontal = graph.direction === 'LR' || graph.direction === 'RL';
-    const alt = { ...graph, direction: horizontal ? 'TB' : 'LR' };
-    const a = chooseLayout(graph, s, fit, false), b = chooseLayout(alt, s, fit, false);
-    // keep the written direction unless the other one is clearly better
-    return b.score < a.score * 0.8 ? { ...b, direction: alt.direction } : { ...a, direction: graph.direction };
-  }
+function chooseLayout(graph, s, fit = 'balanced') {
   const multi = graph.groups.filter((g) => graph.nodes.filter((n) => n.group === g.id).length >= 2).map((g) => g.id);
   let best = null;
   const total = 1 << multi.length;
@@ -1179,19 +1297,35 @@ function chooseLayout(graph, s, fit = 'balanced', autoDirection = false) {
 function layoutGraph(graph, opts = {}) {
   const fit = opts.fit || 'balanced';
   const targetW = opts.targetW || 1000, maxH = opts.maxH || 1100;
-  const tryS = (s) => {
-    const b = chooseLayout(graph, s, fit, opts.autoDirection !== false && !opts.forceDirection);
-    return frame(graph, b, s);
+  const sized = (gr) => {
+    const tryS = (s) => frame(gr, chooseLayout(gr, s, fit), s);
+    let s = opts.size ? Math.max(8, Math.min(40, Math.round(opts.size))) : 18;
+    let res = tryS(s);
+    if (!opts.size) {
+      // text size scales the whole drawing only roughly (gaps and label widths do not scale linearly),
+      // so walk towards the target frame width a few times
+      for (let it = 0; it < 4; it++) {
+        const k = Math.min(targetW / res.W, maxH / res.H);
+        const ns = Math.max(10, Math.min(40, Math.round(s * k)));
+        if (ns === s || (k > 0.85 && k < 1.12)) break;
+        s = ns; res = tryS(s);
+      }
+    }
+    while ((res.W > 2000 || res.H > 2000) && s > 8) { s -= 1; res = tryS(s); }
+    res.fits = res.W <= 2000 && res.H <= 2000;
+    res.direction = gr.direction;
+    return res;
   };
-  let s = opts.size ? Math.max(8, Math.min(40, Math.round(opts.size))) : 18;
-  let res = tryS(s);
-  if (!opts.size) {
-    const k = Math.min(targetW / res.W, maxH / res.H);
-    s = Math.max(10, Math.min(40, Math.floor(s * k)));
-    res = tryS(s);
+  const phone = (r) => (r.size * 343) / r.W;
+  const bad = (r) => r.metrics.crossings + r.metrics.throughBoxes + r.metrics.labelsOnBoxes + 2 * r.metrics.labelOverlaps;
+  let res = sized(graph);
+  // Keep the written direction unless its text would be unreadable on a phone (< 7 px in a 343 px column)
+  // and the other axis is clearly better without making the drawing messier.
+  if (!opts.forceDirection && phone(res) < 7) {
+    const horizontal = graph.direction === 'LR' || graph.direction === 'RL';
+    const alt = sized({ ...graph, direction: horizontal ? 'TB' : 'LR' });
+    if (alt.fits && phone(alt) > phone(res) * 1.3 && bad(alt) <= bad(res) + 3) res = alt;
   }
-  while ((res.W > 2000 || res.H > 2000) && s > 8) { s -= 1; res = tryS(s); }
-  res.fits = res.W <= 2000 && res.H <= 2000;
   return res;
 }
 
@@ -1221,11 +1355,14 @@ function frame(graph, best, s) {
 }
 
 // ---- compile.mjs
-// Canonical graph + layout -> a motion_arch block (and the payload around it).
+// Canonical graph + layout + schedule -> a motion_arch block (and the payload around it).
+
 
 
 const r2 = (x) => Math.round(x * 100) / 100;
-const r3 = (x) => Math.round(x * 1000) / 1000;
+const r4 = (x) => Math.round(x * 10000) / 10000;
+// the atom clamps every dur to 0.01-1 of the film, so a very long film cannot have very short windows
+const pd = (seconds, D) => r4(Math.max(0.011, seconds / D));
 const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
 
 function clip(str, max) {
@@ -1233,10 +1370,24 @@ function clip(str, max) {
   return t.length <= max ? t : t.slice(0, max - 1).trimEnd() + '…';
 }
 
-// graph -> {block, layout, warnings}. The graph must already be valid.
+// graph -> {block, layout, warnings, steps, schedule, durationSeconds}. The graph must already be valid.
 function compileGraph(graph, opts = {}) {
   const warnings = [];
-  const lay = layoutGraph(graph, opts);
+  const numbered = opts.numbered !== undefined ? !!opts.numbered : !!graph.numbered;
+  const pace = opts.pace || graph.pace || 'normal';
+  const duration = opts.duration !== undefined ? opts.duration : graph.duration;
+
+  // ---- step numbers (shown only when numbered) and the edge labels the atom will draw
+  const stepNo = numbered ? assignSteps(graph).steps : null;
+  const drawn = graph.edges.map((e, i) => {
+    if (!numbered) return e.label;
+    const full = String(stepNo[i]) + (e.label ? ' ' + e.label : '');
+    if (full.length > LIMITS.edgeLabel) warnings.push(`edge ${i + 1}: the step number pushes the label to ${full.length} characters; the atom shows at most ${LIMITS.edgeLabel}, so it is cut. Shorten the label.`);
+    return full;
+  });
+  const g2 = { ...graph, edges: graph.edges.map((e, i) => ({ ...e, label: drawn[i] })) };
+
+  const lay = layoutGraph(g2, opts);
   if (!lay.fits) throw new ArchError([`the diagram does not fit in the atom's 2000 x 2000 frame even at the smallest text size; shorten the labels or split the diagram`]);
   if (lay.direction !== graph.direction) {
     warnings.push(`drawn ${lay.direction === 'TB' ? 'top-to-bottom' : 'left-to-right'} instead of ${graph.direction}: that keeps the text about ${(lay.size * 343 / lay.W).toFixed(0)} px on a 343 px phone column. Pass --direction ${graph.direction} to force the written direction.`);
@@ -1245,110 +1396,171 @@ function compileGraph(graph, opts = {}) {
   const horizontal = lay.direction === 'LR' || lay.direction === 'RL';
   const rev = lay.direction === 'RL' || lay.direction === 'BT';
   const byId = new Map(lay.nodes.map((n) => [n.id, n]));
-  const gnodes = new Map(graph.nodes.map((n) => [n.id, n]));
+  const gnode = new Map(graph.nodes.map((n) => [n.id, n]));
 
-  // --- timing: groups, then nodes in flow order, then edges, then messages
+  // ---- messages -> edge index
+  const msgEdge = graph.messages.map((m, j) => {
+    let idx = graph.edges.findIndex((e) => e.from === m.from && e.to === m.to);
+    let back = !!m.back;
+    if (idx < 0) { idx = graph.edges.findIndex((e) => e.from === m.to && e.to === m.from); back = !back; }
+    if (idx < 0) throw new ArchError([`message ${j + 1}: no edge between "${m.from}" and "${m.to}"`]);
+    return { idx, back };
+  });
+
+  // ---- playing order of the edges: step numbers, else the order the flow reaches them
   const main = (n) => (horizontal ? n.x + n.w / 2 : n.y + n.h / 2);
-  const mains = lay.nodes.map(main);
-  const lo = Math.min(...mains), hi = Math.max(...mains);
-  const nodeAt = new Map();
-  for (const n of lay.nodes) {
-    let t = hi > lo ? (main(n) - lo) / (hi - lo) : 0;
-    if (rev) t = 1 - t;
-    nodeAt.set(n.id, r3(0.1 + 0.2 * t));
-  }
-  const NODE_DUR = 0.08;
-  const nodeEnd = (id) => nodeAt.get(id) + NODE_DUR;
+  const sortedNodes = lay.nodes.map((n, i) => ({ id: n.id, m: main(n) * (rev ? -1 : 1), i })).sort((a, b) => a.m - b.m || a.i - b.i);
+  const nodeRank = new Map(sortedNodes.map((n, k) => [n.id, k]));
+  const E = graph.edges.length;
+  const order = graph.edges.map((e, i) => i).sort((a, b) => {
+    if (numbered) return stepNo[a] - stepNo[b];
+    const ka = Math.max(nodeRank.get(graph.edges[a].from), nodeRank.get(graph.edges[a].to));
+    const kb = Math.max(nodeRank.get(graph.edges[b].from), nodeRank.get(graph.edges[b].to));
+    return ka - kb || a - b;
+  });
+  const lab = (id) => gnode.get(id).label;
+  const info = order.map((ei) => {
+    const e = graph.edges[ei];
+    return {
+      labelWords: words(e.label),
+      rowWords: words(lab(e.from)) + words(lab(e.to)) + words(e.label) + 1,
+      chips: msgEdge.filter((m) => m.idx === ei).length,
+    };
+  });
+  let sched;
+  try { sched = buildSchedule(info, { pace, duration }); }
+  catch (e) { if (e.archMessage) throw new ArchError([e.message]); throw e; }
+  warnings.push(...sched.warnings);
+  const D = sched.durationSeconds;
+  const stepOf = new Map(order.map((ei, k) => [ei, k]));   // edge index -> position in the schedule
 
+  // ---- nodes: pop in flow order during the lead-in
+  const NODE_DUR = 0.4;
+  const nodeAt = new Map(sortedNodes.map((n, k) => [n.id, 0.3 + (sortedNodes.length > 1 ? (k * 0.75) / (sortedNodes.length - 1) : 0)]));
   const nodes = graph.nodes.map((gn) => {
     const b = byId.get(gn.id);
     const o = { id: gn.id, kind: gn.kind || 'server', label: clip(gn.label, LIMITS.label) };
     if (gn.sub) o.sub = clip(gn.sub, LIMITS.sub);
     o.x = r2(((b.x + b.w / 2) / W) * 100); o.y = r2(((b.y + b.h / 2) / H) * 100);
     o.w = r2(clamp((b.w / W) * 100, 4, 100)); o.h = r2(clamp((b.h / H) * 100, 4, 100));
-    o.at = nodeAt.get(gn.id); o.dur = NODE_DUR;
+    o.at = r4(nodeAt.get(gn.id) / D); o.dur = pd(NODE_DUR, D);
     return o;
   });
 
-  const edgeOrder = graph.edges.map((e, i) => i).sort((a, b) => {
-    const ea = Math.max(nodeAt.get(graph.edges[a].from), nodeAt.get(graph.edges[a].to));
-    const eb = Math.max(nodeAt.get(graph.edges[b].from), nodeAt.get(graph.edges[b].to));
-    return ea - eb || a - b;
-  });
-  const E = Math.max(1, graph.edges.length);
-  const EDGE_DUR = 0.1;
-  const edgeAt = [];
-  edgeOrder.forEach((ei, k) => {
-    const e = graph.edges[ei];
-    const base = 0.34 + (k / E) * 0.26;
-    edgeAt[ei] = r3(Math.max(base, nodeEnd(e.from), nodeEnd(e.to)));
-  });
+  const edgeSec = (st) => Math.max(Math.min(0.5, (st.end - st.start) * 0.4), 0.011 * D);
+  // ---- edges draw at their step's start
   const edges = graph.edges.map((e, i) => {
+    const st = sched.schedule[stepOf.get(i)];
     const o = { from: e.from, to: e.to };
-    if (e.label) o.label = clip(e.label, LIMITS.edgeLabel);
+    if (drawn[i]) o.label = clip(drawn[i], LIMITS.edgeLabel);
     o.style = e.style === 'sync' || e.style === undefined ? 'solid' : 'dashed';
     if (e.both) o.both = true;
     if (lay.curves[i]) o.curve = lay.curves[i];
-    o.at = edgeAt[i]; o.dur = EDGE_DUR;
+    o.at = r4(st.start / D); o.dur = pd(edgeSec(st), D);
     return o;
   });
 
-  // --- messages: resolve from/to to an edge index (first match), stagger in time
-  const M = graph.messages.length;
-  const msgDur0 = 0.1;
-  const lastOnEdge = new Map();
-  const step = M > 1 ? Math.min(0.12, 0.28 / (M - 1)) : 0;
+  // ---- message chips ride inside their step's dwell, one after another
+  const seen = new Map();
   const messages = graph.messages.map((m, j) => {
-    let idx = graph.edges.findIndex((e) => e.from === m.from && e.to === m.to);
-    let back = !!m.back;
-    if (idx < 0) { idx = graph.edges.findIndex((e) => e.from === m.to && e.to === m.from); back = !back; }
-    if (idx < 0) throw new ArchError([`message ${j + 1}: no edge between "${m.from}" and "${m.to}"`]);
-    let dur = msgDur0;
-    let at = Math.max(0.62 + j * step, edgeAt[idx] + EDGE_DUR);
-    if (lastOnEdge.has(idx)) at = Math.max(at, lastOnEdge.get(idx));
-    if (at + dur > 1) { at = 1 - dur; }
-    lastOnEdge.set(idx, at + dur);
+    const { idx, back } = msgEdge[j];
+    const st = sched.schedule[stepOf.get(idx)];
+    const k = info[stepOf.get(idx)].chips, jn = seen.get(idx) || 0; seen.set(idx, jn + 1);
+    const dwell = st.end - st.start;
+    const off = Math.max(CHIP_START, edgeSec(st) + 0.05);   // not before the edge is fully drawn
+    const c = Math.min(1.2, Math.max(0.3, (dwell - off - CHIP_TAIL - (k - 1) * CHIP_GAP) / k));
     const o = { edge: idx, text: clip(m.text, LIMITS.msgText) };
     if (back) o.back = true;
-    o.at = r3(at); o.dur = dur;
+    o.at = r4((st.start + off + jn * (c + CHIP_GAP)) / D); o.dur = pd(c, D);
     return o;
   });
 
   const groups = lay.groups.map((g) => {
     const gg = graph.groups.find((x) => x.id === g.id);
-    return { label: clip(gg.label, LIMITS.groupLabel), x: r2((g.x / W) * 100), y: r2((g.y / H) * 100), w: r2((g.w / W) * 100), h: r2((g.h / H) * 100), at: 0, dur: 0.1 };
+    return { label: clip(gg.label, LIMITS.groupLabel), x: r2((g.x / W) * 100), y: r2((g.y / H) * 100), w: r2((g.w / W) * 100), h: r2((g.h / H) * 100), at: 0, dur: pd(0.3, D) };
   });
 
   const block = { type: 'motion_arch', label: clip(graph.title || 'Architecture diagram', LIMITS.title), w: W, h: H, size, nodes, edges };
   if (groups.length) block.groups = groups;
   if (messages.length) block.messages = messages;
-  return { block, layout: lay, warnings };
+
+  const steps = numbered ? order.map((ei, k) => {
+    const e = graph.edges[ei];
+    return { step: stepNo[ei], from: lab(e.from), to: lab(e.to), label: e.label || '', style: e.style || 'sync' };
+  }) : [];
+  const schedule = sched.schedule.map((s, k) => ({ step: numbered ? stepNo[order[k]] : s.step, start: s.start, end: s.end }));
+  return { block, layout: lay, warnings, steps, schedule, durationSeconds: D, numbered, pace, minimumSeconds: sched.minimumSeconds };
 }
 
 const STAGES = [['16:9', 1280, 720], ['4:3', 1200, 900], ['1:1', 1000, 1000], ['9:16', 720, 1280]];
+const TYPE = { sync: 'sync', async: 'async', optional: 'optional' };
 
-// Wrap the finished-diagram block in a motion_timeline so it plays (draws itself, chips ride).
-function filmPayload(block, opts = {}) {
-  const duration = opts.duration || 9;
-  const ratio = block.w / block.h;
-  let best = STAGES[0], bd = Infinity;
-  for (const st of STAGES) { const d = Math.abs(Math.log(ratio / (st[1] / st[2]))); if (d < bd) { bd = d; best = st; } }
-  const [aspect, sw, sh] = best;
-  const scale = Math.min(sw / block.w, sh / block.h) * 0.96;
-  const pw = (block.w * scale) / sw * 100, ph = (block.h * scale) / sh * 100;
-  const arch = { ...block, id: 'arch', place: { x: r2((100 - pw) / 2), y: r2((100 - ph) / 2), w: r2(pw), h: r2(ph) } };
+function stepsTable(steps) {
+  return {
+    type: 'table', caption: 'Steps',
+    headers: ['Step', 'From', 'To', 'What', 'Kind'],
+    rows: steps.map((s) => [String(s.step), s.from, s.to, s.label || '-', TYPE[s.style] || s.style]),
+    col_widths: ['9%', '25%', '25%', '28%', '13%'],
+  };
+}
+
+// Wrap the diagram (and, when numbered, the steps table) in ONE motion_timeline so both run on one clock.
+// The diagram is the motion_arch block, p = t / duration. Each table row is a motion_text that fades in
+// when its step's edge starts drawing; a translucent bar steps to the current row.
+function filmPayload(block, ctx = {}) {
+  const D = ctx.durationSeconds || 9;
+  const steps = ctx.steps || [], sch = ctx.schedule || [];
+  const n = steps.length;
+  const rowText = (s) => clip(`*${s.step}*  ${s.from} → ${s.to}${s.label ? ': ' + s.label : ''}${s.style === 'async' ? ' (async)' : s.style === 'optional' ? ' (optional)' : ''}`, 60);
+  const rows = steps.map(rowText);
+  const maxChars = Math.max(20, ...rows.map((r) => r.length));
+  let best = null;
+  for (const [aspect, sw, sh] of STAGES) {
+    const sz = clamp(Math.floor((sw * 0.94) / (maxChars * 0.62)), 12, 24);
+    const rowH = Math.round(sz * 1.9), headH = Math.round(sz * 2.1), gap = 24;
+    const T = n ? headH + n * rowH : 0;
+    const scale = Math.min((sw * 0.96) / block.w, (sh - T - gap * (n ? 3 : 2)) / block.h);
+    if (scale > 0 && (!best || scale > best.scale + 1e-9)) best = { aspect, sw, sh, sz, rowH, headH, gap, T, scale };
+  }
+  if (!best) throw new ArchError(['the diagram and its steps table do not fit on one film stage; reduce the number of steps or the diagram size']);
+  const { aspect, sw, sh, sz, rowH, headH, gap, scale } = best;
+  const pw = block.w * scale, ph = block.h * scale;
+  const px = (sw - pw) / 2, py = gap;
+  const arch = { ...block, id: 'arch', place: { x: r2((px / sw) * 100), y: r2((py / sh) * 100), w: r2((pw / sw) * 100), h: r2((ph / sh) * 100), z: 1 } };
+  const blocks = [arch];
+  const tracks = [{ target: 'arch', keys: [{ t: 0, p: 0 }, { t: D, p: 1, ease: 'linear' }] }];
+  if (n) {
+    const top = py + ph + gap;
+    const xPct = r2((sw * 0.03 / sw) * 100), wPct = 94;
+    blocks.push({ type: 'motion_text', id: 'head', text: 'STEP  FROM → TO: WHAT', size: Math.max(11, sz - 3), font: 'mono', weight: 'bold', mode: 'block', reveal: 'fade', color: '#9ca5b1', place: { x: xPct, y: r2((top / sh) * 100), w: wPct, z: 2 } });
+    const rowY = (k) => top + headH + k * rowH;
+    blocks.push({ type: 'motion_shape', id: 'hl', shape: 'rect', draw: 'none', fill: '#8d98ff', radius: 8, place: { x: r2(xPct - 1.2), y: r2((rowY(0) - 4) / sh * 100), w: r2(wPct + 2.4), h: r2((rowH - 2) / sh * 100), z: 1 } });
+    const hlKeys = [{ t: 0, y: r2((rowY(0) - 4) / sh * 100), opacity: 0 }];
+    steps.forEach((s, k) => {
+      const t0 = sch[k].start;
+      blocks.push({ type: 'motion_text', id: 'row' + (k + 1), text: rows[k], size: sz, font: 'mono', weight: 'regular', mode: 'block', reveal: 'fade', place: { x: xPct, y: r2((rowY(k) / sh) * 100), w: wPct, z: 2 } });
+      tracks.push({ target: 'row' + (k + 1), keys: [{ t: 0, opacity: 0 }, { t: t0, opacity: 0 }, { t: r2(t0 + 0.3), opacity: 1, ease: 'standard' }] });
+      hlKeys.push(k === 0
+        ? { t: t0, y: r2((rowY(0) - 4) / sh * 100), opacity: 0, ease: 'hold' }
+        : { t: t0, y: r2((rowY(k) - 4) / sh * 100), opacity: 0.22, ease: 'hold' });
+      if (k === 0) hlKeys.push({ t: r2(t0 + 0.3), opacity: 0.22, ease: 'standard' });
+    });
+    tracks.push({ target: 'hl', keys: hlKeys });
+  }
   return {
     theme: 'dark',
     blocks: [{
-      type: 'motion_timeline', title: block.label, aspect, duration, loop: true, autoplay: true, controls: true, theme: 'dark',
-      blocks: [arch],
-      tracks: [{ target: 'arch', keys: [{ t: 0, p: 0 }, { t: 0.5, p: 0 }, { t: duration - 1.5, p: 1, ease: 'linear' }] }],
+      type: 'motion_timeline', title: block.label, aspect, duration: D, loop: true, autoplay: true, controls: true, theme: 'dark',
+      poster: r2(Math.max(0, D - 0.5)), blocks, tracks,
     }],
   };
 }
 
-function archPayload(block) {
-  return { theme: 'dark', blocks: [block] };
+// Standalone payload: the finished diagram (and, when numbered, the steps table under it).
+function archPayload(block, ctx = {}) {
+  const blocks = [block];
+  if (ctx.steps && ctx.steps.length) blocks.push(stepsTable(ctx.steps));
+  return { theme: 'dark', blocks };
 }
 
 // Validate the compiled block against the atom's own limits.
@@ -1376,11 +1588,12 @@ function validateBlock(b) {
     if (!ids.has(e.from) || !ids.has(e.to)) errs.push(`edge ${i} dangling`);
     if (e.curve !== undefined && (e.curve < -100 || e.curve > 100)) errs.push(`edge ${i} curve`);
     if (e.label && e.label.length > 48) errs.push(`edge ${i} label too long`);
+    if (e.at < 0 || e.at > 1 || e.dur < 0.01 || e.dur > 1 || e.at + e.dur > 1.0001) errs.push(`edge ${i} timing outside 0-1`);
   });
   msgs.forEach((m, i) => {
     if (!(m.edge >= 0 && m.edge < edges.length)) errs.push(`message ${i} edge index`);
     if (m.text.length > 40) errs.push(`message ${i} text too long`);
-    if (m.at + m.dur > 1.0001) errs.push(`message ${i} runs past the end of the film`);
+    if (m.at + m.dur > 1.0001 || m.dur < 0.01) errs.push(`message ${i} timing outside the film`);
   });
   groups.forEach((g, i) => {
     if (g.x < 0 || g.y < 0 || g.w < 1 || g.h < 1 || g.x + g.w > 100.01 || g.y + g.h > 100.01) errs.push(`group ${i} outside frame`);
@@ -1396,7 +1609,10 @@ function validateBlock(b) {
 
 
 
-// opts: {direction, title, size, fit:'balanced'|'wide', film:boolean, duration}
+
+
+
+// opts: {direction, title, size, fit:'balanced'|'wide', film:boolean, numbered:boolean, pace:'slow'|'normal'|'fast', duration:seconds}
 function graphToArch(graph, opts = {}) {
   const g = { ...graph };
   if (opts.direction) g.direction = opts.direction;
@@ -1405,15 +1621,24 @@ function graphToArch(graph, opts = {}) {
   const { errors, warnings } = validateGraph(g);
   if (errors.length) throw new ArchError(errors, warnings);
   const lopts = { ...opts, forceDirection: !!opts.direction };
-  const { block, layout, warnings: w2 } = compileGraph(g, lopts);
+  const c = compileGraph(g, lopts);
+  const { block, layout, warnings: w2 } = c;
   const bad = validateBlock(block);
   if (bad.length) throw new ArchError(['internal: compiled block breaks the atom limits: ' + bad.join('; ')], warnings);
-  const payload = opts.film ? filmPayload(block, opts) : archPayload(block);
-  return { payload, graph: g, warnings: [...warnings, ...w2], block, layout };
+  const ctx = { steps: c.steps, schedule: c.schedule, durationSeconds: c.durationSeconds };
+  const payload = opts.film ? filmPayload(block, ctx) : archPayload(block, ctx);
+  return { payload, graph: g, warnings: [...warnings, ...w2], block, layout, steps: c.steps, schedule: c.schedule, durationSeconds: c.durationSeconds, pace: c.pace, minimumSeconds: c.minimumSeconds, numbered: c.numbered };
 }
 
 function mermaidToArch(text, opts = {}) {
   const parsed = parseMermaid(text, opts);
+  const r = graphToArch(parsed.graph, { ...opts, direction: opts.direction });
+  r.warnings = [...parsed.warnings, ...r.warnings];
+  return r;
+}
+
+function d2ToArch(text, opts = {}) {
+  const parsed = parseD2(text, opts);
   const r = graphToArch(parsed.graph, { ...opts, direction: opts.direction });
   r.warnings = [...parsed.warnings, ...r.warnings];
   return r;
@@ -1434,11 +1659,12 @@ function mermaidToArch(text, opts = {}) {
     if (m.method === 'ui/request-display-mode' && m.id) post({ jsonrpc: '2.0', id: m.id, result: { mode: 'inline' } });
   });
   frame.addEventListener('load', function () { setTimeout(function () { ready = true; send(); }, 700); });
-  frame.src = BUNDLE;
+  function reloadView() { ready = false; frame.src = BUNDLE + (BUNDLE.indexOf('?') < 0 ? '?' : '&') + Date.now(); }
+  reloadView();
   function fit(asp) { frame.style.height = Math.round(frame.clientWidth * asp + 84) + 'px'; }
   function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
   function convert() {
-    var msgs = document.getElementById('msgs'), opts = { film: document.getElementById('film').checked };
+    var msgs = document.getElementById('msgs'), opts = { film: document.getElementById('film').checked, numbered: document.getElementById('num').checked, pace: document.getElementById('pace').value };
     var d = document.getElementById('dir').value; if (d) opts.direction = d;
     try {
       var r = mermaidToArch(document.getElementById('src').value, opts);
@@ -1448,8 +1674,9 @@ function mermaidToArch(text, opts = {}) {
       msgs.innerHTML = html;
       document.getElementById('json').textContent = JSON.stringify(r.payload, null, 1);
       var t = r.payload.blocks[0];
-      fit(opts.film ? { '16:9': 9 / 16, '4:3': 3 / 4, '1:1': 1, '9:16': 16 / 9 }[t.aspect] : b.h / b.w);
-      pending = r.payload; send();
+      fit(opts.film ? { '16:9': 9 / 16, '4:3': 3 / 4, '1:1': 1, '9:16': 16 / 9 }[t.aspect] : (b.h / b.w) * 1.0 + (opts.numbered ? 0.9 : 0));
+      document.getElementById('dur').textContent = opts.film ? 'film ' + r.durationSeconds.toFixed(1) + ' s, ' + r.schedule.length + ' steps, pace ' + r.pace : '';
+      pending = r.payload; reloadView();
       document.getElementById('note').textContent = opts.film ? 'Playing in the renderer’s own film controls.' : 'Standalone block: the finished diagram, no animation.';
     } catch (e) {
       if (e && e.errors) msgs.innerHTML = e.errors.map(function (m) { return '<span class="err">error: ' + esc(m) + '</span>'; }).join('\n');
@@ -1458,7 +1685,12 @@ function mermaidToArch(text, opts = {}) {
   }
   document.getElementById('go').onclick = convert;
   document.getElementById('src').addEventListener('input', function () { clearTimeout(convert.t); convert.t = setTimeout(convert, 500); });
-  document.getElementById('dir').onchange = convert; document.getElementById('film').onchange = convert;
+  document.getElementById('dir').onchange = convert; document.getElementById('film').onchange = convert; document.getElementById('num').onchange = convert; document.getElementById('pace').onchange = convert;
+  function api() { try { var o = frame.contentWindow.__a2uiMotion; return o && o[Object.keys(o)[0]] || null; } catch (e) { return null; } }
+  function playing() { try { var r = frame.contentDocument.querySelector('.mt-root'); return !!r && r.getAttribute('data-pl') === '1'; } catch (e) { return false; } }
+  document.getElementById('pp').onclick = function () { var a = api(); if (!a) return; if (playing()) a.pause(); else a.play(); };
+  document.getElementById('rs').onclick = function () { var a = api(); if (!a) return; a.seek(0); a.play(); };
+  setInterval(function () { document.getElementById('pp').textContent = playing() ? 'Pause' : 'Play'; }, 300);
   document.getElementById('copy').onclick = function () { if (last && navigator.clipboard) navigator.clipboard.writeText(JSON.stringify(last)); };
   convert();
 })();

@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
-const order = ['graph.mjs', 'mermaid.mjs', 'layout.mjs', 'compile.mjs', 'index.mjs'];
+const order = ['graph.mjs', 'schedule.mjs', 'mermaid.mjs', 'layout.mjs', 'compile.mjs', 'index.mjs'];
 const code = order.map((f) => {
   let s = readFileSync(join(HERE, f), 'utf8');
   s = s.replace(/^import[^;]*;\s*$/gm, '');                       // single-statement imports

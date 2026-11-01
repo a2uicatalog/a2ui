@@ -40,13 +40,15 @@ flowchart LR
 <div class="row">
   <label>Direction <select id="dir"><option value="">as written (auto)</option><option>LR</option><option>TB</option><option>RL</option><option>BT</option></select></label>
   <label><input type="checkbox" id="film" checked> play as a film</label>
+  <label><input type="checkbox" id="num" checked> numbered steps + table</label>
+  <label>pace <select id="pace"><option>slow</option><option selected>normal</option><option>fast</option></select></label>
   <button id="go">Convert</button><button id="copy">Copy payload</button>
 </div>
 <div id="msgs" class="ok"></div>
 <details><summary>Payload JSON</summary><pre id="json"></pre></details>
 </section>
 <section><iframe id="view" title="A2UI renderer" scrolling="no"></iframe>
-<div class="row"><span id="note"></span></div></section>
+<div class="row"><button id="pp">Pause</button><button id="rs">Replay</button><span id="dur"></span><span id="note"></span></div></section>
 </main>
 <script>
 /*__MODULES__*/
@@ -65,11 +67,12 @@ flowchart LR
     if (m.method === 'ui/request-display-mode' && m.id) post({ jsonrpc: '2.0', id: m.id, result: { mode: 'inline' } });
   });
   frame.addEventListener('load', function () { setTimeout(function () { ready = true; send(); }, 700); });
-  frame.src = BUNDLE;
+  function reloadView() { ready = false; frame.src = BUNDLE + (BUNDLE.indexOf('?') < 0 ? '?' : '&') + Date.now(); }
+  reloadView();
   function fit(asp) { frame.style.height = Math.round(frame.clientWidth * asp + 84) + 'px'; }
   function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
   function convert() {
-    var msgs = document.getElementById('msgs'), opts = { film: document.getElementById('film').checked };
+    var msgs = document.getElementById('msgs'), opts = { film: document.getElementById('film').checked, numbered: document.getElementById('num').checked, pace: document.getElementById('pace').value };
     var d = document.getElementById('dir').value; if (d) opts.direction = d;
     try {
       var r = mermaidToArch(document.getElementById('src').value, opts);
@@ -79,8 +82,9 @@ flowchart LR
       msgs.innerHTML = html;
       document.getElementById('json').textContent = JSON.stringify(r.payload, null, 1);
       var t = r.payload.blocks[0];
-      fit(opts.film ? { '16:9': 9 / 16, '4:3': 3 / 4, '1:1': 1, '9:16': 16 / 9 }[t.aspect] : b.h / b.w);
-      pending = r.payload; send();
+      fit(opts.film ? { '16:9': 9 / 16, '4:3': 3 / 4, '1:1': 1, '9:16': 16 / 9 }[t.aspect] : (b.h / b.w) * 1.0 + (opts.numbered ? 0.9 : 0));
+      document.getElementById('dur').textContent = opts.film ? 'film ' + r.durationSeconds.toFixed(1) + ' s, ' + r.schedule.length + ' steps, pace ' + r.pace : '';
+      pending = r.payload; reloadView();
       document.getElementById('note').textContent = opts.film ? 'Playing in the renderer’s own film controls.' : 'Standalone block: the finished diagram, no animation.';
     } catch (e) {
       if (e && e.errors) msgs.innerHTML = e.errors.map(function (m) { return '<span class="err">error: ' + esc(m) + '</span>'; }).join('\n');
@@ -89,7 +93,12 @@ flowchart LR
   }
   document.getElementById('go').onclick = convert;
   document.getElementById('src').addEventListener('input', function () { clearTimeout(convert.t); convert.t = setTimeout(convert, 500); });
-  document.getElementById('dir').onchange = convert; document.getElementById('film').onchange = convert;
+  document.getElementById('dir').onchange = convert; document.getElementById('film').onchange = convert; document.getElementById('num').onchange = convert; document.getElementById('pace').onchange = convert;
+  function api() { try { var o = frame.contentWindow.__a2uiMotion; return o && o[Object.keys(o)[0]] || null; } catch (e) { return null; } }
+  function playing() { try { var r = frame.contentDocument.querySelector('.mt-root'); return !!r && r.getAttribute('data-pl') === '1'; } catch (e) { return false; } }
+  document.getElementById('pp').onclick = function () { var a = api(); if (!a) return; if (playing()) a.pause(); else a.play(); };
+  document.getElementById('rs').onclick = function () { var a = api(); if (!a) return; a.seek(0); a.play(); };
+  setInterval(function () { document.getElementById('pp').textContent = playing() ? 'Pause' : 'Play'; }, 300);
   document.getElementById('copy').onclick = function () { if (last && navigator.clipboard) navigator.clipboard.writeText(JSON.stringify(last)); };
   convert();
 })();
