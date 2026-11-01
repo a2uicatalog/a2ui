@@ -34,6 +34,7 @@ CLAIMS = [
     ("README.md", r"## (\d+) atoms across"),
     ("plugin.json", r"(\d+) typed A2UI components"),
     ("docs/quickstart-claude.md", r"\((\d+) atoms across"),
+    ("mcp/package.json", r"(\d+)-atom vocabulary"),   # the npm listing; Ora quoted the stale 474 on 2026-11-01
 ]
 
 # Whole places where count claims keep appearing (owner 2026-11-01: "correct the harness to mechanically update
