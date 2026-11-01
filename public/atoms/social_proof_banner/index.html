@@ -120,6 +120,9 @@ footer a{color:var(--accent-2-text);text-decoration:underline;text-underline-off
 nav.crumb{font-size:12px;color:var(--muted);margin-bottom:28px;font-family:ui-monospace,'SF Mono',Monaco,monospace}
 nav.crumb a{color:var(--accent-2-text);text-decoration:underline;text-underline-offset:2px}
 nav.crumb a:hover{text-decoration:underline}
+.cat-line{margin:-2px 0 18px;font-size:14px;color:var(--text-muted)}
+.cat-chip{display:inline-block;padding:3px 12px;border-radius:999px;background:var(--accent-soft-bg);color:var(--accent-2-text);font-weight:700;text-decoration:none;border:1px solid var(--border)}
+.cat-chip:hover,.cat-chip:focus-visible{border-color:var(--accent-2-text)}
 nav.atom-pager{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;margin:-12px 0 28px}
 nav.atom-pager .pg-btn{display:flex;flex-direction:column;gap:2px;padding:10px 14px;border:1px solid var(--border-strong);border-radius:10px;background:var(--surface);color:var(--text);text-decoration:none;min-width:0}
 nav.atom-pager .pg-btn:hover,nav.atom-pager .pg-btn:focus-visible{border-color:var(--accent-2-text);background:var(--accent-soft-bg)}
@@ -187,6 +190,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   <nav class="atom-pager" aria-label="Browse atoms"><a class="pg-btn pg-prev" rel="prev" href="/atoms/social_feed_embed/" aria-keyshortcuts="ArrowLeft"><span class="pg-dir"><kbd>←</kbd> Previous</span><span class="pg-name">Social Feed Embed</span></a><a class="pg-all" href="/atoms/">All atoms</a><a class="pg-btn pg-next" rel="next" href="/atoms/social_share_bar/" aria-keyshortcuts="ArrowRight"><span class="pg-dir">Next <kbd>→</kbd></span><span class="pg-name">Social Share Bar</span></a><p class="pg-hint">Press <kbd>←</kbd> or <kbd>→</kbd> on your keyboard to move between atoms.</p></nav>
 
   <h1>Social Proof Banner</h1>
+  <p class="cat-line">Category: <a class="cat-chip" href="/atoms/?catalog=marketing" title="All atoms in the a2ui-marketing-v1 catalog">Marketing</a></p>
 
   
 <div class="section">

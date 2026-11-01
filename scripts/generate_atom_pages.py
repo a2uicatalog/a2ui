@@ -628,6 +628,9 @@ PAGE_CSS = """
 nav.crumb{font-size:12px;color:var(--muted);margin-bottom:28px;font-family:ui-monospace,'SF Mono',Monaco,monospace}
 nav.crumb a{color:var(--accent-2-text);text-decoration:underline;text-underline-offset:2px}
 nav.crumb a:hover{text-decoration:underline}
+.cat-line{margin:-2px 0 18px;font-size:14px;color:var(--text-muted)}
+.cat-chip{display:inline-block;padding:3px 12px;border-radius:999px;background:var(--accent-soft-bg);color:var(--accent-2-text);font-weight:700;text-decoration:none;border:1px solid var(--border)}
+.cat-chip:hover,.cat-chip:focus-visible{border-color:var(--accent-2-text)}
 nav.atom-pager{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;margin:-12px 0 28px}
 nav.atom-pager .pg-btn{display:flex;flex-direction:column;gap:2px;padding:10px 14px;border:1px solid var(--border-strong);border-radius:10px;background:var(--surface);color:var(--text);text-decoration:none;min-width:0}
 nav.atom-pager .pg-btn:hover,nav.atom-pager .pg-btn:focus-visible{border-color:var(--accent-2-text);background:var(--accent-soft-bg)}
@@ -1212,6 +1215,36 @@ def meta_description(text, limit=160):
     return html.escape(text, quote=True)
 
 
+# Each atom's A2UI catalog (atoms/atom-packs.yaml: a complete partition, the same catalogIds the MCP server and the
+# renderer route with). Shown as a category on atom pages and as filters on /atoms/. Slug = id without a2ui- / -v1.
+CATALOG_LABELS = {
+    "atoms": "Core", "effects": "Effects & motion", "display": "Display", "ops": "Developer & ops", "charts": "Charts",
+    "editorial": "Editorial", "marketing": "Marketing", "learning": "Learning", "google-workspace-live": "Google Workspace",
+    "meta": "Agent & meta", "aviation": "Aviation & maps", "embeds": "Embeds", "bricks": "Bricks", "presentation": "Presentation",
+}
+
+
+def _load_atom_catalogs():
+    try:
+        packs = yaml.safe_load((ROOT / "atoms" / "atom-packs.yaml").read_text()) or {}
+    except OSError:
+        return {}
+    return {t: cid[len("a2ui-"):-len("-v1")] for cid, types in packs.items() if isinstance(types, list) for t in types}
+
+
+ATOM_CATALOG = _load_atom_catalogs()
+
+
+def catalog_chip(atom_type):
+    """The atom's catalog as a link to /atoms/ filtered to that catalog."""
+    slug = ATOM_CATALOG.get(atom_type)
+    if not slug:
+        return ""
+    label = html.escape(CATALOG_LABELS.get(slug, slug.replace("-", " ").title()))
+    return (f'<p class="cat-line">Category: <a class="cat-chip" href="/atoms/?catalog={slug}" '
+            f'title="All atoms in the a2ui-{slug}-v1 catalog">{label}</a></p>')
+
+
 # type -> (prev, next) in the /atoms/ hub's A-Z order; filled by main() before the pages render.
 _NEIGHBOURS = {}
 
@@ -1331,6 +1364,7 @@ def render_page(atom):
   {atom_pager(atom_type)}
 
   <h1>{display_name}</h1>
+  {catalog_chip(atom_type)}
 
   {preview}
 
@@ -4108,13 +4142,23 @@ def render_atoms_hub(atoms):
             {"@type": "ListItem", "position": 2, "name": "Atoms", "item": url}]},
     ]}, ensure_ascii=False).replace("</", "<\\/")
     jump = " ".join(f'<a href="#{k.lower()}">{k}</a>' for k in groups)
+    cat_counts = {}
+    for items in groups.values():
+        for t, _, _ in items:
+            c = ATOM_CATALOG.get(t)
+            if c:
+                cat_counts[c] = cat_counts.get(c, 0) + 1
+    cat_buttons = '<button type="button" class="hub-cat" data-c="" aria-pressed="true">All</button>' + "".join(
+        f'<button type="button" class="hub-cat" data-c="{c}" aria-pressed="false">'
+        f'{html.escape(CATALOG_LABELS.get(c, c))} <span>{k}</span></button>'
+        for c, k in sorted(cat_counts.items(), key=lambda kv: -kv[1]))
     surface_links = " · ".join(
         f'<a href="/surfaces/{s}/">{html.escape(SURFACE_NAMES.get(s, s))}</a> ({c})'
         for s, c in sorted(surfaces.items(), key=lambda kv: -kv[1]))
     sections = ""
     for k, items in groups.items():
         lis = "".join(
-            f'<li data-q="{html.escape((t + " " + line).lower(), quote=True)}"><a href="/atoms/{t}/">{html.escape(name)}</a>'
+            f'<li data-q="{html.escape((t + " " + line).lower(), quote=True)}" data-c="{ATOM_CATALOG.get(t, "")}"><a href="/atoms/{t}/">{html.escape(name)}</a>'
             f' <code>{t}</code><span>{html.escape(line)}</span></li>'
             for t, name, line in items)
         sections += f'\n  <section class="hub-group" id="{k.lower()}"><h2>{k}</h2><ul>{lis}</ul></section>'
@@ -4146,6 +4190,10 @@ def render_atoms_hub(atoms):
   .hub-group li code{{font-size:12px;color:var(--muted);margin-left:6px}}
   .hub-group li span{{display:block;font-size:14px;color:var(--muted);margin-top:2px}}
   .hub-group[hidden],.hub-group li[hidden]{{display:none}}
+  .hub-cats{{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 4px}}
+  .hub-cat{{padding:6px 12px;border:1px solid var(--border);border-radius:999px;background:var(--card);color:var(--text);font:600 14px/1.3 inherit;cursor:pointer}}
+  .hub-cat span{{color:var(--muted);font-weight:500}}
+  .hub-cat[aria-pressed="true"]{{background:var(--accent-soft-bg);border-color:var(--accent-2-text);color:var(--accent-2-text)}}
   .sr-only{{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}}
   </style>
 </head>
@@ -4161,6 +4209,7 @@ def render_atoms_hub(atoms):
   the client renders it, so no model-written HTML reaches the page. Every entry links to its fields, an example payload
   and a live preview. Agents can search the same catalog through the <a href="/mcp-docs/">MCP server</a> (<code>find_atoms</code>).</p>
   <p class="hub-surfaces">By surface: {surface_links}</p>
+  <div class="hub-cats" role="group" aria-label="Filter by category (A2UI catalog)">{cat_buttons}</div>
   <div class="hub-filter"><label class="sr-only" for="hub-q">Filter atoms</label>
     <input id="hub-q" type="search" placeholder="Filter {n} atoms…" autocomplete="off"></div>
   <nav class="hub-jump" aria-label="Jump to letter">{jump}</nav>
@@ -4177,17 +4226,27 @@ def render_atoms_hub(atoms):
 (function(){{
   var q = document.getElementById('hub-q');
   if (!q) return;
-  q.addEventListener('input', function(){{
+  var cat = new URLSearchParams(location.search).get('catalog') || '';
+  var btns = document.querySelectorAll('.hub-cat');
+  function apply(){{
     var v = q.value.trim().toLowerCase();
+    btns.forEach(function(b){{ b.setAttribute('aria-pressed', String(b.getAttribute('data-c') === cat)); }});
     document.querySelectorAll('.hub-group').forEach(function(g){{
       var shown = 0;
       g.querySelectorAll('li').forEach(function(li){{
-        var hit = !v || li.getAttribute('data-q').indexOf(v) !== -1;
+        var hit = (!v || li.getAttribute('data-q').indexOf(v) !== -1) && (!cat || li.getAttribute('data-c') === cat);
         li.hidden = !hit; if (hit) shown++;
       }});
       g.hidden = shown === 0;
     }});
-  }});
+  }}
+  btns.forEach(function(b){{ b.addEventListener('click', function(){{
+    cat = b.getAttribute('data-c');
+    history.replaceState(null, '', cat ? '?catalog=' + cat : location.pathname);
+    apply();
+  }}); }});
+  q.addEventListener('input', apply);
+  apply();
 }})();
 </script>
 </body>

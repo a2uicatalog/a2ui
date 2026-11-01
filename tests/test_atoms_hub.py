@@ -22,7 +22,7 @@ def _published():
 
 def test_hub_links_every_published_atom_once_with_trailing_slash():
     s = HUB.read_text()
-    links = re.findall(r'<li data-q="[^"]*"><a href="/atoms/([a-z0-9_]+)/">', s)
+    links = re.findall(r'<li data-q="[^"]*"(?: data-c="[^"]*")?><a href="/atoms/([a-z0-9_]+)/">', s)
     assert len(links) == len(set(links))
     assert set(links) == _published()
 
@@ -55,7 +55,7 @@ def test_atom_page_breadcrumb_points_at_the_hub():
 def test_atom_pages_page_through_the_hub_order_with_prev_and_next():
     # Owner 2026-11-01: a "next" shortcut on the atom pages, ideally on the keyboard.
     # The pager follows the hub's A-Z list, so walking next from the first atom visits every atom once.
-    order = re.findall(r'<li data-q="[^"]*"><a href="/atoms/([a-z0-9_]+)/">', HUB.read_text())
+    order = re.findall(r'<li data-q="[^"]*"(?: data-c="[^"]*")?><a href="/atoms/([a-z0-9_]+)/">', HUB.read_text())
     for i, t in enumerate(order):
         s = (ROOT / "public" / "atoms" / t / "index.html").read_text()
         prev = re.search(r'<a [^>]*rel="prev" href="/atoms/([a-z0-9_]+)/"', s)
@@ -63,3 +63,17 @@ def test_atom_pages_page_through_the_hub_order_with_prev_and_next():
         assert (prev.group(1) if prev else None) == (order[i - 1] if i else None), t
         assert (nxt.group(1) if nxt else None) == (order[i + 1] if i + 1 < len(order) else None), t
         assert "ArrowRight" in s and 'nav.atom-pager a[rel="' in s, t
+
+
+def test_every_atom_shows_its_catalog_and_the_hub_filters_cover_all_atoms():
+    # Owner 2026-11-01: a category button, which also shows the catalogs agents are routed through.
+    # The category is the atom's A2UI catalog from atoms/atom-packs.yaml (each atom in exactly one).
+    packs = yaml.safe_load((ROOT / "atoms" / "atom-packs.yaml").read_text())
+    cat = {t: cid[len("a2ui-"):-len("-v1")] for cid, types in packs.items() if isinstance(types, list) for t in types}
+    hub = HUB.read_text()
+    for t in _published():
+        s = (ROOT / "public" / "atoms" / t / "index.html").read_text()
+        assert f'class="cat-chip" href="/atoms/?catalog={cat[t]}"' in s, t
+        assert f'data-c="{cat[t]}"><a href="/atoms/{t}/">' in hub, t
+    counts = [int(n) for n in re.findall(r'<button type="button" class="hub-cat" data-c="[a-z-]+" aria-pressed="false">[^<]*<span>(\d+)</span>', hub)]
+    assert sum(counts) == len(_published())
