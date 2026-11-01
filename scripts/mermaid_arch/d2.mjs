@@ -16,7 +16,7 @@ export const D2_SHAPE_KIND = Object.freeze({
 });
 const RESERVED = new Set(['shape', 'label', 'class', 'kind', 'style', 'direction', 'icon', 'tooltip', 'near', 'width', 'height', 'link', 'constraint', 'source-arrowhead', 'target-arrowhead', 'top', 'left', 'grid-rows', 'grid-columns', 'link']);
 const UNSUPPORTED = new Set(['classes', 'vars', 'd2-config', 'layers', 'scenarios', 'steps']);
-const DIRS = { right: 'LR', left: 'RL', down: 'TB', up: 'BT' };
+const DIRS = Object.freeze({ right: 'LR', left: 'RL', down: 'TB', up: 'BT' });
 
 export function parseD2(text, opts = {}) {
   const errors = [], warnings = [];
@@ -125,12 +125,14 @@ export function parseD2(text, opts = {}) {
     for (const op of OPS) if (src.startsWith(op, i) && /[\s]/.test(src[i + op.length] || ' ')) { i += op.length; return op; }
     return null;
   }
-  const keyOf = (scope, segs) => [...scope.path, ...segs].join('.');
+  // internal path key: a separator that cannot appear in user text, so a quoted "a.b" stays ONE shape
+  const SEP = '\u0001', disp = (p) => p.split(SEP).join('.');
+  const keyOf = (scope, segs) => [...scope.path, ...segs].join(SEP);
   function ensureNode(path, ln) {
     let n = nodes.get(path);
     if (!n) {
-      const segs = path.split('.');
-      n = { path, leaf: segs[segs.length - 1], label: undefined, sub: undefined, shape: undefined, hints: [], order: nodes.size, line: ln, children: 0, parent: segs.length > 1 ? segs.slice(0, -1).join('.') : undefined };
+      const segs = path.split(SEP);
+      n = { path, leaf: segs[segs.length - 1], label: undefined, sub: undefined, shape: undefined, hints: [], order: nodes.size, line: ln, children: 0, parent: segs.length > 1 ? segs.slice(0, -1).join(SEP) : undefined };
       nodes.set(path, n);
       if (n.parent) { const p = ensureNode(n.parent, ln); p.children++; }
     }
@@ -168,7 +170,7 @@ export function parseD2(text, opts = {}) {
       const cut = scope.type === 'edge' ? -1 : segs.findIndex((x, k) => k >= 1 && RESERVED.has(x.toLowerCase()));
       if (cut >= 1) {   // `g.label: X`, `b.shape: person`, `a.style.fill: red`: a property of the object `g` / `b` / `a`, not a new shape
         const opath = keyOf(scope, segs.slice(0, cut)), owner = ensureNode(opath, ln), prop = segs.slice(cut);
-        const sc = { type: 'node', path: opath.split('.'), owner };
+        const sc = { type: 'node', path: opath.split(SEP), owner };
         attribute(sc, prop, val, ln);
         if (peek() === '{') { adv(); parseBlock({ ...sc, stylePrefix: prop[0].toLowerCase() === 'style' }, false, depth + 1); }
         continue;
@@ -182,7 +184,7 @@ export function parseD2(text, opts = {}) {
       const path = keyOf(scope, segs);
       const n = ensureNode(path, ln);
       if (val !== undefined && val !== '') setLabel(n, val);
-      if (peek() === '{') { adv(); parseBlock({ type: 'node', path: path.split('.'), owner: n }, false, depth + 1); }
+      if (peek() === '{') { adv(); parseBlock({ type: 'node', path: path.split(SEP), owner: n }, false, depth + 1); }
     }
   }
   function skipBlock() { skipSpace(false); if (peek() !== '{') return; let d = 0; do { const c = adv(); if (c === '{') d++; else if (c === '}') d--; } while (d > 0 && peek() !== undefined); }
@@ -190,7 +192,7 @@ export function parseD2(text, opts = {}) {
     const key = segs.join('.').toLowerCase();
     const owner = scope.owner;
     const isEdge = scope.type === 'edge';
-    if (key === 'direction') { const d = DIRS[(val || '').toLowerCase()]; if (d) direction = d; else fail('direction must be right, left, down or up', ln); return; }
+    if (key === 'direction') { const dk = (val || '').toLowerCase(), d = Object.hasOwn(DIRS, dk) ? DIRS[dk] : undefined; if (d) direction = d; else fail('direction must be right, left, down or up', ln); return; }
     if (!owner) return;
     if (key === 'style' || key === 'style.stroke-dash' || scope.stylePrefix) {
       const k = scope.stylePrefix ? key : key;
@@ -246,7 +248,7 @@ export function parseD2(text, opts = {}) {
   // ---- canonical graph
   const leafCount = new Map();
   for (const n of nodes.values()) if (!n.children) leafCount.set(n.leaf, (leafCount.get(n.leaf) || 0) + 1);
-  const origOf = (n) => (leafCount.get(n.leaf) > 1 ? n.path : n.leaf);
+  const origOf = (n) => (leafCount.get(n.leaf) > 1 ? disp(n.path) : n.leaf);
   const mapNode = makeIdMapper(), mapGroup = makeIdMapper();
   const outer = (n) => { let p = n; while (p.parent) p = nodes.get(p.parent); return p; };
   const groupNodes = [...nodes.values()].filter((n) => n.children && !n.parent);
@@ -261,8 +263,8 @@ export function parseD2(text, opts = {}) {
     let kind;
     for (const h of n.hints) { const k = resolveKind(h); if (k) kind = k; else warn(`"${h}" is not a known kind; ignored.`, n.line); }
     if (!kind) {
-      if (n.shape && !(n.shape in D2_SHAPE_KIND)) warn(`shape "${n.shape}" is not known; treated as a plain box.`, n.line);
-      kind = D2_SHAPE_KIND[n.shape || 'rectangle'] || 'server';
+      if (n.shape && !Object.hasOwn(D2_SHAPE_KIND, n.shape)) warn(`shape "${n.shape}" is not known; treated as a plain box.`, n.line);
+      kind = (Object.hasOwn(D2_SHAPE_KIND, n.shape || 'rectangle') ? D2_SHAPE_KIND[n.shape || 'rectangle'] : undefined) || 'server';
     }
     const o = { id: mapNode(origOf(n)), label: n.label !== undefined ? n.label : n.leaf, kind };
     if (n.sub) o.sub = n.sub;
@@ -276,14 +278,14 @@ export function parseD2(text, opts = {}) {
   const eOut = [];
   for (const e of edges) {
     const f = idOf(e.from), t = idOf(e.to);
-    if (!f || !t) { addErr(`line ${e.line}: "${!f ? e.from : e.to}" is a container, not a shape. Edges to a whole container are not supported; connect to a shape inside it.`); continue; }
+    if (!f || !t) { addErr(`line ${e.line}: "${disp(!f ? e.from : e.to)}" is a container, not a shape. Edges to a whole container are not supported; connect to a shape inside it.`); continue; }
     const o = { from: f, to: t, style: e.style };
     if (e.label) o.label = e.label;
     if (e.both) o.both = true;
     eOut.push(o);
   }
   const findId = (ref, ln) => {
-    const cand = [...byPath.values()].filter((n) => n.path === ref || n.leaf === ref || origOf(n) === ref || n.leaf.toLowerCase() === ref.toLowerCase());
+    const cand = [...byPath.values()].filter((n) => disp(n.path) === ref || n.leaf === ref || origOf(n) === ref || n.leaf.toLowerCase() === ref.toLowerCase());
     if (cand.length) return mapNode(origOf(cand[0]));
     const names = [...byPath.values()].map((n) => n.leaf);
     addErr(`line ${ln}: "${ref}" is not a shape` + (didYouMean(ref, names) ? ` (did you mean "${didYouMean(ref, names)}"?)` : ''));

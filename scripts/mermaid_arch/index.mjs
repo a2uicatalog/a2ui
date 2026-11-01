@@ -1,5 +1,5 @@
 // Library entry: mermaidToArch(text, opts) -> {payload, graph, warnings}
-import { ArchError, validateGraph, PACES } from './graph.mjs';
+import { ArchError, validateGraph, PACES, normDirection } from './graph.mjs';
 import { parseMermaid } from './mermaid.mjs';
 import { parseD2 } from './d2.mjs';
 import { compileGraph, archPayload, filmPayload, validateBlock } from './compile.mjs';
@@ -19,7 +19,7 @@ export function checkOptions(opts = {}) {
   if (o.routing != null && !['orthogonal', 'curve'].includes(o.routing)) e.push(`routing ${JSON.stringify(o.routing)} must be orthogonal or curve`);
   if (o.pace != null && !(typeof o.pace === 'string' && Object.hasOwn(PACES, o.pace))) e.push(`pace ${JSON.stringify(o.pace)} must be one of ${Object.keys(PACES).join(', ')}`);
   if (o.duration != null && !(typeof o.duration === 'number' && o.duration >= 2 && o.duration <= 120)) e.push(`duration ${JSON.stringify(o.duration)} must be a number of seconds from 2 to 120`);
-  if (o.direction != null && !['LR', 'RL', 'TB', 'BT'].includes(o.direction)) e.push(`direction ${JSON.stringify(o.direction)} must be LR, RL, TB or BT`);
+  if (o.direction != null && !['LR', 'RL', 'TB', 'BT'].includes(normDirection(o.direction))) e.push(`direction ${JSON.stringify(o.direction)} must be LR, RL, TB (or TD) or BT`);
   if (e.length) throw new ArchError(e);
 }
 
@@ -27,12 +27,13 @@ export function checkOptions(opts = {}) {
 export function graphToArch(graph, opts = {}) {
   checkOptions(opts);
   const g = { ...graph };
-  if (opts.direction) g.direction = opts.direction;
+  if (opts.direction) g.direction = normDirection(opts.direction);
+  if (g.direction) g.direction = normDirection(g.direction);
   if (opts.title) g.title = opts.title;
   if (!g.direction) g.direction = 'LR';
   const { errors, warnings } = validateGraph(g);
   if (errors.length) throw new ArchError(errors, warnings);
-  const lopts = { ...opts, forceDirection: !!opts.direction };
+  const lopts = { ...opts, forceDirection: !!opts.direction, direction: normDirection(opts.direction) };
   const c = compileGraph(g, lopts);
   const { block, layout, warnings: w2 } = c;
   const bad = validateBlock(block);

@@ -80,6 +80,7 @@ const KINDS = Object.freeze(['device', 'app', 'server', 'tool', 'model', 'store'
 const STYLES = Object.freeze(['sync', 'async', 'optional']);
 const PACES = Object.freeze({ slow: 1.4, normal: 1.0, fast: 0.75 });
 const DIRECTIONS = Object.freeze(['LR', 'RL', 'TB', 'BT']);
+const normDirection = (d) => (d === 'TD' ? 'TB' : d);
 const ID_RE = /^[a-z][a-z0-9_-]{0,31}$/;
 
 // Friendly names that map onto the 8 atom kinds.
@@ -106,7 +107,8 @@ class ArchError extends Error {
 
 function resolveKind(name) {
   if (typeof name !== 'string') return undefined;
-  return KIND_ALIASES[name.trim().toLowerCase()];
+  const k = name.trim().toLowerCase();
+  return Object.hasOwn(KIND_ALIASES, k) ? KIND_ALIASES[k] : undefined;
 }
 
 function levenshtein(a, b) {
@@ -180,7 +182,7 @@ function validateGraph(g) {
   const groups = Array.isArray(g.groups) ? g.groups : [];
   const messages = Array.isArray(g.messages) ? g.messages : [];
 
-  if (g.direction !== undefined && !DIRECTIONS.includes(g.direction)) {
+  if (g.direction !== undefined && !DIRECTIONS.includes(normDirection(g.direction))) {
     errors.push(`direction "${g.direction}" is not one of ${DIRECTIONS.join(', ')}`);
   }
   if (!nodes.length) errors.push('the graph has no nodes; add at least one node');
@@ -639,7 +641,7 @@ function parseMermaid(text, opts = {}) {
       const sm = body.match(/shape\s*:\s*([\w-]+)/);
       const lm = body.match(/label\s*:\s*("([^"]*)"|[^,]+)/);
       if (sm) {
-        const sh = AT_SHAPES[sm[1].toLowerCase()];
+        const shk = sm[1].toLowerCase(), sh = Object.hasOwn(AT_SHAPES, shk) ? AT_SHAPES[shk] : undefined;
         if (sh) ref.shape = sh;
         else { ref.shape = 'rect'; warn(line, `node "${orig}": shape "${sm[1]}" is not known; treated as a plain box.`); }
       }
@@ -752,7 +754,7 @@ function parseMermaid(text, opts = {}) {
       else if (key === 'msg') {
         const m = /^(\S+?)\s*->\s*(\S+?)\s+"([^"]*)"(?:\s+(back))?\s*$/.exec(d[2].trim());
         if (!m) fail(L(), `bad "%% msg:" directive; write it as  %% msg: fromId->toId "payload text"  (add the word back at the end for a reply)`);
-        else msgDirectives.push({ line: L(), from: m[1], to: m[2], text: m[3], back: !!m[4] });
+        else msgDirectives.push({ line: L(), from: m[1], to: m[2], text: cleanText(m[3]), back: !!m[4] });
       } else if (key === 'numbered') {
         const v = d[2].trim().toLowerCase();
         if (v === 'on' || v === 'true' || v === 'yes') numbered = true;
@@ -797,7 +799,7 @@ function parseMermaid(text, opts = {}) {
       const k = word.toLowerCase();
       if (/^(flowchart|graph)/i.test(line)) {
         fail(L(), `cannot read the header "${line}"; write "flowchart LR" (or TD, TB, RL, BT)`);
-      } else if (OTHER_DIAGRAMS[k]) {
+      } else if (Object.hasOwn(OTHER_DIAGRAMS, k)) {
         fail(L(), `"${word}" diagrams are not supported; only flowcharts are. ${OTHER_DIAGRAMS[k]}`);
       } else if (line.startsWith('%%{')) { continue; }
       else {
@@ -867,7 +869,7 @@ function parseMermaid(text, opts = {}) {
   for (const n of [...nodes.values()].sort((a, b) => a.order - b.order)) {
     let kind;
     for (const h of n.hints) { const k = resolveKind(h); if (k) kind = k; }
-    if (!kind) kind = SHAPE_KIND[n.shape || 'plain'];
+    if (!kind) kind = SHAPE_KIND[Object.hasOwn(SHAPE_KIND, n.shape || 'plain') ? (n.shape || 'plain') : 'plain'];
     const label = n.label !== undefined ? n.label : n.orig;
     const o = { id: mapNode(n.orig), label, kind };
     if (n.sub) o.sub = n.sub;
@@ -2167,7 +2169,7 @@ function compileGraph(graph, opts = {}) {
     });
     if (at >= 0) {
       const total = sched.schedule.reduce((a, x) => a + (x.end - x.start), 0);
-      throw new ArchError([`duration ${duration} s is too short for the ${info[at].chips} message chips on step ${sched.schedule[at].step}: each chip needs at least 0.3 s inside its step. Raise the duration to about ${Math.ceil(LEAD_IN + HOLD + total * worst + 0.5)} s, or remove messages.`]);
+      throw new ArchError([`duration ${duration} s is too short for the ${info[at].chips} message chips on step ${sched.schedule[at].step}: each chip needs at least 0.3 s inside its step. Raise the duration to at least ${Math.ceil(LEAD_IN + HOLD + total * worst)} s, or remove messages.`]);
     }
   }
   const seen = new Map();
@@ -2408,7 +2410,7 @@ function checkOptions(opts = {}) {
   if (o.routing != null && !['orthogonal', 'curve'].includes(o.routing)) e.push(`routing ${JSON.stringify(o.routing)} must be orthogonal or curve`);
   if (o.pace != null && !(typeof o.pace === 'string' && Object.hasOwn(PACES, o.pace))) e.push(`pace ${JSON.stringify(o.pace)} must be one of ${Object.keys(PACES).join(', ')}`);
   if (o.duration != null && !(typeof o.duration === 'number' && o.duration >= 2 && o.duration <= 120)) e.push(`duration ${JSON.stringify(o.duration)} must be a number of seconds from 2 to 120`);
-  if (o.direction != null && !['LR', 'RL', 'TB', 'BT'].includes(o.direction)) e.push(`direction ${JSON.stringify(o.direction)} must be LR, RL, TB or BT`);
+  if (o.direction != null && !['LR', 'RL', 'TB', 'BT'].includes(normDirection(o.direction))) e.push(`direction ${JSON.stringify(o.direction)} must be LR, RL, TB (or TD) or BT`);
   if (e.length) throw new ArchError(e);
 }
 
@@ -2416,12 +2418,13 @@ function checkOptions(opts = {}) {
 function graphToArch(graph, opts = {}) {
   checkOptions(opts);
   const g = { ...graph };
-  if (opts.direction) g.direction = opts.direction;
+  if (opts.direction) g.direction = normDirection(opts.direction);
+  if (g.direction) g.direction = normDirection(g.direction);
   if (opts.title) g.title = opts.title;
   if (!g.direction) g.direction = 'LR';
   const { errors, warnings } = validateGraph(g);
   if (errors.length) throw new ArchError(errors, warnings);
-  const lopts = { ...opts, forceDirection: !!opts.direction };
+  const lopts = { ...opts, forceDirection: !!opts.direction, direction: normDirection(opts.direction) };
   const c = compileGraph(g, lopts);
   const { block, layout, warnings: w2 } = c;
   const bad = validateBlock(block);

@@ -205,7 +205,7 @@ export function parseMermaid(text, opts = {}) {
       const sm = body.match(/shape\s*:\s*([\w-]+)/);
       const lm = body.match(/label\s*:\s*("([^"]*)"|[^,]+)/);
       if (sm) {
-        const sh = AT_SHAPES[sm[1].toLowerCase()];
+        const shk = sm[1].toLowerCase(), sh = Object.hasOwn(AT_SHAPES, shk) ? AT_SHAPES[shk] : undefined;
         if (sh) ref.shape = sh;
         else { ref.shape = 'rect'; warn(line, `node "${orig}": shape "${sm[1]}" is not known; treated as a plain box.`); }
       }
@@ -318,7 +318,7 @@ export function parseMermaid(text, opts = {}) {
       else if (key === 'msg') {
         const m = /^(\S+?)\s*->\s*(\S+?)\s+"([^"]*)"(?:\s+(back))?\s*$/.exec(d[2].trim());
         if (!m) fail(L(), `bad "%% msg:" directive; write it as  %% msg: fromId->toId "payload text"  (add the word back at the end for a reply)`);
-        else msgDirectives.push({ line: L(), from: m[1], to: m[2], text: m[3], back: !!m[4] });
+        else msgDirectives.push({ line: L(), from: m[1], to: m[2], text: cleanText(m[3]), back: !!m[4] });
       } else if (key === 'numbered') {
         const v = d[2].trim().toLowerCase();
         if (v === 'on' || v === 'true' || v === 'yes') numbered = true;
@@ -363,7 +363,7 @@ export function parseMermaid(text, opts = {}) {
       const k = word.toLowerCase();
       if (/^(flowchart|graph)/i.test(line)) {
         fail(L(), `cannot read the header "${line}"; write "flowchart LR" (or TD, TB, RL, BT)`);
-      } else if (OTHER_DIAGRAMS[k]) {
+      } else if (Object.hasOwn(OTHER_DIAGRAMS, k)) {
         fail(L(), `"${word}" diagrams are not supported; only flowcharts are. ${OTHER_DIAGRAMS[k]}`);
       } else if (line.startsWith('%%{')) { continue; }
       else {
@@ -433,7 +433,7 @@ export function parseMermaid(text, opts = {}) {
   for (const n of [...nodes.values()].sort((a, b) => a.order - b.order)) {
     let kind;
     for (const h of n.hints) { const k = resolveKind(h); if (k) kind = k; }
-    if (!kind) kind = SHAPE_KIND[n.shape || 'plain'];
+    if (!kind) kind = SHAPE_KIND[Object.hasOwn(SHAPE_KIND, n.shape || 'plain') ? (n.shape || 'plain') : 'plain'];
     const label = n.label !== undefined ? n.label : n.orig;
     const o = { id: mapNode(n.orig), label, kind };
     if (n.sub) o.sub = n.sub;

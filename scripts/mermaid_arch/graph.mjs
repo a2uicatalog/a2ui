@@ -20,6 +20,7 @@ export const KINDS = Object.freeze(['device', 'app', 'server', 'tool', 'model', 
 export const STYLES = Object.freeze(['sync', 'async', 'optional']);
 export const PACES = Object.freeze({ slow: 1.4, normal: 1.0, fast: 0.75 });
 export const DIRECTIONS = Object.freeze(['LR', 'RL', 'TB', 'BT']);
+export const normDirection = (d) => (d === 'TD' ? 'TB' : d);
 export const ID_RE = /^[a-z][a-z0-9_-]{0,31}$/;
 
 // Friendly names that map onto the 8 atom kinds.
@@ -46,7 +47,8 @@ export class ArchError extends Error {
 
 export function resolveKind(name) {
   if (typeof name !== 'string') return undefined;
-  return KIND_ALIASES[name.trim().toLowerCase()];
+  const k = name.trim().toLowerCase();
+  return Object.hasOwn(KIND_ALIASES, k) ? KIND_ALIASES[k] : undefined;
 }
 
 export function levenshtein(a, b) {
@@ -120,7 +122,7 @@ export function validateGraph(g) {
   const groups = Array.isArray(g.groups) ? g.groups : [];
   const messages = Array.isArray(g.messages) ? g.messages : [];
 
-  if (g.direction !== undefined && !DIRECTIONS.includes(g.direction)) {
+  if (g.direction !== undefined && !DIRECTIONS.includes(normDirection(g.direction))) {
     errors.push(`direction "${g.direction}" is not one of ${DIRECTIONS.join(', ')}`);
   }
   if (!nodes.length) errors.push('the graph has no nodes; add at least one node');

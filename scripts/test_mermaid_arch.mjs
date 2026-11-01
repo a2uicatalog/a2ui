@@ -916,7 +916,7 @@ test('a short %% duration with many chips on one edge is refused with a clear me
   const msgs = Array.from({ length: 12 }, (_, i) => `%% msg: a->b "m${i}"`).join('\n');
   const src = `%% duration: 4\n${msgs}\nflowchart LR\na -->|go| b\nb --> c`;
   assert.throws(() => mermaidToArch(src), (e) => e instanceof ArchError && /too short for the 12 message chips/.test(e.errors.join()) && !/internal/.test(e.errors.join()));
-  const m = /about (\d+) s/.exec((() => { try { mermaidToArch(src); } catch (e) { return e.errors[0]; } })());
+  const m = /at least (\d+) s/.exec((() => { try { mermaidToArch(src); } catch (e) { return e.errors[0]; } })());
   const r = mermaidToArch(src.replace('duration: 4', 'duration: ' + m[1]));
   assert.deepEqual(validateBlock(r.block), [], 'the suggested duration works');
   const fine = mermaidToArch('%% duration: 4\n%% msg: a->b "m"\nflowchart LR\na --> b');
@@ -936,4 +936,52 @@ test('library and CLI options are validated, never silently clamped', () => {
   assert.equal(cli('--size', 'x'), 2);
   assert.equal(cli('--fit', 'huge'), 2);
   assert.equal(cli('--size', '16', '--fit', 'wide'), 0);
+});
+
+// ------------------------------------------------------------------ recheck fixes
+const PROTO = ['__proto__', 'constructor', 'toString', 'hasOwnProperty', 'valueOf'];
+const clean = (s) => { assert.ok(!/function Object|\[object Object\]|function \w+\(\)/.test(s), s); return s; };
+const catchText = (fn) => { try { const r = fn(); return { ok: true, w: (r.warnings || []).join('\n'), r }; } catch (e) { if (e instanceof ArchError) return { ok: false, text: clean(e.errors.join('\n')) }; throw e; } };
+
+test('prototype-chain names in user text give the normal messages', () => {
+  for (const w of PROTO) {
+    const d = catchText(() => d2ToArch(`direction: ${w}\na -> b`));
+    assert.ok(!d.ok && /direction must be right, left, down or up/.test(d.text), w + ' ' + d.text);
+    const s = catchText(() => d2ToArch(`a: A\na.shape: ${w}\nb\na -> b`));
+    assert.ok(s.ok && /shape "[^"]*" is not known/.test(clean(s.w)), w + ' d2 shape ' + (s.w || s.text));
+    const c = catchText(() => d2ToArch(`a: A\na.class: ${w}\nb\na -> b`));
+    assert.ok(c.ok && /is not a known kind/.test(clean(c.w)), w + ' d2 class');
+    const mc = catchText(() => mermaidToArch(`flowchart LR\na --> b\nclass a ${w}`));
+    clean(mc.ok ? mc.w : mc.text);
+    const at = catchText(() => mermaidToArch(`flowchart LR\na@{ shape: ${w}, label: "x" } --> b`));
+    assert.ok(at.ok && /shape "[^"]*" is not known; treated as a plain box/.test(clean(at.w)), w + ' @shape ' + (at.w || at.text));
+    const od = catchText(() => mermaidToArch(w));
+    assert.ok(!od.ok && !/diagrams are not supported/.test(od.text), w + ' ' + od.text);
+    const gk = catchText(() => graphToArch({ nodes: [{ id: 'a', label: 'A', kind: w }, { id: 'b', label: 'B' }], edges: [{ from: 'a', to: 'b' }] }));
+    clean(gk.ok ? gk.w : gk.text);
+    assert.ok(!gk.ok && /kind/.test(gk.text), w + ' graph kind ' + gk.text);
+  }
+});
+
+test('D2: a quoted key with a dot is ONE shape; unquoted dotted paths still nest', () => {
+  const q = parseD2('"a.b" -> c').graph;
+  assert.equal((q.groups || []).length, 0);
+  assert.deepEqual(q.nodes.map((n) => n.label).sort(), ['a.b', 'c']);
+  const p = parseD2('a.b.c -> d').graph;
+  assert.equal(p.groups.length, 1);
+  assert.deepEqual(p.nodes.map((n) => n.label).sort(), ['c', 'd']);
+});
+
+test('nits: duration hint is the smallest working value, TD accepted everywhere, %% msg text is cleaned', () => {
+  const msgs = Array.from({ length: 12 }, (_, i) => `%% msg: a->b "m${i}"`).join('\n');
+  const src = `%% duration: 4\n${msgs}\nflowchart LR\na -->|go| b\nb --> c`;
+  const hint = (() => { try { mermaidToArch(src); } catch (e) { return +/at least (\d+) s/.exec(e.errors[0])[1]; } })();
+  assert.ok(hint);
+  assert.ok(mermaidToArch(src.replace('duration: 4', 'duration: ' + hint)));
+  assert.throws(() => mermaidToArch(src.replace('duration: 4', 'duration: ' + (hint - 1))), ArchError);
+  assert.equal(graphToArch({ direction: 'TD', groups: [], messages: [], nodes: [{ id: 'a', label: 'A' }, { id: 'b', label: 'B' }], edges: [{ from: 'a', to: 'b' }] }).graph.direction, 'TB');
+  assert.ok(mermaidToArch('flowchart LR\na-->b', { direction: 'TD' }));
+  assert.ok(d2ToArch('a -> b', { direction: 'TD' }));
+  const r = mermaidToArch('%% msg: a->b "<b>Tom</b> &amp; Jerry &lt;3&quot;"\nflowchart LR\na --> b');
+  assert.equal(r.graph.messages[0].text, 'Tom & Jerry <3"');
 });

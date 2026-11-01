@@ -115,7 +115,7 @@ export function compileGraph(graph, opts = {}) {
     });
     if (at >= 0) {
       const total = sched.schedule.reduce((a, x) => a + (x.end - x.start), 0);
-      throw new ArchError([`duration ${duration} s is too short for the ${info[at].chips} message chips on step ${sched.schedule[at].step}: each chip needs at least 0.3 s inside its step. Raise the duration to about ${Math.ceil(LEAD_IN + HOLD + total * worst + 0.5)} s, or remove messages.`]);
+      throw new ArchError([`duration ${duration} s is too short for the ${info[at].chips} message chips on step ${sched.schedule[at].step}: each chip needs at least 0.3 s inside its step. Raise the duration to at least ${Math.ceil(LEAD_IN + HOLD + total * worst)} s, or remove messages.`]);
     }
   }
   const seen = new Map();
