@@ -910,3 +910,15 @@ test('D2: HTML tags are stripped from labels like Mermaid, <br> splits label and
   assert.equal(p.nodes[0].sub, 'second line');
   assert.equal(p.edges[0].label, 'xsends data');
 });
+
+// ------------------------------------------------------------------ review round 2: S2 (short duration vs message chips)
+test('a short %% duration with many chips on one edge is refused with a clear message, not an internal error', () => {
+  const msgs = Array.from({ length: 12 }, (_, i) => `%% msg: a->b "m${i}"`).join('\n');
+  const src = `%% duration: 4\n${msgs}\nflowchart LR\na -->|go| b\nb --> c`;
+  assert.throws(() => mermaidToArch(src), (e) => e instanceof ArchError && /too short for the 12 message chips/.test(e.errors.join()) && !/internal/.test(e.errors.join()));
+  const m = /about (\d+) s/.exec((() => { try { mermaidToArch(src); } catch (e) { return e.errors[0]; } })());
+  const r = mermaidToArch(src.replace('duration: 4', 'duration: ' + m[1]));
+  assert.deepEqual(validateBlock(r.block), [], 'the suggested duration works');
+  const fine = mermaidToArch('%% duration: 4\n%% msg: a->b "m"\nflowchart LR\na --> b');
+  assert.deepEqual(validateBlock(fine.block), []);
+});

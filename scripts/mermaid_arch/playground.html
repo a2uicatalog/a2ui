@@ -2155,7 +2155,21 @@ function compileGraph(graph, opts = {}) {
     return o;
   });
 
-  // ---- message chips ride inside their step's dwell, one after another
+  // ---- message chips ride inside their step's dwell, one after another. A chip needs at least 0.3 s; when a short
+  // `duration` squeezes the step below that, refuse up front instead of producing chips that run past the step.
+  if (duration !== undefined) {
+    let worst = 1, at = -1;
+    info.forEach((st, k) => {
+      if (!st.chips) return;
+      const dw = sched.schedule[k].end - sched.schedule[k].start;
+      const need = Math.max(CHIP_START, edgeSec(sched.schedule[k]) + 0.05) + st.chips * 0.3 + (st.chips - 1) * CHIP_GAP;
+      if (need / dw > worst) { worst = need / dw; at = k; }
+    });
+    if (at >= 0) {
+      const total = sched.schedule.reduce((a, x) => a + (x.end - x.start), 0);
+      throw new ArchError([`duration ${duration} s is too short for the ${info[at].chips} message chips on step ${sched.schedule[at].step}: each chip needs at least 0.3 s inside its step. Raise the duration to about ${Math.ceil(LEAD_IN + HOLD + total * worst + 0.5)} s, or remove messages.`]);
+    }
+  }
   const seen = new Map();
   const messages = graph.messages.map((m, j) => {
     const { idx, back } = msgEdge[j];
