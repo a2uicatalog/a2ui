@@ -366,19 +366,19 @@
        "edge": 1,
        "text": "prompt",
        "at": 0.1198,
-       "dur": 0.0336
+       "dur": 0.0561
       },
       {
        "edge": 4,
        "text": "updateComponents",
        "at": 0.3827,
-       "dur": 0.0336
+       "dur": 0.0561
       },
       {
        "edge": 8,
        "text": "action",
        "at": 0.7558,
-       "dur": 0.0336
+       "dur": 0.0561
       }
      ],
      "id": "arch",

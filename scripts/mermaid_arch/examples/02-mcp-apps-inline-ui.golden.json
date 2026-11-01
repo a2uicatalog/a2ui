@@ -345,19 +345,19 @@
      "edge": 2,
      "text": "tool call",
      "at": 0.2177,
-     "dur": 0.0382
+     "dur": 0.0637
     },
     {
      "edge": 3,
      "text": "tools/call",
      "at": 0.6295,
-     "dur": 0.0382
+     "dur": 0.0637
     },
     {
      "edge": 5,
      "text": "resources/read ui://",
      "at": 0.8574,
-     "dur": 0.0382
+     "dur": 0.0637
     }
    ]
   }

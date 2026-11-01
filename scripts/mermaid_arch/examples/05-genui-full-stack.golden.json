@@ -434,19 +434,19 @@
      "edge": 1,
      "text": "AG-UI run",
      "at": 0.3996,
-     "dur": 0.0254
+     "dur": 0.0423
     },
     {
      "edge": 6,
      "text": "A2UI JSON",
      "at": 0.8864,
-     "dur": 0.0254
+     "dur": 0.0423
     },
     {
      "edge": 4,
      "text": "ui:// HTML",
      "at": 0.7135,
-     "dur": 0.0254
+     "dur": 0.0423
     }
    ]
   }

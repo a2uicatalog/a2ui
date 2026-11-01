@@ -5,12 +5,12 @@
    "type": "motion_timeline",
    "title": "AG-UI: streaming an agent run into an app",
    "aspect": "9:16",
-   "duration": 39.603,
+   "duration": 39.763,
    "loop": true,
    "autoplay": true,
    "controls": true,
    "theme": "dark",
-   "poster": 39.1,
+   "poster": 39.26,
    "blocks": [
     {
      "type": "motion_arch",
@@ -27,7 +27,7 @@
        "y": 40.36,
        "w": 5.26,
        "h": 11.63,
-       "at": 0.0076,
+       "at": 0.0075,
        "dur": 0.011
       },
       {
@@ -38,7 +38,7 @@
        "y": 45.59,
        "w": 9.56,
        "h": 11.63,
-       "at": 0.0093,
+       "at": 0.0092,
        "dur": 0.011
       },
       {
@@ -82,7 +82,7 @@
        "y": 41.86,
        "w": 10.13,
        "h": 11.63,
-       "at": 0.016,
+       "at": 0.0159,
        "dur": 0.011
       },
       {
@@ -93,7 +93,7 @@
        "y": 44.53,
        "w": 9.56,
        "h": 11.63,
-       "at": 0.0177,
+       "at": 0.0176,
        "dur": 0.011
       }
      ],
@@ -103,7 +103,7 @@
        "to": "app",
        "label": "1 message",
        "style": "solid",
-       "at": 0.0253,
+       "at": 0.0251,
        "dur": 0.0126
       },
       {
@@ -112,7 +112,7 @@
        "label": "2 run input",
        "style": "solid",
        "curve": -50,
-       "at": 0.1016,
+       "at": 0.1012,
        "dur": 0.0126
       },
       {
@@ -120,7 +120,7 @@
        "to": "agent",
        "label": "3 POST run over HTTP",
        "style": "solid",
-       "at": 0.1933,
+       "at": 0.1925,
        "dur": 0.0126
       },
       {
@@ -128,7 +128,7 @@
        "to": "llm",
        "label": "4 prompt",
        "style": "solid",
-       "at": 0.3079,
+       "at": 0.3066,
        "dur": 0.0126
       },
       {
@@ -136,7 +136,7 @@
        "to": "tools",
        "label": "5 tool call",
        "style": "solid",
-       "at": 0.3995,
+       "at": 0.3979,
        "dur": 0.0126
       },
       {
@@ -145,7 +145,7 @@
        "label": "6 events, SSE by default",
        "style": "dashed",
        "curve": 24,
-       "at": 0.5065,
+       "at": 0.5044,
        "dur": 0.0126
       },
       {
@@ -154,7 +154,7 @@
        "label": "7 dispatches events",
        "style": "solid",
        "curve": 100,
-       "at": 0.6287,
+       "at": 0.6302,
        "dur": 0.0126
       },
       {
@@ -163,7 +163,7 @@
        "label": "8 streamed UI",
        "style": "solid",
        "curve": 36,
-       "at": 0.7051,
+       "at": 0.7063,
        "dur": 0.0126
       },
       {
@@ -173,7 +173,7 @@
        "style": "solid",
        "both": true,
        "curve": 50,
-       "at": 0.7815,
+       "at": 0.7823,
        "dur": 0.0126
       },
       {
@@ -183,7 +183,7 @@
        "style": "solid",
        "both": true,
        "curve": 65,
-       "at": 0.8731,
+       "at": 0.8736,
        "dur": 0.0126
       }
      ],
@@ -211,20 +211,20 @@
       {
        "edge": 2,
        "text": "run input",
-       "at": 0.2072,
-       "dur": 0.0303
+       "at": 0.2063,
+       "dur": 0.0503
       },
       {
        "edge": 5,
        "text": "TEXT_MESSAGE_CONTENT",
-       "at": 0.5204,
-       "dur": 0.0303
+       "at": 0.5183,
+       "dur": 0.0503
       },
       {
        "edge": 5,
        "text": "STATE_DELTA",
-       "at": 0.5545,
-       "dur": 0.0303
+       "at": 0.5723,
+       "dur": 0.0503
       }
      ],
      "id": "arch",
@@ -438,7 +438,7 @@
        "p": 0
       },
       {
-       "t": 39.603,
+       "t": 39.763,
        "p": 1,
        "ease": "linear"
       }
@@ -560,11 +560,11 @@
        "opacity": 0
       },
       {
-       "t": 24.898,
+       "t": 25.058,
        "opacity": 0
       },
       {
-       "t": 25.2,
+       "t": 25.36,
        "opacity": 1,
        "ease": "standard"
       }
@@ -578,11 +578,11 @@
        "opacity": 0
       },
       {
-       "t": 27.923,
+       "t": 28.083,
        "opacity": 0
       },
       {
-       "t": 28.22,
+       "t": 28.38,
        "opacity": 1,
        "ease": "standard"
       }
@@ -596,11 +596,11 @@
        "opacity": 0
       },
       {
-       "t": 30.948,
+       "t": 31.108,
        "opacity": 0
       },
       {
-       "t": 31.25,
+       "t": 31.41,
        "opacity": 1,
        "ease": "standard"
       }
@@ -614,11 +614,11 @@
        "opacity": 0
       },
       {
-       "t": 34.578,
+       "t": 34.738,
        "opacity": 0
       },
       {
-       "t": 34.88,
+       "t": 35.04,
        "opacity": 1,
        "ease": "standard"
       }
@@ -674,25 +674,25 @@
        "ease": "hold"
       },
       {
-       "t": 24.898,
+       "t": 25.058,
        "y": 35.66,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 27.923,
+       "t": 28.083,
        "y": 38.32,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 30.948,
+       "t": 31.108,
        "y": 40.98,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 34.578,
+       "t": 34.738,
        "y": 43.63,
        "opacity": 0.22,
        "ease": "hold"

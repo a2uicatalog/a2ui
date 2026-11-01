@@ -16,7 +16,7 @@
      "y": 35.52,
      "w": 8.86,
      "h": 14.48,
-     "at": 0.0093,
+     "at": 0.0092,
      "dur": 0.011
     },
     {
@@ -49,7 +49,7 @@
      "y": 23.86,
      "w": 23.12,
      "h": 14.48,
-     "at": 0.0076,
+     "at": 0.0075,
      "dur": 0.011
     },
     {
@@ -71,7 +71,7 @@
      "y": 52.82,
      "w": 16.83,
      "h": 14.48,
-     "at": 0.016,
+     "at": 0.0159,
      "dur": 0.011
     },
     {
@@ -82,7 +82,7 @@
      "y": 86.6,
      "w": 15.94,
      "h": 14.48,
-     "at": 0.0177,
+     "at": 0.0176,
      "dur": 0.011
     }
    ],
@@ -93,7 +93,7 @@
      "label": "message",
      "style": "solid",
      "curve": -80,
-     "at": 0.0253,
+     "at": 0.0251,
      "dur": 0.0126
     },
     {
@@ -101,7 +101,7 @@
      "to": "client",
      "label": "run input",
      "style": "solid",
-     "at": 0.178,
+     "at": 0.1773,
      "dur": 0.0126
     },
     {
@@ -110,7 +110,7 @@
      "label": "POST run over HTTP",
      "style": "solid",
      "curve": -100,
-     "at": 0.2697,
+     "at": 0.2686,
      "dur": 0.0126
     },
     {
@@ -118,7 +118,7 @@
      "to": "llm",
      "label": "prompt",
      "style": "solid",
-     "at": 0.5829,
+     "at": 0.5845,
      "dur": 0.0126
     },
     {
@@ -126,7 +126,7 @@
      "to": "tools",
      "label": "tool call",
      "style": "solid",
-     "at": 0.6745,
+     "at": 0.6758,
      "dur": 0.0126
     },
     {
@@ -135,7 +135,7 @@
      "label": "events, SSE by default",
      "style": "dashed",
      "curve": 12,
-     "at": 0.3843,
+     "at": 0.3827,
      "dur": 0.0126
     },
     {
@@ -144,7 +144,7 @@
      "label": "dispatches events",
      "style": "solid",
      "curve": 24,
-     "at": 0.5065,
+     "at": 0.5085,
      "dur": 0.0126
     },
     {
@@ -153,7 +153,7 @@
      "label": "streamed UI",
      "style": "solid",
      "curve": -24,
-     "at": 0.1016,
+     "at": 0.1012,
      "dur": 0.0126
     },
     {
@@ -163,7 +163,7 @@
      "style": "solid",
      "both": true,
      "curve": -100,
-     "at": 0.7815,
+     "at": 0.7823,
      "dur": 0.0126
     },
     {
@@ -172,7 +172,7 @@
      "label": "reads and writes",
      "style": "solid",
      "both": true,
-     "at": 0.8731,
+     "at": 0.8736,
      "dur": 0.0126
     }
    ],
@@ -200,20 +200,20 @@
     {
      "edge": 2,
      "text": "run input",
-     "at": 0.2836,
-     "dur": 0.0303
+     "at": 0.2824,
+     "dur": 0.0503
     },
     {
      "edge": 5,
      "text": "TEXT_MESSAGE_CONTENT",
-     "at": 0.3982,
-     "dur": 0.0303
+     "at": 0.3965,
+     "dur": 0.0503
     },
     {
      "edge": 5,
      "text": "STATE_DELTA",
-     "at": 0.4322,
-     "dur": 0.0303
+     "at": 0.4506,
+     "dur": 0.0503
     }
    ]
   }

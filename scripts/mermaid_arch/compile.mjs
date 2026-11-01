@@ -1,7 +1,7 @@
 // Canonical graph + layout + schedule -> a motion_arch block (and the payload around it).
 import { ArchError, LIMITS, assignSteps } from './graph.mjs';
 import { layoutGraph } from './layout.mjs';
-import { buildSchedule, words, LEAD_IN, HOLD, CHIP_START, CHIP_GAP, CHIP_TAIL } from './schedule.mjs';
+import { buildSchedule, words, LEAD_IN, HOLD, CHIP_SECONDS, CHIP_START, CHIP_GAP, CHIP_TAIL } from './schedule.mjs';
 import { activity, rowText } from './activity.mjs';
 
 const r2 = (x) => Math.round(x * 100) / 100;
@@ -111,7 +111,7 @@ export function compileGraph(graph, opts = {}) {
     const k = info[stepOf.get(idx)].chips, jn = seen.get(idx) || 0; seen.set(idx, jn + 1);
     const dwell = st.end - st.start;
     const off = Math.max(CHIP_START, edgeSec(st) + 0.05);   // not before the edge is fully drawn
-    const c = Math.min(1.2, Math.max(0.3, (dwell - off - CHIP_TAIL - (k - 1) * CHIP_GAP) / k));
+    const c = Math.min(CHIP_SECONDS, Math.max(0.3, (dwell - off - CHIP_TAIL - (k - 1) * CHIP_GAP) / k));
     const o = { edge: idx, text: clip(m.text, LIMITS.msgText) };
     if (back) o.back = true;
     o.at = r4((st.start + off + jn * (c + CHIP_GAP)) / D); o.dur = pd(c, D);

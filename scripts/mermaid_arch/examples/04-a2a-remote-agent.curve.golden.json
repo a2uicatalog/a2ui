@@ -180,19 +180,19 @@
      "edge": 1,
      "text": "GET agent card",
      "at": 0.2348,
-     "dur": 0.0416
+     "dur": 0.0693
     },
     {
      "edge": 2,
      "text": "SendStreamingMessage",
      "at": 0.3397,
-     "dur": 0.0416
+     "dur": 0.0693
     },
     {
      "edge": 6,
      "text": "artifact",
      "at": 0.4541,
-     "dur": 0.0416
+     "dur": 0.0693
     }
    ]
   }

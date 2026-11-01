@@ -189,19 +189,19 @@
        "edge": 2,
        "text": "tool call",
        "at": 0.2177,
-       "dur": 0.0382
+       "dur": 0.0637
       },
       {
        "edge": 3,
        "text": "tools/call",
        "at": 0.3141,
-       "dur": 0.0382
+       "dur": 0.0637
       },
       {
        "edge": 5,
        "text": "resources/read ui://",
        "at": 0.5419,
-       "dur": 0.0382
+       "dur": 0.0637
       }
      ],
      "id": "arch",

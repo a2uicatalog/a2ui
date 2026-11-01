@@ -11,7 +11,7 @@
 // shorter than the fast-pace reading time.
 import { PACES } from './graph.mjs';
 
-export const LEAD_IN = 1, HOLD = 2, MIN_DWELL = 1.8, WORDS_PER_SECOND = 4, READ_PAD = 0.5, CHIP_SECONDS = 1.2, CHIP_GAP = 0.15, CHIP_START = 0.55, CHIP_TAIL = 0.3;
+export const LEAD_IN = 1, HOLD = 2, MIN_DWELL = 1.8, WORDS_PER_SECOND = 4, READ_PAD = 0.5, CHIP_SECONDS = 2.0, CHIP_GAP = 0.15, CHIP_START = 0.55, CHIP_TAIL = 0.3;
 
 export const words = (t) => (String(t || '').trim() ? String(t).trim().split(/\s+/).length : 0);
 
