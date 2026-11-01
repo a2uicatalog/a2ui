@@ -49,7 +49,7 @@
     },
     {
       "type": "body",
-      "text": "a2uicatalog.ai is a **catalog implementation**: 468 typed UI atoms, a renderer that runs them on eight surfaces, and a simpler JSON authoring shape — `{title, theme, blocks: [...]}`, blocks keyed by `type` — that this whole curriculum has been using. That shape is **not** the A2UI wire protocol. It's a convenience dialect the catalogue converts *into* real, conformant A2UI v1.0 `createSurface` messages via its own `a2ui-emit` tool."
+      "text": "a2uicatalog.ai is a **catalog implementation**: 573 typed UI atoms, a renderer that runs them on eight surfaces, and a simpler JSON authoring shape — `{title, theme, blocks: [...]}`, blocks keyed by `type` — that this whole curriculum has been using. That shape is **not** the A2UI wire protocol. It's a convenience dialect the catalogue converts *into* real, conformant A2UI v1.0 `createSurface` messages via its own `a2ui-emit` tool."
     },
     {
       "type": "steps",

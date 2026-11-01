@@ -32,7 +32,26 @@ CLAIMS = [
     ("mcp/README.md", r"`a2ui-atoms-v1` \((\d+) atoms\)"),
     ("README.md", r"Browse all (\d+) atoms"),
     ("README.md", r"## (\d+) atoms across"),
+    ("plugin.json", r"(\d+) typed A2UI components"),
+    ("docs/quickstart-claude.md", r"\((\d+) atoms across"),
 ]
+
+# Whole places where count claims keep appearing (owner 2026-11-01: "correct the harness to mechanically update
+# that", after skills/a2ui-catalog/SKILL.md still said 480 with 573 published). Every "<N> atoms" / "<N> typed
+# (UI) atoms" in these files is held to the published count, so a new skill or doc page is covered the day it is
+# added, without anyone remembering to extend CLAIMS.
+SWEEP_GLOBS = ["skills/*/SKILL.md", "docs/quickstart*.md", "payloads/learn-a2ui*.json", "payloads/learn-a2ui-modules/*.json"]
+SWEEP_PATTERN = r"\b(\d{3}) (?:typed )?(?:UI )?atoms\b"
+
+
+def _claims():
+    out = list(CLAIMS)
+    for g in SWEEP_GLOBS:
+        for f in sorted(ROOT.glob(g)):
+            rel = f.relative_to(ROOT).as_posix()
+            if re.search(SWEEP_PATTERN, f.read_text(encoding="utf-8")):
+                out.append((rel, SWEEP_PATTERN))
+    return out
 
 
 def published_count():
@@ -51,7 +70,7 @@ def published_count():
 def stale(n):
     """Returns [(path, pattern, found_numbers)] for every claim that does not equal n."""
     out = []
-    for path, pattern in CLAIMS:
+    for path, pattern in _claims():
         text = (ROOT / path).read_text(encoding="utf-8")
         found = re.findall(pattern, text)
         if not found:
@@ -75,7 +94,7 @@ def main():
         print(f"✓ atom-count claims match the published catalogue ({n})")
         return 0
     changed = set()
-    for path, pattern in CLAIMS:
+    for path, pattern in _claims():
         p = ROOT / path
         text = p.read_text(encoding="utf-8")
         new = re.sub(pattern, lambda m: m.group(0).replace(m.group(1), str(n), 1), text)
@@ -83,6 +102,10 @@ def main():
             p.write_text(new, encoding="utf-8")
             changed.add(path)
     print(f"✓ atom-count claims: {n} atoms" + (f"; updated {', '.join(sorted(changed))}" if changed else " (already current)"))
+    if any(c.startswith("skills/") for c in changed):
+        # the skills index carries a sha256 of each SKILL.md; a count edit must not leave it stale
+        import subprocess
+        subprocess.run([sys.executable, str(ROOT / "scripts" / "gen_agent_skills_index.py")], check=True)
     return 0
 
 

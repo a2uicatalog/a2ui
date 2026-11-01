@@ -1,6 +1,6 @@
 ---
 name: a2ui-catalog
-description: Pick the right A2UI atoms and read their real field contracts before composing a UI payload. Use when deciding WHAT to render — searching the A2UI Atomic Catalog's 480 typed UI atoms (charts, gauges, steppers, dashboards, decision trees) for a task, or when a previous attempt to render a payload failed because a field name or atom type was guessed wrong. Not for the render step itself (see the a2ui-compose skill) or for MCP connection setup (see a2ui-mcp).
+description: Pick the right A2UI atoms and read their real field contracts before composing a UI payload. Use when deciding WHAT to render — searching the A2UI Atomic Catalog's 573 typed UI atoms (charts, gauges, steppers, dashboards, decision trees) for a task, or when a previous attempt to render a payload failed because a field name or atom type was guessed wrong. Not for the render step itself (see the a2ui-compose skill) or for MCP connection setup (see a2ui-mcp).
 license: MIT
 metadata:
   author: a2uicatalog
@@ -9,7 +9,7 @@ metadata:
 
 # Picking A2UI atoms
 
-The catalog is deliberately not loaded all at once: 480 atoms is too much context for
+The catalog is deliberately not loaded all at once: 573 atoms is too much context for
 most tasks, and the wrong field name is a validation error, not a broken render — so
 this skill is about narrowing down to the right slice and reading its real contract,
 not guessing.

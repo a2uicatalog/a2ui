@@ -22,7 +22,7 @@ Try, verbatim:
 > Using the A2UI catalog, show me the atoms available for a stat dashboard, then render a `stat_card` with value "1,234", label "Daily users", delta "+12%".
 
 What happens under the hood:
-1. `list_catalogs` — Claude picks the right catalog slice for the request (473 atoms across 14 catalogs; it doesn't need the whole vocabulary in context for one card).
+1. `list_catalogs` — Claude picks the right catalog slice for the request (573 atoms across 14 catalogs; it doesn't need the whole vocabulary in context for one card).
 2. `get_catalog` — fetches that slice's real field contracts. Claude never guesses a field name.
 3. `render_surface` (on MCP Apps hosts) or `preview_url` (elsewhere) — the rendered result comes back as a live view or a link, not raw HTML in the transcript.
 
