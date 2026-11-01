@@ -26,6 +26,10 @@ details{margin-top:10px}pre{background:#0d1117;border:1px solid var(--line);bord
 <textarea id="src" spellcheck="false" aria-label="Mermaid flowchart">%% title: Order service
 %% msg: client->api "GET /orders"
 %% msg: api->db "SELECT"
+%% relation-name: Interaction
+%% rel: client->api calls
+%% rel: api->db queries
+%% rel: api->worker queues work
 flowchart LR
   client([Browser]):::device
   subgraph backend[Backend]
@@ -41,6 +45,8 @@ flowchart LR
   <label>Direction <select id="dir"><option value="">as written (auto)</option><option>LR</option><option>TB</option><option>RL</option><option>BT</option></select></label>
   <label><input type="checkbox" id="film" checked> play as a film</label>
   <label><input type="checkbox" id="num" checked> numbered steps + table</label>
+  <label><input type="checkbox" id="rel"> Show relation column</label>
+  <label>edges <select id="routing"><option value="orthogonal" selected>routed (right angles)</option><option value="curve">curves</option></select></label>
   <label>pace <select id="pace"><option>slow</option><option selected>normal</option><option>fast</option></select></label>
   <button id="go">Convert</button><button id="copy">Copy payload</button>
 </div>
@@ -59,15 +65,16 @@ flowchart LR
 //   direction: 'LR' | 'RL' | 'TB' | 'BT',
 //   groups:   [{id, label}],
 //   nodes:    [{id, label, kind?, sub?, group?}],
-//   edges:    [{from, to, label?, style: 'sync'|'async'|'optional', both?}],
+//   edges:    [{from, to, label?, style: 'sync'|'async'|'optional', both?, step?, relation?}],
 //   messages: [{from, to, text, back?}],
+//   numbered?, pace?, duration?, relationColumn?: boolean, relationName?: string (max 20, default 'Relation'),
 // }
 //
 // Limits are the motion_arch atom's own (atoms/schema.yaml, renderers/web_article.py).
 
 const LIMITS = Object.freeze({
   nodes: 12, edges: 16, groups: 4, messages: 12,
-  label: 40, sub: 40, groupLabel: 40, edgeLabel: 48, msgText: 40, title: 80,
+  label: 40, sub: 40, groupLabel: 40, edgeLabel: 48, msgText: 40, title: 80, relation: 20,
 });
 const KINDS = Object.freeze(['device', 'app', 'server', 'tool', 'model', 'store', 'surface', 'user']);
 const STYLES = Object.freeze(['sync', 'async', 'optional']);
@@ -274,6 +281,11 @@ function validateGraph(g) {
     }
   });
 
+  edges.forEach((e, i) => {
+    if (e && e.relation !== undefined && (typeof e.relation !== 'string' || e.relation.length > LIMITS.relation)) errors.push(`edge ${i + 1}: relation must be text of at most ${LIMITS.relation} characters (for example "calls" or "reports back")`);
+  });
+  if (g.relationName !== undefined && (typeof g.relationName !== 'string' || !g.relationName.trim() || g.relationName.length > LIMITS.relation)) errors.push(`relationName must be 1 to ${LIMITS.relation} characters`);
+  if (g.relationColumn !== undefined && typeof g.relationColumn !== 'boolean') errors.push('relationColumn must be true or false');
   if (g.pace !== undefined && !(g.pace in PACES)) errors.push(`pace "${g.pace}" is not one of ${Object.keys(PACES).join(', ')}`);
   if (g.duration !== undefined && !(typeof g.duration === 'number' && g.duration >= 2 && g.duration <= 120)) errors.push(`duration "${g.duration}" must be a number of seconds from 2 to 120`);
   if (g.numbered || edges.some((e) => e && e.step !== undefined)) {
@@ -305,27 +317,28 @@ function validateGraph(g) {
 // ---- schedule.mjs
 // Pacing: how long each step of the film stays on screen. Timing only, derived from the content.
 //
-//   dwell(step) = max(2.5 s, (words in the edge label + words in its table row) / 3 + 0.8 s)
-//                 x 1.15 when the diagram has more than 6 steps, x 1.15 again above 9 steps
+//   dwell(step) = max(1.8 s, words in the step's sentence / 4 per second + 0.5 s)
+//                 x 1.1 when the diagram has more than 6 steps, x 1.1 again above 9 steps
 //                 x pace (slow 1.4, normal 1.0, fast 0.75)
 //   a step with several message chips is stretched so every chip rides inside its own step
-//   total = LEAD_IN (1.5 s: groups and nodes pop) + sum of dwells + HOLD (3 s on the finished diagram)
+//   total = LEAD_IN (1 s: groups and nodes pop) + sum of dwells + HOLD (2 s on the finished diagram)
+//   (a 10-step diagram plays in about 30 s at the normal pace)
 //
 // `duration` (seconds) overrides the total: the dwells are scaled to fit, with a warning when that is
 // shorter than the fast-pace reading time.
 
-const LEAD_IN = 1.5, HOLD = 3, MIN_DWELL = 2.5, WORDS_PER_SECOND = 3, CHIP_SECONDS = 1.2, CHIP_GAP = 0.15, CHIP_START = 0.55, CHIP_TAIL = 0.3;
+const LEAD_IN = 1, HOLD = 2, MIN_DWELL = 1.8, WORDS_PER_SECOND = 4, READ_PAD = 0.5, CHIP_SECONDS = 1.2, CHIP_GAP = 0.15, CHIP_START = 0.55, CHIP_TAIL = 0.3;
 
 const words = (t) => (String(t || '').trim() ? String(t).trim().split(/\s+/).length : 0);
 
-// steps: [{labelWords, rowWords, chips}] in playing order
+// steps: [{words, chips}] in playing order (words = words in the step's sentence)
 function buildSchedule(steps, { pace = 'normal', duration } = {}) {
   const warnings = [];
   const mult = PACES[pace];
   const n = steps.length;
-  const crowd = n > 9 ? 1.15 * 1.15 : n > 6 ? 1.15 : 1;
+  const crowd = n > 9 ? 1.1 * 1.1 : n > 6 ? 1.1 : 1;
   const base = (st, m) => {
-    let d = Math.max(MIN_DWELL, (st.labelWords + st.rowWords) / WORDS_PER_SECOND + 0.8) * crowd * m;
+    let d = Math.max(MIN_DWELL, st.words / WORDS_PER_SECOND + READ_PAD) * crowd * m;
     const need = CHIP_START + st.chips * CHIP_SECONDS + Math.max(0, st.chips - 1) * CHIP_GAP + CHIP_TAIL;
     return Math.max(d, need);
   };
@@ -348,6 +361,71 @@ function buildSchedule(steps, { pace = 'normal', duration } = {}) {
   return { schedule, durationSeconds: round(total), warnings, minimumSeconds: round(fast) };
 }
 const round = (x) => Math.round(x * 1000) / 1000;
+
+// ---- activity.mjs
+// The steps table's `Activity` column: one plain-English sentence per edge, built from the two node labels and
+// the edge label by a fixed template. No model, no randomness: the same graph gives the same sentences.
+//
+//   edge label      sentence
+//   (none)          "<From> calls <To>"
+//   noun phrase     "<From> sends the <label> to <To>"      ("the" only before a lower-case plain word)
+//   verb phrase     "<From> <verb> <rest> <preposition> <To>" for a known leading verb ("types prompt" -> "... types prompt into <To>")
+//   single verb     "<From> <verb> <To>"                     ("asks" -> "User asks Orchestrator")
+//   both ways       "<From> and <To> exchange <label>"       (a verb phrase like "reads and writes": "<From> reads and writes <To>")
+//   async / optional edges end in " (async)" / " (optional)"
+//
+// A row of the film is one line of at most 60 characters: rowText() tries the full sentence, then the sentence
+// without "the", then "<From> -> <To>: <label>", and only then cuts it with an ellipsis. The standalone `table`
+// atom always carries the full sentence.
+
+// third-person verbs the template recognises at the start of an edge label, with the preposition that links the rest to the target
+const LEAD_VERBS = Object.freeze({
+  'looks up': 'in', types: 'into', asks: '', answers: '', creates: 'in', discovers: 'from', reads: 'from', writes: 'to', mounts: 'in',
+  dispatches: 'to', streams: 'to', sends: 'to', posts: 'to', calls: '', fetches: 'from', renders: 'in', returns: 'to', lists: 'from',
+  saves: 'in', stores: 'in', loads: 'from', requests: 'from', checks: '', validates: '', notifies: '', hands: 'to', forwards: 'to',
+  publishes: 'to', subscribes: 'to', queries: '', updates: '', deletes: 'from', opens: '', pushes: 'to', pulls: 'from', resolves: '',
+  verifies: '', signs: '', receives: 'from', reports: 'to', triggers: '', invokes: '', runs: 'on', executes: '',
+});
+
+function activity(fromLabel, toLabel, label, { style, both } = {}) {
+  const F = String(fromLabel).trim(), T = String(toLabel).trim(), L = String(label || '').trim();
+  let s;
+  if (!L) {
+    s = both ? `${F} and ${T} talk to each other` : `${F} calls ${T}`;
+  } else {
+    const lower = L.toLowerCase();
+    const verb = Object.keys(LEAD_VERBS).find((v) => lower === v || lower.startsWith(v + ' '));
+    if (verb) {
+      const rest = L.slice(verb.length).trim();
+      const prep = LEAD_VERBS[verb];
+      if (!rest) s = `${F} ${verb} ${T}`;
+      else if (/^(and|or)\b/i.test(rest) || both) s = `${F} ${verb} ${rest} ${T}`;
+      else s = `${F} ${verb} ${rest} ${prep || 'with'} ${T}`;
+    } else if (both) {
+      s = `${F} and ${T} exchange ${/^[a-z][a-z ]*$/.test(L) ? 'the ' : ''}${L}`;
+    } else {
+      const article = /^[a-z][a-z ,+-]*$/.test(L) ? 'the ' : '';   // lower-case plain words only: not "A2UI JSON", "tools/call", "POST run"
+      s = `${F} sends ${article}${L} to ${T}`;
+    }
+  }
+  if (style === 'async') s += ' (async)';
+  else if (style === 'optional') s += ' (optional)';
+  return s[0].toUpperCase() + s.slice(1);
+}
+
+// a row of the film's table: "*N*  sentence", at most `max` characters
+function rowText(step, sentence, fromLabel, toLabel, label, style, max = 60) {
+  const pre = `*${step}*  `;
+  const suffix = style === 'async' ? ' (async)' : style === 'optional' ? ' (optional)' : '';
+  const tries = [
+    sentence,
+    sentence.replace(/ the /, ' '),
+    `${fromLabel} → ${toLabel}${label ? ': ' + label : ''}${suffix}`,
+  ];
+  for (const t of tries) if ((pre + t).length <= max) return pre + t;
+  const t = tries[2], room = max - pre.length;
+  return pre + t.slice(0, room - 1).trimEnd() + '…';
+}
 
 // ---- mermaid.mjs
 // Mermaid flowchart subset -> canonical graph. Pure ES module, no dependencies.
@@ -484,7 +562,8 @@ function parseMermaid(text, opts = {}) {
   const classStmts = [];            // {line, ids, cls}
   const msgDirectives = [];         // {line, from, to, text, back}
   const stepDirectives = [];         // {line, from, to, step}
-  let title, numbered, pace, duration, direction = 'TB', headerSeen = false, openLinkWarned = false;
+  let title, numbered, pace, duration, relationColumn, relationName, direction = 'TB', headerSeen = false, openLinkWarned = false;
+  const relDirectives = [];         // {line, from, to, text}
 
   function touchNode(orig, line) {
     let n = nodes.get(orig);
@@ -658,7 +737,7 @@ function parseMermaid(text, opts = {}) {
     let line = lines[li].trim();
     if (!line) continue;
     if (line.startsWith('%%')) {
-      const d = /^%%\s*(title|msg|numbered|pace|duration|step)\s*:\s*(.*)$/i.exec(line);
+      const d = /^%%\s*(title|msg|numbered|pace|duration|step|relation-column|relation-name|rel)\s*:\s*(.*)$/i.exec(line);
       const key = d && d[1].toLowerCase();
       if (key === 'title') { if (d[2].trim()) title = d[2].trim(); }
       else if (key === 'msg') {
@@ -676,6 +755,19 @@ function parseMermaid(text, opts = {}) {
       } else if (key === 'duration') {
         const v = Number(d[2].trim().replace(/\s*s$/i, ''));
         if (Number.isFinite(v) && v >= 2 && v <= 120) duration = v; else fail(L(), '"%% duration:" must be a number of seconds from 2 to 120, for example %% duration: 40');
+      } else if (key === 'relation-column') {
+        const v = d[2].trim().toLowerCase();
+        if (v === 'on' || v === 'true' || v === 'yes') relationColumn = true;
+        else if (v === 'off' || v === 'false' || v === 'no') relationColumn = false;
+        else fail(L(), '"%% relation-column:" must be on or off');
+      } else if (key === 'relation-name') {
+        const v = d[2].trim();
+        if (v && v.length <= LIMITS.relation) relationName = v; else fail(L(), `"%% relation-name:" must be 1 to ${LIMITS.relation} characters, for example %% relation-name: Interaction`);
+      } else if (key === 'rel') {
+        const m = /^(\S+?)\s*->\s*(\S+?)\s+(.+?)\s*$/.exec(d[2].trim());
+        if (!m) fail(L(), 'bad "%% rel:" directive; write it as  %% rel: fromId->toId calls  (free text, at most 20 characters)');
+        else if (m[3].length > LIMITS.relation) fail(L(), `"%% rel:" text "${m[3]}" is ${m[3].length} characters; the most is ${LIMITS.relation}`);
+        else relDirectives.push({ line: L(), from: m[1], to: m[2], text: m[3] });
       } else if (key === 'step') {
         const m = /^(\S+?)\s*->\s*(\S+?)\s+(\d+)\s*$/.exec(d[2].trim());
         if (!m) fail(L(), 'bad "%% step:" directive; write it as  %% step: fromId->toId 3');
@@ -811,14 +903,455 @@ function parseMermaid(text, opts = {}) {
     if (idx < 0) { errors.push(`line ${d.line}: step directive: there is no (further) edge from "${d.from}" to "${d.to}"`); continue; }
     taken.add(idx); eOut[idx].step = d.step;
   }
+  const relTaken = new Set();
+  for (const d of relDirectives) {
+    const f = lookup(d.from), t = lookup(d.to);
+    const names = [...nodes.keys()];
+    if (!f || !t) { errors.push(`line ${d.line}: rel directive names "${!f ? d.from : d.to}", which is not a node` + (didYouMean(!f ? d.from : d.to, names) ? ` (did you mean "${didYouMean(!f ? d.from : d.to, names)}"?)` : '')); continue; }
+    const idx = eOut.findIndex((e, i) => e.from === mapNode(f) && e.to === mapNode(t) && !relTaken.has(i));
+    if (idx < 0) { errors.push(`line ${d.line}: rel directive: there is no (further) edge from "${d.from}" to "${d.to}"`); continue; }
+    relTaken.add(idx); eOut[idx].relation = d.text;
+  }
   if (errors.length) throw new ArchError(errors.slice(0, 20), warnings);
   const graph = { direction: opts.direction || direction, groups: gOut, nodes: nOut, edges: eOut, messages: mOut };
+  if (relationColumn !== undefined) graph.relationColumn = relationColumn;
+  if (relationName) graph.relationName = relationName;
   if (numbered !== undefined) graph.numbered = numbered;
   if (pace) graph.pace = pace;
   if (duration !== undefined) graph.duration = duration;
   const ttl = opts.title || title;
   if (ttl) graph.title = ttl;
   return { graph, warnings };
+}
+
+// ---- route.mjs
+// Orthogonal edge router and edge-label placement for the converter. Pure ES module, deterministic.
+//
+// The atom stays dumb: it draws each edge's `points` as a polyline with rounded corners and puts the label where
+// `label_at` says. Everything clever is here.
+//
+//   routeEdges(graph, layout, opts) -> {routes, warnings, metrics}
+//     routes[i] = {points: [[x, y], ...] (rim to rim, axis-aligned), label: {x, y, w, h} | null, via: 'grid' | 'curve'}
+//
+// How an edge is routed: a uniform grid (cell = about 0.55 x the text size) is laid over the drawing. Cells close to
+// a node box, or on a group title, are blocked. Each edge is an A* search over (cell, heading) with a cost for
+// distance, for every bend, for every cell another edge already uses (a heavy cost if it runs along that edge, a
+// medium one if it crosses it), for cells inside a group the edge does not belong to, and for running along a group
+// border. Edges are routed shortest first in input order, so the result is byte-stable. An edge leaves and enters a
+// box at a port: a cell in the band 14 px beyond one of its four sides, so the first and last stretch always run at
+// a right angle to the box and are long enough for the arrowhead. Parallel edges take neighbouring lanes because an
+// occupied lane is expensive; a request/response pair therefore comes out as two lanes side by side.
+//
+// Labels go on the longest free straight stretch: candidates sit above or below a horizontal stretch, left or right
+// of a vertical one, or on the line, and are checked against every box, group title, other label and other edge.
+// A label is never shortened here; if nothing is free it is placed where it collides least and a warning says so.
+
+const E = 0, S = 1, W = 2, N = 3;
+const DX = [1, 0, -1, 0], DY = [0, 1, 0, -1];
+
+class Heap {
+  constructor() { this.a = []; this.n = 0; }
+  push(f, id, term, port) {
+    const it = { f, id, term, port, k: this.n++ };
+    const a = this.a;
+    a.push(it);
+    let i = a.length - 1;
+    while (i > 0) {
+      const p = (i - 1) >> 1;
+      if (this.lt(a[i], a[p])) { [a[i], a[p]] = [a[p], a[i]]; i = p; } else break;
+    }
+  }
+  lt(x, y) { return x.f < y.f - 1e-9 || (Math.abs(x.f - y.f) <= 1e-9 && x.k < y.k); }
+  pop() {
+    const a = this.a;
+    const top = a[0], last = a.pop();
+    if (a.length) {
+      a[0] = last;
+      let i = 0;
+      for (;;) {
+        const l = 2 * i + 1, r = l + 1;
+        let m = i;
+        if (l < a.length && this.lt(a[l], a[m])) m = l;
+        if (r < a.length && this.lt(a[r], a[m])) m = r;
+        if (m === i) break;
+        [a[i], a[m]] = [a[m], a[i]]; i = m;
+      }
+    }
+    return top;
+  }
+  get size() { return this.a.length; }
+}
+
+const rectsOverlap = (a, b) => a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
+const inflate = (r, m) => ({ x: r.x - m, y: r.y - m, w: r.w + 2 * m, h: r.h + 2 * m });
+
+function groupTitleRect(g, gl, s) {
+  return { x: g.x + 12, y: g.y + 6, w: groupLabelWidth(gl.label, s) - 20, h: 24 };
+}
+
+// does the axis-aligned segment a-b pass through the open interior of rect r (shrunk by `m`)?
+function segHitsRect(a, b, r, m = 0) {
+  const x0 = Math.min(a[0], b[0]), x1 = Math.max(a[0], b[0]), y0 = Math.min(a[1], b[1]), y1 = Math.max(a[1], b[1]);
+  return x1 > r.x + m && x0 < r.x + r.w - m && y1 > r.y + m && y0 < r.y + r.h - m;
+}
+// proper crossing of two axis-aligned segments (perpendicular, interiors meet)
+function axisCross(a1, a2, b1, b2) {
+  const ah = a1[1] === a2[1], bh = b1[1] === b2[1];
+  if (ah === bh) return false;
+  const [h1, h2, v1, v2] = ah ? [a1, a2, b1, b2] : [b1, b2, a1, a2];
+  const hx0 = Math.min(h1[0], h2[0]), hx1 = Math.max(h1[0], h2[0]), vy0 = Math.min(v1[1], v2[1]), vy1 = Math.max(v1[1], v2[1]);
+  return v1[0] > hx0 + 0.5 && v1[0] < hx1 - 0.5 && h1[1] > vy0 + 0.5 && h1[1] < vy1 - 0.5;
+}
+
+// proper crossing of two general segments (used for sampled curves)
+function diagCross(a, b, c, d) {
+  if (a[0] === b[0] || a[1] === b[1] || c[0] === d[0] || c[1] === d[1]) return false;
+  const o = (p, q, r) => (q[0] - p[0]) * (r[1] - p[1]) - (q[1] - p[1]) * (r[0] - p[0]);
+  return o(c, d, a) * o(c, d, b) < 0 && o(a, b, c) * o(a, b, d) < 0;
+}
+
+function routeEdges(graph, layout, opts = {}) {
+  const s = layout.s;
+  const warnings = [];
+  const g = Math.max(8, Math.round(0.55 * s));            // lane pitch
+  const clear = Math.max(6, Math.round(0.42 * s));        // keep-out around every box
+  const port0 = Math.max(clear + 3, 15);                  // first port ring distance from the rim
+  const nodeById = new Map(layout.nodes.map((n) => [n.id, n]));
+  const boxes = layout.nodes;
+  const glabels = layout.groups.map((gr) => groupTitleRect(gr, graph.groups.find((x) => x.id === gr.id), s));
+  // ---- the grid covers all content plus a few lanes of margin on every side
+  let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+  for (const r of [...boxes, ...layout.groups]) { x0 = Math.min(x0, r.x); y0 = Math.min(y0, r.y); x1 = Math.max(x1, r.x + r.w); y1 = Math.max(y1, r.y + r.h); }
+  if (!isFinite(x0)) { x0 = y0 = 0; x1 = y1 = 100; }
+  const pad = 5 * g;
+  const ox = x0 - pad, oy = y0 - pad;
+  const cols = Math.ceil((x1 - x0 + 2 * pad) / g), rows = Math.ceil((y1 - y0 + 2 * pad) / g);
+  const NC = cols * rows;
+  const cx = (i) => ox + (i + 0.5) * g, cy = (j) => oy + (j + 0.5) * g;
+  const ci = (x) => Math.floor((x - ox) / g), cj = (y) => Math.floor((y - oy) / g);
+  const blocked = new Uint8Array(NC);
+  const fillRect = (r, m, arr, val = 1) => {
+    const i0 = Math.max(0, ci(r.x - m)), i1 = Math.min(cols - 1, ci(r.x + r.w + m)), j0 = Math.max(0, cj(r.y - m)), j1 = Math.min(rows - 1, cj(r.y + r.h + m));
+    for (let j = j0; j <= j1; j++) for (let i = i0; i <= i1; i++) {
+      const px = cx(i), py = cy(j);
+      if (px > r.x - m && px < r.x + r.w + m && py > r.y - m && py < r.y + r.h + m) arr[j * cols + i] = val;
+    }
+  };
+  for (const b of boxes) fillRect(b, clear, blocked);
+  for (const t of glabels) fillRect(t, 3, blocked);
+  // group membership per cell, and cells that lie on a group border
+  const cellGroup = new Int8Array(NC).fill(-1);
+  layout.groups.forEach((gr, k) => fillRect(gr, 0, cellGroup, k));
+  const hBorder = new Uint8Array(NC), vBorder = new Uint8Array(NC);
+  layout.groups.forEach((gr) => {
+    for (let i = 0; i < cols; i++) for (const yy of [gr.y, gr.y + gr.h]) {
+      const j = cj(yy), px = cx(i);
+      if (px >= gr.x - g && px <= gr.x + gr.w + g && j >= 0 && j < rows && Math.abs(cy(j) - yy) <= 0.6 * g) hBorder[j * cols + i] = 1;
+    }
+    for (let j = 0; j < rows; j++) for (const xx of [gr.x, gr.x + gr.w]) {
+      const i = ci(xx), py = cy(j);
+      if (py >= gr.y - g && py <= gr.y + gr.h + g && i >= 0 && i < cols && Math.abs(cx(i) - xx) <= 0.6 * g) vBorder[j * cols + i] = 1;
+    }
+  });
+  const groupIdx = new Map(layout.groups.map((gr, k) => [gr.id, k]));
+  const groupOfNode = new Map(graph.nodes.map((n) => [n.id, n.group && groupIdx.has(n.group) ? groupIdx.get(n.group) : -1]));
+  // near a box (not blocked): a small cost keeps lanes in the middle of a channel
+  const near = new Uint8Array(NC);
+  for (const b of boxes) fillRect(b, clear + 1.5 * g, near);
+
+  const usedH = new Uint8Array(NC), usedV = new Uint8Array(NC);
+  const scale = opts.bendScale || 1;
+  const BEND = 34 * scale, OVERLAP = 420, CROSS = 70, FOREIGN = 14, OWN_OUT = 7, BORDER = 12, NEAR = 3.5, SIDE = 0.18;
+
+  // ports of a box: cells in the band [port0, port0 + g) beyond a side, away from the rounded corners
+  const ports = (b) => {
+    const out = [];
+    const cm = 14;
+    const sides = [
+      { dir: E, ok: (px, py) => px >= b.x + b.w + port0 && px < b.x + b.w + port0 + g && py > b.y + cm && py < b.y + b.h - cm, off: (px, py) => Math.abs(py - (b.y + b.h / 2)) },
+      { dir: W, ok: (px, py) => px <= b.x - port0 && px > b.x - port0 - g && py > b.y + cm && py < b.y + b.h - cm, off: (px, py) => Math.abs(py - (b.y + b.h / 2)) },
+      { dir: S, ok: (px, py) => py >= b.y + b.h + port0 && py < b.y + b.h + port0 + g && px > b.x + cm && px < b.x + b.w - cm, off: (px) => Math.abs(px - (b.x + b.w / 2)) },
+      { dir: N, ok: (px, py) => py <= b.y - port0 && py > b.y - port0 - g && px > b.x + cm && px < b.x + b.w - cm, off: (px) => Math.abs(px - (b.x + b.w / 2)) },
+    ];
+    const i0 = Math.max(0, ci(b.x - port0 - g)), i1 = Math.min(cols - 1, ci(b.x + b.w + port0 + g)), j0 = Math.max(0, cj(b.y - port0 - g)), j1 = Math.min(rows - 1, cj(b.y + b.h + port0 + g));
+    for (let j = j0; j <= j1; j++) for (let i = i0; i <= i1; i++) {
+      if (blocked[j * cols + i]) continue;
+      const px = cx(i), py = cy(j);
+      for (const sd of sides) if (sd.ok(px, py)) out.push({ cell: j * cols + i, i, j, out: sd.dir, side: sd.off(px, py) * SIDE });
+    }
+    return out;
+  };
+
+  const route = (e, k, scl) => {
+    const fb = nodeById.get(e.from), tb = nodeById.get(e.to);
+    const sg = groupOfNode.get(e.from), tg = groupOfNode.get(e.to);
+    const cellCost = (c, axisH) => {
+      let k2 = 0;
+      if (axisH ? usedH[c] : usedV[c]) k2 += OVERLAP;
+      if (axisH ? usedV[c] : usedH[c]) k2 += CROSS;
+      const cg = cellGroup[c];
+      if (cg >= 0 && cg !== sg && cg !== tg) k2 += FOREIGN;
+      else if (cg < 0 && sg >= 0 && sg === tg) k2 += OWN_OUT;
+      if (axisH ? hBorder[c] : vBorder[c]) k2 += BORDER;
+      if (near[c]) k2 += NEAR;
+      return k2;
+    };
+    const dist = new Float64Array(NC * 4).fill(Infinity);
+    const prev = new Int32Array(NC * 4).fill(-1);
+    const heap = new Heap();
+    const tPorts = ports(tb), tMap = new Map();
+    for (const p of tPorts) tMap.set(p.cell, [...(tMap.get(p.cell) || []), p]);
+    const hTarget = (i, j) => {
+      const px = cx(i), py = cy(j);
+      return Math.abs(Math.max(tb.x - px, 0, px - (tb.x + tb.w))) + Math.abs(Math.max(tb.y - py, 0, py - (tb.y + tb.h)));
+    };
+    for (const p of ports(fb)) {
+      const id = p.cell * 4 + p.out;
+      const c0 = p.side + cellCost(p.cell, p.out === E || p.out === W);
+      if (c0 < dist[id]) { dist[id] = c0; prev[id] = -2 - p.out; heap.push(c0 + hTarget(p.i, p.j), id, false); }
+    }
+    let end = -1, endCost = Infinity, endPort = null;
+    while (heap.size) {
+      const it = heap.pop();
+      if (it.term) { end = it.id; endCost = it.f; endPort = it.port; break; }
+      const id = it.id, cell = id >> 2, dir = id & 3;
+      const gcost = dist[id];
+      if (it.f > gcost + hTarget(cell % cols, (cell / cols) | 0) + 1e-6) continue;
+      const i = cell % cols, j = (cell / cols) | 0;
+      const tp = tMap.get(cell);
+      if (tp) for (const p of tp) {
+        const inward = (p.out + 2) & 3;
+        heap.push(gcost + p.side + (dir === inward ? 0 : BEND * scl), id, true, p);
+      }
+      for (const nd of [dir, (dir + 1) & 3, (dir + 3) & 3]) {
+        const ni = i + DX[nd], nj = j + DY[nd];
+        if (ni < 0 || nj < 0 || ni >= cols || nj >= rows) continue;
+        const nc = nj * cols + ni;
+        if (blocked[nc]) continue;
+        const cost = gcost + g + (nd === dir ? 0 : BEND * scl) + cellCost(nc, nd === E || nd === W);
+        const nid = nc * 4 + nd;
+        if (cost < dist[nid] - 1e-9) { dist[nid] = cost; prev[nid] = id; heap.push(cost + hTarget(ni, nj), nid, false); }
+      }
+    }
+    if (end < 0) return null;
+    // rebuild the cell path
+    const cells = [];
+    let id = end;
+    while (id >= 0) { cells.push([id >> 2, id & 3]); id = prev[id]; }
+    const startDir = -2 - id;
+    cells.reverse();
+    const pts = [];
+    const first = cells[0][0];
+    const fi = first % cols, fj = (first / cols) | 0;
+    // rim point of the source
+    pts.push(startDir === E ? [fb.x + fb.w, cy(fj)] : startDir === W ? [fb.x, cy(fj)] : startDir === S ? [cx(fi), fb.y + fb.h] : [cx(fi), fb.y]);
+    for (const [c] of cells) pts.push([cx(c % cols), cy((c / cols) | 0)]);
+    const pin = (endPort.out + 2) & 3;
+    const lastC = cells[cells.length - 1][0], li = lastC % cols, lj = (lastC / cols) | 0;
+    pts.push(endPort.out === E ? [tb.x + tb.w, cy(lj)] : endPort.out === W ? [tb.x, cy(lj)] : endPort.out === S ? [cx(li), tb.y + tb.h] : [cx(li), tb.y]);
+    void pin;
+    // drop collinear points
+    const out = [pts[0]];
+    for (let q = 1; q < pts.length - 1; q++) {
+      const a = out[out.length - 1], b = pts[q], c = pts[q + 1];
+      if ((a[0] === b[0] && b[0] === c[0]) || (a[1] === b[1] && b[1] === c[1])) continue;
+      out.push(b);
+    }
+    out.push(pts[pts.length - 1]);
+    return { points: out, cells: cells.map((c) => c[0]), cost: endCost };
+  };
+
+  const order = graph.edges.map((e, i) => i).sort((a, b) => {
+    const ea = graph.edges[a], eb = graph.edges[b];
+    const da = Math.abs(nodeById.get(ea.from).x - nodeById.get(ea.to).x) + Math.abs(nodeById.get(ea.from).y - nodeById.get(ea.to).y);
+    const db = Math.abs(nodeById.get(eb.from).x - nodeById.get(eb.to).x) + Math.abs(nodeById.get(eb.from).y - nodeById.get(eb.to).y);
+    return da - db || a - b;
+  });
+  const routes = new Array(graph.edges.length).fill(null);
+  for (const k of order) {
+    const e = graph.edges[k];
+    if (!nodeById.has(e.from) || !nodeById.has(e.to) || e.from === e.to) continue;
+    let r = null;
+    for (const scl of [1, 3, 8]) {
+      r = route(e, k, scl);
+      if (r && r.points.length <= 10) break;
+      if (r && scl === 8) r = null;
+    }
+    if (!r) { warnings.push(`edge ${k + 1} (${e.from} -> ${e.to}): no clear orthogonal route was found, so it is drawn as a curve.`); continue; }
+    // occupy the lanes this edge uses (a cell is entered along an axis; the corner cell counts for both)
+    const cs = r.cells;
+    for (let q = 0; q < cs.length; q++) {
+      const c = cs[q], pc = q ? cs[q - 1] : c, nc2 = q + 1 < cs.length ? cs[q + 1] : c;
+      const horiz = (a, b) => ((a / cols) | 0) === ((b / cols) | 0), vert = (a, b) => a % cols === b % cols;
+      if ((q && horiz(c, pc) && c !== pc) || (q + 1 < cs.length && horiz(c, nc2) && c !== nc2)) usedH[c] = 1;
+      if ((q && vert(c, pc) && c !== pc) || (q + 1 < cs.length && vert(c, nc2) && c !== nc2)) usedV[c] = 1;
+      if (cs.length === 1) { usedH[c] = 1; usedV[c] = 1; }
+    }
+    // the stub cells (the port cell is the first/last in the list)
+    routes[k] = { points: r.points, via: 'grid', label: null };
+  }
+
+  placeLabels(graph, layout, routes, glabels, s, warnings);
+  return { routes, warnings, metrics: routeMetrics(graph, layout, routes, glabels, s) };
+}
+
+// ---------------------------------------------------------------- labels
+function segs(points) { const o = []; for (let i = 0; i + 1 < points.length; i++) o.push([points[i], points[i + 1]]); return o; }
+
+function placeLabels(graph, layout, routes, glabels, s, warnings) {
+  const boxes = layout.nodes;
+  const placed = [];
+  const allSegs = routes.map((r) => (r ? segs(r.points) : []));
+  // longest labels first: they are the hardest to fit; ties by input order
+  const order = graph.edges.map((e, i) => i).filter((i) => graph.edges[i].label && routes[i]).sort((a, b) => edgeLabelSize(graph.edges[b].label, s).w - edgeLabelSize(graph.edges[a].label, s).w || a - b);
+  const gap = 3;
+  for (const k of order) {
+    const e = graph.edges[k], sz = edgeLabelSize(e.label, s), r = routes[k];
+    const cands = [];
+    segs(r.points).forEach(([a, b], si) => {
+      const horiz = a[1] === b[1];
+      const len = horiz ? Math.abs(b[0] - a[0]) : Math.abs(b[1] - a[1]);
+      const lo = horiz ? Math.min(a[0], b[0]) : Math.min(a[1], b[1]);
+      const need = horiz ? sz.w : sz.h;
+      // positions along the stretch: the middle first, then both ways in 6 px steps; never within 14 px of an end (corners, arrowheads)
+      const margin = 14;
+      const span = len - 2 * margin - need;
+      const offs = [];
+      if (span >= -0.5) { offs.push(0); for (let d = 6; d <= span / 2 + 0.01; d += 6) { offs.push(d, -d); } }
+      else if (len - need >= 4) offs.push(0);
+      const mid = lo + len / 2;
+      for (const d of offs) {
+        const c = mid + d;
+        if (horiz) {
+          const x = c - sz.w / 2, y = a[1];
+          cands.push({ x, y: y - gap - sz.h, w: sz.w, h: sz.h, pref: 0, si, d, len });          // above
+          cands.push({ x, y: y + gap, w: sz.w, h: sz.h, pref: 1.5, si, d, len });               // below
+          cands.push({ x, y: y - sz.h / 2, w: sz.w, h: sz.h, pref: 4, si, d, len, on: true });  // on the line
+        } else {
+          const y = c - sz.h / 2, xx = a[0];
+          cands.push({ x: xx + gap, y, w: sz.w, h: sz.h, pref: 0.5, si, d, len });
+          cands.push({ x: xx - gap - sz.w, y, w: sz.w, h: sz.h, pref: 1.5, si, d, len });
+          cands.push({ x: xx - sz.w / 2, y, w: sz.w, h: sz.h, pref: 5, si, d, len, on: true });
+        }
+      }
+    });
+    let best = null;
+    for (const c of cands) {
+      let hard = 0, soft = 0;
+      for (const b of boxes) if (rectsOverlap(c, inflate(b, 2))) hard++;
+      for (const t of glabels) if (rectsOverlap(c, inflate(t, 1))) hard++;
+      for (const p of placed) if (rectsOverlap(c, inflate(p, 3))) hard++;
+      for (let q = 0; q < allSegs.length; q++) for (const [a, b] of allSegs[q]) {
+        if (q === k && !c.on) { if (segHitsRect(a, b, c, 0.5)) soft += 0.2; continue; }
+        if (q === k && c.on) continue;
+        if (segHitsRect(a, b, inflate(c, 1), 0)) soft += 1;
+      }
+      // another edge between this label and its own line makes it read as that edge's label
+      let between = 0;
+      if (!c.on) {
+        const own = r.points[c.si], own2 = r.points[c.si + 1], horiz = own[1] === own2[1];
+        for (let q = 0; q < allSegs.length; q++) if (q !== k) for (const [a, b] of allSegs[q]) {
+          if (horiz && a[1] === b[1]) {
+            const lo = Math.min(a[0], b[0]), hi = Math.max(a[0], b[0]);
+            if (hi > c.x && lo < c.x + c.w && ((a[1] > own[1] && a[1] < c.y + c.h / 2) || (a[1] < own[1] && a[1] > c.y + c.h / 2))) between = 1;
+          } else if (!horiz && a[0] === b[0]) {
+            const lo = Math.min(a[1], b[1]), hi = Math.max(a[1], b[1]);
+            if (hi > c.y && lo < c.y + c.h && ((a[0] > own[0] && a[0] < c.x + c.w / 2) || (a[0] < own[0] && a[0] > c.x + c.w / 2))) between = 1;
+          }
+        }
+      }
+      const cost = hard * 1000 + soft * 60 + between * 25 + c.pref + Math.abs(c.d) * 0.08 - Math.min(c.len, 400) * 0.01;
+      if (!best || cost < best.cost - 1e-9) best = { c, cost, hard, soft };
+    }
+    if (!best) {
+      // no stretch is long enough: put it at the middle of the route, on the line, and say so
+      const pts = r.points, m = Math.floor(pts.length / 2);
+      const mx = (pts[m - 1][0] + pts[m][0]) / 2, my = (pts[m - 1][1] + pts[m][1]) / 2;
+      best = { c: { x: mx - sz.w / 2, y: my - sz.h / 2, w: sz.w, h: sz.h }, hard: 1, soft: 0, cost: 1e9 };
+      warnings.push(`edge ${k + 1}: its label "${e.label}" does not fit on a straight stretch of the route; it sits on a bend. Shorten the label.`);
+    } else if (best.hard) {
+      warnings.push(`edge ${k + 1}: the label "${e.label}" overlaps a box or another label (no free place was found). Shorten it or give the diagram more room.`);
+    }
+    const c = best.c;
+    r.label = { x: c.x, y: c.y, w: c.w, h: c.h };
+    placed.push(r.label);
+  }
+}
+
+// ---------------------------------------------------------------- measuring (used for routed and for curved edges)
+function routeMetrics(graph, layout, routes, glabels, s) {
+  const boxes = layout.nodes;
+  const lines = routes.map((r) => (r ? r.points : null));
+  let throughBoxes = 0, titleHits = 0, labelNode = 0, labelLabel = 0, labelTitle = 0, labelOnLine = 0, crossings = 0, bends = 0, length = 0;
+  const L = [];
+  routes.forEach((r, k) => {
+    if (!r) return;
+    const e = graph.edges[k];
+    const ps = r.points;
+    bends += Math.max(0, ps.length - 2);
+    if (r.curve) {
+      // a sampled curve: count a box or title once if any sample point lies inside it
+      for (const bx of boxes) {
+        const own = bx.id === e.from || bx.id === e.to, m = own ? 3 : 0;
+        if (ps.some((p) => p[0] > bx.x + m && p[0] < bx.x + bx.w - m && p[1] > bx.y + m && p[1] < bx.y + bx.h - m)) throughBoxes++;
+      }
+      for (const t of glabels) if (ps.some((p) => p[0] > t.x && p[0] < t.x + t.w && p[1] > t.y && p[1] < t.y + t.h)) titleHits++;
+    } else segs(ps).forEach(([a, b]) => {
+      length += Math.abs(b[0] - a[0]) + Math.abs(b[1] - a[1]);
+      for (const bx of boxes) {
+        const own = bx.id === e.from || bx.id === e.to;
+        if (segHitsRect(a, b, bx, own ? 2 : 0.5)) throughBoxes++;
+      }
+      for (const t of glabels) if (segHitsRect(a, b, t, 0)) titleHits++;
+    });
+    if (r.label) {
+      L.push({ k, rect: r.label });
+      for (const bx of boxes) if (rectsOverlap(r.label, bx)) labelNode++;
+      for (const t of glabels) if (rectsOverlap(r.label, t)) labelTitle++;
+    }
+  });
+  for (let i = 0; i < L.length; i++) for (let j = i + 1; j < L.length; j++) if (rectsOverlap(L[i].rect, L[j].rect)) labelLabel++;
+  for (const { k, rect } of L) lines.forEach((ps, q) => {
+    if (!ps || q === k) return;
+    if (routes[q].curve ? ps.some((p) => p[0] > rect.x && p[0] < rect.x + rect.w && p[1] > rect.y && p[1] < rect.y + rect.h) : segs(ps).some(([a, b]) => segHitsRect(a, b, rect, 0))) labelOnLine++;
+  });
+  for (let i = 0; i < lines.length; i++) for (let j = i + 1; j < lines.length; j++) {
+    if (!lines[i] || !lines[j]) continue;
+    let hit = false;
+    for (const [a, b] of segs(lines[i])) { for (const [c, d] of segs(lines[j])) if (axisCross(a, b, c, d) || diagCross(a, b, c, d)) { hit = true; break; } if (hit) break; }
+    if (hit) crossings++;
+  }
+  return { crossings, throughBoxes, titleHits, labelNode, labelLabel, labelTitle, labelOnLine, bends, length: Math.round(length) };
+}
+
+// the same metrics for the atom's quadratic curves (stage 1), so the two modes can be compared like for like
+function curveRoutes(graph, layout, curves, edgeCurve, labelRect) {
+  const boxes = new Map(layout.nodes.map((n) => [n.id, { ...n, cx: n.x + n.w / 2, cy: n.y + n.h / 2 }]));
+  const quad = (P, t) => [(1 - t) * (1 - t) * P[0][0] + 2 * (1 - t) * t * P[1][0] + t * t * P[2][0], (1 - t) * (1 - t) * P[0][1] + 2 * (1 - t) * t * P[1][1] + t * t * P[2][1]];
+  return graph.edges.map((e, i) => {
+    const fb = boxes.get(e.from), tb = boxes.get(e.to);
+    if (!fb || !tb || fb === tb) return null;
+    const P = edgeCurve(fb, tb, curves ? curves[i] : 0);
+    const pts = [];
+    for (let k = 0; k <= 24; k++) pts.push(quad(P, k / 24));
+    return { points: pts, via: 'curve', label: e.label ? (({ x, y, w, h }) => ({ x, y, w, h }))(labelRect(P, e.label, layout.s)) : null, curve: true };
+  });
+}
+// crossing counter for sampled (non axis-aligned) polylines
+function curveCrossings(routes) {
+  const cr = (p1, p2, p3, p4) => {
+    const d = (a, b, c) => (b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0]);
+    return d(p3, p4, p1) * d(p3, p4, p2) < 0 && d(p1, p2, p3) * d(p1, p2, p4) < 0;
+  };
+  let n = 0;
+  for (let i = 0; i < routes.length; i++) for (let j = i + 1; j < routes.length; j++) {
+    if (!routes[i] || !routes[j]) continue;
+    const A = segs(routes[i].points), B = segs(routes[j].points);
+    let hit = false;
+    for (const [a, b] of A) { for (const [c, d] of B) if (cr(a, b, c, d)) { hit = true; break; } if (hit) break; }
+    if (hit) n++;
+  }
+  return n;
 }
 
 // ---- layout.mjs
@@ -832,6 +1365,7 @@ function parseMermaid(text, opts = {}) {
 // Pipeline:  clusterLayout() -> chooseOrientation() -> routeCurves() -> frame()
 // routeCurves() is the ONLY place that decides how an edge bends. A better router
 // can replace it without touching anything else.
+
 
 const CHAR_SANS = 0.56;     // bold system-ui, em per character (calibrated, see docs)
 const CHAR_MONO = 0.62;    // mono, em per character
@@ -878,10 +1412,10 @@ function spaceOut(desired, minDist) {
 // ---------------------------------------------------------------- layered core
 // items: [{key,w,h}]; edges: [{a,b,lw}] directed between item keys; axis 'x'|'y' is the rank axis.
 // returns {pos: Map key -> {x,y} top-left, w, h, rank: Map}
-function layered(items, edges, axis, s, samePairs = []) {
+function layered(items, edges, axis, s, samePairs = [], laneGap = 0, extraGap = 0) {
   const n = items.length;
   const idx = new Map(items.map((it, i) => [it.key, i]));
-  const E = edges.filter((e) => idx.has(e.a) && idx.has(e.b) && e.a !== e.b).map((e) => ({ a: idx.get(e.a), b: idx.get(e.b), lw: e.lw || 0, lh: e.lh || 0 }));
+  const E = edges.filter((e) => idx.has(e.a) && idx.has(e.b) && e.a !== e.b).map((e) => ({ a: idx.get(e.a), b: idx.get(e.b), lw: e.lw || 0, lh: e.lh || 0, n: e.n || 1 }));
   // optional same-rank pairs (union-find): used so a labelled request/response pair runs side by side
   const rep = Array.from({ length: n }, (_, i) => i);
   const find = (x) => { while (rep[x] !== x) { rep[x] = rep[rep[x]]; x = rep[x]; } return x; };
@@ -1008,6 +1542,17 @@ function layered(items, edges, axis, s, samePairs = []) {
       const lo = Math.min(rank[e.oa], rank[e.ob]), hi = Math.max(rank[e.oa], rank[e.ob]);
       if (lo === r && hi === r + 1) g = Math.max(g, axis === 'x' ? e.lw + 1.6 * s : e.lh + 1.4 * s);
     }
+    if (laneGap) {
+      // orthogonal routing: every edge that runs through this channel takes its own lane
+      const through = Eorig.filter((e) => Math.min(rank[e.oa], rank[e.ob]) <= r && Math.max(rank[e.oa], rank[e.ob]) >= r + 1).reduce((a, e) => a + e.n, 0);
+      g += Math.max(0, through - 1) * laneGap;
+      if (axis === 'y') {
+        // top-to-bottom: labels sit beside the vertical stretches inside this channel, so give them height to stack in
+        const lh = Eorig.filter((e) => Math.min(rank[e.oa], rank[e.ob]) <= r && Math.max(rank[e.oa], rank[e.ob]) >= r + 1 && e.lh).reduce((a, e) => a + e.lh + 4, 0);
+        g = Math.max(g, 0.55 * lh + 1.4 * s);
+      }
+      g += extraGap;
+    }
     gaps.push(Math.round(g));
   }
   const rankPos = [];
@@ -1069,7 +1614,7 @@ function labelledPairs(edges, keyOf) {
   return out;
 }
 
-function clusterLayout(graph, s, flows, pairMode = false) {
+function clusterLayout(graph, s, flows, pairMode = false, laneGap = 0, extraGap = 0) {
   const outerAxis = graph.direction === 'LR' || graph.direction === 'RL' ? 'x' : 'y';
   const nodeById = new Map(graph.nodes.map((n) => [n.id, n]));
   const box = new Map(graph.nodes.map((n) => [n.id, nodeBox(n, s)]));
@@ -1099,7 +1644,7 @@ function clusterLayout(graph, s, flows, pairMode = false) {
       const items = members.map((id) => ({ key: id, ...box.get(id) }));
       const innerEdges = graph.edges.filter((e) => members.includes(e.from) && members.includes(e.to)).map(edgeOf);
       const innerPairs = pairMode && flow === 'y' ? labelledPairs(graph.edges.filter((e) => members.includes(e.from) && members.includes(e.to)), (x) => x) : [];
-      const lay = layered(items, innerEdges, flow, s, innerPairs);
+      const lay = layered(items, innerEdges, flow, s, innerPairs, laneGap, extraGap);
       const gl = graph.groups.find((g) => g.id === gid);
       const w = Math.max(lay.w + 2 * padX, groupLabelWidth(gl.label, s));
       const h = lay.h + padTop + padBottom;
@@ -1116,10 +1661,10 @@ function clusterLayout(graph, s, flows, pairMode = false) {
     const k = a + '>' + b;
     const o = edgeOf(e);
     const prev = ce.get(k);
-    if (prev) { prev.lw = Math.max(prev.lw, o.lw); prev.lh = Math.max(prev.lh, o.lh); } else ce.set(k, { a, b, lw: o.lw, lh: o.lh });
+    if (prev) { prev.lw = Math.max(prev.lw, o.lw); prev.lh = Math.max(prev.lh, o.lh); prev.n++; } else ce.set(k, { a, b, lw: o.lw, lh: o.lh, n: 1 });
   }
   const topPairs = pairMode && outerAxis === 'y' ? labelledPairs(graph.edges, (x) => clusterOfNode.get(x)) : [];
-  const top = layered(clusters, [...ce.values()], outerAxis, s, topPairs);
+  const top = layered(clusters, [...ce.values()], outerAxis, s, topPairs, laneGap, extraGap);
   const nodes = [], groups = [];
   for (const c of clusters) {
     const p = top.pos.get(c.key);
@@ -1277,24 +1822,100 @@ function score(graph, layout, curves, fit) {
   return wu * wW + hu * hW + m.crossings * 7 + m.throughBoxes * 12 + m.labelsOnBoxes * 10 + m.labelOverlaps * 40 + (m.edgeLength / s) * 0.06;
 }
 
+// text px on a 343 px column for a drawing of this size: the smallest text is size - 4 (edge labels)
+const phonePx = (w, s) => ((s - 4) * 343) / Math.max(w, 1);
+// a quick shape score used to pick which layouts are worth routing: legible on a phone, not absurdly tall, short edges
+function shapeScore(graph, layout, fit) {
+  const s = layout.s, W = layout.w, H = layout.h;
+  const byId = new Map(layout.nodes.map((n) => [n.id, n]));
+  let len = 0;
+  for (const e of graph.edges) { const a = byId.get(e.from), b = byId.get(e.to); if (a && b) len += Math.abs(a.x + a.w / 2 - b.x - b.w / 2) + Math.abs(a.y + a.h / 2 - b.y - b.h / 2); }
+  const phone = fit === 'wide' ? 0 : 14 * Math.max(0, 9 - phonePx(W, s)) + 30 * Math.max(0, H / W - 1.7);
+  return phone + (W / s) * 0.15 + (H / s) * 0.15 + (len / s) * 0.35;
+}
+
 function chooseLayout(graph, s, fit = 'balanced') {
+  return rankLayouts(graph, s, fit, 1, 0)[0];
+}
+
+// All candidate layouts (cluster flow directions x request/response pairing), best first by the cheap curve score.
+function rankLayouts(graph, s, fit = 'balanced', keep = 3, laneGap = 0, shapeOnly = false, extraGap = 0) {
   const multi = graph.groups.filter((g) => graph.nodes.filter((n) => n.group === g.id).length >= 2).map((g) => g.id);
-  let best = null;
+  const list = [];
   const total = 1 << multi.length;
   for (let mask = 0; mask < total; mask++) {
     for (const pairMode of [false, true]) {
       const flows = new Map(multi.map((id, i) => [id, mask & (1 << i) ? 'cross' : 'same']));
-      const lay = clusterLayout(graph, s, flows, pairMode);
+      const lay = clusterLayout(graph, s, flows, pairMode, laneGap, extraGap);
+      if (shapeOnly) { list.push({ layout: lay, curves: null, score: shapeScore(graph, lay, fit), flows, pairMode }); continue; }
       const curves = routeCurves(graph, lay);
-      const sc = score(graph, lay, curves, fit);
-      if (!best || sc < best.score - 1e-9) best = { layout: lay, curves, score: sc, flows, pairMode };
+      list.push({ layout: lay, curves, score: score(graph, lay, curves, fit), flows, pairMode });
     }
   }
-  return best;
+  return list.map((v, i) => ({ v, i })).sort((a, b) => (Math.abs(a.v.score - b.v.score) < 1e-9 ? a.i - b.i : a.v.score - b.v.score)).slice(0, keep).map((x) => x.v);
 }
 
 // ---------------------------------------------------------------- framing: size choice and viewBox
 function layoutGraph(graph, opts = {}) {
+  return opts.routing === 'curve' ? layoutCurve(graph, opts) : layoutOrthogonal(graph, opts);
+}
+
+// ---------------------------------------------------------------- orthogonal routing: size, orientation, framing
+function orthoScore(fr, fit) {
+  const m = fr.metrics, s = fr.size;
+  const phone = fit === 'wide' ? 0 : 14 * Math.max(0, 9 - phonePx(fr.W, s)) + 30 * Math.max(0, fr.H / fr.W - 1.7);
+  return phone + (fr.W / s) * 0.15 + (fr.H / s) * 0.15 + m.crossings * 8 + (m.throughBoxes + m.titleHits) * 40 + m.labelNode * 20 + m.labelLabel * 40 + m.labelTitle * 30
+    + m.labelOnLine * 9 + m.bends * 0.5 + (m.length / s) * 0.04 + fr.failed * 50;
+}
+
+function orthoAt(gr, s, fit) {
+  const laneGap = Math.round(0.55 * s);
+  let best = null;
+  // if some label has no free place, give every channel more room and route again (twice at most)
+  for (const extra of [0, 1.0, 2.0]) {
+    for (const v of rankLayouts(gr, s, fit, 4, laneGap, true, Math.round(extra * s))) {
+      const rt = routeEdges(gr, { nodes: v.layout.nodes, groups: v.layout.groups, s }, {});
+      const fr = frameRouted(gr, v, rt, s);
+      fr.score = orthoScore(fr, fit);
+      if (!best || fr.score < best.score - 1e-9) best = fr;
+    }
+    const m = best.metrics;
+    if (best.failed === 0 && m.labelLabel + m.labelNode + m.labelTitle + m.throughBoxes + m.titleHits === 0 && m.labelOnLine <= 1) break;
+  }
+  return best;
+}
+
+function layoutOrthogonal(graph, opts = {}) {
+  const fit = opts.fit || 'balanced';
+  const targetW = opts.targetW || 1000, maxH = opts.maxH || 1100;
+  const one = (gr) => {
+    let s = opts.size ? Math.max(8, Math.min(40, Math.round(opts.size))) : 18;
+    let res = orthoAt(gr, s, fit);
+    if (!opts.size) {
+      for (let it = 0; it < 3; it++) {
+        const k = Math.min(targetW / res.W, maxH / res.H);
+        const ns = Math.max(10, Math.min(40, Math.round(s * k)));
+        if (ns === s || (k > 0.88 && k < 1.12)) break;
+        s = ns; res = orthoAt(gr, s, fit);
+      }
+    }
+    while ((res.W > 2000 || res.H > 2000) && s > 8) { s -= 1; res = orthoAt(gr, s, fit); }
+    res.fits = res.W <= 2000 && res.H <= 2000;
+    res.direction = gr.direction;
+    return res;
+  };
+  let res = one(graph);
+  if (!opts.forceDirection) {
+    const horizontal = graph.direction === 'LR' || graph.direction === 'RL';
+    const alt = one({ ...graph, direction: horizontal ? 'TB' : 'LR' });
+    // the other axis wins when its text is clearly bigger on a phone and it is not messier
+    // legibility and shape are already part of the score (see orthoScore)
+    if (alt.fits && alt.score < res.score - 1) res = alt;
+  }
+  return res;
+}
+
+function layoutCurve(graph, opts = {}) {
   const fit = opts.fit || 'balanced';
   const targetW = opts.targetW || 1000, maxH = opts.maxH || 1100;
   const sized = (gr) => {
@@ -1354,8 +1975,39 @@ function frame(graph, best, s) {
   };
 }
 
+function frameRouted(graph, best, rt, s) {
+  const { layout } = best;
+  const margin = Math.round(1.3 * s);
+  let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+  const take = (x, y, w = 0, h = 0) => { x0 = Math.min(x0, x); y0 = Math.min(y0, y); x1 = Math.max(x1, x + w); y1 = Math.max(y1, y + h); };
+  layout.nodes.forEach((n) => take(n.x, n.y, n.w, n.h));
+  layout.groups.forEach((g) => take(g.x, g.y, g.w, g.h));
+  rt.routes.forEach((r) => { if (!r) return; r.points.forEach((p) => take(p[0] - 2, p[1] - 2, 4, 4)); if (r.label) take(r.label.x, r.label.y, r.label.w, r.label.h); });
+  if (!isFinite(x0)) { x0 = y0 = 0; x1 = y1 = 100; }
+  const dx = margin - x0, dy = margin - y0;
+  const W = Math.max(200, Math.ceil(x1 - x0 + 2 * margin)), H = Math.max(120, Math.ceil(y1 - y0 + 2 * margin));
+  const shift = (o) => ({ ...o, x: o.x + dx, y: o.y + dy });
+  const routes = rt.routes.map((r) => (r ? { ...r, points: r.points.map((p) => [p[0] + dx, p[1] + dy]), label: r.label ? shift(r.label) : null } : null));
+  const failed = graph.edges.filter((e, i) => !routes[i] && e.from !== e.to).length;
+  return {
+    W, H, size: s, routing: 'orthogonal', routes, routeWarnings: rt.warnings, failed,
+    nodes: layout.nodes.map(shift), groups: layout.groups.map(shift), curves: graph.edges.map(() => 0),
+    direction: graph.direction, flows: [...best.flows.entries()], metrics: rt.metrics,
+  };
+}
+
+// One yardstick for both drawings (curved or routed) of a finished layout: counts of edges through boxes or group titles,
+// edge crossings (pairs of edges that cross), labels on boxes, titles, each other and other edges.
+function commonMetrics(graph, lay) {
+  const layout = { nodes: lay.nodes, groups: lay.groups, s: lay.size };
+  const glabels = lay.groups.map((g) => groupTitleRect(g, graph.groups.find((x) => x.id === g.id), lay.size));
+  const routes = lay.routes || curveRoutes(graph, layout, lay.curves, edgeCurve, labelRect);
+  return routeMetrics(graph, layout, routes, glabels, lay.size);
+}
+
 // ---- compile.mjs
 // Canonical graph + layout + schedule -> a motion_arch block (and the payload around it).
+
 
 
 
@@ -1419,14 +2071,8 @@ function compileGraph(graph, opts = {}) {
     return ka - kb || a - b;
   });
   const lab = (id) => gnode.get(id).label;
-  const info = order.map((ei) => {
-    const e = graph.edges[ei];
-    return {
-      labelWords: words(e.label),
-      rowWords: words(lab(e.from)) + words(lab(e.to)) + words(e.label) + 1,
-      chips: msgEdge.filter((m) => m.idx === ei).length,
-    };
-  });
+  const sentence = graph.edges.map((e) => activity(lab(e.from), lab(e.to), e.label, { style: e.style, both: e.both }));
+  const info = order.map((ei) => ({ words: words(sentence[ei]), chips: msgEdge.filter((m) => m.idx === ei).length }));
   let sched;
   try { sched = buildSchedule(info, { pace, duration }); }
   catch (e) { if (e.archMessage) throw new ArchError([e.message]); throw e; }
@@ -1435,8 +2081,8 @@ function compileGraph(graph, opts = {}) {
   const stepOf = new Map(order.map((ei, k) => [ei, k]));   // edge index -> position in the schedule
 
   // ---- nodes: pop in flow order during the lead-in
-  const NODE_DUR = 0.4;
-  const nodeAt = new Map(sortedNodes.map((n, k) => [n.id, 0.3 + (sortedNodes.length > 1 ? (k * 0.75) / (sortedNodes.length - 1) : 0)]));
+  const NODE_DUR = 0.3;
+  const nodeAt = new Map(sortedNodes.map((n, k) => [n.id, 0.3 + (sortedNodes.length > 1 ? (k * 0.4) / (sortedNodes.length - 1) : 0)]));
   const nodes = graph.nodes.map((gn) => {
     const b = byId.get(gn.id);
     const o = { id: gn.id, kind: gn.kind || 'server', label: clip(gn.label, LIMITS.label) };
@@ -1455,7 +2101,11 @@ function compileGraph(graph, opts = {}) {
     if (drawn[i]) o.label = clip(drawn[i], LIMITS.edgeLabel);
     o.style = e.style === 'sync' || e.style === undefined ? 'solid' : 'dashed';
     if (e.both) o.both = true;
-    if (lay.curves[i]) o.curve = lay.curves[i];
+    const rt = lay.routes && lay.routes[i];
+    if (rt) {
+      o.points = rt.points.map((q) => ({ x: r2((q[0] / W) * 100), y: r2((q[1] / H) * 100) }));
+      if (rt.label) o.label_at = { x: r2(((rt.label.x + rt.label.w / 2) / W) * 100), y: r2(((rt.label.y + rt.label.h / 2) / H) * 100) };
+    } else if (lay.curves[i]) o.curve = lay.curves[i];
     o.at = r4(st.start / D); o.dur = pd(edgeSec(st), D);
     return o;
   });
@@ -1481,65 +2131,100 @@ function compileGraph(graph, opts = {}) {
   });
 
   const block = { type: 'motion_arch', label: clip(graph.title || 'Architecture diagram', LIMITS.title), w: W, h: H, size, nodes, edges };
+  if (lay.routes) { block.radius = clamp(Math.round(size * 0.55), 6, 14); warnings.push(...lay.routeWarnings); }
   if (groups.length) block.groups = groups;
   if (messages.length) block.messages = messages;
 
   const steps = numbered ? order.map((ei, k) => {
     const e = graph.edges[ei];
-    return { step: stepNo[ei], from: lab(e.from), to: lab(e.to), label: e.label || '', style: e.style || 'sync' };
+    const o = { step: stepNo[ei], from: lab(e.from), to: lab(e.to), label: e.label || '', style: e.style || 'sync', activity: sentence[ei] };
+    if (e.relation) o.relation = e.relation;
+    return o;
   }) : [];
+  const relationColumn = numbered && (opts.relationColumn !== undefined ? !!opts.relationColumn : !!graph.relationColumn);
+  const relationName = opts.relationName || graph.relationName || 'Relation';
   const schedule = sched.schedule.map((s, k) => ({ step: numbered ? stepNo[order[k]] : s.step, start: s.start, end: s.end }));
-  return { block, layout: lay, warnings, steps, schedule, durationSeconds: D, numbered, pace, minimumSeconds: sched.minimumSeconds };
+  return { block, layout: lay, warnings, steps, schedule, durationSeconds: D, numbered, pace, minimumSeconds: sched.minimumSeconds, relationColumn, relationName };
 }
 
 const STAGES = [['16:9', 1280, 720], ['4:3', 1200, 900], ['1:1', 1000, 1000], ['9:16', 720, 1280]];
-const TYPE = { sync: 'sync', async: 'async', optional: 'optional' };
 
-function stepsTable(steps) {
+// The steps table: a legend with the columns Step | Activity (and Relation when asked for). Full text, no cutting.
+function stepsTable(steps, ctx = {}) {
+  const rel = !!ctx.relationColumn;
   return {
     type: 'table', caption: 'Steps',
-    headers: ['Step', 'From', 'To', 'What', 'Kind'],
-    rows: steps.map((s) => [String(s.step), s.from, s.to, s.label || '-', TYPE[s.style] || s.style]),
-    col_widths: ['9%', '25%', '25%', '28%', '13%'],
+    headers: rel ? ['Step', 'Activity', ctx.relationName || 'Relation'] : ['Step', 'Activity'],
+    rows: steps.map((s) => (rel ? [String(s.step), s.activity, s.relation || ''] : [String(s.step), s.activity])),
+    col_widths: rel ? ['9%', '67%', '24%'] : ['9%', '91%'],
   };
 }
 
 // Wrap the diagram (and, when numbered, the steps table) in ONE motion_timeline so both run on one clock.
 // The diagram is the motion_arch block, p = t / duration. Each table row is a motion_text that fades in
-// when its step's edge starts drawing; a translucent bar steps to the current row.
+// when its step's edge starts drawing; a translucent bar steps to the current row. The stage is the one of
+// four shapes (or, for a tall diagram, a wide stage with the table beside it) that draws the diagram biggest.
 function filmPayload(block, ctx = {}) {
   const D = ctx.durationSeconds || 9;
   const steps = ctx.steps || [], sch = ctx.schedule || [];
   const n = steps.length;
-  const rowText = (s) => clip(`*${s.step}*  ${s.from} → ${s.to}${s.label ? ': ' + s.label : ''}${s.style === 'async' ? ' (async)' : s.style === 'optional' ? ' (optional)' : ''}`, 60);
-  const rows = steps.map(rowText);
+  const rel = !!ctx.relationColumn && n > 0, relName = ctx.relationName || 'Relation';
+  const rows = steps.map((s) => rowText(s.step, s.activity, s.from, s.to, s.label, s.style, 60));
   const maxChars = Math.max(20, ...rows.map((r) => r.length));
-  let best = null;
+  const relChars = rel ? Math.max(relName.length, ...steps.map((s) => (s.relation || '').length)) : 0;
+  const gap = 24;
+  const cands = [];
+  // the text is one line per row: its size is what the table width allows
+  const textSize = (tw, lo, hi) => clamp(Math.floor((tw * 0.94) / ((maxChars + (rel ? relChars + 3 : 0)) * 0.62)), lo, hi);
   for (const [aspect, sw, sh] of STAGES) {
-    const sz = clamp(Math.floor((sw * 0.94) / (maxChars * 0.62)), 12, 24);
-    const rowH = Math.round(sz * 1.9), headH = Math.round(sz * 2.1), gap = 24;
+    const sz = textSize(sw, 12, 24);
+    const rowH = Math.round(sz * 1.9), headH = Math.round(sz * 2.1);
     const T = n ? headH + n * rowH : 0;
     const scale = Math.min((sw * 0.96) / block.w, (sh - T - gap * (n ? 3 : 2)) / block.h);
-    if (scale > 0 && (!best || scale > best.scale + 1e-9)) best = { aspect, sw, sh, sz, rowH, headH, gap, T, scale };
+    if (scale > 0) cands.push({ kind: 'stack', aspect, sw, sh, sz, rowH, headH, scale });
   }
+  if (n) for (const [aspect, sw, sh] of STAGES.slice(0, 2)) for (const f of [0.34, 0.4, 0.46]) {
+    const tw = sw * f - gap, sz = textSize(tw, 11, 22);
+    const rowH = Math.round(sz * 1.9), headH = Math.round(sz * 2.1);
+    if (headH + n * rowH > sh - 2 * gap) continue;
+    if (maxChars * sz * 0.62 > tw * 0.97) continue;           // the longest row must fit its line
+    const scale = Math.min((sw * (1 - f) - 2 * gap) / block.w, (sh - 2 * gap) / block.h);
+    if (scale > 0) cands.push({ kind: 'side', aspect, sw, sh, sz, rowH, headH, scale, f });
+  }
+  let best = null;
+  for (const c of cands) if (!best || c.scale > best.scale + 1e-9) best = c;
   if (!best) throw new ArchError(['the diagram and its steps table do not fit on one film stage; reduce the number of steps or the diagram size']);
-  const { aspect, sw, sh, sz, rowH, headH, gap, scale } = best;
+  const { aspect, sw, sh, sz, rowH, headH, scale } = best;
   const pw = block.w * scale, ph = block.h * scale;
-  const px = (sw - pw) / 2, py = gap;
+  let px, py, tx, tw, top;
+  if (best.kind === 'side') {
+    const reg = sw * (1 - best.f);
+    px = (reg - pw) / 2; py = (sh - ph) / 2;
+    tx = reg + gap / 2; tw = sw * best.f - gap * 1.5; top = gap;
+  } else {
+    px = (sw - pw) / 2; py = gap;
+    tx = sw * 0.03; tw = sw * 0.94; top = py + ph + gap;
+  }
   const arch = { ...block, id: 'arch', place: { x: r2((px / sw) * 100), y: r2((py / sh) * 100), w: r2((pw / sw) * 100), h: r2((ph / sh) * 100), z: 1 } };
   const blocks = [arch];
   const tracks = [{ target: 'arch', keys: [{ t: 0, p: 0 }, { t: D, p: 1, ease: 'linear' }] }];
   if (n) {
-    const top = py + ph + gap;
-    const xPct = r2((sw * 0.03 / sw) * 100), wPct = 94;
-    blocks.push({ type: 'motion_text', id: 'head', text: 'STEP  FROM → TO: WHAT', size: Math.max(11, sz - 3), font: 'mono', weight: 'bold', mode: 'block', reveal: 'fade', color: '#9ca5b1', place: { x: xPct, y: r2((top / sh) * 100), w: wPct, z: 2 } });
+    const xPct = r2((tx / sw) * 100), wPct = r2((tw / sw) * 100);
+    const aw = rel ? r2(wPct * 0.68) : wPct, rx = r2(xPct + wPct * 0.7), rw = r2(wPct * 0.3);
+    blocks.push({ type: 'motion_text', id: 'head', text: 'STEP  ACTIVITY', size: Math.max(11, sz - 3), font: 'mono', weight: 'bold', mode: 'block', reveal: 'fade', color: '#9ca5b1', place: { x: xPct, y: r2((top / sh) * 100), w: aw, z: 2 } });
+    if (rel) blocks.push({ type: 'motion_text', id: 'headrel', text: relName.toUpperCase(), size: Math.max(11, sz - 3), font: 'mono', weight: 'bold', mode: 'block', reveal: 'fade', color: '#9ca5b1', place: { x: rx, y: r2((top / sh) * 100), w: rw, z: 2 } });
     const rowY = (k) => top + headH + k * rowH;
     blocks.push({ type: 'motion_shape', id: 'hl', shape: 'rect', draw: 'none', fill: '#8d98ff', radius: 8, place: { x: r2(xPct - 1.2), y: r2((rowY(0) - 4) / sh * 100), w: r2(wPct + 2.4), h: r2((rowH - 2) / sh * 100), z: 1 } });
     const hlKeys = [{ t: 0, y: r2((rowY(0) - 4) / sh * 100), opacity: 0 }];
     steps.forEach((s, k) => {
       const t0 = sch[k].start;
-      blocks.push({ type: 'motion_text', id: 'row' + (k + 1), text: rows[k], size: sz, font: 'mono', weight: 'regular', mode: 'block', reveal: 'fade', place: { x: xPct, y: r2((rowY(k) / sh) * 100), w: wPct, z: 2 } });
-      tracks.push({ target: 'row' + (k + 1), keys: [{ t: 0, opacity: 0 }, { t: t0, opacity: 0 }, { t: r2(t0 + 0.3), opacity: 1, ease: 'standard' }] });
+      const fade = [{ t: 0, opacity: 0 }, { t: t0, opacity: 0 }, { t: r2(t0 + 0.3), opacity: 1, ease: 'standard' }];
+      blocks.push({ type: 'motion_text', id: 'row' + (k + 1), text: rows[k], size: sz, font: 'mono', weight: 'regular', mode: 'block', reveal: 'fade', place: { x: xPct, y: r2((rowY(k) / sh) * 100), w: aw, z: 2 } });
+      tracks.push({ target: 'row' + (k + 1), keys: fade });
+      if (rel && s.relation) {
+        blocks.push({ type: 'motion_text', id: 'rel' + (k + 1), text: s.relation, size: sz, font: 'mono', weight: 'regular', mode: 'block', reveal: 'fade', color: '#9ca5b1', place: { x: rx, y: r2((rowY(k) / sh) * 100), w: rw, z: 2 } });
+        tracks.push({ target: 'rel' + (k + 1), keys: fade });
+      }
       hlKeys.push(k === 0
         ? { t: t0, y: r2((rowY(0) - 4) / sh * 100), opacity: 0, ease: 'hold' }
         : { t: t0, y: r2((rowY(k) - 4) / sh * 100), opacity: 0.22, ease: 'hold' });
@@ -1559,7 +2244,7 @@ function filmPayload(block, ctx = {}) {
 // Standalone payload: the finished diagram (and, when numbered, the steps table under it).
 function archPayload(block, ctx = {}) {
   const blocks = [block];
-  if (ctx.steps && ctx.steps.length) blocks.push(stepsTable(ctx.steps));
+  if (ctx.steps && ctx.steps.length) blocks.push(stepsTable(ctx.steps, ctx));
   return { theme: 'dark', blocks };
 }
 
@@ -1570,6 +2255,7 @@ function validateBlock(b) {
   if (!(b.w >= 200 && b.w <= 2000)) errs.push(`w ${b.w} outside 200-2000`);
   if (!(b.h >= 120 && b.h <= 2000)) errs.push(`h ${b.h} outside 120-2000`);
   if (!(b.size >= 8 && b.size <= 40)) errs.push(`size ${b.size} outside 8-40`);
+  if (b.radius !== undefined && !(b.radius >= 0 && b.radius <= 60)) errs.push(`radius ${b.radius} outside 0-60`);
   const nodes = b.nodes || [], edges = b.edges || [], groups = b.groups || [], msgs = b.messages || [];
   if (nodes.length > LIMITS.nodes) errs.push('too many nodes');
   if (edges.length > LIMITS.edges) errs.push('too many edges');
@@ -1587,6 +2273,11 @@ function validateBlock(b) {
   edges.forEach((e, i) => {
     if (!ids.has(e.from) || !ids.has(e.to)) errs.push(`edge ${i} dangling`);
     if (e.curve !== undefined && (e.curve < -100 || e.curve > 100)) errs.push(`edge ${i} curve`);
+    if (e.points !== undefined) {
+      if (!Array.isArray(e.points) || e.points.length < 2 || e.points.length > 10) errs.push(`edge ${i} points: 2 to 10 needed`);
+      else if (e.points.some((q) => !(q.x >= 0 && q.x <= 100 && q.y >= 0 && q.y <= 100))) errs.push(`edge ${i} points outside the frame`);
+    }
+    if (e.label_at !== undefined && !(e.label_at.x >= 0 && e.label_at.x <= 100 && e.label_at.y >= 0 && e.label_at.y <= 100)) errs.push(`edge ${i} label_at outside the frame`);
     if (e.label && e.label.length > 48) errs.push(`edge ${i} label too long`);
     if (e.at < 0 || e.at > 1 || e.dur < 0.01 || e.dur > 1 || e.at + e.dur > 1.0001) errs.push(`edge ${i} timing outside 0-1`);
   });
@@ -1612,7 +2303,7 @@ function validateBlock(b) {
 
 
 
-// opts: {direction, title, size, fit:'balanced'|'wide', film:boolean, numbered:boolean, pace:'slow'|'normal'|'fast', duration:seconds}
+// opts: {routing:'orthogonal'|'curve' (default orthogonal), direction, title, size, fit:'balanced'|'wide', film:boolean, numbered:boolean, pace:'slow'|'normal'|'fast', duration:seconds, relationColumn:boolean, relationName:string}
 function graphToArch(graph, opts = {}) {
   const g = { ...graph };
   if (opts.direction) g.direction = opts.direction;
@@ -1625,9 +2316,9 @@ function graphToArch(graph, opts = {}) {
   const { block, layout, warnings: w2 } = c;
   const bad = validateBlock(block);
   if (bad.length) throw new ArchError(['internal: compiled block breaks the atom limits: ' + bad.join('; ')], warnings);
-  const ctx = { steps: c.steps, schedule: c.schedule, durationSeconds: c.durationSeconds };
+  const ctx = { steps: c.steps, schedule: c.schedule, durationSeconds: c.durationSeconds, relationColumn: c.relationColumn, relationName: c.relationName };
   const payload = opts.film ? filmPayload(block, ctx) : archPayload(block, ctx);
-  return { payload, graph: g, warnings: [...warnings, ...w2], block, layout, steps: c.steps, schedule: c.schedule, durationSeconds: c.durationSeconds, pace: c.pace, minimumSeconds: c.minimumSeconds, numbered: c.numbered };
+  return { payload, graph: g, warnings: [...warnings, ...w2], block, layout, steps: c.steps, schedule: c.schedule, durationSeconds: c.durationSeconds, pace: c.pace, minimumSeconds: c.minimumSeconds, numbered: c.numbered, relationColumn: c.relationColumn, relationName: c.relationName };
 }
 
 function mermaidToArch(text, opts = {}) {
@@ -1664,7 +2355,7 @@ function d2ToArch(text, opts = {}) {
   function fit(asp) { frame.style.height = Math.round(frame.clientWidth * asp + 84) + 'px'; }
   function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
   function convert() {
-    var msgs = document.getElementById('msgs'), opts = { film: document.getElementById('film').checked, numbered: document.getElementById('num').checked, pace: document.getElementById('pace').value };
+    var msgs = document.getElementById('msgs'), opts = { film: document.getElementById('film').checked, numbered: document.getElementById('num').checked, pace: document.getElementById('pace').value, routing: document.getElementById('routing').value, relationColumn: document.getElementById('rel').checked };
     var d = document.getElementById('dir').value; if (d) opts.direction = d;
     try {
       var r = mermaidToArch(document.getElementById('src').value, opts);
@@ -1685,7 +2376,7 @@ function d2ToArch(text, opts = {}) {
   }
   document.getElementById('go').onclick = convert;
   document.getElementById('src').addEventListener('input', function () { clearTimeout(convert.t); convert.t = setTimeout(convert, 500); });
-  document.getElementById('dir').onchange = convert; document.getElementById('film').onchange = convert; document.getElementById('num').onchange = convert; document.getElementById('pace').onchange = convert;
+  document.getElementById('dir').onchange = convert; document.getElementById('film').onchange = convert; document.getElementById('num').onchange = convert; document.getElementById('pace').onchange = convert; document.getElementById('rel').onchange = convert; document.getElementById('routing').onchange = convert;
   function api() { try { var o = frame.contentWindow.__a2uiMotion; return o && o[Object.keys(o)[0]] || null; } catch (e) { return null; } }
   function playing() { try { var r = frame.contentDocument.querySelector('.mt-root'); return !!r && r.getAttribute('data-pl') === '1'; } catch (e) { return false; } }
   document.getElementById('pp').onclick = function () { var a = api(); if (!a) return; if (playing()) a.pause(); else a.play(); };

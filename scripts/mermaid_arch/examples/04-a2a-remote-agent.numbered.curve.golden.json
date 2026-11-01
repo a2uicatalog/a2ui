@@ -16,8 +16,8 @@
      "y": 57.26,
      "w": 9.46,
      "h": 17.11,
-     "at": 0.0128,
-     "dur": 0.011
+     "at": 0.0162,
+     "dur": 0.0112
     },
     {
      "id": "orch",
@@ -27,8 +27,8 @@
      "y": 60.95,
      "w": 23.84,
      "h": 17.11,
-     "at": 0.0157,
-     "dur": 0.011
+     "at": 0.0187,
+     "dur": 0.0112
     },
     {
      "id": "card",
@@ -38,8 +38,8 @@
      "y": 43.84,
      "w": 15.19,
      "h": 17.11,
-     "at": 0.007,
-     "dur": 0.011
+     "at": 0.0112,
+     "dur": 0.0112
     },
     {
      "id": "remote",
@@ -49,8 +49,8 @@
      "y": 43.84,
      "w": 17.1,
      "h": 17.11,
-     "at": 0.0099,
-     "dur": 0.011
+     "at": 0.0137,
+     "dur": 0.0112
     },
     {
      "id": "task",
@@ -60,8 +60,8 @@
      "y": 78.06,
      "w": 15.19,
      "h": 17.11,
-     "at": 0.0186,
-     "dur": 0.011
+     "at": 0.0212,
+     "dur": 0.0112
     },
     {
      "id": "rllm",
@@ -71,8 +71,8 @@
      "y": 78.06,
      "w": 15.19,
      "h": 17.11,
-     "at": 0.0216,
-     "dur": 0.011
+     "at": 0.0237,
+     "dur": 0.0112
     },
     {
      "id": "rtools",
@@ -82,8 +82,8 @@
      "y": 78.06,
      "w": 14.29,
      "h": 17.11,
-     "at": 0.0245,
-     "dur": 0.011
+     "at": 0.0262,
+     "dur": 0.0112
     }
    ],
    "edges": [
@@ -93,8 +93,8 @@
      "label": "1 asks",
      "style": "solid",
      "curve": -100,
-     "at": 0.035,
-     "dur": 0.0117
+     "at": 0.0374,
+     "dur": 0.0187
     },
     {
      "from": "orch",
@@ -102,8 +102,8 @@
      "label": "2 discovers skills",
      "style": "solid",
      "curve": -80,
-     "at": 0.1189,
-     "dur": 0.0117
+     "at": 0.1116,
+     "dur": 0.0187
     },
     {
      "from": "orch",
@@ -111,16 +111,16 @@
      "label": "3 SendStreamingMessage JSON-RPC",
      "style": "solid",
      "curve": -100,
-     "at": 0.2297,
-     "dur": 0.0117
+     "at": 0.2146,
+     "dur": 0.0187
     },
     {
      "from": "remote",
      "to": "task",
      "label": "4 creates task",
      "style": "solid",
-     "at": 0.3405,
-     "dur": 0.0117
+     "at": 0.3278,
+     "dur": 0.0187
     },
     {
      "from": "remote",
@@ -128,8 +128,8 @@
      "label": "5 prompt",
      "style": "solid",
      "curve": -65,
-     "at": 0.4423,
-     "dur": 0.0117
+     "at": 0.4205,
+     "dur": 0.0187
     },
     {
      "from": "remote",
@@ -137,8 +137,8 @@
      "label": "6 tool calls",
      "style": "solid",
      "curve": 50,
-     "at": 0.5263,
-     "dur": 0.0117
+     "at": 0.5235,
+     "dur": 0.0187
     },
     {
      "from": "remote",
@@ -146,8 +146,8 @@
      "label": "7 status, artifacts, A2UI in a DataPart, over S…",
      "style": "dashed",
      "curve": 80,
-     "at": 0.6281,
-     "dur": 0.0117
+     "at": 0.6368,
+     "dur": 0.0187
     },
     {
      "from": "orch",
@@ -155,8 +155,8 @@
      "label": "8 answer",
      "style": "solid",
      "curve": -100,
-     "at": 0.8461,
-     "dur": 0.0117
+     "at": 0.8221,
+     "dur": 0.0187
     }
    ],
    "groups": [
@@ -167,7 +167,7 @@
      "w": 27.67,
      "h": 35.91,
      "at": 0,
-     "dur": 0.011
+     "dur": 0.0112
     },
     {
      "label": "Partner system",
@@ -176,27 +176,27 @@
      "w": 54.02,
      "h": 70.13,
      "at": 0,
-     "dur": 0.011
+     "dur": 0.0112
     }
    ],
    "messages": [
     {
      "edge": 1,
      "text": "GET agent card",
-     "at": 0.1317,
-     "dur": 0.028
+     "at": 0.1322,
+     "dur": 0.0449
     },
     {
      "edge": 2,
      "text": "SendStreamingMessage",
-     "at": 0.2425,
-     "dur": 0.028
+     "at": 0.2352,
+     "dur": 0.0449
     },
     {
      "edge": 6,
      "text": "artifact",
-     "at": 0.6409,
-     "dur": 0.028
+     "at": 0.6574,
+     "dur": 0.0449
     }
    ]
   },
@@ -205,75 +205,45 @@
    "caption": "Steps",
    "headers": [
     "Step",
-    "From",
-    "To",
-    "What",
-    "Kind"
+    "Activity"
    ],
    "rows": [
     [
      "1",
-     "User",
-     "Orchestrator on ADK",
-     "asks",
-     "sync"
+     "User asks Orchestrator on ADK"
     ],
     [
      "2",
-     "Orchestrator on ADK",
-     "Agent Card",
-     "discovers skills",
-     "sync"
+     "Orchestrator on ADK discovers skills from Agent Card"
     ],
     [
      "3",
-     "Orchestrator on ADK",
-     "Remote agent",
-     "SendStreamingMessage JSON-RPC",
-     "sync"
+     "Orchestrator on ADK sends SendStreamingMessage JSON-RPC to Remote agent"
     ],
     [
      "4",
-     "Remote agent",
-     "Task state",
-     "creates task",
-     "sync"
+     "Remote agent creates task in Task state"
     ],
     [
      "5",
-     "Remote agent",
-     "Remote LLM",
-     "prompt",
-     "sync"
+     "Remote agent sends the prompt to Remote LLM"
     ],
     [
      "6",
-     "Remote agent",
-     "MCP tools",
-     "tool calls",
-     "sync"
+     "Remote agent sends the tool calls to MCP tools"
     ],
     [
      "7",
-     "Remote agent",
-     "Orchestrator on ADK",
-     "status, artifacts, A2UI in a DataPart, over SSE",
-     "async"
+     "Remote agent sends status, artifacts, A2UI in a DataPart, over SSE to Orchestrator on ADK (async)"
     ],
     [
      "8",
-     "Orchestrator on ADK",
-     "User",
-     "answer",
-     "sync"
+     "Orchestrator on ADK sends the answer to User"
     ]
    ],
    "col_widths": [
     "9%",
-    "25%",
-    "25%",
-    "28%",
-    "13%"
+    "91%"
    ]
   }
  ]

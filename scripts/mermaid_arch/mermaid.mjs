@@ -133,7 +133,8 @@ export function parseMermaid(text, opts = {}) {
   const classStmts = [];            // {line, ids, cls}
   const msgDirectives = [];         // {line, from, to, text, back}
   const stepDirectives = [];         // {line, from, to, step}
-  let title, numbered, pace, duration, direction = 'TB', headerSeen = false, openLinkWarned = false;
+  let title, numbered, pace, duration, relationColumn, relationName, direction = 'TB', headerSeen = false, openLinkWarned = false;
+  const relDirectives = [];         // {line, from, to, text}
 
   function touchNode(orig, line) {
     let n = nodes.get(orig);
@@ -307,7 +308,7 @@ export function parseMermaid(text, opts = {}) {
     let line = lines[li].trim();
     if (!line) continue;
     if (line.startsWith('%%')) {
-      const d = /^%%\s*(title|msg|numbered|pace|duration|step)\s*:\s*(.*)$/i.exec(line);
+      const d = /^%%\s*(title|msg|numbered|pace|duration|step|relation-column|relation-name|rel)\s*:\s*(.*)$/i.exec(line);
       const key = d && d[1].toLowerCase();
       if (key === 'title') { if (d[2].trim()) title = d[2].trim(); }
       else if (key === 'msg') {
@@ -325,6 +326,19 @@ export function parseMermaid(text, opts = {}) {
       } else if (key === 'duration') {
         const v = Number(d[2].trim().replace(/\s*s$/i, ''));
         if (Number.isFinite(v) && v >= 2 && v <= 120) duration = v; else fail(L(), '"%% duration:" must be a number of seconds from 2 to 120, for example %% duration: 40');
+      } else if (key === 'relation-column') {
+        const v = d[2].trim().toLowerCase();
+        if (v === 'on' || v === 'true' || v === 'yes') relationColumn = true;
+        else if (v === 'off' || v === 'false' || v === 'no') relationColumn = false;
+        else fail(L(), '"%% relation-column:" must be on or off');
+      } else if (key === 'relation-name') {
+        const v = d[2].trim();
+        if (v && v.length <= LIMITS.relation) relationName = v; else fail(L(), `"%% relation-name:" must be 1 to ${LIMITS.relation} characters, for example %% relation-name: Interaction`);
+      } else if (key === 'rel') {
+        const m = /^(\S+?)\s*->\s*(\S+?)\s+(.+?)\s*$/.exec(d[2].trim());
+        if (!m) fail(L(), 'bad "%% rel:" directive; write it as  %% rel: fromId->toId calls  (free text, at most 20 characters)');
+        else if (m[3].length > LIMITS.relation) fail(L(), `"%% rel:" text "${m[3]}" is ${m[3].length} characters; the most is ${LIMITS.relation}`);
+        else relDirectives.push({ line: L(), from: m[1], to: m[2], text: m[3] });
       } else if (key === 'step') {
         const m = /^(\S+?)\s*->\s*(\S+?)\s+(\d+)\s*$/.exec(d[2].trim());
         if (!m) fail(L(), 'bad "%% step:" directive; write it as  %% step: fromId->toId 3');
@@ -460,8 +474,19 @@ export function parseMermaid(text, opts = {}) {
     if (idx < 0) { errors.push(`line ${d.line}: step directive: there is no (further) edge from "${d.from}" to "${d.to}"`); continue; }
     taken.add(idx); eOut[idx].step = d.step;
   }
+  const relTaken = new Set();
+  for (const d of relDirectives) {
+    const f = lookup(d.from), t = lookup(d.to);
+    const names = [...nodes.keys()];
+    if (!f || !t) { errors.push(`line ${d.line}: rel directive names "${!f ? d.from : d.to}", which is not a node` + (didYouMean(!f ? d.from : d.to, names) ? ` (did you mean "${didYouMean(!f ? d.from : d.to, names)}"?)` : '')); continue; }
+    const idx = eOut.findIndex((e, i) => e.from === mapNode(f) && e.to === mapNode(t) && !relTaken.has(i));
+    if (idx < 0) { errors.push(`line ${d.line}: rel directive: there is no (further) edge from "${d.from}" to "${d.to}"`); continue; }
+    relTaken.add(idx); eOut[idx].relation = d.text;
+  }
   if (errors.length) throw new ArchError(errors.slice(0, 20), warnings);
   const graph = { direction: opts.direction || direction, groups: gOut, nodes: nOut, edges: eOut, messages: mOut };
+  if (relationColumn !== undefined) graph.relationColumn = relationColumn;
+  if (relationName) graph.relationName = relationName;
   if (numbered !== undefined) graph.numbered = numbered;
   if (pace) graph.pace = pace;
   if (duration !== undefined) graph.duration = duration;

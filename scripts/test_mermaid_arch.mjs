@@ -477,7 +477,8 @@ test('steps table matches the edges (standalone payload carries a table atom)', 
     r.graph.edges.forEach((e, i) => {
       const row = t.rows[r.steps.findIndex((s) => s.from === label.get(e.from) && s.to === label.get(e.to) && s.label === (e.label || ''))];
       assert.ok(row, 'row for edge ' + i);
-      assert.deepEqual(row.slice(1), [label.get(e.from), label.get(e.to), e.label || '-', e.style]);
+      assert.equal(row.length, 2, 'the legend has exactly the columns Step and Activity');
+      assert.equal(row[1], r.steps[r.steps.findIndex((x) => x.from === label.get(e.from) && x.to === label.get(e.to) && x.label === (e.label || ''))].activity);
     });
     assert.deepEqual(r.steps.map((s) => s.step), r.steps.map((_, i) => i + 1));
   }
@@ -503,23 +504,24 @@ test('film: one timeline carries diagram and rows on one clock; rows reveal at t
   assert.equal(tl.tracks.find((t) => t.target === 'arch').keys[1].p, 1);
 });
 const P3 = 'flowchart LR\na -->|one| b\nb -->|two| c\nc -->|three| d';
-test('pacing: step dwell follows the formula (min 2.5 s, 3 words per second + 0.8 s)', () => {
+test('pacing: step dwell follows the formula (min 1.8 s, 4 words per second + 0.5 s)', () => {
   const r = mermaidToArch(P3, { numbered: true });
-  assert.equal(r.schedule[0].start, 1.5);                                        // lead-in
-  r.schedule.forEach((s) => assert.ok(s.end - s.start >= 2.5 - 1e-9));
+  assert.equal(r.schedule[0].start, 1);                                          // lead-in
+  r.schedule.forEach((s) => assert.ok(s.end - s.start >= 1.8 - 1e-9));
   const long = mermaidToArch('flowchart LR\na[Alpha service] -->|' + 'word '.repeat(9).trim() + '| b[Beta service]', { numbered: true });
-  const w = 9, row = 2 + 2 + 9 + 1;
-  assert.ok(Math.abs((long.schedule[0].end - long.schedule[0].start) - ((w + row) / 3 + 0.8)) < 2e-3);
-  assert.equal(r.durationSeconds, +(r.schedule[2].end + 3).toFixed(3));           // 3 s hold at the end
+  const w = long.steps[0].activity.trim().split(/\s+/).length;
+  assert.ok(w >= 14);
+  assert.ok(Math.abs((long.schedule[0].end - long.schedule[0].start) - (w / 4 + 0.5)) < 2e-3);
+  assert.equal(r.durationSeconds, +(r.schedule[2].end + 2).toFixed(3));           // 2 s hold at the end
 });
-test('pacing: more steps and more words never make the film shorter; crowded films get +15% / +30%', () => {
+test('pacing: more steps and more words never make the film shorter; crowded films get +10% / +21%', () => {
   const chain = (n, lbl = 'x') => 'flowchart LR\n' + Array.from({ length: n }, (_, i) => `n${i} -->|${lbl}| n${i + 1}`).join('\n');
   const d = (n, lbl) => mermaidToArch(chain(n, lbl), { numbered: true }).durationSeconds;
   const ds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map((n) => d(n));
   for (let i = 1; i < ds.length; i++) assert.ok(ds[i] > ds[i - 1], 'steps ' + (i + 1));
   assert.ok(d(3, 'a long label with many words in it') > d(3, 'x'));
   const per = (n) => { const r = mermaidToArch(chain(n), { numbered: true }); return r.schedule[0].end - r.schedule[0].start; };
-  assert.ok(Math.abs(per(7) / per(6) - 1.15) < 2e-3); assert.ok(Math.abs(per(10) / per(9) - 1.15) < 2e-3);
+  assert.ok(Math.abs(per(7) / per(6) - 1.1) < 2e-3); assert.ok(Math.abs(per(10) / per(9) - 1.1) < 2e-3);
 });
 test('pacing: slow 1.4x, fast 0.75x of the dwell; directive and option agree', () => {
   const dw = (o, pre = '') => { const r = mermaidToArch(pre + P3, { numbered: true, ...o }); return r.schedule[0].end - r.schedule[0].start; };
@@ -532,9 +534,9 @@ function errP(src) { try { mermaidToArch(src); } catch (e) { if (e instanceof Ar
 test('pacing: %% duration overrides the total; below the fast reading time it warns', () => {
   const ok = mermaidToArch('%% duration: 40\n' + P3, { numbered: true });
   assert.equal(ok.durationSeconds, 40); assert.equal(ok.warnings.filter((w) => /duration/.test(w)).length, 0);
-  assert.equal(ok.schedule[2].end + 3, 40);
-  const short = mermaidToArch('%% duration: 10\n' + P3, { numbered: true });
-  assert.ok(short.warnings.some((w) => /duration 10 s is shorter than the .* s the steps need at the fast pace/.test(w)));
+  assert.equal(ok.schedule[2].end + 2, 40);
+  const short = mermaidToArch('%% duration: 6\n' + P3, { numbered: true });
+  assert.ok(short.warnings.some((w) => /duration 6 s is shorter than the .* s the steps need at the fast pace/.test(w)));
   assert.match(errP('%% duration: 3\n' + P3.replace('a -->|one| b', 'a -->|one| b\nb -->|x| a')), /leaves no time|duration/);
 });
 test('pacing: steps never overlap; chips ride inside their own step; film length is monotonic in pace', () => {
@@ -725,4 +727,93 @@ test('router: goes round a box that stands in the way, and a request/response pa
 test('router: a diagram that is too crowded for the label to fit is warned about, not silently shortened', () => {
   const r = mermaidToArch('flowchart LR\n a[A] -->|a very very long edge label that cannot possibly sit between two close boxes| b[B]', { size: 30 });
   assert.ok(r.block.edges[0].label.length > 20, 'the label text is untouched');
+});
+
+// ------------------------------------------------------------------ steps table legend: Step | Activity, optional Relation
+import { activity, rowText } from './mermaid_arch/activity.mjs';
+test('activity: the sentence template (no model, fixed rules)', () => {
+  assert.equal(activity('Chat host', 'LLM', 'tool call'), 'Chat host sends the tool call to LLM');
+  assert.equal(activity('User', 'Orchestrator', 'asks'), 'User asks Orchestrator');
+  assert.equal(activity('User', 'Client app', 'types prompt'), 'User types prompt into Client app');
+  assert.equal(activity('Remote agent', 'Task state', 'creates task'), 'Remote agent creates task in Task state');
+  assert.equal(activity('Orchestrator', 'Agent Card', 'discovers skills'), 'Orchestrator discovers skills from Agent Card');
+  assert.equal(activity('LLM', 'ADK agent', 'A2UI JSON'), 'LLM sends A2UI JSON to ADK agent');            // no "the" before a capitalised label
+  assert.equal(activity('Host', 'Tool', 'tools/call'), 'Host sends tools/call to Tool');
+  assert.equal(activity('A', 'B', ''), 'A calls B');
+  assert.equal(activity('Agent', 'State', 'reads and writes', { both: true }), 'Agent reads and writes State');
+  assert.equal(activity('A', 'B', 'status', { style: 'async' }), 'A sends the status to B (async)');
+  assert.equal(activity('A', 'B', 'ping', { style: 'optional' }), 'A sends the ping to B (optional)');
+  assert.equal(activity('A', 'B', 'x'), activity('A', 'B', 'x'));
+});
+test('activity: a film row is at most 60 characters and says so with an ellipsis only as a last resort', () => {
+  const sentence = activity('Orchestrator on ADK', 'Remote agent', 'status, artifacts, A2UI in a DataPart, over SSE', { style: 'async' });
+  const row = rowText(7, sentence, 'Orchestrator on ADK', 'Remote agent', 'status, artifacts, A2UI in a DataPart, over SSE', 'async');
+  assert.ok(row.length <= 60);
+  assert.match(row, /^\*7\*  /);
+  const short = rowText(1, 'User asks Orchestrator', 'User', 'Orchestrator', 'asks', 'sync');
+  assert.equal(short, '*1*  User asks Orchestrator');
+});
+test('steps table: columns are exactly Step | Activity; the standalone table keeps the full sentence', () => {
+  for (const f of examples) {
+    const r = mermaidToArch(readFileSync(join(EX, f), 'utf8'), { numbered: true });
+    const t = r.payload.blocks[1];
+    assert.deepEqual(t.headers, ['Step', 'Activity']);
+    assert.equal(t.col_widths.length, 2);
+    r.steps.forEach((s, i) => assert.equal(t.rows[i][1], s.activity));
+  }
+});
+const REL = 'flowchart LR\na[Chat host] -->|tool call| b[LLM]\nb -->|result| a\n%% rel: a->b calls\n%% rel: b->a reports back';
+test('relation column: off by default; the option, the CLI flag value and the directive turn it on', () => {
+  const off = mermaidToArch(REL, { numbered: true });
+  assert.deepEqual(off.payload.blocks[1].headers, ['Step', 'Activity']);
+  assert.equal(off.relationColumn, false);
+  const on = mermaidToArch(REL, { numbered: true, relationColumn: true });
+  assert.deepEqual(on.payload.blocks[1].headers, ['Step', 'Activity', 'Relation']);
+  assert.deepEqual(on.payload.blocks[1].rows.map((r) => r[2]), ['calls', 'reports back']);
+  assert.equal(on.payload.blocks[1].col_widths.length, 3);
+  const dir = mermaidToArch('%% relation-column: on\n' + REL, { numbered: true });
+  assert.deepEqual(dir.payload.blocks[1].headers, ['Step', 'Activity', 'Relation']);
+  assert.equal(mermaidToArch('%% relation-column: on\n' + REL, { numbered: true, relationColumn: false }).payload.blocks[1].headers.length, 2, 'an explicit option beats the directive');
+});
+test('relation column: %% relation-name renames the header; an edge without %% rel has an empty cell; plain (not numbered) diagrams have no table', () => {
+  const r = mermaidToArch('%% relation-name: Interaction\n%% relation-column: on\nflowchart LR\na --> b\nb --> c\n%% rel: a->b streams', { numbered: true });
+  const t = r.payload.blocks[1];
+  assert.deepEqual(t.headers, ['Step', 'Activity', 'Interaction']);
+  assert.deepEqual(t.rows.map((x) => x[2]), ['streams', '']);
+  assert.equal(mermaidToArch(REL, { relationColumn: true }).payload.blocks.length, 1);
+  assert.equal(mermaidToArch(REL, { numbered: true, relationColumn: true, relationName: 'Verb' }).payload.blocks[1].headers[2], 'Verb');
+});
+test('relation column: limits and errors are plain', () => {
+  assert.match(err('flowchart LR\na --> b\n%% rel: a->b ' + 'x'.repeat(21)), /at most 20|the most is 20/);
+  assert.match(err('flowchart LR\na --> b\n%% rel: a->c calls'), /not a node/);
+  assert.match(err('flowchart LR\na --> b\n%% rel: a->b'), /bad "%% rel:"/);
+  assert.match(err('%% relation-name: ' + 'y'.repeat(21) + '\nflowchart LR\na --> b'), /1 to 20 characters/);
+  assert.match(err('%% relation-column: maybe\nflowchart LR\na --> b'), /on or off/);
+});
+test('relation column: the film shows it as a third column that fades in with its row; same in D2', () => {
+  const r = mermaidToArch(REL, { numbered: true, film: true, relationColumn: true });
+  const tl = r.payload.blocks[0];
+  assert.ok(tl.blocks.some((b) => b.id === 'headrel' && b.text === 'RELATION'));
+  assert.ok(tl.blocks.some((b) => b.id === 'rel1' && b.text === 'calls'));
+  assert.ok(tl.tracks.some((t) => t.target === 'rel1'));
+  const off = mermaidToArch(REL, { numbered: true, film: true });
+  assert.ok(!off.payload.blocks[0].blocks.some((b) => /^rel/.test(b.id) || b.id === 'headrel'));
+  const d = d2ToArch('# relation-column: on\n# relation-name: Verb\na: A\nb: B\na -> b: go\n# rel: a->b calls', { numbered: true });
+  assert.deepEqual(d.payload.blocks[1].headers, ['Step', 'Activity', 'Verb']);
+  assert.equal(d.payload.blocks[1].rows[0][2], 'calls');
+});
+test('film: the stage is picked for the biggest diagram; a tall diagram may get the table beside it', () => {
+  for (const f of examples) {
+    const r = mermaidToArch(readFileSync(join(EX, f), 'utf8'), { numbered: true, film: true });
+    const tl = r.payload.blocks[0], arch = tl.blocks.find((b) => b.id === 'arch');
+    assert.ok(arch.place.x >= 0 && arch.place.y >= 0 && arch.place.x + arch.place.w <= 100.01 && arch.place.y + arch.place.h <= 100.01, f + ': diagram on the stage');
+    const rows = tl.blocks.filter((b) => /^row\d+$/.test(b.id));
+    rows.forEach((b) => assert.ok(b.place.y + 1 <= 100 && b.place.x + b.place.w <= 100.5, f + ': row on the stage'));
+  }
+});
+test('pacing: a 10-step diagram plays in about 25-35 s at the normal pace, and the new durations scale with pace', () => {
+  const src = readFileSync(join(EX, '01-a2ui-agent-to-screen.mmd'), 'utf8');
+  const d = (pace) => mermaidToArch(src, { numbered: true, pace }).durationSeconds;
+  assert.ok(d('normal') >= 25 && d('normal') <= 36, 'normal ' + d('normal'));
+  assert.ok(d('fast') < d('normal') && d('normal') < d('slow'));
 });

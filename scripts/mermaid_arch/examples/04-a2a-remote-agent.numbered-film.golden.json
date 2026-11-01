@@ -4,13 +4,13 @@
   {
    "type": "motion_timeline",
    "title": "A2A: one agent hands work to another",
-   "aspect": "9:16",
-   "duration": 42.91,
+   "aspect": "16:9",
+   "duration": 26.705,
    "loop": true,
    "autoplay": true,
    "controls": true,
    "theme": "dark",
-   "poster": 42.41,
+   "poster": 26.21,
    "blocks": [
     {
      "type": "motion_arch",
@@ -27,8 +27,8 @@
        "y": 8.4,
        "w": 14.21,
        "h": 8.98,
-       "at": 0.007,
-       "dur": 0.011
+       "at": 0.0112,
+       "dur": 0.0112
       },
       {
        "id": "orch",
@@ -38,8 +38,8 @@
        "y": 33.27,
        "w": 35.91,
        "h": 8.98,
-       "at": 0.0099,
-       "dur": 0.011
+       "at": 0.0137,
+       "dur": 0.0112
       },
       {
        "id": "card",
@@ -49,8 +49,8 @@
        "y": 62.83,
        "w": 22.93,
        "h": 8.98,
-       "at": 0.0128,
-       "dur": 0.011
+       "at": 0.0162,
+       "dur": 0.0112
       },
       {
        "id": "remote",
@@ -60,8 +60,8 @@
        "y": 75.72,
        "w": 25.73,
        "h": 8.98,
-       "at": 0.0186,
-       "dur": 0.011
+       "at": 0.0212,
+       "dur": 0.0112
       },
       {
        "id": "task",
@@ -71,8 +71,8 @@
        "y": 62.83,
        "w": 22.93,
        "h": 8.98,
-       "at": 0.0157,
-       "dur": 0.011
+       "at": 0.0187,
+       "dur": 0.0112
       },
       {
        "id": "rllm",
@@ -82,8 +82,8 @@
        "y": 75.72,
        "w": 22.93,
        "h": 8.98,
-       "at": 0.0216,
-       "dur": 0.011
+       "at": 0.0237,
+       "dur": 0.0112
       },
       {
        "id": "rtools",
@@ -93,8 +93,8 @@
        "y": 88.61,
        "w": 21.48,
        "h": 8.98,
-       "at": 0.0245,
-       "dur": 0.011
+       "at": 0.0262,
+       "dur": 0.0112
       }
      ],
      "edges": [
@@ -117,8 +117,8 @@
         "x": 38.37,
         "y": 20.83
        },
-       "at": 0.035,
-       "dur": 0.0117
+       "at": 0.0374,
+       "dur": 0.0187
       },
       {
        "from": "orch",
@@ -139,8 +139,8 @@
         "x": 15.94,
         "y": 48.05
        },
-       "at": 0.1189,
-       "dur": 0.0117
+       "at": 0.1116,
+       "dur": 0.0187
       },
       {
        "from": "orch",
@@ -165,8 +165,8 @@
         "x": 56.04,
         "y": 48.93
        },
-       "at": 0.2297,
-       "dur": 0.0117
+       "at": 0.2146,
+       "dur": 0.0187
       },
       {
        "from": "remote",
@@ -195,8 +195,8 @@
         "x": 44.74,
         "y": 69.08
        },
-       "at": 0.3405,
-       "dur": 0.0117
+       "at": 0.3278,
+       "dur": 0.0187
       },
       {
        "from": "remote",
@@ -217,8 +217,8 @@
         "x": 45.3,
         "y": 78.06
        },
-       "at": 0.4423,
-       "dur": 0.0117
+       "at": 0.4205,
+       "dur": 0.0187
       },
       {
        "from": "remote",
@@ -243,8 +243,8 @@
         "x": 44.85,
         "y": 83.79
        },
-       "at": 0.5263,
-       "dur": 0.0117
+       "at": 0.5235,
+       "dur": 0.0187
       },
       {
        "from": "remote",
@@ -273,8 +273,8 @@
         "x": 64.32,
         "y": 53.42
        },
-       "at": 0.6281,
-       "dur": 0.0117
+       "at": 0.6368,
+       "dur": 0.0187
       },
       {
        "from": "orch",
@@ -295,8 +295,8 @@
         "x": 51.06,
         "y": 20.83
        },
-       "at": 0.8461,
-       "dur": 0.0117
+       "at": 0.8221,
+       "dur": 0.0187
       }
      ],
      "radius": 13,
@@ -308,7 +308,7 @@
        "w": 41.5,
        "h": 17.19,
        "at": 0,
-       "dur": 0.011
+       "dur": 0.0112
       },
       {
        "label": "Partner system",
@@ -317,52 +317,52 @@
        "w": 81.1,
        "h": 42.97,
        "at": 0,
-       "dur": 0.011
+       "dur": 0.0112
       }
      ],
      "messages": [
       {
        "edge": 1,
        "text": "GET agent card",
-       "at": 0.1317,
-       "dur": 0.028
+       "at": 0.1322,
+       "dur": 0.0449
       },
       {
        "edge": 2,
        "text": "SendStreamingMessage",
-       "at": 0.2425,
-       "dur": 0.028
+       "at": 0.2352,
+       "dur": 0.0449
       },
       {
        "edge": 6,
        "text": "artifact",
-       "at": 0.6409,
-       "dur": 0.028
+       "at": 0.6574,
+       "dur": 0.0449
       }
      ],
      "id": "arch",
      "place": {
-      "x": 2,
-      "y": 1.88,
-      "w": 96,
-      "h": 46.39,
+      "x": 1.88,
+      "y": 7.05,
+      "w": 56.25,
+      "h": 85.91,
       "z": 1
      }
     },
     {
      "type": "motion_text",
      "id": "head",
-     "text": "STEP  FROM → TO: WHAT",
-     "size": 15,
+     "text": "STEP  ACTIVITY",
+     "size": 11,
      "font": "mono",
      "weight": "bold",
      "mode": "block",
      "reveal": "fade",
      "color": "#9ca5b1",
      "place": {
-      "x": 3,
-      "y": 50.14,
-      "w": 94,
+      "x": 60.94,
+      "y": 3.33,
+      "w": 37.19,
       "z": 2
      }
     },
@@ -374,42 +374,42 @@
      "fill": "#8d98ff",
      "radius": 8,
      "place": {
-      "x": 1.8,
-      "y": 52.8,
-      "w": 96.4,
-      "h": 2.5,
+      "x": 59.74,
+      "y": 6.25,
+      "w": 39.59,
+      "h": 2.92,
       "z": 1
      }
     },
     {
      "type": "motion_text",
      "id": "row1",
-     "text": "*1*  User → Orchestrator on ADK: asks",
-     "size": 18,
+     "text": "*1*  User asks Orchestrator on ADK",
+     "size": 12,
      "font": "mono",
      "weight": "regular",
      "mode": "block",
      "reveal": "fade",
      "place": {
-      "x": 3,
-      "y": 53.11,
-      "w": 94,
+      "x": 60.94,
+      "y": 6.81,
+      "w": 37.19,
       "z": 2
      }
     },
     {
      "type": "motion_text",
      "id": "row2",
-     "text": "*2*  Orchestrator on ADK → Agent Card: discovers skills",
-     "size": 18,
+     "text": "*2*  Orchestrator on ADK discovers skills from Agent Card",
+     "size": 12,
      "font": "mono",
      "weight": "regular",
      "mode": "block",
      "reveal": "fade",
      "place": {
-      "x": 3,
-      "y": 55.76,
-      "w": 94,
+      "x": 60.94,
+      "y": 10,
+      "w": 37.19,
       "z": 2
      }
     },
@@ -417,63 +417,63 @@
      "type": "motion_text",
      "id": "row3",
      "text": "*3*  Orchestrator on ADK → Remote agent: SendStreamingMessa…",
-     "size": 18,
+     "size": 12,
      "font": "mono",
      "weight": "regular",
      "mode": "block",
      "reveal": "fade",
      "place": {
-      "x": 3,
-      "y": 58.42,
-      "w": 94,
+      "x": 60.94,
+      "y": 13.19,
+      "w": 37.19,
       "z": 2
      }
     },
     {
      "type": "motion_text",
      "id": "row4",
-     "text": "*4*  Remote agent → Task state: creates task",
-     "size": 18,
+     "text": "*4*  Remote agent creates task in Task state",
+     "size": 12,
      "font": "mono",
      "weight": "regular",
      "mode": "block",
      "reveal": "fade",
      "place": {
-      "x": 3,
-      "y": 61.08,
-      "w": 94,
+      "x": 60.94,
+      "y": 16.39,
+      "w": 37.19,
       "z": 2
      }
     },
     {
      "type": "motion_text",
      "id": "row5",
-     "text": "*5*  Remote agent → Remote LLM: prompt",
-     "size": 18,
+     "text": "*5*  Remote agent sends the prompt to Remote LLM",
+     "size": 12,
      "font": "mono",
      "weight": "regular",
      "mode": "block",
      "reveal": "fade",
      "place": {
-      "x": 3,
-      "y": 63.73,
-      "w": 94,
+      "x": 60.94,
+      "y": 19.58,
+      "w": 37.19,
       "z": 2
      }
     },
     {
      "type": "motion_text",
      "id": "row6",
-     "text": "*6*  Remote agent → MCP tools: tool calls",
-     "size": 18,
+     "text": "*6*  Remote agent sends the tool calls to MCP tools",
+     "size": 12,
      "font": "mono",
      "weight": "regular",
      "mode": "block",
      "reveal": "fade",
      "place": {
-      "x": 3,
-      "y": 66.39,
-      "w": 94,
+      "x": 60.94,
+      "y": 22.78,
+      "w": 37.19,
       "z": 2
      }
     },
@@ -481,31 +481,31 @@
      "type": "motion_text",
      "id": "row7",
      "text": "*7*  Remote agent → Orchestrator on ADK: status, artifacts,…",
-     "size": 18,
+     "size": 12,
      "font": "mono",
      "weight": "regular",
      "mode": "block",
      "reveal": "fade",
      "place": {
-      "x": 3,
-      "y": 69.05,
-      "w": 94,
+      "x": 60.94,
+      "y": 25.97,
+      "w": 37.19,
       "z": 2
      }
     },
     {
      "type": "motion_text",
      "id": "row8",
-     "text": "*8*  Orchestrator on ADK → User: answer",
-     "size": 18,
+     "text": "*8*  Orchestrator on ADK sends the answer to User",
+     "size": 12,
      "font": "mono",
      "weight": "regular",
      "mode": "block",
      "reveal": "fade",
      "place": {
-      "x": 3,
-      "y": 71.7,
-      "w": 94,
+      "x": 60.94,
+      "y": 29.17,
+      "w": 37.19,
       "z": 2
      }
     }
@@ -519,7 +519,7 @@
        "p": 0
       },
       {
-       "t": 42.91,
+       "t": 26.705,
        "p": 1,
        "ease": "linear"
       }
@@ -533,11 +533,11 @@
        "opacity": 0
       },
       {
-       "t": 1.5,
+       "t": 1,
        "opacity": 0
       },
       {
-       "t": 1.8,
+       "t": 1.3,
        "opacity": 1,
        "ease": "standard"
       }
@@ -551,11 +551,11 @@
        "opacity": 0
       },
       {
-       "t": 5.103,
+       "t": 2.98,
        "opacity": 0
       },
       {
-       "t": 5.4,
+       "t": 3.28,
        "opacity": 1,
        "ease": "standard"
       }
@@ -569,11 +569,11 @@
        "opacity": 0
       },
       {
-       "t": 9.857,
+       "t": 5.73,
        "opacity": 0
       },
       {
-       "t": 10.16,
+       "t": 6.03,
        "opacity": 1,
        "ease": "standard"
       }
@@ -587,11 +587,11 @@
        "opacity": 0
       },
       {
-       "t": 14.61,
+       "t": 8.755,
        "opacity": 0
       },
       {
-       "t": 14.91,
+       "t": 9.06,
        "opacity": 1,
        "ease": "standard"
       }
@@ -605,11 +605,11 @@
        "opacity": 0
       },
       {
-       "t": 18.98,
+       "t": 11.23,
        "opacity": 0
       },
       {
-       "t": 19.28,
+       "t": 11.53,
        "opacity": 1,
        "ease": "standard"
       }
@@ -623,11 +623,11 @@
        "opacity": 0
       },
       {
-       "t": 22.583,
+       "t": 13.98,
        "opacity": 0
       },
       {
-       "t": 22.88,
+       "t": 14.28,
        "opacity": 1,
        "ease": "standard"
       }
@@ -641,11 +641,11 @@
        "opacity": 0
       },
       {
-       "t": 26.953,
+       "t": 17.005,
        "opacity": 0
       },
       {
-       "t": 27.25,
+       "t": 17.31,
        "opacity": 1,
        "ease": "standard"
       }
@@ -659,11 +659,11 @@
        "opacity": 0
       },
       {
-       "t": 36.307,
+       "t": 21.955,
        "opacity": 0
       },
       {
-       "t": 36.61,
+       "t": 22.26,
        "opacity": 1,
        "ease": "standard"
       }
@@ -674,59 +674,59 @@
      "keys": [
       {
        "t": 0,
-       "y": 52.8,
+       "y": 6.25,
        "opacity": 0
       },
       {
-       "t": 1.5,
-       "y": 52.8,
+       "t": 1,
+       "y": 6.25,
        "opacity": 0,
        "ease": "hold"
       },
       {
-       "t": 1.8,
+       "t": 1.3,
        "opacity": 0.22,
        "ease": "standard"
       },
       {
-       "t": 5.103,
-       "y": 55.45,
+       "t": 2.98,
+       "y": 9.44,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 9.857,
-       "y": 58.11,
+       "t": 5.73,
+       "y": 12.64,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 14.61,
-       "y": 60.76,
+       "t": 8.755,
+       "y": 15.83,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 18.98,
-       "y": 63.42,
+       "t": 11.23,
+       "y": 19.03,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 22.583,
-       "y": 66.08,
+       "t": 13.98,
+       "y": 22.22,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 26.953,
-       "y": 68.73,
+       "t": 17.005,
+       "y": 25.42,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 36.307,
-       "y": 71.39,
+       "t": 21.955,
+       "y": 28.61,
        "opacity": 0.22,
        "ease": "hold"
       }

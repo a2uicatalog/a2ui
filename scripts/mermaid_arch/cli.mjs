@@ -10,6 +10,8 @@ const HELP = `usage: node cli.mjs <file.mmd | file.d2 | file.json | -> [options]
   --check                  validate only; print warnings, exit 1 on errors
   --film                   wrap in a motion_timeline so the diagram (and the steps table) plays
   --numbered               prefix every edge label with its step number and add the steps table
+  --relation-column        add a third column (Relation) to the steps table, filled from %% rel: directives
+  --relation-name TEXT     header of that column (default Relation)
   --pace slow|normal|fast  reading pace of the film (1.4x / 1.0x / 0.75x per-step time); default normal
   --duration SECONDS       fix the total film length (warns when shorter than the fast reading time)
   --routing orthogonal|curve  how edges are drawn: routed right-angle lines with placed labels (default) or the atom's single curve
@@ -29,6 +31,8 @@ function main(argv) {
     else if (a === '--check') check = true;
     else if (a === '--film') opts.film = true;
     else if (a === '--numbered') opts.numbered = true;
+    else if (a === '--relation-column') opts.relationColumn = true;
+    else if (a === '--relation-name') opts.relationName = argv[++i];
     else if (a === '--pace') opts.pace = argv[++i];
     else if (a === '--duration') opts.duration = Number(argv[++i]);
     else if (a === '--graph') asGraph = true;

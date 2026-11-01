@@ -4,7 +4,7 @@
 // `style.stroke-dash` (dashed = async), `shape:` names, `kind:` / `class:` hints, `direction:`, and
 // comment directives `# title: ...`, `# msg: a->b "text"`, `# numbered: on`, `# pace: slow`, `# duration: 40`,
 // `# step: a->b 2`. Operators must be surrounded by spaces. See docs/mermaid_arch.md.
-import { ArchError, resolveKind, didYouMean, PACES } from './graph.mjs';
+import { ArchError, resolveKind, didYouMean, PACES, LIMITS } from './graph.mjs';
 import { makeIdMapper } from './mermaid.mjs';
 
 export const D2_SHAPE_KIND = Object.freeze({
@@ -24,7 +24,8 @@ export function parseD2(text, opts = {}) {
   const nodes = new Map();           // path -> {path, leaf, label, sub, shape, hints, parent, order, line, children:0}
   const edges = [];                  // {from(path), to(path), label, style, both, line}
   const msgs = [], stepDirs = [];
-  let title, numbered, pace, duration, direction = 'LR', openWarned = false;
+  let title, numbered, pace, duration, relationColumn, relationName, direction = 'LR', openWarned = false;
+  const relDirs = [];
   const fail = (m, ln = line) => errors.push(`line ${ln}: ${m}`);
   const warn = (m, ln = line) => warnings.push(`line ${ln}: ${m}`);
 
@@ -43,7 +44,7 @@ export function parseD2(text, opts = {}) {
     }
   }
   function directive(body, ln) {
-    const m = /^(title|msg|numbered|pace|duration|step)\s*:\s*(.*)$/i.exec(body);
+    const m = /^(title|msg|numbered|pace|duration|step|relation-column|relation-name|rel)\s*:\s*(.*)$/i.exec(body);
     if (!m) return;
     const k = m[1].toLowerCase(), v = m[2].trim();
     if (k === 'title') { if (v) title = v; }
@@ -54,6 +55,12 @@ export function parseD2(text, opts = {}) {
       const b = v.toLowerCase(); if (['on', 'true', 'yes'].includes(b)) numbered = true; else if (['off', 'false', 'no'].includes(b)) numbered = false; else fail('"# numbered:" must be on or off', ln);
     } else if (k === 'pace') { if (v.toLowerCase() in PACES) pace = v.toLowerCase(); else fail(`"# pace:" must be one of ${Object.keys(PACES).join(', ')}`, ln); }
     else if (k === 'duration') { const d = Number(v.replace(/\s*s$/i, '')); if (Number.isFinite(d) && d >= 2 && d <= 120) duration = d; else fail('"# duration:" must be a number of seconds from 2 to 120', ln); }
+    else if (k === 'relation-column') { const b = v.toLowerCase(); if (['on', 'true', 'yes'].includes(b)) relationColumn = true; else if (['off', 'false', 'no'].includes(b)) relationColumn = false; else fail('"# relation-column:" must be on or off', ln); }
+    else if (k === 'relation-name') { if (v && v.length <= LIMITS.relation) relationName = v; else fail(`"# relation-name:" must be 1 to ${LIMITS.relation} characters`, ln); }
+    else if (k === 'rel') {
+      const mm = /^(\S+?)\s*->\s*(\S+?)\s+(.+?)\s*$/.exec(v);
+      if (!mm) fail('bad "# rel:" directive; write it as  # rel: fromId->toId calls', ln); else if (mm[3].length > LIMITS.relation) fail(`"# rel:" text is ${mm[3].length} characters; the most is ${LIMITS.relation}`, ln); else relDirs.push({ line: ln, from: mm[1], to: mm[2], text: mm[3] });
+    }
     else if (k === 'step') {
       const mm = /^(\S+?)\s*->\s*(\S+?)\s+(\d+)\s*$/.exec(v);
       if (!mm) fail('bad "# step:" directive; write it as  # step: fromId->toId 3', ln); else stepDirs.push({ line: ln, from: mm[1], to: mm[2], step: +mm[3] });
@@ -252,8 +259,18 @@ export function parseD2(text, opts = {}) {
     if (idx < 0) { errors.push(`line ${d.line}: step directive: there is no (further) edge from "${d.from}" to "${d.to}"`); continue; }
     taken.add(idx); eOut[idx].step = d.step;
   }
+  const relTaken = new Set();
+  for (const d of relDirs) {
+    const f = findId(d.from, d.line), t = findId(d.to, d.line);
+    if (!f || !t) continue;
+    const idx = eOut.findIndex((e, k) => e.from === f && e.to === t && !relTaken.has(k));
+    if (idx < 0) { errors.push(`line ${d.line}: rel directive: there is no (further) edge from "${d.from}" to "${d.to}"`); continue; }
+    relTaken.add(idx); eOut[idx].relation = d.text;
+  }
   if (errors.length) throw new ArchError(errors.slice(0, 20), warnings);
   const graph = { direction: opts.direction || direction, groups: groups.map(({ id, label }) => ({ id, label })), nodes: nOut, edges: eOut, messages: mOut };
+  if (relationColumn !== undefined) graph.relationColumn = relationColumn;
+  if (relationName) graph.relationName = relationName;
   if (numbered !== undefined) graph.numbered = numbered;
   if (pace) graph.pace = pace;
   if (duration !== undefined) graph.duration = duration;

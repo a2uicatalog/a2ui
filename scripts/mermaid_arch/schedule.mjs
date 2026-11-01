@@ -1,27 +1,28 @@
 // Pacing: how long each step of the film stays on screen. Timing only, derived from the content.
 //
-//   dwell(step) = max(2.5 s, (words in the edge label + words in its table row) / 3 + 0.8 s)
-//                 x 1.15 when the diagram has more than 6 steps, x 1.15 again above 9 steps
+//   dwell(step) = max(1.8 s, words in the step's sentence / 4 per second + 0.5 s)
+//                 x 1.1 when the diagram has more than 6 steps, x 1.1 again above 9 steps
 //                 x pace (slow 1.4, normal 1.0, fast 0.75)
 //   a step with several message chips is stretched so every chip rides inside its own step
-//   total = LEAD_IN (1.5 s: groups and nodes pop) + sum of dwells + HOLD (3 s on the finished diagram)
+//   total = LEAD_IN (1 s: groups and nodes pop) + sum of dwells + HOLD (2 s on the finished diagram)
+//   (a 10-step diagram plays in about 30 s at the normal pace)
 //
 // `duration` (seconds) overrides the total: the dwells are scaled to fit, with a warning when that is
 // shorter than the fast-pace reading time.
 import { PACES } from './graph.mjs';
 
-export const LEAD_IN = 1.5, HOLD = 3, MIN_DWELL = 2.5, WORDS_PER_SECOND = 3, CHIP_SECONDS = 1.2, CHIP_GAP = 0.15, CHIP_START = 0.55, CHIP_TAIL = 0.3;
+export const LEAD_IN = 1, HOLD = 2, MIN_DWELL = 1.8, WORDS_PER_SECOND = 4, READ_PAD = 0.5, CHIP_SECONDS = 1.2, CHIP_GAP = 0.15, CHIP_START = 0.55, CHIP_TAIL = 0.3;
 
 export const words = (t) => (String(t || '').trim() ? String(t).trim().split(/\s+/).length : 0);
 
-// steps: [{labelWords, rowWords, chips}] in playing order
+// steps: [{words, chips}] in playing order (words = words in the step's sentence)
 export function buildSchedule(steps, { pace = 'normal', duration } = {}) {
   const warnings = [];
   const mult = PACES[pace];
   const n = steps.length;
-  const crowd = n > 9 ? 1.15 * 1.15 : n > 6 ? 1.15 : 1;
+  const crowd = n > 9 ? 1.1 * 1.1 : n > 6 ? 1.1 : 1;
   const base = (st, m) => {
-    let d = Math.max(MIN_DWELL, (st.labelWords + st.rowWords) / WORDS_PER_SECOND + 0.8) * crowd * m;
+    let d = Math.max(MIN_DWELL, st.words / WORDS_PER_SECOND + READ_PAD) * crowd * m;
     const need = CHIP_START + st.chips * CHIP_SECONDS + Math.max(0, st.chips - 1) * CHIP_GAP + CHIP_TAIL;
     return Math.max(d, need);
   };

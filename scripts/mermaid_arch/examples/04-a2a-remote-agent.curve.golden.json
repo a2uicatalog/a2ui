@@ -16,8 +16,8 @@
      "y": 50,
      "w": 6.88,
      "h": 16.29,
-     "at": 0.007,
-     "dur": 0.011
+     "at": 0.0112,
+     "dur": 0.0112
     },
     {
      "id": "orch",
@@ -27,8 +27,8 @@
      "y": 55.66,
      "w": 17.4,
      "h": 16.29,
-     "at": 0.0099,
-     "dur": 0.011
+     "at": 0.0137,
+     "dur": 0.0112
     },
     {
      "id": "card",
@@ -38,8 +38,8 @@
      "y": 32.13,
      "w": 11.15,
      "h": 16.29,
-     "at": 0.0128,
-     "dur": 0.011
+     "at": 0.0162,
+     "dur": 0.0112
     },
     {
      "id": "remote",
@@ -49,8 +49,8 @@
      "y": 55.66,
      "w": 12.5,
      "h": 16.29,
-     "at": 0.0157,
-     "dur": 0.011
+     "at": 0.0187,
+     "dur": 0.0112
     },
     {
      "id": "task",
@@ -60,8 +60,8 @@
      "y": 32.13,
      "w": 11.15,
      "h": 16.29,
-     "at": 0.0186,
-     "dur": 0.011
+     "at": 0.0212,
+     "dur": 0.0112
     },
     {
      "id": "rllm",
@@ -71,8 +71,8 @@
      "y": 55.66,
      "w": 11.15,
      "h": 16.29,
-     "at": 0.0216,
-     "dur": 0.011
+     "at": 0.0237,
+     "dur": 0.0112
     },
     {
      "id": "rtools",
@@ -82,8 +82,8 @@
      "y": 79.19,
      "w": 10.42,
      "h": 16.29,
-     "at": 0.0245,
-     "dur": 0.011
+     "at": 0.0262,
+     "dur": 0.0112
     }
    ],
    "edges": [
@@ -92,16 +92,16 @@
      "to": "orch",
      "label": "asks",
      "style": "solid",
-     "at": 0.035,
-     "dur": 0.0117
+     "at": 0.0374,
+     "dur": 0.0187
     },
     {
      "from": "orch",
      "to": "card",
      "label": "discovers skills",
      "style": "solid",
-     "at": 0.2029,
-     "dur": 0.0117
+     "at": 0.2146,
+     "dur": 0.0187
     },
     {
      "from": "orch",
@@ -109,32 +109,32 @@
      "label": "SendStreamingMessage JSON-RPC",
      "style": "solid",
      "curve": 12,
-     "at": 0.3137,
-     "dur": 0.0117
+     "at": 0.3175,
+     "dur": 0.0187
     },
     {
      "from": "remote",
      "to": "task",
      "label": "creates task",
      "style": "solid",
-     "at": 0.6424,
-     "dur": 0.0117
+     "at": 0.6162,
+     "dur": 0.0187
     },
     {
      "from": "remote",
      "to": "rllm",
      "label": "prompt",
      "style": "solid",
-     "at": 0.7443,
-     "dur": 0.0117
+     "at": 0.7089,
+     "dur": 0.0187
     },
     {
      "from": "remote",
      "to": "rtools",
      "label": "tool calls",
      "style": "solid",
-     "at": 0.8282,
-     "dur": 0.0117
+     "at": 0.8118,
+     "dur": 0.0187
     },
     {
      "from": "remote",
@@ -142,8 +142,8 @@
      "label": "status, artifacts, A2UI in a DataPart, over SSE",
      "style": "dashed",
      "curve": -36,
-     "at": 0.4244,
-     "dur": 0.0117
+     "at": 0.4308,
+     "dur": 0.0187
     },
     {
      "from": "orch",
@@ -151,8 +151,8 @@
      "label": "answer",
      "style": "solid",
      "curve": 36,
-     "at": 0.1189,
-     "dur": 0.0117
+     "at": 0.1116,
+     "dur": 0.0187
     }
    ],
    "groups": [
@@ -163,7 +163,7 @@
      "w": 20.1,
      "h": 38.46,
      "at": 0,
-     "dur": 0.011
+     "dur": 0.0112
     },
     {
      "label": "Partner system",
@@ -172,27 +172,27 @@
      "w": 35.83,
      "h": 85.52,
      "at": 0,
-     "dur": 0.011
+     "dur": 0.0112
     }
    ],
    "messages": [
     {
      "edge": 1,
      "text": "GET agent card",
-     "at": 0.2157,
-     "dur": 0.028
+     "at": 0.2352,
+     "dur": 0.0449
     },
     {
      "edge": 2,
      "text": "SendStreamingMessage",
-     "at": 0.3265,
-     "dur": 0.028
+     "at": 0.3381,
+     "dur": 0.0449
     },
     {
      "edge": 6,
      "text": "artifact",
-     "at": 0.4373,
-     "dur": 0.028
+     "at": 0.4514,
+     "dur": 0.0449
     }
    ]
   }

@@ -16,7 +16,7 @@
      "y": 5.45,
      "w": 10.73,
      "h": 5.89,
-     "at": 0.0042,
+     "at": 0.0068,
      "dur": 0.011
     },
     {
@@ -27,7 +27,7 @@
      "y": 25.41,
      "w": 19.31,
      "h": 5.89,
-     "at": 0.0057,
+     "at": 0.0081,
      "dur": 0.011
     },
     {
@@ -38,7 +38,7 @@
      "y": 44.38,
      "w": 20.39,
      "h": 5.89,
-     "at": 0.0072,
+     "at": 0.0094,
      "dur": 0.011
     },
     {
@@ -49,7 +49,7 @@
      "y": 44.38,
      "w": 21.57,
      "h": 5.89,
-     "at": 0.0086,
+     "at": 0.0107,
      "dur": 0.011
     },
     {
@@ -60,7 +60,7 @@
      "y": 67.39,
      "w": 16.09,
      "h": 5.89,
-     "at": 0.0101,
+     "at": 0.012,
      "dur": 0.011
     },
     {
@@ -71,7 +71,7 @@
      "y": 67.39,
      "w": 10.09,
      "h": 5.89,
-     "at": 0.0116,
+     "at": 0.0133,
      "dur": 0.011
     },
     {
@@ -82,7 +82,7 @@
      "y": 92.58,
      "w": 17.17,
      "h": 5.89,
-     "at": 0.0131,
+     "at": 0.0146,
      "dur": 0.011
     },
     {
@@ -93,7 +93,7 @@
      "y": 92.58,
      "w": 29.08,
      "h": 5.89,
-     "at": 0.0146,
+     "at": 0.0159,
      "dur": 0.011
     }
    ],
@@ -117,8 +117,8 @@
       "x": 65.13,
       "y": 15.43
      },
-     "at": 0.0209,
-     "dur": 0.011
+     "at": 0.0228,
+     "dur": 0.0114
     },
     {
      "from": "app",
@@ -144,7 +144,7 @@
       "y": 49.29
      },
      "at": 0.0724,
-     "dur": 0.011
+     "dur": 0.0114
     },
     {
      "from": "agent",
@@ -165,8 +165,8 @@
       "x": 65.88,
       "y": 65.87
      },
-     "at": 0.1423,
-     "dur": 0.011
+     "at": 0.1413,
+     "dur": 0.0114
     },
     {
      "from": "agent",
@@ -187,8 +187,8 @@
       "x": 34.5,
       "y": 79.99
      },
-     "at": 0.1939,
-     "dur": 0.011
+     "at": 0.2033,
+     "dur": 0.0114
     },
     {
      "from": "mcp",
@@ -209,8 +209,8 @@
       "x": 34.33,
       "y": 83.26
      },
-     "at": 0.2638,
-     "dur": 0.011
+     "at": 0.2722,
+     "dur": 0.0114
     },
     {
      "from": "agent",
@@ -235,8 +235,8 @@
       "x": 59.23,
       "y": 79.06
      },
-     "at": 0.3705,
-     "dur": 0.011
+     "at": 0.3618,
+     "dur": 0.0114
     },
     {
      "from": "remote",
@@ -261,8 +261,8 @@
       "x": 66.36,
       "y": 82.33
      },
-     "at": 0.4528,
-     "dur": 0.011
+     "at": 0.4445,
+     "dur": 0.0114
     },
     {
      "from": "agent",
@@ -291,8 +291,8 @@
       "x": 19.42,
       "y": 46.13
      },
-     "at": 0.535,
-     "dur": 0.011
+     "at": 0.5272,
+     "dur": 0.0114
     },
     {
      "from": "app",
@@ -313,8 +313,8 @@
       "x": 50.21,
       "y": 34.9
      },
-     "at": 0.6662,
-     "dur": 0.011
+     "at": 0.6375,
+     "dur": 0.0114
     },
     {
      "from": "app",
@@ -335,8 +335,8 @@
       "x": 74.41,
       "y": 38.17
      },
-     "at": 0.7362,
-     "dur": 0.011
+     "at": 0.7064,
+     "dur": 0.0114
     },
     {
      "from": "ui",
@@ -357,8 +357,8 @@
       "x": 48.71,
       "y": 38.17
      },
-     "at": 0.8123,
-     "dur": 0.011
+     "at": 0.7891,
+     "dur": 0.0114
     },
     {
      "from": "mcpapp",
@@ -379,8 +379,8 @@
       "x": 83.37,
       "y": 34.9
      },
-     "at": 0.8699,
-     "dur": 0.011
+     "at": 0.8649,
+     "dur": 0.0114
     }
    ],
    "radius": 10,
@@ -417,20 +417,20 @@
     {
      "edge": 1,
      "text": "AG-UI run",
-     "at": 0.0841,
-     "dur": 0.0167
+     "at": 0.0849,
+     "dur": 0.0273
     },
     {
      "edge": 6,
      "text": "A2UI JSON",
-     "at": 0.4645,
-     "dur": 0.0167
+     "at": 0.457,
+     "dur": 0.0273
     },
     {
      "edge": 4,
      "text": "ui:// HTML",
-     "at": 0.2755,
-     "dur": 0.0167
+     "at": 0.2848,
+     "dur": 0.0273
     }
    ]
   },
@@ -439,103 +439,61 @@
    "caption": "Steps",
    "headers": [
     "Step",
-    "From",
-    "To",
-    "What",
-    "Kind"
+    "Activity"
    ],
    "rows": [
     [
      "1",
-     "User",
-     "Frontend app",
-     "asks",
-     "sync"
+     "User asks Frontend app"
     ],
     [
      "2",
-     "Frontend app",
-     "ADK agent",
-     "AG-UI run",
-     "sync"
+     "Frontend app sends AG-UI run to ADK agent"
     ],
     [
      "3",
-     "ADK agent",
-     "LLM",
-     "prompt",
-     "sync"
+     "ADK agent sends the prompt to LLM"
     ],
     [
      "4",
-     "ADK agent",
-     "MCP server",
-     "tools/call, resources/read",
-     "sync"
+     "ADK agent sends tools/call, resources/read to MCP server"
     ],
     [
      "5",
-     "MCP server",
-     "ADK agent",
-     "tool result + ui:// HTML",
-     "sync"
+     "MCP server sends tool result + ui:// HTML to ADK agent"
     ],
     [
      "6",
-     "ADK agent",
-     "Remote agent over A2A",
-     "A2A message",
-     "sync"
+     "ADK agent sends A2A message to Remote agent over A2A"
     ],
     [
      "7",
-     "Remote agent over A2A",
-     "ADK agent",
-     "A2UI JSON",
-     "sync"
+     "Remote agent over A2A sends A2UI JSON to ADK agent"
     ],
     [
      "8",
-     "ADK agent",
-     "Frontend app",
-     "AG-UI events: A2UI + MCP App HTML",
-     "async"
+     "ADK agent sends AG-UI events: A2UI + MCP App HTML to Frontend app (async)"
     ],
     [
      "9",
-     "Frontend app",
-     "A2UI renderer",
-     "A2UI messages",
-     "sync"
+     "Frontend app sends A2UI messages to A2UI renderer"
     ],
     [
      "10",
-     "Frontend app",
-     "MCP App iframe",
-     "sandboxed iframe",
-     "sync"
+     "Frontend app sends the sandboxed iframe to MCP App iframe"
     ],
     [
      "11",
-     "A2UI renderer",
-     "Frontend app",
-     "action",
-     "async"
+     "A2UI renderer sends the action to Frontend app (async)"
     ],
     [
      "12",
-     "MCP App iframe",
-     "Frontend app",
-     "tools/call via postMessage",
-     "async"
+     "MCP App iframe sends tools/call via postMessage to Frontend app (async)"
     ]
    ],
    "col_widths": [
     "9%",
-    "25%",
-    "25%",
-    "28%",
-    "13%"
+    "91%"
    ]
   }
  ]

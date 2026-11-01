@@ -26,6 +26,10 @@ details{margin-top:10px}pre{background:#0d1117;border:1px solid var(--line);bord
 <textarea id="src" spellcheck="false" aria-label="Mermaid flowchart">%% title: Order service
 %% msg: client->api "GET /orders"
 %% msg: api->db "SELECT"
+%% relation-name: Interaction
+%% rel: client->api calls
+%% rel: api->db queries
+%% rel: api->worker queues work
 flowchart LR
   client([Browser]):::device
   subgraph backend[Backend]
@@ -41,6 +45,8 @@ flowchart LR
   <label>Direction <select id="dir"><option value="">as written (auto)</option><option>LR</option><option>TB</option><option>RL</option><option>BT</option></select></label>
   <label><input type="checkbox" id="film" checked> play as a film</label>
   <label><input type="checkbox" id="num" checked> numbered steps + table</label>
+  <label><input type="checkbox" id="rel"> Show relation column</label>
+  <label>edges <select id="routing"><option value="orthogonal" selected>routed (right angles)</option><option value="curve">curves</option></select></label>
   <label>pace <select id="pace"><option>slow</option><option selected>normal</option><option>fast</option></select></label>
   <button id="go">Convert</button><button id="copy">Copy payload</button>
 </div>
@@ -72,7 +78,7 @@ flowchart LR
   function fit(asp) { frame.style.height = Math.round(frame.clientWidth * asp + 84) + 'px'; }
   function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
   function convert() {
-    var msgs = document.getElementById('msgs'), opts = { film: document.getElementById('film').checked, numbered: document.getElementById('num').checked, pace: document.getElementById('pace').value };
+    var msgs = document.getElementById('msgs'), opts = { film: document.getElementById('film').checked, numbered: document.getElementById('num').checked, pace: document.getElementById('pace').value, routing: document.getElementById('routing').value, relationColumn: document.getElementById('rel').checked };
     var d = document.getElementById('dir').value; if (d) opts.direction = d;
     try {
       var r = mermaidToArch(document.getElementById('src').value, opts);
@@ -93,7 +99,7 @@ flowchart LR
   }
   document.getElementById('go').onclick = convert;
   document.getElementById('src').addEventListener('input', function () { clearTimeout(convert.t); convert.t = setTimeout(convert, 500); });
-  document.getElementById('dir').onchange = convert; document.getElementById('film').onchange = convert; document.getElementById('num').onchange = convert; document.getElementById('pace').onchange = convert;
+  document.getElementById('dir').onchange = convert; document.getElementById('film').onchange = convert; document.getElementById('num').onchange = convert; document.getElementById('pace').onchange = convert; document.getElementById('rel').onchange = convert; document.getElementById('routing').onchange = convert;
   function api() { try { var o = frame.contentWindow.__a2uiMotion; return o && o[Object.keys(o)[0]] || null; } catch (e) { return null; } }
   function playing() { try { var r = frame.contentDocument.querySelector('.mt-root'); return !!r && r.getAttribute('data-pl') === '1'; } catch (e) { return false; } }
   document.getElementById('pp').onclick = function () { var a = api(); if (!a) return; if (playing()) a.pause(); else a.play(); };

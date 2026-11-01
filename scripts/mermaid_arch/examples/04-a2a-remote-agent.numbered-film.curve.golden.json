@@ -5,12 +5,12 @@
    "type": "motion_timeline",
    "title": "A2A: one agent hands work to another",
    "aspect": "4:3",
-   "duration": 42.91,
+   "duration": 26.705,
    "loop": true,
    "autoplay": true,
    "controls": true,
    "theme": "dark",
-   "poster": 42.41,
+   "poster": 26.21,
    "blocks": [
     {
      "type": "motion_arch",
@@ -27,8 +27,8 @@
        "y": 57.26,
        "w": 9.46,
        "h": 17.11,
-       "at": 0.0128,
-       "dur": 0.011
+       "at": 0.0162,
+       "dur": 0.0112
       },
       {
        "id": "orch",
@@ -38,8 +38,8 @@
        "y": 60.95,
        "w": 23.84,
        "h": 17.11,
-       "at": 0.0157,
-       "dur": 0.011
+       "at": 0.0187,
+       "dur": 0.0112
       },
       {
        "id": "card",
@@ -49,8 +49,8 @@
        "y": 43.84,
        "w": 15.19,
        "h": 17.11,
-       "at": 0.007,
-       "dur": 0.011
+       "at": 0.0112,
+       "dur": 0.0112
       },
       {
        "id": "remote",
@@ -60,8 +60,8 @@
        "y": 43.84,
        "w": 17.1,
        "h": 17.11,
-       "at": 0.0099,
-       "dur": 0.011
+       "at": 0.0137,
+       "dur": 0.0112
       },
       {
        "id": "task",
@@ -71,8 +71,8 @@
        "y": 78.06,
        "w": 15.19,
        "h": 17.11,
-       "at": 0.0186,
-       "dur": 0.011
+       "at": 0.0212,
+       "dur": 0.0112
       },
       {
        "id": "rllm",
@@ -82,8 +82,8 @@
        "y": 78.06,
        "w": 15.19,
        "h": 17.11,
-       "at": 0.0216,
-       "dur": 0.011
+       "at": 0.0237,
+       "dur": 0.0112
       },
       {
        "id": "rtools",
@@ -93,8 +93,8 @@
        "y": 78.06,
        "w": 14.29,
        "h": 17.11,
-       "at": 0.0245,
-       "dur": 0.011
+       "at": 0.0262,
+       "dur": 0.0112
       }
      ],
      "edges": [
@@ -104,8 +104,8 @@
        "label": "1 asks",
        "style": "solid",
        "curve": -100,
-       "at": 0.035,
-       "dur": 0.0117
+       "at": 0.0374,
+       "dur": 0.0187
       },
       {
        "from": "orch",
@@ -113,8 +113,8 @@
        "label": "2 discovers skills",
        "style": "solid",
        "curve": -80,
-       "at": 0.1189,
-       "dur": 0.0117
+       "at": 0.1116,
+       "dur": 0.0187
       },
       {
        "from": "orch",
@@ -122,16 +122,16 @@
        "label": "3 SendStreamingMessage JSON-RPC",
        "style": "solid",
        "curve": -100,
-       "at": 0.2297,
-       "dur": 0.0117
+       "at": 0.2146,
+       "dur": 0.0187
       },
       {
        "from": "remote",
        "to": "task",
        "label": "4 creates task",
        "style": "solid",
-       "at": 0.3405,
-       "dur": 0.0117
+       "at": 0.3278,
+       "dur": 0.0187
       },
       {
        "from": "remote",
@@ -139,8 +139,8 @@
        "label": "5 prompt",
        "style": "solid",
        "curve": -65,
-       "at": 0.4423,
-       "dur": 0.0117
+       "at": 0.4205,
+       "dur": 0.0187
       },
       {
        "from": "remote",
@@ -148,8 +148,8 @@
        "label": "6 tool calls",
        "style": "solid",
        "curve": 50,
-       "at": 0.5263,
-       "dur": 0.0117
+       "at": 0.5235,
+       "dur": 0.0187
       },
       {
        "from": "remote",
@@ -157,8 +157,8 @@
        "label": "7 status, artifacts, A2UI in a DataPart, over S…",
        "style": "dashed",
        "curve": 80,
-       "at": 0.6281,
-       "dur": 0.0117
+       "at": 0.6368,
+       "dur": 0.0187
       },
       {
        "from": "orch",
@@ -166,8 +166,8 @@
        "label": "8 answer",
        "style": "solid",
        "curve": -100,
-       "at": 0.8461,
-       "dur": 0.0117
+       "at": 0.8221,
+       "dur": 0.0187
       }
      ],
      "groups": [
@@ -178,7 +178,7 @@
        "w": 27.67,
        "h": 35.91,
        "at": 0,
-       "dur": 0.011
+       "dur": 0.0112
       },
       {
        "label": "Partner system",
@@ -187,27 +187,27 @@
        "w": 54.02,
        "h": 70.13,
        "at": 0,
-       "dur": 0.011
+       "dur": 0.0112
       }
      ],
      "messages": [
       {
        "edge": 1,
        "text": "GET agent card",
-       "at": 0.1317,
-       "dur": 0.028
+       "at": 0.1322,
+       "dur": 0.0449
       },
       {
        "edge": 2,
        "text": "SendStreamingMessage",
-       "at": 0.2425,
-       "dur": 0.028
+       "at": 0.2352,
+       "dur": 0.0449
       },
       {
        "edge": 6,
        "text": "artifact",
-       "at": 0.6409,
-       "dur": 0.028
+       "at": 0.6574,
+       "dur": 0.0449
       }
      ],
      "id": "arch",
@@ -222,7 +222,7 @@
     {
      "type": "motion_text",
      "id": "head",
-     "text": "STEP  FROM → TO: WHAT",
+     "text": "STEP  ACTIVITY",
      "size": 21,
      "font": "mono",
      "weight": "bold",
@@ -254,7 +254,7 @@
     {
      "type": "motion_text",
      "id": "row1",
-     "text": "*1*  User → Orchestrator on ADK: asks",
+     "text": "*1*  User asks Orchestrator on ADK",
      "size": 24,
      "font": "mono",
      "weight": "regular",
@@ -270,7 +270,7 @@
     {
      "type": "motion_text",
      "id": "row2",
-     "text": "*2*  Orchestrator on ADK → Agent Card: discovers skills",
+     "text": "*2*  Orchestrator on ADK discovers skills from Agent Card",
      "size": 24,
      "font": "mono",
      "weight": "regular",
@@ -302,7 +302,7 @@
     {
      "type": "motion_text",
      "id": "row4",
-     "text": "*4*  Remote agent → Task state: creates task",
+     "text": "*4*  Remote agent creates task in Task state",
      "size": 24,
      "font": "mono",
      "weight": "regular",
@@ -318,7 +318,7 @@
     {
      "type": "motion_text",
      "id": "row5",
-     "text": "*5*  Remote agent → Remote LLM: prompt",
+     "text": "*5*  Remote agent sends the prompt to Remote LLM",
      "size": 24,
      "font": "mono",
      "weight": "regular",
@@ -334,7 +334,7 @@
     {
      "type": "motion_text",
      "id": "row6",
-     "text": "*6*  Remote agent → MCP tools: tool calls",
+     "text": "*6*  Remote agent sends the tool calls to MCP tools",
      "size": 24,
      "font": "mono",
      "weight": "regular",
@@ -366,7 +366,7 @@
     {
      "type": "motion_text",
      "id": "row8",
-     "text": "*8*  Orchestrator on ADK → User: answer",
+     "text": "*8*  Orchestrator on ADK sends the answer to User",
      "size": 24,
      "font": "mono",
      "weight": "regular",
@@ -389,7 +389,7 @@
        "p": 0
       },
       {
-       "t": 42.91,
+       "t": 26.705,
        "p": 1,
        "ease": "linear"
       }
@@ -403,11 +403,11 @@
        "opacity": 0
       },
       {
-       "t": 1.5,
+       "t": 1,
        "opacity": 0
       },
       {
-       "t": 1.8,
+       "t": 1.3,
        "opacity": 1,
        "ease": "standard"
       }
@@ -421,11 +421,11 @@
        "opacity": 0
       },
       {
-       "t": 5.103,
+       "t": 2.98,
        "opacity": 0
       },
       {
-       "t": 5.4,
+       "t": 3.28,
        "opacity": 1,
        "ease": "standard"
       }
@@ -439,11 +439,11 @@
        "opacity": 0
       },
       {
-       "t": 9.857,
+       "t": 5.73,
        "opacity": 0
       },
       {
-       "t": 10.16,
+       "t": 6.03,
        "opacity": 1,
        "ease": "standard"
       }
@@ -457,11 +457,11 @@
        "opacity": 0
       },
       {
-       "t": 14.61,
+       "t": 8.755,
        "opacity": 0
       },
       {
-       "t": 14.91,
+       "t": 9.06,
        "opacity": 1,
        "ease": "standard"
       }
@@ -475,11 +475,11 @@
        "opacity": 0
       },
       {
-       "t": 18.98,
+       "t": 11.23,
        "opacity": 0
       },
       {
-       "t": 19.28,
+       "t": 11.53,
        "opacity": 1,
        "ease": "standard"
       }
@@ -493,11 +493,11 @@
        "opacity": 0
       },
       {
-       "t": 22.583,
+       "t": 13.98,
        "opacity": 0
       },
       {
-       "t": 22.88,
+       "t": 14.28,
        "opacity": 1,
        "ease": "standard"
       }
@@ -511,11 +511,11 @@
        "opacity": 0
       },
       {
-       "t": 26.953,
+       "t": 17.005,
        "opacity": 0
       },
       {
-       "t": 27.25,
+       "t": 17.31,
        "opacity": 1,
        "ease": "standard"
       }
@@ -529,11 +529,11 @@
        "opacity": 0
       },
       {
-       "t": 36.307,
+       "t": 21.955,
        "opacity": 0
       },
       {
-       "t": 36.61,
+       "t": 22.26,
        "opacity": 1,
        "ease": "standard"
       }
@@ -548,54 +548,54 @@
        "opacity": 0
       },
       {
-       "t": 1.5,
+       "t": 1,
        "y": 48.82,
        "opacity": 0,
        "ease": "hold"
       },
       {
-       "t": 1.8,
+       "t": 1.3,
        "opacity": 0.22,
        "ease": "standard"
       },
       {
-       "t": 5.103,
+       "t": 2.98,
        "y": 53.93,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 9.857,
+       "t": 5.73,
        "y": 59.04,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 14.61,
+       "t": 8.755,
        "y": 64.15,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 18.98,
+       "t": 11.23,
        "y": 69.26,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 22.583,
+       "t": 13.98,
        "y": 74.37,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 26.953,
+       "t": 17.005,
        "y": 79.49,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 36.307,
+       "t": 21.955,
        "y": 84.6,
        "opacity": 0.22,
        "ease": "hold"

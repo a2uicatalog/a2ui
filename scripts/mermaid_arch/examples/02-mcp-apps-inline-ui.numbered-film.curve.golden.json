@@ -5,12 +5,12 @@
    "type": "motion_timeline",
    "title": "MCP Apps: a tool result becomes an inline UI",
    "aspect": "1:1",
-   "duration": 45.747,
+   "duration": 29.18,
    "loop": true,
    "autoplay": true,
    "controls": true,
    "theme": "dark",
-   "poster": 45.25,
+   "poster": 28.68,
    "blocks": [
     {
      "type": "motion_arch",
@@ -27,7 +27,7 @@
        "y": 10.24,
        "w": 12.57,
        "h": 10.95,
-       "at": 0.0066,
+       "at": 0.0103,
        "dur": 0.011
       },
       {
@@ -38,7 +38,7 @@
        "y": 46.35,
        "w": 19.01,
        "h": 10.95,
-       "at": 0.0131,
+       "at": 0.0158,
        "dur": 0.011
       },
       {
@@ -49,7 +49,7 @@
        "y": 38.49,
        "w": 11.88,
        "h": 10.95,
-       "at": 0.0098,
+       "at": 0.013,
        "dur": 0.011
       },
       {
@@ -60,7 +60,7 @@
        "y": 54.21,
        "w": 27.92,
        "h": 10.95,
-       "at": 0.0164,
+       "at": 0.0185,
        "dur": 0.011
       },
       {
@@ -71,7 +71,7 @@
        "y": 86.11,
        "w": 33.07,
        "h": 10.95,
-       "at": 0.0197,
+       "at": 0.0212,
        "dur": 0.011
       },
       {
@@ -82,7 +82,7 @@
        "y": 86.11,
        "w": 31.78,
        "h": 10.95,
-       "at": 0.023,
+       "at": 0.024,
        "dur": 0.011
       }
      ],
@@ -92,16 +92,16 @@
        "to": "host",
        "label": "1 asks",
        "style": "solid",
-       "at": 0.0328,
-       "dur": 0.011
+       "at": 0.0343,
+       "dur": 0.0171
       },
       {
        "from": "host",
        "to": "llm",
        "label": "2 prompt + tools",
        "style": "solid",
-       "at": 0.1032,
-       "dur": 0.011
+       "at": 0.1021,
+       "dur": 0.0171
       },
       {
        "from": "llm",
@@ -109,16 +109,16 @@
        "label": "3 tool call",
        "style": "solid",
        "curve": 24,
-       "at": 0.2071,
-       "dur": 0.011
+       "at": 0.2058,
+       "dur": 0.0171
       },
       {
        "from": "host",
        "to": "tool",
        "label": "4 tools/call",
        "style": "solid",
-       "at": 0.2942,
-       "dur": 0.011
+       "at": 0.3,
+       "dur": 0.0171
       },
       {
        "from": "tool",
@@ -126,24 +126,24 @@
        "label": "5 tool result",
        "style": "solid",
        "curve": 100,
-       "at": 0.3898,
-       "dur": 0.011
+       "at": 0.4037,
+       "dur": 0.0171
       },
       {
        "from": "host",
        "to": "resource",
        "label": "6 resources/read",
        "style": "solid",
-       "at": 0.502,
-       "dur": 0.011
+       "at": 0.5262,
+       "dur": 0.0171
       },
       {
        "from": "host",
        "to": "frame",
        "label": "7 mounts HTML, sends tool result",
        "style": "solid",
-       "at": 0.5892,
-       "dur": 0.011
+       "at": 0.6205,
+       "dur": 0.0171
       },
       {
        "from": "frame",
@@ -151,8 +151,8 @@
        "label": "8 tools/call via postMessage",
        "style": "dashed",
        "curve": 100,
-       "at": 0.735,
-       "dur": 0.011
+       "at": 0.7336,
+       "dur": 0.0171
       },
       {
        "from": "frame",
@@ -160,8 +160,8 @@
        "label": "9 interactive UI",
        "style": "solid",
        "curve": 12,
-       "at": 0.8473,
-       "dur": 0.011
+       "at": 0.8466,
+       "dur": 0.0171
       }
      ],
      "groups": [
@@ -188,20 +188,20 @@
       {
        "edge": 2,
        "text": "tool call",
-       "at": 0.2192,
-       "dur": 0.0262
+       "at": 0.2246,
+       "dur": 0.0411
       },
       {
        "edge": 3,
        "text": "tools/call",
-       "at": 0.3063,
-       "dur": 0.0262
+       "at": 0.3189,
+       "dur": 0.0411
       },
       {
        "edge": 5,
        "text": "resources/read ui://",
-       "at": 0.5141,
-       "dur": 0.0262
+       "at": 0.5451,
+       "dur": 0.0411
       }
      ],
      "id": "arch",
@@ -216,7 +216,7 @@
     {
      "type": "motion_text",
      "id": "head",
-     "text": "STEP  FROM → TO: WHAT",
+     "text": "STEP  ACTIVITY",
      "size": 21,
      "font": "mono",
      "weight": "bold",
@@ -248,7 +248,7 @@
     {
      "type": "motion_text",
      "id": "row1",
-     "text": "*1*  User → Chat host: asks",
+     "text": "*1*  User asks Chat host",
      "size": 24,
      "font": "mono",
      "weight": "regular",
@@ -264,7 +264,7 @@
     {
      "type": "motion_text",
      "id": "row2",
-     "text": "*2*  Chat host → LLM: prompt + tools",
+     "text": "*2*  Chat host sends the prompt + tools to LLM",
      "size": 24,
      "font": "mono",
      "weight": "regular",
@@ -280,7 +280,7 @@
     {
      "type": "motion_text",
      "id": "row3",
-     "text": "*3*  LLM → Chat host: tool call",
+     "text": "*3*  LLM sends the tool call to Chat host",
      "size": 24,
      "font": "mono",
      "weight": "regular",
@@ -296,7 +296,7 @@
     {
      "type": "motion_text",
      "id": "row4",
-     "text": "*4*  Chat host → Tool with ui:// link: tools/call",
+     "text": "*4*  Chat host sends tools/call to Tool with ui:// link",
      "size": 24,
      "font": "mono",
      "weight": "regular",
@@ -312,7 +312,7 @@
     {
      "type": "motion_text",
      "id": "row5",
-     "text": "*5*  Tool with ui:// link → Chat host: tool result",
+     "text": "*5*  Tool with ui:// link sends the tool result to Chat host",
      "size": 24,
      "font": "mono",
      "weight": "regular",
@@ -328,7 +328,7 @@
     {
      "type": "motion_text",
      "id": "row6",
-     "text": "*6*  Chat host → ui:// HTML resource: resources/read",
+     "text": "*6*  Chat host sends resources/read to ui:// HTML resource",
      "size": 24,
      "font": "mono",
      "weight": "regular",
@@ -376,7 +376,7 @@
     {
      "type": "motion_text",
      "id": "row9",
-     "text": "*9*  Sandboxed iframe → User: interactive UI",
+     "text": "*9*  Sandboxed iframe sends interactive UI to User",
      "size": 24,
      "font": "mono",
      "weight": "regular",
@@ -399,7 +399,7 @@
        "p": 0
       },
       {
-       "t": 45.747,
+       "t": 29.18,
        "p": 1,
        "ease": "linear"
       }
@@ -413,11 +413,11 @@
        "opacity": 0
       },
       {
-       "t": 1.5,
+       "t": 1,
        "opacity": 0
       },
       {
-       "t": 1.8,
+       "t": 1.3,
        "opacity": 1,
        "ease": "standard"
       }
@@ -431,11 +431,11 @@
        "opacity": 0
       },
       {
-       "t": 4.72,
+       "t": 2.98,
        "opacity": 0
       },
       {
-       "t": 5.02,
+       "t": 3.28,
        "opacity": 1,
        "ease": "standard"
       }
@@ -449,11 +449,11 @@
        "opacity": 0
       },
       {
-       "t": 9.473,
+       "t": 6.005,
        "opacity": 0
       },
       {
-       "t": 9.77,
+       "t": 6.31,
        "opacity": 1,
        "ease": "standard"
       }
@@ -467,11 +467,11 @@
        "opacity": 0
       },
       {
-       "t": 13.46,
+       "t": 8.755,
        "opacity": 0
       },
       {
-       "t": 13.76,
+       "t": 9.06,
        "opacity": 1,
        "ease": "standard"
       }
@@ -485,11 +485,11 @@
        "opacity": 0
       },
       {
-       "t": 17.83,
+       "t": 11.78,
        "opacity": 0
       },
       {
-       "t": 18.13,
+       "t": 12.08,
        "opacity": 1,
        "ease": "standard"
       }
@@ -503,11 +503,11 @@
        "opacity": 0
       },
       {
-       "t": 22.967,
+       "t": 15.355,
        "opacity": 0
       },
       {
-       "t": 23.27,
+       "t": 15.66,
        "opacity": 1,
        "ease": "standard"
       }
@@ -521,11 +521,11 @@
        "opacity": 0
       },
       {
-       "t": 26.953,
+       "t": 18.105,
        "opacity": 0
       },
       {
-       "t": 27.25,
+       "t": 18.41,
        "opacity": 1,
        "ease": "standard"
       }
@@ -539,11 +539,11 @@
        "opacity": 0
       },
       {
-       "t": 33.623,
+       "t": 21.405,
        "opacity": 0
       },
       {
-       "t": 33.92,
+       "t": 21.71,
        "opacity": 1,
        "ease": "standard"
       }
@@ -557,11 +557,11 @@
        "opacity": 0
       },
       {
-       "t": 38.76,
+       "t": 24.705,
        "opacity": 0
       },
       {
-       "t": 39.06,
+       "t": 25.01,
        "opacity": 1,
        "ease": "standard"
       }
@@ -576,60 +576,60 @@
        "opacity": 0
       },
       {
-       "t": 1.5,
+       "t": 1,
        "y": 55.8,
        "opacity": 0,
        "ease": "hold"
       },
       {
-       "t": 1.8,
+       "t": 1.3,
        "opacity": 0.22,
        "ease": "standard"
       },
       {
-       "t": 4.72,
+       "t": 2.98,
        "y": 60.4,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 9.473,
+       "t": 6.005,
        "y": 65,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 13.46,
+       "t": 8.755,
        "y": 69.6,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 17.83,
+       "t": 11.78,
        "y": 74.2,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 22.967,
+       "t": 15.355,
        "y": 78.8,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 26.953,
+       "t": 18.105,
        "y": 83.4,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 33.623,
+       "t": 21.405,
        "y": 88,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 38.76,
+       "t": 24.705,
        "y": 92.6,
        "opacity": 0.22,
        "ease": "hold"

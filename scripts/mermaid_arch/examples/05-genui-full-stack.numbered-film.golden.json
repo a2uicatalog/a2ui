@@ -5,12 +5,12 @@
    "type": "motion_timeline",
    "title": "GenUI stack, one possible composition (A2UI v0.9)",
    "aspect": "9:16",
-   "duration": 71.859,
+   "duration": 43.898,
    "loop": true,
    "autoplay": true,
    "controls": true,
    "theme": "dark",
-   "poster": 71.36,
+   "poster": 43.4,
    "blocks": [
     {
      "type": "motion_arch",
@@ -27,7 +27,7 @@
        "y": 5.45,
        "w": 10.73,
        "h": 5.89,
-       "at": 0.0042,
+       "at": 0.0068,
        "dur": 0.011
       },
       {
@@ -38,7 +38,7 @@
        "y": 25.41,
        "w": 19.31,
        "h": 5.89,
-       "at": 0.0057,
+       "at": 0.0081,
        "dur": 0.011
       },
       {
@@ -49,7 +49,7 @@
        "y": 44.38,
        "w": 20.39,
        "h": 5.89,
-       "at": 0.0072,
+       "at": 0.0094,
        "dur": 0.011
       },
       {
@@ -60,7 +60,7 @@
        "y": 44.38,
        "w": 21.57,
        "h": 5.89,
-       "at": 0.0086,
+       "at": 0.0107,
        "dur": 0.011
       },
       {
@@ -71,7 +71,7 @@
        "y": 67.39,
        "w": 16.09,
        "h": 5.89,
-       "at": 0.0101,
+       "at": 0.012,
        "dur": 0.011
       },
       {
@@ -82,7 +82,7 @@
        "y": 67.39,
        "w": 10.09,
        "h": 5.89,
-       "at": 0.0116,
+       "at": 0.0133,
        "dur": 0.011
       },
       {
@@ -93,7 +93,7 @@
        "y": 92.58,
        "w": 17.17,
        "h": 5.89,
-       "at": 0.0131,
+       "at": 0.0146,
        "dur": 0.011
       },
       {
@@ -104,7 +104,7 @@
        "y": 92.58,
        "w": 29.08,
        "h": 5.89,
-       "at": 0.0146,
+       "at": 0.0159,
        "dur": 0.011
       }
      ],
@@ -128,8 +128,8 @@
         "x": 65.13,
         "y": 15.43
        },
-       "at": 0.0209,
-       "dur": 0.011
+       "at": 0.0228,
+       "dur": 0.0114
       },
       {
        "from": "app",
@@ -155,7 +155,7 @@
         "y": 49.29
        },
        "at": 0.0724,
-       "dur": 0.011
+       "dur": 0.0114
       },
       {
        "from": "agent",
@@ -176,8 +176,8 @@
         "x": 65.88,
         "y": 65.87
        },
-       "at": 0.1423,
-       "dur": 0.011
+       "at": 0.1413,
+       "dur": 0.0114
       },
       {
        "from": "agent",
@@ -198,8 +198,8 @@
         "x": 34.5,
         "y": 79.99
        },
-       "at": 0.1939,
-       "dur": 0.011
+       "at": 0.2033,
+       "dur": 0.0114
       },
       {
        "from": "mcp",
@@ -220,8 +220,8 @@
         "x": 34.33,
         "y": 83.26
        },
-       "at": 0.2638,
-       "dur": 0.011
+       "at": 0.2722,
+       "dur": 0.0114
       },
       {
        "from": "agent",
@@ -246,8 +246,8 @@
         "x": 59.23,
         "y": 79.06
        },
-       "at": 0.3705,
-       "dur": 0.011
+       "at": 0.3618,
+       "dur": 0.0114
       },
       {
        "from": "remote",
@@ -272,8 +272,8 @@
         "x": 66.36,
         "y": 82.33
        },
-       "at": 0.4528,
-       "dur": 0.011
+       "at": 0.4445,
+       "dur": 0.0114
       },
       {
        "from": "agent",
@@ -302,8 +302,8 @@
         "x": 19.42,
         "y": 46.13
        },
-       "at": 0.535,
-       "dur": 0.011
+       "at": 0.5272,
+       "dur": 0.0114
       },
       {
        "from": "app",
@@ -324,8 +324,8 @@
         "x": 50.21,
         "y": 34.9
        },
-       "at": 0.6662,
-       "dur": 0.011
+       "at": 0.6375,
+       "dur": 0.0114
       },
       {
        "from": "app",
@@ -346,8 +346,8 @@
         "x": 74.41,
         "y": 38.17
        },
-       "at": 0.7362,
-       "dur": 0.011
+       "at": 0.7064,
+       "dur": 0.0114
       },
       {
        "from": "ui",
@@ -368,8 +368,8 @@
         "x": 48.71,
         "y": 38.17
        },
-       "at": 0.8123,
-       "dur": 0.011
+       "at": 0.7891,
+       "dur": 0.0114
       },
       {
        "from": "mcpapp",
@@ -390,8 +390,8 @@
         "x": 83.37,
         "y": 34.9
        },
-       "at": 0.8699,
-       "dur": 0.011
+       "at": 0.8649,
+       "dur": 0.0114
       }
      ],
      "radius": 10,
@@ -428,20 +428,20 @@
       {
        "edge": 1,
        "text": "AG-UI run",
-       "at": 0.0841,
-       "dur": 0.0167
+       "at": 0.0849,
+       "dur": 0.0273
       },
       {
        "edge": 6,
        "text": "A2UI JSON",
-       "at": 0.4645,
-       "dur": 0.0167
+       "at": 0.457,
+       "dur": 0.0273
       },
       {
        "edge": 4,
        "text": "ui:// HTML",
-       "at": 0.2755,
-       "dur": 0.0167
+       "at": 0.2848,
+       "dur": 0.0273
       }
      ],
      "id": "arch",
@@ -456,7 +456,7 @@
     {
      "type": "motion_text",
      "id": "head",
-     "text": "STEP  FROM → TO: WHAT",
+     "text": "STEP  ACTIVITY",
      "size": 15,
      "font": "mono",
      "weight": "bold",
@@ -488,7 +488,7 @@
     {
      "type": "motion_text",
      "id": "row1",
-     "text": "*1*  User → Frontend app: asks",
+     "text": "*1*  User asks Frontend app",
      "size": 18,
      "font": "mono",
      "weight": "regular",
@@ -504,7 +504,7 @@
     {
      "type": "motion_text",
      "id": "row2",
-     "text": "*2*  Frontend app → ADK agent: AG-UI run",
+     "text": "*2*  Frontend app sends AG-UI run to ADK agent",
      "size": 18,
      "font": "mono",
      "weight": "regular",
@@ -520,7 +520,7 @@
     {
      "type": "motion_text",
      "id": "row3",
-     "text": "*3*  ADK agent → LLM: prompt",
+     "text": "*3*  ADK agent sends the prompt to LLM",
      "size": 18,
      "font": "mono",
      "weight": "regular",
@@ -552,7 +552,7 @@
     {
      "type": "motion_text",
      "id": "row5",
-     "text": "*5*  MCP server → ADK agent: tool result + ui:// HTML",
+     "text": "*5*  MCP server sends tool result + ui:// HTML to ADK agent",
      "size": 18,
      "font": "mono",
      "weight": "regular",
@@ -568,7 +568,7 @@
     {
      "type": "motion_text",
      "id": "row6",
-     "text": "*6*  ADK agent → Remote agent over A2A: A2A message",
+     "text": "*6*  ADK agent sends A2A message to Remote agent over A2A",
      "size": 18,
      "font": "mono",
      "weight": "regular",
@@ -584,7 +584,7 @@
     {
      "type": "motion_text",
      "id": "row7",
-     "text": "*7*  Remote agent over A2A → ADK agent: A2UI JSON",
+     "text": "*7*  Remote agent over A2A sends A2UI JSON to ADK agent",
      "size": 18,
      "font": "mono",
      "weight": "regular",
@@ -616,7 +616,7 @@
     {
      "type": "motion_text",
      "id": "row9",
-     "text": "*9*  Frontend app → A2UI renderer: A2UI messages",
+     "text": "*9*  Frontend app sends A2UI messages to A2UI renderer",
      "size": 18,
      "font": "mono",
      "weight": "regular",
@@ -632,7 +632,7 @@
     {
      "type": "motion_text",
      "id": "row10",
-     "text": "*10*  Frontend app → MCP App iframe: sandboxed iframe",
+     "text": "*10*  Frontend app sends sandboxed iframe to MCP App iframe",
      "size": 18,
      "font": "mono",
      "weight": "regular",
@@ -648,7 +648,7 @@
     {
      "type": "motion_text",
      "id": "row11",
-     "text": "*11*  A2UI renderer → Frontend app: action (async)",
+     "text": "*11*  A2UI renderer sends the action to Frontend app (async)",
      "size": 18,
      "font": "mono",
      "weight": "regular",
@@ -687,7 +687,7 @@
        "p": 0
       },
       {
-       "t": 71.859,
+       "t": 43.898,
        "p": 1,
        "ease": "linear"
       }
@@ -701,11 +701,11 @@
        "opacity": 0
       },
       {
-       "t": 1.5,
+       "t": 1,
        "opacity": 0
       },
       {
-       "t": 1.8,
+       "t": 1.3,
        "opacity": 1,
        "ease": "standard"
       }
@@ -719,11 +719,11 @@
        "opacity": 0
       },
       {
-       "t": 5.203,
+       "t": 3.178,
        "opacity": 0
       },
       {
-       "t": 5.5,
+       "t": 3.48,
        "opacity": 1,
        "ease": "standard"
       }
@@ -737,11 +737,11 @@
        "opacity": 0
       },
       {
-       "t": 10.228,
+       "t": 6.203,
        "opacity": 0
       },
       {
-       "t": 10.53,
+       "t": 6.5,
        "opacity": 1,
        "ease": "standard"
       }
@@ -755,11 +755,11 @@
        "opacity": 0
       },
       {
-       "t": 13.931,
+       "t": 8.926,
        "opacity": 0
       },
       {
-       "t": 14.23,
+       "t": 9.23,
        "opacity": 1,
        "ease": "standard"
       }
@@ -773,11 +773,11 @@
        "opacity": 0
       },
       {
-       "t": 18.957,
+       "t": 11.951,
        "opacity": 0
       },
       {
-       "t": 19.26,
+       "t": 12.25,
        "opacity": 1,
        "ease": "standard"
       }
@@ -791,11 +791,11 @@
        "opacity": 0
       },
       {
-       "t": 26.627,
+       "t": 15.883,
        "opacity": 0
       },
       {
-       "t": 26.93,
+       "t": 16.18,
        "opacity": 1,
        "ease": "standard"
       }
@@ -809,11 +809,11 @@
        "opacity": 0
       },
       {
-       "t": 32.535,
+       "t": 19.513,
        "opacity": 0
       },
       {
-       "t": 32.83,
+       "t": 19.81,
        "opacity": 1,
        "ease": "standard"
       }
@@ -827,11 +827,11 @@
        "opacity": 0
       },
       {
-       "t": 38.442,
+       "t": 23.143,
        "opacity": 0
       },
       {
-       "t": 38.74,
+       "t": 23.44,
        "opacity": 1,
        "ease": "standard"
       }
@@ -845,11 +845,11 @@
        "opacity": 0
       },
       {
-       "t": 47.876,
+       "t": 27.983,
        "opacity": 0
       },
       {
-       "t": 48.18,
+       "t": 28.28,
        "opacity": 1,
        "ease": "standard"
       }
@@ -863,11 +863,11 @@
        "opacity": 0
       },
       {
-       "t": 52.901,
+       "t": 31.008,
        "opacity": 0
       },
       {
-       "t": 53.2,
+       "t": 31.31,
        "opacity": 1,
        "ease": "standard"
       }
@@ -881,11 +881,11 @@
        "opacity": 0
       },
       {
-       "t": 58.368,
+       "t": 34.638,
        "opacity": 0
       },
       {
-       "t": 58.67,
+       "t": 34.94,
        "opacity": 1,
        "ease": "standard"
       }
@@ -899,11 +899,11 @@
        "opacity": 0
       },
       {
-       "t": 62.511,
+       "t": 37.966,
        "opacity": 0
       },
       {
-       "t": 62.81,
+       "t": 38.27,
        "opacity": 1,
        "ease": "standard"
       }
@@ -918,78 +918,78 @@
        "opacity": 0
       },
       {
-       "t": 1.5,
+       "t": 1,
        "y": 59.54,
        "opacity": 0,
        "ease": "hold"
       },
       {
-       "t": 1.8,
+       "t": 1.3,
        "opacity": 0.22,
        "ease": "standard"
       },
       {
-       "t": 5.203,
+       "t": 3.178,
        "y": 62.19,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 10.228,
+       "t": 6.203,
        "y": 64.85,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 13.931,
+       "t": 8.926,
        "y": 67.51,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 18.957,
+       "t": 11.951,
        "y": 70.16,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 26.627,
+       "t": 15.883,
        "y": 72.82,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 32.535,
+       "t": 19.513,
        "y": 75.47,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 38.442,
+       "t": 23.143,
        "y": 78.13,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 47.876,
+       "t": 27.983,
        "y": 80.79,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 52.901,
+       "t": 31.008,
        "y": 83.44,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 58.368,
+       "t": 34.638,
        "y": 86.1,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 62.511,
+       "t": 37.966,
        "y": 88.76,
        "opacity": 0.22,
        "ease": "hold"

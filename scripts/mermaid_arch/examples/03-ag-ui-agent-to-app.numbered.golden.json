@@ -16,7 +16,7 @@
      "y": 6.31,
      "w": 14.58,
      "h": 6.78,
-     "at": 0.0049,
+     "at": 0.0082,
      "dur": 0.011
     },
     {
@@ -27,7 +27,7 @@
      "y": 24.95,
      "w": 26.32,
      "h": 6.78,
-     "at": 0.0069,
+     "at": 0.01,
      "dur": 0.011
     },
     {
@@ -38,7 +38,7 @@
      "y": 39.74,
      "w": 26.32,
      "h": 6.78,
-     "at": 0.009,
+     "at": 0.0118,
      "dur": 0.011
     },
     {
@@ -49,7 +49,7 @@
      "y": 61.86,
      "w": 38.16,
      "h": 6.78,
-     "at": 0.011,
+     "at": 0.0137,
      "dur": 0.011
     },
     {
@@ -60,7 +60,7 @@
      "y": 76.65,
      "w": 13.71,
      "h": 6.78,
-     "at": 0.013,
+     "at": 0.0155,
      "dur": 0.011
     },
     {
@@ -71,7 +71,7 @@
      "y": 76.65,
      "w": 27.85,
      "h": 6.78,
-     "at": 0.0151,
+     "at": 0.0173,
      "dur": 0.011
     },
     {
@@ -82,7 +82,7 @@
      "y": 93.69,
      "w": 26.32,
      "h": 6.78,
-     "at": 0.0171,
+     "at": 0.0191,
      "dur": 0.011
     }
    ],
@@ -106,8 +106,8 @@
       "x": 56.25,
       "y": 15.63
      },
-     "at": 0.0244,
-     "dur": 0.011
+     "at": 0.0273,
+     "dur": 0.0137
     },
     {
      "from": "app",
@@ -128,8 +128,8 @@
       "x": 57.57,
       "y": 32.34
      },
-     "at": 0.0848,
-     "dur": 0.011
+     "at": 0.1018,
+     "dur": 0.0137
     },
     {
      "from": "client",
@@ -150,8 +150,8 @@
       "x": 62.28,
       "y": 50.8
      },
-     "at": 0.1667,
-     "dur": 0.011
+     "at": 0.1927,
+     "dur": 0.0137
     },
     {
      "from": "agent",
@@ -172,8 +172,8 @@
       "x": 19.9,
       "y": 69.26
      },
-     "at": 0.2917,
-     "dur": 0.011
+     "at": 0.3085,
+     "dur": 0.0137
     },
     {
      "from": "agent",
@@ -194,8 +194,8 @@
       "x": 41.89,
       "y": 69.26
      },
-     "at": 0.3664,
-     "dur": 0.011
+     "at": 0.3995,
+     "dur": 0.0137
     },
     {
      "from": "agent",
@@ -216,8 +216,8 @@
       "x": 20.39,
       "y": 50.8
      },
-     "at": 0.4626,
-     "dur": 0.011
+     "at": 0.507,
+     "dur": 0.0137
     },
     {
      "from": "client",
@@ -238,8 +238,8 @@
       "x": 33.77,
       "y": 32.34
      },
-     "at": 0.5876,
-     "dur": 0.011
+     "at": 0.6311,
+     "dur": 0.0137
     },
     {
      "from": "app",
@@ -260,8 +260,8 @@
       "x": 37.88,
       "y": 15.63
      },
-     "at": 0.6695,
-     "dur": 0.011
+     "at": 0.7055,
+     "dur": 0.0137
     },
     {
      "from": "agent",
@@ -287,8 +287,8 @@
       "x": 50.16,
       "y": 81.99
      },
-     "at": 0.7442,
-     "dur": 0.011
+     "at": 0.7799,
+     "dur": 0.0137
     },
     {
      "from": "app",
@@ -318,8 +318,8 @@
       "x": 83,
       "y": 59.23
      },
-     "at": 0.8549,
-     "dur": 0.011
+     "at": 0.8709,
+     "dur": 0.0137
     }
    ],
    "radius": 13,
@@ -347,20 +347,20 @@
     {
      "edge": 2,
      "text": "run input",
-     "at": 0.1785,
-     "dur": 0.0196
+     "at": 0.2078,
+     "dur": 0.0328
     },
     {
      "edge": 5,
      "text": "TEXT_MESSAGE_CONTENT",
-     "at": 0.4745,
-     "dur": 0.0196
+     "at": 0.522,
+     "dur": 0.0328
     },
     {
      "edge": 5,
      "text": "STATE_DELTA",
-     "at": 0.4965,
-     "dur": 0.0196
+     "at": 0.5589,
+     "dur": 0.0328
     }
    ]
   },
@@ -369,89 +369,53 @@
    "caption": "Steps",
    "headers": [
     "Step",
-    "From",
-    "To",
-    "What",
-    "Kind"
+    "Activity"
    ],
    "rows": [
     [
      "1",
-     "User",
-     "Frontend app",
-     "message",
-     "sync"
+     "User sends the message to Frontend app"
     ],
     [
      "2",
-     "Frontend app",
-     "AG-UI client",
-     "run input",
-     "sync"
+     "Frontend app sends the run input to AG-UI client"
     ],
     [
      "3",
-     "AG-UI client",
-     "Agent runtime on ADK",
-     "POST run over HTTP",
-     "sync"
+     "AG-UI client sends POST run over HTTP to Agent runtime on ADK"
     ],
     [
      "4",
-     "Agent runtime on ADK",
-     "LLM",
-     "prompt",
-     "sync"
+     "Agent runtime on ADK sends the prompt to LLM"
     ],
     [
      "5",
-     "Agent runtime on ADK",
-     "Backend tools",
-     "tool call",
-     "sync"
+     "Agent runtime on ADK sends the tool call to Backend tools"
     ],
     [
      "6",
-     "Agent runtime on ADK",
-     "AG-UI client",
-     "events, SSE by default",
-     "async"
+     "Agent runtime on ADK sends events, SSE by default to AG-UI client (async)"
     ],
     [
      "7",
-     "AG-UI client",
-     "Frontend app",
-     "dispatches events",
-     "sync"
+     "AG-UI client dispatches events to Frontend app"
     ],
     [
      "8",
-     "Frontend app",
-     "User",
-     "streamed UI",
-     "sync"
+     "Frontend app sends streamed UI to User"
     ],
     [
      "9",
-     "Agent runtime on ADK",
-     "Shared state",
-     "reads and writes",
-     "sync"
+     "Agent runtime on ADK reads and writes Shared state"
     ],
     [
      "10",
-     "Frontend app",
-     "Shared state",
-     "reads and writes",
-     "sync"
+     "Frontend app reads and writes Shared state"
     ]
    ],
    "col_widths": [
     "9%",
-    "25%",
-    "25%",
-    "28%",
-    "13%"
+    "91%"
    ]
   }
  ]

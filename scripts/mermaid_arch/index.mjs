@@ -8,9 +8,9 @@ export { assignSteps } from './graph.mjs';
 export { buildSchedule } from './schedule.mjs';
 export { ArchError, validateGraph, parseMermaid, parseD2, compileGraph, archPayload, filmPayload, validateBlock };
 export { LIMITS, KINDS, KIND_ALIASES } from './graph.mjs';
-export { layoutGraph } from './layout.mjs';
+export { layoutGraph, commonMetrics } from './layout.mjs';
 
-// opts: {routing:'orthogonal'|'curve' (default orthogonal), direction, title, size, fit:'balanced'|'wide', film:boolean, numbered:boolean, pace:'slow'|'normal'|'fast', duration:seconds}
+// opts: {routing:'orthogonal'|'curve' (default orthogonal), direction, title, size, fit:'balanced'|'wide', film:boolean, numbered:boolean, pace:'slow'|'normal'|'fast', duration:seconds, relationColumn:boolean, relationName:string}
 export function graphToArch(graph, opts = {}) {
   const g = { ...graph };
   if (opts.direction) g.direction = opts.direction;
@@ -23,9 +23,9 @@ export function graphToArch(graph, opts = {}) {
   const { block, layout, warnings: w2 } = c;
   const bad = validateBlock(block);
   if (bad.length) throw new ArchError(['internal: compiled block breaks the atom limits: ' + bad.join('; ')], warnings);
-  const ctx = { steps: c.steps, schedule: c.schedule, durationSeconds: c.durationSeconds };
+  const ctx = { steps: c.steps, schedule: c.schedule, durationSeconds: c.durationSeconds, relationColumn: c.relationColumn, relationName: c.relationName };
   const payload = opts.film ? filmPayload(block, ctx) : archPayload(block, ctx);
-  return { payload, graph: g, warnings: [...warnings, ...w2], block, layout, steps: c.steps, schedule: c.schedule, durationSeconds: c.durationSeconds, pace: c.pace, minimumSeconds: c.minimumSeconds, numbered: c.numbered };
+  return { payload, graph: g, warnings: [...warnings, ...w2], block, layout, steps: c.steps, schedule: c.schedule, durationSeconds: c.durationSeconds, pace: c.pace, minimumSeconds: c.minimumSeconds, numbered: c.numbered, relationColumn: c.relationColumn, relationName: c.relationName };
 }
 
 export function mermaidToArch(text, opts = {}) {

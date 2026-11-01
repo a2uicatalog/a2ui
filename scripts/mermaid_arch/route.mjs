@@ -77,6 +77,13 @@ function axisCross(a1, a2, b1, b2) {
   return v1[0] > hx0 + 0.5 && v1[0] < hx1 - 0.5 && h1[1] > vy0 + 0.5 && h1[1] < vy1 - 0.5;
 }
 
+// proper crossing of two general segments (used for sampled curves)
+function diagCross(a, b, c, d) {
+  if (a[0] === b[0] || a[1] === b[1] || c[0] === d[0] || c[1] === d[1]) return false;
+  const o = (p, q, r) => (q[0] - p[0]) * (r[1] - p[1]) - (q[1] - p[1]) * (r[0] - p[0]);
+  return o(c, d, a) * o(c, d, b) < 0 && o(a, b, c) * o(a, b, d) < 0;
+}
+
 export function routeEdges(graph, layout, opts = {}) {
   const s = layout.s;
   const warnings = [];
@@ -356,7 +363,14 @@ export function routeMetrics(graph, layout, routes, glabels, s) {
     const e = graph.edges[k];
     const ps = r.points;
     bends += Math.max(0, ps.length - 2);
-    segs(ps).forEach(([a, b], si) => {
+    if (r.curve) {
+      // a sampled curve: count a box or title once if any sample point lies inside it
+      for (const bx of boxes) {
+        const own = bx.id === e.from || bx.id === e.to, m = own ? 3 : 0;
+        if (ps.some((p) => p[0] > bx.x + m && p[0] < bx.x + bx.w - m && p[1] > bx.y + m && p[1] < bx.y + bx.h - m)) throughBoxes++;
+      }
+      for (const t of glabels) if (ps.some((p) => p[0] > t.x && p[0] < t.x + t.w && p[1] > t.y && p[1] < t.y + t.h)) titleHits++;
+    } else segs(ps).forEach(([a, b]) => {
       length += Math.abs(b[0] - a[0]) + Math.abs(b[1] - a[1]);
       for (const bx of boxes) {
         const own = bx.id === e.from || bx.id === e.to;
@@ -373,12 +387,12 @@ export function routeMetrics(graph, layout, routes, glabels, s) {
   for (let i = 0; i < L.length; i++) for (let j = i + 1; j < L.length; j++) if (rectsOverlap(L[i].rect, L[j].rect)) labelLabel++;
   for (const { k, rect } of L) lines.forEach((ps, q) => {
     if (!ps || q === k) return;
-    if (segs(ps).some(([a, b]) => segHitsRect(a, b, rect, 0))) labelOnLine++;
+    if (routes[q].curve ? ps.some((p) => p[0] > rect.x && p[0] < rect.x + rect.w && p[1] > rect.y && p[1] < rect.y + rect.h) : segs(ps).some(([a, b]) => segHitsRect(a, b, rect, 0))) labelOnLine++;
   });
   for (let i = 0; i < lines.length; i++) for (let j = i + 1; j < lines.length; j++) {
     if (!lines[i] || !lines[j]) continue;
     let hit = false;
-    for (const [a, b] of segs(lines[i])) { for (const [c, d] of segs(lines[j])) if (axisCross(a, b, c, d)) { hit = true; break; } if (hit) break; }
+    for (const [a, b] of segs(lines[i])) { for (const [c, d] of segs(lines[j])) if (axisCross(a, b, c, d) || diagCross(a, b, c, d)) { hit = true; break; } if (hit) break; }
     if (hit) crossings++;
   }
   return { crossings, throughBoxes, titleHits, labelNode, labelLabel, labelTitle, labelOnLine, bends, length: Math.round(length) };

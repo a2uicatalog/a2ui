@@ -9,7 +9,7 @@
 // routeCurves() is the ONLY place that decides how an edge bends. A better router
 // can replace it without touching anything else.
 import { LIMITS } from './graph.mjs';
-import { routeEdges } from './route.mjs';
+import { routeEdges, routeMetrics, curveRoutes, groupTitleRect } from './route.mjs';
 
 const CHAR_SANS = 0.56;     // bold system-ui, em per character (calibrated, see docs)
 const CHAR_MONO = 0.62;    // mono, em per character
@@ -638,4 +638,13 @@ function frameRouted(graph, best, rt, s) {
     nodes: layout.nodes.map(shift), groups: layout.groups.map(shift), curves: graph.edges.map(() => 0),
     direction: graph.direction, flows: [...best.flows.entries()], metrics: rt.metrics,
   };
+}
+
+// One yardstick for both drawings (curved or routed) of a finished layout: counts of edges through boxes or group titles,
+// edge crossings (pairs of edges that cross), labels on boxes, titles, each other and other edges.
+export function commonMetrics(graph, lay) {
+  const layout = { nodes: lay.nodes, groups: lay.groups, s: lay.size };
+  const glabels = lay.groups.map((g) => groupTitleRect(g, graph.groups.find((x) => x.id === g.id), lay.size));
+  const routes = lay.routes || curveRoutes(graph, layout, lay.curves, edgeCurve, labelRect);
+  return routeMetrics(graph, layout, routes, glabels, lay.size);
 }

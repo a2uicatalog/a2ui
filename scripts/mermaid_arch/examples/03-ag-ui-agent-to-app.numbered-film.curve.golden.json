@@ -5,12 +5,12 @@
    "type": "motion_timeline",
    "title": "AG-UI: streaming an agent run into an app",
    "aspect": "4:3",
-   "duration": 61.367,
+   "duration": 36.578,
    "loop": true,
    "autoplay": true,
    "controls": true,
    "theme": "dark",
-   "poster": 60.87,
+   "poster": 36.08,
    "blocks": [
     {
      "type": "motion_arch",
@@ -27,7 +27,7 @@
        "y": 40.36,
        "w": 5.26,
        "h": 11.63,
-       "at": 0.0049,
+       "at": 0.0082,
        "dur": 0.011
       },
       {
@@ -38,7 +38,7 @@
        "y": 45.59,
        "w": 9.56,
        "h": 11.63,
-       "at": 0.0069,
+       "at": 0.01,
        "dur": 0.011
       },
       {
@@ -49,7 +49,7 @@
        "y": 45.59,
        "w": 9.56,
        "h": 11.63,
-       "at": 0.009,
+       "at": 0.0118,
        "dur": 0.011
       },
       {
@@ -60,7 +60,7 @@
        "y": 33.53,
        "w": 13.86,
        "h": 11.63,
-       "at": 0.011,
+       "at": 0.0137,
        "dur": 0.011
       },
       {
@@ -71,7 +71,7 @@
        "y": 25.19,
        "w": 4.97,
        "h": 11.63,
-       "at": 0.013,
+       "at": 0.0155,
        "dur": 0.011
       },
       {
@@ -82,7 +82,7 @@
        "y": 41.86,
        "w": 10.13,
        "h": 11.63,
-       "at": 0.0151,
+       "at": 0.0173,
        "dur": 0.011
       },
       {
@@ -93,7 +93,7 @@
        "y": 44.53,
        "w": 9.56,
        "h": 11.63,
-       "at": 0.0171,
+       "at": 0.0191,
        "dur": 0.011
       }
      ],
@@ -103,8 +103,8 @@
        "to": "app",
        "label": "1 message",
        "style": "solid",
-       "at": 0.0244,
-       "dur": 0.011
+       "at": 0.0273,
+       "dur": 0.0137
       },
       {
        "from": "app",
@@ -112,32 +112,32 @@
        "label": "2 run input",
        "style": "solid",
        "curve": -50,
-       "at": 0.0848,
-       "dur": 0.011
+       "at": 0.1018,
+       "dur": 0.0137
       },
       {
        "from": "client",
        "to": "agent",
        "label": "3 POST run over HTTP",
        "style": "solid",
-       "at": 0.1667,
-       "dur": 0.011
+       "at": 0.1927,
+       "dur": 0.0137
       },
       {
        "from": "agent",
        "to": "llm",
        "label": "4 prompt",
        "style": "solid",
-       "at": 0.2917,
-       "dur": 0.011
+       "at": 0.3085,
+       "dur": 0.0137
       },
       {
        "from": "agent",
        "to": "tools",
        "label": "5 tool call",
        "style": "solid",
-       "at": 0.3664,
-       "dur": 0.011
+       "at": 0.3995,
+       "dur": 0.0137
       },
       {
        "from": "agent",
@@ -145,8 +145,8 @@
        "label": "6 events, SSE by default",
        "style": "dashed",
        "curve": 24,
-       "at": 0.4626,
-       "dur": 0.011
+       "at": 0.507,
+       "dur": 0.0137
       },
       {
        "from": "client",
@@ -154,8 +154,8 @@
        "label": "7 dispatches events",
        "style": "solid",
        "curve": 100,
-       "at": 0.5876,
-       "dur": 0.011
+       "at": 0.6311,
+       "dur": 0.0137
       },
       {
        "from": "app",
@@ -163,8 +163,8 @@
        "label": "8 streamed UI",
        "style": "solid",
        "curve": 36,
-       "at": 0.6695,
-       "dur": 0.011
+       "at": 0.7055,
+       "dur": 0.0137
       },
       {
        "from": "agent",
@@ -173,8 +173,8 @@
        "style": "solid",
        "both": true,
        "curve": 50,
-       "at": 0.7442,
-       "dur": 0.011
+       "at": 0.7799,
+       "dur": 0.0137
       },
       {
        "from": "app",
@@ -183,8 +183,8 @@
        "style": "solid",
        "both": true,
        "curve": 65,
-       "at": 0.8549,
-       "dur": 0.011
+       "at": 0.8709,
+       "dur": 0.0137
       }
      ],
      "groups": [
@@ -211,20 +211,20 @@
       {
        "edge": 2,
        "text": "run input",
-       "at": 0.1785,
-       "dur": 0.0196
+       "at": 0.2078,
+       "dur": 0.0328
       },
       {
        "edge": 5,
        "text": "TEXT_MESSAGE_CONTENT",
-       "at": 0.4745,
-       "dur": 0.0196
+       "at": 0.522,
+       "dur": 0.0328
       },
       {
        "edge": 5,
        "text": "STATE_DELTA",
-       "at": 0.4965,
-       "dur": 0.0196
+       "at": 0.5589,
+       "dur": 0.0328
       }
      ],
      "id": "arch",
@@ -239,7 +239,7 @@
     {
      "type": "motion_text",
      "id": "head",
-     "text": "STEP  FROM → TO: WHAT",
+     "text": "STEP  ACTIVITY",
      "size": 21,
      "font": "mono",
      "weight": "bold",
@@ -271,7 +271,7 @@
     {
      "type": "motion_text",
      "id": "row1",
-     "text": "*1*  User → Frontend app: message",
+     "text": "*1*  User sends the message to Frontend app",
      "size": 24,
      "font": "mono",
      "weight": "regular",
@@ -287,7 +287,7 @@
     {
      "type": "motion_text",
      "id": "row2",
-     "text": "*2*  Frontend app → AG-UI client: run input",
+     "text": "*2*  Frontend app sends the run input to AG-UI client",
      "size": 24,
      "font": "mono",
      "weight": "regular",
@@ -319,7 +319,7 @@
     {
      "type": "motion_text",
      "id": "row4",
-     "text": "*4*  Agent runtime on ADK → LLM: prompt",
+     "text": "*4*  Agent runtime on ADK sends the prompt to LLM",
      "size": 24,
      "font": "mono",
      "weight": "regular",
@@ -335,7 +335,7 @@
     {
      "type": "motion_text",
      "id": "row5",
-     "text": "*5*  Agent runtime on ADK → Backend tools: tool call",
+     "text": "*5*  Agent runtime on ADK sends tool call to Backend tools",
      "size": 24,
      "font": "mono",
      "weight": "regular",
@@ -367,7 +367,7 @@
     {
      "type": "motion_text",
      "id": "row7",
-     "text": "*7*  AG-UI client → Frontend app: dispatches events",
+     "text": "*7*  AG-UI client dispatches events to Frontend app",
      "size": 24,
      "font": "mono",
      "weight": "regular",
@@ -383,7 +383,7 @@
     {
      "type": "motion_text",
      "id": "row8",
-     "text": "*8*  Frontend app → User: streamed UI",
+     "text": "*8*  Frontend app sends streamed UI to User",
      "size": 24,
      "font": "mono",
      "weight": "regular",
@@ -399,7 +399,7 @@
     {
      "type": "motion_text",
      "id": "row9",
-     "text": "*9*  Agent runtime on ADK → Shared state: reads and writes",
+     "text": "*9*  Agent runtime on ADK reads and writes Shared state",
      "size": 24,
      "font": "mono",
      "weight": "regular",
@@ -415,7 +415,7 @@
     {
      "type": "motion_text",
      "id": "row10",
-     "text": "*10*  Frontend app → Shared state: reads and writes",
+     "text": "*10*  Frontend app reads and writes Shared state",
      "size": 24,
      "font": "mono",
      "weight": "regular",
@@ -438,7 +438,7 @@
        "p": 0
       },
       {
-       "t": 61.367,
+       "t": 36.578,
        "p": 1,
        "ease": "linear"
       }
@@ -452,11 +452,11 @@
        "opacity": 0
       },
       {
-       "t": 1.5,
+       "t": 1,
        "opacity": 0
       },
       {
-       "t": 1.8,
+       "t": 1.3,
        "opacity": 1,
        "ease": "standard"
       }
@@ -470,11 +470,11 @@
        "opacity": 0
       },
       {
-       "t": 5.203,
+       "t": 3.723,
        "opacity": 0
       },
       {
-       "t": 5.5,
+       "t": 4.02,
        "opacity": 1,
        "ease": "standard"
       }
@@ -488,11 +488,11 @@
        "opacity": 0
       },
       {
-       "t": 10.228,
+       "t": 7.05,
        "opacity": 0
       },
       {
-       "t": 10.53,
+       "t": 7.35,
        "opacity": 1,
        "ease": "standard"
       }
@@ -506,11 +506,11 @@
        "opacity": 0
       },
       {
-       "t": 17.899,
+       "t": 11.285,
        "opacity": 0
       },
       {
-       "t": 18.2,
+       "t": 11.59,
        "opacity": 1,
        "ease": "standard"
       }
@@ -524,11 +524,11 @@
        "opacity": 0
       },
       {
-       "t": 22.484,
+       "t": 14.613,
        "opacity": 0
       },
       {
-       "t": 22.78,
+       "t": 14.91,
        "opacity": 1,
        "ease": "standard"
       }
@@ -542,11 +542,11 @@
        "opacity": 0
       },
       {
-       "t": 28.391,
+       "t": 18.545,
        "opacity": 0
       },
       {
-       "t": 28.69,
+       "t": 18.85,
        "opacity": 1,
        "ease": "standard"
       }
@@ -560,11 +560,11 @@
        "opacity": 0
       },
       {
-       "t": 36.061,
+       "t": 23.083,
        "opacity": 0
       },
       {
-       "t": 36.36,
+       "t": 23.38,
        "opacity": 1,
        "ease": "standard"
       }
@@ -578,11 +578,11 @@
        "opacity": 0
       },
       {
-       "t": 41.087,
+       "t": 25.805,
        "opacity": 0
       },
       {
-       "t": 41.39,
+       "t": 26.11,
        "opacity": 1,
        "ease": "standard"
       }
@@ -596,11 +596,11 @@
        "opacity": 0
       },
       {
-       "t": 45.671,
+       "t": 28.528,
        "opacity": 0
       },
       {
-       "t": 45.97,
+       "t": 28.83,
        "opacity": 1,
        "ease": "standard"
       }
@@ -614,11 +614,11 @@
        "opacity": 0
       },
       {
-       "t": 52.46,
+       "t": 31.855,
        "opacity": 0
       },
       {
-       "t": 52.76,
+       "t": 32.16,
        "opacity": 1,
        "ease": "standard"
       }
@@ -633,66 +633,66 @@
        "opacity": 0
       },
       {
-       "t": 1.5,
+       "t": 1,
        "y": 42.02,
        "opacity": 0,
        "ease": "hold"
       },
       {
-       "t": 1.8,
+       "t": 1.3,
        "opacity": 0.22,
        "ease": "standard"
       },
       {
-       "t": 5.203,
+       "t": 3.723,
        "y": 47.13,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 10.228,
+       "t": 7.05,
        "y": 52.24,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 17.899,
+       "t": 11.285,
        "y": 57.35,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 22.484,
+       "t": 14.613,
        "y": 62.46,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 28.391,
+       "t": 18.545,
        "y": 67.57,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 36.061,
+       "t": 23.083,
        "y": 72.68,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 41.087,
+       "t": 25.805,
        "y": 77.79,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 45.671,
+       "t": 28.528,
        "y": 82.91,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 52.46,
+       "t": 31.855,
        "y": 88.02,
        "opacity": 0.22,
        "ease": "hold"

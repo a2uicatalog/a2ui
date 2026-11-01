@@ -16,7 +16,7 @@
      "y": 6.93,
      "w": 12.9,
      "h": 7.45,
-     "at": 0.0042,
+     "at": 0.0068,
      "dur": 0.011
     },
     {
@@ -27,7 +27,7 @@
      "y": 31.39,
      "w": 23.28,
      "h": 7.45,
-     "at": 0.0072,
+     "at": 0.0094,
      "dur": 0.011
     },
     {
@@ -38,7 +38,7 @@
      "y": 26.06,
      "w": 24.64,
      "h": 7.45,
-     "at": 0.0057,
+     "at": 0.0081,
      "dur": 0.011
     },
     {
@@ -49,7 +49,7 @@
      "y": 36.71,
      "w": 25.9,
      "h": 7.45,
-     "at": 0.0086,
+     "at": 0.0107,
      "dur": 0.011
     },
     {
@@ -60,7 +60,7 @@
      "y": 58.32,
      "w": 19.4,
      "h": 7.45,
-     "at": 0.0101,
+     "at": 0.012,
      "dur": 0.011
     },
     {
@@ -71,7 +71,7 @@
      "y": 58.32,
      "w": 12.12,
      "h": 7.45,
-     "at": 0.0116,
+     "at": 0.0133,
      "dur": 0.011
     },
     {
@@ -82,7 +82,7 @@
      "y": 79.94,
      "w": 20.76,
      "h": 7.45,
-     "at": 0.0131,
+     "at": 0.0146,
      "dur": 0.011
     },
     {
@@ -93,7 +93,7 @@
      "y": 90.59,
      "w": 35.01,
      "h": 7.45,
-     "at": 0.0146,
+     "at": 0.0159,
      "dur": 0.011
     }
    ],
@@ -103,8 +103,8 @@
      "to": "app",
      "label": "1 asks",
      "style": "solid",
-     "at": 0.0209,
-     "dur": 0.011
+     "at": 0.0228,
+     "dur": 0.0114
     },
     {
      "from": "app",
@@ -112,23 +112,23 @@
      "label": "2 AG-UI run",
      "style": "solid",
      "at": 0.0724,
-     "dur": 0.011
+     "dur": 0.0114
     },
     {
      "from": "agent",
      "to": "llm",
      "label": "3 prompt",
      "style": "solid",
-     "at": 0.1423,
-     "dur": 0.011
+     "at": 0.1413,
+     "dur": 0.0114
     },
     {
      "from": "agent",
      "to": "mcp",
      "label": "4 tools/call, resources/read",
      "style": "solid",
-     "at": 0.1939,
-     "dur": 0.011
+     "at": 0.2033,
+     "dur": 0.0114
     },
     {
      "from": "mcp",
@@ -136,8 +136,8 @@
      "label": "5 tool result + ui:// HTML",
      "style": "solid",
      "curve": 100,
-     "at": 0.2638,
-     "dur": 0.011
+     "at": 0.2722,
+     "dur": 0.0114
     },
     {
      "from": "agent",
@@ -145,8 +145,8 @@
      "label": "6 A2A message",
      "style": "solid",
      "curve": -65,
-     "at": 0.3705,
-     "dur": 0.011
+     "at": 0.3618,
+     "dur": 0.0114
     },
     {
      "from": "remote",
@@ -154,8 +154,8 @@
      "label": "7 A2UI JSON",
      "style": "solid",
      "curve": -100,
-     "at": 0.4528,
-     "dur": 0.011
+     "at": 0.4445,
+     "dur": 0.0114
     },
     {
      "from": "agent",
@@ -163,24 +163,24 @@
      "label": "8 AG-UI events: A2UI + MCP App HTML",
      "style": "dashed",
      "curve": 65,
-     "at": 0.535,
-     "dur": 0.011
+     "at": 0.5272,
+     "dur": 0.0114
     },
     {
      "from": "app",
      "to": "ui",
      "label": "9 A2UI messages",
      "style": "solid",
-     "at": 0.6662,
-     "dur": 0.011
+     "at": 0.6375,
+     "dur": 0.0114
     },
     {
      "from": "app",
      "to": "mcpapp",
      "label": "10 sandboxed iframe",
      "style": "solid",
-     "at": 0.7362,
-     "dur": 0.011
+     "at": 0.7064,
+     "dur": 0.0114
     },
     {
      "from": "ui",
@@ -188,8 +188,8 @@
      "label": "11 action",
      "style": "dashed",
      "curve": 24,
-     "at": 0.8123,
-     "dur": 0.011
+     "at": 0.7891,
+     "dur": 0.0114
     },
     {
      "from": "mcpapp",
@@ -197,8 +197,8 @@
      "label": "12 tools/call via postMessage",
      "style": "dashed",
      "curve": -24,
-     "at": 0.8699,
-     "dur": 0.011
+     "at": 0.8649,
+     "dur": 0.0114
     }
    ],
    "groups": [
@@ -234,20 +234,20 @@
     {
      "edge": 1,
      "text": "AG-UI run",
-     "at": 0.0841,
-     "dur": 0.0167
+     "at": 0.0849,
+     "dur": 0.0273
     },
     {
      "edge": 6,
      "text": "A2UI JSON",
-     "at": 0.4645,
-     "dur": 0.0167
+     "at": 0.457,
+     "dur": 0.0273
     },
     {
      "edge": 4,
      "text": "ui:// HTML",
-     "at": 0.2755,
-     "dur": 0.0167
+     "at": 0.2848,
+     "dur": 0.0273
     }
    ]
   },
@@ -256,103 +256,61 @@
    "caption": "Steps",
    "headers": [
     "Step",
-    "From",
-    "To",
-    "What",
-    "Kind"
+    "Activity"
    ],
    "rows": [
     [
      "1",
-     "User",
-     "Frontend app",
-     "asks",
-     "sync"
+     "User asks Frontend app"
     ],
     [
      "2",
-     "Frontend app",
-     "ADK agent",
-     "AG-UI run",
-     "sync"
+     "Frontend app sends AG-UI run to ADK agent"
     ],
     [
      "3",
-     "ADK agent",
-     "LLM",
-     "prompt",
-     "sync"
+     "ADK agent sends the prompt to LLM"
     ],
     [
      "4",
-     "ADK agent",
-     "MCP server",
-     "tools/call, resources/read",
-     "sync"
+     "ADK agent sends tools/call, resources/read to MCP server"
     ],
     [
      "5",
-     "MCP server",
-     "ADK agent",
-     "tool result + ui:// HTML",
-     "sync"
+     "MCP server sends tool result + ui:// HTML to ADK agent"
     ],
     [
      "6",
-     "ADK agent",
-     "Remote agent over A2A",
-     "A2A message",
-     "sync"
+     "ADK agent sends A2A message to Remote agent over A2A"
     ],
     [
      "7",
-     "Remote agent over A2A",
-     "ADK agent",
-     "A2UI JSON",
-     "sync"
+     "Remote agent over A2A sends A2UI JSON to ADK agent"
     ],
     [
      "8",
-     "ADK agent",
-     "Frontend app",
-     "AG-UI events: A2UI + MCP App HTML",
-     "async"
+     "ADK agent sends AG-UI events: A2UI + MCP App HTML to Frontend app (async)"
     ],
     [
      "9",
-     "Frontend app",
-     "A2UI renderer",
-     "A2UI messages",
-     "sync"
+     "Frontend app sends A2UI messages to A2UI renderer"
     ],
     [
      "10",
-     "Frontend app",
-     "MCP App iframe",
-     "sandboxed iframe",
-     "sync"
+     "Frontend app sends the sandboxed iframe to MCP App iframe"
     ],
     [
      "11",
-     "A2UI renderer",
-     "Frontend app",
-     "action",
-     "async"
+     "A2UI renderer sends the action to Frontend app (async)"
     ],
     [
      "12",
-     "MCP App iframe",
-     "Frontend app",
-     "tools/call via postMessage",
-     "async"
+     "MCP App iframe sends tools/call via postMessage to Frontend app (async)"
     ]
    ],
    "col_widths": [
     "9%",
-    "25%",
-    "25%",
-    "28%",
-    "13%"
+    "91%"
    ]
   }
  ]

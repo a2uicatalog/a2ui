@@ -2,6 +2,7 @@
 import { ArchError, LIMITS, assignSteps } from './graph.mjs';
 import { layoutGraph } from './layout.mjs';
 import { buildSchedule, words, LEAD_IN, HOLD, CHIP_START, CHIP_GAP, CHIP_TAIL } from './schedule.mjs';
+import { activity, rowText } from './activity.mjs';
 
 const r2 = (x) => Math.round(x * 100) / 100;
 const r4 = (x) => Math.round(x * 10000) / 10000;
@@ -63,14 +64,8 @@ export function compileGraph(graph, opts = {}) {
     return ka - kb || a - b;
   });
   const lab = (id) => gnode.get(id).label;
-  const info = order.map((ei) => {
-    const e = graph.edges[ei];
-    return {
-      labelWords: words(e.label),
-      rowWords: words(lab(e.from)) + words(lab(e.to)) + words(e.label) + 1,
-      chips: msgEdge.filter((m) => m.idx === ei).length,
-    };
-  });
+  const sentence = graph.edges.map((e) => activity(lab(e.from), lab(e.to), e.label, { style: e.style, both: e.both }));
+  const info = order.map((ei) => ({ words: words(sentence[ei]), chips: msgEdge.filter((m) => m.idx === ei).length }));
   let sched;
   try { sched = buildSchedule(info, { pace, duration }); }
   catch (e) { if (e.archMessage) throw new ArchError([e.message]); throw e; }
@@ -79,8 +74,8 @@ export function compileGraph(graph, opts = {}) {
   const stepOf = new Map(order.map((ei, k) => [ei, k]));   // edge index -> position in the schedule
 
   // ---- nodes: pop in flow order during the lead-in
-  const NODE_DUR = 0.4;
-  const nodeAt = new Map(sortedNodes.map((n, k) => [n.id, 0.3 + (sortedNodes.length > 1 ? (k * 0.75) / (sortedNodes.length - 1) : 0)]));
+  const NODE_DUR = 0.3;
+  const nodeAt = new Map(sortedNodes.map((n, k) => [n.id, 0.3 + (sortedNodes.length > 1 ? (k * 0.4) / (sortedNodes.length - 1) : 0)]));
   const nodes = graph.nodes.map((gn) => {
     const b = byId.get(gn.id);
     const o = { id: gn.id, kind: gn.kind || 'server', label: clip(gn.label, LIMITS.label) };
@@ -135,60 +130,94 @@ export function compileGraph(graph, opts = {}) {
 
   const steps = numbered ? order.map((ei, k) => {
     const e = graph.edges[ei];
-    return { step: stepNo[ei], from: lab(e.from), to: lab(e.to), label: e.label || '', style: e.style || 'sync' };
+    const o = { step: stepNo[ei], from: lab(e.from), to: lab(e.to), label: e.label || '', style: e.style || 'sync', activity: sentence[ei] };
+    if (e.relation) o.relation = e.relation;
+    return o;
   }) : [];
+  const relationColumn = numbered && (opts.relationColumn !== undefined ? !!opts.relationColumn : !!graph.relationColumn);
+  const relationName = opts.relationName || graph.relationName || 'Relation';
   const schedule = sched.schedule.map((s, k) => ({ step: numbered ? stepNo[order[k]] : s.step, start: s.start, end: s.end }));
-  return { block, layout: lay, warnings, steps, schedule, durationSeconds: D, numbered, pace, minimumSeconds: sched.minimumSeconds };
+  return { block, layout: lay, warnings, steps, schedule, durationSeconds: D, numbered, pace, minimumSeconds: sched.minimumSeconds, relationColumn, relationName };
 }
 
 const STAGES = [['16:9', 1280, 720], ['4:3', 1200, 900], ['1:1', 1000, 1000], ['9:16', 720, 1280]];
-const TYPE = { sync: 'sync', async: 'async', optional: 'optional' };
 
-export function stepsTable(steps) {
+// The steps table: a legend with the columns Step | Activity (and Relation when asked for). Full text, no cutting.
+export function stepsTable(steps, ctx = {}) {
+  const rel = !!ctx.relationColumn;
   return {
     type: 'table', caption: 'Steps',
-    headers: ['Step', 'From', 'To', 'What', 'Kind'],
-    rows: steps.map((s) => [String(s.step), s.from, s.to, s.label || '-', TYPE[s.style] || s.style]),
-    col_widths: ['9%', '25%', '25%', '28%', '13%'],
+    headers: rel ? ['Step', 'Activity', ctx.relationName || 'Relation'] : ['Step', 'Activity'],
+    rows: steps.map((s) => (rel ? [String(s.step), s.activity, s.relation || ''] : [String(s.step), s.activity])),
+    col_widths: rel ? ['9%', '67%', '24%'] : ['9%', '91%'],
   };
 }
 
 // Wrap the diagram (and, when numbered, the steps table) in ONE motion_timeline so both run on one clock.
 // The diagram is the motion_arch block, p = t / duration. Each table row is a motion_text that fades in
-// when its step's edge starts drawing; a translucent bar steps to the current row.
+// when its step's edge starts drawing; a translucent bar steps to the current row. The stage is the one of
+// four shapes (or, for a tall diagram, a wide stage with the table beside it) that draws the diagram biggest.
 export function filmPayload(block, ctx = {}) {
   const D = ctx.durationSeconds || 9;
   const steps = ctx.steps || [], sch = ctx.schedule || [];
   const n = steps.length;
-  const rowText = (s) => clip(`*${s.step}*  ${s.from} → ${s.to}${s.label ? ': ' + s.label : ''}${s.style === 'async' ? ' (async)' : s.style === 'optional' ? ' (optional)' : ''}`, 60);
-  const rows = steps.map(rowText);
+  const rel = !!ctx.relationColumn && n > 0, relName = ctx.relationName || 'Relation';
+  const rows = steps.map((s) => rowText(s.step, s.activity, s.from, s.to, s.label, s.style, 60));
   const maxChars = Math.max(20, ...rows.map((r) => r.length));
-  let best = null;
+  const relChars = rel ? Math.max(relName.length, ...steps.map((s) => (s.relation || '').length)) : 0;
+  const gap = 24;
+  const cands = [];
+  // the text is one line per row: its size is what the table width allows
+  const textSize = (tw, lo, hi) => clamp(Math.floor((tw * 0.94) / ((maxChars + (rel ? relChars + 3 : 0)) * 0.62)), lo, hi);
   for (const [aspect, sw, sh] of STAGES) {
-    const sz = clamp(Math.floor((sw * 0.94) / (maxChars * 0.62)), 12, 24);
-    const rowH = Math.round(sz * 1.9), headH = Math.round(sz * 2.1), gap = 24;
+    const sz = textSize(sw, 12, 24);
+    const rowH = Math.round(sz * 1.9), headH = Math.round(sz * 2.1);
     const T = n ? headH + n * rowH : 0;
     const scale = Math.min((sw * 0.96) / block.w, (sh - T - gap * (n ? 3 : 2)) / block.h);
-    if (scale > 0 && (!best || scale > best.scale + 1e-9)) best = { aspect, sw, sh, sz, rowH, headH, gap, T, scale };
+    if (scale > 0) cands.push({ kind: 'stack', aspect, sw, sh, sz, rowH, headH, scale });
   }
+  if (n) for (const [aspect, sw, sh] of STAGES.slice(0, 2)) for (const f of [0.34, 0.4, 0.46]) {
+    const tw = sw * f - gap, sz = textSize(tw, 11, 22);
+    const rowH = Math.round(sz * 1.9), headH = Math.round(sz * 2.1);
+    if (headH + n * rowH > sh - 2 * gap) continue;
+    if (maxChars * sz * 0.62 > tw * 0.97) continue;           // the longest row must fit its line
+    const scale = Math.min((sw * (1 - f) - 2 * gap) / block.w, (sh - 2 * gap) / block.h);
+    if (scale > 0) cands.push({ kind: 'side', aspect, sw, sh, sz, rowH, headH, scale, f });
+  }
+  let best = null;
+  for (const c of cands) if (!best || c.scale > best.scale + 1e-9) best = c;
   if (!best) throw new ArchError(['the diagram and its steps table do not fit on one film stage; reduce the number of steps or the diagram size']);
-  const { aspect, sw, sh, sz, rowH, headH, gap, scale } = best;
+  const { aspect, sw, sh, sz, rowH, headH, scale } = best;
   const pw = block.w * scale, ph = block.h * scale;
-  const px = (sw - pw) / 2, py = gap;
+  let px, py, tx, tw, top;
+  if (best.kind === 'side') {
+    const reg = sw * (1 - best.f);
+    px = (reg - pw) / 2; py = (sh - ph) / 2;
+    tx = reg + gap / 2; tw = sw * best.f - gap * 1.5; top = gap;
+  } else {
+    px = (sw - pw) / 2; py = gap;
+    tx = sw * 0.03; tw = sw * 0.94; top = py + ph + gap;
+  }
   const arch = { ...block, id: 'arch', place: { x: r2((px / sw) * 100), y: r2((py / sh) * 100), w: r2((pw / sw) * 100), h: r2((ph / sh) * 100), z: 1 } };
   const blocks = [arch];
   const tracks = [{ target: 'arch', keys: [{ t: 0, p: 0 }, { t: D, p: 1, ease: 'linear' }] }];
   if (n) {
-    const top = py + ph + gap;
-    const xPct = r2((sw * 0.03 / sw) * 100), wPct = 94;
-    blocks.push({ type: 'motion_text', id: 'head', text: 'STEP  FROM → TO: WHAT', size: Math.max(11, sz - 3), font: 'mono', weight: 'bold', mode: 'block', reveal: 'fade', color: '#9ca5b1', place: { x: xPct, y: r2((top / sh) * 100), w: wPct, z: 2 } });
+    const xPct = r2((tx / sw) * 100), wPct = r2((tw / sw) * 100);
+    const aw = rel ? r2(wPct * 0.68) : wPct, rx = r2(xPct + wPct * 0.7), rw = r2(wPct * 0.3);
+    blocks.push({ type: 'motion_text', id: 'head', text: 'STEP  ACTIVITY', size: Math.max(11, sz - 3), font: 'mono', weight: 'bold', mode: 'block', reveal: 'fade', color: '#9ca5b1', place: { x: xPct, y: r2((top / sh) * 100), w: aw, z: 2 } });
+    if (rel) blocks.push({ type: 'motion_text', id: 'headrel', text: relName.toUpperCase(), size: Math.max(11, sz - 3), font: 'mono', weight: 'bold', mode: 'block', reveal: 'fade', color: '#9ca5b1', place: { x: rx, y: r2((top / sh) * 100), w: rw, z: 2 } });
     const rowY = (k) => top + headH + k * rowH;
     blocks.push({ type: 'motion_shape', id: 'hl', shape: 'rect', draw: 'none', fill: '#8d98ff', radius: 8, place: { x: r2(xPct - 1.2), y: r2((rowY(0) - 4) / sh * 100), w: r2(wPct + 2.4), h: r2((rowH - 2) / sh * 100), z: 1 } });
     const hlKeys = [{ t: 0, y: r2((rowY(0) - 4) / sh * 100), opacity: 0 }];
     steps.forEach((s, k) => {
       const t0 = sch[k].start;
-      blocks.push({ type: 'motion_text', id: 'row' + (k + 1), text: rows[k], size: sz, font: 'mono', weight: 'regular', mode: 'block', reveal: 'fade', place: { x: xPct, y: r2((rowY(k) / sh) * 100), w: wPct, z: 2 } });
-      tracks.push({ target: 'row' + (k + 1), keys: [{ t: 0, opacity: 0 }, { t: t0, opacity: 0 }, { t: r2(t0 + 0.3), opacity: 1, ease: 'standard' }] });
+      const fade = [{ t: 0, opacity: 0 }, { t: t0, opacity: 0 }, { t: r2(t0 + 0.3), opacity: 1, ease: 'standard' }];
+      blocks.push({ type: 'motion_text', id: 'row' + (k + 1), text: rows[k], size: sz, font: 'mono', weight: 'regular', mode: 'block', reveal: 'fade', place: { x: xPct, y: r2((rowY(k) / sh) * 100), w: aw, z: 2 } });
+      tracks.push({ target: 'row' + (k + 1), keys: fade });
+      if (rel && s.relation) {
+        blocks.push({ type: 'motion_text', id: 'rel' + (k + 1), text: s.relation, size: sz, font: 'mono', weight: 'regular', mode: 'block', reveal: 'fade', color: '#9ca5b1', place: { x: rx, y: r2((rowY(k) / sh) * 100), w: rw, z: 2 } });
+        tracks.push({ target: 'rel' + (k + 1), keys: fade });
+      }
       hlKeys.push(k === 0
         ? { t: t0, y: r2((rowY(0) - 4) / sh * 100), opacity: 0, ease: 'hold' }
         : { t: t0, y: r2((rowY(k) - 4) / sh * 100), opacity: 0.22, ease: 'hold' });
@@ -208,7 +237,7 @@ export function filmPayload(block, ctx = {}) {
 // Standalone payload: the finished diagram (and, when numbered, the steps table under it).
 export function archPayload(block, ctx = {}) {
   const blocks = [block];
-  if (ctx.steps && ctx.steps.length) blocks.push(stepsTable(ctx.steps));
+  if (ctx.steps && ctx.steps.length) blocks.push(stepsTable(ctx.steps, ctx));
   return { theme: 'dark', blocks };
 }
 

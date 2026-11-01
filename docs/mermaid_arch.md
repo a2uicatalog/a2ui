@@ -20,7 +20,8 @@ node scripts/mermaid_arch/cli.mjs diagram.d2               # D2 subset (see belo
 
 Options: `--direction LR|RL|TB|BT` (force the flow direction), `--size N` (label px, 8-40),
 `--title TEXT`, `--fit wide`, `--graph` (input is a canonical graph in JSON), `--numbered`,
-`--pace slow|normal|fast`, `--duration SECONDS`, `--d2` (read stdin as D2).
+`--pace slow|normal|fast`, `--duration SECONDS`, `--d2` (read stdin as D2), `--routing orthogonal|curve`
+(routed right-angle edges, the default, or the atom's single curves), `--relation-column`, `--relation-name TEXT`.
 
 ```js
 import { mermaidToArch } from './scripts/mermaid_arch/index.mjs';
@@ -58,19 +59,21 @@ The library returns `steps` (`{step, from, to, label, style}`, in order). The pa
 table:
 
 - **standalone** (`film: false`): the finished `motion_arch` followed by the repo's existing `table` atom
-  (Step, From, To, What, Kind);
+  with exactly the columns `Step | Activity` (see "The Activity sentence" below);
 - **film** (`film: true`): ONE `motion_timeline` holds the diagram and the table, so both run on one
   clock. Each row is a `motion_text` that fades in when its step's edge starts drawing, a translucent
   `motion_shape` bar steps to the row of the step that is playing, and the poster frame is the finished
-  table. Rows are one line of at most 60 characters, so a long row is cut with an ellipsis (the `table`
-  atom has the full text). Twelve steps is the most a film carries (the timeline holds 24 children).
+  table. Rows are one line of at most 60 characters (the sentence, then the sentence without "the", then
+  `From -> To: label`, and only then cut with an ellipsis; the `table` atom has the full sentence). The stage
+  is the one of four shapes, or a wide stage with the table beside a tall diagram, that draws the diagram
+  biggest. Twelve steps is the most a film carries (the timeline holds 24 children).
 
 **Pacing** (timing only; no atom change). Every step gets reading time:
 
 ```
-dwell(step) = max(2.5 s, (words in the edge label + words in its table row) / 3 + 0.8 s)
-              x 1.15 above 6 steps, x 1.15 again above 9 steps, x pace (slow 1.4, normal 1.0, fast 0.75)
-total       = 1.5 s lead-in (groups and nodes pop) + sum of the dwells + 3 s hold on the finished diagram
+dwell(step) = max(1.8 s, words in the step's sentence / 4 per second + 0.5 s)
+              x 1.1 above 6 steps, x 1.1 again above 9 steps, x pace (slow 1.4, normal 1.0, fast 0.75)
+total       = 1 s lead-in (groups and nodes pop) + sum of the dwells + 2 s hold on the finished diagram
 ```
 
 Edges draw and message chips ride inside their own step, one after another (a step with several chips is
@@ -81,6 +84,28 @@ dwells to fit, with a warning if it is under the time the steps need at the fast
 120 s timeline limit. The atom keeps every window at 1% of the film or longer, so a very long film cannot
 have very short pops. Without `numbered` the film uses the same schedule (edges in flow order) and has no
 table.
+
+**The Activity sentence** is built from the two node labels and the edge label by a fixed template
+(`scripts/mermaid_arch/activity.mjs`; no model, same input gives the same text): "Chat host sends the tool
+call to LLM"; a label that starts with a known verb reads as a verb phrase ("types prompt" gives "User
+types prompt into Client app", "asks" gives "User asks Orchestrator"); `<->` edges and "reads and writes"
+give "Agent reads and writes State"; async and optional edges end in "(async)" / "(optional)". "the" is only
+added before a lower-case plain label, never before "A2UI JSON" or "tools/call". The template is crude on
+purpose; a wrong-sounding sentence is fixed by rewording the edge label.
+
+**The optional Relation column.** Off by default. Turn it on with `opts.relationColumn`, `--relation-column`,
+or `%% relation-column: on` (an explicit option beats the directive); the review page and the playground have
+a "Show relation column" checkbox next to the numbers toggle. The cell is a short verb type from an optional
+directive, free text of at most 20 characters; an edge without one has an empty cell:
+
+```
+%% rel: orch->card calls
+%% rel: remote->orch reports back
+%% relation-name: Interaction     (renames the column header; default Relation, at most 20 characters)
+```
+
+In the film the column is a third text block per row that fades in with its row. D2 uses `# rel:`,
+`# relation-column:` and `# relation-name:`.
 
 A proper number badge on the edge would need a small additive change to the `motion_arch` atom; today
 the number is part of the label text.
@@ -113,7 +138,8 @@ circles, edges that point at a whole subgraph.
 ```
 
 `title` becomes the accessible name. Also: `%% numbered: on|off`, `%% step: from->to N`,
-`%% pace: slow|normal|fast`, `%% duration: SECONDS`.
+`%% pace: slow|normal|fast`, `%% duration: SECONDS`, `%% rel: from->to TEXT`, `%% relation-column: on|off`,
+`%% relation-name: TEXT`.
 
 `title` becomes the accessible name. `msg` adds a payload chip that rides the first edge from `from`
 to `to` (ids as written in the Mermaid file; case-insensitive). Add `back` to send it from the end to
@@ -169,19 +195,35 @@ running the members across or along the flow and keeps the tidier result. Ungrou
 between and beside the groups. Box sizes come from label lengths (calibrated against the atom's fonts
 on one machine; other fonts may differ by some percent, the boxes carry slack for that).
 
-The atom draws one curved line per edge with no routing. The converter picks each edge's `curve`
-(bend) to keep lines off other boxes, edge labels off boxes and off each other, and group titles
-clear. That step is one function (`routeCurves` in `layout.mjs`); a real router can replace it.
+**Edge routing** (`scripts/mermaid_arch/route.mjs`, the default; `routing: 'curve'` / `--routing curve` gives the
+stage-1 single curves, byte for byte). The atom only draws what it is told: per edge `points` (a polyline with rounded
+corners, `radius` top-level) and `label_at` (where the label's centre goes), and messages ride the polyline. The
+router is a public JS module in the converter, not in the Python or Apps Script twins.
 
-**Direction.** The direction in the file is kept unless the text would be under 7 px in a 343 px phone
-column and the other axis is at least 30% better without a messier drawing; then the converter draws
-it the other way and says so (warning). Force the written direction with `--direction`.
+- A grid (cell about 0.55 x the text size) lies over the drawing. Cells near a box or on a group title are blocked.
+- Each edge is an A* search over (cell, heading): distance, a cost per bend, a heavy cost for running along a lane
+  another edge uses, a medium one for crossing it, a cost for passing through a group the edge does not belong to
+  or running along a group border. Edges are routed shortest first, ties by input order, so the output is byte-stable.
+- An edge leaves and enters a box at a port (a cell 15+ px out from one of the four sides, away from the rounded
+  corners), so its first and last stretch are at right angles to the box and long enough for the arrowhead. A
+  request/response pair takes two neighbouring lanes. At most 10 points per edge; an edge that cannot be routed
+  within that is drawn as a curve and a warning says so.
+- Every channel between ranks grows with the number of edges (and, top to bottom, the labels) that run through it.
+  If some label still has no free place, all gaps are widened and the diagram is routed again (twice at most).
+- Labels go on the longest free stretch: above or below a horizontal one, left or right of a vertical one, or on the
+  line, checked against boxes, group titles, other labels and other edges. A label is never shortened here; when
+  nothing is free it is placed where it collides least and a warning says so.
+
+**Direction and shape.** With routing on, the converter lays the diagram out both ways (and several group
+arrangements), routes each, and keeps the one with the best score: text size on a 343 px phone column (every px
+under 9 costs), not more than about 1.7 times taller than wide, then crossings, label collisions, bends and length.
+When it picks the other axis it says so (warning). Force the written direction with `--direction`.
 
 **Frame and text size.** The frame (`w`, `h`) is the layout's natural size, aimed at about 1000 wide
 and no more than about 1100 tall; `size` (label px) is chosen with it. What matters on a phone is
 `size x 343 / w`. All sizes are single-line labels (the atom does not wrap text), so wide labels and
-many ranks make small text. The five example diagrams measure 4.3 to 8.2 px (the flat left-to-right ones are the worst);
-a diagram with short labels, or a vertical one, reads better.
+many ranks make small text. The five example diagrams measured 2.0 to 6.7 px as curves and 5.2 to 8.6 px routed (see the numbers in the
+review page); a diagram with short labels, or a vertical one, reads better.
 
 ## D2 (subset)
 
@@ -207,13 +249,14 @@ scenarios, sql_table/class shapes, edges to a whole container, icons, globs.
 
 ## Honest limitations
 
-- Edges are single curves. They can cross boxes and each other, and two labelled edges that run
-  parallel in a vertical corridor can have their labels on top of each other (the atom centres every
-  label on its curve). A router with label placement would fix this; it needs an atom change or a
-  separate waypoint field.
+- Routed edges can still cross each other (the router prefers a detour of up to about 7 lanes to a crossing, no more)
+  and a label may sit across a neighbouring edge's line when the channel is crowded; the counts are measured and
+  reported, and the review page shows them. Two edges next to each other can make it unclear which label belongs to
+  which line; labels sit right against their own line to keep that readable.
+- Routing a 12-node diagram takes about 1 to 2 seconds in Node (several candidate layouts are routed).
 - Long labels make small text on phones; see above.
 - Fonts: widths are estimates. A different system font can make a label touch its box edge.
-- No orthogonal edges, no dotted style (`optional` is drawn dashed), no thick lines, no nested boxes,
+- No dotted style (`optional` is drawn dashed), no thick lines, no nested boxes,
   no icons beyond the eight kinds.
 - Over 12 nodes is refused, not folded into an overview.
 - Text is not wrapped and is cut at the atom's limits.
@@ -223,4 +266,4 @@ scenarios, sql_table/class shapes, edges to a whole container, icons, globs.
 `node scripts/test_mermaid_arch.mjs` (parser tables for Mermaid and D2, error messages, numbering and pacing, layout invariants on the example
 diagrams in `scripts/mermaid_arch/examples/` and on synthetic graphs, compile checks, golden payloads,
 and the Python web renderer drawing every golden payload). After an intended change:
-`UPDATE_GOLDEN=1 node scripts/test_mermaid_arch.mjs`.
+`UPDATE_GOLDEN=1 node scripts/test_mermaid_arch.mjs`. The default goldens are the routed drawing; the `*.curve.golden.json` files keep the stage-1 curve drawing. `tests/test_motion_arch_routing.py` covers the atom's `points`, `label_at` and `radius` (Python and Apps Script renderers byte for byte).
