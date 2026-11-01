@@ -321,19 +321,19 @@
        "edge": 1,
        "text": "GET agent card",
        "at": 0.13,
-       "dur": 0.0693
+       "dur": 0.0624
       },
       {
        "edge": 2,
        "text": "SendStreamingMessage",
        "at": 0.2348,
-       "dur": 0.0693
+       "dur": 0.0763
       },
       {
        "edge": 6,
        "text": "artifact",
        "at": 0.6638,
-       "dur": 0.0693
+       "dur": 0.0822
       }
      ],
      "id": "arch",

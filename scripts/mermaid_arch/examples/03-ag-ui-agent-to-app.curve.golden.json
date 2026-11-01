@@ -16,7 +16,7 @@
      "y": 35.52,
      "w": 8.86,
      "h": 14.48,
-     "at": 0.0092,
+     "at": 0.0091,
      "dur": 0.011
     },
     {
@@ -27,7 +27,7 @@
      "y": 38.34,
      "w": 15.94,
      "h": 14.48,
-     "at": 0.0109,
+     "at": 0.0108,
      "dur": 0.011
     },
     {
@@ -38,7 +38,7 @@
      "y": 38.34,
      "w": 15.94,
      "h": 14.48,
-     "at": 0.0126,
+     "at": 0.0125,
      "dur": 0.011
     },
     {
@@ -60,7 +60,7 @@
      "y": 52.82,
      "w": 8.33,
      "h": 14.48,
-     "at": 0.0143,
+     "at": 0.0141,
      "dur": 0.011
     },
     {
@@ -71,7 +71,7 @@
      "y": 52.82,
      "w": 16.83,
      "h": 14.48,
-     "at": 0.0159,
+     "at": 0.0158,
      "dur": 0.011
     },
     {
@@ -82,7 +82,7 @@
      "y": 86.6,
      "w": 15.94,
      "h": 14.48,
-     "at": 0.0176,
+     "at": 0.0174,
      "dur": 0.011
     }
    ],
@@ -93,16 +93,16 @@
      "label": "message",
      "style": "solid",
      "curve": -80,
-     "at": 0.0251,
-     "dur": 0.0126
+     "at": 0.0249,
+     "dur": 0.0125
     },
     {
      "from": "app",
      "to": "client",
      "label": "run input",
      "style": "solid",
-     "at": 0.1773,
-     "dur": 0.0126
+     "at": 0.1756,
+     "dur": 0.0125
     },
     {
      "from": "client",
@@ -110,24 +110,24 @@
      "label": "POST run over HTTP",
      "style": "solid",
      "curve": -100,
-     "at": 0.2686,
-     "dur": 0.0126
+     "at": 0.266,
+     "dur": 0.0125
     },
     {
      "from": "agent",
      "to": "llm",
      "label": "prompt",
      "style": "solid",
-     "at": 0.5845,
-     "dur": 0.0126
+     "at": 0.5886,
+     "dur": 0.0125
     },
     {
      "from": "agent",
      "to": "tools",
      "label": "tool call",
      "style": "solid",
-     "at": 0.6758,
-     "dur": 0.0126
+     "at": 0.679,
+     "dur": 0.0125
     },
     {
      "from": "agent",
@@ -135,8 +135,8 @@
      "label": "events, SSE by default",
      "style": "dashed",
      "curve": 12,
-     "at": 0.3827,
-     "dur": 0.0126
+     "at": 0.379,
+     "dur": 0.0125
     },
     {
      "from": "client",
@@ -144,8 +144,8 @@
      "label": "dispatches events",
      "style": "solid",
      "curve": 24,
-     "at": 0.5085,
-     "dur": 0.0126
+     "at": 0.5132,
+     "dur": 0.0125
     },
     {
      "from": "app",
@@ -153,8 +153,8 @@
      "label": "streamed UI",
      "style": "solid",
      "curve": -24,
-     "at": 0.1012,
-     "dur": 0.0126
+     "at": 0.1002,
+     "dur": 0.0125
     },
     {
      "from": "agent",
@@ -163,8 +163,8 @@
      "style": "solid",
      "both": true,
      "curve": -100,
-     "at": 0.7823,
-     "dur": 0.0126
+     "at": 0.7845,
+     "dur": 0.0125
     },
     {
      "from": "app",
@@ -172,8 +172,8 @@
      "label": "reads and writes",
      "style": "solid",
      "both": true,
-     "at": 0.8736,
-     "dur": 0.0126
+     "at": 0.8749,
+     "dur": 0.0125
     }
    ],
    "groups": [
@@ -200,20 +200,20 @@
     {
      "edge": 2,
      "text": "run input",
-     "at": 0.2824,
-     "dur": 0.0503
+     "at": 0.2797,
+     "dur": 0.0546
     },
     {
      "edge": 5,
      "text": "TEXT_MESSAGE_CONTENT",
-     "at": 0.3965,
-     "dur": 0.0503
+     "at": 0.3927,
+     "dur": 0.0548
     },
     {
      "edge": 5,
      "text": "STATE_DELTA",
-     "at": 0.4506,
-     "dur": 0.0503
+     "at": 0.4512,
+     "dur": 0.0546
     }
    ]
   },

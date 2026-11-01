@@ -977,7 +977,7 @@ test('film: the stage is picked for the biggest diagram; a tall diagram may get 
 test('pacing: a 10-step diagram plays in about 25-35 s at the normal pace, and the new durations scale with pace', () => {
   const src = readFileSync(join(EX, '01-a2ui-agent-to-screen.mmd'), 'utf8');
   const d = (pace) => mermaidToArch(src, { numbered: true, pace }).durationSeconds;
-  assert.ok(d('normal') >= 25 && d('normal') <= 36, 'normal ' + d('normal'));
+  assert.ok(d('normal') >= 25 && d('normal') <= 42, 'normal ' + d('normal'));   // chips ride at a constant apparent speed, so long edges lengthen the film
   assert.ok(d('fast') < d('normal') && d('normal') < d('slow'));
 });
 
@@ -1078,7 +1078,7 @@ test('a short %% duration with many chips on one edge is refused with a clear me
   const m = /at least (\d+) s/.exec((() => { try { mermaidToArch(src); } catch (e) { return e.errors[0]; } })());
   const r = mermaidToArch(src.replace('duration: 4', 'duration: ' + m[1]));
   assert.deepEqual(validateBlock(r.block), [], 'the suggested duration works');
-  const fine = mermaidToArch('%% duration: 4\n%% msg: a->b "m"\nflowchart LR\na --> b');
+  const fine = mermaidToArch('%% duration: 6\n%% msg: a->b "m"\nflowchart LR\na --> b');
   assert.deepEqual(validateBlock(fine.block), []);
 });
 
@@ -1168,4 +1168,62 @@ test('worker-safe: the converter modules touch no DOM, window, storage or node-o
     const code = readFileSync(join(dir, f), 'utf8').replace(/\/\/.*$/gm, '').replace(/'(?:[^'\\\n]|\\.)*'|`(?:[^`\\]|\\.)*`/g, "''");
     assert.ok(!/(?<![.\w])(document|window|localStorage|sessionStorage|navigator|process|require)\b(?!\s*:)|from\s+['"]node:/.test(code), `${f} uses a browser-only or node-only global`);
   }
+});
+
+// ------------------------------------------------------------------ chip pacing: one apparent speed
+const pathPx = (lay, graph, i) => {
+  const rt = lay.routes && lay.routes[i];
+  if (rt) { let t = 0; for (let q = 0; q + 1 < rt.points.length; q++) t += Math.hypot(rt.points[q + 1][0] - rt.points[q][0], rt.points[q + 1][1] - rt.points[q][1]); return t; }
+  const a = lay.nodes.find((n) => n.id === graph.edges[i].from), b = lay.nodes.find((n) => n.id === graph.edges[i].to);
+  return 1.2 * Math.hypot(a.x + a.w / 2 - (b.x + b.w / 2), a.y + a.h / 2 - (b.y + b.h / 2));
+};
+test('chip pacing: every chip moves at 14% of the long side per second (+-15%) unless its ride is clamped to the minimum or maximum', () => {
+  let free = 0;
+  for (const f of examples) {
+    const r = mermaidToArch(readFileSync(join(EX, f), 'utf8'), { film: true, numbered: true, hint: 'web' });
+    const long = Math.max(r.layout.W, r.layout.H);
+    for (const m of r.block.messages || []) {
+      const ride = m.dur * r.durationSeconds, min = Math.max(1.8, 0.8 + 0.07 * m.text.length), max = Math.max(5, min);
+      const v = pathPx(r.layout, r.graph, m.edge) / long / ride;
+      if (ride > min + 0.03 && ride < max - 0.03) { free++; assert.ok(Math.abs(v / 0.14 - 1) <= 0.15, `${f} "${m.text}": ${(v * 100).toFixed(1)}%/s`); }
+      else assert.ok(ride >= min - 0.03 && ride <= max + 0.03, `${f}: ride ${ride} outside ${min}..${max}`);
+    }
+  }
+  assert.ok(free >= 5, 'enough chips are in the free range to make the property mean something: ' + free);
+});
+
+test('chip pacing: long text keeps its chip on screen longer (minimum ride 0.8 s + 0.07 s per character), even on a short edge', () => {
+  const text = 'x'.repeat(40);
+  const r = mermaidToArch(`%% msg: a->b "${text}"\nflowchart LR\na -->|go| b`, { film: true });
+  const m = r.block.messages[0];
+  assert.ok(m.dur * r.durationSeconds >= 0.8 + 0.07 * 40 - 0.03, 'ride ' + m.dur * r.durationSeconds);
+  const short = mermaidToArch('%% msg: a->b "hi"\nflowchart LR\na -->|go| b', { film: true }).block.messages[0];
+  assert.ok(short.dur * mermaidToArch('%% msg: a->b "hi"\nflowchart LR\na -->|go| b', { film: true }).durationSeconds >= 1.8 - 0.03);
+});
+
+test('chip pacing: several chips on one edge ride one after another inside their step, never overlapping', () => {
+  const src = '%% msg: a->b "one"\n%% msg: a->b "second message here"\n%% msg: b->a "three"\nflowchart LR\na -->|go| b\nb --> c';
+  for (const pace of ['slow', 'normal', 'fast']) {
+    const r = mermaidToArch(src, { pace });
+    const D = r.durationSeconds, ms = r.block.messages.filter((m) => m.edge === 0).map((m) => ({ s: m.at * D, e: (m.at + m.dur) * D }));
+    assert.equal(ms.length, 3);
+    for (let i = 1; i < ms.length; i++) assert.ok(ms[i].s >= ms[i - 1].e - 0.01, `${pace}: chip ${i} starts before the previous ends`);
+    const st = r.schedule[0];
+    assert.ok(ms[0].s >= st.start - 0.01 && ms[2].e <= st.end + 0.01, `${pace}: chips inside the step`);
+  }
+});
+
+test('chip pacing: pace scales the ride (slow longer, fast shorter) but never below 0.75 x the minimum', () => {
+  const src = readFileSync(join(EX, examples[1]), 'utf8');
+  const rides = (pace) => mermaidToArch(src, { film: true, numbered: true, pace }).block.messages.map((m) => m.dur);
+  const D = (pace) => mermaidToArch(src, { film: true, numbered: true, pace }).durationSeconds;
+  const sl = rides('slow').map((x) => x * D('slow')), no = rides('normal').map((x) => x * D('normal')), fa = rides('fast').map((x) => x * D('fast'));
+  sl.forEach((x, i) => { assert.ok(x >= no[i] - 0.03 && no[i] >= fa[i] - 0.03); assert.ok(fa[i] >= 0.75 * 1.8 - 0.03); });
+});
+
+test('chip pacing: a duration override that gives the chips room works, one that does not is refused with a working suggestion', () => {
+  const src = readFileSync(join(EX, examples[1]), 'utf8');
+  const natural = mermaidToArch(src, { film: true, numbered: true }).durationSeconds;
+  assert.deepEqual(validateBlock(mermaidToArch(src, { film: true, numbered: true, duration: Math.ceil(natural) }).block), []);
+  assert.throws(() => mermaidToArch('%% duration: 6\n' + src, { film: true }), (e) => e instanceof ArchError && /too short|at least/.test(e.errors.join()));
 });

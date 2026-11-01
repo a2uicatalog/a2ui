@@ -5,12 +5,12 @@
    "type": "motion_timeline",
    "title": "A2UI v0.9: from prompt to native screen",
    "aspect": "9:16",
-   "duration": 35.67,
+   "duration": 37.668,
    "loop": true,
    "autoplay": true,
    "controls": true,
    "theme": "dark",
-   "poster": 35.17,
+   "poster": 37.17,
    "blocks": [
     {
      "type": "motion_arch",
@@ -27,7 +27,7 @@
        "y": 50,
        "w": 7.76,
        "h": 14.09,
-       "at": 0.0084,
+       "at": 0.008,
        "dur": 0.011
       },
       {
@@ -38,7 +38,7 @@
        "y": 25.84,
        "w": 12.44,
        "h": 14.09,
-       "at": 0.0107,
+       "at": 0.0101,
        "dur": 0.011
       },
       {
@@ -49,7 +49,7 @@
        "y": 54.03,
        "w": 14.73,
        "h": 14.09,
-       "at": 0.0129,
+       "at": 0.0122,
        "dur": 0.011
       },
       {
@@ -60,7 +60,7 @@
        "y": 82.21,
        "w": 17.81,
        "h": 14.09,
-       "at": 0.0151,
+       "at": 0.0143,
        "dur": 0.011
       },
       {
@@ -71,7 +71,7 @@
        "y": 54.03,
        "w": 11.64,
        "h": 14.09,
-       "at": 0.0174,
+       "at": 0.0165,
        "dur": 0.011
       },
       {
@@ -82,7 +82,7 @@
        "y": 54.03,
        "w": 7.26,
        "h": 14.09,
-       "at": 0.0196,
+       "at": 0.0186,
        "dur": 0.011
       }
      ],
@@ -92,24 +92,24 @@
        "to": "client",
        "label": "1 types prompt",
        "style": "solid",
-       "at": 0.028,
-       "dur": 0.014
+       "at": 0.0265,
+       "dur": 0.0133
       },
       {
        "from": "client",
        "to": "agent",
        "label": "2 prompt",
        "style": "solid",
-       "at": 0.1044,
-       "dur": 0.014
+       "at": 0.0988,
+       "dur": 0.0133
       },
       {
        "from": "agent",
        "to": "llm",
        "label": "3 plan",
        "style": "solid",
-       "at": 0.1976,
-       "dur": 0.014
+       "at": 0.2177,
+       "dur": 0.0133
       },
       {
        "from": "llm",
@@ -117,8 +117,8 @@
        "label": "4 A2UI JSON",
        "style": "solid",
        "curve": 50,
-       "at": 0.2825,
-       "dur": 0.014
+       "at": 0.298,
+       "dur": 0.0133
       },
       {
        "from": "agent",
@@ -126,32 +126,32 @@
        "label": "5 createSurface, updateComponents",
        "style": "dashed",
        "curve": 24,
-       "at": 0.3673,
-       "dur": 0.014
+       "at": 0.3783,
+       "dur": 0.0133
       },
       {
        "from": "client",
        "to": "renderer",
        "label": "6 A2UI messages",
        "style": "solid",
-       "at": 0.469,
-       "dur": 0.014
+       "at": 0.4972,
+       "dur": 0.0133
       },
       {
        "from": "renderer",
        "to": "catalog",
        "label": "7 looks up components",
        "style": "solid",
-       "at": 0.5623,
-       "dur": 0.014
+       "at": 0.5855,
+       "dur": 0.0133
       },
       {
        "from": "renderer",
        "to": "user",
        "label": "8 native UI",
        "style": "solid",
-       "at": 0.6556,
-       "dur": 0.014
+       "at": 0.6739,
+       "dur": 0.0133
       },
       {
        "from": "renderer",
@@ -159,8 +159,8 @@
        "label": "9 action",
        "style": "dashed",
        "curve": 65,
-       "at": 0.7404,
-       "dur": 0.014
+       "at": 0.7542,
+       "dur": 0.0133
       },
       {
        "from": "client",
@@ -168,8 +168,8 @@
        "label": "10 action",
        "style": "dashed",
        "curve": 36,
-       "at": 0.8422,
-       "dur": 0.014
+       "at": 0.8505,
+       "dur": 0.0133
       }
      ],
      "groups": [
@@ -196,20 +196,20 @@
       {
        "edge": 1,
        "text": "prompt",
-       "at": 0.1198,
-       "dur": 0.0561
+       "at": 0.1134,
+       "dur": 0.0963
       },
       {
        "edge": 4,
        "text": "updateComponents",
-       "at": 0.3827,
-       "dur": 0.0561
+       "at": 0.3929,
+       "dur": 0.0963
       },
       {
        "edge": 8,
        "text": "action",
-       "at": 0.7558,
-       "dur": 0.0561
+       "at": 0.7688,
+       "dur": 0.0478
       }
      ],
      "id": "arch",
@@ -423,7 +423,7 @@
        "p": 0
       },
       {
-       "t": 35.67,
+       "t": 37.668,
        "p": 1,
        "ease": "linear"
       }
@@ -473,11 +473,11 @@
        "opacity": 0
       },
       {
-       "t": 7.05,
+       "t": 8.2,
        "opacity": 0
       },
       {
-       "t": 7.35,
+       "t": 8.5,
        "opacity": 1,
        "ease": "standard"
       }
@@ -491,11 +491,11 @@
        "opacity": 0
       },
       {
-       "t": 10.075,
+       "t": 11.225,
        "opacity": 0
       },
       {
-       "t": 10.38,
+       "t": 11.53,
        "opacity": 1,
        "ease": "standard"
       }
@@ -509,11 +509,11 @@
        "opacity": 0
       },
       {
-       "t": 13.1,
+       "t": 14.25,
        "opacity": 0
       },
       {
-       "t": 13.4,
+       "t": 14.55,
        "opacity": 1,
        "ease": "standard"
       }
@@ -527,11 +527,11 @@
        "opacity": 0
       },
       {
-       "t": 16.73,
+       "t": 18.728,
        "opacity": 0
       },
       {
-       "t": 17.03,
+       "t": 19.03,
        "opacity": 1,
        "ease": "standard"
       }
@@ -545,11 +545,11 @@
        "opacity": 0
       },
       {
-       "t": 20.058,
+       "t": 22.056,
        "opacity": 0
       },
       {
-       "t": 20.36,
+       "t": 22.36,
        "opacity": 1,
        "ease": "standard"
       }
@@ -563,11 +563,11 @@
        "opacity": 0
       },
       {
-       "t": 23.385,
+       "t": 25.383,
        "opacity": 0
       },
       {
-       "t": 23.69,
+       "t": 25.68,
        "opacity": 1,
        "ease": "standard"
       }
@@ -581,11 +581,11 @@
        "opacity": 0
       },
       {
-       "t": 26.41,
+       "t": 28.408,
        "opacity": 0
       },
       {
-       "t": 26.71,
+       "t": 28.71,
        "opacity": 1,
        "ease": "standard"
       }
@@ -599,11 +599,11 @@
        "opacity": 0
       },
       {
-       "t": 30.04,
+       "t": 32.038,
        "opacity": 0
       },
       {
-       "t": 30.34,
+       "t": 32.34,
        "opacity": 1,
        "ease": "standard"
       }
@@ -635,49 +635,49 @@
        "ease": "hold"
       },
       {
-       "t": 7.05,
+       "t": 8.2,
        "y": 27.73,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 10.075,
+       "t": 11.225,
        "y": 30.39,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 13.1,
+       "t": 14.25,
        "y": 33.04,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 16.73,
+       "t": 18.728,
        "y": 35.7,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 20.058,
+       "t": 22.056,
        "y": 38.36,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 23.385,
+       "t": 25.383,
        "y": 41.01,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 26.41,
+       "t": 28.408,
        "y": 43.67,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 30.04,
+       "t": 32.038,
        "y": 46.32,
        "opacity": 0.22,
        "ease": "hold"

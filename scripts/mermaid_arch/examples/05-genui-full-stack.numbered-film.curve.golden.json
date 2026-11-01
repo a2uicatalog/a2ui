@@ -5,12 +5,12 @@
    "type": "motion_timeline",
    "title": "GenUI stack, one possible composition (A2UI v0.9)",
    "aspect": "9:16",
-   "duration": 47.226,
+   "duration": 47.486,
    "loop": true,
    "autoplay": true,
    "controls": true,
    "theme": "dark",
-   "poster": 46.73,
+   "poster": 46.99,
    "blocks": [
     {
      "type": "motion_arch",
@@ -27,7 +27,7 @@
        "y": 6.93,
        "w": 12.9,
        "h": 7.45,
-       "at": 0.0064,
+       "at": 0.0063,
        "dur": 0.011
       },
       {
@@ -38,7 +38,7 @@
        "y": 31.39,
        "w": 23.28,
        "h": 7.45,
-       "at": 0.0088,
+       "at": 0.0087,
        "dur": 0.011
       },
       {
@@ -49,7 +49,7 @@
        "y": 26.06,
        "w": 24.64,
        "h": 7.45,
-       "at": 0.0076,
+       "at": 0.0075,
        "dur": 0.011
       },
       {
@@ -60,7 +60,7 @@
        "y": 36.71,
        "w": 25.9,
        "h": 7.45,
-       "at": 0.01,
+       "at": 0.0099,
        "dur": 0.011
       },
       {
@@ -71,7 +71,7 @@
        "y": 58.32,
        "w": 19.4,
        "h": 7.45,
-       "at": 0.0112,
+       "at": 0.0111,
        "dur": 0.011
       },
       {
@@ -82,7 +82,7 @@
        "y": 58.32,
        "w": 12.12,
        "h": 7.45,
-       "at": 0.0124,
+       "at": 0.0123,
        "dur": 0.011
       },
       {
@@ -93,7 +93,7 @@
        "y": 79.94,
        "w": 20.76,
        "h": 7.45,
-       "at": 0.0136,
+       "at": 0.0135,
        "dur": 0.011
       },
       {
@@ -104,7 +104,7 @@
        "y": 90.59,
        "w": 35.01,
        "h": 7.45,
-       "at": 0.0148,
+       "at": 0.0147,
        "dur": 0.011
       }
      ],
@@ -114,7 +114,7 @@
        "to": "app",
        "label": "1 asks",
        "style": "solid",
-       "at": 0.0212,
+       "at": 0.0211,
        "dur": 0.011
       },
       {
@@ -122,7 +122,7 @@
        "to": "agent",
        "label": "2 AG-UI run",
        "style": "solid",
-       "at": 0.0673,
+       "at": 0.0669,
        "dur": 0.011
       },
       {
@@ -130,7 +130,7 @@
        "to": "llm",
        "label": "3 prompt",
        "style": "solid",
-       "at": 0.1378,
+       "at": 0.1425,
        "dur": 0.011
       },
       {
@@ -138,7 +138,7 @@
        "to": "mcp",
        "label": "4 tools/call, resources/read",
        "style": "solid",
-       "at": 0.2018,
+       "at": 0.2062,
        "dur": 0.011
       },
       {
@@ -147,7 +147,7 @@
        "label": "5 tool result + ui:// HTML",
        "style": "solid",
        "curve": 100,
-       "at": 0.2723,
+       "at": 0.2763,
        "dur": 0.011
       },
       {
@@ -156,7 +156,7 @@
        "label": "6 A2A message",
        "style": "solid",
        "curve": -65,
-       "at": 0.3619,
+       "at": 0.3655,
        "dur": 0.011
       },
       {
@@ -165,7 +165,7 @@
        "label": "7 A2UI JSON",
        "style": "solid",
        "curve": -100,
-       "at": 0.4452,
+       "at": 0.4483,
        "dur": 0.011
       },
       {
@@ -174,7 +174,7 @@
        "label": "8 AG-UI events: A2UI + MCP App HTML",
        "style": "dashed",
        "curve": 65,
-       "at": 0.5285,
+       "at": 0.5311,
        "dur": 0.011
       },
       {
@@ -182,7 +182,7 @@
        "to": "ui",
        "label": "9 A2UI messages",
        "style": "solid",
-       "at": 0.6374,
+       "at": 0.6394,
        "dur": 0.011
       },
       {
@@ -190,7 +190,7 @@
        "to": "mcpapp",
        "label": "10 sandboxed iframe",
        "style": "solid",
-       "at": 0.7078,
+       "at": 0.7095,
        "dur": 0.011
       },
       {
@@ -199,7 +199,7 @@
        "label": "11 action",
        "style": "dashed",
        "curve": 24,
-       "at": 0.7911,
+       "at": 0.7923,
        "dur": 0.011
       },
       {
@@ -208,7 +208,7 @@
        "label": "12 tools/call via postMessage",
        "style": "dashed",
        "curve": -24,
-       "at": 0.868,
+       "at": 0.8687,
        "dur": 0.011
       }
      ],
@@ -245,20 +245,20 @@
       {
        "edge": 1,
        "text": "AG-UI run",
-       "at": 0.0794,
-       "dur": 0.0423
+       "at": 0.079,
+       "dur": 0.0572
       },
       {
        "edge": 6,
        "text": "A2UI JSON",
-       "at": 0.4573,
-       "dur": 0.0423
+       "at": 0.4603,
+       "dur": 0.0597
       },
       {
        "edge": 4,
        "text": "ui:// HTML",
-       "at": 0.2843,
-       "dur": 0.0423
+       "at": 0.2883,
+       "dur": 0.0438
       }
      ],
      "id": "arch",
@@ -504,7 +504,7 @@
        "p": 0
       },
       {
-       "t": 47.226,
+       "t": 47.486,
        "p": 1,
        "ease": "linear"
       }
@@ -554,11 +554,11 @@
        "opacity": 0
       },
       {
-       "t": 6.506,
+       "t": 6.766,
        "opacity": 0
       },
       {
-       "t": 6.81,
+       "t": 7.07,
        "opacity": 1,
        "ease": "standard"
       }
@@ -572,11 +572,11 @@
        "opacity": 0
       },
       {
-       "t": 9.531,
+       "t": 9.791,
        "opacity": 0
       },
       {
-       "t": 9.83,
+       "t": 10.09,
        "opacity": 1,
        "ease": "standard"
       }
@@ -590,11 +590,11 @@
        "opacity": 0
       },
       {
-       "t": 12.858,
+       "t": 13.119,
        "opacity": 0
       },
       {
-       "t": 13.16,
+       "t": 13.42,
        "opacity": 1,
        "ease": "standard"
       }
@@ -608,11 +608,11 @@
        "opacity": 0
       },
       {
-       "t": 17.093,
+       "t": 17.354,
        "opacity": 0
       },
       {
-       "t": 17.39,
+       "t": 17.65,
        "opacity": 1,
        "ease": "standard"
       }
@@ -626,11 +626,11 @@
        "opacity": 0
       },
       {
-       "t": 21.026,
+       "t": 21.286,
        "opacity": 0
       },
       {
-       "t": 21.33,
+       "t": 21.59,
        "opacity": 1,
        "ease": "standard"
       }
@@ -644,11 +644,11 @@
        "opacity": 0
       },
       {
-       "t": 24.958,
+       "t": 25.219,
        "opacity": 0
       },
       {
-       "t": 25.26,
+       "t": 25.52,
        "opacity": 1,
        "ease": "standard"
       }
@@ -662,11 +662,11 @@
        "opacity": 0
       },
       {
-       "t": 30.101,
+       "t": 30.361,
        "opacity": 0
       },
       {
-       "t": 30.4,
+       "t": 30.66,
        "opacity": 1,
        "ease": "standard"
       }
@@ -680,11 +680,11 @@
        "opacity": 0
       },
       {
-       "t": 33.428,
+       "t": 33.689,
        "opacity": 0
       },
       {
-       "t": 33.73,
+       "t": 33.99,
        "opacity": 1,
        "ease": "standard"
       }
@@ -698,11 +698,11 @@
        "opacity": 0
       },
       {
-       "t": 37.361,
+       "t": 37.621,
        "opacity": 0
       },
       {
-       "t": 37.66,
+       "t": 37.92,
        "opacity": 1,
        "ease": "standard"
       }
@@ -716,11 +716,11 @@
        "opacity": 0
       },
       {
-       "t": 40.991,
+       "t": 41.251,
        "opacity": 0
       },
       {
-       "t": 41.29,
+       "t": 41.55,
        "opacity": 1,
        "ease": "standard"
       }
@@ -752,61 +752,61 @@
        "ease": "hold"
       },
       {
-       "t": 6.506,
+       "t": 6.766,
        "y": 62.37,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 9.531,
+       "t": 9.791,
        "y": 65.02,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 12.858,
+       "t": 13.119,
        "y": 67.68,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 17.093,
+       "t": 17.354,
        "y": 70.34,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 21.026,
+       "t": 21.286,
        "y": 72.99,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 24.958,
+       "t": 25.219,
        "y": 75.65,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 30.101,
+       "t": 30.361,
        "y": 78.3,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 33.428,
+       "t": 33.689,
        "y": 80.96,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 37.361,
+       "t": 37.621,
        "y": 83.62,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 40.991,
+       "t": 41.251,
        "y": 86.27,
        "opacity": 0.22,
        "ease": "hold"

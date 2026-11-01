@@ -11,11 +11,24 @@
 // shorter than the fast-pace reading time.
 import { PACES } from './graph.mjs';
 
-export const LEAD_IN = 1, HOLD = 2, MIN_DWELL = 1.8, WORDS_PER_SECOND = 4, READ_PAD = 0.5, CHIP_SECONDS = 2.0, CHIP_GAP = 0.15, CHIP_START = 0.55, CHIP_TAIL = 0.3;
+export const LEAD_IN = 1, HOLD = 2, MIN_DWELL = 1.8, WORDS_PER_SECOND = 4, READ_PAD = 0.5, CHIP_GAP = 0.15, CHIP_START = 0.55, CHIP_TAIL = 0.3;
+
+// Message chips move at one apparent speed: CHIP_SPEED is the share of the diagram's long side covered per second.
+// A chip's ride is clamp(path / (CHIP_SPEED x long side), minRide, maxRide); minRide keeps its text readable while it moves.
+// Pace multiplies the ride (slow 1.4, normal 1, fast 0.75) but never below RIDE_FLOOR x minRide.
+export const CHIP_SPEED = 0.14, CHIP_MAX_RIDE = 5.0, RIDE_FLOOR = 0.75;
+export const chipMinRide = (chars) => Math.max(1.8, 0.8 + 0.07 * chars);
+export function chipRide(pathLen, longSide, chars) {
+  const min = chipMinRide(chars), max = Math.max(CHIP_MAX_RIDE, min);
+  return { r: Math.min(max, Math.max(min, pathLen / (CHIP_SPEED * Math.max(1, longSide)))), min };
+}
+// the ride at a pace multiplier m (chip = {r, min} from chipRide)
+export const paceRide = (chip, m) => Math.max(RIDE_FLOOR * chip.min, chip.r * m);
 
 export const words = (t) => (String(t || '').trim() ? String(t).trim().split(/\s+/).length : 0);
 
-// steps: [{words, chips}] in playing order (words = words in the step's sentence)
+// steps: [{words, chips, rides}] in playing order (words = words in the step's sentence; chips = number of message chips;
+// rides = [{r, min}] per chip from chipRide)
 export function buildSchedule(steps, { pace = 'normal', duration } = {}) {
   const warnings = [];
   if (!Object.hasOwn(PACES, pace)) throw Object.assign(new Error(`pace "${String(pace)}" is not one of ${Object.keys(PACES).join(', ')}`), { archMessage: true });
@@ -24,7 +37,7 @@ export function buildSchedule(steps, { pace = 'normal', duration } = {}) {
   const crowd = n > 9 ? 1.1 * 1.1 : n > 6 ? 1.1 : 1;
   const base = (st, m) => {
     let d = Math.max(MIN_DWELL, st.words / WORDS_PER_SECOND + READ_PAD) * crowd * m;
-    const need = CHIP_START + st.chips * CHIP_SECONDS + Math.max(0, st.chips - 1) * CHIP_GAP + CHIP_TAIL;
+    const need = CHIP_START + (st.rides || []).reduce((a, c) => a + paceRide(c, m), 0) + Math.max(0, st.chips - 1) * CHIP_GAP + CHIP_TAIL;
     return Math.max(d, need);
   };
   let dwell = steps.map((st) => base(st, mult));

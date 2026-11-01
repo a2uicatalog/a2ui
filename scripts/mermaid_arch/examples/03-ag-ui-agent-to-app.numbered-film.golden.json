@@ -363,19 +363,19 @@
        "edge": 2,
        "text": "run input",
        "at": 0.2063,
-       "dur": 0.0503
+       "dur": 0.0453
       },
       {
        "edge": 5,
        "text": "TEXT_MESSAGE_CONTENT",
        "at": 0.5183,
-       "dur": 0.0503
+       "dur": 0.0553
       },
       {
        "edge": 5,
        "text": "STATE_DELTA",
-       "at": 0.5723,
-       "dur": 0.0503
+       "at": 0.5774,
+       "dur": 0.0453
       }
      ],
      "id": "arch",

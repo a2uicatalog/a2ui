@@ -352,19 +352,19 @@
      "edge": 2,
      "text": "run input",
      "at": 0.3585,
-     "dur": 0.0503
+     "dur": 0.0453
     },
     {
      "edge": 5,
      "text": "TEXT_MESSAGE_CONTENT",
      "at": 0.4726,
-     "dur": 0.0503
+     "dur": 0.0553
     },
     {
      "edge": 5,
      "text": "STATE_DELTA",
-     "at": 0.5267,
-     "dur": 0.0503
+     "at": 0.5317,
+     "dur": 0.0453
     }
    ]
   },

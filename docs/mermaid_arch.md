@@ -86,7 +86,9 @@ total       = 1 s lead-in (groups and nodes pop) + sum of the dwells + 2 s hold 
 ```
 
 Edges draw and message chips ride inside their own step, one after another (a step with several chips is
-stretched to fit them); row n appears at the instant edge n starts. `--pace`, `opts.pace` or
+stretched to fit them). A chip moves at a constant apparent speed, 14% of the diagram's long side per second, so
+its ride is the route length over that speed, at least max(1.8 s, 0.8 s + 0.07 s per character of its text) and at
+most 5 s; pace multiplies the ride (never below 0.75 x the minimum). Row n appears at the instant edge n starts. `--pace`, `opts.pace` or
 `%% pace: slow` pick the multiplier; `%% duration: 40` (or `--duration`) fixes the total and scales the
 dwells to fit, with a warning if it is under the time the steps need at the fast pace. The result carries
 `schedule` (`[{step, start, end}]` in seconds) and `durationSeconds`. The film never exceeds the atom's
@@ -287,7 +289,7 @@ HTML tags in labels are dropped, as in Mermaid.
   closer to another edge than to its own); the counts are measured and
   reported, and the review page shows them. Two edges next to each other can make it unclear which label belongs to
   which line; labels sit right against their own line to keep that readable.
-- Routing a 12-node diagram takes about 1 to 2 seconds in Node (several candidate layouts are routed).
+- Converting takes from about 0.05 s (small diagrams) to about 0.7 s (the largest examples) in Node on a 2009-era Xeon, and the code uses no DOM, window or storage, so it can run in a Web Worker.
 - Long labels make small text on phones; see above.
 - Fonts: widths are estimates. A different system font can make a label touch its box edge.
 - No dotted style (`optional` is drawn dashed), no thick lines, no nested boxes,

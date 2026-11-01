@@ -5,12 +5,12 @@
    "type": "motion_timeline",
    "title": "A2A: one agent hands work to another",
    "aspect": "9:16",
-   "duration": 28.85,
+   "duration": 30.249,
    "loop": true,
    "autoplay": true,
    "controls": true,
    "theme": "dark",
-   "poster": 28.35,
+   "poster": 29.75,
    "blocks": [
     {
      "type": "motion_arch",
@@ -27,7 +27,7 @@
        "y": 57.26,
        "w": 9.46,
        "h": 17.11,
-       "at": 0.015,
+       "at": 0.0143,
        "dur": 0.011
       },
       {
@@ -38,7 +38,7 @@
        "y": 60.95,
        "w": 23.84,
        "h": 17.11,
-       "at": 0.0173,
+       "at": 0.0165,
        "dur": 0.011
       },
       {
@@ -49,7 +49,7 @@
        "y": 43.84,
        "w": 15.19,
        "h": 17.11,
-       "at": 0.0104,
+       "at": 0.0099,
        "dur": 0.011
       },
       {
@@ -60,7 +60,7 @@
        "y": 43.84,
        "w": 17.1,
        "h": 17.11,
-       "at": 0.0127,
+       "at": 0.0121,
        "dur": 0.011
       },
       {
@@ -71,7 +71,7 @@
        "y": 78.06,
        "w": 15.19,
        "h": 17.11,
-       "at": 0.0196,
+       "at": 0.0187,
        "dur": 0.011
       },
       {
@@ -82,7 +82,7 @@
        "y": 78.06,
        "w": 15.19,
        "h": 17.11,
-       "at": 0.022,
+       "at": 0.0209,
        "dur": 0.011
       },
       {
@@ -93,7 +93,7 @@
        "y": 78.06,
        "w": 14.29,
        "h": 17.11,
-       "at": 0.0243,
+       "at": 0.0231,
        "dur": 0.011
       }
      ],
@@ -104,8 +104,8 @@
        "label": "1 asks",
        "style": "solid",
        "curve": -100,
-       "at": 0.0347,
-       "dur": 0.0173
+       "at": 0.0331,
+       "dur": 0.0165
       },
       {
        "from": "orch",
@@ -113,8 +113,8 @@
        "label": "2 discovers skills",
        "style": "solid",
        "curve": -80,
-       "at": 0.1109,
-       "dur": 0.0173
+       "at": 0.1058,
+       "dur": 0.0165
       },
       {
        "from": "orch",
@@ -122,16 +122,16 @@
        "label": "3 SendStreamingMessage JSON-RPC",
        "style": "solid",
        "curve": -100,
-       "at": 0.2158,
-       "dur": 0.0173
+       "at": 0.2077,
+       "dur": 0.0165
       },
       {
        "from": "remote",
        "to": "task",
        "label": "4 creates task",
        "style": "solid",
-       "at": 0.3302,
-       "dur": 0.0173
+       "at": 0.3611,
+       "dur": 0.0165
       },
       {
        "from": "remote",
@@ -139,8 +139,8 @@
        "label": "5 prompt",
        "style": "solid",
        "curve": -65,
-       "at": 0.4255,
-       "dur": 0.0173
+       "at": 0.452,
+       "dur": 0.0165
       },
       {
        "from": "remote",
@@ -148,8 +148,8 @@
        "label": "6 tool calls",
        "style": "solid",
        "curve": 50,
-       "at": 0.5303,
-       "dur": 0.0173
+       "at": 0.5521,
+       "dur": 0.0165
       },
       {
        "from": "remote",
@@ -157,8 +157,8 @@
        "label": "7 status, artifacts, A2UI in a DataPart, over S…",
        "style": "dashed",
        "curve": 80,
-       "at": 0.6447,
-       "dur": 0.0173
+       "at": 0.6611,
+       "dur": 0.0165
       },
       {
        "from": "orch",
@@ -166,8 +166,8 @@
        "label": "8 answer",
        "style": "solid",
        "curve": -100,
-       "at": 0.8258,
-       "dur": 0.0173
+       "at": 0.8339,
+       "dur": 0.0165
       }
      ],
      "groups": [
@@ -194,20 +194,20 @@
       {
        "edge": 1,
        "text": "GET agent card",
-       "at": 0.13,
-       "dur": 0.0693
+       "at": 0.124,
+       "dur": 0.0739
       },
       {
        "edge": 2,
        "text": "SendStreamingMessage",
-       "at": 0.2348,
-       "dur": 0.0693
+       "at": 0.2259,
+       "dur": 0.1253
       },
       {
        "edge": 6,
        "text": "artifact",
-       "at": 0.6638,
-       "dur": 0.0693
+       "at": 0.6793,
+       "dur": 0.1253
       }
      ],
      "id": "arch",
@@ -389,7 +389,7 @@
        "p": 0
       },
       {
-       "t": 28.85,
+       "t": 30.249,
        "p": 1,
        "ease": "linear"
       }
@@ -439,11 +439,11 @@
        "opacity": 0
       },
       {
-       "t": 6.225,
+       "t": 6.284,
        "opacity": 0
       },
       {
-       "t": 6.53,
+       "t": 6.58,
        "opacity": 1,
        "ease": "standard"
       }
@@ -457,11 +457,11 @@
        "opacity": 0
       },
       {
-       "t": 9.525,
+       "t": 10.924,
        "opacity": 0
       },
       {
-       "t": 9.83,
+       "t": 11.22,
        "opacity": 1,
        "ease": "standard"
       }
@@ -475,11 +475,11 @@
        "opacity": 0
       },
       {
-       "t": 12.275,
+       "t": 13.674,
        "opacity": 0
       },
       {
-       "t": 12.58,
+       "t": 13.97,
        "opacity": 1,
        "ease": "standard"
       }
@@ -493,11 +493,11 @@
        "opacity": 0
       },
       {
-       "t": 15.3,
+       "t": 16.699,
        "opacity": 0
       },
       {
-       "t": 15.6,
+       "t": 17,
        "opacity": 1,
        "ease": "standard"
       }
@@ -511,11 +511,11 @@
        "opacity": 0
       },
       {
-       "t": 18.6,
+       "t": 19.999,
        "opacity": 0
       },
       {
-       "t": 18.9,
+       "t": 20.3,
        "opacity": 1,
        "ease": "standard"
       }
@@ -529,11 +529,11 @@
        "opacity": 0
       },
       {
-       "t": 23.825,
+       "t": 25.224,
        "opacity": 0
       },
       {
-       "t": 24.13,
+       "t": 25.52,
        "opacity": 1,
        "ease": "standard"
       }
@@ -565,37 +565,37 @@
        "ease": "hold"
       },
       {
-       "t": 6.225,
+       "t": 6.284,
        "y": 27.91,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 9.525,
+       "t": 10.924,
        "y": 30.56,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 12.275,
+       "t": 13.674,
        "y": 33.22,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 15.3,
+       "t": 16.699,
        "y": 35.88,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 18.6,
+       "t": 19.999,
        "y": 38.53,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 23.825,
+       "t": 25.224,
        "y": 41.19,
        "opacity": 0.22,
        "ease": "hold"

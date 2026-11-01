@@ -1,7 +1,7 @@
 // Canonical graph + layout + schedule -> a motion_arch block (and the payload around it).
-import { ArchError, LIMITS, assignSteps } from './graph.mjs';
+import { ArchError, LIMITS, PACES, assignSteps } from './graph.mjs';
 import { layoutGraph } from './layout.mjs';
-import { buildSchedule, words, LEAD_IN, HOLD, CHIP_SECONDS, CHIP_START, CHIP_GAP, CHIP_TAIL } from './schedule.mjs';
+import { buildSchedule, words, chipRide, paceRide, RIDE_FLOOR, LEAD_IN, HOLD, CHIP_START, CHIP_GAP, CHIP_TAIL } from './schedule.mjs';
 import { activity, rowText } from './activity.mjs';
 
 const r2 = (x) => Math.round(x * 100) / 100;
@@ -65,7 +65,20 @@ export function compileGraph(graph, opts = {}) {
   });
   const lab = (id) => gnode.get(id).label;
   const sentence = graph.edges.map((e, i) => activity(lab(e.from), lab(e.to), e.label, { style: e.style, both: e.both, reply: graph.edges.some((o, j) => j !== i && o.from === e.to && o.to === e.from) && graph.edges.findIndex((o) => o.from === e.to && o.to === e.from) < i }));
-  const info = order.map((ei) => ({ words: words(sentence[ei]), chips: msgEdge.filter((m) => m.idx === ei).length }));
+  // ---- each chip's ride, from the length of its edge's route and the length of its text (so every chip moves at one apparent speed)
+  const longSide = Math.max(W, H);
+  const pathLen = (ei) => {
+    const rt = lay.routes && lay.routes[ei];
+    if (rt) { let t = 0; for (let q = 0; q + 1 < rt.points.length; q++) t += Math.hypot(rt.points[q + 1][0] - rt.points[q][0], rt.points[q + 1][1] - rt.points[q][1]); return t; }
+    const a = byId.get(graph.edges[ei].from), b = byId.get(graph.edges[ei].to);   // a curve: the chord between box centres, grown 20% for the bow
+    return 1.2 * Math.hypot(a.x + a.w / 2 - (b.x + b.w / 2), a.y + a.h / 2 - (b.y + b.h / 2));
+  };
+  const rideOf = graph.messages.map((m, j) => chipRide(pathLen(msgEdge[j].idx), longSide, clip(m.text, LIMITS.msgText).length));
+  const info = order.map((ei) => {
+    const rides = graph.messages.map((m, j) => (msgEdge[j].idx === ei ? rideOf[j] : null)).filter(Boolean);
+    return { words: words(sentence[ei]), chips: rides.length, rides };
+  });
+  const mult = PACES[pace];
   let sched;
   try { sched = buildSchedule(info, { pace, duration }); }
   catch (e) { if (e.archMessage) throw new ArchError([e.message]); throw e; }
@@ -105,30 +118,44 @@ export function compileGraph(graph, opts = {}) {
 
   // ---- message chips ride inside their step's dwell, one after another. A chip needs at least 0.3 s; when a short
   // `duration` squeezes the step below that, refuse up front instead of producing chips that run past the step.
-  if (duration !== undefined) {
+  // worstChipFit(sch, D): how far over its dwell the most crowded step is (> 1 means the chips do not fit), and where
+  const worstChipFit = (sch, Dt) => {
     let worst = 1, at = -1;
     info.forEach((st, k) => {
       if (!st.chips) return;
-      const dw = sched.schedule[k].end - sched.schedule[k].start;
-      const need = Math.max(CHIP_START, edgeSec(sched.schedule[k]) + 0.05) + st.chips * 0.3 + (st.chips - 1) * CHIP_GAP;
+      const dw = sch[k].end - sch[k].start;
+      const es = Math.max(Math.min(0.5, dw * 0.4), 0.011 * Dt);
+      const need = Math.max(CHIP_START, es + 0.05) + st.rides.reduce((a, c) => a + RIDE_FLOOR * c.min, 0) + (st.chips - 1) * CHIP_GAP;
       if (need / dw > worst) { worst = need / dw; at = k; }
     });
+    return { worst, at };
+  };
+  if (duration !== undefined) {
+    const { at } = worstChipFit(sched.schedule, D);
     if (at >= 0) {
-      const total = sched.schedule.reduce((a, x) => a + (x.end - x.start), 0);
-      throw new ArchError([`duration ${duration} s is too short for the ${info[at].chips} message chips on step ${sched.schedule[at].step}: each chip needs at least 0.3 s inside its step. Raise the duration to at least ${Math.ceil(LEAD_IN + HOLD + total * worst)} s, or remove messages.`]);
+      // the smallest whole number of seconds at which every step's chips fit (the edge-draw time moves with the duration, so test, do not extrapolate)
+      let hint = Math.ceil(duration);
+      const bad = (h) => { try { return worstChipFit(buildSchedule(info, { pace, duration: h }).schedule, h).at >= 0; } catch { return true; } };
+      while (hint < 600 && bad(hint)) hint++;
+      throw new ArchError([`duration ${duration} s is too short for the ${info[at].chips} message chips on step ${sched.schedule[at].step}: each chip needs at least its minimum ride (1.35 s or more, longer for long text) inside its step. Raise the duration to at least ${hint} s, or remove messages.`]);
     }
   }
   const seen = new Map();
   const messages = graph.messages.map((m, j) => {
     const { idx, back } = msgEdge[j];
-    const st = sched.schedule[stepOf.get(idx)];
-    const k = info[stepOf.get(idx)].chips, jn = seen.get(idx) || 0; seen.set(idx, jn + 1);
+    const si = stepOf.get(idx), st = sched.schedule[si];
+    const jn = seen.get(idx) || 0; seen.set(idx, jn + 1);
     const dwell = st.end - st.start;
     const off = Math.max(CHIP_START, edgeSec(st) + 0.05);   // not before the edge is fully drawn
-    const c = Math.min(CHIP_SECONDS, Math.max(0.3, (dwell - off - CHIP_TAIL - (k - 1) * CHIP_GAP) / k));
+    // the step's chips ride one after another at their own pace; a short `duration` squeezes them all alike (never below 0.3 s)
+    const rides = info[si].rides.map((c) => paceRide(c, mult)), k = rides.length;
+    const room = dwell - off - CHIP_TAIL - (k - 1) * CHIP_GAP, sum = rides.reduce((a, b) => a + b, 0);
+    const sq = sum > room ? room / sum : 1;
+    const cs = rides.map((r) => Math.max(0.3, r * sq));
+    const c = cs[jn];
     const o = { edge: idx, text: clip(m.text, LIMITS.msgText) };
     if (back) o.back = true;
-    o.at = r4((st.start + off + jn * (c + CHIP_GAP)) / D); o.dur = pd(c, D);
+    o.at = r4((st.start + off + cs.slice(0, jn).reduce((a, b) => a + b + CHIP_GAP, 0)) / D); o.dur = pd(c, D);
     return o;
   });
 

@@ -16,7 +16,7 @@
      "y": 50,
      "w": 7.76,
      "h": 14.09,
-     "at": 0.0084,
+     "at": 0.008,
      "dur": 0.011
     },
     {
@@ -27,7 +27,7 @@
      "y": 25.84,
      "w": 12.44,
      "h": 14.09,
-     "at": 0.0107,
+     "at": 0.0101,
      "dur": 0.011
     },
     {
@@ -38,7 +38,7 @@
      "y": 54.03,
      "w": 14.73,
      "h": 14.09,
-     "at": 0.0129,
+     "at": 0.0122,
      "dur": 0.011
     },
     {
@@ -49,7 +49,7 @@
      "y": 82.21,
      "w": 17.81,
      "h": 14.09,
-     "at": 0.0151,
+     "at": 0.0143,
      "dur": 0.011
     },
     {
@@ -60,7 +60,7 @@
      "y": 54.03,
      "w": 11.64,
      "h": 14.09,
-     "at": 0.0174,
+     "at": 0.0165,
      "dur": 0.011
     },
     {
@@ -71,7 +71,7 @@
      "y": 54.03,
      "w": 7.26,
      "h": 14.09,
-     "at": 0.0196,
+     "at": 0.0186,
      "dur": 0.011
     }
    ],
@@ -81,24 +81,24 @@
      "to": "client",
      "label": "1 types prompt",
      "style": "solid",
-     "at": 0.028,
-     "dur": 0.014
+     "at": 0.0265,
+     "dur": 0.0133
     },
     {
      "from": "client",
      "to": "agent",
      "label": "2 prompt",
      "style": "solid",
-     "at": 0.1044,
-     "dur": 0.014
+     "at": 0.0988,
+     "dur": 0.0133
     },
     {
      "from": "agent",
      "to": "llm",
      "label": "3 plan",
      "style": "solid",
-     "at": 0.1976,
-     "dur": 0.014
+     "at": 0.2177,
+     "dur": 0.0133
     },
     {
      "from": "llm",
@@ -106,8 +106,8 @@
      "label": "4 A2UI JSON",
      "style": "solid",
      "curve": 50,
-     "at": 0.2825,
-     "dur": 0.014
+     "at": 0.298,
+     "dur": 0.0133
     },
     {
      "from": "agent",
@@ -115,32 +115,32 @@
      "label": "5 createSurface, updateComponents",
      "style": "dashed",
      "curve": 24,
-     "at": 0.3673,
-     "dur": 0.014
+     "at": 0.3783,
+     "dur": 0.0133
     },
     {
      "from": "client",
      "to": "renderer",
      "label": "6 A2UI messages",
      "style": "solid",
-     "at": 0.469,
-     "dur": 0.014
+     "at": 0.4972,
+     "dur": 0.0133
     },
     {
      "from": "renderer",
      "to": "catalog",
      "label": "7 looks up components",
      "style": "solid",
-     "at": 0.5623,
-     "dur": 0.014
+     "at": 0.5855,
+     "dur": 0.0133
     },
     {
      "from": "renderer",
      "to": "user",
      "label": "8 native UI",
      "style": "solid",
-     "at": 0.6556,
-     "dur": 0.014
+     "at": 0.6739,
+     "dur": 0.0133
     },
     {
      "from": "renderer",
@@ -148,8 +148,8 @@
      "label": "9 action",
      "style": "dashed",
      "curve": 65,
-     "at": 0.7404,
-     "dur": 0.014
+     "at": 0.7542,
+     "dur": 0.0133
     },
     {
      "from": "client",
@@ -157,8 +157,8 @@
      "label": "10 action",
      "style": "dashed",
      "curve": 36,
-     "at": 0.8422,
-     "dur": 0.014
+     "at": 0.8505,
+     "dur": 0.0133
     }
    ],
    "groups": [
@@ -185,20 +185,20 @@
     {
      "edge": 1,
      "text": "prompt",
-     "at": 0.1198,
-     "dur": 0.0561
+     "at": 0.1134,
+     "dur": 0.0963
     },
     {
      "edge": 4,
      "text": "updateComponents",
-     "at": 0.3827,
-     "dur": 0.0561
+     "at": 0.3929,
+     "dur": 0.0963
     },
     {
      "edge": 8,
      "text": "action",
-     "at": 0.7558,
-     "dur": 0.0561
+     "at": 0.7688,
+     "dur": 0.0478
     }
    ]
   },
