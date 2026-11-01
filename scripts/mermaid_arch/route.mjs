@@ -25,37 +25,48 @@ import { edgeLabelSize, groupLabelWidth } from './layout.mjs';
 const E = 0, S = 1, W = 2, N = 3;
 const DX = [1, 0, -1, 0], DY = [0, 1, 0, -1];
 
+// Binary min-heap on (f, insertion order) held in typed arrays (no object per entry); pop() leaves the entry in topF/topId/topTerm/topPort.
 class Heap {
-  constructor() { this.a = []; this.n = 0; }
-  push(f, id, term, port) {
-    const it = { f, id, term, port, k: this.n++ };
-    const a = this.a;
-    a.push(it);
-    let i = a.length - 1;
+  constructor() { this.cap = 1024; this.f = new Float64Array(this.cap); this.k = new Int32Array(this.cap); this.id = new Int32Array(this.cap); this.pt = new Int32Array(this.cap); this.len = 0; this.n = 0; this.topF = 0; this.topId = 0; this.topPort = -1; }
+  grow() {
+    const cap = this.cap * 2, f = new Float64Array(cap), k = new Int32Array(cap), id = new Int32Array(cap), pt = new Int32Array(cap);
+    f.set(this.f); k.set(this.k); id.set(this.id); pt.set(this.pt);
+    this.f = f; this.k = k; this.id = id; this.pt = pt; this.cap = cap;
+  }
+  lt(i, j) { const f = this.f; const d = f[i] - f[j]; return f[i] < f[j] - 1e-9 || (Math.abs(d) <= 1e-9 && this.k[i] < this.k[j]); }
+  swap(i, j) {
+    let t = this.f[i]; this.f[i] = this.f[j]; this.f[j] = t;
+    t = this.k[i]; this.k[i] = this.k[j]; this.k[j] = t;
+    t = this.id[i]; this.id[i] = this.id[j]; this.id[j] = t;
+    t = this.pt[i]; this.pt[i] = this.pt[j]; this.pt[j] = t;
+  }
+  // port: index into the target's port list for a terminal entry, -1 otherwise
+  push(f, id, port) {
+    if (this.len === this.cap) this.grow();
+    let i = this.len++;
+    this.f[i] = f; this.k[i] = this.n++; this.id[i] = id; this.pt[i] = port;
     while (i > 0) {
       const p = (i - 1) >> 1;
-      if (this.lt(a[i], a[p])) { [a[i], a[p]] = [a[p], a[i]]; i = p; } else break;
+      if (this.lt(i, p)) { this.swap(i, p); i = p; } else break;
     }
   }
-  lt(x, y) { return x.f < y.f - 1e-9 || (Math.abs(x.f - y.f) <= 1e-9 && x.k < y.k); }
   pop() {
-    const a = this.a;
-    const top = a[0], last = a.pop();
-    if (a.length) {
-      a[0] = last;
+    this.topF = this.f[0]; this.topId = this.id[0]; this.topPort = this.pt[0];
+    const last = --this.len;
+    if (last > 0) {
+      this.f[0] = this.f[last]; this.k[0] = this.k[last]; this.id[0] = this.id[last]; this.pt[0] = this.pt[last];
       let i = 0;
       for (;;) {
         const l = 2 * i + 1, r = l + 1;
         let m = i;
-        if (l < a.length && this.lt(a[l], a[m])) m = l;
-        if (r < a.length && this.lt(a[r], a[m])) m = r;
+        if (l < last && this.lt(l, m)) m = l;
+        if (r < last && this.lt(r, m)) m = r;
         if (m === i) break;
-        [a[i], a[m]] = [a[m], a[i]]; i = m;
+        this.swap(i, m); i = m;
       }
     }
-    return top;
   }
-  get size() { return this.a.length; }
+  get size() { return this.len; }
 }
 
 const rectsOverlap = (a, b) => a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
@@ -103,7 +114,10 @@ export function routeEdges(graph, layout, opts = {}) {
   const ox = x0 - pad, oy = y0 - pad;
   const cols = Math.ceil((x1 - x0 + 2 * pad) / g), rows = Math.ceil((y1 - y0 + 2 * pad) / g);
   const NC = cols * rows;
-  const cx = (i) => ox + (i + 0.5) * g, cy = (j) => oy + (j + 0.5) * g;
+  const CXs = new Float64Array(cols), CYs = new Float64Array(rows);
+  for (let i = 0; i < cols; i++) CXs[i] = ox + (i + 0.5) * g;
+  for (let j = 0; j < rows; j++) CYs[j] = oy + (j + 0.5) * g;
+  const cx = (i) => CXs[i], cy = (j) => CYs[j];
   const ci = (x) => Math.floor((x - ox) / g), cj = (y) => Math.floor((y - oy) / g);
   const blocked = new Uint8Array(NC);
   const fillRect = (r, m, arr, val = 1) => {
@@ -158,6 +172,9 @@ export function routeEdges(graph, layout, opts = {}) {
     return out;
   };
 
+  // ports depend only on the (static) blocked grid, so they are reused across edges and passes
+  const portMemo = new Map();
+  const portsOf = (b) => { let l = portMemo.get(b.id); if (!l) { l = ports(b); portMemo.set(b.id, l); } return l; };
   const route = (e, k, scl) => {
     const fb = nodeById.get(e.from), tb = nodeById.get(e.to);
     const sg = groupOfNode.get(e.from), tg = groupOfNode.get(e.to);
@@ -175,38 +192,44 @@ export function routeEdges(graph, layout, opts = {}) {
     const dist = new Float64Array(NC * 4).fill(Infinity);
     const prev = new Int32Array(NC * 4).fill(-1);
     const heap = new Heap();
-    const tPorts = ports(tb), tMap = new Map();
-    for (const p of tPorts) tMap.set(p.cell, [...(tMap.get(p.cell) || []), p]);
+    const tPortList = portsOf(tb), tMap = new Map();
+    tPortList.forEach((p, pi) => { const l = tMap.get(p.cell); if (l) l.push(pi); else tMap.set(p.cell, [pi]); });
+        const tx0 = tb.x, tx1 = tb.x + tb.w, ty0 = tb.y, ty1 = tb.y + tb.h;
     const hTarget = (i, j) => {
-      const px = cx(i), py = cy(j);
-      return Math.abs(Math.max(tb.x - px, 0, px - (tb.x + tb.w))) + Math.abs(Math.max(tb.y - py, 0, py - (tb.y + tb.h)));
+      const px = CXs[i], py = CYs[j];
+      const dx = tx0 - px > 0 ? tx0 - px : px - tx1 > 0 ? px - tx1 : 0, dy = ty0 - py > 0 ? ty0 - py : py - ty1 > 0 ? py - ty1 : 0;
+      return dx + dy;
     };
-    for (const p of ports(fb)) {
+    for (const p of portsOf(fb)) {
       const id = p.cell * 4 + p.out;
       const c0 = p.side + cellCost(p.cell, p.out === E || p.out === W);
-      if (c0 < dist[id]) { dist[id] = c0; prev[id] = -2 - p.out; heap.push(c0 + hTarget(p.i, p.j), id, false); }
+      if (c0 < dist[id]) { dist[id] = c0; prev[id] = -2 - p.out; heap.push(c0 + hTarget(p.i, p.j), id, -1); }
     }
     let end = -1, endCost = Infinity, endPort = null;
+    const DIRS = [[0, 1, 3], [1, 2, 0], [2, 3, 1], [3, 0, 2]];   // straight, then the two turns, for each heading
     while (heap.size) {
-      const it = heap.pop();
-      if (it.term) { end = it.id; endCost = it.f; endPort = it.port; break; }
-      const id = it.id, cell = id >> 2, dir = id & 3;
+      heap.pop();
+      if (heap.topPort >= 0) { end = heap.topId; endCost = heap.topF; endPort = tPortList[heap.topPort]; break; }
+      const id = heap.topId, cell = id >> 2, dir = id & 3;
       const gcost = dist[id];
-      if (it.f > gcost + hTarget(cell % cols, (cell / cols) | 0) + 1e-6) continue;
       const i = cell % cols, j = (cell / cols) | 0;
+      if (heap.topF > gcost + hTarget(i, j) + 1e-6) continue;
       const tp = tMap.get(cell);
-      if (tp) for (const p of tp) {
+      if (tp) for (const pi of tp) {
+        const p = tPortList[pi];
         const inward = (p.out + 2) & 3;
-        heap.push(gcost + p.side + (dir === inward ? 0 : BEND * scl), id, true, p);
+        heap.push(gcost + p.side + (dir === inward ? 0 : BEND * scl), id, pi);
       }
-      for (const nd of [dir, (dir + 1) & 3, (dir + 3) & 3]) {
+      const ds = DIRS[dir];
+      for (let q = 0; q < 3; q++) {
+        const nd = ds[q];
         const ni = i + DX[nd], nj = j + DY[nd];
         if (ni < 0 || nj < 0 || ni >= cols || nj >= rows) continue;
         const nc = nj * cols + ni;
         if (blocked[nc]) continue;
         const cost = gcost + g + (nd === dir ? 0 : BEND * scl) + cellCost(nc, nd === E || nd === W);
         const nid = nc * 4 + nd;
-        if (cost < dist[nid] - 1e-9) { dist[nid] = cost; prev[nid] = id; heap.push(cost + hTarget(ni, nj), nid, false); }
+        if (cost < dist[nid] - 1e-9) { dist[nid] = cost; prev[nid] = id; heap.push(cost + hTarget(ni, nj), nid, -1); }
       }
     }
     if (end < 0) return null;
@@ -253,7 +276,10 @@ export function routeEdges(graph, layout, opts = {}) {
       if (r && r.points.length <= 10) break;
       if (r && scl === 8) r = null;
     }
-    if (!r) { warnings.push(`edge ${k + 1} (${e.from} -> ${e.to}): no clear orthogonal route was found, so it is drawn as a curve.`); continue; }
+    if (!r) {
+      warnings.push(`edge ${k + 1} (${e.from} -> ${e.to}): no clear orthogonal route was found, so it is drawn as a curve.`);
+      continue;
+    }
     // occupy the lanes this edge uses (a cell is entered along an axis; the corner cell counts for both)
     const cs = r.cells;
     for (let q = 0; q < cs.length; q++) {
@@ -303,6 +329,11 @@ function placeLabels(graph, layout, routes, glabels, s, warnings, chips = {}) {
   const order = graph.edges.map((e, i) => i).filter((i) => graph.edges[i].label && routes[i]).sort((a, b) => edgeLabelSize(graph.edges[b].label, s).w - edgeLabelSize(graph.edges[a].label, s).w || a - b);
   const gap = 3;
   const bands = chipBands(graph, routes, chips, s);
+  const boxesI = boxes.map((b) => inflate(b, 2)), glabelsI = glabels.map((t) => inflate(t, 1)), placedI = [];
+  // every route segment once, with its bounding box, in route order (the scoring below walks them many times)
+  const sx0 = [], sx1 = [], sy0 = [], sy1 = [], sq = [];
+  allSegs.forEach((ss, q) => ss.forEach(([a, b]) => { sx0.push(Math.min(a[0], b[0])); sx1.push(Math.max(a[0], b[0])); sy0.push(Math.min(a[1], b[1])); sy1.push(Math.max(a[1], b[1])); sq.push(q); }));
+  const nSeg = sq.length;
   for (const k of order) {
     const e = graph.edges[k], sz = edgeLabelSize(e.label, s), r = routes[k];
     // a message chip rides this edge: keep the label out of the chip's path (the chip is 28 px tall and as wide as its text)
@@ -340,33 +371,44 @@ function placeLabels(graph, layout, routes, glabels, s, warnings, chips = {}) {
     for (const c of cands) {
       let hard = 0, soft = 0, chipHit = 0;
       for (const bd of bands) if (rectsOverlap(c, bd)) chipHit++;
-      for (const b of boxes) if (rectsOverlap(c, inflate(b, 2))) hard++;
-      for (const t of glabels) if (rectsOverlap(c, inflate(t, 1))) hard++;
-      for (const p of placed) if (rectsOverlap(c, inflate(p, 3))) hard++;
-      for (let q = 0; q < allSegs.length; q++) for (const [a, b] of allSegs[q]) {
-        if (q === k && !c.on) { if (segHitsRect(a, b, c, 0.5)) soft += 0.2; continue; }
-        if (q === k && c.on) continue;
-        if (segHitsRect(a, b, inflate(c, 1), 0)) soft += 1;
+      for (const b of boxesI) if (rectsOverlap(c, b)) hard++;
+      for (const t of glabelsI) if (rectsOverlap(c, t)) hard++;
+      for (const p of placedI) if (rectsOverlap(c, p)) hard++;
+      // the remaining terms (soft, closer, between) only ever add: when the cheap part already cannot beat the best, skip them
+      const tail = c.pref + Math.abs(c.d) * 0.08 - Math.min(c.len, 400) * 0.01;
+      if (best && !(hard * 1000 + chipHit * 150 + 0 + 0 + 0 + tail < best.cost - 1e-9)) continue;
+      const cx0 = c.x, cx1 = c.x + c.w, cy0 = c.y, cy1 = c.y + c.h;
+      const ix0 = c.x - 1, ix1 = (c.x - 1) + (c.w + 2), iy0 = c.y - 1, iy1 = (c.y - 1) + (c.h + 2);   // inflate(c, 1) exactly as inflate() computes it
+      // segHitsRect(a, b, c, 0.5) and segHitsRect(a, b, inflate(c, 1), 0) on the flat segment table
+      for (let t = 0; t < nSeg; t++) {
+        const x0 = sx0[t], x1 = sx1[t], y0 = sy0[t], y1 = sy1[t];
+        if (sq[t] === k) {
+          if (!c.on && x1 > cx0 + 0.5 && x0 < cx1 - 0.5 && y1 > cy0 + 0.5 && y0 < cy1 - 0.5) soft += 0.2;
+        } else if (x1 > ix0 && x0 < ix1 && y1 > iy0 && y0 < iy1) soft += 1;
       }
       // another edge between this label and its own line makes it read as that edge's label
       let between = 0;
       if (!c.on) {
         const own = r.points[c.si], own2 = r.points[c.si + 1], horiz = own[1] === own2[1];
-        for (let q = 0; q < allSegs.length; q++) if (q !== k) for (const [a, b] of allSegs[q]) {
-          if (horiz && a[1] === b[1]) {
-            const lo = Math.min(a[0], b[0]), hi = Math.max(a[0], b[0]);
-            if (hi > c.x && lo < c.x + c.w && ((a[1] > own[1] && a[1] < c.y + c.h / 2) || (a[1] < own[1] && a[1] > c.y + c.h / 2))) between = 1;
-          } else if (!horiz && a[0] === b[0]) {
-            const lo = Math.min(a[1], b[1]), hi = Math.max(a[1], b[1]);
-            if (hi > c.y && lo < c.y + c.h && ((a[0] > own[0] && a[0] < c.x + c.w / 2) || (a[0] < own[0] && a[0] > c.x + c.w / 2))) between = 1;
+        for (let t = 0; t < nSeg; t++) {
+          if (sq[t] === k) continue;
+          const x0 = sx0[t], x1 = sx1[t], y0 = sy0[t], y1 = sy1[t];
+          if (horiz && y0 === y1) {
+            if (x1 > c.x && x0 < c.x + c.w && ((y0 > own[1] && y0 < c.y + c.h / 2) || (y0 < own[1] && y0 > c.y + c.h / 2))) between = 1;
+          } else if (!horiz && x0 === x1) {
+            if (y1 > c.y && y0 < c.y + c.h && ((x0 > own[0] && x0 < c.x + c.w / 2) || (x0 < own[0] && x0 > c.x + c.w / 2))) between = 1;
           }
         }
       }
       // never closer to another edge than to its own line
-      let nearest = Infinity;
-      for (let q = 0; q < allSegs.length; q++) if (q !== k) for (const [a, b] of allSegs[q]) nearest = Math.min(nearest, rectSegDist(c, a, b));
       const ownD = c.on ? 0 : (c.gp || gap);
-      const closer = nearest < ownD + 4 ? 1 : 0;
+      const lim = ownD + 4;
+      let closer = 0;
+      for (let t = 0; t < nSeg; t++) {
+        if (sq[t] === k) continue;
+        const dx = Math.max(c.x - sx1[t], 0, sx0[t] - (c.x + c.w)), dy = Math.max(c.y - sy1[t], 0, sy0[t] - (c.y + c.h));
+        if (dx < lim && dy < lim && Math.hypot(dx, dy) < lim) { closer = 1; break; }
+      }
       const cost = hard * 1000 + chipHit * 150 + soft * 200 + closer * 150 + between * 25 + c.pref + Math.abs(c.d) * 0.08 - Math.min(c.len, 400) * 0.01;
       if (!best || cost < best.cost - 1e-9) best = { c, cost, hard, soft };
     }
@@ -382,6 +424,7 @@ function placeLabels(graph, layout, routes, glabels, s, warnings, chips = {}) {
     const c = best.c;
     r.label = { x: c.x, y: c.y, w: c.w, h: c.h };
     placed.push(r.label);
+    placedI.push(inflate(r.label, 3));
   }
 }
 

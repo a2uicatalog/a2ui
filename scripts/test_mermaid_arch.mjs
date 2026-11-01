@@ -1144,3 +1144,28 @@ test('nits: duration hint is the smallest working value, TD accepted everywhere,
   const r = mermaidToArch('%% msg: a->b "<b>Tom</b> &amp; Jerry &lt;3&quot;"\nflowchart LR\na --> b');
   assert.equal(r.graph.messages[0].text, 'Tom & Jerry <3"');
 });
+
+// ------------------------------------------------------------------ speed: the try-it box converts on every keystroke
+test('speed: the examples and the 16-edge corpus input convert within a generous budget (median of 3)', () => {
+  const inputs = examples.map((f) => join(EX, f));
+  inputs.push(join(HERE, '..', 'tests', 'mermaid_corpus', '62_limit_16_edges.mmd'));
+  for (const f of inputs) {
+    const text = readFileSync(f, 'utf8');
+    const ms = [];
+    for (let i = 0; i < 3; i++) {
+      const t0 = performance.now();
+      mermaidToArch(text, { film: true, numbered: true, hint: 'web' });
+      ms.push(performance.now() - t0);
+    }
+    ms.sort((a, b) => a - b);
+    assert.ok(ms[1] < 1500, `${f}: median ${ms[1].toFixed(0)} ms exceeds 1500 ms (runs: ${ms.map((x) => x.toFixed(0)).join(', ')})`);
+  }
+});
+
+test('worker-safe: the converter modules touch no DOM, window, storage or node-only module', () => {
+  const dir = join(HERE, 'mermaid_arch');
+  for (const f of readdirSync(dir).filter((x) => x.endsWith('.mjs') && !['cli.mjs', 'build_playground.mjs'].includes(x))) {
+    const code = readFileSync(join(dir, f), 'utf8').replace(/\/\/.*$/gm, '').replace(/'(?:[^'\\\n]|\\.)*'|`(?:[^`\\]|\\.)*`/g, "''");
+    assert.ok(!/(?<![.\w])(document|window|localStorage|sessionStorage|navigator|process|require)\b(?!\s*:)|from\s+['"]node:/.test(code), `${f} uses a browser-only or node-only global`);
+  }
+});

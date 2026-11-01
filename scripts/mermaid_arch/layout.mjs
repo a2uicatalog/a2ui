@@ -501,7 +501,10 @@ export function rankLayouts(graph, s, fit = 'balanced', keep = 3, laneGap = 0, s
 
 // ---------------------------------------------------------------- framing: size choice and viewBox
 export function layoutGraph(graph, opts = {}) {
-  return opts.routing === 'curve' ? layoutCurve(graph, opts) : layoutOrthogonal(graph, opts);
+  if (opts.routing === 'curve') return layoutCurve(graph, opts);
+  const outer = routeMemo;
+  routeMemo = outer || new Map();
+  try { return layoutOrthogonal(graph, opts); } finally { routeMemo = outer; }
 }
 
 // ---------------------------------------------------------------- orthogonal routing: size, orientation, framing
@@ -513,13 +516,27 @@ function orthoScore(fr, fit) {
     + m.labelOnLine * 14 + (m.labelChip || 0) * 1.5 + m.bends * 0.5 + (m.length / s) * 0.04 + fr.failed * 50;
 }
 
+// Routing is a pure function of the drawn geometry, the edges (ends and label text) and the group membership, and the
+// orientation/shape candidates often land on the same geometry (and the TB/LR pass repeats sizes), so identical
+// requests are answered from a cache that lives for one layoutGraph call. Results are cloned: callers may edit them.
+let routeMemo = null;
+function routeCached(gr, layout) {
+  if (!routeMemo) return routeEdges(gr, layout, {});
+  const r1 = (o) => o.id + ',' + o.x + ',' + o.y + ',' + o.w + ',' + o.h;
+  const key = layout.s + '|' + layout.nodes.map(r1).join(';') + '|' + layout.groups.map(r1).join(';') + '|' + gr.edges.map((e) => e.from + '>' + e.to + ':' + e.label).join(';')
+    + '|' + gr.nodes.map((n) => n.id + '@' + (n.group || '')).join(';') + '|' + gr.groups.map((g) => g.id + ':' + g.label).join(';');
+  let hit = routeMemo.get(key);
+  if (!hit) { hit = routeEdges(gr, layout, {}); routeMemo.set(key, hit); }
+  return { routes: hit.routes.map((r) => (r ? { ...r, points: r.points.map((p) => [p[0], p[1]]), label: r.label ? { ...r.label } : null } : null)), warnings: [...hit.warnings], metrics: { ...hit.metrics } };
+}
+
 function orthoAt(gr, s, fit) {
   const laneGap = Math.round(0.55 * s);
   let best = null;
   // if some label has no free place, give every channel more room and route again (twice at most)
   for (const extra of [0, 1.0, 2.0, 3.5]) {
     for (const v of rankLayouts(gr, s, fit, 4, laneGap, true, Math.round(extra * s))) {
-      const rt = routeEdges(gr, { nodes: v.layout.nodes, groups: v.layout.groups, s }, {});
+      const rt = routeCached(gr, { nodes: v.layout.nodes, groups: v.layout.groups, s });
       const fr = frameRouted(gr, v, rt, s);
       fr.score = orthoScore(fr, fit);
       if (!best || fr.score < best.score - 1e-9) best = fr;
