@@ -49,6 +49,8 @@ function main(argv) {
   if (opts.pace && !['slow', 'normal', 'fast'].includes(opts.pace)) { console.error('--pace must be slow, normal or fast'); return 2; }
   if (opts.duration !== undefined && !(opts.duration >= 2 && opts.duration <= 120)) { console.error('--duration must be 2 to 120 seconds'); return 2; }
   if (opts.direction && !['LR', 'RL', 'TB', 'BT'].includes(opts.direction)) { console.error('--direction must be LR, RL, TB (or TD) or BT'); return 2; }
+  if (opts.size !== undefined && !(opts.size >= 8 && opts.size <= 40)) { console.error('--size must be 8 to 40'); return 2; }
+  if (opts.fit !== undefined && !['balanced', 'wide'].includes(opts.fit)) { console.error('--fit must be balanced or wide'); return 2; }
   let text;
   try { text = file === '-' ? readFileSync(0, 'utf8') : readFileSync(file, 'utf8'); }
   catch (e) { console.error(`cannot read ${file}: ${e.message}`); return 2; }

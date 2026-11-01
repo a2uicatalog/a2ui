@@ -922,3 +922,18 @@ test('a short %% duration with many chips on one edge is refused with a clear me
   const fine = mermaidToArch('%% duration: 4\n%% msg: a->b "m"\nflowchart LR\na --> b');
   assert.deepEqual(validateBlock(fine.block), []);
 });
+
+// ------------------------------------------------------------------ review round 2: option validation
+test('library and CLI options are validated, never silently clamped', () => {
+  const bad = [{ size: 4 }, { size: 99 }, { size: 'big' }, { size: NaN }, { fit: 'huge' }, { routing: 'zigzag' }, { pace: 'turbo' }, { duration: 1 }, { duration: 500 }, { direction: 'sideways' }];
+  for (const o of bad) {
+    assert.throws(() => mermaidToArch('flowchart LR\nA-->B', o), (e) => e instanceof ArchError, JSON.stringify(o));
+    assert.throws(() => d2ToArch('a -> b', o), (e) => e instanceof ArchError, 'd2 ' + JSON.stringify(o));
+  }
+  assert.ok(mermaidToArch('flowchart LR\nA-->B', { size: 8, fit: 'wide', routing: 'curve', pace: 'fast', duration: 10, direction: 'TB' }));
+  const cli = (...a) => { try { execFileSync('node', [join(HERE, 'mermaid_arch', 'cli.mjs'), join(EX, examples[0]), ...a], { stdio: 'pipe' }); return 0; } catch (e) { return e.status; } };
+  assert.equal(cli('--size', '5'), 2);
+  assert.equal(cli('--size', 'x'), 2);
+  assert.equal(cli('--fit', 'huge'), 2);
+  assert.equal(cli('--size', '16', '--fit', 'wide'), 0);
+});
