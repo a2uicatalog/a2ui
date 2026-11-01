@@ -3152,6 +3152,54 @@ var _MO_ARCH_STYLE = {solid: 1, dashed: 1};
 function _moArchN(x) { return _ffNum(x, 0, -100000, 100000, 1); }
 function _moArchT(v, d) { return _ffNum(v, d, 0, 1, 3); }
 function _moArchD(v, d) { return _ffNum(v, d, 0.01, 1, 3); }
+function _moArchOk(v) { return typeof v === 'number' && isFinite(v); }
+// a {x, y} pair in percent of the frame (numbers only) -> [px, py] rounded like every other coordinate, or null
+function _moArchXY(v, W, H) {
+  if (!v || typeof v !== 'object' || Array.isArray(v) || !_moArchOk(v.x) || !_moArchOk(v.y)) return null;
+  return [parseFloat(_moArchN(parseFloat(_ffNum(v.x, 0, 0, 100, 2)) * W / 100)), parseFloat(_moArchN(parseFloat(_ffNum(v.y, 0, 0, 100, 2)) * H / 100))];
+}
+// an edge's own route: up to 10 {x, y} waypoints, rim to rim; repeated points dropped; fewer than 2 -> null (the curve is used)
+function _moArchPoly(v, W, H) {
+  var out = [], i;
+  if (Array.isArray(v)) {
+    var q = v.slice(0, 10);
+    for (i = 0; i < q.length; i++) {
+      var pt = _moArchXY(q[i], W, H);
+      if (pt && (!out.length || pt[0] !== out[out.length - 1][0] || pt[1] !== out[out.length - 1][1])) out.push(pt);
+    }
+  }
+  return out.length >= 2 ? out : null;
+}
+// polyline path with the corners rounded by quadratic arcs of radius r (never more than half of either neighbour segment)
+function _moArchRounded(pts, r) {
+  var d = 'M' + _moArchN(pts[0][0]) + ' ' + _moArchN(pts[0][1]), i;
+  for (i = 1; i < pts.length - 1; i++) {
+    var a = pts[i - 1], c = pts[i], z = pts[i + 1];
+    var l1 = Math.sqrt(Math.pow(c[0] - a[0], 2) + Math.pow(c[1] - a[1], 2)), l2 = Math.sqrt(Math.pow(z[0] - c[0], 2) + Math.pow(z[1] - c[1], 2));
+    var rr = Math.min(r, l1 / 2, l2 / 2), cross = (c[0] - a[0]) * (z[1] - c[1]) - (c[1] - a[1]) * (z[0] - c[0]);
+    if (rr < 0.5 || Math.abs(cross) < 0.01) d += ' L' + _moArchN(c[0]) + ' ' + _moArchN(c[1]);
+    else d += ' L' + _moArchN(c[0] - (c[0] - a[0]) / l1 * rr) + ' ' + _moArchN(c[1] - (c[1] - a[1]) / l1 * rr)
+      + ' Q' + _moArchN(c[0]) + ' ' + _moArchN(c[1]) + ' ' + _moArchN(c[0] + (z[0] - c[0]) / l2 * rr) + ' ' + _moArchN(c[1] + (z[1] - c[1]) / l2 * rr);
+  }
+  return d + ' L' + _moArchN(pts[pts.length - 1][0]) + ' ' + _moArchN(pts[pts.length - 1][1]);
+}
+function _moArchSlope(v) { return _ffNum(v, 0, -1, 1, 4); }
+// the position of a chip along a polyline as calc() of --u: each segment adds slope * clamp(0, u * total - start, length)
+function _moArchRide(pts) {
+  var segs = [], tot = 0, i;
+  for (i = 0; i < pts.length - 1; i++) {
+    var dx = pts[i + 1][0] - pts[i][0], dy = pts[i + 1][1] - pts[i][1], ln = Math.sqrt(dx * dx + dy * dy);
+    segs.push([dx / ln, dy / ln, tot, ln]);
+    tot += ln;
+  }
+  var X = _moArchN(pts[0][0]), Y = _moArchN(pts[0][1]);
+  for (i = 0; i < segs.length; i++) {
+    var cl = 'clamp(0,calc(var(--u)*' + _moArchN(tot) + ' - ' + _moArchN(segs[i][2]) + '),' + _moArchN(segs[i][3]) + ')';
+    if (_moArchSlope(segs[i][0]) !== '0') X += ' + ' + _moArchSlope(segs[i][0]) + '*' + cl;
+    if (_moArchSlope(segs[i][1]) !== '0') Y += ' + ' + _moArchSlope(segs[i][1]) + '*' + cl;
+  }
+  return ['calc((' + X + ')*1px)', 'calc((' + Y + ')*1px)'];
+}
 _RENDERERS['motion_arch'] = function(b) {
   var W = _ffInt(b.w, 1000, 200, 2000), H = _ffInt(b.h, 560, 120, 2000), size = _ffInt(b.size, 17, 8, 40);
   var acc = _moInk(b, 'accent', 'var(--mt-acc,#8d98ff)'), acc2 = _moInk(b, 'accent2', '#2ac4ce'), ink = _moInk(b, 'color', 'var(--mt-ink,#eaeff5)');
@@ -3189,42 +3237,55 @@ _RENDERERS['motion_arch'] = function(b) {
     var t = Math.min(dx === 0 ? 1e9 : bx[2] / Math.abs(dx), dy === 0 ? 1e9 : bx[3] / Math.abs(dy));
     return [bx[0] + dx * t, bx[1] + dy * t];
   }
-  var edges = Array.isArray(b.edges) ? b.edges.slice(0, 16) : [], curves = [];
+  var edges = Array.isArray(b.edges) ? b.edges.slice(0, 16) : [], curves = [], rad = _ffInt(b.radius, 10, 0, 60);
+  function head(tip, from, col) {
+    var hx = tip[0] - from[0], hy = tip[1] - from[1], hl = Math.sqrt(hx * hx + hy * hy) || 1, ux = hx / hl, uy = hy / hl;
+    return '<path d="M' + _moArchN(tip[0] - ux * 11 - uy * 6) + ' ' + _moArchN(tip[1] - uy * 11 + ux * 6) + ' L' + _moArchN(tip[0]) + ' ' + _moArchN(tip[1]) + ' L' + _moArchN(tip[0] - ux * 11 + uy * 6) + ' ' + _moArchN(tip[1] - uy * 11 - ux * 6) + '" style="fill:none;stroke:' + col + ';stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;opacity:clamp(0,calc(var(--u)*12 - 11),1);"/>';
+  }
   for (i = 0; i < edges.length; i++) {
     var e = edges[i] && typeof edges[i] === 'object' ? edges[i] : {}, f = box[_moId(e.from)], t2 = box[_moId(e.to)];
     curves.push(null);
     if (!f || !t2 || f === t2) continue;
-    var dx = t2[0] - f[0], dy = t2[1] - f[1], len = Math.sqrt(dx * dx + dy * dy), bend = _ffNum(e.curve, 0, -100, 100, 0) / 100;
-    var a = rim(f, dx, dy), z = rim(t2, -dx, -dy), mx = (a[0] + z[0]) / 2, my = (a[1] + z[1]) / 2;
-    var c = [mx - dy / len * bend * len * 0.5, my + dx / len * bend * len * 0.5];
-    var P = [[parseFloat(_moArchN(a[0])), parseFloat(_moArchN(a[1]))], [parseFloat(_moArchN(c[0])), parseFloat(_moArchN(c[1]))], [parseFloat(_moArchN(z[0])), parseFloat(_moArchN(z[1]))]];
-    curves[i] = P;
-    var col = _moInk(e, 'color', acc2), dashed = _moOwn(_MO_ARCH_STYLE, e.style, 'solid') === 'dashed', both = e.both === true;
-    var at = _moArchT(e.at, 0.3 + i * 0.05), dur = _moArchD(e.dur, 0.1);
-    var d = 'M' + _moArchN(P[0][0]) + ' ' + _moArchN(P[0][1]) + ' Q' + _moArchN(P[1][0]) + ' ' + _moArchN(P[1][1]) + ' ' + _moArchN(P[2][0]) + ' ' + _moArchN(P[2][1]);
-    function head(tip, from) {
-      var hx = tip[0] - from[0], hy = tip[1] - from[1], hl = Math.sqrt(hx * hx + hy * hy) || 1, ux = hx / hl, uy = hy / hl;
-      return '<path d="M' + _moArchN(tip[0] - ux * 11 - uy * 6) + ' ' + _moArchN(tip[1] - uy * 11 + ux * 6) + ' L' + _moArchN(tip[0]) + ' ' + _moArchN(tip[1]) + ' L' + _moArchN(tip[0] - ux * 11 + uy * 6) + ' ' + _moArchN(tip[1] - uy * 11 - ux * 6) + '" style="fill:none;stroke:' + col + ';stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;opacity:clamp(0,calc(var(--u)*12 - 11),1);"/>';
+    var poly = _moArchPoly(e.points, W, H), P, d, ha, hz, lx, ly;
+    if (poly) {
+      P = poly; d = _moArchRounded(P, rad); ha = P[1]; hz = P[P.length - 2];
+      curves[i] = ['l', P];
+      var lat = _moArchXY(e.label_at, W, H);
+      if (lat) { lx = lat[0]; ly = lat[1] + (size - 4) * 0.35; }
+      else { var mi = Math.floor(P.length / 2); lx = (P[mi - 1][0] + P[mi][0]) / 2; ly = (P[mi - 1][1] + P[mi][1]) / 2 - 10; }
+    } else {
+      var dx = t2[0] - f[0], dy = t2[1] - f[1], len = Math.sqrt(dx * dx + dy * dy), bend = _ffNum(e.curve, 0, -100, 100, 0) / 100;
+      var a = rim(f, dx, dy), z = rim(t2, -dx, -dy), mx = (a[0] + z[0]) / 2, my = (a[1] + z[1]) / 2;
+      var c = [mx - dy / len * bend * len * 0.5, my + dx / len * bend * len * 0.5];
+      P = [[parseFloat(_moArchN(a[0])), parseFloat(_moArchN(a[1]))], [parseFloat(_moArchN(c[0])), parseFloat(_moArchN(c[1]))], [parseFloat(_moArchN(z[0])), parseFloat(_moArchN(z[1]))]];
+      curves[i] = ['q', P];
+      d = 'M' + _moArchN(P[0][0]) + ' ' + _moArchN(P[0][1]) + ' Q' + _moArchN(P[1][0]) + ' ' + _moArchN(P[1][1]) + ' ' + _moArchN(P[2][0]) + ' ' + _moArchN(P[2][1]);
+      ha = P[1]; hz = P[1];
+      lx = 0.25 * P[0][0] + 0.5 * P[1][0] + 0.25 * P[2][0]; ly = 0.25 * P[0][1] + 0.5 * P[1][1] + 0.25 * P[2][1] - 10;
     }
-    var el = _moStr(e.label, 48);
-    var lx = 0.25 * P[0][0] + 0.5 * P[1][0] + 0.25 * P[2][0], ly = 0.25 * P[0][1] + 0.5 * P[1][1] + 0.25 * P[2][1] - 10;
+    var col = _moInk(e, 'color', acc2), dashed = _moOwn(_MO_ARCH_STYLE, e.style, 'solid') === 'dashed', both = e.both === true;
+    var at = _moArchT(e.at, 0.3 + i * 0.05), dur = _moArchD(e.dur, 0.1), el = _moStr(e.label, 48);
     out += '<g style="' + win(at, dur) + '">'
       + '<path d="' + d + '" pathLength="1" style="fill:none;stroke:' + col + ';stroke-width:2.2;stroke-linecap:round;'
       + (dashed ? 'stroke-dasharray:0.012 0.012;opacity:var(--u);' : 'stroke-dasharray:1;stroke-dashoffset:calc(1 - var(--u));') + '"/>'
-      + head(P[2], P[1]) + (both ? head(P[0], P[1]) : '')
+      + head(P[P.length - 1], hz, col) + (both ? head(P[0], ha, col) : '')
       + (el ? '<text x="' + _moArchN(lx) + '" y="' + _moArchN(ly) + '" text-anchor="middle" style="font-family:' + _JOURNEY_MONO + ';font-size:' + (size - 4) + 'px;fill:' + ink + ';paint-order:stroke;stroke:' + paper + ';stroke-width:6px;stroke-linejoin:round;opacity:var(--u);">' + _esc(el) + '</text>' : '')
       + '</g>';
   }
-  // messages: payload chips riding an edge's curve (back: the reply, end to start)
+  // messages: payload chips riding an edge's route (back: the reply, end to start)
   var msgs = Array.isArray(b.messages) ? b.messages.slice(0, 12) : [];
   for (i = 0; i < msgs.length; i++) {
-    var m = msgs[i] && typeof msgs[i] === 'object' ? msgs[i] : {}, k = _ffInt(m.edge, -1, -1, 15), Q = k >= 0 ? curves[k] : null;
-    if (!Q) continue;
-    if (m.back === true) Q = [Q[2], Q[1], Q[0]];
+    var m = msgs[i] && typeof msgs[i] === 'object' ? msgs[i] : {}, k = _ffInt(m.edge, -1, -1, 15), C = k >= 0 ? curves[k] : null;
+    if (!C) continue;
+    var Q = C[1], back = m.back === true, X, Y;
     var txt = _moStr(m.text, 40) || 'payload', cw = txt.length * (size - 4) * 0.62 + 22, mc = _moInk(m, 'color', acc);
-    var u = 'var(--u)', v = '(1 - var(--u))';
-    var X = 'calc((' + _moArchN(Q[0][0]) + '*' + v + '*' + v + ' + ' + _moArchN(2 * Q[1][0]) + '*' + v + '*' + u + ' + ' + _moArchN(Q[2][0]) + '*' + u + '*' + u + ')*1px)';
-    var Y = 'calc((' + _moArchN(Q[0][1]) + '*' + v + '*' + v + ' + ' + _moArchN(2 * Q[1][1]) + '*' + v + '*' + u + ' + ' + _moArchN(Q[2][1]) + '*' + u + '*' + u + ')*1px)';
+    if (C[0] === 'l') { var rd = _moArchRide(back ? Q.slice().reverse() : Q); X = rd[0]; Y = rd[1]; }
+    else {
+      if (back) Q = [Q[2], Q[1], Q[0]];
+      var u = 'var(--u)', v = '(1 - var(--u))';
+      X = 'calc((' + _moArchN(Q[0][0]) + '*' + v + '*' + v + ' + ' + _moArchN(2 * Q[1][0]) + '*' + v + '*' + u + ' + ' + _moArchN(Q[2][0]) + '*' + u + '*' + u + ')*1px)';
+      Y = 'calc((' + _moArchN(Q[0][1]) + '*' + v + '*' + v + ' + ' + _moArchN(2 * Q[1][1]) + '*' + v + '*' + u + ' + ' + _moArchN(Q[2][1]) + '*' + u + '*' + u + ')*1px)';
+    }
     out += '<g style="' + win(_moArchT(m.at, 0.6 + i * 0.08), _moArchD(m.dur, 0.12)) + 'transform:translate(' + X + ',' + Y + ');opacity:clamp(0,min(calc(var(--u)*10),calc((1 - var(--u))*10)),1);">'
       + '<rect x="' + _moArchN(-cw / 2) + '" y="-14" width="' + _moArchN(cw) + '" height="28" rx="14" style="fill:' + mc + ';"/>'
       + '<text x="0" y="5" text-anchor="middle" style="font-family:' + _JOURNEY_MONO + ';font-size:' + (size - 4) + 'px;font-weight:700;fill:#141b24;">' + _esc(txt) + '</text></g>';

@@ -43524,6 +43524,12 @@
                 "curve": {
                   "type": "string"
                 },
+                "points": {
+                  "type": "string"
+                },
+                "label_at": {
+                  "type": "string"
+                },
                 "color": {
                   "type": "string"
                 },
@@ -43616,6 +43622,9 @@
             "type": "integer"
           },
           "size": {
+            "type": "integer"
+          },
+          "radius": {
             "type": "integer"
           },
           "accent": {

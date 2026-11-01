@@ -34760,6 +34760,67 @@ def _mo_arch_d(v, d):
     return _ff_num(v, d, 0.01, 1, 3)
 
 
+def _mo_arch_ok(v):
+    return isinstance(v, (int, float)) and not isinstance(v, bool) and math.isfinite(v)
+
+
+def _mo_arch_xy(v, W, H):
+    # a {x, y} pair in percent of the frame (numbers only) -> [px, py] rounded like every other coordinate, or None
+    if not isinstance(v, dict) or not _mo_arch_ok(v.get('x')) or not _mo_arch_ok(v.get('y')):
+        return None
+    return [float(_mo_arch_n(float(_ff_num(v.get('x'), 0, 0, 100, 2)) * W / 100)), float(_mo_arch_n(float(_ff_num(v.get('y'), 0, 0, 100, 2)) * H / 100))]
+
+
+def _mo_arch_poly(v, W, H):
+    # an edge's own route: up to 10 {x, y} waypoints, rim to rim; repeated points dropped; fewer than 2 -> None (the curve is used)
+    out = []
+    if isinstance(v, list):
+        for q in v[:10]:
+            pt = _mo_arch_xy(q, W, H)
+            if pt and (not out or pt != out[-1]):
+                out.append(pt)
+    return out if len(out) >= 2 else None
+
+
+def _mo_arch_rounded(pts, r):
+    # polyline path with the corners rounded by quadratic arcs of radius r (never more than half of either neighbour segment)
+    d = 'M' + _mo_arch_n(pts[0][0]) + ' ' + _mo_arch_n(pts[0][1])
+    for i in range(1, len(pts) - 1):
+        a, c, z = pts[i - 1], pts[i], pts[i + 1]
+        l1, l2 = math.sqrt((c[0] - a[0]) ** 2 + (c[1] - a[1]) ** 2), math.sqrt((z[0] - c[0]) ** 2 + (z[1] - c[1]) ** 2)
+        rr = min(r, l1 / 2, l2 / 2)
+        cross = (c[0] - a[0]) * (z[1] - c[1]) - (c[1] - a[1]) * (z[0] - c[0])
+        if rr < 0.5 or abs(cross) < 0.01:
+            d += ' L' + _mo_arch_n(c[0]) + ' ' + _mo_arch_n(c[1])
+        else:
+            d += (' L' + _mo_arch_n(c[0] - (c[0] - a[0]) / l1 * rr) + ' ' + _mo_arch_n(c[1] - (c[1] - a[1]) / l1 * rr)
+                  + ' Q' + _mo_arch_n(c[0]) + ' ' + _mo_arch_n(c[1]) + ' ' + _mo_arch_n(c[0] + (z[0] - c[0]) / l2 * rr) + ' ' + _mo_arch_n(c[1] + (z[1] - c[1]) / l2 * rr))
+    return d + ' L' + _mo_arch_n(pts[-1][0]) + ' ' + _mo_arch_n(pts[-1][1])
+
+
+def _mo_arch_slope(v):
+    return _ff_num(v, 0, -1, 1, 4)
+
+
+def _mo_arch_ride(pts):
+    # the position of a chip along a polyline as calc() of --u: each segment adds slope * clamp(0, u * total - start, length);
+    # no motion-path support is needed, and an orthogonal route has one term per segment per axis at most
+    segs, tot = [], 0.0
+    for i in range(len(pts) - 1):
+        dx, dy = pts[i + 1][0] - pts[i][0], pts[i + 1][1] - pts[i][1]
+        ln = math.sqrt(dx * dx + dy * dy)
+        segs.append([dx / ln, dy / ln, tot, ln])
+        tot += ln
+    X, Y = _mo_arch_n(pts[0][0]), _mo_arch_n(pts[0][1])
+    for sx, sy, st, ln in segs:
+        cl = 'clamp(0,calc(var(--u)*' + _mo_arch_n(tot) + ' - ' + _mo_arch_n(st) + '),' + _mo_arch_n(ln) + ')'
+        if _mo_arch_slope(sx) != '0':
+            X += ' + ' + _mo_arch_slope(sx) + '*' + cl
+        if _mo_arch_slope(sy) != '0':
+            Y += ' + ' + _mo_arch_slope(sy) + '*' + cl
+    return 'calc((' + X + ')*1px)', 'calc((' + Y + ')*1px)'
+
+
 def _render_motion_arch(b: dict) -> str:
     W, H, size = _ff_int(b.get('w'), 1000, 200, 2000), _ff_int(b.get('h'), 560, 120, 2000), _ff_int(b.get('size'), 17, 8, 40)
     acc, acc2, ink = _mo_ink(b, 'accent', 'var(--mt-acc,#8d98ff)'), _mo_ink(b, 'accent2', '#2ac4ce'), _mo_ink(b, 'color', 'var(--mt-ink,#eaeff5)')
@@ -34801,40 +34862,55 @@ def _render_motion_arch(b: dict) -> str:
         t = min(1e9 if dx == 0 else bx[2] / abs(dx), 1e9 if dy == 0 else bx[3] / abs(dy))
         return [bx[0] + dx * t, bx[1] + dy * t]
     edges = b.get('edges') if isinstance(b.get('edges'), list) else []
+    rad = _ff_int(b.get('radius'), 10, 0, 60)
     curves = []
+
+    def head(tip, frm, col, u='var(--u)'):
+        hx, hy = tip[0] - frm[0], tip[1] - frm[1]
+        hl = math.sqrt(hx * hx + hy * hy) or 1
+        ux, uy = hx / hl, hy / hl
+        return ('<path d="M' + _mo_arch_n(tip[0] - ux * 11 - uy * 6) + ' ' + _mo_arch_n(tip[1] - uy * 11 + ux * 6) + ' L' + _mo_arch_n(tip[0]) + ' ' + _mo_arch_n(tip[1])
+                + ' L' + _mo_arch_n(tip[0] - ux * 11 + uy * 6) + ' ' + _mo_arch_n(tip[1] - uy * 11 - ux * 6) + '" style="fill:none;stroke:' + col
+                + ';stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;opacity:clamp(0,calc(var(--u)*12 - 11),1);"/>')
     for i, e in enumerate(edges[:16]):
         e = e if isinstance(e, dict) else {}
         f, t2 = box.get(_mo_id(e.get('from'))), box.get(_mo_id(e.get('to')))
         curves.append(None)
         if not f or not t2 or f is t2:
             continue
-        dx, dy = t2[0] - f[0], t2[1] - f[1]
-        ln = math.sqrt(dx * dx + dy * dy)
-        bend = float(_ff_num(e.get('curve'), 0, -100, 100, 0)) / 100
-        a, z = rim(f, dx, dy), rim(t2, -dx, -dy)
-        mx, my = (a[0] + z[0]) / 2, (a[1] + z[1]) / 2
-        c = [mx - dy / ln * bend * ln * 0.5, my + dx / ln * bend * ln * 0.5]
-        P = [[float(_mo_arch_n(a[0])), float(_mo_arch_n(a[1]))], [float(_mo_arch_n(c[0])), float(_mo_arch_n(c[1]))], [float(_mo_arch_n(z[0])), float(_mo_arch_n(z[1]))]]
-        curves[i] = P
+        poly = _mo_arch_poly(e.get('points'), W, H)
+        if poly:
+            P = poly
+            d = _mo_arch_rounded(P, rad)
+            ha, hz = P[1], P[-2]
+            curves[i] = ('l', P)
+            lat = _mo_arch_xy(e.get('label_at'), W, H)
+            if lat:
+                lx, ly = lat[0], lat[1] + (size - 4) * 0.35
+            else:
+                m = len(P) // 2
+                lx, ly = (P[m - 1][0] + P[m][0]) / 2, (P[m - 1][1] + P[m][1]) / 2 - 10
+        else:
+            dx, dy = t2[0] - f[0], t2[1] - f[1]
+            ln = math.sqrt(dx * dx + dy * dy)
+            bend = float(_ff_num(e.get('curve'), 0, -100, 100, 0)) / 100
+            a, z = rim(f, dx, dy), rim(t2, -dx, -dy)
+            mx, my = (a[0] + z[0]) / 2, (a[1] + z[1]) / 2
+            c = [mx - dy / ln * bend * ln * 0.5, my + dx / ln * bend * ln * 0.5]
+            P = [[float(_mo_arch_n(a[0])), float(_mo_arch_n(a[1]))], [float(_mo_arch_n(c[0])), float(_mo_arch_n(c[1]))], [float(_mo_arch_n(z[0])), float(_mo_arch_n(z[1]))]]
+            curves[i] = ('q', P)
+            d = ('M' + _mo_arch_n(P[0][0]) + ' ' + _mo_arch_n(P[0][1]) + ' Q' + _mo_arch_n(P[1][0]) + ' ' + _mo_arch_n(P[1][1]) + ' '
+                 + _mo_arch_n(P[2][0]) + ' ' + _mo_arch_n(P[2][1]))
+            ha, hz = P[1], P[1]
+            lx = 0.25 * P[0][0] + 0.5 * P[1][0] + 0.25 * P[2][0]
+            ly = 0.25 * P[0][1] + 0.5 * P[1][1] + 0.25 * P[2][1] - 10
         col, dashed, both = _mo_ink(e, 'color', acc2), _mo_own(_MO_ARCH_STYLE, e.get('style'), 'solid') == 'dashed', e.get('both') is True
         at, dur = _mo_arch_t(e.get('at'), 0.3 + i * 0.05), _mo_arch_d(e.get('dur'), 0.1)
-        d = ('M' + _mo_arch_n(P[0][0]) + ' ' + _mo_arch_n(P[0][1]) + ' Q' + _mo_arch_n(P[1][0]) + ' ' + _mo_arch_n(P[1][1]) + ' '
-             + _mo_arch_n(P[2][0]) + ' ' + _mo_arch_n(P[2][1]))
-
-        def head(tip, frm, col=col):
-            hx, hy = tip[0] - frm[0], tip[1] - frm[1]
-            hl = math.sqrt(hx * hx + hy * hy) or 1
-            ux, uy = hx / hl, hy / hl
-            return ('<path d="M' + _mo_arch_n(tip[0] - ux * 11 - uy * 6) + ' ' + _mo_arch_n(tip[1] - uy * 11 + ux * 6) + ' L' + _mo_arch_n(tip[0]) + ' ' + _mo_arch_n(tip[1])
-                    + ' L' + _mo_arch_n(tip[0] - ux * 11 + uy * 6) + ' ' + _mo_arch_n(tip[1] - uy * 11 - ux * 6) + '" style="fill:none;stroke:' + col
-                    + ';stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;opacity:clamp(0,calc(var(--u)*12 - 11),1);"/>')
         el = _cv_str(e.get('label'), 48)
-        lx = 0.25 * P[0][0] + 0.5 * P[1][0] + 0.25 * P[2][0]
-        ly = 0.25 * P[0][1] + 0.5 * P[1][1] + 0.25 * P[2][1] - 10
         out += ('<g style="' + win(at, dur) + '">'
                 + '<path d="' + d + '" pathLength="1" style="fill:none;stroke:' + col + ';stroke-width:2.2;stroke-linecap:round;'
                 + ('stroke-dasharray:0.012 0.012;opacity:var(--u);' if dashed else 'stroke-dasharray:1;stroke-dashoffset:calc(1 - var(--u));') + '"/>'
-                + head(P[2], P[1]) + (head(P[0], P[1]) if both else '')
+                + head(P[-1], hz, col) + (head(P[0], ha, col) if both else '')
                 + ('<text x="' + _mo_arch_n(lx) + '" y="' + _mo_arch_n(ly) + '" text-anchor="middle" style="font-family:' + _JOURNEY_MONO + ';font-size:' + str(size - 4)
                    + 'px;fill:' + ink + ';paint-order:stroke;stroke:' + paper + ';stroke-width:6px;stroke-linejoin:round;opacity:var(--u);">' + _cv_esc(el) + '</text>'
                    if el else '')
@@ -34843,16 +34919,21 @@ def _render_motion_arch(b: dict) -> str:
     for i, m in enumerate(msgs[:12]):
         m = m if isinstance(m, dict) else {}
         k = _ff_int(m.get('edge'), -1, -1, 15)
-        Q = curves[k] if 0 <= k < len(curves) else None
-        if not Q:
+        C = curves[k] if 0 <= k < len(curves) else None
+        if not C:
             continue
-        if m.get('back') is True:
-            Q = [Q[2], Q[1], Q[0]]
+        kind, Q = C
+        back = m.get('back') is True
         txt = _cv_str(m.get('text'), 40) or 'payload'
         cw, mc = len(txt) * (size - 4) * 0.62 + 22, _mo_ink(m, 'color', acc)
-        u, v = 'var(--u)', '(1 - var(--u))'
-        X = ('calc((' + _mo_arch_n(Q[0][0]) + '*' + v + '*' + v + ' + ' + _mo_arch_n(2 * Q[1][0]) + '*' + v + '*' + u + ' + ' + _mo_arch_n(Q[2][0]) + '*' + u + '*' + u + ')*1px)')
-        Y = ('calc((' + _mo_arch_n(Q[0][1]) + '*' + v + '*' + v + ' + ' + _mo_arch_n(2 * Q[1][1]) + '*' + v + '*' + u + ' + ' + _mo_arch_n(Q[2][1]) + '*' + u + '*' + u + ')*1px)')
+        if kind == 'l':
+            X, Y = _mo_arch_ride(Q[::-1] if back else Q)
+        else:
+            if back:
+                Q = [Q[2], Q[1], Q[0]]
+            u, v = 'var(--u)', '(1 - var(--u))'
+            X = ('calc((' + _mo_arch_n(Q[0][0]) + '*' + v + '*' + v + ' + ' + _mo_arch_n(2 * Q[1][0]) + '*' + v + '*' + u + ' + ' + _mo_arch_n(Q[2][0]) + '*' + u + '*' + u + ')*1px)')
+            Y = ('calc((' + _mo_arch_n(Q[0][1]) + '*' + v + '*' + v + ' + ' + _mo_arch_n(2 * Q[1][1]) + '*' + v + '*' + u + ' + ' + _mo_arch_n(Q[2][1]) + '*' + u + '*' + u + ')*1px)')
         out += ('<g style="' + win(_mo_arch_t(m.get('at'), 0.6 + i * 0.08), _mo_arch_d(m.get('dur'), 0.12)) + 'transform:translate(' + X + ',' + Y + ');opacity:clamp(0,min(calc(var(--u)*10),calc((1 - var(--u))*10)),1);">'
                 + '<rect x="' + _mo_arch_n(-cw / 2) + '" y="-14" width="' + _mo_arch_n(cw) + '" height="28" rx="14" style="fill:' + mc + ';"/>'
                 + '<text x="0" y="5" text-anchor="middle" style="font-family:' + _JOURNEY_MONO + ';font-size:' + str(size - 4) + 'px;font-weight:700;fill:#141b24;">' + _cv_esc(txt) + '</text></g>')
