@@ -119,12 +119,16 @@ export function makeIdMapper() {
   };
 }
 
+const MAX_INPUT_CHARS = 20000, MAX_LINE_CHARS = 500;   // keeps backtracking in matchLink and the & cross product bounded
 export function parseMermaid(text, opts = {}) {
   const errors = [], warnings = [];
   const fail = (line, msg) => errors.push(`line ${line}: ${msg}`);
   const warn = (line, msg) => warnings.push(`line ${line}: ${msg}`);
   if (typeof text !== 'string') throw new ArchError(['input must be Mermaid text (a string)']);
+  if (text.length > MAX_INPUT_CHARS) throw new ArchError([`input is ${text.length} characters; the most this converter reads is ${MAX_INPUT_CHARS}. A diagram this atom can show is far smaller.`]);
   const lines = text.replace(/^﻿/, '').replace(/\r\n?/g, '\n').split('\n');
+  const longLine = lines.findIndex((l) => l.length > MAX_LINE_CHARS);
+  if (longLine >= 0) throw new ArchError([`line ${longLine + 1}: ${lines[longLine].length} characters; the most one line may hold is ${MAX_LINE_CHARS}. Split it over several lines.`]);
 
   const nodes = new Map();          // orig -> {orig,label,sub,shape,hints:[],group,order,line}
   const edges = [];                 // {from,to,label,style,both,line}

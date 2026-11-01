@@ -831,3 +831,10 @@ test('film stage: the diagram is as big with the Relation column off as with it 
     assert.ok(row.size / ({ '16:9': 1280, '4:3': 1200, '1:1': 1000, '9:16': 720 }[tl.aspect]) >= 0.0165 - 1e-9, f + ': the table text stays readable');
   }
 });
+
+test('input caps: a long line or a huge paste is refused fast, not parsed', () => {
+  const t0 = Date.now();
+  assert.throws(() => mermaidToArch('flowchart LR\nA -- ' + ' '.repeat(8000) + 'x'), /most one line may hold/);
+  assert.throws(() => mermaidToArch('flowchart LR\n' + 'A-->B\n'.repeat(5000)), /most this converter reads/);
+  assert.ok(Date.now() - t0 < 1000);
+});

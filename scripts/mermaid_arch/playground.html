@@ -327,7 +327,7 @@ function validateGraph(g) {
 // `duration` (seconds) overrides the total: the dwells are scaled to fit, with a warning when that is
 // shorter than the fast-pace reading time.
 
-const LEAD_IN = 1, HOLD = 2, MIN_DWELL = 1.8, WORDS_PER_SECOND = 4, READ_PAD = 0.5, CHIP_SECONDS = 1.2, CHIP_GAP = 0.15, CHIP_START = 0.55, CHIP_TAIL = 0.3;
+const LEAD_IN = 1, HOLD = 2, MIN_DWELL = 1.8, WORDS_PER_SECOND = 4, READ_PAD = 0.5, CHIP_SECONDS = 2.0, CHIP_GAP = 0.15, CHIP_START = 0.55, CHIP_TAIL = 0.3;
 
 const words = (t) => (String(t || '').trim() ? String(t).trim().split(/\s+/).length : 0);
 
@@ -552,12 +552,16 @@ function makeIdMapper() {
   };
 }
 
+const MAX_INPUT_CHARS = 20000, MAX_LINE_CHARS = 500;   // keeps backtracking in matchLink and the & cross product bounded
 function parseMermaid(text, opts = {}) {
   const errors = [], warnings = [];
   const fail = (line, msg) => errors.push(`line ${line}: ${msg}`);
   const warn = (line, msg) => warnings.push(`line ${line}: ${msg}`);
   if (typeof text !== 'string') throw new ArchError(['input must be Mermaid text (a string)']);
+  if (text.length > MAX_INPUT_CHARS) throw new ArchError([`input is ${text.length} characters; the most this converter reads is ${MAX_INPUT_CHARS}. A diagram this atom can show is far smaller.`]);
   const lines = text.replace(/^﻿/, '').replace(/\r\n?/g, '\n').split('\n');
+  const longLine = lines.findIndex((l) => l.length > MAX_LINE_CHARS);
+  if (longLine >= 0) throw new ArchError([`line ${longLine + 1}: ${lines[longLine].length} characters; the most one line may hold is ${MAX_LINE_CHARS}. Split it over several lines.`]);
 
   const nodes = new Map();          // orig -> {orig,label,sub,shape,hints:[],group,order,line}
   const edges = [];                 // {from,to,label,style,both,line}
@@ -2158,7 +2162,7 @@ function compileGraph(graph, opts = {}) {
     const k = info[stepOf.get(idx)].chips, jn = seen.get(idx) || 0; seen.set(idx, jn + 1);
     const dwell = st.end - st.start;
     const off = Math.max(CHIP_START, edgeSec(st) + 0.05);   // not before the edge is fully drawn
-    const c = Math.min(1.2, Math.max(0.3, (dwell - off - CHIP_TAIL - (k - 1) * CHIP_GAP) / k));
+    const c = Math.min(CHIP_SECONDS, Math.max(0.3, (dwell - off - CHIP_TAIL - (k - 1) * CHIP_GAP) / k));
     const o = { edge: idx, text: clip(m.text, LIMITS.msgText) };
     if (back) o.back = true;
     o.at = r4((st.start + off + jn * (c + CHIP_GAP)) / D); o.dur = pd(c, D);
@@ -2387,7 +2391,13 @@ function d2ToArch(text, opts = {}) {
 </script>
 <script>
 (function () {
-  var BUNDLE = (location.search.match(/[?&]bundle=([^&]+)/) || [])[1] || '../../public/surfaces/mcp-apps/renderer-bundle.html';
+  var DEFAULT_BUNDLE = '../../public/surfaces/mcp-apps/renderer-bundle.html';
+  // ?bundle= may only point at an http(s) page on this origin: a javascript: or data: URL would run in this page's origin
+  var BUNDLE = DEFAULT_BUNDLE;
+  try {
+    var asked = (location.search.match(/[?&]bundle=([^&]+)/) || [])[1];
+    if (asked) { var u = new URL(decodeURIComponent(asked), location.href); if ((u.protocol === 'http:' || u.protocol === 'https:') && u.origin === location.origin) BUNDLE = u.href; }
+  } catch (e) { /* keep the default */ }
   var frame = document.getElementById('view'), ready = false, pending = null, last = null;
   function post(m) { frame.contentWindow.postMessage(m, '*'); }
   function send() { if (ready && pending) { post({ jsonrpc: '2.0', method: 'ui/notifications/tool-result', params: { content: [], structuredContent: pending } }); } }

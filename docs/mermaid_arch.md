@@ -37,7 +37,7 @@ flow order, then edges, then the message chips.
 
 Try it live: open `scripts/mermaid_arch/playground.html` (one file, no external scripts; it loads the
 renderer bundle from `public/surfaces/mcp-apps/renderer-bundle.html` by relative path, so open it from
-a checkout, or pass `?bundle=<url>`). Rebuild it after code changes with
+a checkout, or pass `?bundle=<url>` when it is served over http(s); the URL must be on the same origin, anything else is ignored). Input is capped at 20,000 characters and 500 per line. Rebuild it after code changes with
 `node scripts/mermaid_arch/build_playground.mjs`.
 
 ## Numbered flows, the steps table and pacing

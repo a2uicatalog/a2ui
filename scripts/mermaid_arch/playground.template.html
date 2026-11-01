@@ -61,7 +61,13 @@ flowchart LR
 </script>
 <script>
 (function () {
-  var BUNDLE = (location.search.match(/[?&]bundle=([^&]+)/) || [])[1] || '../../public/surfaces/mcp-apps/renderer-bundle.html';
+  var DEFAULT_BUNDLE = '../../public/surfaces/mcp-apps/renderer-bundle.html';
+  // ?bundle= may only point at an http(s) page on this origin: a javascript: or data: URL would run in this page's origin
+  var BUNDLE = DEFAULT_BUNDLE;
+  try {
+    var asked = (location.search.match(/[?&]bundle=([^&]+)/) || [])[1];
+    if (asked) { var u = new URL(decodeURIComponent(asked), location.href); if ((u.protocol === 'http:' || u.protocol === 'https:') && u.origin === location.origin) BUNDLE = u.href; }
+  } catch (e) { /* keep the default */ }
   var frame = document.getElementById('view'), ready = false, pending = null, last = null;
   function post(m) { frame.contentWindow.postMessage(m, '*'); }
   function send() { if (ready && pending) { post({ jsonrpc: '2.0', method: 'ui/notifications/tool-result', params: { content: [], structuredContent: pending } }); } }
