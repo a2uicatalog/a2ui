@@ -44,7 +44,7 @@ flowchart LR
 <div class="row">
   <label>Direction <select id="dir"><option value="">as written (auto)</option><option>LR</option><option>TB</option><option>RL</option><option>BT</option></select></label>
   <label><input type="checkbox" id="film" checked> play as a film</label>
-  <label><input type="checkbox" id="num" checked> numbered steps + table</label>
+  <label><input type="checkbox" id="num" checked> numbered steps</label>
   <label><input type="checkbox" id="rel"> Show relation column</label>
   <label>edges <select id="routing"><option value="orthogonal" selected>routed (right angles)</option><option value="curve">curves</option></select></label>
   <label>pace <select id="pace"><option>slow</option><option selected>normal</option><option>fast</option></select></label>
@@ -286,7 +286,7 @@ function validateGraph(g) {
   });
   if (g.relationName !== undefined && (typeof g.relationName !== 'string' || !g.relationName.trim() || g.relationName.length > LIMITS.relation)) errors.push(`relationName must be 1 to ${LIMITS.relation} characters`);
   if (g.relationColumn !== undefined && typeof g.relationColumn !== 'boolean') errors.push('relationColumn must be true or false');
-  if (g.pace !== undefined && !(g.pace in PACES)) errors.push(`pace "${g.pace}" is not one of ${Object.keys(PACES).join(', ')}`);
+  if (g.pace !== undefined && !Object.hasOwn(PACES, g.pace)) errors.push(`pace "${g.pace}" is not one of ${Object.keys(PACES).join(', ')}`);
   if (g.duration !== undefined && !(typeof g.duration === 'number' && g.duration >= 2 && g.duration <= 120)) errors.push(`duration "${g.duration}" must be a number of seconds from 2 to 120`);
   if (g.numbered || edges.some((e) => e && e.step !== undefined)) {
     if (!errors.some((e) => /^edge \d+: "/.test(e))) errors.push(...assignSteps(g).errors);
@@ -334,6 +334,7 @@ const words = (t) => (String(t || '').trim() ? String(t).trim().split(/\s+/).len
 // steps: [{words, chips}] in playing order (words = words in the step's sentence)
 function buildSchedule(steps, { pace = 'normal', duration } = {}) {
   const warnings = [];
+  if (!Object.hasOwn(PACES, pace)) throw Object.assign(new Error(`pace "${String(pace)}" is not one of ${Object.keys(PACES).join(', ')}`), { archMessage: true });
   const mult = PACES[pace];
   const n = steps.length;
   const crowd = n > 9 ? 1.1 * 1.1 : n > 6 ? 1.1 : 1;
@@ -759,7 +760,7 @@ function parseMermaid(text, opts = {}) {
         else fail(L(), '"%% numbered:" must be on or off');
       } else if (key === 'pace') {
         const v = d[2].trim().toLowerCase();
-        if (v in PACES) pace = v; else fail(L(), `"%% pace:" must be one of ${Object.keys(PACES).join(', ')}`);
+        if (Object.hasOwn(PACES, v)) pace = v; else fail(L(), `"%% pace:" must be one of ${Object.keys(PACES).join(', ')}`);
       } else if (key === 'duration') {
         const v = Number(d[2].trim().replace(/\s*s$/i, ''));
         if (Number.isFinite(v) && v >= 2 && v <= 120) duration = v; else fail(L(), '"%% duration:" must be a number of seconds from 2 to 120, for example %% duration: 40');
@@ -2185,10 +2186,21 @@ function compileGraph(graph, opts = {}) {
     if (e.relation) o.relation = e.relation;
     return o;
   }) : [];
+  // text alternative: every edge (full sentence) in playing order, and every message, always present, numbered or not
+  const textSteps = order.map((ei, k) => {
+    const e = graph.edges[ei];
+    const o = { step: numbered ? stepNo[ei] : k + 1, from: lab(e.from), to: lab(e.to), label: e.label || '', style: e.style || 'sync', activity: sentence[ei] };
+    if (e.relation) o.relation = e.relation;
+    return o;
+  });
+  const textMessages = graph.messages.map((m, j) => {
+    const { idx, back } = msgEdge[j], e = graph.edges[idx];
+    return { step: textSteps[stepOf.get(idx)].step, text: m.text, from: lab(back ? e.to : e.from), to: lab(back ? e.from : e.to) };
+  }).sort((a, b) => a.step - b.step);
   const relationColumn = numbered && (opts.relationColumn !== undefined ? !!opts.relationColumn : !!graph.relationColumn);
   const relationName = opts.relationName || graph.relationName || 'Relation';
   const schedule = sched.schedule.map((s, k) => ({ step: numbered ? stepNo[order[k]] : s.step, start: s.start, end: s.end }));
-  return { block, layout: lay, warnings, steps, schedule, durationSeconds: D, numbered, pace, minimumSeconds: sched.minimumSeconds, relationColumn, relationName };
+  return { block, layout: lay, warnings, steps, textSteps, textMessages, schedule, durationSeconds: D, numbered, pace, minimumSeconds: sched.minimumSeconds, relationColumn, relationName };
 }
 
 const STAGES = [['16:9', 1280, 720], ['4:3', 1200, 900], ['1:1', 1000, 1000], ['9:16', 720, 1280]];
@@ -2202,6 +2214,25 @@ function stepsTable(steps, ctx = {}) {
     rows: steps.map((s) => (rel ? [String(s.step), s.activity, s.relation || ''] : [String(s.step), s.activity])),
     col_widths: rel ? ['9%', '67%', '24%'] : ['9%', '91%'],
   };
+}
+
+// The messages table: Step | Message | Direction, full text. Only built when the diagram has messages.
+function messagesTable(messages) {
+  return {
+    type: 'table', caption: 'Messages',
+    headers: ['Step', 'Message', 'Direction'],
+    rows: messages.map((m) => [String(m.step), m.text, `${m.from} to ${m.to}`]),
+    col_widths: ['9%', '45%', '46%'],
+  };
+}
+
+// The text alternative that goes after the diagram in every payload: the steps table (every edge as a full sentence)
+// and the messages table. Uses the existing public `table` atom; the motion_arch atom itself is unchanged.
+function textAlternative(ctx = {}) {
+  const out = [];
+  if (ctx.textSteps && ctx.textSteps.length) out.push(stepsTable(ctx.textSteps, ctx));
+  if (ctx.textMessages && ctx.textMessages.length) out.push(messagesTable(ctx.textMessages));
+  return out;
 }
 
 // Wrap the diagram (and, when numbered, the steps table) in ONE motion_timeline so both run on one clock.
@@ -2290,15 +2321,13 @@ function filmPayload(block, ctx = {}) {
     blocks: [{
       type: 'motion_timeline', title: block.label, aspect, duration: D, loop: true, autoplay: true, controls: true, theme: 'dark',
       poster: r2(Math.max(0, D - 0.5)), blocks, tracks,
-    }],
+    }, ...textAlternative(ctx)],
   };
 }
 
-// Standalone payload: the finished diagram (and, when numbered, the steps table under it).
+// Standalone payload: the finished diagram, then the steps table and (when there are messages) the messages table.
 function archPayload(block, ctx = {}) {
-  const blocks = [block];
-  if (ctx.steps && ctx.steps.length) blocks.push(stepsTable(ctx.steps, ctx));
-  return { theme: 'dark', blocks };
+  return { theme: 'dark', blocks: [block, ...textAlternative(ctx)] };
 }
 
 // Validate the compiled block against the atom's own limits.
@@ -2369,9 +2398,9 @@ function graphToArch(graph, opts = {}) {
   const { block, layout, warnings: w2 } = c;
   const bad = validateBlock(block);
   if (bad.length) throw new ArchError(['internal: compiled block breaks the atom limits: ' + bad.join('; ')], warnings);
-  const ctx = { steps: c.steps, schedule: c.schedule, durationSeconds: c.durationSeconds, relationColumn: c.relationColumn, relationName: c.relationName };
+  const ctx = { steps: c.steps, textSteps: c.textSteps, textMessages: c.textMessages, schedule: c.schedule, durationSeconds: c.durationSeconds, relationColumn: c.relationColumn, relationName: c.relationName };
   const payload = opts.film ? filmPayload(block, ctx) : archPayload(block, ctx);
-  return { payload, graph: g, warnings: [...warnings, ...w2], block, layout, steps: c.steps, schedule: c.schedule, durationSeconds: c.durationSeconds, pace: c.pace, minimumSeconds: c.minimumSeconds, numbered: c.numbered, relationColumn: c.relationColumn, relationName: c.relationName };
+  return { payload, graph: g, warnings: [...warnings, ...w2], block, layout, steps: c.steps, textSteps: c.textSteps, textMessages: c.textMessages, schedule: c.schedule, durationSeconds: c.durationSeconds, pace: c.pace, minimumSeconds: c.minimumSeconds, numbered: c.numbered, relationColumn: c.relationColumn, relationName: c.relationName };
 }
 
 function mermaidToArch(text, opts = {}) {
@@ -2424,10 +2453,11 @@ function d2ToArch(text, opts = {}) {
       msgs.innerHTML = html;
       document.getElementById('json').textContent = JSON.stringify(r.payload, null, 1);
       var t = r.payload.blocks[0];
-      fit(opts.film ? { '16:9': 9 / 16, '4:3': 3 / 4, '1:1': 1, '9:16': 16 / 9 }[t.aspect] : (b.h / b.w) * 1.0 + (opts.numbered ? 0.9 : 0));
+      var extra = 0.3 + 0.07 * (r.textSteps.length + r.textMessages.length);   // the text-alternative tables follow every payload
+      fit((opts.film ? { '16:9': 9 / 16, '4:3': 3 / 4, '1:1': 1, '9:16': 16 / 9 }[t.aspect] : (b.h / b.w)) + extra);
       document.getElementById('dur').textContent = opts.film ? 'film ' + r.durationSeconds.toFixed(1) + ' s, ' + r.schedule.length + ' steps, pace ' + r.pace : '';
       pending = r.payload; reloadView();
-      document.getElementById('note').textContent = opts.film ? 'Playing in the renderer’s own film controls.' : 'Standalone block: the finished diagram, no animation.';
+      document.getElementById('note').textContent = opts.film ? 'Playing in the renderer’s own film controls.' : 'Standalone: the finished diagram, then the steps and messages tables (the text alternative).';
     } catch (e) {
       if (e && e.errors) msgs.innerHTML = e.errors.map(function (m) { return '<span class="err">error: ' + esc(m) + '</span>'; }).join('\n');
       else msgs.innerHTML = '<span class="err">internal error: ' + esc(e && e.message) + '</span>';

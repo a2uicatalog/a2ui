@@ -352,7 +352,8 @@ test('coordinates stay inside the frame and stable under repeated calls', () => 
 test('compile: shape of the standalone payload', () => {
   const r = mermaidToArch(readFileSync(join(EX, examples[0]), 'utf8'));
   assert.equal(r.payload.theme, 'dark');
-  assert.equal(r.payload.blocks.length, 1);
+  assert.equal(r.payload.blocks[0].type, 'motion_arch');
+  assert.equal(r.payload.blocks[1].type, 'table', 'the text alternative follows the diagram');
   const b = r.payload.blocks[0];
   assert.equal(b.type, 'motion_arch');
   assert.match(b.label, /^A2UI/);
@@ -783,7 +784,7 @@ test('relation column: %% relation-name renames the header; an edge without %% r
   const t = r.payload.blocks[1];
   assert.deepEqual(t.headers, ['Step', 'Activity', 'Interaction']);
   assert.deepEqual(t.rows.map((x) => x[2]), ['streams', '']);
-  assert.equal(mermaidToArch(REL, { relationColumn: true }).payload.blocks.length, 1);
+  assert.deepEqual(mermaidToArch(REL, { relationColumn: true }).payload.blocks[1].headers, ['Step', 'Activity'], 'not numbered: no Relation column');
   assert.equal(mermaidToArch(REL, { numbered: true, relationColumn: true, relationName: 'Verb' }).payload.blocks[1].headers[2], 'Verb');
 });
 test('relation column: limits and errors are plain', () => {
@@ -859,4 +860,25 @@ test('prototype keys are not paces: Mermaid, D2, graph JSON and the library opti
     assert.throws(() => mermaidToArch('flowchart LR\nA-->B', { pace: k }), (e) => e instanceof ArchError && /pace/.test(e.errors.join()), 'option ' + k);
     assert.throws(() => graphToArch({ nodes: [{ id: 'a' }, { id: 'b' }], edges: [{ from: 'a', to: 'b' }], pace: k }), (e) => e instanceof ArchError, 'graph ' + k);
   }
+});
+
+test('accessibility: every output (plain, numbered, film) carries the full text of every edge and every message in table atoms', () => {
+  for (const f of examples) {
+    const src = readFileSync(join(EX, f), 'utf8');
+    for (const o of [{}, { numbered: true }, { film: true }, { numbered: true, film: true }]) {
+      const r = mermaidToArch(src, o), bl = r.payload.blocks;
+      const steps = bl.find((b) => b.type === 'table' && b.caption === 'Steps');
+      assert.ok(steps, f + ' ' + JSON.stringify(o) + ': steps table');
+      assert.equal(steps.rows.length, r.graph.edges.length, 'one row per edge');
+      assert.deepEqual(steps.rows.map((x) => x[1]), r.textSteps.map((s) => s.activity));
+      steps.rows.forEach((row, i) => assert.ok(row[1].length > 10 && !row[1].endsWith('…'), 'full sentence, never cut: ' + row[1]));
+      const mt = bl.find((b) => b.type === 'table' && b.caption === 'Messages');
+      assert.equal(!!mt, r.graph.messages.length > 0);
+      if (mt) assert.deepEqual(mt.rows.map((x) => x[1]).sort(), r.graph.messages.map((m) => m.text).sort(), 'every message text in full');
+    }
+  }
+  const r = mermaidToArch('%% msg: a->b "a rather long payload text, in full"\nflowchart LR\na -->|a long edge label of some words| b', { film: true });
+  assert.equal(r.payload.blocks[0].type, 'motion_timeline');
+  assert.match(r.payload.blocks[1].rows[0][1], /long edge label of some words/);
+  assert.deepEqual(r.payload.blocks[2].rows[0], ['1', 'a rather long payload text, in full', 'a to b']);
 });

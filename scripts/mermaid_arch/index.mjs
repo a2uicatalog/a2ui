@@ -23,9 +23,9 @@ export function graphToArch(graph, opts = {}) {
   const { block, layout, warnings: w2 } = c;
   const bad = validateBlock(block);
   if (bad.length) throw new ArchError(['internal: compiled block breaks the atom limits: ' + bad.join('; ')], warnings);
-  const ctx = { steps: c.steps, schedule: c.schedule, durationSeconds: c.durationSeconds, relationColumn: c.relationColumn, relationName: c.relationName };
+  const ctx = { steps: c.steps, textSteps: c.textSteps, textMessages: c.textMessages, schedule: c.schedule, durationSeconds: c.durationSeconds, relationColumn: c.relationColumn, relationName: c.relationName };
   const payload = opts.film ? filmPayload(block, ctx) : archPayload(block, ctx);
-  return { payload, graph: g, warnings: [...warnings, ...w2], block, layout, steps: c.steps, schedule: c.schedule, durationSeconds: c.durationSeconds, pace: c.pace, minimumSeconds: c.minimumSeconds, numbered: c.numbered, relationColumn: c.relationColumn, relationName: c.relationName };
+  return { payload, graph: g, warnings: [...warnings, ...w2], block, layout, steps: c.steps, textSteps: c.textSteps, textMessages: c.textMessages, schedule: c.schedule, durationSeconds: c.durationSeconds, pace: c.pace, minimumSeconds: c.minimumSeconds, numbered: c.numbered, relationColumn: c.relationColumn, relationName: c.relationName };
 }
 
 export function mermaidToArch(text, opts = {}) {

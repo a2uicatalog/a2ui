@@ -371,6 +371,37 @@
     "9%",
     "91%"
    ]
+  },
+  {
+   "type": "table",
+   "caption": "Messages",
+   "headers": [
+    "Step",
+    "Message",
+    "Direction"
+   ],
+   "rows": [
+    [
+     "2",
+     "GET agent card",
+     "Orchestrator on ADK to Agent Card"
+    ],
+    [
+     "3",
+     "SendStreamingMessage",
+     "Orchestrator on ADK to Remote agent"
+    ],
+    [
+     "7",
+     "artifact",
+     "Remote agent to Orchestrator on ADK"
+    ]
+   ],
+   "col_widths": [
+    "9%",
+    "45%",
+    "46%"
+   ]
   }
  ]
 }

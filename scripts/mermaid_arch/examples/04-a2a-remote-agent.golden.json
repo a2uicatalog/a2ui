@@ -329,6 +329,83 @@
      "dur": 0.0693
     }
    ]
+  },
+  {
+   "type": "table",
+   "caption": "Steps",
+   "headers": [
+    "Step",
+    "Activity"
+   ],
+   "rows": [
+    [
+     "1",
+     "User asks the orchestrator on ADK"
+    ],
+    [
+     "2",
+     "Orchestrator on ADK returns the answer to the user"
+    ],
+    [
+     "3",
+     "Orchestrator on ADK discovers skills from the agent card"
+    ],
+    [
+     "4",
+     "Orchestrator on ADK sends SendStreamingMessage JSON-RPC to the remote agent"
+    ],
+    [
+     "5",
+     "Remote agent creates task in the task state"
+    ],
+    [
+     "6",
+     "Remote agent sends status, artifacts, A2UI in a DataPart, over SSE to the orchestrator on ADK (async)"
+    ],
+    [
+     "7",
+     "Remote agent sends the prompt to the remote LLM"
+    ],
+    [
+     "8",
+     "Remote agent sends the tool calls to the MCP tools"
+    ]
+   ],
+   "col_widths": [
+    "9%",
+    "91%"
+   ]
+  },
+  {
+   "type": "table",
+   "caption": "Messages",
+   "headers": [
+    "Step",
+    "Message",
+    "Direction"
+   ],
+   "rows": [
+    [
+     "3",
+     "GET agent card",
+     "Orchestrator on ADK to Agent Card"
+    ],
+    [
+     "4",
+     "SendStreamingMessage",
+     "Orchestrator on ADK to Remote agent"
+    ],
+    [
+     "6",
+     "artifact",
+     "Remote agent to Orchestrator on ADK"
+    ]
+   ],
+   "col_widths": [
+    "9%",
+    "45%",
+    "46%"
+   ]
   }
  ]
 }

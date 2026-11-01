@@ -55,16 +55,24 @@ twice, a number above the edge count (a gap) or an edge that does not exist is a
 number pushes a label over the atom's 48 characters you get a warning and the label is cut with an
 ellipsis.
 
-The library returns `steps` (`{step, from, to, label, style}`, in order). The payload carries the same
-table:
+The library returns `steps` (`{step, from, to, label, style}`, in order; empty unless numbered) and `textSteps` / `textMessages`
+(always filled). **Every payload carries a full text alternative** for screen-reader users, using the repo's existing `table`
+atom (the `motion_arch` atom is unchanged; its SVG still has only the `label` as its accessible name):
 
-- **standalone** (`film: false`): the finished `motion_arch` followed by the repo's existing `table` atom
-  with exactly the columns `Step | Activity` (see "The Activity sentence" below);
-- **film** (`film: true`): ONE `motion_timeline` holds the diagram and the table, so both run on one
-  clock. Each row is a `motion_text` that fades in when its step's edge starts drawing, a translucent
-  `motion_shape` bar steps to the row of the step that is playing, and the poster frame is the finished
-  table. Rows are one line of at most 60 characters (the sentence, then the sentence without "the", then
-  `From -> To: label`, and only then cut with an ellipsis; the `table` atom has the full sentence). The stage
+- a `table` captioned `Steps` with the columns `Step | Activity` (and Relation when asked for): one row per edge, the
+  full sentence, never cut (see "The Activity sentence" below). Unnumbered diagrams get it too; the step numbers are then the
+  order the diagram draws the edges, and are not printed on the diagram;
+- when the diagram has messages, a second `table` captioned `Messages` with `Step | Message | Direction`, the full payload text
+  and the nodes it travels between.
+
+Where they sit:
+
+- **standalone** (`film: false`): the finished `motion_arch`, then those tables;
+- **film** (`film: true`): ONE `motion_timeline` (the diagram and, when numbered, the on-film step rows) followed by the same tables, so the
+  tables are the accessible text of the film. When numbered, each on-film row is a `motion_text` that fades in when its step's edge starts
+  drawing, a translucent `motion_shape` bar steps to the row of the step that is playing, and the poster frame is the finished
+  table. Film rows are one line of at most 60 characters (the sentence, then the sentence without "the", then
+  `From -> To: label`, and only then cut with an ellipsis; the tables below the film have the full sentence). The stage
   is chosen by how big the diagram is shown relative to the stage WIDTH (the player is displayed at its column's
   width), with the table text kept at 1.65% of the width or more; the table text may shrink to about 1.95% of the
   width when that makes a tall diagram bigger, so the diagram is the same size with the Relation column on or off. Twelve steps is the most a film carries (the timeline holds 24 children).

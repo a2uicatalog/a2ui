@@ -360,6 +360,87 @@
      "dur": 0.0637
     }
    ]
+  },
+  {
+   "type": "table",
+   "caption": "Steps",
+   "headers": [
+    "Step",
+    "Activity"
+   ],
+   "rows": [
+    [
+     "1",
+     "User asks the chat host"
+    ],
+    [
+     "2",
+     "Chat host sends the prompt + tools to the LLM"
+    ],
+    [
+     "3",
+     "LLM returns the tool call to the chat host"
+    ],
+    [
+     "4",
+     "Chat host mounts HTML, sends tool result in the sandboxed iframe"
+    ],
+    [
+     "5",
+     "Sandboxed iframe sends tools/call via postMessage to the chat host (async)"
+    ],
+    [
+     "6",
+     "Sandboxed iframe sends interactive UI to the user"
+    ],
+    [
+     "7",
+     "Chat host sends tools/call to the tool with ui link"
+    ],
+    [
+     "8",
+     "Tool with ui link returns the tool result to the chat host"
+    ],
+    [
+     "9",
+     "Chat host sends resources/read to the ui HTML resource"
+    ]
+   ],
+   "col_widths": [
+    "9%",
+    "91%"
+   ]
+  },
+  {
+   "type": "table",
+   "caption": "Messages",
+   "headers": [
+    "Step",
+    "Message",
+    "Direction"
+   ],
+   "rows": [
+    [
+     "3",
+     "tool call",
+     "LLM to Chat host"
+    ],
+    [
+     "7",
+     "tools/call",
+     "Chat host to Tool with ui:// link"
+    ],
+    [
+     "9",
+     "resources/read ui://",
+     "Chat host to ui:// HTML resource"
+    ]
+   ],
+   "col_widths": [
+    "9%",
+    "45%",
+    "46%"
+   ]
   }
  ]
 }

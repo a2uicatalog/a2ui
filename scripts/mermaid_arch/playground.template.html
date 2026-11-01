@@ -44,7 +44,7 @@ flowchart LR
 <div class="row">
   <label>Direction <select id="dir"><option value="">as written (auto)</option><option>LR</option><option>TB</option><option>RL</option><option>BT</option></select></label>
   <label><input type="checkbox" id="film" checked> play as a film</label>
-  <label><input type="checkbox" id="num" checked> numbered steps + table</label>
+  <label><input type="checkbox" id="num" checked> numbered steps</label>
   <label><input type="checkbox" id="rel"> Show relation column</label>
   <label>edges <select id="routing"><option value="orthogonal" selected>routed (right angles)</option><option value="curve">curves</option></select></label>
   <label>pace <select id="pace"><option>slow</option><option selected>normal</option><option>fast</option></select></label>
@@ -94,10 +94,11 @@ flowchart LR
       msgs.innerHTML = html;
       document.getElementById('json').textContent = JSON.stringify(r.payload, null, 1);
       var t = r.payload.blocks[0];
-      fit(opts.film ? { '16:9': 9 / 16, '4:3': 3 / 4, '1:1': 1, '9:16': 16 / 9 }[t.aspect] : (b.h / b.w) * 1.0 + (opts.numbered ? 0.9 : 0));
+      var extra = 0.3 + 0.07 * (r.textSteps.length + r.textMessages.length);   // the text-alternative tables follow every payload
+      fit((opts.film ? { '16:9': 9 / 16, '4:3': 3 / 4, '1:1': 1, '9:16': 16 / 9 }[t.aspect] : (b.h / b.w)) + extra);
       document.getElementById('dur').textContent = opts.film ? 'film ' + r.durationSeconds.toFixed(1) + ' s, ' + r.schedule.length + ' steps, pace ' + r.pace : '';
       pending = r.payload; reloadView();
-      document.getElementById('note').textContent = opts.film ? 'Playing in the renderer’s own film controls.' : 'Standalone block: the finished diagram, no animation.';
+      document.getElementById('note').textContent = opts.film ? 'Playing in the renderer’s own film controls.' : 'Standalone: the finished diagram, then the steps and messages tables (the text alternative).';
     } catch (e) {
       if (e && e.errors) msgs.innerHTML = e.errors.map(function (m) { return '<span class="err">error: ' + esc(m) + '</span>'; }).join('\n');
       else msgs.innerHTML = '<span class="err">internal error: ' + esc(e && e.message) + '</span>';

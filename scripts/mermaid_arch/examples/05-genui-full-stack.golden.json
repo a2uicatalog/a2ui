@@ -449,6 +449,99 @@
      "dur": 0.0423
     }
    ]
+  },
+  {
+   "type": "table",
+   "caption": "Steps",
+   "headers": [
+    "Step",
+    "Activity"
+   ],
+   "rows": [
+    [
+     "1",
+     "User asks the frontend app"
+    ],
+    [
+     "2",
+     "Frontend app sends A2UI messages to the A2UI renderer"
+    ],
+    [
+     "3",
+     "A2UI renderer sends the action to the frontend app (async)"
+    ],
+    [
+     "4",
+     "Frontend app sends the sandboxed iframe to the MCP app iframe"
+    ],
+    [
+     "5",
+     "MCP app iframe sends tools/call via postMessage to the frontend app (async)"
+    ],
+    [
+     "6",
+     "Frontend app sends AG-UI run to the ADK agent"
+    ],
+    [
+     "7",
+     "ADK agent sends AG-UI events, A2UI + MCP app HTML to the frontend app (async)"
+    ],
+    [
+     "8",
+     "ADK agent sends the prompt to the LLM"
+    ],
+    [
+     "9",
+     "ADK agent sends tools/call, resources/read to the MCP server"
+    ],
+    [
+     "10",
+     "MCP server returns tool result + ui HTML to the ADK agent"
+    ],
+    [
+     "11",
+     "ADK agent sends A2A message to the remote agent over A2A"
+    ],
+    [
+     "12",
+     "Remote agent over A2A returns A2UI JSON to the ADK agent"
+    ]
+   ],
+   "col_widths": [
+    "9%",
+    "91%"
+   ]
+  },
+  {
+   "type": "table",
+   "caption": "Messages",
+   "headers": [
+    "Step",
+    "Message",
+    "Direction"
+   ],
+   "rows": [
+    [
+     "6",
+     "AG-UI run",
+     "Frontend app to ADK agent"
+    ],
+    [
+     "10",
+     "ui:// HTML",
+     "MCP server to ADK agent"
+    ],
+    [
+     "12",
+     "A2UI JSON",
+     "Remote agent over A2A to ADK agent"
+    ]
+   ],
+   "col_widths": [
+    "9%",
+    "45%",
+    "46%"
+   ]
   }
  ]
 }

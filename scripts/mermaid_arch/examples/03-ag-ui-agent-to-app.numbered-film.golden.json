@@ -851,6 +851,91 @@
      ]
     }
    ]
+  },
+  {
+   "type": "table",
+   "caption": "Steps",
+   "headers": [
+    "Step",
+    "Activity"
+   ],
+   "rows": [
+    [
+     "1",
+     "User sends the message to the frontend app"
+    ],
+    [
+     "2",
+     "Frontend app sends the run input to the AG-UI client"
+    ],
+    [
+     "3",
+     "AG-UI client sends POST run over HTTP to the agent runtime on ADK"
+    ],
+    [
+     "4",
+     "Agent runtime on ADK sends the prompt to the LLM"
+    ],
+    [
+     "5",
+     "Agent runtime on ADK sends the tool call to the backend tools"
+    ],
+    [
+     "6",
+     "Agent runtime on ADK sends events, SSE by default to the AG-UI client (async)"
+    ],
+    [
+     "7",
+     "AG-UI client dispatches events to the frontend app"
+    ],
+    [
+     "8",
+     "Frontend app returns streamed UI to the user"
+    ],
+    [
+     "9",
+     "Agent runtime on ADK reads and writes the shared state"
+    ],
+    [
+     "10",
+     "Frontend app reads and writes the shared state"
+    ]
+   ],
+   "col_widths": [
+    "9%",
+    "91%"
+   ]
+  },
+  {
+   "type": "table",
+   "caption": "Messages",
+   "headers": [
+    "Step",
+    "Message",
+    "Direction"
+   ],
+   "rows": [
+    [
+     "3",
+     "run input",
+     "AG-UI client to Agent runtime on ADK"
+    ],
+    [
+     "6",
+     "TEXT_MESSAGE_CONTENT",
+     "Agent runtime on ADK to AG-UI client"
+    ],
+    [
+     "6",
+     "STATE_DELTA",
+     "Agent runtime on ADK to AG-UI client"
+    ]
+   ],
+   "col_widths": [
+    "9%",
+    "45%",
+    "46%"
+   ]
   }
  ]
 }

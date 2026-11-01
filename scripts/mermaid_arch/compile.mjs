@@ -134,10 +134,21 @@ export function compileGraph(graph, opts = {}) {
     if (e.relation) o.relation = e.relation;
     return o;
   }) : [];
+  // text alternative: every edge (full sentence) in playing order, and every message, always present, numbered or not
+  const textSteps = order.map((ei, k) => {
+    const e = graph.edges[ei];
+    const o = { step: numbered ? stepNo[ei] : k + 1, from: lab(e.from), to: lab(e.to), label: e.label || '', style: e.style || 'sync', activity: sentence[ei] };
+    if (e.relation) o.relation = e.relation;
+    return o;
+  });
+  const textMessages = graph.messages.map((m, j) => {
+    const { idx, back } = msgEdge[j], e = graph.edges[idx];
+    return { step: textSteps[stepOf.get(idx)].step, text: m.text, from: lab(back ? e.to : e.from), to: lab(back ? e.from : e.to) };
+  }).sort((a, b) => a.step - b.step);
   const relationColumn = numbered && (opts.relationColumn !== undefined ? !!opts.relationColumn : !!graph.relationColumn);
   const relationName = opts.relationName || graph.relationName || 'Relation';
   const schedule = sched.schedule.map((s, k) => ({ step: numbered ? stepNo[order[k]] : s.step, start: s.start, end: s.end }));
-  return { block, layout: lay, warnings, steps, schedule, durationSeconds: D, numbered, pace, minimumSeconds: sched.minimumSeconds, relationColumn, relationName };
+  return { block, layout: lay, warnings, steps, textSteps, textMessages, schedule, durationSeconds: D, numbered, pace, minimumSeconds: sched.minimumSeconds, relationColumn, relationName };
 }
 
 const STAGES = [['16:9', 1280, 720], ['4:3', 1200, 900], ['1:1', 1000, 1000], ['9:16', 720, 1280]];
@@ -151,6 +162,25 @@ export function stepsTable(steps, ctx = {}) {
     rows: steps.map((s) => (rel ? [String(s.step), s.activity, s.relation || ''] : [String(s.step), s.activity])),
     col_widths: rel ? ['9%', '67%', '24%'] : ['9%', '91%'],
   };
+}
+
+// The messages table: Step | Message | Direction, full text. Only built when the diagram has messages.
+export function messagesTable(messages) {
+  return {
+    type: 'table', caption: 'Messages',
+    headers: ['Step', 'Message', 'Direction'],
+    rows: messages.map((m) => [String(m.step), m.text, `${m.from} to ${m.to}`]),
+    col_widths: ['9%', '45%', '46%'],
+  };
+}
+
+// The text alternative that goes after the diagram in every payload: the steps table (every edge as a full sentence)
+// and the messages table. Uses the existing public `table` atom; the motion_arch atom itself is unchanged.
+export function textAlternative(ctx = {}) {
+  const out = [];
+  if (ctx.textSteps && ctx.textSteps.length) out.push(stepsTable(ctx.textSteps, ctx));
+  if (ctx.textMessages && ctx.textMessages.length) out.push(messagesTable(ctx.textMessages));
+  return out;
 }
 
 // Wrap the diagram (and, when numbered, the steps table) in ONE motion_timeline so both run on one clock.
@@ -239,15 +269,13 @@ export function filmPayload(block, ctx = {}) {
     blocks: [{
       type: 'motion_timeline', title: block.label, aspect, duration: D, loop: true, autoplay: true, controls: true, theme: 'dark',
       poster: r2(Math.max(0, D - 0.5)), blocks, tracks,
-    }],
+    }, ...textAlternative(ctx)],
   };
 }
 
-// Standalone payload: the finished diagram (and, when numbered, the steps table under it).
+// Standalone payload: the finished diagram, then the steps table and (when there are messages) the messages table.
 export function archPayload(block, ctx = {}) {
-  const blocks = [block];
-  if (ctx.steps && ctx.steps.length) blocks.push(stepsTable(ctx.steps, ctx));
-  return { theme: 'dark', blocks };
+  return { theme: 'dark', blocks: [block, ...textAlternative(ctx)] };
 }
 
 // Validate the compiled block against the atom's own limits.

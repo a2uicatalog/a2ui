@@ -421,6 +421,37 @@
     "9%",
     "91%"
    ]
+  },
+  {
+   "type": "table",
+   "caption": "Messages",
+   "headers": [
+    "Step",
+    "Message",
+    "Direction"
+   ],
+   "rows": [
+    [
+     "3",
+     "run input",
+     "AG-UI client to Agent runtime on ADK"
+    ],
+    [
+     "6",
+     "TEXT_MESSAGE_CONTENT",
+     "Agent runtime on ADK to AG-UI client"
+    ],
+    [
+     "6",
+     "STATE_DELTA",
+     "Agent runtime on ADK to AG-UI client"
+    ]
+   ],
+   "col_widths": [
+    "9%",
+    "45%",
+    "46%"
+   ]
   }
  ]
 }

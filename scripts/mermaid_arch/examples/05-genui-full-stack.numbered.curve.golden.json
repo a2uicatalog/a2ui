@@ -312,6 +312,37 @@
     "9%",
     "91%"
    ]
+  },
+  {
+   "type": "table",
+   "caption": "Messages",
+   "headers": [
+    "Step",
+    "Message",
+    "Direction"
+   ],
+   "rows": [
+    [
+     "2",
+     "AG-UI run",
+     "Frontend app to ADK agent"
+    ],
+    [
+     "5",
+     "ui:// HTML",
+     "MCP server to ADK agent"
+    ],
+    [
+     "7",
+     "A2UI JSON",
+     "Remote agent over A2A to ADK agent"
+    ]
+   ],
+   "col_widths": [
+    "9%",
+    "45%",
+    "46%"
+   ]
   }
  ]
 }
