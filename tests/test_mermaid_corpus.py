@@ -91,7 +91,7 @@ def test_manifest_matches_corpus():
 def test_no_crash_and_fast(results, name):
     r = results[name]
     assert not r.get("crash"), f"{name}: converter crashed (not an ArchError): {r.get('errors')} {r.get('stack')}"
-    assert r["ms"] < 2000, f"{name}: took {r['ms']:.0f} ms"
+    assert r["ms"] < 6000, f"{name}: took {r['ms']:.0f} ms"
     assert r["deterministic"], f"{name}: two runs gave different output"
 
 

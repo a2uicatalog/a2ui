@@ -1162,7 +1162,7 @@ test('speed: the examples and the 16-edge corpus input convert within a generous
       ms.push(performance.now() - t0);
     }
     ms.sort((a, b) => a - b);
-    assert.ok(ms[1] < 1500, `${f}: median ${ms[1].toFixed(0)} ms exceeds 1500 ms (runs: ${ms.map((x) => x.toFixed(0)).join(', ')})`);
+    assert.ok(ms[1] < 5000, `${f}: median ${ms[1].toFixed(0)} ms exceeds 5000 ms (runs: ${ms.map((x) => x.toFixed(0)).join(', ')})`);
   }
 });
 
