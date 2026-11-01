@@ -183,6 +183,7 @@ export function validateGraph(g) {
 
   // edges
   const ndList = [...ids];
+  const shown = (id) => { const n = nodes.find((x) => x && x.id === id); return n && typeof n.label === 'string' && n.label.trim() && n.label !== id ? `"${n.label}" (id ${id})` : `"${id}"`; };
   const touched = new Set();
   edges.forEach((e, i) => {
     const where = at(e), nm = `edge ${i + 1}`;
@@ -195,7 +196,7 @@ export function validateGraph(g) {
       }
     }
     if (bad) return;
-    if (e.from === e.to) { errors.push(`${where}${nm}: "${e.from}" points at itself; the atom cannot draw self-loops. Remove the edge or add a second node.`); return; }
+    if (e.from === e.to) { errors.push(`${where}${nm}: ${shown(e.from)} points at itself; the atom cannot draw self-loops. Remove the edge or add a second node.`); return; }
     if (e.style !== undefined && !STYLES.includes(e.style)) {
       errors.push(`${where}${nm}: style "${e.style}" is not one of ${STYLES.join(', ')}`);
     }

@@ -1,6 +1,6 @@
 // Library entry: mermaidToArch(text, opts) -> {payload, graph, warnings}
 import { ArchError, validateGraph, foldGroups, PACES, normDirection } from './graph.mjs';
-import { parseMermaid } from './mermaid.mjs';
+import { parseMermaid, stripTagsDeep } from './mermaid.mjs';
 import { parseD2 } from './d2.mjs';
 import { compileGraph, archPayload, filmPayload, validateBlock } from './compile.mjs';
 
@@ -24,10 +24,38 @@ export function checkOptions(opts = {}) {
   if (e.length) throw new ArchError(e);
 }
 
+// One gate for every input path (Mermaid, D2, JSON): strings are literal text, so only tags are removed
+// (no entity decoding). Returns a copy; the input graph is never changed.
+export function sanitizeGraph(graph) {
+  let changed = false;
+  const clean = (t) => (typeof t === 'string' ? stripTagsDeep(t, () => { changed = true; }) : t);
+  const each = (a, keys) => (Array.isArray(a) ? a.map((o) => {
+    if (!o || typeof o !== 'object') return o;
+    const c = { ...o };
+    if (Object.getOwnPropertyDescriptor(o, 'line')) Object.defineProperty(c, 'line', { value: o.line, enumerable: Object.getOwnPropertyDescriptor(o, 'line').enumerable, writable: true, configurable: true });   // keep the hidden source line
+    for (const k of keys) if (k in c) c[k] = clean(c[k]);
+    return c;
+  }) : a);
+  if (!graph || typeof graph !== 'object') return { graph, changed };
+  const g = { ...graph };
+  if ('title' in g) g.title = clean(g.title);
+  if ('relationName' in g) g.relationName = clean(g.relationName);
+  g.nodes = each(g.nodes, ['label', 'sub']);
+  g.groups = each(g.groups, ['label']);
+  g.edges = each(g.edges, ['label', 'relation']);
+  g.messages = each(g.messages, ['text']);
+  for (const k of ['groups', 'messages']) if (g[k] === undefined) g[k] = [];   // a graph without groups or messages used to crash the layout
+  return { graph: g, changed };
+}
+
 // opts: {hint:'cli'|'web' (wording of the layout warning, default cli), routing:'orthogonal'|'curve' (default orthogonal), direction, title, size, fit:'balanced'|'wide', film:boolean, numbered:boolean, pace:'slow'|'normal'|'fast', duration:seconds, relationColumn:boolean, relationName:string}
 export function graphToArch(graph, opts = {}) {
   checkOptions(opts);
-  const folded = foldGroups(graph);
+  const san = sanitizeGraph(graph);
+  const folded = foldGroups(san.graph);
+  if (san.changed) folded.warnings.unshift('HTML tags were removed from a label.');
+  opts = { ...opts };
+  for (const k of ['title', 'relationName']) if (typeof opts[k] === 'string') { const o = sanitizeGraph({ title: opts[k] }); opts[k] = o.graph.title; if (o.changed && !folded.warnings.includes('HTML tags were removed from a label.')) folded.warnings.unshift('HTML tags were removed from a label.'); }
   const g = { ...folded.graph };
   if (opts.direction) g.direction = normDirection(opts.direction);
   if (g.direction) g.direction = normDirection(g.direction);
@@ -50,7 +78,7 @@ export function mermaidToArch(text, opts = {}) {
   checkOptions(opts);
   const parsed = parseMermaid(text, opts);
   const r = graphToArch(parsed.graph, { ...opts, direction: opts.direction });
-  r.warnings = [...parsed.warnings, ...r.warnings];
+  r.warnings = [...new Set([...parsed.warnings, ...r.warnings])];
   return r;
 }
 
@@ -58,6 +86,6 @@ export function d2ToArch(text, opts = {}) {
   checkOptions(opts);
   const parsed = parseD2(text, opts);
   const r = graphToArch(parsed.graph, { ...opts, direction: opts.direction });
-  r.warnings = [...parsed.warnings, ...r.warnings];
+  r.warnings = [...new Set([...parsed.warnings, ...r.warnings])];
   return r;
 }

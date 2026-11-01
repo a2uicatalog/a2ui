@@ -170,7 +170,7 @@ test('shapes the atom cannot draw degrade to the nearest shape with one warning 
 });
 test('graph errors name the source line of the node or edge', () => {
   const e = err('flowchart LR\na[A] --> b[B]\nb --> b');
-  assert.match(e, /^line 3: edge 2: "b" points at itself/);
+  assert.match(e, /^line 3: edge 2: "B" \(id b\) points at itself/);
   assert.match(validateGraph({ direction: 'LR', groups: [], nodes: [{ id: 'a', label: 'A', line: 7 }], edges: [{ from: 'a', to: 'a', style: 'sync', line: 7 }], messages: [] }).errors.join(), /^line 7: edge 1/);
   assert.match(validateGraph({ direction: 'LR', groups: [], nodes: [{ id: 'a', label: 'A' }], edges: [{ from: 'a', to: 'a', style: 'sync' }], messages: [] }).errors.join(), /^edge 1:/);
 });
@@ -1403,4 +1403,72 @@ test('duration below the film minimum: the message says to raise the total, not 
   let m;
   assert.throws(() => mermaidToArch('%% duration: 6\n' + body, { film: true }), (e) => { m = /minimum.*at least (\d+) s/.exec(e.errors.join()); return e instanceof ArchError && !!m && !/message chips on step/.test(e.errors.join()); });
   assert.doesNotThrow(() => mermaidToArch(`%% duration: ${m[1]}\n` + body, { film: true }));   // the advice is true
+});
+
+// ------------------------------------------------------------------ smuggling battery (every input path)
+const SMUGGLE = ['<script>alert(1)</script>', '<<script>script>x', '&lt;&lt;script&gt;script&gt;', '<scr<b>ipt>alert(1)</scr</b>ipt>',
+  '&lt;img src=x onerror=alert(1)&gt;', '#lt;script#gt;x', '&amp;lt;script&amp;gt;', '&#60;svg onload=alert(1)&#62;', '&#x3c;iframe src=javascript:alert(1)&#x3e;',
+  '<ScRiPt>x</sCrIpT>', '<img src=x onerror=alert(1)', '&lt;img src=x onerror=alert(1)', '<scr\u0000ipt>x', '&#0;<script>', '<a href="javascript:alert(1)">x</a>',
+  '<!-- c -->x', '<svg/onload=alert(1)>', '&LT;script&GT;', '#60;script#62;', '<<<b>b>b>z', '</style>x', '<b title=">">x</b>', '#lt;#lt;script#gt;script#gt;',
+  '&#x0003c;script>', '<\tscript>', '<img\nsrc=x>', 'ok <b'];
+const strs = (o, out = []) => { if (typeof o === 'string') out.push(o); else if (o && typeof o === 'object') for (const v of Object.values(o)) strs(v, out); return out; };
+test('smuggling battery: no tag survives on any input path (Mermaid, D2, JSON), refusals are calm', () => {
+  const O = { film: true, numbered: true, hint: 'web' };
+  const q = (p) => p.replace(/"/g, '#quot;').replace(/\n/g, ' '), dq = (p) => p.replace(/"/g, '\\"').replace(/\n/g, ' '), one = (p) => p.replace(/\n/g, ' ');
+  const paths = (p) => [
+    () => mermaidToArch(`flowchart LR\n a["${q(p)}"] --> b[B]`, O), () => mermaidToArch(`flowchart LR\n a["A<br/>${q(p)}"] --> b[B]`, O),
+    () => mermaidToArch(`flowchart LR\n a[A] -->|"${q(p)}"| b[B]`, O), () => mermaidToArch(`flowchart LR\n subgraph g["${q(p)}"]\n a[A]\n end\n a --> b[B]`, O),
+    () => mermaidToArch(`%% msg: a->b "${q(p)}"\nflowchart LR\n a[A] --> b[B]`, O), () => mermaidToArch(`%% title: ${one(p)}\nflowchart LR\n a[A] --> b[B]`, O),
+    () => mermaidToArch(`---\ntitle: ${one(p)}\n---\nflowchart LR\n a[A] --> b[B]`, O),
+    () => mermaidToArch(`%% rel: a->b ${one(p).slice(0, 20)}\n%% relation-column: on\n%% numbered: on\nflowchart LR\n a[A] --> b[B]`, O),
+    () => mermaidToArch(`%% relation-name: ${one(p).slice(0, 20)}\n%% relation-column: on\n%% numbered: on\nflowchart LR\n a[A] --> b[B]`, O),
+    () => d2ToArch(`a: "${dq(p)}"\na -> b`, O), () => d2ToArch(`a -> b: "${dq(p)}"`, O), () => d2ToArch(`g: "${dq(p)}" {\n a\n}\ng.a -> b`, O),
+    () => d2ToArch(`# msg: a->b "${one(p).replace(/"/g, "'")}"\na -> b`, O), () => d2ToArch(`# title: ${one(p)}\na -> b`, O),
+    () => d2ToArch(`# rel: a->b ${one(p).slice(0, 20)}\n# relation-column: on\n# numbered: on\na -> b`, O),
+    () => d2ToArch(`# relation-name: ${one(p).slice(0, 20)}\n# relation-column: on\n# numbered: on\na -> b`, O),
+    () => graphToArch({ direction: 'LR', groups: [{ id: 'g', label: p }], nodes: [{ id: 'a', label: p, sub: p, group: 'g' }, { id: 'b', label: 'B' }], edges: [{ from: 'a', to: 'b', label: p, relation: p.slice(0, 20) }], messages: [{ from: 'a', to: 'b', text: p }], title: p, relationColumn: true, relationName: p.slice(0, 20), numbered: true }, O),
+  ];
+  let n = 0;
+  for (const p of SMUGGLE) for (const f of paths(p)) {
+    let r;
+    try { r = f(); } catch (e) { if (e instanceof ArchError) continue; throw e; }
+    n++;
+    const hits = [...strs(r.payload), ...strs(r.textSteps), ...strs(r.textMessages)].filter((x) => /<[a-zA-Z/!]/.test(x));
+    assert.deepEqual(hits, [], JSON.stringify(p));
+  }
+  assert.ok(n > 300);
+});
+test('relation text from %% rel and # rel is tag-stripped with one calm warning (A)', () => {
+  const r = mermaidToArch('%% rel: a->b <script>alert(1)</script>calls\n%% relation-column: on\nflowchart LR\n a --> b', { film: true });
+  assert.ok(!JSON.stringify(r.payload).includes('<script'));
+  assert.equal(r.warnings.filter((w) => /tags were removed/.test(w)).length, 1);
+  const d = d2ToArch('# rel: a->b <script>x</script>calls\n# relation-column: on\na -> b');
+  assert.ok(!JSON.stringify(d.payload).includes('<script'));
+  assert.equal(d.warnings.filter((w) => /tags were removed/.test(w)).length, 1);
+});
+test('graph JSON input is sanitised at the gate (B)', () => {
+  const r = graphToArch({ direction: 'LR', nodes: [{ id: 'a', label: '<scr<b>ipt>x' }, { id: 'b', label: 'B' }], edges: [{ from: 'a', to: 'b', label: '<script>y</script>z' }], title: '<b>T</b>' });
+  assert.ok(!/<[a-z/]/i.test(JSON.stringify(r.payload)));
+  assert.equal(r.warnings.filter((w) => w === 'HTML tags were removed from a label.').length, 1);
+  assert.equal(graphToArch({ direction: 'LR', nodes: [{ id: 'a', label: 'a &lt; b' }, { id: 'b', label: 'B' }], edges: [{ from: 'a', to: 'b' }] }).block.nodes[0].label, 'a &lt; b');   // JSON is literal text: entities are not decoded
+});
+test('D2 keeps "a < b" and "Cost < 5 > 2" like Mermaid, and warns when it does strip (C)', () => {
+  const r = d2ToArch('a: "Cost < 5 > 2"\nb: "a < b"\na -> b');
+  assert.deepEqual([r.block.nodes[0].label, r.block.nodes[1].label], ['Cost < 5 > 2', 'a < b']);
+  assert.ok(!r.warnings.some((w) => /tags/.test(w)));
+  const s = d2ToArch('a: "x<i>y</i>"\na -> b');
+  assert.equal(s.block.nodes[0].label, 'xy');
+  assert.ok(s.warnings.includes('HTML tags were removed from a label.'));
+});
+test('an unclosed trailing tag is dropped with the warning on every path (D)', () => {
+  const m = mermaidToArch('flowchart LR\n a["Hi <img src=x onerror=alert(1)"] --> b');
+  assert.equal(m.block.nodes[0].label, 'Hi');
+  assert.ok(m.warnings.includes('HTML tags were removed from a label.'));
+  assert.equal(d2ToArch('a: "Hi <img src=x"\na -> b').block.nodes[0].label, 'Hi');
+  assert.equal(graphToArch({ direction: 'LR', nodes: [{ id: 'a', label: 'Hi </b' }, { id: 'b', label: 'B' }], edges: [{ from: 'a', to: 'b' }] }).block.nodes[0].label, 'Hi');
+});
+test('nits: no "the an", errors show the source text (E)', () => {
+  const r = mermaidToArch('flowchart LR\n a -->|an extremely long edge label| b', { film: true });
+  assert.ok(!/ the an /.test(JSON.stringify(r.textSteps)));
+  assert.match(err('flowchart LR\ncafé --> café'), /"café" \(id cafe\) points at itself/);
 });

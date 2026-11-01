@@ -243,6 +243,7 @@ function validateGraph(g) {
 
   // edges
   const ndList = [...ids];
+  const shown = (id) => { const n = nodes.find((x) => x && x.id === id); return n && typeof n.label === 'string' && n.label.trim() && n.label !== id ? `"${n.label}" (id ${id})` : `"${id}"`; };
   const touched = new Set();
   edges.forEach((e, i) => {
     const where = at(e), nm = `edge ${i + 1}`;
@@ -255,7 +256,7 @@ function validateGraph(g) {
       }
     }
     if (bad) return;
-    if (e.from === e.to) { errors.push(`${where}${nm}: "${e.from}" points at itself; the atom cannot draw self-loops. Remove the edge or add a second node.`); return; }
+    if (e.from === e.to) { errors.push(`${where}${nm}: ${shown(e.from)} points at itself; the atom cannot draw self-loops. Remove the edge or add a second node.`); return; }
     if (e.style !== undefined && !STYLES.includes(e.style)) {
       errors.push(`${where}${nm}: style "${e.style}" is not one of ${STYLES.join(', ')}`);
     }
@@ -557,9 +558,9 @@ function activity(fromLabel, toLabel, label, { style, both, reply } = {}) {
       else if (/^(and|or)\b/i.test(rest) || both) s = `${F} ${verb} ${rest} ${T}`;
       else s = `${F} ${verb} ${rest} ${prep || 'with'} ${T}`;
     } else if (both) {
-      s = `${F} and ${T} exchange ${/^[a-z][a-z ]*$/.test(L) ? 'the ' : ''}${L}`;
+      s = `${F} and ${T} exchange ${/^[a-z][a-z ]*$/.test(L) && !/^(a|an|the)\b/.test(L) ? 'the ' : ''}${L}`;
     } else {
-      const article = /^[a-z][a-z ,+-]*$/.test(L) ? 'the ' : '';   // lower-case plain words only: not "A2UI JSON", "tools/call", "POST run"
+      const article = /^[a-z][a-z ,+-]*$/.test(L) && !/^(a|an|the|\d)\b/i.test(L) ? 'the ' : '';   // lower-case plain words only: not "A2UI JSON", "tools/call", "POST run"
       s = `${F} ${reply && style !== 'async' && style !== 'optional' ? 'returns' : 'sends'} ${article}${L} to ${T}`;
     }
   }
@@ -664,7 +665,8 @@ function withLine(o, line) { Object.defineProperty(o, 'line', { value: line, enu
 
 // Set when stripping tags changed a label; parseMermaid reads it once to warn (parsing is synchronous).
 let tagsStripped = false, titleStripped = false;
-const TAG = /<\/?[A-Za-z!][^>]*>/g;
+// A tag starts with '<' then a letter or '!' (or '/' and a letter), so "a < b" and "Cost < 5 > 2" stay. A tag that never closes is cut to the end.
+const TAG = /<\/?[A-Za-z!][^>]*(?:>|$)/g;
 // Repeats until nothing changes (capped), so "<<script>script>" cannot leave a tag behind once the inner one is gone.
 function stripTagsDeep(t, onChange, re = TAG) {
   let cur = String(t);
@@ -959,10 +961,12 @@ function parseMermaid(text, opts = {}) {
         else fail(L(), '"%% relation-column:" must be on or off');
       } else if (key === 'relation-name') {
         const v = d[2].trim();
-        if (v && v.length <= LIMITS.relation) relationName = v; else fail(L(), `"%% relation-name:" must be 1 to ${LIMITS.relation} characters, for example %% relation-name: Interaction`);
+        const v2 = stripTags(v);
+        if (v2 && v2.length <= LIMITS.relation) relationName = v2; else fail(L(), `"%% relation-name:" must be 1 to ${LIMITS.relation} characters, for example %% relation-name: Interaction`);
       } else if (key === 'rel') {
         const m = /^(\S+?)\s*->\s*(\S+?)\s+(.+?)\s*$/.exec(d[2].trim());
-        if (!m) fail(L(), 'bad "%% rel:" directive; write it as  %% rel: fromId->toId calls  (free text, at most 20 characters)');
+        if (m) m[3] = stripTags(m[3]).replace(/\s+/g, ' ').trim();
+        if (!m || !m[3]) fail(L(), 'bad "%% rel:" directive; write it as  %% rel: fromId->toId calls  (free text, at most 20 characters)');
         else if (m[3].length > LIMITS.relation) fail(L(), `"%% rel:" text "${m[3]}" is ${m[3].length} characters; the most is ${LIMITS.relation}`);
         else relDirectives.push({ line: L(), from: m[1], to: m[2], text: m[3] });
       } else if (key === 'step') {
@@ -2711,10 +2715,38 @@ function checkOptions(opts = {}) {
   if (e.length) throw new ArchError(e);
 }
 
+// One gate for every input path (Mermaid, D2, JSON): strings are literal text, so only tags are removed
+// (no entity decoding). Returns a copy; the input graph is never changed.
+function sanitizeGraph(graph) {
+  let changed = false;
+  const clean = (t) => (typeof t === 'string' ? stripTagsDeep(t, () => { changed = true; }) : t);
+  const each = (a, keys) => (Array.isArray(a) ? a.map((o) => {
+    if (!o || typeof o !== 'object') return o;
+    const c = { ...o };
+    if (Object.getOwnPropertyDescriptor(o, 'line')) Object.defineProperty(c, 'line', { value: o.line, enumerable: Object.getOwnPropertyDescriptor(o, 'line').enumerable, writable: true, configurable: true });   // keep the hidden source line
+    for (const k of keys) if (k in c) c[k] = clean(c[k]);
+    return c;
+  }) : a);
+  if (!graph || typeof graph !== 'object') return { graph, changed };
+  const g = { ...graph };
+  if ('title' in g) g.title = clean(g.title);
+  if ('relationName' in g) g.relationName = clean(g.relationName);
+  g.nodes = each(g.nodes, ['label', 'sub']);
+  g.groups = each(g.groups, ['label']);
+  g.edges = each(g.edges, ['label', 'relation']);
+  g.messages = each(g.messages, ['text']);
+  for (const k of ['groups', 'messages']) if (g[k] === undefined) g[k] = [];   // a graph without groups or messages used to crash the layout
+  return { graph: g, changed };
+}
+
 // opts: {hint:'cli'|'web' (wording of the layout warning, default cli), routing:'orthogonal'|'curve' (default orthogonal), direction, title, size, fit:'balanced'|'wide', film:boolean, numbered:boolean, pace:'slow'|'normal'|'fast', duration:seconds, relationColumn:boolean, relationName:string}
 function graphToArch(graph, opts = {}) {
   checkOptions(opts);
-  const folded = foldGroups(graph);
+  const san = sanitizeGraph(graph);
+  const folded = foldGroups(san.graph);
+  if (san.changed) folded.warnings.unshift('HTML tags were removed from a label.');
+  opts = { ...opts };
+  for (const k of ['title', 'relationName']) if (typeof opts[k] === 'string') { const o = sanitizeGraph({ title: opts[k] }); opts[k] = o.graph.title; if (o.changed && !folded.warnings.includes('HTML tags were removed from a label.')) folded.warnings.unshift('HTML tags were removed from a label.'); }
   const g = { ...folded.graph };
   if (opts.direction) g.direction = normDirection(opts.direction);
   if (g.direction) g.direction = normDirection(g.direction);
@@ -2737,7 +2769,7 @@ function mermaidToArch(text, opts = {}) {
   checkOptions(opts);
   const parsed = parseMermaid(text, opts);
   const r = graphToArch(parsed.graph, { ...opts, direction: opts.direction });
-  r.warnings = [...parsed.warnings, ...r.warnings];
+  r.warnings = [...new Set([...parsed.warnings, ...r.warnings])];
   return r;
 }
 
@@ -2745,7 +2777,7 @@ function d2ToArch(text, opts = {}) {
   checkOptions(opts);
   const parsed = parseD2(text, opts);
   const r = graphToArch(parsed.graph, { ...opts, direction: opts.direction });
-  r.warnings = [...parsed.warnings, ...r.warnings];
+  r.warnings = [...new Set([...parsed.warnings, ...r.warnings])];
   return r;
 }
 

@@ -86,7 +86,8 @@ function withLine(o, line) { Object.defineProperty(o, 'line', { value: line, enu
 
 // Set when stripping tags changed a label; parseMermaid reads it once to warn (parsing is synchronous).
 let tagsStripped = false, titleStripped = false;
-const TAG = /<\/?[A-Za-z!][^>]*>/g;
+// A tag starts with '<' then a letter or '!' (or '/' and a letter), so "a < b" and "Cost < 5 > 2" stay. A tag that never closes is cut to the end.
+const TAG = /<\/?[A-Za-z!][^>]*(?:>|$)/g;
 // Repeats until nothing changes (capped), so "<<script>script>" cannot leave a tag behind once the inner one is gone.
 export function stripTagsDeep(t, onChange, re = TAG) {
   let cur = String(t);
@@ -381,10 +382,12 @@ export function parseMermaid(text, opts = {}) {
         else fail(L(), '"%% relation-column:" must be on or off');
       } else if (key === 'relation-name') {
         const v = d[2].trim();
-        if (v && v.length <= LIMITS.relation) relationName = v; else fail(L(), `"%% relation-name:" must be 1 to ${LIMITS.relation} characters, for example %% relation-name: Interaction`);
+        const v2 = stripTags(v);
+        if (v2 && v2.length <= LIMITS.relation) relationName = v2; else fail(L(), `"%% relation-name:" must be 1 to ${LIMITS.relation} characters, for example %% relation-name: Interaction`);
       } else if (key === 'rel') {
         const m = /^(\S+?)\s*->\s*(\S+?)\s+(.+?)\s*$/.exec(d[2].trim());
-        if (!m) fail(L(), 'bad "%% rel:" directive; write it as  %% rel: fromId->toId calls  (free text, at most 20 characters)');
+        if (m) m[3] = stripTags(m[3]).replace(/\s+/g, ' ').trim();
+        if (!m || !m[3]) fail(L(), 'bad "%% rel:" directive; write it as  %% rel: fromId->toId calls  (free text, at most 20 characters)');
         else if (m[3].length > LIMITS.relation) fail(L(), `"%% rel:" text "${m[3]}" is ${m[3].length} characters; the most is ${LIMITS.relation}`);
         else relDirectives.push({ line: L(), from: m[1], to: m[2], text: m[3] });
       } else if (key === 'step') {

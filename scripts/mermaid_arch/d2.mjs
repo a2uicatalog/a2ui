@@ -30,7 +30,7 @@ export function parseD2(text, opts = {}) {
   const nodes = new Map();           // path -> {path, leaf, label, sub, shape, hints, parent, order, line, children:0}
   const edges = [];                  // {from(path), to(path), label, style, both, line}
   const msgs = [], stepDirs = [];
-  let titleTagged = false, title, numbered, pace, duration, relationColumn, relationName, direction = 'LR', openWarned = false;
+  let titleTagged = false, labelTagged = false, title, numbered, pace, duration, relationColumn, relationName, direction = 'LR', openWarned = false;
   const relDirs = [];
   // every error goes through here; after MAX_ERRORS we stop reading (a hostile paste must not cost seconds)
   const addErr = (m) => { errors.push(m); if (errors.length >= MAX_ERRORS) throw new ArchError(errors.slice(0, MAX_ERRORS), warnings); };
@@ -55,19 +55,20 @@ export function parseD2(text, opts = {}) {
     const m = /^(title|msg|numbered|pace|duration|step|relation-column|relation-name|rel)\s*:\s*(.*)$/i.exec(body);
     if (!m) return;
     const k = m[1].toLowerCase(), v = m[2].trim();
-    if (k === 'title') { if (v) { const tt = stripTagsDeep(v, () => { titleTagged = true; }, /<[^<>]*>/g).replace(/\s+/g, ' ').trim(); if (tt) title = tt; } }
+    if (k === 'title') { if (v) { const tt = stripTagsDeep(v, () => { titleTagged = true; }).replace(/\s+/g, ' ').trim(); if (tt) title = tt; } }
     else if (k === 'msg') {
       const mm = /^(\S+?)\s*->\s*(\S+?)\s+"([^"]*)"(?:\s+(back))?\s*$/.exec(v);
-      if (!mm) fail('bad "# msg:" directive; write it as  # msg: fromId->toId "payload text"', ln); else msgs.push({ line: ln, from: mm[1], to: mm[2], text: stripTagsDeep(mm[3], null, /<[^<>]*>/g).replace(/\s+/g, ' ').trim(), back: !!mm[4] });
+      if (!mm) fail('bad "# msg:" directive; write it as  # msg: fromId->toId "payload text"', ln); else msgs.push({ line: ln, from: mm[1], to: mm[2], text: stripTagsDeep(mm[3], () => { labelTagged = true; }).replace(/\s+/g, ' ').trim(), back: !!mm[4] });
     } else if (k === 'numbered') {
       const b = v.toLowerCase(); if (['on', 'true', 'yes'].includes(b)) numbered = true; else if (['off', 'false', 'no'].includes(b)) numbered = false; else fail('"# numbered:" must be on or off', ln);
     } else if (k === 'pace') { if (Object.hasOwn(PACES, v.toLowerCase())) pace = v.toLowerCase(); else fail(`"# pace:" must be one of ${Object.keys(PACES).join(', ')}`, ln); }
     else if (k === 'duration') { const d = Number(v.replace(/\s*s$/i, '')); if (Number.isFinite(d) && d >= 2 && d <= 120) duration = d; else fail('"# duration:" must be a number of seconds from 2 to 120', ln); }
     else if (k === 'relation-column') { const b = v.toLowerCase(); if (['on', 'true', 'yes'].includes(b)) relationColumn = true; else if (['off', 'false', 'no'].includes(b)) relationColumn = false; else fail('"# relation-column:" must be on or off', ln); }
-    else if (k === 'relation-name') { if (v && v.length <= LIMITS.relation) relationName = v; else fail(`"# relation-name:" must be 1 to ${LIMITS.relation} characters`, ln); }
+    else if (k === 'relation-name') { const v2 = stripTagsDeep(v, () => { labelTagged = true; }).replace(/\s+/g, ' ').trim(); if (v2 && v2.length <= LIMITS.relation) relationName = v2; else fail(`"# relation-name:" must be 1 to ${LIMITS.relation} characters`, ln); }
     else if (k === 'rel') {
       const mm = /^(\S+?)\s*->\s*(\S+?)\s+(.+?)\s*$/.exec(v);
-      if (!mm) fail('bad "# rel:" directive; write it as  # rel: fromId->toId calls', ln); else if (mm[3].length > LIMITS.relation) fail(`"# rel:" text is ${mm[3].length} characters; the most is ${LIMITS.relation}`, ln); else relDirs.push({ line: ln, from: mm[1], to: mm[2], text: mm[3] });
+      if (mm) mm[3] = stripTagsDeep(mm[3], () => { labelTagged = true; }).replace(/\s+/g, ' ').trim();
+      if (!mm || !mm[3]) fail('bad "# rel:" directive; write it as  # rel: fromId->toId calls', ln); else if (mm[3].length > LIMITS.relation) fail(`"# rel:" text is ${mm[3].length} characters; the most is ${LIMITS.relation}`, ln); else relDirs.push({ line: ln, from: mm[1], to: mm[2], text: mm[3] });
     }
     else if (k === 'step') {
       const mm = /^(\S+?)\s*->\s*(\S+?)\s+(\d+)\s*$/.exec(v);
@@ -139,7 +140,7 @@ export function parseD2(text, opts = {}) {
     return n;
   }
   // like Mermaid: <br> splits a node label into label and sub-label, any other tag is dropped (labels are plain text)
-  const stripTags = (t) => stripTagsDeep(t, null, /<[^<>]*>/g).replace(/[ \t]+/g, ' ').trim();
+  const stripTags = (t) => stripTagsDeep(t, () => { labelTagged = true; }).replace(/[ \t]+/g, ' ').trim();
   const edgeText = (t) => stripTags(String(t).replace(/<br\s*\/?>/gi, ' ')) || undefined;
   function setLabel(n, v) {
     const parts = v.replace(/<br\s*\/?>/gi, '\n').split('\n').map(stripTags).map((x) => x.trim()).filter(Boolean);
@@ -316,6 +317,7 @@ export function parseD2(text, opts = {}) {
   if (numbered !== undefined) graph.numbered = numbered;
   if (pace) graph.pace = pace;
   if (duration !== undefined) graph.duration = duration;
+  if (labelTagged) warnings.push('HTML tags were removed from a label.');
   if (titleTagged) warnings.push('HTML tags were removed from the title.');
   const ttl = opts.title || title;
   if (ttl) graph.title = ttl;

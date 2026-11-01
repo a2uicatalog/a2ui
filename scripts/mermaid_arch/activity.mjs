@@ -48,9 +48,9 @@ export function activity(fromLabel, toLabel, label, { style, both, reply } = {})
       else if (/^(and|or)\b/i.test(rest) || both) s = `${F} ${verb} ${rest} ${T}`;
       else s = `${F} ${verb} ${rest} ${prep || 'with'} ${T}`;
     } else if (both) {
-      s = `${F} and ${T} exchange ${/^[a-z][a-z ]*$/.test(L) ? 'the ' : ''}${L}`;
+      s = `${F} and ${T} exchange ${/^[a-z][a-z ]*$/.test(L) && !/^(a|an|the)\b/.test(L) ? 'the ' : ''}${L}`;
     } else {
-      const article = /^[a-z][a-z ,+-]*$/.test(L) ? 'the ' : '';   // lower-case plain words only: not "A2UI JSON", "tools/call", "POST run"
+      const article = /^[a-z][a-z ,+-]*$/.test(L) && !/^(a|an|the|\d)\b/i.test(L) ? 'the ' : '';   // lower-case plain words only: not "A2UI JSON", "tools/call", "POST run"
       s = `${F} ${reply && style !== 'async' && style !== 'optional' ? 'returns' : 'sends'} ${article}${L} to ${T}`;
     }
   }
