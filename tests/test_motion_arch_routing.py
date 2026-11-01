@@ -114,3 +114,85 @@ def test_a_routed_edges_label_is_drawn_after_the_message_chips():
     assert h.index(">go<") > h.index(">m<") > h.index("<path d=\"M220")      # route, then the chips, then the label
     c = _py(dict(blk(), edges=[{"from": "a", "to": "b", "label": "go", "curve": 10}]))
     assert c.index(">go<") < c.index(">m<")                                      # a curved edge keeps the old order
+
+
+def _published_arch_schema():
+    import json
+    from pathlib import Path
+    doc = json.loads((Path(__file__).parent.parent / "public" / "catalogue" / "atoms-json-schema.json").read_text(encoding="utf-8"))
+    found = [a for a in doc["items"]["oneOf"] if a["properties"]["type"].get("const") == "motion_arch"]
+    assert len(found) == 1
+    return found[0]
+
+
+def test_published_strict_schema_types_the_routing_fields():
+    # the strict schema constrains LLM output: points/label_at/radius used to be strings with no limits
+    p = _published_arch_schema()["properties"]
+    e = p["edges"]["items"]["properties"]
+    assert e["points"]["type"] == "array" and e["points"]["maxItems"] == 10
+    assert e["points"]["items"]["properties"]["x"]["type"] == "number" and e["points"]["items"]["required"] == ["x", "y"]
+    assert e["label_at"]["type"] == "object" and set(e["label_at"]["properties"]) == {"x", "y"}
+    assert e["curve"]["type"] == "number" and (e["curve"]["minimum"], e["curve"]["maximum"]) == (-100, 100)
+    assert e["both"] == {"type": "boolean"} and e["style"]["enum"] == ["solid", "dashed"]
+    assert p["radius"] == {"type": "integer", "minimum": 0, "maximum": 60}
+    assert p["nodes"]["items"]["properties"]["x"]["type"] == "number" and p["nodes"]["maxItems"] == 12
+
+
+def _check(v, sc, path="$"):
+    """A small JSON Schema checker (type, enum, bounds, maxItems/maxLength, pattern, required, additionalProperties): jsonschema is not a dependency."""
+    errs = []
+    t = sc.get("type")
+    ok = {"object": isinstance(v, dict), "array": isinstance(v, list), "string": isinstance(v, str), "boolean": isinstance(v, bool),
+          "integer": isinstance(v, int) and not isinstance(v, bool), "number": isinstance(v, (int, float)) and not isinstance(v, bool), None: True}[t]
+    if not ok:
+        return [f"{path}: expected {t}, got {type(v).__name__}"]
+    if "const" in sc and v != sc["const"]:
+        errs.append(f"{path}: const")
+    if "enum" in sc and v not in sc["enum"]:
+        errs.append(f"{path}: {v!r} not in enum")
+    if t in ("integer", "number"):
+        if "minimum" in sc and v < sc["minimum"]:
+            errs.append(f"{path}: {v} below {sc['minimum']}")
+        if "maximum" in sc and v > sc["maximum"]:
+            errs.append(f"{path}: {v} above {sc['maximum']}")
+    if t == "string":
+        if "maxLength" in sc and len(v) > sc["maxLength"]:
+            errs.append(f"{path}: too long")
+        if "pattern" in sc and not re.search(sc["pattern"], v):
+            errs.append(f"{path}: {v!r} breaks pattern")
+    if t == "array":
+        if "maxItems" in sc and len(v) > sc["maxItems"]:
+            errs.append(f"{path}: more than {sc['maxItems']} items")
+        for i, x in enumerate(v):
+            errs += _check(x, sc.get("items", {}), f"{path}[{i}]")
+    if t == "object":
+        for k in sc.get("required", []):
+            if k not in v:
+                errs.append(f"{path}: missing {k}")
+        for k, x in v.items():
+            if k in sc.get("properties", {}):
+                errs += _check(x, sc["properties"][k], f"{path}.{k}")
+            elif sc.get("additionalProperties") is False:
+                errs.append(f"{path}: unexpected {k}")
+    return errs
+
+
+def test_converter_output_validates_against_the_published_strict_schema():
+    import json
+    from pathlib import Path
+    ex = Path(__file__).parent.parent / "scripts" / "mermaid_arch" / "examples"
+    schema = _published_arch_schema()
+    n = 0
+    for f in sorted(ex.glob("*.golden.json")):
+        payload = json.loads(f.read_text(encoding="utf-8"))
+        stack = list(payload["blocks"])
+        while stack:
+            b = stack.pop()
+            if b.get("type") == "motion_arch":
+                b = {k: v for k, v in b.items() if k not in ("id", "place")}
+                assert _check(b, schema) == [], f.name
+                n += 1
+            stack.extend(b.get("blocks", []))
+    assert n >= 10
+    bad = {"type": "motion_arch", "nodes": [], "edges": [{"from": "a", "to": "b", "points": "x"}], "radius": 99}
+    assert len(_check(bad, schema)) == 2          # the checker does reject a string `points` and an out-of-range radius

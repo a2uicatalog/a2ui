@@ -28,6 +28,7 @@ Run:
 """
 import argparse
 import ast
+import copy
 import json
 import os
 import re
@@ -100,6 +101,59 @@ def evaluate_ast_node(node) -> dict:
 # Atoms whose fields all start with an explicit type word and are parsed by it (2026-10-29, the brick atoms).
 LEADING_TYPE_ATOMS = {"motion_bricks", "brick_build_3d", "block_robot", "block_rocket"}
 _LEADING_TYPE_ON = False
+
+
+# Hand-typed field schemas for atoms whose prose field grammar ("array (max 12) of {id, kind?, x, ...}") carries
+# types and ranges the generic parser cannot read: it types every key of an object-in-array as "string" (so x, y, at
+# were strings and a `points` list was one string). Each entry replaces the parsed schema of that field; the field's
+# optional/required status still comes from the parser. Every number here is stated in atoms/schema.yaml's own field text
+# (and enforced by scripts/mermaid_arch/compile.mjs validateBlock). Only motion_arch so far, so no other atom's output changes.
+def _num(lo=None, hi=None, integer=False):
+    d = {"type": "integer" if integer else "number"}
+    if lo is not None:
+        d["minimum"] = lo
+    if hi is not None:
+        d["maximum"] = hi
+    return d
+
+
+_P01 = _num(0, 1)
+_PCT = _num(0, 100)
+_HEX = {"type": "string", "pattern": "^#[0-9a-fA-F]{6}$"}
+_XY = {"type": "object", "properties": {"x": _PCT, "y": _PCT}, "required": ["x", "y"], "additionalProperties": False}
+
+
+def _obj(props: dict, required: list) -> dict:
+    return {"type": "object", "properties": props, "required": required, "additionalProperties": False}
+
+
+FIELD_OVERRIDES = {
+    "motion_arch": {
+        "nodes": {"type": "array", "maxItems": 12, "items": _obj({
+            "id": {"type": "string", "pattern": "^[a-z][a-z0-9_-]{0,31}$"},
+            "kind": {"type": "string", "enum": ["device", "app", "server", "tool", "model", "store", "surface", "user"]},
+            "label": {"type": "string"}, "sub": {"type": "string"},
+            "x": _PCT, "y": _PCT, "w": _PCT, "h": _PCT, "at": _P01, "dur": _P01}, ["id", "label", "x", "y"])},
+        "edges": {"type": "array", "maxItems": 16, "items": _obj({
+            "from": {"type": "string"}, "to": {"type": "string"}, "label": {"type": "string"},
+            "style": {"type": "string", "enum": ["solid", "dashed"]}, "both": {"type": "boolean"},
+            "curve": _num(-100, 100),
+            "points": {"type": "array", "maxItems": 10, "items": _XY},
+            "label_at": _XY,
+            "color": _HEX, "at": _P01, "dur": _P01}, ["from", "to"])},
+        "messages": {"type": "array", "maxItems": 12, "items": _obj({
+            "edge": _num(0, None, integer=True), "text": {"type": "string", "maxLength": 40}, "back": {"type": "boolean"},
+            "color": _HEX, "at": _P01, "dur": _P01}, ["edge", "text"])},
+        "groups": {"type": "array", "maxItems": 4, "items": _obj({
+            "label": {"type": "string"}, "x": _PCT, "y": _PCT, "w": _PCT, "h": _PCT, "at": _P01, "dur": _P01}, ["label", "x", "y", "w", "h"])},
+        "w": _num(200, 2000, integer=True),
+        "h": _num(120, 2000, integer=True),
+        "size": _num(8, 40, integer=True),
+        "radius": _num(0, 60, integer=True),
+        "accent": _HEX, "accent2": _HEX, "color": _HEX, "mute": _HEX, "fill": _HEX, "background": _HEX,
+        "label": {"type": "string", "maxLength": 80},
+    },
+}
 
 
 def advanced_parse_field(raw_string: str):
@@ -238,6 +292,9 @@ def build_atom_schema(block: dict, with_enter: bool = False) -> dict:
         except Exception as e:
             field_schema, is_optional = {"type": ["string", "number", "boolean", "object", "array"]}, True
             print(f"[FALLBACK] {atom_type}.{field_name} -> {field_raw!r} | {e}", file=sys.stderr)
+
+        if field_name in FIELD_OVERRIDES.get(atom_type, {}):
+            field_schema = copy.deepcopy(FIELD_OVERRIDES[atom_type][field_name])
 
         # atom's own field literally named "type" collides with the injected
         # discriminator above — namespace it rather than silently overwrite.
