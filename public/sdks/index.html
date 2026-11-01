@@ -166,10 +166,15 @@ npx @a2uicatalog/mcp</code></pre>
 <pre style="background:#0e1116;color:#c7d1e0;padding:14px 16px;border-radius:8px;overflow-x:auto;"><code>npx skills add a2uicatalog/a2ui</code></pre>
 <p>Includes skills for catalog discovery (<code>a2ui-catalog</code>), composition (<code>a2ui-compose</code>), and MCP server connection (<code>a2ui-mcp</code>).</p>
 
-<h2>3. Python &amp; A2A SDK Integration</h2>
+<h2>3. Python SDK (a2uicatalog)</h2>
+<p>A thin, dependency-free Python client for the REST API: compose, render, batch render, catalogue search and local payload validation.</p>
+<pre style="background:#0e1116;color:#c7d1e0;padding:14px 16px;border-radius:8px;overflow-x:auto;"><code>pip install a2uicatalog</code></pre>
+<p>Package page: <a href="https://pypi.org/project/a2uicatalog/">a2uicatalog on PyPI</a>. Source: <code>sdk/python/</code> in the <a href="https://github.com/a2uicatalog/a2ui">GitHub repository</a>.</p>
+
+<h2>4. Python &amp; A2A SDK Integration</h2>
 <p>For Python applications using Google's A2A protocol (<code>a2a-sdk</code>), connect over JSON-RPC or use the typed extension wrappers in the open-source repository (<code>renderers/a2a_extension.py</code>).</p>
 
-<h2>4. Generating Typed SDKs from OpenAPI</h2>
+<h2>5. Generating Typed SDKs from OpenAPI</h2>
 <p>Generate native client SDKs for any language (TypeScript, Python, Go, Java, Swift) using OpenAPI Generator and our OpenAPI 3.1 specification:</p>
 <pre style="background:#0e1116;color:#c7d1e0;padding:14px 16px;border-radius:8px;overflow-x:auto;"><code>npx @openapitools/openapi-generator-cli generate \
   -i https://a2uicatalog.ai/openapi.json \

@@ -6,6 +6,7 @@
 ## Packages
 
 - npm / CLI SDK: `@a2uicatalog/mcp` on npm (`npx -p @a2uicatalog/mcp a2ui render page.json`)
+- Python SDK: `a2uicatalog` on PyPI (`pip install a2uicatalog`) (https://pypi.org/project/a2uicatalog/)
 - Agent Skills: `npx skills add a2uicatalog/a2ui` (https://a2uicatalog.ai/.well-known/agent-skills/index.json)
 - Remote MCP server: https://a2uicatalog.ai/mcp
 - OpenAPI 3.1 specification: https://a2uicatalog.ai/openapi.json

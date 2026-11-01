@@ -14,6 +14,7 @@ Official client libraries, SDK packages, CLI tools, and agent integrations for t
   - Direct render: `npx -p @a2uicatalog/mcp a2ui render page.json`
   - Local MCP server: `npx @a2uicatalog/mcp`
 - **Agent Skills**: `npx skills add a2uicatalog/a2ui` (skills index at `https://a2uicatalog.ai/.well-known/agent-skills/index.json`)
+- **Python client**: [`a2uicatalog`](https://pypi.org/project/a2uicatalog/) on PyPI (`pip install a2uicatalog`); source `sdk/python/` in the GitHub repo
 - **Python / A2A Extension**: `renderers/a2a_extension.py` in the GitHub repo for A2A SDK interop.
 
 ## Generating Native Client SDKs
