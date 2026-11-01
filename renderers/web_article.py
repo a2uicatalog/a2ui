@@ -34879,6 +34879,7 @@ def _render_motion_arch(b: dict) -> str:
         if not f or not t2 or f is t2:
             continue
         poly = _mo_arch_poly(e.get('points'), W, H)
+        l2up = (size - 4) * 1.15                   # a second line (label2): how far the first line sits above the baseline the label would have had
         if poly:
             P = poly
             d = _mo_arch_rounded(P, rad)
@@ -34887,6 +34888,7 @@ def _render_motion_arch(b: dict) -> str:
             lat = _mo_arch_xy(e.get('label_at'), W, H)
             if lat:
                 lx, ly = lat[0], lat[1] + (size - 4) * 0.35
+                l2up = (size - 4) * 0.575      # a second line: half a line height up, so the two lines are centred on label_at
             else:
                 m = len(P) // 2
                 lx, ly = (P[m - 1][0] + P[m][0]) / 2, (P[m - 1][1] + P[m][1]) / 2 - 10
@@ -34907,9 +34909,15 @@ def _render_motion_arch(b: dict) -> str:
         col, dashed, both = _mo_ink(e, 'color', acc2), _mo_own(_MO_ARCH_STYLE, e.get('style'), 'solid') == 'dashed', e.get('both') is True
         at, dur = _mo_arch_t(e.get('at'), 0.3 + i * 0.05), _mo_arch_d(e.get('dur'), 0.1)
         el = _cv_str(e.get('label'), 48)
-        ltxt = ('<text x="' + _mo_arch_n(lx) + '" y="' + _mo_arch_n(ly) + '" text-anchor="middle" style="font-family:' + _JOURNEY_MONO + ';font-size:' + str(size - 4)
-                + 'px;fill:' + ink + ';paint-order:stroke;stroke:' + paper + ';stroke-width:6px;stroke-linejoin:round;opacity:var(--u);">' + _cv_esc(el) + '</text>'
-                if el else '')
+        el2 = _cv_str(e.get('label2'), 48) if el else ''
+        if el2:      # two lines: one text element, so the halo sits behind both lines
+            ltxt = ('<text x="' + _mo_arch_n(lx) + '" y="' + _mo_arch_n(ly - l2up) + '" text-anchor="middle" style="font-family:' + _JOURNEY_MONO + ';font-size:' + str(size - 4)
+                    + 'px;fill:' + ink + ';paint-order:stroke;stroke:' + paper + ';stroke-width:6px;stroke-linejoin:round;opacity:var(--u);">'
+                    + '<tspan x="' + _mo_arch_n(lx) + '">' + _cv_esc(el) + '</tspan><tspan x="' + _mo_arch_n(lx) + '" dy="' + _mo_arch_n((size - 4) * 1.15) + '">' + _cv_esc(el2) + '</tspan></text>')
+        else:
+            ltxt = ('<text x="' + _mo_arch_n(lx) + '" y="' + _mo_arch_n(ly) + '" text-anchor="middle" style="font-family:' + _JOURNEY_MONO + ';font-size:' + str(size - 4)
+                    + 'px;fill:' + ink + ';paint-order:stroke;stroke:' + paper + ';stroke-width:6px;stroke-linejoin:round;opacity:var(--u);">' + _cv_esc(el) + '</text>'
+                    if el else '')
         if poly and ltxt:
             late += '<g style="' + win(at, dur) + '">' + ltxt + '</g>'     # a routed edge's label is drawn after the message chips, so a chip never hides it
             ltxt = ''

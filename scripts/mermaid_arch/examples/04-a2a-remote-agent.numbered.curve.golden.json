@@ -4,85 +4,85 @@
   {
    "type": "motion_arch",
    "label": "A2A: one agent hands work to another",
-   "w": 994,
-   "h": 298,
-   "size": 17,
+   "w": 1026,
+   "h": 311,
+   "size": 18,
    "nodes": [
     {
      "id": "user",
      "kind": "user",
      "label": "User",
-     "x": 6.94,
-     "y": 57.26,
-     "w": 9.46,
-     "h": 17.11,
-     "at": 0.0143,
+     "x": 7.12,
+     "y": 50,
+     "w": 9.75,
+     "h": 17.36,
+     "at": 0.0149,
      "dur": 0.011
     },
     {
      "id": "orch",
      "kind": "app",
      "label": "Orchestrator on ADK",
-     "x": 27.72,
-     "y": 60.95,
-     "w": 23.84,
-     "h": 17.11,
-     "at": 0.0165,
+     "x": 28.41,
+     "y": 53.38,
+     "w": 24.46,
+     "h": 17.36,
+     "at": 0.0172,
      "dur": 0.011
     },
     {
      "id": "card",
      "kind": "store",
      "label": "Agent Card",
-     "x": 53.27,
-     "y": 43.84,
-     "w": 15.19,
-     "h": 17.11,
-     "at": 0.0099,
+     "x": 55.56,
+     "y": 28.62,
+     "w": 15.59,
+     "h": 17.36,
+     "at": 0.0103,
      "dur": 0.011
     },
     {
      "id": "remote",
      "kind": "server",
      "label": "Remote agent",
-     "x": 71.63,
-     "y": 43.84,
-     "w": 17.1,
-     "h": 17.11,
-     "at": 0.0121,
+     "x": 55.56,
+     "y": 53.38,
+     "w": 17.54,
+     "h": 17.36,
+     "at": 0.0195,
      "dur": 0.011
     },
     {
      "id": "task",
      "kind": "store",
      "label": "Task state",
-     "x": 54.38,
-     "y": 78.06,
-     "w": 15.19,
-     "h": 17.11,
-     "at": 0.0187,
+     "x": 88.01,
+     "y": 28.62,
+     "w": 15.59,
+     "h": 17.36,
+     "at": 0.0126,
      "dur": 0.011
     },
     {
      "id": "rllm",
      "kind": "model",
      "label": "Remote LLM",
-     "x": 71.78,
-     "y": 78.06,
-     "w": 15.19,
-     "h": 17.11,
-     "at": 0.0209,
+     "x": 88.01,
+     "y": 53.38,
+     "w": 15.59,
+     "h": 17.36,
+     "at": 0.0218,
      "dur": 0.011
     },
     {
      "id": "rtools",
      "kind": "tool",
      "label": "MCP tools",
-     "x": 88.73,
-     "y": 78.06,
-     "w": 14.29,
-     "h": 17.11,
-     "at": 0.0231,
+     "x": 88.01,
+     "y": 78.14,
+     "w": 14.62,
+     "h": 17.36,
+     "at": 0.0241,
      "dur": 0.011
     }
    ],
@@ -93,61 +93,60 @@
      "label": "1 asks",
      "style": "solid",
      "curve": -100,
-     "at": 0.0331,
-     "dur": 0.0165
+     "at": 0.0344,
+     "dur": 0.0172
     },
     {
      "from": "orch",
      "to": "card",
      "label": "2 discovers skills",
      "style": "solid",
-     "curve": -80,
-     "at": 0.1058,
-     "dur": 0.0165
+     "curve": -100,
+     "at": 0.11,
+     "dur": 0.0172
     },
     {
      "from": "orch",
      "to": "remote",
      "label": "3 SendStreamingMessage JSON-RPC",
      "style": "solid",
-     "curve": -100,
-     "at": 0.2077,
-     "dur": 0.0165
+     "curve": 80,
+     "at": 0.2222,
+     "dur": 0.0172
     },
     {
      "from": "remote",
      "to": "task",
      "label": "4 creates task",
      "style": "solid",
-     "at": 0.3611,
-     "dur": 0.0165
+     "at": 0.3357,
+     "dur": 0.0172
     },
     {
      "from": "remote",
      "to": "rllm",
      "label": "5 prompt",
      "style": "solid",
-     "curve": -65,
-     "at": 0.452,
-     "dur": 0.0165
+     "at": 0.4302,
+     "dur": 0.0172
     },
     {
      "from": "remote",
      "to": "rtools",
      "label": "6 tool calls",
      "style": "solid",
-     "curve": 50,
-     "at": 0.5521,
-     "dur": 0.0165
+     "at": 0.5342,
+     "dur": 0.0172
     },
     {
      "from": "remote",
      "to": "orch",
-     "label": "7 status, artifacts, A2UI in a DataPart, over S…",
+     "label": "7 status, artifacts, A2UI",
+     "label2": "in a DataPart, over SSE",
      "style": "dashed",
-     "curve": 80,
-     "at": 0.6611,
-     "dur": 0.0165
+     "curve": 50,
+     "at": 0.6476,
+     "dur": 0.0172
     },
     {
      "from": "orch",
@@ -155,26 +154,26 @@
      "label": "8 answer",
      "style": "solid",
      "curve": -100,
-     "at": 0.8339,
-     "dur": 0.0165
+     "at": 0.8273,
+     "dur": 0.0172
     }
    ],
    "groups": [
     {
      "label": "Our system",
-     "x": 13.88,
-     "y": 39.31,
-     "w": 27.67,
-     "h": 35.91,
+     "x": 14.23,
+     "y": 32.15,
+     "w": 28.36,
+     "h": 35.69,
      "at": 0,
      "dur": 0.011
     },
     {
      "label": "Partner system",
-     "x": 43.76,
-     "y": 22.19,
-     "w": 54.02,
-     "h": 70.13,
+     "x": 44.83,
+     "y": 7.4,
+     "w": 52.92,
+     "h": 85.21,
      "at": 0,
      "dur": 0.011
     }
@@ -183,20 +182,20 @@
     {
      "edge": 1,
      "text": "GET agent card",
-     "at": 0.124,
-     "dur": 0.0739
+     "at": 0.1289,
+     "dur": 0.083
     },
     {
      "edge": 2,
      "text": "SendStreamingMessage",
-     "at": 0.2259,
-     "dur": 0.1253
+     "at": 0.2411,
+     "dur": 0.08
     },
     {
      "edge": 6,
      "text": "artifact",
-     "at": 0.6793,
-     "dur": 0.1253
+     "at": 0.6665,
+     "dur": 0.08
     }
    ]
   },

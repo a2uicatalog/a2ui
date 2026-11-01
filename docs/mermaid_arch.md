@@ -52,8 +52,9 @@ unlabelled edge just "1"). Steps follow the order of the edges in the source. To
 
 That edge becomes step 3 and the other edges take the lowest free numbers in source order. A number used
 twice, a number above the edge count (a gap) or an edge that does not exist is a plain error. If the
-number pushes a label over the atom's 48 characters you get a warning and the label is cut with an
-ellipsis.
+number pushes a label past 48 characters it wraps onto two lines like any long label (see "Long labels" below). A label
+the author numbered themselves ("1. Request token", "2) Return it") loses that number when `numbered` is on, in the drawing
+and in the Activity sentence, so the step number is not shown twice.
 
 The library returns `steps` (`{step, from, to, label, style}`, in order; empty unless numbered) and `textSteps` / `textMessages`
 (always filled). **Every payload carries a full text alternative** for screen-reader users, using the repo's existing `table`
@@ -196,14 +197,15 @@ replaces other characters with `_`, prefixes `n` if the id starts with a digit, 
 ## Limits and what is checked
 
 The atom's own limits: 12 nodes, 16 edges, 4 groups, 12 messages; labels 40 characters, sub-labels 40,
-edge labels 48, message text 40, group labels 40 (drawn in capitals), title 80. **Nothing is dropped
+edge labels 48, message text 40, group labels 40 (drawn in capitals), title 80. Node labels and edge labels may use two
+lines (see "Long labels"). **Nothing is dropped
 silently.** Over a cap is an error that says how to split (it names the groups and their sizes), with one
 exception: **groups beyond 4 are folded, not refused.** The converter (Mermaid, D2 and graph JSON alike, after
 nested groups are flattened) turns the smallest groups into plain nodes, fewest members first and, on a tie,
 the later one in the source first, until 4 remain. A folded group loses its box and title; its nodes stay. Its
 title is added as the sub-label of each member that has none, when the title fits 40 characters. One warning
 says what happened, for example `Drew 4 of 5 groups: "5. Mail" was shown without its box (the diagram can draw at
-most 4).` Text over a limit is cut with an ellipsis and a warning. The layout warning (drawn top-to-bottom
+most 4).` Text that does not fit even on two lines is cut with an ellipsis and a warning. The layout warning (drawn top-to-bottom
 instead of the written direction, given only when the other axis makes the text at least 25% bigger) ends with the CLI hint by default; `hint: 'web'` swaps it for "You can switch
 the Layout menu to the written direction." (the playground passes it).
 
@@ -254,9 +256,30 @@ It picks the other axis only when that scores better and the text is at least 25
 
 **Frame and text size.** The frame (`w`, `h`) is the layout's natural size, aimed at about 1000 wide
 and no more than about 1100 tall; `size` (label px) is chosen with it. What matters on a phone is
-`size x 343 / w`. All sizes are single-line labels (the atom does not wrap text), so wide labels and
-many ranks make small text. The five example diagrams measured 2.0 to 6.7 px as curves and 5.2 to 8.6 px routed (see the numbers in the
+`size x 343 / w`. Labels wrap onto at most two lines (see "Long labels"), so the widest line is at most 40 or 48
+characters; wide labels and many ranks still make small text. The five example diagrams measured 2.0 to 6.7 px as curves and 5.2 to 8.6 px routed (see the numbers in the
 review page); a diagram with short labels, or a vertical one, reads better.
+
+### Long labels
+
+The converter wraps instead of cutting. A text that fits one line is untouched. A longer one is broken at the space that
+leaves the two lines most even (both within the limit, and never a line of under 4 characters, so a step number is not
+left alone); a single long word, or text without spaces such as Chinese, is broken near the middle. Lengths are counted in
+UTF-16 units and a break never lands inside an emoji.
+
+- **Node label** (limit 40): the second line goes to the node's `sub` (smaller, muted, mono). That needs no atom change. A
+  node that already has a sub-label cannot wrap its label (the second line is taken), so a label over 40 is cut there.
+- **Edge label** (limit 48 per line): the second line goes to the optional `label2` field of the edge, drawn under the first
+  as one text element, so the halo sits behind both lines. `label2` is additive: without it every older payload renders
+  byte for byte as before (and an older renderer that does not know the field shows the first line only; the Steps table
+  always has the full text). It is ignored when `label` is empty. The router reserves the two-line box (as wide as the longer
+  line, twice as tall) when it places the label.
+- Only text longer than two lines is cut, with an ellipsis; one merged warning per kind says which, for example
+  `Edges 3, 8 and 11 have labels longer than the atom can show on two lines; they were cut (the Steps table has the full text).`
+  Groups titles (40, one line) get `Groups "x" and "y" have titles longer than 40 characters; they were cut.` A text that fits on
+  two lines gives no warning.
+- A `<br/>` in a Mermaid node label splits label and sub as before; stray punctuation left at the end of the first line
+  (`,` `;` `:` `&` `-`) is dropped, and the Activity sentence never ends in a dangling comma or ampersand.
 
 ## D2 (subset)
 
@@ -295,11 +318,11 @@ HTML tags in labels are dropped, as in Mermaid.
 - No dotted style (`optional` is drawn dashed), no thick lines, no nested boxes,
   no icons beyond the eight kinds.
 - Over 12 nodes is refused, not folded into an overview.
-- Text is not wrapped and is cut at the atom's limits.
+- Text is wrapped onto two lines; beyond that it is cut at the atom's limits (with one merged warning).
 
 ## Tests
 
 `node scripts/test_mermaid_arch.mjs` (parser tables for Mermaid and D2, error messages, numbering and pacing, layout invariants on the example
 diagrams in `scripts/mermaid_arch/examples/` and on synthetic graphs, compile checks, golden payloads,
 and the Python web renderer drawing every golden payload). After an intended change:
-`UPDATE_GOLDEN=1 node scripts/test_mermaid_arch.mjs`. The default goldens are the routed drawing; the `*.curve.golden.json` files keep the stage-1 curve drawing. `tests/test_motion_arch_routing.py` covers the atom's `points`, `label_at` and `radius` (Python and Apps Script renderers byte for byte).
+`UPDATE_GOLDEN=1 node scripts/test_mermaid_arch.mjs`. The default goldens are the routed drawing; the `*.curve.golden.json` files keep the stage-1 curve drawing. `tests/test_motion_arch_routing.py` covers the atom's `points`, `label_at`, `radius` and `label2` (Python and Apps Script renderers byte for byte).

@@ -389,16 +389,18 @@ test('canonical validator: duplicate id, bad kind, bad group, bad id', () => {
   assert.match(all, /kind "srever".*did you mean "server"/);
   assert.match(all, /group "h" is not a group id/);
 });
-test('warnings: orphan node, long label, duplicate edge, long edge label', () => {
+test('warnings: orphan node, duplicate edge; long labels wrap onto two lines instead of being cut', () => {
   const long = 'x'.repeat(45);
   const r = mermaidToArch(`flowchart LR\na[${long}] -->|${'y'.repeat(50)}| b\na --> b\na --> b\nlonely`, { direction: 'LR' });
   const w = r.warnings.join('\n');
   assert.match(w, /node "lonely" has no edges/);
-  assert.match(w, /label is 45 characters; the atom shows at most 40/);
   assert.match(w, /duplicates edge 2/);
-  assert.match(w, /label is 50 characters; the atom shows at most 48/);
+  assert.doesNotMatch(w, /longer than|will be cut|atom shows at most/, 'labels that fit on two lines are not warned about');
   const n = r.block.nodes[0];
-  assert.ok(n.label.length <= 40 && n.label.endsWith('…'), 'label cut with an ellipsis, not silently');
+  assert.equal(n.label + n.sub, long, 'a 45-character word is split over label and sub, nothing lost');
+  assert.ok(n.label.length <= 40 && n.sub.length <= 40);
+  const e = r.block.edges[0];
+  assert.equal(e.label + e.label2, 'y'.repeat(50));
 });
 test('warning: --- has no arrowhead', () => {
   assert.ok(parseMermaid('flowchart LR\na --- b').warnings.some((w) => /no arrowhead/.test(w)));
@@ -622,10 +624,12 @@ test('numbered: step errors are plain (duplicate, gap/out of range, unknown edge
   assert.match(errN('%% step: a->zz 1\n' + N3), /"zz", which is not a node/);
 });
 function errN(src) { try { mermaidToArch(src, { numbered: true }); } catch (e) { if (e instanceof ArchError) return e.errors.join('\n'); throw e; } return ''; }
-test('numbered: a prefix that pushes a label over 48 characters warns and is cut with an ellipsis', () => {
+test('numbered: a prefix that pushes a label over 48 characters wraps instead of warning', () => {
   const r = mermaidToArch('flowchart LR\na -->|' + 'w'.repeat(47) + '| b', { numbered: true });
-  assert.ok(r.warnings.some((w) => /step number pushes the label to 49 characters/.test(w)));
-  assert.ok(r.block.edges[0].label.length <= 48);
+  assert.deepEqual(r.warnings.filter((w) => /cut|longer than|pushes/.test(w)), []);
+  const e = r.block.edges[0];
+  assert.equal((e.label + e.label2).replace(/\s/g, ''), '1' + 'w'.repeat(47));
+  assert.ok(e.label.length <= 48 && e.label2.length <= 48);
 });
 test('steps table matches the edges (standalone payload carries a table atom)', () => {
   for (const f of examples) {
@@ -1226,4 +1230,125 @@ test('chip pacing: a duration override that gives the chips room works, one that
   const natural = mermaidToArch(src, { film: true, numbered: true }).durationSeconds;
   assert.deepEqual(validateBlock(mermaidToArch(src, { film: true, numbered: true, duration: Math.ceil(natural) }).block), []);
   assert.throws(() => mermaidToArch('%% duration: 6\n' + src, { film: true }), (e) => e instanceof ArchError && /too short|at least/.test(e.errors.join()));
+});
+
+// ------------------------------------------------------------------ two-line labels and label hygiene (2026-11)
+import { wrapLabel, stripOwnNumber } from './mermaid_arch/labels.mjs';
+import { edgeLabelSize } from './mermaid_arch/layout.mjs';
+
+test('wrapLabel: fits on one line -> untouched; two words -> split at the space nearest the middle', () => {
+  assert.deepEqual(wrapLabel('short', 40), { lines: ['short'], cut: false });
+  assert.deepEqual(wrapLabel('x'.repeat(40), 40), { lines: ['x'.repeat(40)], cut: false }, 'exactly at the limit stays on one line');
+  const w = wrapLabel('Return short-lived GCP Service Account Access Token', 40);
+  assert.equal(w.cut, false);
+  assert.equal(w.lines.length, 2);
+  assert.equal(w.lines.join(' '), 'Return short-lived GCP Service Account Access Token');
+  assert.ok(Math.abs(w.lines[0].length - w.lines[1].length) <= 8, `balanced: ${w.lines}`);
+  assert.equal(wrapLabel('1 ' + 'w'.repeat(47), 48).lines[0].length > 3, true, 'a step number is not left alone on a line');
+});
+test('wrapLabel: one past the limit wraps at a space, never inside a word when a space works', () => {
+  const t = 'a'.repeat(20) + ' ' + 'b'.repeat(21);          // 42 chars
+  assert.deepEqual(wrapLabel(t, 40), { lines: ['a'.repeat(20), 'b'.repeat(21)], cut: false });
+});
+test('wrapLabel: a single long word is split in the middle; exactly 2 x limit still fits; one more is cut', () => {
+  const w = wrapLabel('z'.repeat(60), 40);
+  assert.equal(w.cut, false);
+  assert.deepEqual(w.lines.map((l) => l.length), [30, 30]);
+  assert.equal(wrapLabel('z'.repeat(80), 40).cut, false);
+  const c = wrapLabel('z'.repeat(81), 40);
+  assert.equal(c.cut, true);
+  assert.ok(c.lines[1].endsWith('…') && c.lines.every((l) => l.length <= 40));
+});
+test('wrapLabel: text beyond two lines fills line 1 at a word boundary and cuts line 2', () => {
+  const t = Array.from({ length: 30 }, (_, i) => 'word' + i).join(' ');
+  const w = wrapLabel(t, 48);
+  assert.equal(w.cut, true);
+  assert.ok(w.lines[0].length <= 48 && !w.lines[0].endsWith(' ') && t.startsWith(w.lines[0] + ' '));
+  assert.ok(w.lines[1].length <= 48 && w.lines[1].endsWith('…'));
+});
+test('wrapLabel: emoji and other astral characters are never split in half; lengths count UTF-16 units', () => {
+  const t = '😀'.repeat(30);                                   // 60 units
+  const w = wrapLabel(t, 40);
+  assert.equal(w.cut, false);
+  assert.equal(w.lines.join(''), t);
+  for (const l of w.lines) { assert.ok(l.length <= 40); assert.ok(!/[\uD800-\uDBFF]$/.test(l) && !/^[\uDC00-\uDFFF]/.test(l), 'no lone surrogate'); }
+  const mixed = wrapLabel('Ünïcödé 日本語 text with 😀 emoji and more words to wrap onto lines', 40);
+  assert.equal(mixed.lines.join(' '), 'Ünïcödé 日本語 text with 😀 emoji and more words to wrap onto lines');
+  for (const l of mixed.lines) assert.ok(!/[\uD800-\uDBFF]$/.test(l));
+});
+test('wrapLabel: CJK without spaces splits near the middle', () => {
+  const t = '这是一个没有空格的很长的中文标签用来测试换行是否在中间附近进行拆分处理';   // 34 chars: fits
+  assert.equal(wrapLabel(t, 40).lines.length, 1);
+  const long = t + t;                                           // 68
+  const w = wrapLabel(long, 40);
+  assert.equal(w.cut, false);
+  assert.equal(w.lines.join(''), long);
+  assert.deepEqual(w.lines.map((l) => l.length), [t.length, t.length]);
+});
+test('stripOwnNumber: only a leading "N." / "N)" / "N:" / "(N)" is removed', () => {
+  for (const [a, b] of [['1. Request credential', 'Request credential'], ['2) Return JWT', 'Return JWT'], ['3: Exchange', 'Exchange'], ['(4) Return', 'Return'], ['12 - Go', 'Go']]) assert.equal(stripOwnNumber(a), b);
+  for (const k of ['2024 roadmap', '3 retries', 'v2 API', '1.5 GB', '1.', 'POST /v1']) assert.equal(stripOwnNumber(k), k);
+});
+test('numbered: an author number on an edge label is dropped from the drawn label and from the Activity sentence', () => {
+  const r = mermaidToArch('flowchart LR\na -->|"1. Request credential / identity token"| b\nb -->|"2) Return token"| a', { numbered: true });
+  assert.equal(r.block.edges[0].label, '1 Request credential / identity token');
+  assert.equal(r.block.edges[1].label, '2 Return token');
+  assert.doesNotMatch(r.textSteps.map((s) => s.activity).join('\n'), /\d\.|\d\)/);
+  assert.equal(r.textSteps[0].label, 'Request credential / identity token');
+  const plain = mermaidToArch('flowchart LR\na -->|"1. Request"| b', {});
+  assert.equal(plain.block.edges[0].label, '1. Request', 'not numbered: the author label is left alone');
+});
+test('hygiene: stray punctuation at the end of the first <br/> line is dropped; sentences never end in , or &', () => {
+  const g1 = parseMermaid('flowchart LR\na["Validate Token Signature,<br/>Issuer & Expiration"] -->|"Map claims &"| b').graph;
+  assert.equal(g1.nodes[0].label, 'Validate Token Signature');
+  assert.equal(g1.nodes[0].sub, 'Issuer & Expiration');
+  for (const t of ['Keep-', 'One;', 'Two:', 'Three &', 'Four -']) assert.doesNotMatch(parseMermaid(`flowchart LR\na["${t}<br/>x"] --> b`).graph.nodes[0].label, /[,;:&-]$/);
+  const r = mermaidToArch('flowchart LR\na -->|"Map claims,"| b\nb -->|"Send tokens &"| a');
+  for (const s of r.textSteps) assert.doesNotMatch(s.activity, /[,&]\s*(\(.*\))?$/);
+});
+test('warnings: one merged line per kind of cut; labels that fit on two lines give none', () => {
+  const huge = Array.from({ length: 14 }, (_, i) => 'segment' + i).join(' ');   // longer than two lines
+  const src = 'flowchart LR\n' + [1, 2, 3].map((i) => `n${i}["${huge}"] -->|"${huge}"| m${i}["m${i}"]`).join('\n') + '\nsubgraph g1["' + 'G'.repeat(45) + '"]\n  m1\nend\nsubgraph g2["' + 'H'.repeat(50) + '"]\n  m2\nend';
+  const r = mermaidToArch(src, { numbered: true });
+  const cut = r.warnings.filter((w) => /longer than|cut/.test(w));
+  assert.equal(cut.filter((w) => /^Edges /.test(w)).length, 1);
+  assert.match(cut.find((w) => /^Edges /.test(w)), /^Edges 1, 2 and 3 have labels longer than the atom can show on two lines; they were cut \(the Steps table has the full text\)\.$/);
+  assert.equal(cut.filter((w) => /^Nodes /.test(w)).length, 1);
+  assert.equal(cut.filter((w) => /^Groups /.test(w)).length, 1);
+  assert.match(cut.find((w) => /^Groups /.test(w)), /^Groups "g1" and "g2" have titles longer than 40 characters; they were cut\.$/);
+  assert.ok(!r.warnings.some((w) => /step number pushes/.test(w)));
+  const one = mermaidToArch('flowchart LR\na -->|"' + huge + '"| b');
+  assert.ok(one.warnings.includes('Edge 1 has a label longer than the atom can show on two lines; it was cut (the Steps table has the full text).'));
+  const fits = mermaidToArch('flowchart LR\na["' + 'word '.repeat(14).trim() + '"] -->|"' + 'word '.repeat(18).trim() + '"| b', { numbered: true });
+  assert.deepEqual(fits.warnings.filter((w) => /longer than|cut/.test(w)), []);
+});
+test('long edge labels: two lines in the block, within the per-line limit, the router reserves the two-line box', () => {
+  const r = mermaidToArch('flowchart LR\na -->|"Return short-lived GCP Service Account Access Token"| b');
+  const e = r.block.edges[0];
+  assert.ok(e.label && e.label2 && e.label.length <= 48 && e.label2.length <= 48);
+  assert.equal(e.label + ' ' + e.label2, 'Return short-lived GCP Service Account Access Token');
+  assert.deepEqual(validateBlock(r.block), []);
+  const one = edgeLabelSize('abc def', 17), two = edgeLabelSize('abc\ndef', 17);
+  assert.ok(two.h > one.h * 1.7, 'a two-line label box is about twice as tall');
+  assert.ok(two.w < one.w, 'and as wide as its longer line only');
+  const lr = r.layout.routes && r.layout.routes[0];
+  if (lr && lr.label) assert.ok(lr.label.h >= two.h * 0 + edgeLabelSize(e.label + '\n' + e.label2, r.block.size).h - 1);
+});
+test('long node labels: split over label and sub when there is no sub; cut (merged warning) when there is one', () => {
+  const r = mermaidToArch('flowchart LR\na["Workload Identity Federation token exchange service"] --> b');
+  const n = r.block.nodes[0];
+  assert.ok(n.sub && n.label.length <= 40 && n.sub.length <= 40);
+  assert.equal(n.label + ' ' + n.sub, 'Workload Identity Federation token exchange service');
+  assert.deepEqual(r.warnings.filter((w) => /longer than|cut/.test(w)), []);
+  const hasSub = mermaidToArch('flowchart LR\na["' + 'Workload Identity Federation token exchange service' + '<br/>with a sub"] --> b');
+  assert.ok(hasSub.warnings.some((w) => /^Node "a" has a label longer than/.test(w)));
+});
+test('backward compatibility: a graph with no long labels gives the same block as before (no label2, no extra fields)', () => {
+  for (const f of examples) {
+    const r = mermaidToArch(readFileSync(join(EX, f), 'utf8'), {});
+    for (const e of r.block.edges) if (e.label2 !== undefined) assert.ok(e.label.length <= 48 && e.label2.length <= 48);
+  }
+  const r = mermaidToArch('flowchart LR\na -->|short| b');
+  assert.ok(!('label2' in r.block.edges[0]));
+  assert.ok(!('sub' in r.block.nodes[0]));
 });

@@ -29,7 +29,8 @@ export const LEAD_VERBS = Object.freeze({
 const plain = (t) => String(t).replace(/:\/\//g, ' ').replace(/\s*:\s*/g, ', ').replace(/\s*(?:->|-->|=>|→)\s*/g, ' to ').replace(/\s+/g, ' ').trim();
 // a node label inside a sentence: lower-case words, except acronyms and camelCase names (ADK, A2UI, AG-UI, postMessage)
 const keep = (w) => /[A-Z]/.test(w.slice(1)) || /^[A-Z0-9]{2,}/.test(w);
-const inSentence = (label) => plain(label).split(' ').map((w) => (keep(w) ? w : w.toLowerCase())).join(' ');
+const dangling = (t) => String(t).replace(/[\s,;:&\-–—]+$/, '');   // a label cut at a <br/> can end in a comma or an ampersand
+const inSentence = (label) => plain(dangling(label)).split(' ').map((w) => (keep(w) ? w : w.toLowerCase())).join(' ');
 
 // forward: ("X sends <what> to Y"), a reply to an earlier edge in the other direction ("X returns <what> to Y"),
 // a verb phrase ("X types prompt into the Y"), both ways ("X and Y exchange <what>")

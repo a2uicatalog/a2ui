@@ -23,9 +23,12 @@ export function nodeBox(n, s) {
   const nw = Math.max(Math.round(0.76 * nh + textW + 0.34 * nh), Math.round(5.2 * s));
   return { w: nw, h: nh };
 }
+// an edge label is one or two lines (the lines of `text` are separated by a newline); the box is as wide as the longer line
+export function edgeLabelLines(text) { return String(text).split('\n').slice(0, 2); }
 export function edgeLabelSize(text, s) {
-  const t = Math.min(String(text).length, LIMITS.edgeLabel);
-  return { w: Math.round(t * (s - 4) * CHAR_MONO + 12), h: Math.round((s - 4) * 1.15 + 6) };
+  const ls = edgeLabelLines(text);
+  const t = Math.min(Math.max(...ls.map((l) => l.length)), LIMITS.edgeLabel);
+  return { w: Math.round(t * (s - 4) * CHAR_MONO + 12), h: Math.round((s - 4) * 1.15 * ls.length + 6) };
 }
 export function groupLabelWidth(label, s) {
   const t = Math.min(String(label).length, LIMITS.groupLabel);
@@ -352,7 +355,8 @@ export function labelRect(P, text, s) {
   const lx = 0.25 * P[0][0] + 0.5 * P[1][0] + 0.25 * P[2][0];
   const ly = 0.25 * P[0][1] + 0.5 * P[1][1] + 0.25 * P[2][1] - 10;
   const fs = s - 4;
-  return { x: lx - sz.w / 2, y: ly - fs * 0.85 - 2, w: sz.w, h: sz.h };
+  // two lines grow upwards from the baseline of the curve's label (the atom puts the second line where the one line would be)
+  return { x: lx - sz.w / 2, y: ly - fs * 0.85 - 2 - (edgeLabelLines(text).length - 1) * fs * 1.15, w: sz.w, h: sz.h };
 }
 const overlap = (a, b) => a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
 const inside = (p, b, m = 0) => p[0] > b.x - m && p[0] < b.x + b.w + m && p[1] > b.y - m && p[1] < b.y + b.h + m;

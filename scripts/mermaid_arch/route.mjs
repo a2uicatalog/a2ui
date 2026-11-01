@@ -417,9 +417,9 @@ function placeLabels(graph, layout, routes, glabels, s, warnings, chips = {}) {
       const pts = r.points, m = Math.floor(pts.length / 2);
       const mx = (pts[m - 1][0] + pts[m][0]) / 2, my = (pts[m - 1][1] + pts[m][1]) / 2;
       best = { c: { x: mx - sz.w / 2, y: my - sz.h / 2, w: sz.w, h: sz.h }, hard: 1, soft: 0, cost: 1e9 };
-      warnings.push(`edge ${k + 1}: its label "${e.label}" does not fit on a straight stretch of the route; it sits on a bend. Shorten the label.`);
+      warnings.push(`edge ${k + 1}: its label "${e.label.replace(/\n/g, " ")}" does not fit on a straight stretch of the route; it sits on a bend. Shorten the label.`);
     } else if (best.hard) {
-      warnings.push(`edge ${k + 1}: the label "${e.label}" overlaps a box or another label (no free place was found). Shorten it or give the diagram more room.`);
+      warnings.push(`edge ${k + 1}: the label "${e.label.replace(/\n/g, " ")}" overlaps a box or another label (no free place was found). Shorten it or give the diagram more room.`);
     }
     const c = best.c;
     r.label = { x: c.x, y: c.y, w: c.w, h: c.h };

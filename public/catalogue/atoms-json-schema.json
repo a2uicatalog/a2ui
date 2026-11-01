@@ -43540,6 +43540,9 @@
                 "label": {
                   "type": "string"
                 },
+                "label2": {
+                  "type": "string"
+                },
                 "style": {
                   "type": "string",
                   "enum": [

@@ -220,9 +220,6 @@ function validateGraph(g) {
     if (groupIds.has(gr.id)) errors.push(`group ${i + 1}: id "${gr.id}" is used twice; group ids must be unique`);
     groupIds.add(gr.id);
     if (typeof gr.label !== 'string' || !gr.label.trim()) errors.push(`group ${i + 1} ("${gr.id}"): needs a label`);
-    else if (gr.label.length > LIMITS.groupLabel) {
-      warnings.push(`group "${gr.id}": label is ${gr.label.length} characters; the atom shows at most ${LIMITS.groupLabel}, so it will be cut. Shorten it.`);
-    }
   });
 
   // nodes
@@ -236,12 +233,6 @@ function validateGraph(g) {
     if (ids.has(n.id)) errors.push(`${where}${nm}: id "${n.id}" is used twice; node ids must be unique`);
     ids.add(n.id);
     if (typeof n.label !== 'string' || !n.label.trim()) errors.push(`${where}${nm} ("${n.id}"): needs a label`);
-    else if (n.label.length > LIMITS.label) {
-      warnings.push(`node "${n.id}": label is ${n.label.length} characters; the atom shows at most ${LIMITS.label}, so it will be cut. Shorten it or move detail into the sub-label.`);
-    }
-    if (n.sub !== undefined && String(n.sub).length > LIMITS.sub) {
-      warnings.push(`node "${n.id}": sub-label is ${String(n.sub).length} characters; the atom shows at most ${LIMITS.sub}.`);
-    }
     if (n.kind !== undefined && !KINDS.includes(n.kind)) {
       errors.push(`${where}node "${n.id}": kind "${n.kind}" is not one of ${KINDS.join(', ')}` + (resolveKind(n.kind) ? ` (did you mean "${resolveKind(n.kind)}"?)` : hint(n.kind, KINDS)));
     }
@@ -267,9 +258,6 @@ function validateGraph(g) {
     if (e.from === e.to) { errors.push(`${where}${nm}: "${e.from}" points at itself; the atom cannot draw self-loops. Remove the edge or add a second node.`); return; }
     if (e.style !== undefined && !STYLES.includes(e.style)) {
       errors.push(`${where}${nm}: style "${e.style}" is not one of ${STYLES.join(', ')}`);
-    }
-    if (e.label !== undefined && String(e.label).length > LIMITS.edgeLabel) {
-      warnings.push(`${nm}: label is ${String(e.label).length} characters; the atom shows at most ${LIMITS.edgeLabel}.`);
     }
     touched.add(e.from); touched.add(e.to);
   });
@@ -340,6 +328,120 @@ function validateGraph(g) {
     warnings.push(`title is ${String(g.title).length} characters; the atom keeps at most ${LIMITS.title} for the accessible name.`);
   }
   return { errors, warnings };
+}
+
+// ---- labels.mjs
+// Label wrapping and label hygiene for the converter. Pure ES module.
+//
+// The atom shows a node label (max 40) with an optional second line (`sub`, max 40), and an edge label (max 48) with an
+// optional second line (`label2`, max 48). A longer text is wrapped here at a word boundary near the middle, so words are
+// no longer lost; only a text that cannot fit on two lines is cut (with an ellipsis, and one merged warning).
+// Lengths are counted in UTF-16 units (JS .length), the strictest count the Python and Apps Script twins can see; a
+// split never lands inside a surrogate pair.
+
+const MIN_SIDE = 4;
+const squash = (s) => String(s).replace(/\s+/g, ' ').trim();
+
+// text -> {lines: [line1] | [line1, line2], cut: boolean}; every line is at most `max` units
+function wrapLabel(text, max) {
+  const raw = String(text).trim();
+  if (raw.length <= max) return { lines: [raw], cut: false };     // fits on one line: untouched, so existing output is byte-identical
+  const t = squash(raw);
+  if (t.length <= max) return { lines: [t], cut: false };
+  const cps = Array.from(t);
+  const pre = [0];                       // pre[i] = UTF-16 length of the first i code points
+  cps.forEach((c, i) => pre.push(pre[i] + c.length));
+  const total = pre[cps.length];
+  if (total <= 2 * max) {
+    // 1. a space that leaves both halves within the limit and closest to the middle
+    let best = -1, bestGap = Infinity;
+    for (let i = 1; i < cps.length - 1; i++) {
+      if (cps[i] !== ' ') continue;
+      const l = pre[i], r = total - pre[i + 1];
+      if (l < MIN_SIDE || r < MIN_SIDE) continue;       // never strand a step number or a short word on a line of its own
+      if (l <= max && r <= max && Math.abs(l - r) < bestGap) { best = i; bestGap = Math.abs(l - r); }
+    }
+    if (best >= 0) return { lines: [cps.slice(0, best).join(''), cps.slice(best + 1).join('')], cut: false };
+    // 2. one long word, or no spaces (CJK): split inside the text, as near the middle as the limits allow
+    let at = -1, gap = Infinity;
+    for (let i = 1; i < cps.length; i++) {
+      const l = pre[i], r = total - pre[i];
+      if (l <= max && r <= max && Math.abs(l - r) < gap) { at = i; gap = Math.abs(l - r); }
+    }
+    if (at > 0) return { lines: [cps.slice(0, at).join('').trimEnd(), cps.slice(at).join('').trimStart()], cut: false };
+  }
+  // 3. too long for two lines: fill the first line at a word boundary, cut the rest
+  let at = -1;
+  for (let i = 1; i < cps.length; i++) if (cps[i] === ' ' && pre[i] <= max) at = i;
+  if (at < 0) { at = 0; while (at + 1 < cps.length && pre[at + 1] <= max) at++; }
+  const l1 = cps.slice(0, at).join('').trimEnd(), rest = cps.slice(at).join('').trimStart();
+  return { lines: [l1, clipText(rest, max)], cut: true };
+}
+
+function clipText(str, max) {
+  const t = squash(str);
+  if (t.length <= max) return t;
+  const cps = Array.from(t);
+  let n = 0, i = 0;
+  while (i < cps.length && n + cps[i].length <= max - 1) { n += cps[i].length; i++; }
+  return cps.slice(0, i).join('').trimEnd() + '…';
+}
+
+// an edge label the author numbered themselves ("1. Request", "2) Return", "3: Go", "(4) x"): the part after the number, or the label
+const OWN_NUMBER = /^\(?\d{1,3}\s*(?:[.):]|-(?=\s))\s+(?=\S)/;
+function stripOwnNumber(label) {
+  const s = String(label ?? '');
+  return OWN_NUMBER.test(s.trimStart()) ? s.trimStart().replace(OWN_NUMBER, '') : s;
+}
+
+// trailing punctuation that is left over when a label was split on <br/> ("Validate Token Signature,")
+const stripDangling = (s) => String(s).replace(/[\s,;:&\-–—]+$/, '');
+
+const nameList = (xs) => (xs.length < 2 ? xs.join('') : xs.slice(0, -1).join(', ') + ' and ' + xs[xs.length - 1]);
+
+// graph (+ whether the edge labels get a step number) -> what the atom will be given
+//   nodes: id -> {label, sub}, edges: index -> {text (lines joined by \n), lines}, edgeLabels: the author's labels without their own number,
+//   warnings: at most one line each for nodes, sub-labels, edges and group titles
+function planLabels(graph, { numbered = false, stepNo = null } = {}) {
+  const nodeCut = [], subCut = [], edgeCut = [], groupCut = [];
+  const nodes = new Map();
+  for (const n of graph.nodes) {
+    let label = squash(n.label), sub = n.sub ? squash(n.sub) : '';
+    if (label.length > LIMITS.label) {
+      if (!sub) {
+        const w = wrapLabel(label, LIMITS.label);
+        label = w.lines[0]; sub = w.lines[1] || '';
+        if (w.cut) nodeCut.push(n.id);
+      } else { label = clipText(label, LIMITS.label); nodeCut.push(n.id); }
+    }
+    if (sub.length > LIMITS.sub) { sub = clipText(sub, LIMITS.sub); if (!nodeCut.includes(n.id)) subCut.push(n.id); }
+    nodes.set(n.id, { label, sub });
+  }
+  const edgeLabels = graph.edges.map((e) => (numbered && e.label ? stripOwnNumber(e.label) : e.label));
+  const edges = graph.edges.map((e, i) => {
+    const base = edgeLabels[i];
+    const full = numbered ? String(stepNo[i]) + (base ? ' ' + base : '') : base;
+    if (!full) return { text: base, lines: [] };
+    const w = wrapLabel(full, LIMITS.edgeLabel);
+    if (w.cut) edgeCut.push(i + 1);
+    return { text: w.lines.join('\n'), lines: w.lines };
+  });
+  for (const gr of graph.groups || []) if (String(gr.label).length > LIMITS.groupLabel) groupCut.push(gr.id);
+
+  const warnings = [];
+  if (nodeCut.length) {
+    warnings.push(`${nodeCut.length === 1 ? 'Node' : 'Nodes'} ${nameList(nodeCut.map((x) => `"${x}"`))} ${nodeCut.length === 1 ? 'has a label' : 'have labels'} longer than the atom can show (${LIMITS.label} characters, or ${LIMITS.label * 2} on two lines when there is no sub-label); ${nodeCut.length === 1 ? 'it was' : 'they were'} cut (the Steps table has the full text).`);
+  }
+  if (subCut.length) {
+    warnings.push(`${subCut.length === 1 ? 'Node' : 'Nodes'} ${nameList(subCut.map((x) => `"${x}"`))} ${subCut.length === 1 ? 'has a sub-label' : 'have sub-labels'} longer than ${LIMITS.sub} characters; ${subCut.length === 1 ? 'it was' : 'they were'} cut.`);
+  }
+  if (edgeCut.length) {
+    warnings.push(`${edgeCut.length === 1 ? 'Edge' : 'Edges'} ${nameList(edgeCut.map(String))} ${edgeCut.length === 1 ? 'has a label' : 'have labels'} longer than the atom can show on two lines; ${edgeCut.length === 1 ? 'it was' : 'they were'} cut (the Steps table has the full text).`);
+  }
+  if (groupCut.length) {
+    warnings.push(`${groupCut.length === 1 ? 'Group' : 'Groups'} ${nameList(groupCut.map((x) => `"${x}"`))} ${groupCut.length === 1 ? 'has a title' : 'have titles'} longer than ${LIMITS.groupLabel} characters; ${groupCut.length === 1 ? 'it was' : 'they were'} cut.`);
+  }
+  return { nodes, edges, edgeLabels, warnings };
 }
 
 // ---- schedule.mjs
@@ -436,7 +538,8 @@ const LEAD_VERBS = Object.freeze({
 const plain = (t) => String(t).replace(/:\/\//g, ' ').replace(/\s*:\s*/g, ', ').replace(/\s*(?:->|-->|=>|→)\s*/g, ' to ').replace(/\s+/g, ' ').trim();
 // a node label inside a sentence: lower-case words, except acronyms and camelCase names (ADK, A2UI, AG-UI, postMessage)
 const keep = (w) => /[A-Z]/.test(w.slice(1)) || /^[A-Z0-9]{2,}/.test(w);
-const inSentence = (label) => plain(label).split(' ').map((w) => (keep(w) ? w : w.toLowerCase())).join(' ');
+const dangling = (t) => String(t).replace(/[\s,;:&\-–—]+$/, '');   // a label cut at a <br/> can end in a comma or an ampersand
+const inSentence = (label) => plain(dangling(label)).split(' ').map((w) => (keep(w) ? w : w.toLowerCase())).join(' ');
 
 // forward: ("X sends <what> to Y"), a reply to an earlier edge in the other direction ("X returns <what> to Y"),
 // a verb phrase ("X types prompt into the Y"), both ways ("X and Y exchange <what>")
@@ -574,7 +677,10 @@ function tidy(p) {
 function splitLabel(raw) {
   const parts = stripQuotes(raw).split(/<br\s*\/?>/i).map(tidy).filter(Boolean);
   if (!parts.length) return { label: '' };
-  return parts.length === 1 ? { label: parts[0] } : { label: parts[0], sub: parts.slice(1).join(' ') };
+  if (parts.length === 1) return { label: parts[0] };
+  // the first line often ends where the author broke the line ("Validate Token Signature,"): drop that stray punctuation
+  const first = parts[0].replace(/[\s,;:&\-–—]+$/, '') || parts[0];
+  return { label: first, sub: parts.slice(1).join(' ') };
 }
 
 function cleanText(raw) {
@@ -1430,9 +1536,9 @@ function placeLabels(graph, layout, routes, glabels, s, warnings, chips = {}) {
       const pts = r.points, m = Math.floor(pts.length / 2);
       const mx = (pts[m - 1][0] + pts[m][0]) / 2, my = (pts[m - 1][1] + pts[m][1]) / 2;
       best = { c: { x: mx - sz.w / 2, y: my - sz.h / 2, w: sz.w, h: sz.h }, hard: 1, soft: 0, cost: 1e9 };
-      warnings.push(`edge ${k + 1}: its label "${e.label}" does not fit on a straight stretch of the route; it sits on a bend. Shorten the label.`);
+      warnings.push(`edge ${k + 1}: its label "${e.label.replace(/\n/g, " ")}" does not fit on a straight stretch of the route; it sits on a bend. Shorten the label.`);
     } else if (best.hard) {
-      warnings.push(`edge ${k + 1}: the label "${e.label}" overlaps a box or another label (no free place was found). Shorten it or give the diagram more room.`);
+      warnings.push(`edge ${k + 1}: the label "${e.label.replace(/\n/g, " ")}" overlaps a box or another label (no free place was found). Shorten it or give the diagram more room.`);
     }
     const c = best.c;
     r.label = { x: c.x, y: c.y, w: c.w, h: c.h };
@@ -1545,9 +1651,12 @@ function nodeBox(n, s) {
   const nw = Math.max(Math.round(0.76 * nh + textW + 0.34 * nh), Math.round(5.2 * s));
   return { w: nw, h: nh };
 }
+// an edge label is one or two lines (the lines of `text` are separated by a newline); the box is as wide as the longer line
+function edgeLabelLines(text) { return String(text).split('\n').slice(0, 2); }
 function edgeLabelSize(text, s) {
-  const t = Math.min(String(text).length, LIMITS.edgeLabel);
-  return { w: Math.round(t * (s - 4) * CHAR_MONO + 12), h: Math.round((s - 4) * 1.15 + 6) };
+  const ls = edgeLabelLines(text);
+  const t = Math.min(Math.max(...ls.map((l) => l.length)), LIMITS.edgeLabel);
+  return { w: Math.round(t * (s - 4) * CHAR_MONO + 12), h: Math.round((s - 4) * 1.15 * ls.length + 6) };
 }
 function groupLabelWidth(label, s) {
   const t = Math.min(String(label).length, LIMITS.groupLabel);
@@ -1874,7 +1983,8 @@ function labelRect(P, text, s) {
   const lx = 0.25 * P[0][0] + 0.5 * P[1][0] + 0.25 * P[2][0];
   const ly = 0.25 * P[0][1] + 0.5 * P[1][1] + 0.25 * P[2][1] - 10;
   const fs = s - 4;
-  return { x: lx - sz.w / 2, y: ly - fs * 0.85 - 2, w: sz.w, h: sz.h };
+  // two lines grow upwards from the baseline of the curve's label (the atom puts the second line where the one line would be)
+  return { x: lx - sz.w / 2, y: ly - fs * 0.85 - 2 - (edgeLabelLines(text).length - 1) * fs * 1.15, w: sz.w, h: sz.h };
 }
 const overlap = (a, b) => a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
 const inside = (p, b, m = 0) => p[0] > b.x - m && p[0] < b.x + b.w + m && p[1] > b.y - m && p[1] < b.y + b.h + m;
@@ -2195,6 +2305,7 @@ function commonMetrics(graph, lay, chips = {}) {
 
 
 
+
 const r2 = (x) => Math.round(x * 100) / 100;
 const r4 = (x) => Math.round(x * 10000) / 10000;
 // the atom clamps every dur to 0.01-1 of the film, so a very long film cannot have very short windows
@@ -2213,15 +2324,18 @@ function compileGraph(graph, opts = {}) {
   const pace = opts.pace || graph.pace || 'normal';
   const duration = opts.duration !== undefined ? opts.duration : graph.duration;
 
-  // ---- step numbers (shown only when numbered) and the edge labels the atom will draw
+  // ---- step numbers (shown only when numbered), then the labels the atom will draw: long ones are wrapped onto two lines
+  // (a node's second line is its sub; an edge's is label2), and one warning per kind says what could not fit even so
   const stepNo = numbered ? assignSteps(graph).steps : null;
-  const drawn = graph.edges.map((e, i) => {
-    if (!numbered) return e.label;
-    const full = String(stepNo[i]) + (e.label ? ' ' + e.label : '');
-    if (full.length > LIMITS.edgeLabel) warnings.push(`edge ${i + 1}: the step number pushes the label to ${full.length} characters; the atom shows at most ${LIMITS.edgeLabel}, so it is cut. Shorten the label.`);
-    return full;
-  });
-  const g2 = { ...graph, edges: graph.edges.map((e, i) => ({ ...e, label: drawn[i] })) };
+  const plan = planLabels(graph, { numbered, stepNo });
+  warnings.push(...plan.warnings);
+  const drawn = plan.edges.map((x) => x.text);
+  const edgeText = plan.edgeLabels;           // the author's edge labels (without a number the author typed themselves when numbered)
+  const g2 = {
+    ...graph,
+    nodes: graph.nodes.map((n) => { const p = plan.nodes.get(n.id); const o = { ...n, label: p.label }; if (p.sub) o.sub = p.sub; else delete o.sub; return o; }),
+    edges: graph.edges.map((e, i) => ({ ...e, label: drawn[i] })),
+  };
 
   const lay = layoutGraph(g2, opts);
   if (!lay.fits) throw new ArchError([`the diagram does not fit in the atom's 2000 x 2000 frame even at the smallest text size; shorten the labels or split the diagram`]);
@@ -2255,7 +2369,7 @@ function compileGraph(graph, opts = {}) {
     return ka - kb || a - b;
   });
   const lab = (id) => gnode.get(id).label;
-  const sentence = graph.edges.map((e, i) => activity(lab(e.from), lab(e.to), e.label, { style: e.style, both: e.both, reply: graph.edges.some((o, j) => j !== i && o.from === e.to && o.to === e.from) && graph.edges.findIndex((o) => o.from === e.to && o.to === e.from) < i }));
+  const sentence = graph.edges.map((e, i) => activity(lab(e.from), lab(e.to), edgeText[i], { style: e.style, both: e.both, reply: graph.edges.some((o, j) => j !== i && o.from === e.to && o.to === e.from) && graph.edges.findIndex((o) => o.from === e.to && o.to === e.from) < i }));
   // ---- each chip's ride, from the length of its edge's route and the length of its text (so every chip moves at one apparent speed)
   const longSide = Math.max(W, H);
   const pathLen = (ei) => {
@@ -2282,8 +2396,9 @@ function compileGraph(graph, opts = {}) {
   const nodeAt = new Map(sortedNodes.map((n, k) => [n.id, 0.3 + (sortedNodes.length > 1 ? (k * 0.4) / (sortedNodes.length - 1) : 0)]));
   const nodes = graph.nodes.map((gn) => {
     const b = byId.get(gn.id);
-    const o = { id: gn.id, kind: gn.kind || 'server', label: clip(gn.label, LIMITS.label) };
-    if (gn.sub) o.sub = clip(gn.sub, LIMITS.sub);
+    const pn = plan.nodes.get(gn.id);
+    const o = { id: gn.id, kind: gn.kind || 'server', label: clip(pn.label, LIMITS.label) };
+    if (pn.sub) o.sub = clip(pn.sub, LIMITS.sub);
     o.x = r2(((b.x + b.w / 2) / W) * 100); o.y = r2(((b.y + b.h / 2) / H) * 100);
     o.w = r2(clamp((b.w / W) * 100, 4, 100)); o.h = r2(clamp((b.h / H) * 100, 4, 100));
     o.at = r4(nodeAt.get(gn.id) / D); o.dur = pd(NODE_DUR, D);
@@ -2295,7 +2410,9 @@ function compileGraph(graph, opts = {}) {
   const edges = graph.edges.map((e, i) => {
     const st = sched.schedule[stepOf.get(i)];
     const o = { from: e.from, to: e.to };
-    if (drawn[i]) o.label = clip(drawn[i], LIMITS.edgeLabel);
+    const dl = plan.edges[i].lines;
+    if (dl.length) o.label = clip(dl[0], LIMITS.edgeLabel);
+    if (dl.length > 1) o.label2 = clip(dl[1], LIMITS.edgeLabel);
     o.style = e.style === 'sync' || e.style === undefined ? 'solid' : 'dashed';
     if (e.both) o.both = true;
     const rt = lay.routes && lay.routes[i];
@@ -2362,14 +2479,14 @@ function compileGraph(graph, opts = {}) {
 
   const steps = numbered ? order.map((ei, k) => {
     const e = graph.edges[ei];
-    const o = { step: stepNo[ei], from: lab(e.from), to: lab(e.to), label: e.label || '', style: e.style || 'sync', activity: sentence[ei] };
+    const o = { step: stepNo[ei], from: lab(e.from), to: lab(e.to), label: edgeText[ei] || '', style: e.style || 'sync', activity: sentence[ei] };
     if (e.relation) o.relation = e.relation;
     return o;
   }) : [];
   // text alternative: every edge (full sentence) in playing order, and every message, always present, numbered or not
   const textSteps = order.map((ei, k) => {
     const e = graph.edges[ei];
-    const o = { step: numbered ? stepNo[ei] : k + 1, from: lab(e.from), to: lab(e.to), label: e.label || '', style: e.style || 'sync', activity: sentence[ei] };
+    const o = { step: numbered ? stepNo[ei] : k + 1, from: lab(e.from), to: lab(e.to), label: edgeText[ei] || '', style: e.style || 'sync', activity: sentence[ei] };
     if (e.relation) o.relation = e.relation;
     return o;
   });
@@ -2541,6 +2658,7 @@ function validateBlock(b) {
     }
     if (e.label_at !== undefined && !(e.label_at.x >= 0 && e.label_at.x <= 100 && e.label_at.y >= 0 && e.label_at.y <= 100)) errs.push(`edge ${i} label_at outside the frame`);
     if (e.label && e.label.length > 48) errs.push(`edge ${i} label too long`);
+    if (e.label2 !== undefined && (!e.label || e.label2.length > 48)) errs.push(`edge ${i} label2 too long or without a label`);
     if (e.at < 0 || e.at > 1 || e.dur < 0.01 || e.dur > 1 || e.at + e.dur > 1.0001) errs.push(`edge ${i} timing outside 0-1`);
   });
   msgs.forEach((m, i) => {

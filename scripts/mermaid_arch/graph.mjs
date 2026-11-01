@@ -160,9 +160,6 @@ export function validateGraph(g) {
     if (groupIds.has(gr.id)) errors.push(`group ${i + 1}: id "${gr.id}" is used twice; group ids must be unique`);
     groupIds.add(gr.id);
     if (typeof gr.label !== 'string' || !gr.label.trim()) errors.push(`group ${i + 1} ("${gr.id}"): needs a label`);
-    else if (gr.label.length > LIMITS.groupLabel) {
-      warnings.push(`group "${gr.id}": label is ${gr.label.length} characters; the atom shows at most ${LIMITS.groupLabel}, so it will be cut. Shorten it.`);
-    }
   });
 
   // nodes
@@ -176,12 +173,6 @@ export function validateGraph(g) {
     if (ids.has(n.id)) errors.push(`${where}${nm}: id "${n.id}" is used twice; node ids must be unique`);
     ids.add(n.id);
     if (typeof n.label !== 'string' || !n.label.trim()) errors.push(`${where}${nm} ("${n.id}"): needs a label`);
-    else if (n.label.length > LIMITS.label) {
-      warnings.push(`node "${n.id}": label is ${n.label.length} characters; the atom shows at most ${LIMITS.label}, so it will be cut. Shorten it or move detail into the sub-label.`);
-    }
-    if (n.sub !== undefined && String(n.sub).length > LIMITS.sub) {
-      warnings.push(`node "${n.id}": sub-label is ${String(n.sub).length} characters; the atom shows at most ${LIMITS.sub}.`);
-    }
     if (n.kind !== undefined && !KINDS.includes(n.kind)) {
       errors.push(`${where}node "${n.id}": kind "${n.kind}" is not one of ${KINDS.join(', ')}` + (resolveKind(n.kind) ? ` (did you mean "${resolveKind(n.kind)}"?)` : hint(n.kind, KINDS)));
     }
@@ -207,9 +198,6 @@ export function validateGraph(g) {
     if (e.from === e.to) { errors.push(`${where}${nm}: "${e.from}" points at itself; the atom cannot draw self-loops. Remove the edge or add a second node.`); return; }
     if (e.style !== undefined && !STYLES.includes(e.style)) {
       errors.push(`${where}${nm}: style "${e.style}" is not one of ${STYLES.join(', ')}`);
-    }
-    if (e.label !== undefined && String(e.label).length > LIMITS.edgeLabel) {
-      warnings.push(`${nm}: label is ${String(e.label).length} characters; the atom shows at most ${LIMITS.edgeLabel}.`);
     }
     touched.add(e.from); touched.add(e.to);
   });

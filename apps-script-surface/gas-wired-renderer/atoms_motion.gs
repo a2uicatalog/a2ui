@@ -3246,12 +3246,12 @@ _RENDERERS['motion_arch'] = function(b) {
     var e = edges[i] && typeof edges[i] === 'object' ? edges[i] : {}, f = box[_moId(e.from)], t2 = box[_moId(e.to)];
     curves.push(null);
     if (!f || !t2 || f === t2) continue;
-    var poly = _moArchPoly(e.points, W, H), P, d, ha, hz, lx, ly;
+    var poly = _moArchPoly(e.points, W, H), P, d, ha, hz, lx, ly, l2up = (size - 4) * 1.15;   // l2up: with a second line (label2), how far the first line sits above the baseline the label would have had
     if (poly) {
       P = poly; d = _moArchRounded(P, rad); ha = P[1]; hz = P[P.length - 2];
       curves[i] = ['l', P];
       var lat = _moArchXY(e.label_at, W, H);
-      if (lat) { lx = lat[0]; ly = lat[1] + (size - 4) * 0.35; }
+      if (lat) { lx = lat[0]; ly = lat[1] + (size - 4) * 0.35; l2up = (size - 4) * 0.575; }
       else { var mi = Math.floor(P.length / 2); lx = (P[mi - 1][0] + P[mi][0]) / 2; ly = (P[mi - 1][1] + P[mi][1]) / 2 - 10; }
     } else {
       var dx = t2[0] - f[0], dy = t2[1] - f[1], len = Math.sqrt(dx * dx + dy * dy), bend = _ffNum(e.curve, 0, -100, 100, 0) / 100;
@@ -3264,8 +3264,10 @@ _RENDERERS['motion_arch'] = function(b) {
       lx = 0.25 * P[0][0] + 0.5 * P[1][0] + 0.25 * P[2][0]; ly = 0.25 * P[0][1] + 0.5 * P[1][1] + 0.25 * P[2][1] - 10;
     }
     var col = _moInk(e, 'color', acc2), dashed = _moOwn(_MO_ARCH_STYLE, e.style, 'solid') === 'dashed', both = e.both === true;
-    var at = _moArchT(e.at, 0.3 + i * 0.05), dur = _moArchD(e.dur, 0.1), el = _moStr(e.label, 48);
-    var ltxt = el ? '<text x="' + _moArchN(lx) + '" y="' + _moArchN(ly) + '" text-anchor="middle" style="font-family:' + _JOURNEY_MONO + ';font-size:' + (size - 4) + 'px;fill:' + ink + ';paint-order:stroke;stroke:' + paper + ';stroke-width:6px;stroke-linejoin:round;opacity:var(--u);">' + _esc(el) + '</text>' : '';
+    var at = _moArchT(e.at, 0.3 + i * 0.05), dur = _moArchD(e.dur, 0.1), el = _moStr(e.label, 48), el2 = el ? _moStr(e.label2, 48) : '';
+    var ltxt = el2 ? '<text x="' + _moArchN(lx) + '" y="' + _moArchN(ly - l2up) + '" text-anchor="middle" style="font-family:' + _JOURNEY_MONO + ';font-size:' + (size - 4) + 'px;fill:' + ink + ';paint-order:stroke;stroke:' + paper + ';stroke-width:6px;stroke-linejoin:round;opacity:var(--u);">'
+      + '<tspan x="' + _moArchN(lx) + '">' + _esc(el) + '</tspan><tspan x="' + _moArchN(lx) + '" dy="' + _moArchN((size - 4) * 1.15) + '">' + _esc(el2) + '</tspan></text>'
+      : (el ? '<text x="' + _moArchN(lx) + '" y="' + _moArchN(ly) + '" text-anchor="middle" style="font-family:' + _JOURNEY_MONO + ';font-size:' + (size - 4) + 'px;fill:' + ink + ';paint-order:stroke;stroke:' + paper + ';stroke-width:6px;stroke-linejoin:round;opacity:var(--u);">' + _esc(el) + '</text>' : '');
     if (poly && ltxt) { late += '<g style="' + win(at, dur) + '">' + ltxt + '</g>'; ltxt = ''; }   // a routed edge's label is drawn after the message chips, so a chip never hides it
     out += '<g style="' + win(at, dur) + '">'
       + '<path d="' + d + '" pathLength="1" style="fill:none;stroke:' + col + ';stroke-width:2.2;stroke-linecap:round;'

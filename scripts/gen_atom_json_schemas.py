@@ -135,7 +135,7 @@ FIELD_OVERRIDES = {
             "label": {"type": "string"}, "sub": {"type": "string"},
             "x": _PCT, "y": _PCT, "w": _PCT, "h": _PCT, "at": _P01, "dur": _P01}, ["id", "label", "x", "y"])},
         "edges": {"type": "array", "maxItems": 16, "items": _obj({
-            "from": {"type": "string"}, "to": {"type": "string"}, "label": {"type": "string"},
+            "from": {"type": "string"}, "to": {"type": "string"}, "label": {"type": "string"}, "label2": {"type": "string"},
             "style": {"type": "string", "enum": ["solid", "dashed"]}, "both": {"type": "boolean"},
             "curve": _num(-100, 100),
             "points": {"type": "array", "maxItems": 10, "items": _XY},

@@ -5,95 +5,95 @@
    "type": "motion_timeline",
    "title": "A2A: one agent hands work to another",
    "aspect": "9:16",
-   "duration": 30.249,
+   "duration": 29.089,
    "loop": true,
    "autoplay": true,
    "controls": true,
    "theme": "dark",
-   "poster": 29.75,
+   "poster": 28.59,
    "blocks": [
     {
      "type": "motion_arch",
      "label": "A2A: one agent hands work to another",
-     "w": 994,
-     "h": 298,
-     "size": 17,
+     "w": 1026,
+     "h": 311,
+     "size": 18,
      "nodes": [
       {
        "id": "user",
        "kind": "user",
        "label": "User",
-       "x": 6.94,
-       "y": 57.26,
-       "w": 9.46,
-       "h": 17.11,
-       "at": 0.0143,
+       "x": 7.12,
+       "y": 50,
+       "w": 9.75,
+       "h": 17.36,
+       "at": 0.0149,
        "dur": 0.011
       },
       {
        "id": "orch",
        "kind": "app",
        "label": "Orchestrator on ADK",
-       "x": 27.72,
-       "y": 60.95,
-       "w": 23.84,
-       "h": 17.11,
-       "at": 0.0165,
+       "x": 28.41,
+       "y": 53.38,
+       "w": 24.46,
+       "h": 17.36,
+       "at": 0.0172,
        "dur": 0.011
       },
       {
        "id": "card",
        "kind": "store",
        "label": "Agent Card",
-       "x": 53.27,
-       "y": 43.84,
-       "w": 15.19,
-       "h": 17.11,
-       "at": 0.0099,
+       "x": 55.56,
+       "y": 28.62,
+       "w": 15.59,
+       "h": 17.36,
+       "at": 0.0103,
        "dur": 0.011
       },
       {
        "id": "remote",
        "kind": "server",
        "label": "Remote agent",
-       "x": 71.63,
-       "y": 43.84,
-       "w": 17.1,
-       "h": 17.11,
-       "at": 0.0121,
+       "x": 55.56,
+       "y": 53.38,
+       "w": 17.54,
+       "h": 17.36,
+       "at": 0.0195,
        "dur": 0.011
       },
       {
        "id": "task",
        "kind": "store",
        "label": "Task state",
-       "x": 54.38,
-       "y": 78.06,
-       "w": 15.19,
-       "h": 17.11,
-       "at": 0.0187,
+       "x": 88.01,
+       "y": 28.62,
+       "w": 15.59,
+       "h": 17.36,
+       "at": 0.0126,
        "dur": 0.011
       },
       {
        "id": "rllm",
        "kind": "model",
        "label": "Remote LLM",
-       "x": 71.78,
-       "y": 78.06,
-       "w": 15.19,
-       "h": 17.11,
-       "at": 0.0209,
+       "x": 88.01,
+       "y": 53.38,
+       "w": 15.59,
+       "h": 17.36,
+       "at": 0.0218,
        "dur": 0.011
       },
       {
        "id": "rtools",
        "kind": "tool",
        "label": "MCP tools",
-       "x": 88.73,
-       "y": 78.06,
-       "w": 14.29,
-       "h": 17.11,
-       "at": 0.0231,
+       "x": 88.01,
+       "y": 78.14,
+       "w": 14.62,
+       "h": 17.36,
+       "at": 0.0241,
        "dur": 0.011
       }
      ],
@@ -104,61 +104,60 @@
        "label": "1 asks",
        "style": "solid",
        "curve": -100,
-       "at": 0.0331,
-       "dur": 0.0165
+       "at": 0.0344,
+       "dur": 0.0172
       },
       {
        "from": "orch",
        "to": "card",
        "label": "2 discovers skills",
        "style": "solid",
-       "curve": -80,
-       "at": 0.1058,
-       "dur": 0.0165
+       "curve": -100,
+       "at": 0.11,
+       "dur": 0.0172
       },
       {
        "from": "orch",
        "to": "remote",
        "label": "3 SendStreamingMessage JSON-RPC",
        "style": "solid",
-       "curve": -100,
-       "at": 0.2077,
-       "dur": 0.0165
+       "curve": 80,
+       "at": 0.2222,
+       "dur": 0.0172
       },
       {
        "from": "remote",
        "to": "task",
        "label": "4 creates task",
        "style": "solid",
-       "at": 0.3611,
-       "dur": 0.0165
+       "at": 0.3357,
+       "dur": 0.0172
       },
       {
        "from": "remote",
        "to": "rllm",
        "label": "5 prompt",
        "style": "solid",
-       "curve": -65,
-       "at": 0.452,
-       "dur": 0.0165
+       "at": 0.4302,
+       "dur": 0.0172
       },
       {
        "from": "remote",
        "to": "rtools",
        "label": "6 tool calls",
        "style": "solid",
-       "curve": 50,
-       "at": 0.5521,
-       "dur": 0.0165
+       "at": 0.5342,
+       "dur": 0.0172
       },
       {
        "from": "remote",
        "to": "orch",
-       "label": "7 status, artifacts, A2UI in a DataPart, over S…",
+       "label": "7 status, artifacts, A2UI",
+       "label2": "in a DataPart, over SSE",
        "style": "dashed",
-       "curve": 80,
-       "at": 0.6611,
-       "dur": 0.0165
+       "curve": 50,
+       "at": 0.6476,
+       "dur": 0.0172
       },
       {
        "from": "orch",
@@ -166,26 +165,26 @@
        "label": "8 answer",
        "style": "solid",
        "curve": -100,
-       "at": 0.8339,
-       "dur": 0.0165
+       "at": 0.8273,
+       "dur": 0.0172
       }
      ],
      "groups": [
       {
        "label": "Our system",
-       "x": 13.88,
-       "y": 39.31,
-       "w": 27.67,
-       "h": 35.91,
+       "x": 14.23,
+       "y": 32.15,
+       "w": 28.36,
+       "h": 35.69,
        "at": 0,
        "dur": 0.011
       },
       {
        "label": "Partner system",
-       "x": 43.76,
-       "y": 22.19,
-       "w": 54.02,
-       "h": 70.13,
+       "x": 44.83,
+       "y": 7.4,
+       "w": 52.92,
+       "h": 85.21,
        "at": 0,
        "dur": 0.011
       }
@@ -194,20 +193,20 @@
       {
        "edge": 1,
        "text": "GET agent card",
-       "at": 0.124,
-       "dur": 0.0739
+       "at": 0.1289,
+       "dur": 0.083
       },
       {
        "edge": 2,
        "text": "SendStreamingMessage",
-       "at": 0.2259,
-       "dur": 0.1253
+       "at": 0.2411,
+       "dur": 0.08
       },
       {
        "edge": 6,
        "text": "artifact",
-       "at": 0.6793,
-       "dur": 0.1253
+       "at": 0.6665,
+       "dur": 0.08
       }
      ],
      "id": "arch",
@@ -215,7 +214,7 @@
       "x": 2,
       "y": 1.88,
       "w": 96,
-      "h": 16.19,
+      "h": 16.37,
       "z": 1
      }
     },
@@ -231,7 +230,7 @@
      "color": "#9ca5b1",
      "place": {
       "x": 3,
-      "y": 19.94,
+      "y": 20.12,
       "w": 94,
       "z": 2
      }
@@ -245,7 +244,7 @@
      "radius": 8,
      "place": {
       "x": 1.8,
-      "y": 22.6,
+      "y": 22.77,
       "w": 96.4,
       "h": 2.5,
       "z": 1
@@ -262,7 +261,7 @@
      "reveal": "fade",
      "place": {
       "x": 3,
-      "y": 22.91,
+      "y": 23.09,
       "w": 94,
       "z": 2
      }
@@ -278,7 +277,7 @@
      "reveal": "fade",
      "place": {
       "x": 3,
-      "y": 25.56,
+      "y": 25.74,
       "w": 94,
       "z": 2
      }
@@ -294,7 +293,7 @@
      "reveal": "fade",
      "place": {
       "x": 3,
-      "y": 28.22,
+      "y": 28.4,
       "w": 94,
       "z": 2
      }
@@ -310,7 +309,7 @@
      "reveal": "fade",
      "place": {
       "x": 3,
-      "y": 30.88,
+      "y": 31.06,
       "w": 94,
       "z": 2
      }
@@ -326,7 +325,7 @@
      "reveal": "fade",
      "place": {
       "x": 3,
-      "y": 33.53,
+      "y": 33.71,
       "w": 94,
       "z": 2
      }
@@ -342,7 +341,7 @@
      "reveal": "fade",
      "place": {
       "x": 3,
-      "y": 36.19,
+      "y": 36.37,
       "w": 94,
       "z": 2
      }
@@ -358,7 +357,7 @@
      "reveal": "fade",
      "place": {
       "x": 3,
-      "y": 38.85,
+      "y": 39.02,
       "w": 94,
       "z": 2
      }
@@ -374,7 +373,7 @@
      "reveal": "fade",
      "place": {
       "x": 3,
-      "y": 41.5,
+      "y": 41.68,
       "w": 94,
       "z": 2
      }
@@ -389,7 +388,7 @@
        "p": 0
       },
       {
-       "t": 30.249,
+       "t": 29.089,
        "p": 1,
        "ease": "linear"
       }
@@ -439,11 +438,11 @@
        "opacity": 0
       },
       {
-       "t": 6.284,
+       "t": 6.464,
        "opacity": 0
       },
       {
-       "t": 6.58,
+       "t": 6.76,
        "opacity": 1,
        "ease": "standard"
       }
@@ -457,11 +456,11 @@
        "opacity": 0
       },
       {
-       "t": 10.924,
+       "t": 9.764,
        "opacity": 0
       },
       {
-       "t": 11.22,
+       "t": 10.06,
        "opacity": 1,
        "ease": "standard"
       }
@@ -475,11 +474,11 @@
        "opacity": 0
       },
       {
-       "t": 13.674,
+       "t": 12.514,
        "opacity": 0
       },
       {
-       "t": 13.97,
+       "t": 12.81,
        "opacity": 1,
        "ease": "standard"
       }
@@ -493,11 +492,11 @@
        "opacity": 0
       },
       {
-       "t": 16.699,
+       "t": 15.539,
        "opacity": 0
       },
       {
-       "t": 17,
+       "t": 15.84,
        "opacity": 1,
        "ease": "standard"
       }
@@ -511,11 +510,11 @@
        "opacity": 0
       },
       {
-       "t": 19.999,
+       "t": 18.839,
        "opacity": 0
       },
       {
-       "t": 20.3,
+       "t": 19.14,
        "opacity": 1,
        "ease": "standard"
       }
@@ -529,11 +528,11 @@
        "opacity": 0
       },
       {
-       "t": 25.224,
+       "t": 24.064,
        "opacity": 0
       },
       {
-       "t": 25.52,
+       "t": 24.36,
        "opacity": 1,
        "ease": "standard"
       }
@@ -544,12 +543,12 @@
      "keys": [
       {
        "t": 0,
-       "y": 22.6,
+       "y": 22.77,
        "opacity": 0
       },
       {
        "t": 1,
-       "y": 22.6,
+       "y": 22.77,
        "opacity": 0,
        "ease": "hold"
       },
@@ -560,43 +559,43 @@
       },
       {
        "t": 3.2,
-       "y": 25.25,
+       "y": 25.43,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 6.284,
-       "y": 27.91,
+       "t": 6.464,
+       "y": 28.09,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 10.924,
-       "y": 30.56,
+       "t": 9.764,
+       "y": 30.74,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 13.674,
-       "y": 33.22,
+       "t": 12.514,
+       "y": 33.4,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 16.699,
-       "y": 35.88,
+       "t": 15.539,
+       "y": 36.06,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 19.999,
-       "y": 38.53,
+       "t": 18.839,
+       "y": 38.71,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 25.224,
-       "y": 41.19,
+       "t": 24.064,
+       "y": 41.37,
        "opacity": 0.22,
        "ease": "hold"
       }

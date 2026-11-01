@@ -62,6 +62,25 @@ def strings(x):
             yield from strings(y)
 
 
+def with_wrapped(payload, texts):
+    """A long node label is drawn on two lines (label + sub) and a long edge label too (label + label2): count the joined text as present."""
+    stack = [payload]
+    while stack:
+        x = stack.pop()
+        if isinstance(x, dict):
+            if x.get("type") == "motion_arch":
+                for n in x.get("nodes", []):
+                    if n.get("sub"):
+                        texts.add(f"{n['label']} {n['sub']}")
+                for e in x.get("edges", []):
+                    if e.get("label2"):
+                        texts.add(f"{e['label']} {e['label2']}")
+            stack.extend(x.values())
+        elif isinstance(x, list):
+            stack.extend(x)
+    return texts
+
+
 def test_manifest_matches_corpus():
     assert sorted(MANIFEST) == FILES, (
         f"files without an entry: {sorted(set(FILES) - set(MANIFEST))}; entries without a file: {sorted(set(MANIFEST) - set(FILES))}")
@@ -121,11 +140,11 @@ def test_payload_sound(results, name):
     for needle in NEEDLES:
         assert needle not in low, f"{name}: {needle!r} survived into the payload"
     # every node label is in the payload, or is cut and the cut is warned about
-    texts = set(strings(payload))
+    texts = with_wrapped(payload, set(strings(payload)))
     for label in r["nodeLabels"]:
         if label in texts:
             continue
-        assert len(label) > 40 and any("will be cut" in w or "at most 40" in w for w in r["warnings"]), \
+        assert len(label) > 40 and any(re.search(r"Nodes? .* (was|were) cut", w) for w in r["warnings"]), \
             f"{name}: label {label!r} is missing from the payload and no cut warning was given"
 
 
@@ -134,7 +153,8 @@ def test_labels_intact(results, name):
     r = results[name]
     if not r["ok"]:
         pytest.skip("outcome gap")
-    texts = set(strings(json.loads(r["payload"])))
+    payload = json.loads(r["payload"])
+    texts = with_wrapped(payload, set(strings(payload)))
     want = MANIFEST[name]["labels"]
 
     def check():

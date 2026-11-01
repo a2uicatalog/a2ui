@@ -175,25 +175,32 @@
   }
  },
  "20_long_labels.mmd": {
+  "outcome": "ok",
+  "counts": {
+   "nodes": 2,
+   "edges": 1,
+   "groups": 0
+  },
+  "labels": [
+   "A very long node label that goes well beyond the limit",
+   "Short"
+  ]
+ },
+ "20b_labels_beyond_two_lines.mmd": {
   "outcome": "ok_with_warnings",
   "counts": {
    "nodes": 2,
    "edges": 1,
    "groups": 0
   },
-  "warning": "will be cut",
+  "warning": "cut",
   "labels": [
-   "A very long node label that goes well beyond the forty character node limit for sure",
    "Short"
   ],
   "known_gap": [
    {
-    "kind": "labels",
-    "reason": "node label cut to 40 characters with an ellipsis (warned), edge label to 48; full text only survives in the step table"
-   },
-   {
     "kind": "readability",
-    "reason": "two long labels push the text to about 8 px on a phone column; wrapping long labels onto two lines would keep it legible"
+    "reason": "a node label of 140 characters needs two full lines of 40, so the diagram is wide and the text is about 9 px on a phone column; that much text belongs in the sub-label or the Steps table, and the converter says so in its merged warning"
    }
   ]
  },

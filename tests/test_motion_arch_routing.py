@@ -44,6 +44,12 @@ CASES = [
         messages=[{"edge": 0, "text": "x"}, {"edge": 1, "text": "y", "back": True}, {"edge": 2, "text": "z"}, {"edge": 2, "text": "w", "back": True}]),
     blk(w=600, h=300, size=12, radius=14),
     blk(edges=[{"from": "a", "to": "a", "points": PTS}, {"from": "a", "to": "nope", "points": PTS}]),
+    # label2: the second line of an edge label (2026-11)
+    edge(points=PTS, label2="second line"), edge(points=PTS, label2="second line", label_at={"x": 50, "y": 50}), edge(label2="on a curve"),
+    edge(label2="on a curve", curve=40), edge(label2=""), edge(label2=None), edge(label2=5), edge(label2={"a": 1}), edge(label2="x" * 80, label="y" * 80),
+    edge(label2="<b>&\"'</b>", label="a<b"), edge(label2="  padded  ", points=PTS, size=9), blk(size=30, edges=[{"from": "a", "to": "b", "label": "l1", "label2": "l2", "points": PTS}]),
+    blk(edges=[{"from": "a", "to": "b", "label2": "orphan second line", "points": PTS}]),
+    edge(label2="\u65e5\u672c\u8a9e x", label="\u65e5\u672c\u8a9e" * 16, points=PTS),
 ]
 
 
@@ -196,3 +202,26 @@ def test_converter_output_validates_against_the_published_strict_schema():
     assert n >= 10
     bad = {"type": "motion_arch", "nodes": [], "edges": [{"from": "a", "to": "b", "points": "x"}], "radius": 99}
     assert len(_check(bad, schema)) == 2          # the checker does reject a string `points` and an out-of-range radius
+
+
+def test_label2_is_a_second_line_under_the_label_and_old_payloads_are_unchanged():
+    one = _py(edge(points=PTS))
+    assert _py(edge(points=PTS, label2="")) == one and _py(edge(points=PTS, label2=None)) == one
+    assert _py(edge(label2="")) == _py(edge()) and _py(edge(label2="x")).count("<tspan") == 2     # on a curve too
+    no_label = dict(edge(points=PTS)["edges"][0])
+    del no_label["label"]
+    assert _py(blk(edges=[dict(no_label, label2="orphan")])) == _py(blk(edges=[no_label]))   # label2 without a label is ignored
+    two = _py(edge(points=PTS, label2="line two"))
+    assert two.count("<tspan") == 2 and ">go</tspan>" in two and ">line two</tspan>" in two
+    assert two.count("paint-order:stroke") == one.count("paint-order:stroke")       # one text element: the halo sits behind both lines
+    assert "<tspan" not in one
+
+
+def test_label2_is_documented_in_the_schema_text():
+    import yaml
+    from pathlib import Path
+    s = yaml.safe_load((Path(__file__).parent.parent / "atoms" / "schema.yaml").read_text(encoding="utf-8"))
+    atom = [a for a in s["blocks"] if a.get("type") == "motion_arch"][0]
+    assert "label2?" in atom["fields"]["edges"] and "second line" in atom["fields"]["edges"]
+    e = _published_arch_schema()["properties"]["edges"]["items"]["properties"]
+    assert e["label2"]["type"] == "string"

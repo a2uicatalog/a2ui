@@ -99,7 +99,10 @@ function tidy(p) {
 function splitLabel(raw) {
   const parts = stripQuotes(raw).split(/<br\s*\/?>/i).map(tidy).filter(Boolean);
   if (!parts.length) return { label: '' };
-  return parts.length === 1 ? { label: parts[0] } : { label: parts[0], sub: parts.slice(1).join(' ') };
+  if (parts.length === 1) return { label: parts[0] };
+  // the first line often ends where the author broke the line ("Validate Token Signature,"): drop that stray punctuation
+  const first = parts[0].replace(/[\s,;:&\-–—]+$/, '') || parts[0];
+  return { label: first, sub: parts.slice(1).join(' ') };
 }
 
 function cleanText(raw) {

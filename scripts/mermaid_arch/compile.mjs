@@ -3,6 +3,7 @@ import { ArchError, LIMITS, PACES, assignSteps } from './graph.mjs';
 import { layoutGraph } from './layout.mjs';
 import { buildSchedule, words, chipRide, paceRide, RIDE_FLOOR, LEAD_IN, HOLD, CHIP_START, CHIP_GAP, CHIP_TAIL } from './schedule.mjs';
 import { activity, rowText } from './activity.mjs';
+import { planLabels } from './labels.mjs';
 
 const r2 = (x) => Math.round(x * 100) / 100;
 const r4 = (x) => Math.round(x * 10000) / 10000;
@@ -22,15 +23,18 @@ export function compileGraph(graph, opts = {}) {
   const pace = opts.pace || graph.pace || 'normal';
   const duration = opts.duration !== undefined ? opts.duration : graph.duration;
 
-  // ---- step numbers (shown only when numbered) and the edge labels the atom will draw
+  // ---- step numbers (shown only when numbered), then the labels the atom will draw: long ones are wrapped onto two lines
+  // (a node's second line is its sub; an edge's is label2), and one warning per kind says what could not fit even so
   const stepNo = numbered ? assignSteps(graph).steps : null;
-  const drawn = graph.edges.map((e, i) => {
-    if (!numbered) return e.label;
-    const full = String(stepNo[i]) + (e.label ? ' ' + e.label : '');
-    if (full.length > LIMITS.edgeLabel) warnings.push(`edge ${i + 1}: the step number pushes the label to ${full.length} characters; the atom shows at most ${LIMITS.edgeLabel}, so it is cut. Shorten the label.`);
-    return full;
-  });
-  const g2 = { ...graph, edges: graph.edges.map((e, i) => ({ ...e, label: drawn[i] })) };
+  const plan = planLabels(graph, { numbered, stepNo });
+  warnings.push(...plan.warnings);
+  const drawn = plan.edges.map((x) => x.text);
+  const edgeText = plan.edgeLabels;           // the author's edge labels (without a number the author typed themselves when numbered)
+  const g2 = {
+    ...graph,
+    nodes: graph.nodes.map((n) => { const p = plan.nodes.get(n.id); const o = { ...n, label: p.label }; if (p.sub) o.sub = p.sub; else delete o.sub; return o; }),
+    edges: graph.edges.map((e, i) => ({ ...e, label: drawn[i] })),
+  };
 
   const lay = layoutGraph(g2, opts);
   if (!lay.fits) throw new ArchError([`the diagram does not fit in the atom's 2000 x 2000 frame even at the smallest text size; shorten the labels or split the diagram`]);
@@ -64,7 +68,7 @@ export function compileGraph(graph, opts = {}) {
     return ka - kb || a - b;
   });
   const lab = (id) => gnode.get(id).label;
-  const sentence = graph.edges.map((e, i) => activity(lab(e.from), lab(e.to), e.label, { style: e.style, both: e.both, reply: graph.edges.some((o, j) => j !== i && o.from === e.to && o.to === e.from) && graph.edges.findIndex((o) => o.from === e.to && o.to === e.from) < i }));
+  const sentence = graph.edges.map((e, i) => activity(lab(e.from), lab(e.to), edgeText[i], { style: e.style, both: e.both, reply: graph.edges.some((o, j) => j !== i && o.from === e.to && o.to === e.from) && graph.edges.findIndex((o) => o.from === e.to && o.to === e.from) < i }));
   // ---- each chip's ride, from the length of its edge's route and the length of its text (so every chip moves at one apparent speed)
   const longSide = Math.max(W, H);
   const pathLen = (ei) => {
@@ -91,8 +95,9 @@ export function compileGraph(graph, opts = {}) {
   const nodeAt = new Map(sortedNodes.map((n, k) => [n.id, 0.3 + (sortedNodes.length > 1 ? (k * 0.4) / (sortedNodes.length - 1) : 0)]));
   const nodes = graph.nodes.map((gn) => {
     const b = byId.get(gn.id);
-    const o = { id: gn.id, kind: gn.kind || 'server', label: clip(gn.label, LIMITS.label) };
-    if (gn.sub) o.sub = clip(gn.sub, LIMITS.sub);
+    const pn = plan.nodes.get(gn.id);
+    const o = { id: gn.id, kind: gn.kind || 'server', label: clip(pn.label, LIMITS.label) };
+    if (pn.sub) o.sub = clip(pn.sub, LIMITS.sub);
     o.x = r2(((b.x + b.w / 2) / W) * 100); o.y = r2(((b.y + b.h / 2) / H) * 100);
     o.w = r2(clamp((b.w / W) * 100, 4, 100)); o.h = r2(clamp((b.h / H) * 100, 4, 100));
     o.at = r4(nodeAt.get(gn.id) / D); o.dur = pd(NODE_DUR, D);
@@ -104,7 +109,9 @@ export function compileGraph(graph, opts = {}) {
   const edges = graph.edges.map((e, i) => {
     const st = sched.schedule[stepOf.get(i)];
     const o = { from: e.from, to: e.to };
-    if (drawn[i]) o.label = clip(drawn[i], LIMITS.edgeLabel);
+    const dl = plan.edges[i].lines;
+    if (dl.length) o.label = clip(dl[0], LIMITS.edgeLabel);
+    if (dl.length > 1) o.label2 = clip(dl[1], LIMITS.edgeLabel);
     o.style = e.style === 'sync' || e.style === undefined ? 'solid' : 'dashed';
     if (e.both) o.both = true;
     const rt = lay.routes && lay.routes[i];
@@ -171,14 +178,14 @@ export function compileGraph(graph, opts = {}) {
 
   const steps = numbered ? order.map((ei, k) => {
     const e = graph.edges[ei];
-    const o = { step: stepNo[ei], from: lab(e.from), to: lab(e.to), label: e.label || '', style: e.style || 'sync', activity: sentence[ei] };
+    const o = { step: stepNo[ei], from: lab(e.from), to: lab(e.to), label: edgeText[ei] || '', style: e.style || 'sync', activity: sentence[ei] };
     if (e.relation) o.relation = e.relation;
     return o;
   }) : [];
   // text alternative: every edge (full sentence) in playing order, and every message, always present, numbered or not
   const textSteps = order.map((ei, k) => {
     const e = graph.edges[ei];
-    const o = { step: numbered ? stepNo[ei] : k + 1, from: lab(e.from), to: lab(e.to), label: e.label || '', style: e.style || 'sync', activity: sentence[ei] };
+    const o = { step: numbered ? stepNo[ei] : k + 1, from: lab(e.from), to: lab(e.to), label: edgeText[ei] || '', style: e.style || 'sync', activity: sentence[ei] };
     if (e.relation) o.relation = e.relation;
     return o;
   });
@@ -350,6 +357,7 @@ export function validateBlock(b) {
     }
     if (e.label_at !== undefined && !(e.label_at.x >= 0 && e.label_at.x <= 100 && e.label_at.y >= 0 && e.label_at.y <= 100)) errs.push(`edge ${i} label_at outside the frame`);
     if (e.label && e.label.length > 48) errs.push(`edge ${i} label too long`);
+    if (e.label2 !== undefined && (!e.label || e.label2.length > 48)) errs.push(`edge ${i} label2 too long or without a label`);
     if (e.at < 0 || e.at > 1 || e.dur < 0.01 || e.dur > 1 || e.at + e.dur > 1.0001) errs.push(`edge ${i} timing outside 0-1`);
   });
   msgs.forEach((m, i) => {
