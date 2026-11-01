@@ -15,6 +15,8 @@
 // a right angle to the box and are long enough for the arrowhead. Parallel edges take neighbouring lanes because an
 // occupied lane is expensive; a request/response pair therefore comes out as two lanes side by side.
 //
+// (opts.chips, an optional {edgeIndex: chip text length}, keeps an edge's own label out of its chips' path; the converter does not use it,
+// because the atom draws a routed edge's label above the chips.)
 // Labels go on the longest free straight stretch: candidates sit above or below a horizontal stretch, left or right
 // of a vertical one, or on the line, and are checked against every box, group title, other label and other edge.
 // A label is never shortened here; if nothing is free it is placed where it collides least and a warning says so.
@@ -265,22 +267,47 @@ export function routeEdges(graph, layout, opts = {}) {
     routes[k] = { points: r.points, via: 'grid', label: null };
   }
 
-  placeLabels(graph, layout, routes, glabels, s, warnings);
-  return { routes, warnings, metrics: routeMetrics(graph, layout, routes, glabels, s) };
+  placeLabels(graph, layout, routes, glabels, s, warnings, opts.chips || {});
+  return { routes, warnings, metrics: routeMetrics(graph, layout, routes, glabels, s, opts.chips || {}) };
 }
 
 // ---------------------------------------------------------------- labels
 function segs(points) { const o = []; for (let i = 0; i + 1 < points.length; i++) o.push([points[i], points[i + 1]]); return o; }
 
-function placeLabels(graph, layout, routes, glabels, s, warnings) {
+// shortest distance from an axis-aligned segment to a rectangle (0 when they touch or overlap)
+function rectSegDist(r, a, b) {
+  const x0 = Math.min(a[0], b[0]), x1 = Math.max(a[0], b[0]), y0 = Math.min(a[1], b[1]), y1 = Math.max(a[1], b[1]);
+  const dx = Math.max(r.x - x1, 0, x0 - (r.x + r.w)), dy = Math.max(r.y - y1, 0, y0 - (r.y + r.h));
+  return Math.hypot(dx, dy);
+}
+
+// the area a message chip sweeps along an edge's route: the route's stretches grown by half the chip (28 px tall, as wide as its text)
+export function chipBands(graph, routes, chips, s) {
+  const out = [];
+  routes.forEach((r, k) => {
+    if (!r || !chips[k]) return;
+    const hw = (chips[k] * (s - 4) * 0.62 + 22) / 2, hh = 14;
+    segs(r.points).forEach(([a, b]) => {
+      const x0 = Math.min(a[0], b[0]), x1 = Math.max(a[0], b[0]), y0 = Math.min(a[1], b[1]), y1 = Math.max(a[1], b[1]);
+      out.push({ k, x: x0 - hw, y: y0 - hh, w: x1 - x0 + 2 * hw, h: y1 - y0 + 2 * hh });
+    });
+  });
+  return out;
+}
+
+function placeLabels(graph, layout, routes, glabels, s, warnings, chips = {}) {
   const boxes = layout.nodes;
   const placed = [];
   const allSegs = routes.map((r) => (r ? segs(r.points) : []));
   // longest labels first: they are the hardest to fit; ties by input order
   const order = graph.edges.map((e, i) => i).filter((i) => graph.edges[i].label && routes[i]).sort((a, b) => edgeLabelSize(graph.edges[b].label, s).w - edgeLabelSize(graph.edges[a].label, s).w || a - b);
   const gap = 3;
+  const bands = chipBands(graph, routes, chips, s);
   for (const k of order) {
     const e = graph.edges[k], sz = edgeLabelSize(e.label, s), r = routes[k];
+    // a message chip rides this edge: keep the label out of the chip's path (the chip is 28 px tall and as wide as its text)
+    const chipLen = chips[k] || 0, chipHalfW = chipLen ? (chipLen * (s - 4) * 0.62 + 22) / 2 : 0, chipHalfH = chipLen ? 14 : 0;
+    const gapH = chipLen ? chipHalfH + 3 : gap, gapV = chipLen ? chipHalfW + 3 : gap;
     const cands = [];
     segs(r.points).forEach(([a, b], si) => {
       const horiz = a[1] === b[1];
@@ -298,20 +325,21 @@ function placeLabels(graph, layout, routes, glabels, s, warnings) {
         const c = mid + d;
         if (horiz) {
           const x = c - sz.w / 2, y = a[1];
-          cands.push({ x, y: y - gap - sz.h, w: sz.w, h: sz.h, pref: 0, si, d, len });          // above
-          cands.push({ x, y: y + gap, w: sz.w, h: sz.h, pref: 1.5, si, d, len });               // below
-          cands.push({ x, y: y - sz.h / 2, w: sz.w, h: sz.h, pref: 4, si, d, len, on: true });  // on the line
+          cands.push({ x, y: y - gapH - sz.h, w: sz.w, h: sz.h, pref: 0, si, d, len, gp: gapH });          // above
+          cands.push({ x, y: y + gapH, w: sz.w, h: sz.h, pref: 1.5, si, d, len, gp: gapH });               // below
+          if (!chipLen) cands.push({ x, y: y - sz.h / 2, w: sz.w, h: sz.h, pref: 4, si, d, len, on: true });  // on the line
         } else {
           const y = c - sz.h / 2, xx = a[0];
-          cands.push({ x: xx + gap, y, w: sz.w, h: sz.h, pref: 0.5, si, d, len });
-          cands.push({ x: xx - gap - sz.w, y, w: sz.w, h: sz.h, pref: 1.5, si, d, len });
-          cands.push({ x: xx - sz.w / 2, y, w: sz.w, h: sz.h, pref: 5, si, d, len, on: true });
+          cands.push({ x: xx + gapV, y, w: sz.w, h: sz.h, pref: 0.5 + (chipLen ? 6 : 0), si, d, len, gp: gapV });
+          cands.push({ x: xx - gapV - sz.w, y, w: sz.w, h: sz.h, pref: 1.5 + (chipLen ? 6 : 0), si, d, len, gp: gapV });
+          if (!chipLen) cands.push({ x: xx - sz.w / 2, y, w: sz.w, h: sz.h, pref: 5, si, d, len, on: true });
         }
       }
     });
     let best = null;
     for (const c of cands) {
-      let hard = 0, soft = 0;
+      let hard = 0, soft = 0, chipHit = 0;
+      for (const bd of bands) if (rectsOverlap(c, bd)) chipHit++;
       for (const b of boxes) if (rectsOverlap(c, inflate(b, 2))) hard++;
       for (const t of glabels) if (rectsOverlap(c, inflate(t, 1))) hard++;
       for (const p of placed) if (rectsOverlap(c, inflate(p, 3))) hard++;
@@ -334,7 +362,12 @@ function placeLabels(graph, layout, routes, glabels, s, warnings) {
           }
         }
       }
-      const cost = hard * 1000 + soft * 60 + between * 25 + c.pref + Math.abs(c.d) * 0.08 - Math.min(c.len, 400) * 0.01;
+      // never closer to another edge than to its own line
+      let nearest = Infinity;
+      for (let q = 0; q < allSegs.length; q++) if (q !== k) for (const [a, b] of allSegs[q]) nearest = Math.min(nearest, rectSegDist(c, a, b));
+      const ownD = c.on ? 0 : (c.gp || gap);
+      const closer = nearest < ownD + 4 ? 1 : 0;
+      const cost = hard * 1000 + chipHit * 150 + soft * 200 + closer * 150 + between * 25 + c.pref + Math.abs(c.d) * 0.08 - Math.min(c.len, 400) * 0.01;
       if (!best || cost < best.cost - 1e-9) best = { c, cost, hard, soft };
     }
     if (!best) {
@@ -353,7 +386,7 @@ function placeLabels(graph, layout, routes, glabels, s, warnings) {
 }
 
 // ---------------------------------------------------------------- measuring (used for routed and for curved edges)
-export function routeMetrics(graph, layout, routes, glabels, s) {
+export function routeMetrics(graph, layout, routes, glabels, s, chips = {}) {
   const boxes = layout.nodes;
   const lines = routes.map((r) => (r ? r.points : null));
   let throughBoxes = 0, titleHits = 0, labelNode = 0, labelLabel = 0, labelTitle = 0, labelOnLine = 0, crossings = 0, bends = 0, length = 0;
@@ -395,7 +428,10 @@ export function routeMetrics(graph, layout, routes, glabels, s) {
     for (const [a, b] of segs(lines[i])) { for (const [c, d] of segs(lines[j])) if (axisCross(a, b, c, d) || diagCross(a, b, c, d)) { hit = true; break; } if (hit) break; }
     if (hit) crossings++;
   }
-  return { crossings, throughBoxes, titleHits, labelNode, labelLabel, labelTitle, labelOnLine, bends, length: Math.round(length) };
+  let labelChip = 0;
+  const bands = chipBands(graph, routes, chips, s);
+  for (const { rect } of L) if (bands.some((bd) => rectsOverlap(rect, bd))) labelChip++;
+  return { crossings, throughBoxes, titleHits, labelNode, labelLabel, labelTitle, labelOnLine, labelChip, bends, length: Math.round(length) };
 }
 
 // the same metrics for the atom's quadratic curves (stage 1), so the two modes can be compared like for like

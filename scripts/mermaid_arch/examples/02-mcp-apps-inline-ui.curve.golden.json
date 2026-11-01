@@ -16,7 +16,7 @@
      "y": 10.23,
      "w": 12.91,
      "h": 10.99,
-     "at": 0.0103,
+     "at": 0.0096,
      "dur": 0.011
     },
     {
@@ -27,7 +27,7 @@
      "y": 46.34,
      "w": 19.42,
      "h": 10.99,
-     "at": 0.0158,
+     "at": 0.0147,
      "dur": 0.011
     },
     {
@@ -38,7 +38,7 @@
      "y": 38.47,
      "w": 12.14,
      "h": 10.99,
-     "at": 0.013,
+     "at": 0.0121,
      "dur": 0.011
     },
     {
@@ -49,7 +49,7 @@
      "y": 54.2,
      "w": 28.54,
      "h": 10.99,
-     "at": 0.0185,
+     "at": 0.0172,
      "dur": 0.011
     },
     {
@@ -60,7 +60,7 @@
      "y": 86.11,
      "w": 33.79,
      "h": 10.99,
-     "at": 0.0212,
+     "at": 0.0198,
      "dur": 0.011
     },
     {
@@ -71,7 +71,7 @@
      "y": 86.11,
      "w": 32.52,
      "h": 10.99,
-     "at": 0.024,
+     "at": 0.0223,
      "dur": 0.011
     }
    ],
@@ -81,16 +81,16 @@
      "to": "host",
      "label": "asks",
      "style": "solid",
-     "at": 0.0343,
-     "dur": 0.0171
+     "at": 0.0319,
+     "dur": 0.0159
     },
     {
      "from": "host",
      "to": "llm",
      "label": "prompt + tools",
      "style": "solid",
-     "at": 0.1021,
-     "dur": 0.0171
+     "at": 0.095,
+     "dur": 0.0159
     },
     {
      "from": "llm",
@@ -98,16 +98,16 @@
      "label": "tool call",
      "style": "solid",
      "curve": 24,
-     "at": 0.2058,
-     "dur": 0.0171
+     "at": 0.2001,
+     "dur": 0.0159
     },
     {
      "from": "host",
      "to": "tool",
      "label": "tools/call",
      "style": "solid",
-     "at": 0.611,
-     "dur": 0.0171
+     "at": 0.612,
+     "dur": 0.0159
     },
     {
      "from": "tool",
@@ -115,24 +115,24 @@
      "label": "tool result",
      "style": "solid",
      "curve": 80,
-     "at": 0.7147,
-     "dur": 0.0171
+     "at": 0.7172,
+     "dur": 0.0159
     },
     {
      "from": "host",
      "to": "resource",
      "label": "resources/read",
      "style": "solid",
-     "at": 0.8372,
-     "dur": 0.0171
+     "at": 0.8399,
+     "dur": 0.0159
     },
     {
      "from": "host",
      "to": "frame",
      "label": "mounts HTML, sends tool result",
      "style": "solid",
-     "at": 0.3,
-     "dur": 0.0171
+     "at": 0.2965,
+     "dur": 0.0159
     },
     {
      "from": "frame",
@@ -140,16 +140,16 @@
      "label": "tools/call via postMessage",
      "style": "dashed",
      "curve": -24,
-     "at": 0.4131,
-     "dur": 0.0171
+     "at": 0.4105,
+     "dur": 0.0159
     },
     {
      "from": "frame",
      "to": "user",
      "label": "interactive UI",
      "style": "solid",
-     "at": 0.5262,
-     "dur": 0.0171
+     "at": 0.5244,
+     "dur": 0.0159
     }
    ],
    "groups": [
@@ -176,20 +176,20 @@
     {
      "edge": 2,
      "text": "tool call",
-     "at": 0.2246,
-     "dur": 0.0411
+     "at": 0.2177,
+     "dur": 0.0382
     },
     {
      "edge": 3,
      "text": "tools/call",
-     "at": 0.6299,
-     "dur": 0.0411
+     "at": 0.6295,
+     "dur": 0.0382
     },
     {
      "edge": 5,
      "text": "resources/read ui://",
-     "at": 0.8561,
-     "dur": 0.0411
+     "at": 0.8574,
+     "dur": 0.0382
     }
    ]
   }

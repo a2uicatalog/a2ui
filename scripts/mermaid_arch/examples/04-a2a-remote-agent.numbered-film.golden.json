@@ -4,97 +4,97 @@
   {
    "type": "motion_timeline",
    "title": "A2A: one agent hands work to another",
-   "aspect": "16:9",
-   "duration": 26.705,
+   "aspect": "9:16",
+   "duration": 28.85,
    "loop": true,
    "autoplay": true,
    "controls": true,
    "theme": "dark",
-   "poster": 26.21,
+   "poster": 28.35,
    "blocks": [
     {
      "type": "motion_arch",
      "label": "A2A: one agent hands work to another",
-     "w": 894,
-     "h": 768,
+     "w": 1033,
+     "h": 810,
      "size": 23,
      "nodes": [
       {
        "id": "user",
        "kind": "user",
        "label": "User",
-       "x": 43.9,
-       "y": 8.4,
-       "w": 14.21,
-       "h": 8.98,
-       "at": 0.0112,
-       "dur": 0.0112
+       "x": 47.73,
+       "y": 7.96,
+       "w": 12.29,
+       "h": 8.52,
+       "at": 0.0104,
+       "dur": 0.011
       },
       {
        "id": "orch",
        "kind": "app",
        "label": "Orchestrator on ADK",
-       "x": 43.9,
-       "y": 33.27,
-       "w": 35.91,
-       "h": 8.98,
-       "at": 0.0137,
-       "dur": 0.0112
+       "x": 47.73,
+       "y": 31.54,
+       "w": 31.07,
+       "h": 8.52,
+       "at": 0.0127,
+       "dur": 0.011
       },
       {
        "id": "card",
        "kind": "store",
        "label": "Agent Card",
-       "x": 19.02,
-       "y": 62.83,
-       "w": 22.93,
-       "h": 8.98,
-       "at": 0.0162,
-       "dur": 0.0112
+       "x": 26.19,
+       "y": 59.57,
+       "w": 19.85,
+       "h": 8.52,
+       "at": 0.015,
+       "dur": 0.011
       },
       {
        "id": "remote",
        "kind": "server",
        "label": "Remote agent",
-       "x": 19.02,
-       "y": 75.72,
-       "w": 25.73,
-       "h": 8.98,
-       "at": 0.0212,
-       "dur": 0.0112
+       "x": 26.19,
+       "y": 74.38,
+       "w": 22.27,
+       "h": 8.52,
+       "at": 0.0196,
+       "dur": 0.011
       },
       {
        "id": "task",
        "kind": "store",
        "label": "Task state",
-       "x": 70.19,
-       "y": 62.83,
-       "w": 22.93,
-       "h": 8.98,
-       "at": 0.0187,
-       "dur": 0.0112
+       "x": 70.47,
+       "y": 59.57,
+       "w": 19.85,
+       "h": 8.52,
+       "at": 0.0173,
+       "dur": 0.011
       },
       {
        "id": "rllm",
        "kind": "model",
        "label": "Remote LLM",
-       "x": 70.19,
-       "y": 75.72,
-       "w": 22.93,
-       "h": 8.98,
-       "at": 0.0237,
-       "dur": 0.0112
+       "x": 70.47,
+       "y": 74.38,
+       "w": 19.85,
+       "h": 8.52,
+       "at": 0.022,
+       "dur": 0.011
       },
       {
        "id": "rtools",
        "kind": "tool",
        "label": "MCP tools",
-       "x": 70.19,
-       "y": 88.61,
-       "w": 21.48,
-       "h": 8.98,
-       "at": 0.0262,
-       "dur": 0.0112
+       "x": 70.47,
+       "y": 89.2,
+       "w": 18.59,
+       "h": 8.52,
+       "at": 0.0243,
+       "dur": 0.011
       }
      ],
      "edges": [
@@ -105,20 +105,20 @@
        "style": "solid",
        "points": [
         {
-         "x": 43.34,
-         "y": 12.89
+         "x": 47.24,
+         "y": 12.22
         },
         {
-         "x": 43.34,
-         "y": 28.78
+         "x": 47.24,
+         "y": 27.28
         }
        ],
        "label_at": {
-        "x": 38.37,
-        "y": 20.83
+        "x": 42.93,
+        "y": 19.75
        },
-       "at": 0.0374,
-       "dur": 0.0187
+       "at": 0.0347,
+       "dur": 0.0173
       },
       {
        "from": "orch",
@@ -127,20 +127,20 @@
        "style": "solid",
        "points": [
         {
-         "x": 28.8,
-         "y": 37.76
+         "x": 34.66,
+         "y": 35.8
         },
         {
-         "x": 28.8,
-         "y": 58.33
+         "x": 34.66,
+         "y": 55.31
         }
        ],
        "label_at": {
-        "x": 15.94,
-        "y": 48.05
+        "x": 23.52,
+        "y": 45.56
        },
-       "at": 0.1116,
-       "dur": 0.0187
+       "at": 0.1109,
+       "dur": 0.0173
       },
       {
        "from": "orch",
@@ -149,24 +149,24 @@
        "style": "solid",
        "points": [
         {
-         "x": 34.62,
-         "y": 37.76
+         "x": 39.69,
+         "y": 35.8
         },
         {
-         "x": 34.62,
-         "y": 74.15
+         "x": 39.69,
+         "y": 71.91
         },
         {
-         "x": 31.88,
-         "y": 74.15
+         "x": 37.32,
+         "y": 71.91
         }
        ],
        "label_at": {
-        "x": 56.04,
-        "y": 48.93
+        "x": 21.15,
+        "y": 66.45
        },
-       "at": 0.2146,
-       "dur": 0.0187
+       "at": 0.2158,
+       "dur": 0.0173
       },
       {
        "from": "remote",
@@ -175,28 +175,28 @@
        "style": "solid",
        "points": [
         {
-         "x": 31.88,
-         "y": 74.15
+         "x": 37.32,
+         "y": 76.73
         },
         {
-         "x": 54.98,
-         "y": 74.15
+         "x": 57.31,
+         "y": 76.73
         },
         {
-         "x": 54.98,
-         "y": 64
+         "x": 57.31,
+         "y": 60.68
         },
         {
-         "x": 58.72,
-         "y": 64
+         "x": 60.55,
+         "y": 60.68
         }
        ],
        "label_at": {
-        "x": 44.74,
-        "y": 69.08
+        "x": 47.31,
+        "y": 78.83
        },
-       "at": 0.3278,
-       "dur": 0.0187
+       "at": 0.3302,
+       "dur": 0.0173
       },
       {
        "from": "remote",
@@ -205,20 +205,20 @@
        "style": "solid",
        "points": [
         {
-         "x": 31.88,
-         "y": 75.85
+         "x": 37.32,
+         "y": 75.12
         },
         {
-         "x": 58.72,
-         "y": 75.85
+         "x": 60.55,
+         "y": 75.12
         }
        ],
        "label_at": {
-        "x": 45.3,
-        "y": 78.06
+        "x": 48.94,
+        "y": 73.02
        },
-       "at": 0.4205,
-       "dur": 0.0187
+       "at": 0.4255,
+       "dur": 0.0173
       },
       {
        "from": "remote",
@@ -227,24 +227,24 @@
        "style": "solid",
        "points": [
         {
-         "x": 30.26,
-         "y": 80.21
+         "x": 35.91,
+         "y": 78.64
         },
         {
-         "x": 30.26,
-         "y": 86
+         "x": 35.91,
+         "y": 87.96
         },
         {
-         "x": 59.45,
-         "y": 86
+         "x": 61.18,
+         "y": 87.96
         }
        ],
        "label_at": {
-        "x": 44.85,
-        "y": 83.79
+        "x": 48.55,
+        "y": 85.86
        },
-       "at": 0.5235,
-       "dur": 0.0187
+       "at": 0.5303,
+       "dur": 0.0173
       },
       {
        "from": "remote",
@@ -253,28 +253,24 @@
        "style": "dashed",
        "points": [
         {
-         "x": 30.26,
-         "y": 71.22
+         "x": 37.32,
+         "y": 73.52
         },
         {
-         "x": 30.26,
-         "y": 69.08
+         "x": 40.95,
+         "y": 73.52
         },
         {
-         "x": 31.71,
-         "y": 69.08
-        },
-        {
-         "x": 31.71,
-         "y": 37.76
+         "x": 40.95,
+         "y": 35.8
         }
        ],
        "label_at": {
-        "x": 64.32,
-        "y": 53.42
+        "x": 69.17,
+        "y": 53.18
        },
-       "at": 0.6368,
-       "dur": 0.0187
+       "at": 0.6447,
+       "dur": 0.0173
       },
       {
        "from": "orch",
@@ -283,69 +279,69 @@
        "style": "solid",
        "points": [
         {
-         "x": 44.8,
-         "y": 28.78
+         "x": 48.5,
+         "y": 27.28
         },
         {
-         "x": 44.8,
-         "y": 12.89
+         "x": 48.5,
+         "y": 12.22
         }
        ],
        "label_at": {
-        "x": 51.06,
-        "y": 20.83
+        "x": 53.92,
+        "y": 19.75
        },
-       "at": 0.8221,
-       "dur": 0.0187
+       "at": 0.8258,
+       "dur": 0.0173
       }
      ],
      "radius": 13,
      "groups": [
       {
        "label": "Our system",
-       "x": 23.15,
-       "y": 23.57,
-       "w": 41.5,
-       "h": 17.19,
+       "x": 29.77,
+       "y": 22.35,
+       "w": 35.91,
+       "h": 16.3,
        "at": 0,
-       "dur": 0.0112
+       "dur": 0.011
       },
       {
        "label": "Partner system",
-       "x": 3.36,
-       "y": 53.13,
-       "w": 81.1,
-       "h": 42.97,
+       "x": 12.63,
+       "y": 50.37,
+       "w": 70.18,
+       "h": 45.93,
        "at": 0,
-       "dur": 0.0112
+       "dur": 0.011
       }
      ],
      "messages": [
       {
        "edge": 1,
        "text": "GET agent card",
-       "at": 0.1322,
-       "dur": 0.0449
+       "at": 0.13,
+       "dur": 0.0416
       },
       {
        "edge": 2,
        "text": "SendStreamingMessage",
-       "at": 0.2352,
-       "dur": 0.0449
+       "at": 0.2348,
+       "dur": 0.0416
       },
       {
        "edge": 6,
        "text": "artifact",
-       "at": 0.6574,
-       "dur": 0.0449
+       "at": 0.6638,
+       "dur": 0.0416
       }
      ],
      "id": "arch",
      "place": {
-      "x": 1.88,
-      "y": 7.05,
-      "w": 56.25,
-      "h": 85.91,
+      "x": 2,
+      "y": 1.88,
+      "w": 96,
+      "h": 42.34,
       "z": 1
      }
     },
@@ -353,16 +349,16 @@
      "type": "motion_text",
      "id": "head",
      "text": "STEP  ACTIVITY",
-     "size": 11,
+     "size": 15,
      "font": "mono",
      "weight": "bold",
      "mode": "block",
      "reveal": "fade",
      "color": "#9ca5b1",
      "place": {
-      "x": 60.94,
-      "y": 3.33,
-      "w": 37.19,
+      "x": 3,
+      "y": 46.09,
+      "w": 94,
       "z": 2
      }
     },
@@ -374,138 +370,138 @@
      "fill": "#8d98ff",
      "radius": 8,
      "place": {
-      "x": 59.74,
-      "y": 6.25,
-      "w": 39.59,
-      "h": 2.92,
+      "x": 1.8,
+      "y": 48.75,
+      "w": 96.4,
+      "h": 2.5,
       "z": 1
      }
     },
     {
      "type": "motion_text",
      "id": "row1",
-     "text": "*1*  User asks Orchestrator on ADK",
-     "size": 12,
+     "text": "*1*  User asks the orchestrator on ADK",
+     "size": 18,
      "font": "mono",
      "weight": "regular",
      "mode": "block",
      "reveal": "fade",
      "place": {
-      "x": 60.94,
-      "y": 6.81,
-      "w": 37.19,
+      "x": 3,
+      "y": 49.06,
+      "w": 94,
       "z": 2
      }
     },
     {
      "type": "motion_text",
      "id": "row2",
-     "text": "*2*  Orchestrator on ADK discovers skills from Agent Card",
-     "size": 12,
+     "text": "*2*  Orchestrator on ADK discovers skills from agent card",
+     "size": 18,
      "font": "mono",
      "weight": "regular",
      "mode": "block",
      "reveal": "fade",
      "place": {
-      "x": 60.94,
-      "y": 10,
-      "w": 37.19,
+      "x": 3,
+      "y": 51.72,
+      "w": 94,
       "z": 2
      }
     },
     {
      "type": "motion_text",
      "id": "row3",
-     "text": "*3*  Orchestrator on ADK → Remote agent: SendStreamingMessa…",
-     "size": 12,
+     "text": "*3*  Orchestrator on ADK sends SendStreamingMessage JSON-RP…",
+     "size": 18,
      "font": "mono",
      "weight": "regular",
      "mode": "block",
      "reveal": "fade",
      "place": {
-      "x": 60.94,
-      "y": 13.19,
-      "w": 37.19,
+      "x": 3,
+      "y": 54.37,
+      "w": 94,
       "z": 2
      }
     },
     {
      "type": "motion_text",
      "id": "row4",
-     "text": "*4*  Remote agent creates task in Task state",
-     "size": 12,
+     "text": "*4*  Remote agent creates task in the task state",
+     "size": 18,
      "font": "mono",
      "weight": "regular",
      "mode": "block",
      "reveal": "fade",
      "place": {
-      "x": 60.94,
-      "y": 16.39,
-      "w": 37.19,
+      "x": 3,
+      "y": 57.03,
+      "w": 94,
       "z": 2
      }
     },
     {
      "type": "motion_text",
      "id": "row5",
-     "text": "*5*  Remote agent sends the prompt to Remote LLM",
-     "size": 12,
+     "text": "*5*  Remote agent sends the prompt to the remote LLM",
+     "size": 18,
      "font": "mono",
      "weight": "regular",
      "mode": "block",
      "reveal": "fade",
      "place": {
-      "x": 60.94,
-      "y": 19.58,
-      "w": 37.19,
+      "x": 3,
+      "y": 59.69,
+      "w": 94,
       "z": 2
      }
     },
     {
      "type": "motion_text",
      "id": "row6",
-     "text": "*6*  Remote agent sends the tool calls to MCP tools",
-     "size": 12,
+     "text": "*6*  Remote agent sends the tool calls to the MCP tools",
+     "size": 18,
      "font": "mono",
      "weight": "regular",
      "mode": "block",
      "reveal": "fade",
      "place": {
-      "x": 60.94,
-      "y": 22.78,
-      "w": 37.19,
+      "x": 3,
+      "y": 62.34,
+      "w": 94,
       "z": 2
      }
     },
     {
      "type": "motion_text",
      "id": "row7",
-     "text": "*7*  Remote agent → Orchestrator on ADK: status, artifacts,…",
-     "size": 12,
+     "text": "*7*  Remote agent sends status, artifacts, A2UI in a DataPa…",
+     "size": 18,
      "font": "mono",
      "weight": "regular",
      "mode": "block",
      "reveal": "fade",
      "place": {
-      "x": 60.94,
-      "y": 25.97,
-      "w": 37.19,
+      "x": 3,
+      "y": 65,
+      "w": 94,
       "z": 2
      }
     },
     {
      "type": "motion_text",
      "id": "row8",
-     "text": "*8*  Orchestrator on ADK sends the answer to User",
-     "size": 12,
+     "text": "*8*  Orchestrator on ADK returns the answer to the user",
+     "size": 18,
      "font": "mono",
      "weight": "regular",
      "mode": "block",
      "reveal": "fade",
      "place": {
-      "x": 60.94,
-      "y": 29.17,
-      "w": 37.19,
+      "x": 3,
+      "y": 67.66,
+      "w": 94,
       "z": 2
      }
     }
@@ -519,7 +515,7 @@
        "p": 0
       },
       {
-       "t": 26.705,
+       "t": 28.85,
        "p": 1,
        "ease": "linear"
       }
@@ -551,11 +547,11 @@
        "opacity": 0
       },
       {
-       "t": 2.98,
+       "t": 3.2,
        "opacity": 0
       },
       {
-       "t": 3.28,
+       "t": 3.5,
        "opacity": 1,
        "ease": "standard"
       }
@@ -569,11 +565,11 @@
        "opacity": 0
       },
       {
-       "t": 5.73,
+       "t": 6.225,
        "opacity": 0
       },
       {
-       "t": 6.03,
+       "t": 6.53,
        "opacity": 1,
        "ease": "standard"
       }
@@ -587,11 +583,11 @@
        "opacity": 0
       },
       {
-       "t": 8.755,
+       "t": 9.525,
        "opacity": 0
       },
       {
-       "t": 9.06,
+       "t": 9.83,
        "opacity": 1,
        "ease": "standard"
       }
@@ -605,11 +601,11 @@
        "opacity": 0
       },
       {
-       "t": 11.23,
+       "t": 12.275,
        "opacity": 0
       },
       {
-       "t": 11.53,
+       "t": 12.58,
        "opacity": 1,
        "ease": "standard"
       }
@@ -623,11 +619,11 @@
        "opacity": 0
       },
       {
-       "t": 13.98,
+       "t": 15.3,
        "opacity": 0
       },
       {
-       "t": 14.28,
+       "t": 15.6,
        "opacity": 1,
        "ease": "standard"
       }
@@ -641,11 +637,11 @@
        "opacity": 0
       },
       {
-       "t": 17.005,
+       "t": 18.6,
        "opacity": 0
       },
       {
-       "t": 17.31,
+       "t": 18.9,
        "opacity": 1,
        "ease": "standard"
       }
@@ -659,11 +655,11 @@
        "opacity": 0
       },
       {
-       "t": 21.955,
+       "t": 23.825,
        "opacity": 0
       },
       {
-       "t": 22.26,
+       "t": 24.13,
        "opacity": 1,
        "ease": "standard"
       }
@@ -674,12 +670,12 @@
      "keys": [
       {
        "t": 0,
-       "y": 6.25,
+       "y": 48.75,
        "opacity": 0
       },
       {
        "t": 1,
-       "y": 6.25,
+       "y": 48.75,
        "opacity": 0,
        "ease": "hold"
       },
@@ -689,44 +685,44 @@
        "ease": "standard"
       },
       {
-       "t": 2.98,
-       "y": 9.44,
+       "t": 3.2,
+       "y": 51.41,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 5.73,
-       "y": 12.64,
+       "t": 6.225,
+       "y": 54.06,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 8.755,
-       "y": 15.83,
+       "t": 9.525,
+       "y": 56.72,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 11.23,
-       "y": 19.03,
+       "t": 12.275,
+       "y": 59.37,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 13.98,
-       "y": 22.22,
+       "t": 15.3,
+       "y": 62.03,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 17.005,
-       "y": 25.42,
+       "t": 18.6,
+       "y": 64.69,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 21.955,
-       "y": 28.61,
+       "t": 23.825,
+       "y": 67.34,
        "opacity": 0.22,
        "ease": "hold"
       }

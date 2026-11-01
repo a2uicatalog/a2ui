@@ -4,86 +4,86 @@
   {
    "type": "motion_arch",
    "label": "A2A: one agent hands work to another",
-   "w": 894,
-   "h": 768,
+   "w": 1033,
+   "h": 810,
    "size": 23,
    "nodes": [
     {
      "id": "user",
      "kind": "user",
      "label": "User",
-     "x": 43.9,
-     "y": 8.4,
-     "w": 14.21,
-     "h": 8.98,
-     "at": 0.0112,
-     "dur": 0.0112
+     "x": 47.73,
+     "y": 7.96,
+     "w": 12.29,
+     "h": 8.52,
+     "at": 0.0104,
+     "dur": 0.011
     },
     {
      "id": "orch",
      "kind": "app",
      "label": "Orchestrator on ADK",
-     "x": 43.9,
-     "y": 33.27,
-     "w": 35.91,
-     "h": 8.98,
-     "at": 0.0137,
-     "dur": 0.0112
+     "x": 47.73,
+     "y": 31.54,
+     "w": 31.07,
+     "h": 8.52,
+     "at": 0.0127,
+     "dur": 0.011
     },
     {
      "id": "card",
      "kind": "store",
      "label": "Agent Card",
-     "x": 19.02,
-     "y": 62.83,
-     "w": 22.93,
-     "h": 8.98,
-     "at": 0.0162,
-     "dur": 0.0112
+     "x": 26.19,
+     "y": 59.57,
+     "w": 19.85,
+     "h": 8.52,
+     "at": 0.015,
+     "dur": 0.011
     },
     {
      "id": "remote",
      "kind": "server",
      "label": "Remote agent",
-     "x": 19.02,
-     "y": 75.72,
-     "w": 25.73,
-     "h": 8.98,
-     "at": 0.0212,
-     "dur": 0.0112
+     "x": 26.19,
+     "y": 74.38,
+     "w": 22.27,
+     "h": 8.52,
+     "at": 0.0196,
+     "dur": 0.011
     },
     {
      "id": "task",
      "kind": "store",
      "label": "Task state",
-     "x": 70.19,
-     "y": 62.83,
-     "w": 22.93,
-     "h": 8.98,
-     "at": 0.0187,
-     "dur": 0.0112
+     "x": 70.47,
+     "y": 59.57,
+     "w": 19.85,
+     "h": 8.52,
+     "at": 0.0173,
+     "dur": 0.011
     },
     {
      "id": "rllm",
      "kind": "model",
      "label": "Remote LLM",
-     "x": 70.19,
-     "y": 75.72,
-     "w": 22.93,
-     "h": 8.98,
-     "at": 0.0237,
-     "dur": 0.0112
+     "x": 70.47,
+     "y": 74.38,
+     "w": 19.85,
+     "h": 8.52,
+     "at": 0.022,
+     "dur": 0.011
     },
     {
      "id": "rtools",
      "kind": "tool",
      "label": "MCP tools",
-     "x": 70.19,
-     "y": 88.61,
-     "w": 21.48,
-     "h": 8.98,
-     "at": 0.0262,
-     "dur": 0.0112
+     "x": 70.47,
+     "y": 89.2,
+     "w": 18.59,
+     "h": 8.52,
+     "at": 0.0243,
+     "dur": 0.011
     }
    ],
    "edges": [
@@ -94,20 +94,20 @@
      "style": "solid",
      "points": [
       {
-       "x": 43.34,
-       "y": 12.89
+       "x": 47.24,
+       "y": 12.22
       },
       {
-       "x": 43.34,
-       "y": 28.78
+       "x": 47.24,
+       "y": 27.28
       }
      ],
      "label_at": {
-      "x": 38.37,
-      "y": 20.83
+      "x": 42.93,
+      "y": 19.75
      },
-     "at": 0.0374,
-     "dur": 0.0187
+     "at": 0.0347,
+     "dur": 0.0173
     },
     {
      "from": "orch",
@@ -116,20 +116,20 @@
      "style": "solid",
      "points": [
       {
-       "x": 28.8,
-       "y": 37.76
+       "x": 34.66,
+       "y": 35.8
       },
       {
-       "x": 28.8,
-       "y": 58.33
+       "x": 34.66,
+       "y": 55.31
       }
      ],
      "label_at": {
-      "x": 15.94,
-      "y": 48.05
+      "x": 23.52,
+      "y": 45.56
      },
-     "at": 0.1116,
-     "dur": 0.0187
+     "at": 0.1109,
+     "dur": 0.0173
     },
     {
      "from": "orch",
@@ -138,24 +138,24 @@
      "style": "solid",
      "points": [
       {
-       "x": 34.62,
-       "y": 37.76
+       "x": 39.69,
+       "y": 35.8
       },
       {
-       "x": 34.62,
-       "y": 74.15
+       "x": 39.69,
+       "y": 71.91
       },
       {
-       "x": 31.88,
-       "y": 74.15
+       "x": 37.32,
+       "y": 71.91
       }
      ],
      "label_at": {
-      "x": 56.04,
-      "y": 48.93
+      "x": 21.15,
+      "y": 66.45
      },
-     "at": 0.2146,
-     "dur": 0.0187
+     "at": 0.2158,
+     "dur": 0.0173
     },
     {
      "from": "remote",
@@ -164,28 +164,28 @@
      "style": "solid",
      "points": [
       {
-       "x": 31.88,
-       "y": 74.15
+       "x": 37.32,
+       "y": 76.73
       },
       {
-       "x": 54.98,
-       "y": 74.15
+       "x": 57.31,
+       "y": 76.73
       },
       {
-       "x": 54.98,
-       "y": 64
+       "x": 57.31,
+       "y": 60.68
       },
       {
-       "x": 58.72,
-       "y": 64
+       "x": 60.55,
+       "y": 60.68
       }
      ],
      "label_at": {
-      "x": 44.74,
-      "y": 69.08
+      "x": 47.31,
+      "y": 78.83
      },
-     "at": 0.3278,
-     "dur": 0.0187
+     "at": 0.3302,
+     "dur": 0.0173
     },
     {
      "from": "remote",
@@ -194,20 +194,20 @@
      "style": "solid",
      "points": [
       {
-       "x": 31.88,
-       "y": 75.85
+       "x": 37.32,
+       "y": 75.12
       },
       {
-       "x": 58.72,
-       "y": 75.85
+       "x": 60.55,
+       "y": 75.12
       }
      ],
      "label_at": {
-      "x": 45.3,
-      "y": 78.06
+      "x": 48.94,
+      "y": 73.02
      },
-     "at": 0.4205,
-     "dur": 0.0187
+     "at": 0.4255,
+     "dur": 0.0173
     },
     {
      "from": "remote",
@@ -216,24 +216,24 @@
      "style": "solid",
      "points": [
       {
-       "x": 30.26,
-       "y": 80.21
+       "x": 35.91,
+       "y": 78.64
       },
       {
-       "x": 30.26,
-       "y": 86
+       "x": 35.91,
+       "y": 87.96
       },
       {
-       "x": 59.45,
-       "y": 86
+       "x": 61.18,
+       "y": 87.96
       }
      ],
      "label_at": {
-      "x": 44.85,
-      "y": 83.79
+      "x": 48.55,
+      "y": 85.86
      },
-     "at": 0.5235,
-     "dur": 0.0187
+     "at": 0.5303,
+     "dur": 0.0173
     },
     {
      "from": "remote",
@@ -242,28 +242,24 @@
      "style": "dashed",
      "points": [
       {
-       "x": 30.26,
-       "y": 71.22
+       "x": 37.32,
+       "y": 73.52
       },
       {
-       "x": 30.26,
-       "y": 69.08
+       "x": 40.95,
+       "y": 73.52
       },
       {
-       "x": 31.71,
-       "y": 69.08
-      },
-      {
-       "x": 31.71,
-       "y": 37.76
+       "x": 40.95,
+       "y": 35.8
       }
      ],
      "label_at": {
-      "x": 64.32,
-      "y": 53.42
+      "x": 69.17,
+      "y": 53.18
      },
-     "at": 0.6368,
-     "dur": 0.0187
+     "at": 0.6447,
+     "dur": 0.0173
     },
     {
      "from": "orch",
@@ -272,61 +268,61 @@
      "style": "solid",
      "points": [
       {
-       "x": 44.8,
-       "y": 28.78
+       "x": 48.5,
+       "y": 27.28
       },
       {
-       "x": 44.8,
-       "y": 12.89
+       "x": 48.5,
+       "y": 12.22
       }
      ],
      "label_at": {
-      "x": 51.06,
-      "y": 20.83
+      "x": 53.92,
+      "y": 19.75
      },
-     "at": 0.8221,
-     "dur": 0.0187
+     "at": 0.8258,
+     "dur": 0.0173
     }
    ],
    "radius": 13,
    "groups": [
     {
      "label": "Our system",
-     "x": 23.15,
-     "y": 23.57,
-     "w": 41.5,
-     "h": 17.19,
+     "x": 29.77,
+     "y": 22.35,
+     "w": 35.91,
+     "h": 16.3,
      "at": 0,
-     "dur": 0.0112
+     "dur": 0.011
     },
     {
      "label": "Partner system",
-     "x": 3.36,
-     "y": 53.13,
-     "w": 81.1,
-     "h": 42.97,
+     "x": 12.63,
+     "y": 50.37,
+     "w": 70.18,
+     "h": 45.93,
      "at": 0,
-     "dur": 0.0112
+     "dur": 0.011
     }
    ],
    "messages": [
     {
      "edge": 1,
      "text": "GET agent card",
-     "at": 0.1322,
-     "dur": 0.0449
+     "at": 0.13,
+     "dur": 0.0416
     },
     {
      "edge": 2,
      "text": "SendStreamingMessage",
-     "at": 0.2352,
-     "dur": 0.0449
+     "at": 0.2348,
+     "dur": 0.0416
     },
     {
      "edge": 6,
      "text": "artifact",
-     "at": 0.6574,
-     "dur": 0.0449
+     "at": 0.6638,
+     "dur": 0.0416
     }
    ]
   },
@@ -340,35 +336,35 @@
    "rows": [
     [
      "1",
-     "User asks Orchestrator on ADK"
+     "User asks the orchestrator on ADK"
     ],
     [
      "2",
-     "Orchestrator on ADK discovers skills from Agent Card"
+     "Orchestrator on ADK discovers skills from the agent card"
     ],
     [
      "3",
-     "Orchestrator on ADK sends SendStreamingMessage JSON-RPC to Remote agent"
+     "Orchestrator on ADK sends SendStreamingMessage JSON-RPC to the remote agent"
     ],
     [
      "4",
-     "Remote agent creates task in Task state"
+     "Remote agent creates task in the task state"
     ],
     [
      "5",
-     "Remote agent sends the prompt to Remote LLM"
+     "Remote agent sends the prompt to the remote LLM"
     ],
     [
      "6",
-     "Remote agent sends the tool calls to MCP tools"
+     "Remote agent sends the tool calls to the MCP tools"
     ],
     [
      "7",
-     "Remote agent sends status, artifacts, A2UI in a DataPart, over SSE to Orchestrator on ADK (async)"
+     "Remote agent sends status, artifacts, A2UI in a DataPart, over SSE to the orchestrator on ADK (async)"
     ],
     [
      "8",
-     "Orchestrator on ADK sends the answer to User"
+     "Orchestrator on ADK returns the answer to the user"
     ]
    ],
    "col_widths": [

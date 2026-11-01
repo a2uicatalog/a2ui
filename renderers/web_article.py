@@ -34863,7 +34863,7 @@ def _render_motion_arch(b: dict) -> str:
         return [bx[0] + dx * t, bx[1] + dy * t]
     edges = b.get('edges') if isinstance(b.get('edges'), list) else []
     rad = _ff_int(b.get('radius'), 10, 0, 60)
-    curves = []
+    curves, late = [], ''
 
     def head(tip, frm, col, u='var(--u)'):
         hx, hy = tip[0] - frm[0], tip[1] - frm[1]
@@ -34907,13 +34907,17 @@ def _render_motion_arch(b: dict) -> str:
         col, dashed, both = _mo_ink(e, 'color', acc2), _mo_own(_MO_ARCH_STYLE, e.get('style'), 'solid') == 'dashed', e.get('both') is True
         at, dur = _mo_arch_t(e.get('at'), 0.3 + i * 0.05), _mo_arch_d(e.get('dur'), 0.1)
         el = _cv_str(e.get('label'), 48)
+        ltxt = ('<text x="' + _mo_arch_n(lx) + '" y="' + _mo_arch_n(ly) + '" text-anchor="middle" style="font-family:' + _JOURNEY_MONO + ';font-size:' + str(size - 4)
+                + 'px;fill:' + ink + ';paint-order:stroke;stroke:' + paper + ';stroke-width:6px;stroke-linejoin:round;opacity:var(--u);">' + _cv_esc(el) + '</text>'
+                if el else '')
+        if poly and ltxt:
+            late += '<g style="' + win(at, dur) + '">' + ltxt + '</g>'     # a routed edge's label is drawn after the message chips, so a chip never hides it
+            ltxt = ''
         out += ('<g style="' + win(at, dur) + '">'
                 + '<path d="' + d + '" pathLength="1" style="fill:none;stroke:' + col + ';stroke-width:2.2;stroke-linecap:round;'
                 + ('stroke-dasharray:0.012 0.012;opacity:var(--u);' if dashed else 'stroke-dasharray:1;stroke-dashoffset:calc(1 - var(--u));') + '"/>'
                 + head(P[-1], hz, col) + (head(P[0], ha, col) if both else '')
-                + ('<text x="' + _mo_arch_n(lx) + '" y="' + _mo_arch_n(ly) + '" text-anchor="middle" style="font-family:' + _JOURNEY_MONO + ';font-size:' + str(size - 4)
-                   + 'px;fill:' + ink + ';paint-order:stroke;stroke:' + paper + ';stroke-width:6px;stroke-linejoin:round;opacity:var(--u);">' + _cv_esc(el) + '</text>'
-                   if el else '')
+                + ltxt
                 + '</g>')
     msgs = b.get('messages') if isinstance(b.get('messages'), list) else []
     for i, m in enumerate(msgs[:12]):
@@ -34937,7 +34941,7 @@ def _render_motion_arch(b: dict) -> str:
         out += ('<g style="' + win(_mo_arch_t(m.get('at'), 0.6 + i * 0.08), _mo_arch_d(m.get('dur'), 0.12)) + 'transform:translate(' + X + ',' + Y + ');opacity:clamp(0,min(calc(var(--u)*10),calc((1 - var(--u))*10)),1);">'
                 + '<rect x="' + _mo_arch_n(-cw / 2) + '" y="-14" width="' + _mo_arch_n(cw) + '" height="28" rx="14" style="fill:' + mc + ';"/>'
                 + '<text x="0" y="5" text-anchor="middle" style="font-family:' + _JOURNEY_MONO + ';font-size:' + str(size - 4) + 'px;font-weight:700;fill:#141b24;">' + _cv_esc(txt) + '</text></g>')
-    return '<svg viewBox="0 0 ' + str(W) + ' ' + str(H) + '" role="img" aria-label="' + _cv_esc(label) + '" style="display:block;width:100%;height:auto;overflow:visible;">' + out + '</svg>'
+    return '<svg viewBox="0 0 ' + str(W) + ' ' + str(H) + '" role="img" aria-label="' + _cv_esc(label) + '" style="display:block;width:100%;height:auto;overflow:visible;">' + out + late + '</svg>'
 
 
 # Twin of atoms_motion.gs motion_video (2026-10-05): a video on the film clock; the JS template is byte-shared.

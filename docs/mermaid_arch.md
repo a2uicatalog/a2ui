@@ -65,8 +65,9 @@ table:
   `motion_shape` bar steps to the row of the step that is playing, and the poster frame is the finished
   table. Rows are one line of at most 60 characters (the sentence, then the sentence without "the", then
   `From -> To: label`, and only then cut with an ellipsis; the `table` atom has the full sentence). The stage
-  is the one of four shapes, or a wide stage with the table beside a tall diagram, that draws the diagram
-  biggest. Twelve steps is the most a film carries (the timeline holds 24 children).
+  is chosen by how big the diagram is shown relative to the stage WIDTH (the player is displayed at its column's
+  width), with the table text kept at 1.65% of the width or more; the table text may shrink to about 1.95% of the
+  width when that makes a tall diagram bigger, so the diagram is the same size with the Relation column on or off. Twelve steps is the most a film carries (the timeline holds 24 children).
 
 **Pacing** (timing only; no atom change). Every step gets reading time:
 
@@ -86,12 +87,15 @@ have very short pops. Without `numbered` the film uses the same schedule (edges 
 table.
 
 **The Activity sentence** is built from the two node labels and the edge label by a fixed template
-(`scripts/mermaid_arch/activity.mjs`; no model, same input gives the same text): "Chat host sends the tool
-call to LLM"; a label that starts with a known verb reads as a verb phrase ("types prompt" gives "User
-types prompt into Client app", "asks" gives "User asks Orchestrator"); `<->` edges and "reads and writes"
-give "Agent reads and writes State"; async and optional edges end in "(async)" / "(optional)". "the" is only
-added before a lower-case plain label, never before "A2UI JSON" or "tools/call". The template is crude on
-purpose; a wrong-sounding sentence is fixed by rewording the edge label.
+(`scripts/mermaid_arch/activity.mjs`; no model, same input gives the same text): "Chat host sends the tool call to
+the LLM"; a reply to an earlier edge in the other direction says "returns" ("LLM returns A2UI JSON to the ADK
+agent"); a label that starts with a known verb reads as a verb phrase ("types prompt" gives "User types prompt into
+the client app", "asks" gives "User asks the orchestrator"); `<->` edges and "reads and writes" give "Agent reads and
+writes the shared state"; async and optional edges end in "(async)" / "(optional)". Node names inside a sentence are
+lower-case except acronyms and camelCase (ADK, A2UI, postMessage), and the target gets "the". There are no colons
+or arrows ("ui://" loses its colon). "the" is only added before a lower-case plain label. A film row is at most 60
+characters: the sentence, then without "the", then cut with an ellipsis; the table atom keeps the full sentence. The
+template is crude on purpose; a wrong-sounding sentence is fixed by rewording the edge label.
 
 **The optional Relation column.** Off by default. Turn it on with `opts.relationColumn`, `--relation-column`,
 or `%% relation-column: on` (an explicit option beats the directive); the review page and the playground have
@@ -210,6 +214,7 @@ router is a public JS module in the converter, not in the Python or Apps Script 
   within that is drawn as a curve and a warning says so.
 - Every channel between ranks grows with the number of edges (and, top to bottom, the labels) that run through it.
   If some label still has no free place, all gaps are widened and the diagram is routed again (twice at most).
+- The atom draws a routed edge's label above the message chips, so a chip passing a label never hides it.
 - Labels go on the longest free stretch: above or below a horizontal one, left or right of a vertical one, or on the
   line, checked against boxes, group titles, other labels and other edges. A label is never shortened here; when
   nothing is free it is placed where it collides least and a warning says so.
@@ -250,7 +255,8 @@ scenarios, sql_table/class shapes, edges to a whole container, icons, globs.
 ## Honest limitations
 
 - Routed edges can still cross each other (the router prefers a detour of up to about 7 lanes to a crossing, no more)
-  and a label may sit across a neighbouring edge's line when the channel is crowded; the counts are measured and
+  and a label may sit across a neighbouring edge's line when the channel is crowded (a label is penalised for being
+  closer to another edge than to its own); the counts are measured and
   reported, and the review page shows them. Two edges next to each other can make it unclear which label belongs to
   which line; labels sit right against their own line to keep that readable.
 - Routing a 12-node diagram takes about 1 to 2 seconds in Node (several candidate layouts are routed).

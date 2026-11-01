@@ -732,26 +732,29 @@ test('router: a diagram that is too crowded for the label to fit is warned about
 // ------------------------------------------------------------------ steps table legend: Step | Activity, optional Relation
 import { activity, rowText } from './mermaid_arch/activity.mjs';
 test('activity: the sentence template (no model, fixed rules)', () => {
-  assert.equal(activity('Chat host', 'LLM', 'tool call'), 'Chat host sends the tool call to LLM');
-  assert.equal(activity('User', 'Orchestrator', 'asks'), 'User asks Orchestrator');
-  assert.equal(activity('User', 'Client app', 'types prompt'), 'User types prompt into Client app');
-  assert.equal(activity('Remote agent', 'Task state', 'creates task'), 'Remote agent creates task in Task state');
-  assert.equal(activity('Orchestrator', 'Agent Card', 'discovers skills'), 'Orchestrator discovers skills from Agent Card');
-  assert.equal(activity('LLM', 'ADK agent', 'A2UI JSON'), 'LLM sends A2UI JSON to ADK agent');            // no "the" before a capitalised label
-  assert.equal(activity('Host', 'Tool', 'tools/call'), 'Host sends tools/call to Tool');
-  assert.equal(activity('A', 'B', ''), 'A calls B');
-  assert.equal(activity('Agent', 'State', 'reads and writes', { both: true }), 'Agent reads and writes State');
-  assert.equal(activity('A', 'B', 'status', { style: 'async' }), 'A sends the status to B (async)');
-  assert.equal(activity('A', 'B', 'ping', { style: 'optional' }), 'A sends the ping to B (optional)');
+  assert.equal(activity('Chat host', 'LLM', 'tool call'), 'Chat host sends the tool call to the LLM');
+  assert.equal(activity('User', 'Orchestrator', 'asks'), 'User asks the orchestrator');
+  assert.equal(activity('User', 'Client app', 'types prompt'), 'User types prompt into the client app');
+  assert.equal(activity('Remote agent', 'Task state', 'creates task'), 'Remote agent creates task in the task state');
+  assert.equal(activity('Orchestrator on ADK', 'Agent Card', 'discovers skills'), 'Orchestrator on ADK discovers skills from the agent card');
+  assert.equal(activity('LLM', 'ADK agent', 'A2UI JSON'), 'LLM sends A2UI JSON to the ADK agent');            // acronyms keep their case, no "the" before a capitalised label
+  assert.equal(activity('LLM', 'ADK agent', 'A2UI JSON', { reply: true }), 'LLM returns A2UI JSON to the ADK agent');
+  assert.equal(activity('Sandboxed iframe', 'Chat host', 'tools/call'), 'Sandboxed iframe sends tools/call to the chat host');
+  assert.equal(activity('A', 'B', ''), 'A calls the b');
+  assert.equal(activity('Agent', 'Shared state', 'reads and writes', { both: true }), 'Agent reads and writes the shared state');
+  assert.equal(activity('A', 'B', 'status', { style: 'async' }), 'A sends the status to the b (async)');
+  assert.equal(activity('A', 'B', 'ping', { style: 'optional', reply: true }), 'A sends the ping to the b (optional)');
+  assert.equal(activity('Tool with ui:// link', 'Host', 'AG-UI events: A2UI + MCP App HTML'), 'Tool with ui link sends AG-UI events, A2UI + MCP app HTML to the host');
+  for (const f of examples) for (const st of mermaidToArch(readFileSync(join(EX, f), 'utf8'), { numbered: true }).steps) assert.ok(!/[:→]|->/.test(st.activity), 'no colon or arrow: ' + st.activity);
   assert.equal(activity('A', 'B', 'x'), activity('A', 'B', 'x'));
 });
 test('activity: a film row is at most 60 characters and says so with an ellipsis only as a last resort', () => {
   const sentence = activity('Orchestrator on ADK', 'Remote agent', 'status, artifacts, A2UI in a DataPart, over SSE', { style: 'async' });
-  const row = rowText(7, sentence, 'Orchestrator on ADK', 'Remote agent', 'status, artifacts, A2UI in a DataPart, over SSE', 'async');
+  const row = rowText(7, sentence, 60);
   assert.ok(row.length <= 60);
   assert.match(row, /^\*7\*  /);
-  const short = rowText(1, 'User asks Orchestrator', 'User', 'Orchestrator', 'asks', 'sync');
-  assert.equal(short, '*1*  User asks Orchestrator');
+  assert.equal(rowText(1, 'User asks the orchestrator', 60), '*1*  User asks the orchestrator');
+  assert.equal(rowText(2, 'A sends the plan to the b ' + 'x'.repeat(45), 60).includes('…'), true);
 });
 test('steps table: columns are exactly Step | Activity; the standalone table keeps the full sentence', () => {
   for (const f of examples) {
@@ -816,4 +819,15 @@ test('pacing: a 10-step diagram plays in about 25-35 s at the normal pace, and t
   const d = (pace) => mermaidToArch(src, { numbered: true, pace }).durationSeconds;
   assert.ok(d('normal') >= 25 && d('normal') <= 36, 'normal ' + d('normal'));
   assert.ok(d('fast') < d('normal') && d('normal') < d('slow'));
+});
+
+test('film stage: the diagram is as big with the Relation column off as with it on (no stage is picked by raw scale)', () => {
+  for (const f of examples) {
+    const src = readFileSync(join(EX, f), 'utf8');
+    const w = (rel) => { const r = mermaidToArch(src, { numbered: true, film: true, relationColumn: rel }), a = r.payload.blocks[0].blocks.find((b) => b.id === 'arch'); return { a: r.payload.blocks[0].aspect, w: a.place.w, sw: { '16:9': 1280, '4:3': 1200, '1:1': 1000, '9:16': 720 }[r.payload.blocks[0].aspect] }; };
+    const off = w(false), on = w(true);
+    assert.ok(Math.abs(off.w - on.w) < 3, `${f}: ${JSON.stringify(off)} vs ${JSON.stringify(on)}`);
+    const tl = mermaidToArch(src, { numbered: true, film: true }).payload.blocks[0], row = tl.blocks.find((b) => b.id === 'row1');
+    assert.ok(row.size / ({ '16:9': 1280, '4:3': 1200, '1:1': 1000, '9:16': 720 }[tl.aspect]) >= 0.0165 - 1e-9, f + ': the table text stays readable');
+  }
 });

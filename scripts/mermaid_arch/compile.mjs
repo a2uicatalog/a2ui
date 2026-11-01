@@ -64,7 +64,7 @@ export function compileGraph(graph, opts = {}) {
     return ka - kb || a - b;
   });
   const lab = (id) => gnode.get(id).label;
-  const sentence = graph.edges.map((e) => activity(lab(e.from), lab(e.to), e.label, { style: e.style, both: e.both }));
+  const sentence = graph.edges.map((e, i) => activity(lab(e.from), lab(e.to), e.label, { style: e.style, both: e.both, reply: graph.edges.some((o, j) => j !== i && o.from === e.to && o.to === e.from) && graph.edges.findIndex((o) => o.from === e.to && o.to === e.from) < i }));
   const info = order.map((ei) => ({ words: words(sentence[ei]), chips: msgEdge.filter((m) => m.idx === ei).length }));
   let sched;
   try { sched = buildSchedule(info, { pace, duration }); }
@@ -162,7 +162,7 @@ export function filmPayload(block, ctx = {}) {
   const steps = ctx.steps || [], sch = ctx.schedule || [];
   const n = steps.length;
   const rel = !!ctx.relationColumn && n > 0, relName = ctx.relationName || 'Relation';
-  const rows = steps.map((s) => rowText(s.step, s.activity, s.from, s.to, s.label, s.style, 60));
+  const rows = steps.map((s) => rowText(s.step, s.activity, 60));
   const maxChars = Math.max(20, ...rows.map((r) => r.length));
   const relChars = rel ? Math.max(relName.length, ...steps.map((s) => (s.relation || '').length)) : 0;
   const gap = 24;
@@ -170,11 +170,14 @@ export function filmPayload(block, ctx = {}) {
   // the text is one line per row: its size is what the table width allows
   const textSize = (tw, lo, hi) => clamp(Math.floor((tw * 0.94) / ((maxChars + (rel ? relChars + 3 : 0)) * 0.62)), lo, hi);
   for (const [aspect, sw, sh] of STAGES) {
-    const sz = textSize(sw, 12, 24);
-    const rowH = Math.round(sz * 1.9), headH = Math.round(sz * 2.1);
-    const T = n ? headH + n * rowH : 0;
-    const scale = Math.min((sw * 0.96) / block.w, (sh - T - gap * (n ? 3 : 2)) / block.h);
-    if (scale > 0) cands.push({ kind: 'stack', aspect, sw, sh, sz, rowH, headH, scale });
+    // the table text may shrink to about 1.95% of the stage width (6.7 px in a 343 px column) when that lets a tall diagram be bigger
+    const cap = textSize(sw, 12, 24);
+    for (const sz of new Set([cap, Math.min(cap, 16), Math.min(cap, Math.max(12, Math.ceil(sw * 0.0195)))])) {
+      const rowH = Math.round(sz * 1.9), headH = Math.round(sz * 2.1);
+      const T = n ? headH + n * rowH : 0;
+      const scale = Math.min((sw * 0.96) / block.w, (sh - T - gap * (n ? 3 : 2)) / block.h);
+      if (scale > 0) cands.push({ kind: 'stack', aspect, sw, sh, sz, rowH, headH, scale });
+    }
   }
   if (n) for (const [aspect, sw, sh] of STAGES.slice(0, 2)) for (const f of [0.34, 0.4, 0.46]) {
     const tw = sw * f - gap, sz = textSize(tw, 11, 22);
@@ -184,8 +187,14 @@ export function filmPayload(block, ctx = {}) {
     const scale = Math.min((sw * (1 - f) - 2 * gap) / block.w, (sh - 2 * gap) / block.h);
     if (scale > 0) cands.push({ kind: 'side', aspect, sw, sh, sz, rowH, headH, scale, f });
   }
+  // Stages differ in width, and the player is shown at the width of its column, so what the viewer gets is the diagram's size
+  // relative to the stage WIDTH (scale / sw), not the raw scale. The table's text must stay readable too (>= 1.65% of the width,
+  // about 5.7 px in a 343 px column); a stage where it would be smaller is not considered unless nothing else is left.
+  const shown = (c) => c.scale / c.sw;
+  const legible = cands.filter((c) => !n || c.sz / c.sw >= 0.0165);
   let best = null;
-  for (const c of cands) if (!best || c.scale > best.scale + 1e-9) best = c;
+  // biggest diagram wins; within 1% the larger table text wins
+  for (const c of legible.length ? legible : cands) if (!best || shown(c) > shown(best) * 1.01 || (shown(c) > shown(best) * 0.99 && c.sz / c.sw > best.sz / best.sw)) best = c;
   if (!best) throw new ArchError(['the diagram and its steps table do not fit on one film stage; reduce the number of steps or the diagram size']);
   const { aspect, sw, sh, sz, rowH, headH, scale } = best;
   const pw = block.w * scale, ph = block.h * scale;

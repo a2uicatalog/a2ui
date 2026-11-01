@@ -367,15 +367,18 @@ const round = (x) => Math.round(x * 1000) / 1000;
 // the edge label by a fixed template. No model, no randomness: the same graph gives the same sentences.
 //
 //   edge label      sentence
-//   (none)          "<From> calls <To>"
-//   noun phrase     "<From> sends the <label> to <To>"      ("the" only before a lower-case plain word)
-//   verb phrase     "<From> <verb> <rest> <preposition> <To>" for a known leading verb ("types prompt" -> "... types prompt into <To>")
-//   single verb     "<From> <verb> <To>"                     ("asks" -> "User asks Orchestrator")
-//   both ways       "<From> and <To> exchange <label>"       (a verb phrase like "reads and writes": "<From> reads and writes <To>")
+//   (none)          "<From> calls the <to>"
+//   noun phrase     "<From> sends the <label> to the <to>"   ("the" only before a lower-case plain word)
+//   a reply         "<From> returns the <label> to the <to>" (a sync edge whose reverse edge is in the diagram too)
+//   verb phrase     "<From> <verb> <rest> <preposition> the <to>" for a known leading verb ("types prompt" -> "... types prompt into the client app")
+//   single verb     "<From> <verb> the <to>"                  ("asks" -> "User asks the orchestrator")
+//   both ways       "<From> and the <to> exchange <label>"
 //   async / optional edges end in " (async)" / " (optional)"
+// Node names inside a sentence are lower-case except acronyms and camelCase (ADK, A2UI, postMessage); the first word
+// is capitalised; no colons or arrows (a "ui://" in a name loses its colon).
 //
 // A row of the film is one line of at most 60 characters: rowText() tries the full sentence, then the sentence
-// without "the", then "<From> -> <To>: <label>", and only then cuts it with an ellipsis. The standalone `table`
+// without "the", and only then cuts it with an ellipsis. The standalone `table`
 // atom always carries the full sentence.
 
 // third-person verbs the template recognises at the start of an edge label, with the preposition that links the rest to the target
@@ -387,14 +390,21 @@ const LEAD_VERBS = Object.freeze({
   verifies: '', signs: '', receives: 'from', reports: 'to', triggers: '', invokes: '', runs: 'on', executes: '',
 });
 
-function activity(fromLabel, toLabel, label, { style, both } = {}) {
-  const F = String(fromLabel).trim(), T = String(toLabel).trim(), L = String(label || '').trim();
+// plain text only: no colons ("ui://" loses its colon and slashes, "events: x" becomes "events, x"), no arrows
+const plain = (t) => String(t).replace(/:\/\//g, ' ').replace(/\s*:\s*/g, ', ').replace(/\s*(?:->|-->|=>|→)\s*/g, ' to ').replace(/\s+/g, ' ').trim();
+// a node label inside a sentence: lower-case words, except acronyms and camelCase names (ADK, A2UI, AG-UI, postMessage)
+const keep = (w) => /[A-Z]/.test(w.slice(1)) || /^[A-Z0-9]{2,}/.test(w);
+const inSentence = (label) => plain(label).split(' ').map((w) => (keep(w) ? w : w.toLowerCase())).join(' ');
+
+// forward: ("X sends <what> to Y"), a reply to an earlier edge in the other direction ("X returns <what> to Y"),
+// a verb phrase ("X types prompt into the Y"), both ways ("X and Y exchange <what>")
+function activity(fromLabel, toLabel, label, { style, both, reply } = {}) {
+  const F = inSentence(fromLabel), T = 'the ' + inSentence(toLabel), L = inSentence(label || '');
   let s;
   if (!L) {
     s = both ? `${F} and ${T} talk to each other` : `${F} calls ${T}`;
   } else {
-    const lower = L.toLowerCase();
-    const verb = Object.keys(LEAD_VERBS).find((v) => lower === v || lower.startsWith(v + ' '));
+    const verb = Object.keys(LEAD_VERBS).find((v) => L === v || L.startsWith(v + ' '));
     if (verb) {
       const rest = L.slice(verb.length).trim();
       const prep = LEAD_VERBS[verb];
@@ -405,7 +415,7 @@ function activity(fromLabel, toLabel, label, { style, both } = {}) {
       s = `${F} and ${T} exchange ${/^[a-z][a-z ]*$/.test(L) ? 'the ' : ''}${L}`;
     } else {
       const article = /^[a-z][a-z ,+-]*$/.test(L) ? 'the ' : '';   // lower-case plain words only: not "A2UI JSON", "tools/call", "POST run"
-      s = `${F} sends ${article}${L} to ${T}`;
+      s = `${F} ${reply && style !== 'async' && style !== 'optional' ? 'returns' : 'sends'} ${article}${L} to ${T}`;
     }
   }
   if (style === 'async') s += ' (async)';
@@ -413,17 +423,11 @@ function activity(fromLabel, toLabel, label, { style, both } = {}) {
   return s[0].toUpperCase() + s.slice(1);
 }
 
-// a row of the film's table: "*N*  sentence", at most `max` characters
-function rowText(step, sentence, fromLabel, toLabel, label, style, max = 60) {
+// a row of the film's table: "*N*  sentence", at most `max` characters: the sentence, then without "the", then cut with an ellipsis
+function rowText(step, sentence, max = 60) {
   const pre = `*${step}*  `;
-  const suffix = style === 'async' ? ' (async)' : style === 'optional' ? ' (optional)' : '';
-  const tries = [
-    sentence,
-    sentence.replace(/ the /, ' '),
-    `${fromLabel} → ${toLabel}${label ? ': ' + label : ''}${suffix}`,
-  ];
-  for (const t of tries) if ((pre + t).length <= max) return pre + t;
-  const t = tries[2], room = max - pre.length;
+  for (const t of [sentence, sentence.replace(/ the /g, ' ')]) if ((pre + t).length <= max) return pre + t;
+  const t = sentence.replace(/ the /g, ' '), room = max - pre.length;
   return pre + t.slice(0, room - 1).trimEnd() + '…';
 }
 
@@ -942,6 +946,8 @@ function parseMermaid(text, opts = {}) {
 // a right angle to the box and are long enough for the arrowhead. Parallel edges take neighbouring lanes because an
 // occupied lane is expensive; a request/response pair therefore comes out as two lanes side by side.
 //
+// (opts.chips, an optional {edgeIndex: chip text length}, keeps an edge's own label out of its chips' path; the converter does not use it,
+// because the atom draws a routed edge's label above the chips.)
 // Labels go on the longest free straight stretch: candidates sit above or below a horizontal stretch, left or right
 // of a vertical one, or on the line, and are checked against every box, group title, other label and other edge.
 // A label is never shortened here; if nothing is free it is placed where it collides least and a warning says so.
@@ -1191,22 +1197,47 @@ function routeEdges(graph, layout, opts = {}) {
     routes[k] = { points: r.points, via: 'grid', label: null };
   }
 
-  placeLabels(graph, layout, routes, glabels, s, warnings);
-  return { routes, warnings, metrics: routeMetrics(graph, layout, routes, glabels, s) };
+  placeLabels(graph, layout, routes, glabels, s, warnings, opts.chips || {});
+  return { routes, warnings, metrics: routeMetrics(graph, layout, routes, glabels, s, opts.chips || {}) };
 }
 
 // ---------------------------------------------------------------- labels
 function segs(points) { const o = []; for (let i = 0; i + 1 < points.length; i++) o.push([points[i], points[i + 1]]); return o; }
 
-function placeLabels(graph, layout, routes, glabels, s, warnings) {
+// shortest distance from an axis-aligned segment to a rectangle (0 when they touch or overlap)
+function rectSegDist(r, a, b) {
+  const x0 = Math.min(a[0], b[0]), x1 = Math.max(a[0], b[0]), y0 = Math.min(a[1], b[1]), y1 = Math.max(a[1], b[1]);
+  const dx = Math.max(r.x - x1, 0, x0 - (r.x + r.w)), dy = Math.max(r.y - y1, 0, y0 - (r.y + r.h));
+  return Math.hypot(dx, dy);
+}
+
+// the area a message chip sweeps along an edge's route: the route's stretches grown by half the chip (28 px tall, as wide as its text)
+function chipBands(graph, routes, chips, s) {
+  const out = [];
+  routes.forEach((r, k) => {
+    if (!r || !chips[k]) return;
+    const hw = (chips[k] * (s - 4) * 0.62 + 22) / 2, hh = 14;
+    segs(r.points).forEach(([a, b]) => {
+      const x0 = Math.min(a[0], b[0]), x1 = Math.max(a[0], b[0]), y0 = Math.min(a[1], b[1]), y1 = Math.max(a[1], b[1]);
+      out.push({ k, x: x0 - hw, y: y0 - hh, w: x1 - x0 + 2 * hw, h: y1 - y0 + 2 * hh });
+    });
+  });
+  return out;
+}
+
+function placeLabels(graph, layout, routes, glabels, s, warnings, chips = {}) {
   const boxes = layout.nodes;
   const placed = [];
   const allSegs = routes.map((r) => (r ? segs(r.points) : []));
   // longest labels first: they are the hardest to fit; ties by input order
   const order = graph.edges.map((e, i) => i).filter((i) => graph.edges[i].label && routes[i]).sort((a, b) => edgeLabelSize(graph.edges[b].label, s).w - edgeLabelSize(graph.edges[a].label, s).w || a - b);
   const gap = 3;
+  const bands = chipBands(graph, routes, chips, s);
   for (const k of order) {
     const e = graph.edges[k], sz = edgeLabelSize(e.label, s), r = routes[k];
+    // a message chip rides this edge: keep the label out of the chip's path (the chip is 28 px tall and as wide as its text)
+    const chipLen = chips[k] || 0, chipHalfW = chipLen ? (chipLen * (s - 4) * 0.62 + 22) / 2 : 0, chipHalfH = chipLen ? 14 : 0;
+    const gapH = chipLen ? chipHalfH + 3 : gap, gapV = chipLen ? chipHalfW + 3 : gap;
     const cands = [];
     segs(r.points).forEach(([a, b], si) => {
       const horiz = a[1] === b[1];
@@ -1224,20 +1255,21 @@ function placeLabels(graph, layout, routes, glabels, s, warnings) {
         const c = mid + d;
         if (horiz) {
           const x = c - sz.w / 2, y = a[1];
-          cands.push({ x, y: y - gap - sz.h, w: sz.w, h: sz.h, pref: 0, si, d, len });          // above
-          cands.push({ x, y: y + gap, w: sz.w, h: sz.h, pref: 1.5, si, d, len });               // below
-          cands.push({ x, y: y - sz.h / 2, w: sz.w, h: sz.h, pref: 4, si, d, len, on: true });  // on the line
+          cands.push({ x, y: y - gapH - sz.h, w: sz.w, h: sz.h, pref: 0, si, d, len, gp: gapH });          // above
+          cands.push({ x, y: y + gapH, w: sz.w, h: sz.h, pref: 1.5, si, d, len, gp: gapH });               // below
+          if (!chipLen) cands.push({ x, y: y - sz.h / 2, w: sz.w, h: sz.h, pref: 4, si, d, len, on: true });  // on the line
         } else {
           const y = c - sz.h / 2, xx = a[0];
-          cands.push({ x: xx + gap, y, w: sz.w, h: sz.h, pref: 0.5, si, d, len });
-          cands.push({ x: xx - gap - sz.w, y, w: sz.w, h: sz.h, pref: 1.5, si, d, len });
-          cands.push({ x: xx - sz.w / 2, y, w: sz.w, h: sz.h, pref: 5, si, d, len, on: true });
+          cands.push({ x: xx + gapV, y, w: sz.w, h: sz.h, pref: 0.5 + (chipLen ? 6 : 0), si, d, len, gp: gapV });
+          cands.push({ x: xx - gapV - sz.w, y, w: sz.w, h: sz.h, pref: 1.5 + (chipLen ? 6 : 0), si, d, len, gp: gapV });
+          if (!chipLen) cands.push({ x: xx - sz.w / 2, y, w: sz.w, h: sz.h, pref: 5, si, d, len, on: true });
         }
       }
     });
     let best = null;
     for (const c of cands) {
-      let hard = 0, soft = 0;
+      let hard = 0, soft = 0, chipHit = 0;
+      for (const bd of bands) if (rectsOverlap(c, bd)) chipHit++;
       for (const b of boxes) if (rectsOverlap(c, inflate(b, 2))) hard++;
       for (const t of glabels) if (rectsOverlap(c, inflate(t, 1))) hard++;
       for (const p of placed) if (rectsOverlap(c, inflate(p, 3))) hard++;
@@ -1260,7 +1292,12 @@ function placeLabels(graph, layout, routes, glabels, s, warnings) {
           }
         }
       }
-      const cost = hard * 1000 + soft * 60 + between * 25 + c.pref + Math.abs(c.d) * 0.08 - Math.min(c.len, 400) * 0.01;
+      // never closer to another edge than to its own line
+      let nearest = Infinity;
+      for (let q = 0; q < allSegs.length; q++) if (q !== k) for (const [a, b] of allSegs[q]) nearest = Math.min(nearest, rectSegDist(c, a, b));
+      const ownD = c.on ? 0 : (c.gp || gap);
+      const closer = nearest < ownD + 4 ? 1 : 0;
+      const cost = hard * 1000 + chipHit * 150 + soft * 200 + closer * 150 + between * 25 + c.pref + Math.abs(c.d) * 0.08 - Math.min(c.len, 400) * 0.01;
       if (!best || cost < best.cost - 1e-9) best = { c, cost, hard, soft };
     }
     if (!best) {
@@ -1279,7 +1316,7 @@ function placeLabels(graph, layout, routes, glabels, s, warnings) {
 }
 
 // ---------------------------------------------------------------- measuring (used for routed and for curved edges)
-function routeMetrics(graph, layout, routes, glabels, s) {
+function routeMetrics(graph, layout, routes, glabels, s, chips = {}) {
   const boxes = layout.nodes;
   const lines = routes.map((r) => (r ? r.points : null));
   let throughBoxes = 0, titleHits = 0, labelNode = 0, labelLabel = 0, labelTitle = 0, labelOnLine = 0, crossings = 0, bends = 0, length = 0;
@@ -1321,7 +1358,10 @@ function routeMetrics(graph, layout, routes, glabels, s) {
     for (const [a, b] of segs(lines[i])) { for (const [c, d] of segs(lines[j])) if (axisCross(a, b, c, d) || diagCross(a, b, c, d)) { hit = true; break; } if (hit) break; }
     if (hit) crossings++;
   }
-  return { crossings, throughBoxes, titleHits, labelNode, labelLabel, labelTitle, labelOnLine, bends, length: Math.round(length) };
+  let labelChip = 0;
+  const bands = chipBands(graph, routes, chips, s);
+  for (const { rect } of L) if (bands.some((bd) => rectsOverlap(rect, bd))) labelChip++;
+  return { crossings, throughBoxes, titleHits, labelNode, labelLabel, labelTitle, labelOnLine, labelChip, bends, length: Math.round(length) };
 }
 
 // the same metrics for the atom's quadratic curves (stage 1), so the two modes can be compared like for like
@@ -1558,7 +1598,7 @@ function layered(items, edges, axis, s, samePairs = [], laneGap = 0, extraGap = 
   const rankPos = [];
   let acc = 0;
   for (let r = 0; r < R; r++) { rankPos.push(acc); acc += thick[r] + (gaps[r] || 0); }
-  const crossGap = Math.round(1.3 * s);
+  const crossGap = Math.round(1.3 * s) + (laneGap ? Math.round(0.9 * s) : 0);
   const cpos = Array(N).fill(0);
   L.forEach((layer) => {
     let t = 0;
@@ -1830,7 +1870,7 @@ function shapeScore(graph, layout, fit) {
   const byId = new Map(layout.nodes.map((n) => [n.id, n]));
   let len = 0;
   for (const e of graph.edges) { const a = byId.get(e.from), b = byId.get(e.to); if (a && b) len += Math.abs(a.x + a.w / 2 - b.x - b.w / 2) + Math.abs(a.y + a.h / 2 - b.y - b.h / 2); }
-  const phone = fit === 'wide' ? 0 : 14 * Math.max(0, 9 - phonePx(W, s)) + 30 * Math.max(0, H / W - 1.7);
+  const phone = fit === 'wide' ? 0 : 24 * Math.max(0, 9 - phonePx(W, s)) + 40 * Math.max(0, H / W - 1.3);
   return phone + (W / s) * 0.15 + (H / s) * 0.15 + (len / s) * 0.35;
 }
 
@@ -1863,16 +1903,16 @@ function layoutGraph(graph, opts = {}) {
 // ---------------------------------------------------------------- orthogonal routing: size, orientation, framing
 function orthoScore(fr, fit) {
   const m = fr.metrics, s = fr.size;
-  const phone = fit === 'wide' ? 0 : 14 * Math.max(0, 9 - phonePx(fr.W, s)) + 30 * Math.max(0, fr.H / fr.W - 1.7);
+  const phone = fit === 'wide' ? 0 : 24 * Math.max(0, 9 - phonePx(fr.W, s)) + 40 * Math.max(0, fr.H / fr.W - 1.3);
   return phone + (fr.W / s) * 0.15 + (fr.H / s) * 0.15 + m.crossings * 8 + (m.throughBoxes + m.titleHits) * 40 + m.labelNode * 20 + m.labelLabel * 40 + m.labelTitle * 30
-    + m.labelOnLine * 9 + m.bends * 0.5 + (m.length / s) * 0.04 + fr.failed * 50;
+    + m.labelOnLine * 14 + (m.labelChip || 0) * 1.5 + m.bends * 0.5 + (m.length / s) * 0.04 + fr.failed * 50;
 }
 
 function orthoAt(gr, s, fit) {
   const laneGap = Math.round(0.55 * s);
   let best = null;
   // if some label has no free place, give every channel more room and route again (twice at most)
-  for (const extra of [0, 1.0, 2.0]) {
+  for (const extra of [0, 1.0, 2.0, 3.5]) {
     for (const v of rankLayouts(gr, s, fit, 4, laneGap, true, Math.round(extra * s))) {
       const rt = routeEdges(gr, { nodes: v.layout.nodes, groups: v.layout.groups, s }, {});
       const fr = frameRouted(gr, v, rt, s);
@@ -1880,7 +1920,7 @@ function orthoAt(gr, s, fit) {
       if (!best || fr.score < best.score - 1e-9) best = fr;
     }
     const m = best.metrics;
-    if (best.failed === 0 && m.labelLabel + m.labelNode + m.labelTitle + m.throughBoxes + m.titleHits === 0 && m.labelOnLine <= 1) break;
+    if (best.failed === 0 && m.labelLabel + m.labelNode + m.labelTitle + m.throughBoxes + m.titleHits === 0 && m.labelOnLine === 0) break;
   }
   return best;
 }
@@ -1998,11 +2038,11 @@ function frameRouted(graph, best, rt, s) {
 
 // One yardstick for both drawings (curved or routed) of a finished layout: counts of edges through boxes or group titles,
 // edge crossings (pairs of edges that cross), labels on boxes, titles, each other and other edges.
-function commonMetrics(graph, lay) {
+function commonMetrics(graph, lay, chips = {}) {
   const layout = { nodes: lay.nodes, groups: lay.groups, s: lay.size };
   const glabels = lay.groups.map((g) => groupTitleRect(g, graph.groups.find((x) => x.id === g.id), lay.size));
   const routes = lay.routes || curveRoutes(graph, layout, lay.curves, edgeCurve, labelRect);
-  return routeMetrics(graph, layout, routes, glabels, lay.size);
+  return routeMetrics(graph, layout, routes, glabels, lay.size, chips);
 }
 
 // ---- compile.mjs
@@ -2071,7 +2111,7 @@ function compileGraph(graph, opts = {}) {
     return ka - kb || a - b;
   });
   const lab = (id) => gnode.get(id).label;
-  const sentence = graph.edges.map((e) => activity(lab(e.from), lab(e.to), e.label, { style: e.style, both: e.both }));
+  const sentence = graph.edges.map((e, i) => activity(lab(e.from), lab(e.to), e.label, { style: e.style, both: e.both, reply: graph.edges.some((o, j) => j !== i && o.from === e.to && o.to === e.from) && graph.edges.findIndex((o) => o.from === e.to && o.to === e.from) < i }));
   const info = order.map((ei) => ({ words: words(sentence[ei]), chips: msgEdge.filter((m) => m.idx === ei).length }));
   let sched;
   try { sched = buildSchedule(info, { pace, duration }); }
@@ -2169,7 +2209,7 @@ function filmPayload(block, ctx = {}) {
   const steps = ctx.steps || [], sch = ctx.schedule || [];
   const n = steps.length;
   const rel = !!ctx.relationColumn && n > 0, relName = ctx.relationName || 'Relation';
-  const rows = steps.map((s) => rowText(s.step, s.activity, s.from, s.to, s.label, s.style, 60));
+  const rows = steps.map((s) => rowText(s.step, s.activity, 60));
   const maxChars = Math.max(20, ...rows.map((r) => r.length));
   const relChars = rel ? Math.max(relName.length, ...steps.map((s) => (s.relation || '').length)) : 0;
   const gap = 24;
@@ -2177,11 +2217,14 @@ function filmPayload(block, ctx = {}) {
   // the text is one line per row: its size is what the table width allows
   const textSize = (tw, lo, hi) => clamp(Math.floor((tw * 0.94) / ((maxChars + (rel ? relChars + 3 : 0)) * 0.62)), lo, hi);
   for (const [aspect, sw, sh] of STAGES) {
-    const sz = textSize(sw, 12, 24);
-    const rowH = Math.round(sz * 1.9), headH = Math.round(sz * 2.1);
-    const T = n ? headH + n * rowH : 0;
-    const scale = Math.min((sw * 0.96) / block.w, (sh - T - gap * (n ? 3 : 2)) / block.h);
-    if (scale > 0) cands.push({ kind: 'stack', aspect, sw, sh, sz, rowH, headH, scale });
+    // the table text may shrink to about 1.95% of the stage width (6.7 px in a 343 px column) when that lets a tall diagram be bigger
+    const cap = textSize(sw, 12, 24);
+    for (const sz of new Set([cap, Math.min(cap, 16), Math.min(cap, Math.max(12, Math.ceil(sw * 0.0195)))])) {
+      const rowH = Math.round(sz * 1.9), headH = Math.round(sz * 2.1);
+      const T = n ? headH + n * rowH : 0;
+      const scale = Math.min((sw * 0.96) / block.w, (sh - T - gap * (n ? 3 : 2)) / block.h);
+      if (scale > 0) cands.push({ kind: 'stack', aspect, sw, sh, sz, rowH, headH, scale });
+    }
   }
   if (n) for (const [aspect, sw, sh] of STAGES.slice(0, 2)) for (const f of [0.34, 0.4, 0.46]) {
     const tw = sw * f - gap, sz = textSize(tw, 11, 22);
@@ -2191,8 +2234,14 @@ function filmPayload(block, ctx = {}) {
     const scale = Math.min((sw * (1 - f) - 2 * gap) / block.w, (sh - 2 * gap) / block.h);
     if (scale > 0) cands.push({ kind: 'side', aspect, sw, sh, sz, rowH, headH, scale, f });
   }
+  // Stages differ in width, and the player is shown at the width of its column, so what the viewer gets is the diagram's size
+  // relative to the stage WIDTH (scale / sw), not the raw scale. The table's text must stay readable too (>= 1.65% of the width,
+  // about 5.7 px in a 343 px column); a stage where it would be smaller is not considered unless nothing else is left.
+  const shown = (c) => c.scale / c.sw;
+  const legible = cands.filter((c) => !n || c.sz / c.sw >= 0.0165);
   let best = null;
-  for (const c of cands) if (!best || c.scale > best.scale + 1e-9) best = c;
+  // biggest diagram wins; within 1% the larger table text wins
+  for (const c of legible.length ? legible : cands) if (!best || shown(c) > shown(best) * 1.01 || (shown(c) > shown(best) * 0.99 && c.sz / c.sw > best.sz / best.sw)) best = c;
   if (!best) throw new ArchError(['the diagram and its steps table do not fit on one film stage; reduce the number of steps or the diagram size']);
   const { aspect, sw, sh, sz, rowH, headH, scale } = best;
   const pw = block.w * scale, ph = block.h * scale;

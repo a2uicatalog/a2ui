@@ -4,13 +4,13 @@
   {
    "type": "motion_timeline",
    "title": "A2UI v0.9: from prompt to native screen",
-   "aspect": "4:3",
-   "duration": 32.645,
+   "aspect": "9:16",
+   "duration": 35.67,
    "loop": true,
    "autoplay": true,
    "controls": true,
    "theme": "dark",
-   "poster": 32.15,
+   "poster": 35.17,
    "blocks": [
     {
      "type": "motion_arch",
@@ -27,7 +27,7 @@
        "y": 6.78,
        "w": 16.71,
        "h": 7.29,
-       "at": 0.0092,
+       "at": 0.0084,
        "dur": 0.011
       },
       {
@@ -38,7 +38,7 @@
        "y": 29.25,
        "w": 26.88,
        "h": 7.29,
-       "at": 0.0116,
+       "at": 0.0107,
        "dur": 0.011
       },
       {
@@ -49,7 +49,7 @@
        "y": 47.57,
        "w": 31.91,
        "h": 7.29,
-       "at": 0.0141,
+       "at": 0.0129,
        "dur": 0.011
       },
       {
@@ -60,7 +60,7 @@
        "y": 64.57,
        "w": 38.69,
        "h": 7.29,
-       "at": 0.0165,
+       "at": 0.0151,
        "dur": 0.011
       },
       {
@@ -71,7 +71,7 @@
        "y": 90.79,
        "w": 25.13,
        "h": 7.29,
-       "at": 0.019,
+       "at": 0.0174,
        "dur": 0.011
       },
       {
@@ -82,7 +82,7 @@
        "y": 90.79,
        "w": 15.7,
        "h": 7.29,
-       "at": 0.0214,
+       "at": 0.0196,
        "dur": 0.011
       }
      ],
@@ -106,8 +106,8 @@
         "x": 46.98,
         "y": 18.02
        },
-       "at": 0.0306,
-       "dur": 0.0153
+       "at": 0.028,
+       "dur": 0.014
       },
       {
        "from": "client",
@@ -132,8 +132,8 @@
         "x": 41.9,
         "y": 58.68
        },
-       "at": 0.1048,
-       "dur": 0.0153
+       "at": 0.1044,
+       "dur": 0.014
       },
       {
        "from": "agent",
@@ -154,8 +154,8 @@
         "x": 63.07,
         "y": 88.87
        },
-       "at": 0.1974,
-       "dur": 0.0153
+       "at": 0.1976,
+       "dur": 0.014
       },
       {
        "from": "llm",
@@ -176,8 +176,8 @@
         "x": 63.07,
         "y": 93.72
        },
-       "at": 0.2808,
-       "dur": 0.0153
+       "at": 0.2825,
+       "dur": 0.014
       },
       {
        "from": "agent",
@@ -210,8 +210,8 @@
         "x": 63,
         "y": 79.68
        },
-       "at": 0.3642,
-       "dur": 0.0153
+       "at": 0.3673,
+       "dur": 0.014
       },
       {
        "from": "client",
@@ -232,8 +232,8 @@
         "x": 71.86,
         "y": 38.41
        },
-       "at": 0.4662,
-       "dur": 0.0153
+       "at": 0.469,
+       "dur": 0.014
       },
       {
        "from": "renderer",
@@ -254,8 +254,8 @@
         "x": 76.51,
         "y": 56.07
        },
-       "at": 0.5588,
-       "dur": 0.0153
+       "at": 0.5623,
+       "dur": 0.014
       },
       {
        "from": "renderer",
@@ -284,8 +284,8 @@
         "x": 86.68,
         "y": 26.82
        },
-       "at": 0.6515,
-       "dur": 0.0153
+       "at": 0.6556,
+       "dur": 0.014
       },
       {
        "from": "renderer",
@@ -306,8 +306,8 @@
         "x": 50.06,
         "y": 38.41
        },
-       "at": 0.7349,
-       "dur": 0.0153
+       "at": 0.7404,
+       "dur": 0.014
       },
       {
        "from": "client",
@@ -336,8 +336,8 @@
         "x": 11.68,
         "y": 59.06
        },
-       "at": 0.8368,
-       "dur": 0.0153
+       "at": 0.8422,
+       "dur": 0.014
       }
      ],
      "radius": 13,
@@ -365,28 +365,28 @@
       {
        "edge": 1,
        "text": "prompt",
-       "at": 0.1216,
-       "dur": 0.0368
+       "at": 0.1198,
+       "dur": 0.0336
       },
       {
        "edge": 4,
        "text": "updateComponents",
-       "at": 0.3811,
-       "dur": 0.0368
+       "at": 0.3827,
+       "dur": 0.0336
       },
       {
        "edge": 8,
        "text": "action",
-       "at": 0.7517,
-       "dur": 0.0368
+       "at": 0.7558,
+       "dur": 0.0336
       }
      ],
      "id": "arch",
      "place": {
       "x": 2,
-      "y": 3.66,
-      "w": 56,
-      "h": 92.68,
+      "y": 1.88,
+      "w": 96,
+      "h": 67.03,
       "z": 1
      }
     },
@@ -394,16 +394,16 @@
      "type": "motion_text",
      "id": "head",
      "text": "STEP  ACTIVITY",
-     "size": 11,
+     "size": 13,
      "font": "mono",
      "weight": "bold",
      "mode": "block",
      "reveal": "fade",
      "color": "#9ca5b1",
      "place": {
-      "x": 61,
-      "y": 2.67,
-      "w": 37,
+      "x": 3,
+      "y": 70.78,
+      "w": 94,
       "z": 2
      }
     },
@@ -415,170 +415,170 @@
      "fill": "#8d98ff",
      "radius": 8,
      "place": {
-      "x": 59.8,
-      "y": 4.78,
-      "w": 39.4,
-      "h": 2.11,
+      "x": 1.8,
+      "y": 73.12,
+      "w": 96.4,
+      "h": 2.19,
       "z": 1
      }
     },
     {
      "type": "motion_text",
      "id": "row1",
-     "text": "*1*  User types prompt into Client app",
-     "size": 11,
+     "text": "*1*  User types prompt into the client app",
+     "size": 16,
      "font": "mono",
      "weight": "regular",
      "mode": "block",
      "reveal": "fade",
      "place": {
-      "x": 61,
-      "y": 5.22,
-      "w": 37,
+      "x": 3,
+      "y": 73.43,
+      "w": 94,
       "z": 2
      }
     },
     {
      "type": "motion_text",
      "id": "row2",
-     "text": "*2*  Client app sends the prompt to ADK agent",
-     "size": 11,
+     "text": "*2*  Client app sends the prompt to the ADK agent",
+     "size": 16,
      "font": "mono",
      "weight": "regular",
      "mode": "block",
      "reveal": "fade",
      "place": {
-      "x": 61,
-      "y": 7.56,
-      "w": 37,
+      "x": 3,
+      "y": 75.78,
+      "w": 94,
       "z": 2
      }
     },
     {
      "type": "motion_text",
      "id": "row3",
-     "text": "*3*  ADK agent sends the plan to LLM",
-     "size": 11,
+     "text": "*3*  ADK agent sends the plan to the LLM",
+     "size": 16,
      "font": "mono",
      "weight": "regular",
      "mode": "block",
      "reveal": "fade",
      "place": {
-      "x": 61,
-      "y": 9.89,
-      "w": 37,
+      "x": 3,
+      "y": 78.12,
+      "w": 94,
       "z": 2
      }
     },
     {
      "type": "motion_text",
      "id": "row4",
-     "text": "*4*  LLM sends A2UI JSON to ADK agent",
-     "size": 11,
+     "text": "*4*  LLM returns A2UI JSON to the ADK agent",
+     "size": 16,
      "font": "mono",
      "weight": "regular",
      "mode": "block",
      "reveal": "fade",
      "place": {
-      "x": 61,
-      "y": 12.22,
-      "w": 37,
+      "x": 3,
+      "y": 80.46,
+      "w": 94,
       "z": 2
      }
     },
     {
      "type": "motion_text",
      "id": "row5",
-     "text": "*5*  ADK agent → Client app: createSurface, updateComponent…",
-     "size": 11,
+     "text": "*5*  ADK agent sends createSurface, updateComponents to cli…",
+     "size": 16,
      "font": "mono",
      "weight": "regular",
      "mode": "block",
      "reveal": "fade",
      "place": {
-      "x": 61,
-      "y": 14.56,
-      "w": 37,
+      "x": 3,
+      "y": 82.81,
+      "w": 94,
       "z": 2
      }
     },
     {
      "type": "motion_text",
      "id": "row6",
-     "text": "*6*  Client app sends A2UI messages to A2UI renderer",
-     "size": 11,
+     "text": "*6*  Client app sends A2UI messages to the A2UI renderer",
+     "size": 16,
      "font": "mono",
      "weight": "regular",
      "mode": "block",
      "reveal": "fade",
      "place": {
-      "x": 61,
-      "y": 16.89,
-      "w": 37,
+      "x": 3,
+      "y": 85.15,
+      "w": 94,
       "z": 2
      }
     },
     {
      "type": "motion_text",
      "id": "row7",
-     "text": "*7*  A2UI renderer looks up components in Trusted catalogue",
-     "size": 11,
+     "text": "*7*  A2UI renderer looks up components in trusted catalogue",
+     "size": 16,
      "font": "mono",
      "weight": "regular",
      "mode": "block",
      "reveal": "fade",
      "place": {
-      "x": 61,
-      "y": 19.22,
-      "w": 37,
+      "x": 3,
+      "y": 87.49,
+      "w": 94,
       "z": 2
      }
     },
     {
      "type": "motion_text",
      "id": "row8",
-     "text": "*8*  A2UI renderer sends native UI to User",
-     "size": 11,
+     "text": "*8*  A2UI renderer sends native UI to the user",
+     "size": 16,
      "font": "mono",
      "weight": "regular",
      "mode": "block",
      "reveal": "fade",
      "place": {
-      "x": 61,
-      "y": 21.56,
-      "w": 37,
+      "x": 3,
+      "y": 89.84,
+      "w": 94,
       "z": 2
      }
     },
     {
      "type": "motion_text",
      "id": "row9",
-     "text": "*9*  A2UI renderer sends the action to Client app (async)",
-     "size": 11,
+     "text": "*9*  A2UI renderer sends action to client app (async)",
+     "size": 16,
      "font": "mono",
      "weight": "regular",
      "mode": "block",
      "reveal": "fade",
      "place": {
-      "x": 61,
-      "y": 23.89,
-      "w": 37,
+      "x": 3,
+      "y": 92.18,
+      "w": 94,
       "z": 2
      }
     },
     {
      "type": "motion_text",
      "id": "row10",
-     "text": "*10*  Client app sends the action to ADK agent (async)",
-     "size": 11,
+     "text": "*10*  Client app sends the action to the ADK agent (async)",
+     "size": 16,
      "font": "mono",
      "weight": "regular",
      "mode": "block",
      "reveal": "fade",
      "place": {
-      "x": 61,
-      "y": 26.22,
-      "w": 37,
+      "x": 3,
+      "y": 94.53,
+      "w": 94,
       "z": 2
      }
     }
@@ -592,7 +592,7 @@
        "p": 0
       },
       {
-       "t": 32.645,
+       "t": 35.67,
        "p": 1,
        "ease": "linear"
       }
@@ -624,11 +624,11 @@
        "opacity": 0
       },
       {
-       "t": 3.42,
+       "t": 3.723,
        "opacity": 0
       },
       {
-       "t": 3.72,
+       "t": 4.02,
        "opacity": 1,
        "ease": "standard"
       }
@@ -642,11 +642,11 @@
        "opacity": 0
       },
       {
-       "t": 6.445,
+       "t": 7.05,
        "opacity": 0
       },
       {
-       "t": 6.75,
+       "t": 7.35,
        "opacity": 1,
        "ease": "standard"
       }
@@ -660,11 +660,11 @@
        "opacity": 0
       },
       {
-       "t": 9.168,
+       "t": 10.075,
        "opacity": 0
       },
       {
-       "t": 9.47,
+       "t": 10.38,
        "opacity": 1,
        "ease": "standard"
       }
@@ -678,11 +678,11 @@
        "opacity": 0
       },
       {
-       "t": 11.89,
+       "t": 13.1,
        "opacity": 0
       },
       {
-       "t": 12.19,
+       "t": 13.4,
        "opacity": 1,
        "ease": "standard"
       }
@@ -696,11 +696,11 @@
        "opacity": 0
       },
       {
-       "t": 15.218,
+       "t": 16.73,
        "opacity": 0
       },
       {
-       "t": 15.52,
+       "t": 17.03,
        "opacity": 1,
        "ease": "standard"
       }
@@ -714,11 +714,11 @@
        "opacity": 0
       },
       {
-       "t": 18.243,
+       "t": 20.058,
        "opacity": 0
       },
       {
-       "t": 18.54,
+       "t": 20.36,
        "opacity": 1,
        "ease": "standard"
       }
@@ -732,11 +732,11 @@
        "opacity": 0
       },
       {
-       "t": 21.268,
+       "t": 23.385,
        "opacity": 0
       },
       {
-       "t": 21.57,
+       "t": 23.69,
        "opacity": 1,
        "ease": "standard"
       }
@@ -750,11 +750,11 @@
        "opacity": 0
       },
       {
-       "t": 23.99,
+       "t": 26.41,
        "opacity": 0
       },
       {
-       "t": 24.29,
+       "t": 26.71,
        "opacity": 1,
        "ease": "standard"
       }
@@ -768,11 +768,11 @@
        "opacity": 0
       },
       {
-       "t": 27.318,
+       "t": 30.04,
        "opacity": 0
       },
       {
-       "t": 27.62,
+       "t": 30.34,
        "opacity": 1,
        "ease": "standard"
       }
@@ -783,12 +783,12 @@
      "keys": [
       {
        "t": 0,
-       "y": 4.78,
+       "y": 73.12,
        "opacity": 0
       },
       {
        "t": 1,
-       "y": 4.78,
+       "y": 73.12,
        "opacity": 0,
        "ease": "hold"
       },
@@ -798,56 +798,56 @@
        "ease": "standard"
       },
       {
-       "t": 3.42,
-       "y": 7.11,
+       "t": 3.723,
+       "y": 75.46,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 6.445,
-       "y": 9.44,
+       "t": 7.05,
+       "y": 77.81,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 9.168,
-       "y": 11.78,
+       "t": 10.075,
+       "y": 80.15,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 11.89,
-       "y": 14.11,
+       "t": 13.1,
+       "y": 82.49,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 15.218,
-       "y": 16.44,
+       "t": 16.73,
+       "y": 84.84,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 18.243,
-       "y": 18.78,
+       "t": 20.058,
+       "y": 87.18,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 21.268,
-       "y": 21.11,
+       "t": 23.385,
+       "y": 89.53,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 23.99,
-       "y": 23.44,
+       "t": 26.41,
+       "y": 91.87,
        "opacity": 0.22,
        "ease": "hold"
       },
       {
-       "t": 27.318,
-       "y": 25.78,
+       "t": 30.04,
+       "y": 94.21,
        "opacity": 0.22,
        "ease": "hold"
       }

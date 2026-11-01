@@ -4,96 +4,96 @@
   {
    "type": "motion_arch",
    "label": "GenUI stack, one possible composition (A2UI v0.9)",
-   "w": 932,
-   "h": 917,
+   "w": 802,
+   "h": 1061,
    "size": 18,
    "nodes": [
     {
      "id": "user",
      "kind": "user",
      "label": "User",
-     "x": 61.59,
-     "y": 5.45,
-     "w": 10.73,
-     "h": 5.89,
-     "at": 0.0068,
+     "x": 55.11,
+     "y": 4.71,
+     "w": 12.47,
+     "h": 5.09,
+     "at": 0.0064,
      "dur": 0.011
     },
     {
      "id": "app",
      "kind": "app",
      "label": "Frontend app",
-     "x": 61.29,
-     "y": 25.41,
-     "w": 19.31,
-     "h": 5.89,
-     "at": 0.0081,
+     "x": 54.77,
+     "y": 21.96,
+     "w": 22.44,
+     "h": 5.09,
+     "at": 0.0076,
      "dur": 0.011
     },
     {
      "id": "ui",
      "kind": "surface",
      "label": "A2UI renderer",
-     "x": 49.57,
-     "y": 44.38,
-     "w": 20.39,
-     "h": 5.89,
-     "at": 0.0094,
+     "x": 40.15,
+     "y": 38.36,
+     "w": 23.69,
+     "h": 5.09,
+     "at": 0.0088,
      "dur": 0.011
     },
     {
      "id": "mcpapp",
      "kind": "surface",
      "label": "MCP App iframe",
-     "x": 73.02,
-     "y": 44.38,
-     "w": 21.57,
-     "h": 5.89,
-     "at": 0.0107,
+     "x": 69.39,
+     "y": 38.36,
+     "w": 25.06,
+     "h": 5.09,
+     "at": 0.01,
      "dur": 0.011
     },
     {
      "id": "agent",
      "kind": "app",
      "label": "ADK agent",
-     "x": 48.71,
-     "y": 67.39,
-     "w": 16.09,
-     "h": 5.89,
-     "at": 0.012,
+     "x": 55.11,
+     "y": 58.25,
+     "w": 18.7,
+     "h": 5.09,
+     "at": 0.0112,
      "dur": 0.011
     },
     {
      "id": "llm",
      "kind": "model",
      "label": "LLM",
-     "x": 77.47,
-     "y": 67.39,
-     "w": 10.09,
-     "h": 5.89,
-     "at": 0.0133,
+     "x": 55.11,
+     "y": 71.82,
+     "w": 11.72,
+     "h": 5.09,
+     "at": 0.0124,
      "dur": 0.011
     },
     {
      "id": "mcp",
      "kind": "tool",
      "label": "MCP server",
-     "x": 45.82,
-     "y": 92.58,
-     "w": 17.17,
-     "h": 5.89,
-     "at": 0.0146,
+     "x": 35.79,
+     "y": 93.59,
+     "w": 19.95,
+     "h": 5.09,
+     "at": 0.0136,
      "dur": 0.011
     },
     {
      "id": "remote",
      "kind": "server",
      "label": "Remote agent over A2A",
-     "x": 71.41,
-     "y": 92.58,
-     "w": 29.08,
-     "h": 5.89,
-     "at": 0.0159,
+     "x": 67.52,
+     "y": 93.59,
+     "w": 33.79,
+     "h": 5.09,
+     "at": 0.0148,
      "dur": 0.011
     }
    ],
@@ -105,20 +105,20 @@
      "style": "solid",
      "points": [
       {
-       "x": 61.37,
-       "y": 8.4
+       "x": 55.11,
+       "y": 7.26
       },
       {
-       "x": 61.37,
-       "y": 22.46
+       "x": 55.11,
+       "y": 19.42
       }
      ],
      "label_at": {
-      "x": 65.13,
-      "y": 15.43
+      "x": 59.48,
+      "y": 13.34
      },
-     "at": 0.0228,
-     "dur": 0.0114
+     "at": 0.0212,
+     "dur": 0.011
     },
     {
      "from": "app",
@@ -127,24 +127,32 @@
      "style": "solid",
      "points": [
       {
-       "x": 61.37,
-       "y": 28.35
+       "x": 55.11,
+       "y": 24.51
       },
       {
-       "x": 61.37,
-       "y": 66.3
+       "x": 55.11,
+       "y": 50.71
       },
       {
-       "x": 56.76,
-       "y": 66.3
+       "x": 66.33,
+       "y": 50.71
+      },
+      {
+       "x": 66.33,
+       "y": 57.3
+      },
+      {
+       "x": 64.46,
+       "y": 57.3
       }
      ],
      "label_at": {
-      "x": 67.44,
-      "y": 49.29
+      "x": 73.38,
+      "y": 54.01
      },
-     "at": 0.0724,
-     "dur": 0.0114
+     "at": 0.0673,
+     "dur": 0.011
     },
     {
      "from": "agent",
@@ -153,20 +161,20 @@
      "style": "solid",
      "points": [
       {
-       "x": 56.76,
-       "y": 67.39
+       "x": 55.11,
+       "y": 60.79
       },
       {
-       "x": 72.42,
-       "y": 67.39
+       "x": 55.11,
+       "y": 69.27
       }
      ],
      "label_at": {
-      "x": 65.88,
-      "y": 65.87
+      "x": 49.69,
+      "y": 65.03
      },
-     "at": 0.1413,
-     "dur": 0.0114
+     "at": 0.1378,
+     "dur": 0.011
     },
     {
      "from": "agent",
@@ -175,20 +183,24 @@
      "style": "solid",
      "points": [
       {
-       "x": 48.5,
-       "y": 70.34
+       "x": 45.76,
+       "y": 59.19
       },
       {
-       "x": 48.5,
-       "y": 89.64
+       "x": 42.64,
+       "y": 59.19
+      },
+      {
+       "x": 42.64,
+       "y": 91.05
       }
      ],
      "label_at": {
-      "x": 34.5,
-      "y": 79.99
+      "x": 42.64,
+      "y": 75.68
      },
-     "at": 0.2033,
-     "dur": 0.0114
+     "at": 0.2018,
+     "dur": 0.011
     },
     {
      "from": "mcp",
@@ -197,20 +209,24 @@
      "style": "solid",
      "points": [
       {
-       "x": 47.42,
-       "y": 89.64
+       "x": 41.4,
+       "y": 91.05
       },
       {
-       "x": 47.42,
-       "y": 70.34
+       "x": 41.4,
+       "y": 58.25
+      },
+      {
+       "x": 45.76,
+       "y": 58.25
       }
      ],
      "label_at": {
-      "x": 34.33,
-      "y": 83.26
+      "x": 26.18,
+      "y": 72.95
      },
-     "at": 0.2722,
-     "dur": 0.0114
+     "at": 0.2723,
+     "dur": 0.011
     },
     {
      "from": "agent",
@@ -219,24 +235,20 @@
      "style": "solid",
      "points": [
       {
-       "x": 56.76,
-       "y": 68.48
+       "x": 62.59,
+       "y": 60.79
       },
       {
-       "x": 59.23,
-       "y": 68.48
-      },
-      {
-       "x": 59.23,
-       "y": 89.64
+       "x": 62.59,
+       "y": 91.05
       }
      ],
      "label_at": {
-      "x": 59.23,
-      "y": 79.06
+      "x": 54.43,
+      "y": 78.18
      },
-     "at": 0.3618,
-     "dur": 0.0114
+     "at": 0.3619,
+     "dur": 0.011
     },
     {
      "from": "remote",
@@ -245,24 +257,24 @@
      "style": "solid",
      "points": [
       {
-       "x": 60.3,
-       "y": 89.64
+       "x": 66.33,
+       "y": 91.05
       },
       {
-       "x": 60.3,
-       "y": 68.48
+       "x": 66.33,
+       "y": 59.19
       },
       {
-       "x": 56.76,
-       "y": 68.48
+       "x": 64.46,
+       "y": 59.19
       }
      ],
      "label_at": {
-      "x": 66.36,
-      "y": 82.33
+      "x": 73.38,
+      "y": 75.12
      },
-     "at": 0.4445,
-     "dur": 0.0114
+     "at": 0.4452,
+     "dur": 0.011
     },
     {
      "from": "agent",
@@ -271,28 +283,32 @@
      "style": "dashed",
      "points": [
       {
-       "x": 40.67,
-       "y": 66.3
+       "x": 45.76,
+       "y": 57.3
       },
       {
-       "x": 36.7,
-       "y": 66.3
+       "x": 42.64,
+       "y": 57.3
       },
       {
-       "x": 36.7,
-       "y": 25.95
+       "x": 42.64,
+       "y": 43.17
       },
       {
-       "x": 51.64,
-       "y": 25.95
+       "x": 53.87,
+       "y": 43.17
+      },
+      {
+       "x": 53.87,
+       "y": 24.51
       }
      ],
      "label_at": {
-      "x": 19.42,
-      "y": 46.13
+      "x": 22.57,
+      "y": 50.24
      },
-     "at": 0.5272,
-     "dur": 0.0114
+     "at": 0.5285,
+     "dur": 0.011
     },
     {
      "from": "app",
@@ -301,20 +317,20 @@
      "style": "solid",
      "points": [
       {
-       "x": 58.15,
-       "y": 28.35
+       "x": 50.12,
+       "y": 24.51
       },
       {
-       "x": 58.15,
-       "y": 41.44
+       "x": 50.12,
+       "y": 35.82
       }
      ],
      "label_at": {
-      "x": 50.21,
-      "y": 34.9
+      "x": 40.9,
+      "y": 30.16
      },
-     "at": 0.6375,
-     "dur": 0.0114
+     "at": 0.6374,
+     "dur": 0.011
     },
     {
      "from": "app",
@@ -323,20 +339,20 @@
      "style": "solid",
      "points": [
       {
-       "x": 64.59,
-       "y": 28.35
+       "x": 58.85,
+       "y": 24.51
       },
       {
-       "x": 64.59,
-       "y": 41.44
+       "x": 58.85,
+       "y": 35.82
       }
      ],
      "label_at": {
-      "x": 74.41,
-      "y": 38.17
+      "x": 70.26,
+      "y": 32.99
      },
-     "at": 0.7064,
-     "dur": 0.0114
+     "at": 0.7078,
+     "dur": 0.011
     },
     {
      "from": "ui",
@@ -345,20 +361,20 @@
      "style": "dashed",
      "points": [
       {
-       "x": 53.86,
-       "y": 41.44
+       "x": 46.38,
+       "y": 35.82
       },
       {
-       "x": 53.86,
-       "y": 28.35
+       "x": 46.38,
+       "y": 24.51
       }
      ],
      "label_at": {
-      "x": 48.71,
-      "y": 38.17
+      "x": 40.4,
+      "y": 32.99
      },
-     "at": 0.7891,
-     "dur": 0.0114
+     "at": 0.7911,
+     "dur": 0.011
     },
     {
      "from": "mcpapp",
@@ -367,48 +383,48 @@
      "style": "dashed",
      "points": [
       {
-       "x": 68.88,
-       "y": 41.44
+       "x": 63.84,
+       "y": 35.82
       },
       {
-       "x": 68.88,
-       "y": 28.35
+       "x": 63.84,
+       "y": 24.51
       }
      ],
      "label_at": {
-      "x": 83.37,
-      "y": 34.9
+      "x": 80.67,
+      "y": 30.16
      },
-     "at": 0.8649,
-     "dur": 0.0114
+     "at": 0.868,
+     "dur": 0.011
     }
    ],
    "radius": 10,
    "groups": [
     {
      "label": "Browser",
-     "x": 37.23,
-     "y": 18.21,
-     "w": 48.71,
-     "h": 31.08,
+     "x": 25.81,
+     "y": 15.74,
+     "w": 58.6,
+     "h": 26.86,
      "at": 0,
      "dur": 0.011
     },
     {
      "label": "Agent backend",
-     "x": 38.52,
-     "y": 60.2,
-     "w": 46.14,
-     "h": 12.1,
+     "x": 43.27,
+     "y": 52.03,
+     "w": 23.69,
+     "h": 24.03,
      "at": 0,
      "dur": 0.011
     },
     {
      "label": "Services",
-     "x": 35.09,
-     "y": 85.39,
-     "w": 53,
-     "h": 12.1,
+     "x": 23.32,
+     "y": 87.37,
+     "w": 63.59,
+     "h": 10.46,
      "at": 0,
      "dur": 0.011
     }
@@ -417,20 +433,20 @@
     {
      "edge": 1,
      "text": "AG-UI run",
-     "at": 0.0849,
-     "dur": 0.0273
+     "at": 0.0794,
+     "dur": 0.0254
     },
     {
      "edge": 6,
      "text": "A2UI JSON",
-     "at": 0.457,
-     "dur": 0.0273
+     "at": 0.4573,
+     "dur": 0.0254
     },
     {
      "edge": 4,
      "text": "ui:// HTML",
-     "at": 0.2848,
-     "dur": 0.0273
+     "at": 0.2843,
+     "dur": 0.0254
     }
    ]
   },
@@ -444,51 +460,51 @@
    "rows": [
     [
      "1",
-     "User asks Frontend app"
+     "User asks the frontend app"
     ],
     [
      "2",
-     "Frontend app sends AG-UI run to ADK agent"
+     "Frontend app sends AG-UI run to the ADK agent"
     ],
     [
      "3",
-     "ADK agent sends the prompt to LLM"
+     "ADK agent sends the prompt to the LLM"
     ],
     [
      "4",
-     "ADK agent sends tools/call, resources/read to MCP server"
+     "ADK agent sends tools/call, resources/read to the MCP server"
     ],
     [
      "5",
-     "MCP server sends tool result + ui:// HTML to ADK agent"
+     "MCP server returns tool result + ui HTML to the ADK agent"
     ],
     [
      "6",
-     "ADK agent sends A2A message to Remote agent over A2A"
+     "ADK agent sends A2A message to the remote agent over A2A"
     ],
     [
      "7",
-     "Remote agent over A2A sends A2UI JSON to ADK agent"
+     "Remote agent over A2A returns A2UI JSON to the ADK agent"
     ],
     [
      "8",
-     "ADK agent sends AG-UI events: A2UI + MCP App HTML to Frontend app (async)"
+     "ADK agent sends AG-UI events, A2UI + MCP app HTML to the frontend app (async)"
     ],
     [
      "9",
-     "Frontend app sends A2UI messages to A2UI renderer"
+     "Frontend app sends A2UI messages to the A2UI renderer"
     ],
     [
      "10",
-     "Frontend app sends the sandboxed iframe to MCP App iframe"
+     "Frontend app sends the sandboxed iframe to the MCP app iframe"
     ],
     [
      "11",
-     "A2UI renderer sends the action to Frontend app (async)"
+     "A2UI renderer sends the action to the frontend app (async)"
     ],
     [
      "12",
-     "MCP App iframe sends tools/call via postMessage to Frontend app (async)"
+     "MCP app iframe sends tools/call via postMessage to the frontend app (async)"
     ]
    ],
    "col_widths": [

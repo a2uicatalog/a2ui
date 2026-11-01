@@ -16,7 +16,7 @@
      "y": 7.86,
      "w": 13.33,
      "h": 8.36,
-     "at": 0.0068,
+     "at": 0.0064,
      "dur": 0.011
     },
     {
@@ -27,7 +27,7 @@
      "y": 35.17,
      "w": 24.07,
      "h": 8.36,
-     "at": 0.0094,
+     "at": 0.0088,
      "dur": 0.011
     },
     {
@@ -38,7 +38,7 @@
      "y": 29.15,
      "w": 25.41,
      "h": 8.36,
-     "at": 0.0081,
+     "at": 0.0076,
      "dur": 0.011
     },
     {
@@ -49,7 +49,7 @@
      "y": 41.19,
      "w": 26.75,
      "h": 8.36,
-     "at": 0.0107,
+     "at": 0.01,
      "dur": 0.011
     },
     {
@@ -60,7 +60,7 @@
      "y": 65.27,
      "w": 20.04,
      "h": 8.36,
-     "at": 0.012,
+     "at": 0.0112,
      "dur": 0.011
     },
     {
@@ -71,7 +71,7 @@
      "y": 65.27,
      "w": 12.46,
      "h": 8.36,
-     "at": 0.0133,
+     "at": 0.0124,
      "dur": 0.011
     },
     {
@@ -82,7 +82,7 @@
      "y": 89.35,
      "w": 21.38,
      "h": 8.36,
-     "at": 0.0146,
+     "at": 0.0136,
      "dur": 0.011
     },
     {
@@ -93,7 +93,7 @@
      "y": 89.35,
      "w": 36.15,
      "h": 8.36,
-     "at": 0.0159,
+     "at": 0.0148,
      "dur": 0.011
     }
    ],
@@ -103,32 +103,32 @@
      "to": "app",
      "label": "asks",
      "style": "solid",
-     "at": 0.0228,
-     "dur": 0.0114
+     "at": 0.0212,
+     "dur": 0.011
     },
     {
      "from": "app",
      "to": "agent",
      "label": "AG-UI run",
      "style": "solid",
-     "at": 0.3894,
-     "dur": 0.0114
+     "at": 0.3876,
+     "dur": 0.011
     },
     {
      "from": "agent",
      "to": "llm",
      "label": "prompt",
      "style": "solid",
-     "at": 0.5685,
-     "dur": 0.0114
+     "at": 0.5669,
+     "dur": 0.011
     },
     {
      "from": "agent",
      "to": "mcp",
      "label": "tools/call, resources/read",
      "style": "solid",
-     "at": 0.6306,
-     "dur": 0.0114
+     "at": 0.631,
+     "dur": 0.011
     },
     {
      "from": "mcp",
@@ -136,8 +136,8 @@
      "label": "tool result + ui:// HTML",
      "style": "solid",
      "curve": -12,
-     "at": 0.6995,
-     "dur": 0.0114
+     "at": 0.7014,
+     "dur": 0.011
     },
     {
      "from": "agent",
@@ -145,8 +145,8 @@
      "label": "A2A message",
      "style": "solid",
      "curve": 50,
-     "at": 0.7891,
-     "dur": 0.0114
+     "at": 0.7911,
+     "dur": 0.011
     },
     {
      "from": "remote",
@@ -154,8 +154,8 @@
      "label": "A2UI JSON",
      "style": "solid",
      "curve": 50,
-     "at": 0.8717,
-     "dur": 0.0114
+     "at": 0.8744,
+     "dur": 0.011
     },
     {
      "from": "agent",
@@ -163,24 +163,24 @@
      "label": "AG-UI events: A2UI + MCP App HTML",
      "style": "dashed",
      "curve": 65,
-     "at": 0.4583,
-     "dur": 0.0114
+     "at": 0.458,
+     "dur": 0.011
     },
     {
      "from": "app",
      "to": "ui",
      "label": "A2UI messages",
      "style": "solid",
-     "at": 0.0724,
-     "dur": 0.0114
+     "at": 0.0673,
+     "dur": 0.011
     },
     {
      "from": "app",
      "to": "mcpapp",
      "label": "sandboxed iframe",
      "style": "solid",
-     "at": 0.2171,
-     "dur": 0.0114
+     "at": 0.2146,
+     "dur": 0.011
     },
     {
      "from": "ui",
@@ -188,8 +188,8 @@
      "label": "action",
      "style": "dashed",
      "curve": 24,
-     "at": 0.1413,
-     "dur": 0.0114
+     "at": 0.1378,
+     "dur": 0.011
     },
     {
      "from": "mcpapp",
@@ -197,8 +197,8 @@
      "label": "tools/call via postMessage",
      "style": "dashed",
      "curve": -24,
-     "at": 0.2998,
-     "dur": 0.0114
+     "at": 0.2979,
+     "dur": 0.011
     }
    ],
    "groups": [
@@ -234,20 +234,20 @@
     {
      "edge": 1,
      "text": "AG-UI run",
-     "at": 0.4019,
-     "dur": 0.0273
+     "at": 0.3996,
+     "dur": 0.0254
     },
     {
      "edge": 6,
      "text": "A2UI JSON",
-     "at": 0.8843,
-     "dur": 0.0273
+     "at": 0.8864,
+     "dur": 0.0254
     },
     {
      "edge": 4,
      "text": "ui:// HTML",
-     "at": 0.712,
-     "dur": 0.0273
+     "at": 0.7135,
+     "dur": 0.0254
     }
    ]
   }

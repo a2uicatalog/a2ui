@@ -107,3 +107,10 @@ def test_validation_limits_in_the_schema_text():
     assert "points?" in atom["fields"]["edges"] and "label_at?" in atom["fields"]["edges"] and "max 10" in atom["fields"]["edges"]
     assert "radius" in atom["fields"] and "0-60" in atom["fields"]["radius"]
     assert atom.get("stage") is None                 # stays stable: additive optional fields only
+
+
+def test_a_routed_edges_label_is_drawn_after_the_message_chips():
+    h = _py(blk())
+    assert h.index(">go<") > h.index(">m<") > h.index("<path d=\"M220")      # route, then the chips, then the label
+    c = _py(dict(blk(), edges=[{"from": "a", "to": "b", "label": "go", "curve": 10}]))
+    assert c.index(">go<") < c.index(">m<")                                      # a curved edge keeps the old order

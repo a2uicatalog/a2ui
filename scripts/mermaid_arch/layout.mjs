@@ -202,7 +202,7 @@ export function layered(items, edges, axis, s, samePairs = [], laneGap = 0, extr
   const rankPos = [];
   let acc = 0;
   for (let r = 0; r < R; r++) { rankPos.push(acc); acc += thick[r] + (gaps[r] || 0); }
-  const crossGap = Math.round(1.3 * s);
+  const crossGap = Math.round(1.3 * s) + (laneGap ? Math.round(0.9 * s) : 0);
   const cpos = Array(N).fill(0);
   L.forEach((layer) => {
     let t = 0;
@@ -474,7 +474,7 @@ function shapeScore(graph, layout, fit) {
   const byId = new Map(layout.nodes.map((n) => [n.id, n]));
   let len = 0;
   for (const e of graph.edges) { const a = byId.get(e.from), b = byId.get(e.to); if (a && b) len += Math.abs(a.x + a.w / 2 - b.x - b.w / 2) + Math.abs(a.y + a.h / 2 - b.y - b.h / 2); }
-  const phone = fit === 'wide' ? 0 : 14 * Math.max(0, 9 - phonePx(W, s)) + 30 * Math.max(0, H / W - 1.7);
+  const phone = fit === 'wide' ? 0 : 24 * Math.max(0, 9 - phonePx(W, s)) + 40 * Math.max(0, H / W - 1.3);
   return phone + (W / s) * 0.15 + (H / s) * 0.15 + (len / s) * 0.35;
 }
 
@@ -507,16 +507,16 @@ export function layoutGraph(graph, opts = {}) {
 // ---------------------------------------------------------------- orthogonal routing: size, orientation, framing
 function orthoScore(fr, fit) {
   const m = fr.metrics, s = fr.size;
-  const phone = fit === 'wide' ? 0 : 14 * Math.max(0, 9 - phonePx(fr.W, s)) + 30 * Math.max(0, fr.H / fr.W - 1.7);
+  const phone = fit === 'wide' ? 0 : 24 * Math.max(0, 9 - phonePx(fr.W, s)) + 40 * Math.max(0, fr.H / fr.W - 1.3);
   return phone + (fr.W / s) * 0.15 + (fr.H / s) * 0.15 + m.crossings * 8 + (m.throughBoxes + m.titleHits) * 40 + m.labelNode * 20 + m.labelLabel * 40 + m.labelTitle * 30
-    + m.labelOnLine * 9 + m.bends * 0.5 + (m.length / s) * 0.04 + fr.failed * 50;
+    + m.labelOnLine * 14 + (m.labelChip || 0) * 1.5 + m.bends * 0.5 + (m.length / s) * 0.04 + fr.failed * 50;
 }
 
 function orthoAt(gr, s, fit) {
   const laneGap = Math.round(0.55 * s);
   let best = null;
   // if some label has no free place, give every channel more room and route again (twice at most)
-  for (const extra of [0, 1.0, 2.0]) {
+  for (const extra of [0, 1.0, 2.0, 3.5]) {
     for (const v of rankLayouts(gr, s, fit, 4, laneGap, true, Math.round(extra * s))) {
       const rt = routeEdges(gr, { nodes: v.layout.nodes, groups: v.layout.groups, s }, {});
       const fr = frameRouted(gr, v, rt, s);
@@ -524,7 +524,7 @@ function orthoAt(gr, s, fit) {
       if (!best || fr.score < best.score - 1e-9) best = fr;
     }
     const m = best.metrics;
-    if (best.failed === 0 && m.labelLabel + m.labelNode + m.labelTitle + m.throughBoxes + m.titleHits === 0 && m.labelOnLine <= 1) break;
+    if (best.failed === 0 && m.labelLabel + m.labelNode + m.labelTitle + m.throughBoxes + m.titleHits === 0 && m.labelOnLine === 0) break;
   }
   return best;
 }
@@ -642,9 +642,9 @@ function frameRouted(graph, best, rt, s) {
 
 // One yardstick for both drawings (curved or routed) of a finished layout: counts of edges through boxes or group titles,
 // edge crossings (pairs of edges that cross), labels on boxes, titles, each other and other edges.
-export function commonMetrics(graph, lay) {
+export function commonMetrics(graph, lay, chips = {}) {
   const layout = { nodes: lay.nodes, groups: lay.groups, s: lay.size };
   const glabels = lay.groups.map((g) => groupTitleRect(g, graph.groups.find((x) => x.id === g.id), lay.size));
   const routes = lay.routes || curveRoutes(graph, layout, lay.curves, edgeCurve, labelRect);
-  return routeMetrics(graph, layout, routes, glabels, lay.size);
+  return routeMetrics(graph, layout, routes, glabels, lay.size, chips);
 }

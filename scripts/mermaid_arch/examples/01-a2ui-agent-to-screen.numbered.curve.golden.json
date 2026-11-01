@@ -16,7 +16,7 @@
      "y": 50,
      "w": 7.76,
      "h": 14.09,
-     "at": 0.0092,
+     "at": 0.0084,
      "dur": 0.011
     },
     {
@@ -27,7 +27,7 @@
      "y": 25.84,
      "w": 12.44,
      "h": 14.09,
-     "at": 0.0116,
+     "at": 0.0107,
      "dur": 0.011
     },
     {
@@ -38,7 +38,7 @@
      "y": 54.03,
      "w": 14.73,
      "h": 14.09,
-     "at": 0.0141,
+     "at": 0.0129,
      "dur": 0.011
     },
     {
@@ -49,7 +49,7 @@
      "y": 82.21,
      "w": 17.81,
      "h": 14.09,
-     "at": 0.0165,
+     "at": 0.0151,
      "dur": 0.011
     },
     {
@@ -60,7 +60,7 @@
      "y": 54.03,
      "w": 11.64,
      "h": 14.09,
-     "at": 0.019,
+     "at": 0.0174,
      "dur": 0.011
     },
     {
@@ -71,7 +71,7 @@
      "y": 54.03,
      "w": 7.26,
      "h": 14.09,
-     "at": 0.0214,
+     "at": 0.0196,
      "dur": 0.011
     }
    ],
@@ -81,24 +81,24 @@
      "to": "client",
      "label": "1 types prompt",
      "style": "solid",
-     "at": 0.0306,
-     "dur": 0.0153
+     "at": 0.028,
+     "dur": 0.014
     },
     {
      "from": "client",
      "to": "agent",
      "label": "2 prompt",
      "style": "solid",
-     "at": 0.1048,
-     "dur": 0.0153
+     "at": 0.1044,
+     "dur": 0.014
     },
     {
      "from": "agent",
      "to": "llm",
      "label": "3 plan",
      "style": "solid",
-     "at": 0.1974,
-     "dur": 0.0153
+     "at": 0.1976,
+     "dur": 0.014
     },
     {
      "from": "llm",
@@ -106,8 +106,8 @@
      "label": "4 A2UI JSON",
      "style": "solid",
      "curve": 50,
-     "at": 0.2808,
-     "dur": 0.0153
+     "at": 0.2825,
+     "dur": 0.014
     },
     {
      "from": "agent",
@@ -115,32 +115,32 @@
      "label": "5 createSurface, updateComponents",
      "style": "dashed",
      "curve": 24,
-     "at": 0.3642,
-     "dur": 0.0153
+     "at": 0.3673,
+     "dur": 0.014
     },
     {
      "from": "client",
      "to": "renderer",
      "label": "6 A2UI messages",
      "style": "solid",
-     "at": 0.4662,
-     "dur": 0.0153
+     "at": 0.469,
+     "dur": 0.014
     },
     {
      "from": "renderer",
      "to": "catalog",
      "label": "7 looks up components",
      "style": "solid",
-     "at": 0.5588,
-     "dur": 0.0153
+     "at": 0.5623,
+     "dur": 0.014
     },
     {
      "from": "renderer",
      "to": "user",
      "label": "8 native UI",
      "style": "solid",
-     "at": 0.6515,
-     "dur": 0.0153
+     "at": 0.6556,
+     "dur": 0.014
     },
     {
      "from": "renderer",
@@ -148,8 +148,8 @@
      "label": "9 action",
      "style": "dashed",
      "curve": 65,
-     "at": 0.7349,
-     "dur": 0.0153
+     "at": 0.7404,
+     "dur": 0.014
     },
     {
      "from": "client",
@@ -157,8 +157,8 @@
      "label": "10 action",
      "style": "dashed",
      "curve": 36,
-     "at": 0.8368,
-     "dur": 0.0153
+     "at": 0.8422,
+     "dur": 0.014
     }
    ],
    "groups": [
@@ -185,20 +185,20 @@
     {
      "edge": 1,
      "text": "prompt",
-     "at": 0.1216,
-     "dur": 0.0368
+     "at": 0.1198,
+     "dur": 0.0336
     },
     {
      "edge": 4,
      "text": "updateComponents",
-     "at": 0.3811,
-     "dur": 0.0368
+     "at": 0.3827,
+     "dur": 0.0336
     },
     {
      "edge": 8,
      "text": "action",
-     "at": 0.7517,
-     "dur": 0.0368
+     "at": 0.7558,
+     "dur": 0.0336
     }
    ]
   },
@@ -212,43 +212,43 @@
    "rows": [
     [
      "1",
-     "User types prompt into Client app"
+     "User types prompt into the client app"
     ],
     [
      "2",
-     "Client app sends the prompt to ADK agent"
+     "Client app sends the prompt to the ADK agent"
     ],
     [
      "3",
-     "ADK agent sends the plan to LLM"
+     "ADK agent sends the plan to the LLM"
     ],
     [
      "4",
-     "LLM sends A2UI JSON to ADK agent"
+     "LLM returns A2UI JSON to the ADK agent"
     ],
     [
      "5",
-     "ADK agent sends createSurface, updateComponents to Client app (async)"
+     "ADK agent sends createSurface, updateComponents to the client app (async)"
     ],
     [
      "6",
-     "Client app sends A2UI messages to A2UI renderer"
+     "Client app sends A2UI messages to the A2UI renderer"
     ],
     [
      "7",
-     "A2UI renderer looks up components in Trusted catalogue"
+     "A2UI renderer looks up components in the trusted catalogue"
     ],
     [
      "8",
-     "A2UI renderer sends native UI to User"
+     "A2UI renderer sends native UI to the user"
     ],
     [
      "9",
-     "A2UI renderer sends the action to Client app (async)"
+     "A2UI renderer sends the action to the client app (async)"
     ],
     [
      "10",
-     "Client app sends the action to ADK agent (async)"
+     "Client app sends the action to the ADK agent (async)"
     ]
    ],
    "col_widths": [

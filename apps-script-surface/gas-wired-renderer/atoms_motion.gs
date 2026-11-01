@@ -3237,7 +3237,7 @@ _RENDERERS['motion_arch'] = function(b) {
     var t = Math.min(dx === 0 ? 1e9 : bx[2] / Math.abs(dx), dy === 0 ? 1e9 : bx[3] / Math.abs(dy));
     return [bx[0] + dx * t, bx[1] + dy * t];
   }
-  var edges = Array.isArray(b.edges) ? b.edges.slice(0, 16) : [], curves = [], rad = _ffInt(b.radius, 10, 0, 60);
+  var edges = Array.isArray(b.edges) ? b.edges.slice(0, 16) : [], curves = [], rad = _ffInt(b.radius, 10, 0, 60), late = '';
   function head(tip, from, col) {
     var hx = tip[0] - from[0], hy = tip[1] - from[1], hl = Math.sqrt(hx * hx + hy * hy) || 1, ux = hx / hl, uy = hy / hl;
     return '<path d="M' + _moArchN(tip[0] - ux * 11 - uy * 6) + ' ' + _moArchN(tip[1] - uy * 11 + ux * 6) + ' L' + _moArchN(tip[0]) + ' ' + _moArchN(tip[1]) + ' L' + _moArchN(tip[0] - ux * 11 + uy * 6) + ' ' + _moArchN(tip[1] - uy * 11 - ux * 6) + '" style="fill:none;stroke:' + col + ';stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;opacity:clamp(0,calc(var(--u)*12 - 11),1);"/>';
@@ -3265,11 +3265,13 @@ _RENDERERS['motion_arch'] = function(b) {
     }
     var col = _moInk(e, 'color', acc2), dashed = _moOwn(_MO_ARCH_STYLE, e.style, 'solid') === 'dashed', both = e.both === true;
     var at = _moArchT(e.at, 0.3 + i * 0.05), dur = _moArchD(e.dur, 0.1), el = _moStr(e.label, 48);
+    var ltxt = el ? '<text x="' + _moArchN(lx) + '" y="' + _moArchN(ly) + '" text-anchor="middle" style="font-family:' + _JOURNEY_MONO + ';font-size:' + (size - 4) + 'px;fill:' + ink + ';paint-order:stroke;stroke:' + paper + ';stroke-width:6px;stroke-linejoin:round;opacity:var(--u);">' + _esc(el) + '</text>' : '';
+    if (poly && ltxt) { late += '<g style="' + win(at, dur) + '">' + ltxt + '</g>'; ltxt = ''; }   // a routed edge's label is drawn after the message chips, so a chip never hides it
     out += '<g style="' + win(at, dur) + '">'
       + '<path d="' + d + '" pathLength="1" style="fill:none;stroke:' + col + ';stroke-width:2.2;stroke-linecap:round;'
       + (dashed ? 'stroke-dasharray:0.012 0.012;opacity:var(--u);' : 'stroke-dasharray:1;stroke-dashoffset:calc(1 - var(--u));') + '"/>'
       + head(P[P.length - 1], hz, col) + (both ? head(P[0], ha, col) : '')
-      + (el ? '<text x="' + _moArchN(lx) + '" y="' + _moArchN(ly) + '" text-anchor="middle" style="font-family:' + _JOURNEY_MONO + ';font-size:' + (size - 4) + 'px;fill:' + ink + ';paint-order:stroke;stroke:' + paper + ';stroke-width:6px;stroke-linejoin:round;opacity:var(--u);">' + _esc(el) + '</text>' : '')
+      + ltxt
       + '</g>';
   }
   // messages: payload chips riding an edge's route (back: the reply, end to start)
@@ -3290,7 +3292,7 @@ _RENDERERS['motion_arch'] = function(b) {
       + '<rect x="' + _moArchN(-cw / 2) + '" y="-14" width="' + _moArchN(cw) + '" height="28" rx="14" style="fill:' + mc + ';"/>'
       + '<text x="0" y="5" text-anchor="middle" style="font-family:' + _JOURNEY_MONO + ';font-size:' + (size - 4) + 'px;font-weight:700;fill:#141b24;">' + _esc(txt) + '</text></g>';
   }
-  return '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + _esc(label) + '" style="display:block;width:100%;height:auto;overflow:visible;">' + out + '</svg>';
+  return '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + _esc(label) + '" style="display:block;width:100%;height:auto;overflow:visible;">' + out + late + '</svg>';
 };
 
 // A video on the film clock (2026-10-05, for a screen recording inside motion_device): inside a motion_timeline a track drives

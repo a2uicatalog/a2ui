@@ -16,7 +16,7 @@
      "y": 10.24,
      "w": 12.57,
      "h": 10.95,
-     "at": 0.0103,
+     "at": 0.0096,
      "dur": 0.011
     },
     {
@@ -27,7 +27,7 @@
      "y": 46.35,
      "w": 19.01,
      "h": 10.95,
-     "at": 0.0158,
+     "at": 0.0147,
      "dur": 0.011
     },
     {
@@ -38,7 +38,7 @@
      "y": 38.49,
      "w": 11.88,
      "h": 10.95,
-     "at": 0.013,
+     "at": 0.0121,
      "dur": 0.011
     },
     {
@@ -49,7 +49,7 @@
      "y": 54.21,
      "w": 27.92,
      "h": 10.95,
-     "at": 0.0185,
+     "at": 0.0172,
      "dur": 0.011
     },
     {
@@ -60,7 +60,7 @@
      "y": 86.11,
      "w": 33.07,
      "h": 10.95,
-     "at": 0.0212,
+     "at": 0.0198,
      "dur": 0.011
     },
     {
@@ -71,7 +71,7 @@
      "y": 86.11,
      "w": 31.78,
      "h": 10.95,
-     "at": 0.024,
+     "at": 0.0223,
      "dur": 0.011
     }
    ],
@@ -81,16 +81,16 @@
      "to": "host",
      "label": "1 asks",
      "style": "solid",
-     "at": 0.0343,
-     "dur": 0.0171
+     "at": 0.0319,
+     "dur": 0.0159
     },
     {
      "from": "host",
      "to": "llm",
      "label": "2 prompt + tools",
      "style": "solid",
-     "at": 0.1021,
-     "dur": 0.0171
+     "at": 0.095,
+     "dur": 0.0159
     },
     {
      "from": "llm",
@@ -98,16 +98,16 @@
      "label": "3 tool call",
      "style": "solid",
      "curve": 24,
-     "at": 0.2058,
-     "dur": 0.0171
+     "at": 0.2001,
+     "dur": 0.0159
     },
     {
      "from": "host",
      "to": "tool",
      "label": "4 tools/call",
      "style": "solid",
-     "at": 0.3,
-     "dur": 0.0171
+     "at": 0.2965,
+     "dur": 0.0159
     },
     {
      "from": "tool",
@@ -115,24 +115,24 @@
      "label": "5 tool result",
      "style": "solid",
      "curve": 100,
-     "at": 0.4037,
-     "dur": 0.0171
+     "at": 0.4017,
+     "dur": 0.0159
     },
     {
      "from": "host",
      "to": "resource",
      "label": "6 resources/read",
      "style": "solid",
-     "at": 0.5262,
-     "dur": 0.0171
+     "at": 0.5244,
+     "dur": 0.0159
     },
     {
      "from": "host",
      "to": "frame",
      "label": "7 mounts HTML, sends tool result",
      "style": "solid",
-     "at": 0.6205,
-     "dur": 0.0171
+     "at": 0.6208,
+     "dur": 0.0159
     },
     {
      "from": "frame",
@@ -140,8 +140,8 @@
      "label": "8 tools/call via postMessage",
      "style": "dashed",
      "curve": 100,
-     "at": 0.7336,
-     "dur": 0.0171
+     "at": 0.7347,
+     "dur": 0.0159
     },
     {
      "from": "frame",
@@ -149,8 +149,8 @@
      "label": "9 interactive UI",
      "style": "solid",
      "curve": 12,
-     "at": 0.8466,
-     "dur": 0.0171
+     "at": 0.8486,
+     "dur": 0.0159
     }
    ],
    "groups": [
@@ -177,20 +177,20 @@
     {
      "edge": 2,
      "text": "tool call",
-     "at": 0.2246,
-     "dur": 0.0411
+     "at": 0.2177,
+     "dur": 0.0382
     },
     {
      "edge": 3,
      "text": "tools/call",
-     "at": 0.3189,
-     "dur": 0.0411
+     "at": 0.3141,
+     "dur": 0.0382
     },
     {
      "edge": 5,
      "text": "resources/read ui://",
-     "at": 0.5451,
-     "dur": 0.0411
+     "at": 0.5419,
+     "dur": 0.0382
     }
    ]
   },
@@ -204,39 +204,39 @@
    "rows": [
     [
      "1",
-     "User asks Chat host"
+     "User asks the chat host"
     ],
     [
      "2",
-     "Chat host sends the prompt + tools to LLM"
+     "Chat host sends the prompt + tools to the LLM"
     ],
     [
      "3",
-     "LLM sends the tool call to Chat host"
+     "LLM returns the tool call to the chat host"
     ],
     [
      "4",
-     "Chat host sends tools/call to Tool with ui:// link"
+     "Chat host sends tools/call to the tool with ui link"
     ],
     [
      "5",
-     "Tool with ui:// link sends the tool result to Chat host"
+     "Tool with ui link returns the tool result to the chat host"
     ],
     [
      "6",
-     "Chat host sends resources/read to ui:// HTML resource"
+     "Chat host sends resources/read to the ui HTML resource"
     ],
     [
      "7",
-     "Chat host mounts HTML, sends tool result in Sandboxed iframe"
+     "Chat host mounts HTML, sends tool result in the sandboxed iframe"
     ],
     [
      "8",
-     "Sandboxed iframe sends tools/call via postMessage to Chat host (async)"
+     "Sandboxed iframe sends tools/call via postMessage to the chat host (async)"
     ],
     [
      "9",
-     "Sandboxed iframe sends interactive UI to User"
+     "Sandboxed iframe sends interactive UI to the user"
     ]
    ],
    "col_widths": [

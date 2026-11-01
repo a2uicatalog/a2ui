@@ -4,85 +4,85 @@
   {
    "type": "motion_arch",
    "label": "AG-UI: streaming an agent run into an app",
-   "w": 912,
-   "h": 1062,
-   "size": 24,
+   "w": 1013,
+   "h": 1189,
+   "size": 27,
    "nodes": [
     {
      "id": "user",
      "kind": "user",
      "label": "User",
-     "x": 48.79,
-     "y": 6.31,
-     "w": 14.58,
-     "h": 6.78,
-     "at": 0.0082,
+     "x": 50.39,
+     "y": 6.35,
+     "w": 14.81,
+     "h": 6.81,
+     "at": 0.0076,
      "dur": 0.011
     },
     {
      "id": "app",
      "kind": "app",
      "label": "Frontend app",
-     "x": 48.79,
-     "y": 24.95,
-     "w": 26.32,
-     "h": 6.78,
-     "at": 0.01,
+     "x": 50.39,
+     "y": 24.77,
+     "w": 26.75,
+     "h": 6.81,
+     "at": 0.0093,
      "dur": 0.011
     },
     {
      "id": "client",
      "kind": "tool",
      "label": "AG-UI client",
-     "x": 48.79,
-     "y": 39.74,
-     "w": 26.32,
-     "h": 6.78,
-     "at": 0.0118,
+     "x": 50.39,
+     "y": 39.66,
+     "w": 26.75,
+     "h": 6.81,
+     "at": 0.0109,
      "dur": 0.011
     },
     {
      "id": "agent",
      "kind": "app",
      "label": "Agent runtime on ADK",
-     "x": 33.28,
-     "y": 61.86,
-     "w": 38.16,
-     "h": 6.78,
-     "at": 0.0137,
+     "x": 33.12,
+     "y": 61.61,
+     "w": 38.7,
+     "h": 6.81,
+     "at": 0.0126,
      "dur": 0.011
     },
     {
      "id": "llm",
      "kind": "model",
      "label": "LLM",
-     "x": 21.19,
-     "y": 76.65,
-     "w": 13.71,
-     "h": 6.78,
-     "at": 0.0155,
+     "x": 19.69,
+     "y": 76.49,
+     "w": 13.82,
+     "h": 6.81,
+     "at": 0.0143,
      "dur": 0.011
     },
     {
      "id": "tools",
      "kind": "tool",
      "label": "Backend tools",
-     "x": 45.37,
-     "y": 76.65,
-     "w": 27.85,
-     "h": 6.78,
-     "at": 0.0173,
+     "x": 46.54,
+     "y": 76.49,
+     "w": 28.23,
+     "h": 6.81,
+     "at": 0.016,
      "dur": 0.011
     },
     {
      "id": "state",
      "kind": "store",
      "label": "Shared state",
-     "x": 52.95,
-     "y": 93.69,
-     "w": 26.32,
-     "h": 6.78,
-     "at": 0.0191,
+     "x": 55.11,
+     "y": 93.65,
+     "w": 26.75,
+     "h": 6.81,
+     "at": 0.0177,
      "dur": 0.011
     }
    ],
@@ -94,20 +94,20 @@
      "style": "solid",
      "points": [
       {
-       "x": 49.12,
-       "y": 9.7
+       "x": 50.54,
+       "y": 9.76
       },
       {
-       "x": 49.12,
-       "y": 21.56
+       "x": 50.54,
+       "y": 21.36
       }
      ],
      "label_at": {
-      "x": 56.25,
-      "y": 15.63
+      "x": 57.75,
+      "y": 15.56
      },
-     "at": 0.0273,
-     "dur": 0.0137
+     "at": 0.0253,
+     "dur": 0.0126
     },
     {
      "from": "app",
@@ -116,20 +116,20 @@
      "style": "solid",
      "points": [
       {
-       "x": 49.12,
-       "y": 28.34
+       "x": 50.54,
+       "y": 28.17
       },
       {
-       "x": 49.12,
-       "y": 36.35
+       "x": 50.54,
+       "y": 36.25
       }
      ],
      "label_at": {
-      "x": 57.57,
-      "y": 32.34
+      "x": 59.18,
+      "y": 32.21
      },
-     "at": 0.1018,
-     "dur": 0.0137
+     "at": 0.1016,
+     "dur": 0.0126
     },
     {
      "from": "client",
@@ -138,20 +138,20 @@
      "style": "solid",
      "points": [
       {
-       "x": 47.7,
-       "y": 43.13
+       "x": 49.06,
+       "y": 43.06
       },
       {
-       "x": 47.7,
-       "y": 58.47
+       "x": 49.06,
+       "y": 58.2
       }
      ],
      "label_at": {
-      "x": 62.28,
-      "y": 50.8
+      "x": 64.02,
+      "y": 50.63
      },
-     "at": 0.1927,
-     "dur": 0.0137
+     "at": 0.1933,
+     "dur": 0.0126
     },
     {
      "from": "agent",
@@ -160,20 +160,20 @@
      "style": "solid",
      "points": [
       {
-       "x": 26.32,
-       "y": 65.25
+       "x": 23.89,
+       "y": 65.01
       },
       {
-       "x": 26.32,
-       "y": 73.26
+       "x": 23.89,
+       "y": 73.09
       }
      ],
      "label_at": {
-      "x": 19.9,
-      "y": 69.26
+      "x": 17.37,
+      "y": 69.05
      },
-     "at": 0.3085,
-     "dur": 0.0137
+     "at": 0.3079,
+     "dur": 0.0126
     },
     {
      "from": "agent",
@@ -182,20 +182,20 @@
      "style": "solid",
      "points": [
       {
-       "x": 33.44,
-       "y": 65.25
+       "x": 34.25,
+       "y": 65.01
       },
       {
-       "x": 33.44,
-       "y": 73.26
+       "x": 34.25,
+       "y": 73.09
       }
      ],
      "label_at": {
-      "x": 41.89,
-      "y": 69.26
+      "x": 42.89,
+      "y": 69.05
      },
      "at": 0.3995,
-     "dur": 0.0137
+     "dur": 0.0126
     },
     {
      "from": "agent",
@@ -204,20 +204,20 @@
      "style": "dashed",
      "points": [
       {
-       "x": 37.72,
-       "y": 58.47
+       "x": 38.7,
+       "y": 58.2
       },
       {
-       "x": 37.72,
-       "y": 43.13
+       "x": 38.7,
+       "y": 43.06
       }
      ],
      "label_at": {
-      "x": 20.39,
-      "y": 50.8
+      "x": 20.93,
+      "y": 50.63
      },
-     "at": 0.507,
-     "dur": 0.0137
+     "at": 0.5065,
+     "dur": 0.0126
     },
     {
      "from": "client",
@@ -226,20 +226,20 @@
      "style": "solid",
      "points": [
       {
-       "x": 47.7,
-       "y": 36.35
+       "x": 49.06,
+       "y": 36.25
       },
       {
-       "x": 47.7,
-       "y": 28.34
+       "x": 49.06,
+       "y": 28.17
       }
      ],
      "label_at": {
-      "x": 33.77,
-      "y": 32.34
+      "x": 34.8,
+      "y": 32.21
      },
-     "at": 0.6311,
-     "dur": 0.0137
+     "at": 0.6287,
+     "dur": 0.0126
     },
     {
      "from": "app",
@@ -248,20 +248,20 @@
      "style": "solid",
      "points": [
       {
-       "x": 47.7,
-       "y": 21.56
+       "x": 49.06,
+       "y": 21.36
       },
       {
-       "x": 47.7,
-       "y": 9.7
+       "x": 49.06,
+       "y": 9.76
       }
      ],
      "label_at": {
-      "x": 37.88,
-      "y": 15.63
+      "x": 39.04,
+      "y": 15.56
      },
-     "at": 0.7055,
-     "dur": 0.0137
+     "at": 0.7051,
+     "dur": 0.0126
     },
     {
      "from": "agent",
@@ -271,24 +271,24 @@
      "both": true,
      "points": [
       {
-       "x": 52.36,
-       "y": 63.51
+       "x": 52.47,
+       "y": 62.87
       },
       {
-       "x": 63.38,
-       "y": 63.51
+       "x": 65.35,
+       "y": 62.87
       },
       {
-       "x": 63.38,
-       "y": 90.3
+       "x": 65.35,
+       "y": 90.24
       }
      ],
      "label_at": {
-      "x": 50.16,
-      "y": 81.99
+      "x": 51.78,
+      "y": 81.6
      },
-     "at": 0.7799,
-     "dur": 0.0137
+     "at": 0.7815,
+     "dur": 0.0126
     },
     {
      "from": "app",
@@ -298,47 +298,51 @@
      "both": true,
      "points": [
       {
-       "x": 61.95,
-       "y": 26.79
+       "x": 63.77,
+       "y": 26.28
       },
       {
-       "x": 69.08,
-       "y": 26.79
+       "x": 68.31,
+       "y": 26.28
       },
       {
-       "x": 69.08,
-       "y": 91.67
+       "x": 68.31,
+       "y": 88.1
       },
       {
-       "x": 66.11,
-       "y": 91.67
+       "x": 66.83,
+       "y": 88.1
+      },
+      {
+       "x": 66.83,
+       "y": 90.24
       }
      ],
      "label_at": {
-      "x": 83,
-      "y": 59.23
+      "x": 82.58,
+      "y": 57.19
      },
-     "at": 0.8709,
-     "dur": 0.0137
+     "at": 0.8731,
+     "dur": 0.0126
     }
    ],
-   "radius": 13,
+   "radius": 14,
    "groups": [
     {
      "label": "Browser",
-     "x": 32.78,
-     "y": 17.7,
-     "w": 32.02,
-     "h": 27.68,
+     "x": 34.05,
+     "y": 17.83,
+     "w": 32.68,
+     "h": 27.5,
      "at": 0,
      "dur": 0.011
     },
     {
      "label": "Backend",
-     "x": 11.35,
-     "y": 54.61,
-     "w": 50.77,
-     "h": 27.68,
+     "x": 9.82,
+     "y": 54.67,
+     "w": 53.8,
+     "h": 27.5,
      "at": 0,
      "dur": 0.011
     }
@@ -347,20 +351,20 @@
     {
      "edge": 2,
      "text": "run input",
-     "at": 0.2078,
-     "dur": 0.0328
+     "at": 0.2072,
+     "dur": 0.0303
     },
     {
      "edge": 5,
      "text": "TEXT_MESSAGE_CONTENT",
-     "at": 0.522,
-     "dur": 0.0328
+     "at": 0.5204,
+     "dur": 0.0303
     },
     {
      "edge": 5,
      "text": "STATE_DELTA",
-     "at": 0.5589,
-     "dur": 0.0328
+     "at": 0.5545,
+     "dur": 0.0303
     }
    ]
   },
@@ -374,43 +378,43 @@
    "rows": [
     [
      "1",
-     "User sends the message to Frontend app"
+     "User sends the message to the frontend app"
     ],
     [
      "2",
-     "Frontend app sends the run input to AG-UI client"
+     "Frontend app sends the run input to the AG-UI client"
     ],
     [
      "3",
-     "AG-UI client sends POST run over HTTP to Agent runtime on ADK"
+     "AG-UI client sends POST run over HTTP to the agent runtime on ADK"
     ],
     [
      "4",
-     "Agent runtime on ADK sends the prompt to LLM"
+     "Agent runtime on ADK sends the prompt to the LLM"
     ],
     [
      "5",
-     "Agent runtime on ADK sends the tool call to Backend tools"
+     "Agent runtime on ADK sends the tool call to the backend tools"
     ],
     [
      "6",
-     "Agent runtime on ADK sends events, SSE by default to AG-UI client (async)"
+     "Agent runtime on ADK sends events, SSE by default to the AG-UI client (async)"
     ],
     [
      "7",
-     "AG-UI client dispatches events to Frontend app"
+     "AG-UI client dispatches events to the frontend app"
     ],
     [
      "8",
-     "Frontend app sends streamed UI to User"
+     "Frontend app returns streamed UI to the user"
     ],
     [
      "9",
-     "Agent runtime on ADK reads and writes Shared state"
+     "Agent runtime on ADK reads and writes the shared state"
     ],
     [
      "10",
-     "Frontend app reads and writes Shared state"
+     "Frontend app reads and writes the shared state"
     ]
    ],
    "col_widths": [
