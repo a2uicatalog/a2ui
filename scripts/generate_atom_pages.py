@@ -568,8 +568,26 @@ footer a{color:var(--accent-2-text);text-decoration:underline;text-underline-off
 .motion-paused .stage-inner *,.preview-box.paused *{animation-play-state:paused!important}
 .pause-btn{display:inline-flex;align-items:center;gap:6px;min-width:44px;min-height:44px;padding:0 14px;border:1px solid var(--border-strong);border-radius:10px;background:var(--surface);color:var(--text);font:600 14px/1 inherit;cursor:pointer}
 .pause-btn[hidden]{display:none}
+.preview-tools{gap:8px;flex-wrap:wrap}
+.focus-btn{display:inline-flex;align-items:center;gap:6px;min-width:44px;min-height:44px;padding:0 16px;border:1px solid var(--border-strong);border-radius:10px;background:var(--surface);color:var(--text);font:600 14px/1 inherit;cursor:pointer}
+.focus-btn[hidden]{display:none}
+.focus-btn:focus-visible,.focus-close:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.focus-dialog{border:0;padding:0;background:rgba(8,10,16,.9);max-width:100vw;max-height:100vh;width:100vw;height:100vh;color:var(--text);overflow:hidden}
+.focus-dialog::backdrop{background:rgba(8,10,16,.82)}
+.focus-dialog:not([open]){display:none}
+.focus-dialog[open]{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:12px 16px}
+.focus-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;width:var(--focus-w,100%);max-width:100%;color:#f1f5f9}
+.focus-title{font:600 15px/1.3 inherit;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.focus-actions{display:flex;gap:8px;flex:none}
+.focus-close{min-width:44px;min-height:44px;padding:0 16px;border:1px solid var(--border-strong);border-radius:10px;background:var(--surface);color:var(--text);font:600 14px/1 inherit;cursor:pointer}
+.focus-stage{width:var(--focus-w,100%);max-width:100%;max-height:var(--focus-h,none);overflow:auto;border-radius:16px;background:#0b0d12}
+.focus-stage:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.focus-stage .mt-root{margin:0!important;max-width:none!important;width:calc(var(--focus-w,100%) * var(--focus-zoom,1))}
+.focus-zoom{min-width:44px;min-height:44px;padding:0 14px;border:1px solid var(--border-strong);border-radius:10px;background:var(--surface);color:var(--text);font:600 14px/1 inherit;cursor:pointer}
+.focus-zoom[aria-pressed="true"]{background:var(--accent-soft-bg);border-color:var(--accent);color:var(--accent-text)}
+.focus-zoom:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 /* A portrait film (9:16) would be taller than the screen in the preview column: cap it at 78vh and centre it */
-.preview-box .mt-root:has(> .mt-vp[style*="aspect-ratio:720/1280"]){max-width:calc(78vh*0.5625);margin-left:auto;margin-right:auto}
+.preview-box .mt-root:has(> .mt-vp[style*="aspect-ratio:720/1280"]){max-width:calc(78vh*0.5625);margin-left:auto!important;margin-right:auto!important}   /* !important: the film root carries an inline margin:1rem 0 */
 .pause-btn[aria-pressed="true"]{background:var(--accent-soft-bg);border-color:var(--accent);color:var(--accent-text)}
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 /* cursor_glow ships dark-tuned (screen blend ≈ invisible over a white ground);
@@ -699,6 +717,7 @@ nav.atom-pager kbd{display:inline-block;min-width:1.6em;padding:1px 6px;border:1
 .export-row{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;margin:-24px 0 36px;font-size:13px;color:var(--text-muted)}
 .export-row[hidden],.export-nod[hidden],.export-prog[hidden]{display:none}
 .export-btns{display:flex;gap:8px;flex-wrap:wrap}
+.export-btns[hidden]{display:none}
 .export-note{margin-left:auto}
 .export-nod{display:flex;align-items:center;gap:6px}
 .export-prog{flex:1 1 100%;display:flex;align-items:center;gap:12px}
@@ -1199,11 +1218,22 @@ def live_preview(atom):
     # visitor's own payload may move (WCAG 2.2.2).
     pause = (f'<button type="button" class="pause-btn" id="pause-preview" aria-pressed="false" aria-label="Pause {_esc_attr(str(display))}"{"" if moving else " hidden"}>'
              f'<span aria-hidden="true">\u23f8</span> Pause</button>')
+    # Focus: a film (a clock in the static preview) can be opened large in a modal dialog; film labels are 6-8 px on a 390 px phone.
+    film = 'class="mt-root"' in html
+    focus = (f'<button type="button" class="focus-btn" id="focus-preview" aria-haspopup="dialog" aria-label="Focus {_esc_attr(str(display))}: open the film large">'
+             f'<span aria-hidden="true">\u2922</span> Focus</button>') if film else ""
+    dialog = (f'<dialog id="focus-dialog" class="focus-dialog" aria-label="Focused view of {_esc_attr(str(display))}">'
+              f'<div class="focus-bar"><span class="focus-title">{_esc_attr(str(display))}</span><span class="focus-actions">'
+              f'<button type="button" class="pause-btn" id="focus-pause" aria-pressed="false" aria-label="Pause {_esc_attr(str(display))}"><span aria-hidden="true">\u23f8</span> Pause</button>'
+              f'<button type="button" class="focus-zoom" id="focus-zoom" aria-pressed="false" aria-label="Zoom in to read small labels">Zoom 2\u00d7</button>'
+              f'<button type="button" class="focus-close" id="focus-close" aria-label="Close focused view">Close</button></span></div>'
+              f'<div class="focus-stage" id="focus-stage" tabindex="0" aria-label="Film view; scroll to pan when zoomed"></div></dialog>') if film else ""
     return f"""
 <div class="section">
   <div class="label">Live preview</div>
   <div class="preview-box" role="group" aria-label="Live preview of {_esc_attr(str(display))}">{html}</div>
-  <div class="preview-tools">{pause}</div>
+  <div class="preview-tools">{focus}{pause}</div>
+  {dialog}
 </div>"""
 
 
@@ -1436,10 +1466,17 @@ EXPORT_JS_BLOCK = """<script>
         b.setAttribute('data-fmt', k); b.addEventListener('click', function(){ run(X, k, b); }); btns.appendChild(b);
       });
       nodBox.hidden = !(f.indexOf('mp4') > -1 || f.indexOf('gif') > -1);
-      row.hidden = false;
+      row.hidden = false; syncCustom();
       var tab = document.getElementById('tab-export'); if (tab) tab.hidden = false;
     }).catch(function(){});
   }
+  var custom = row.querySelector('.export-custom'), note = row.querySelector('.export-note'), hint = row.querySelector('.export-hint');
+  function syncCustom(){
+    var c = box.classList.contains('is-custom'); btns.hidden = c; custom.hidden = !c; note.hidden = c; hint.hidden = c;
+    if (c) nodBox.hidden = true; else if (btns.children.length) nodBox.hidden = !btns.querySelector('[data-fmt=mp4],[data-fmt=gif]');
+    if (c && ctl) ctl.abort();
+  }
+  new MutationObserver(syncCustom).observe(box, { attributes: true, attributeFilter: ['class'] });
   function busy(on){ btns.querySelectorAll('button').forEach(function(b){ b.disabled = on; }); prog.hidden = !on; }
   function run(X, k, b){
     ctl = new AbortController(); lastBucket = -1; busy(true); bar.style.width = '0%';
@@ -1470,6 +1507,8 @@ def export_row(atom):
             '<div class="export-btns" role="group" aria-label="Export this preview"></div>'
             '<label class="export-nod" hidden><input type="checkbox" id="export-nod"> Add a small a2uicatalog.ai mark in the last second</label>'
             '<span class="export-note">Runs in your browser. Nothing is uploaded.</span>'
+            '<p class="export-hint insp-note">GIF is the first 6 seconds. MP4 is the whole film and can take a few minutes; keep this tab open and visible.</p>'
+            '<p class="export-custom insp-note" hidden>Export works on the example film. To export your own, copy the payload.</p>'
             '<div class="export-prog" role="progressbar" aria-label="Export progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" hidden>'
             '<span class="export-lab">Preparing</span><span class="export-track"><span class="export-bar"></span></span>'
             '<button type="button" class="export-cancel">Cancel</button></div>'
@@ -1494,6 +1533,47 @@ PREVIEW_JS = """<script>
     else { select(); done(false); }
     function select(){ if (ed && !ed.closest('[hidden]')) { ed.focus(); ed.select(); return; } var r = document.createRange(); r.selectNodeContents(document.getElementById('payload-code')); var g = getSelection(); g.removeAllRanges(); g.addRange(r); }
   });
+})();
+</script>"""
+
+
+FOCUS_JS = """<script>
+(function(){
+  // Focus: the live film opens large in a modal dialog element. The film's own element is moved (not cloned) so its clock, state and Pause stay one thing;
+  // it goes back where it was on close. Esc closes (native); the dialog traps focus and returns it to the Focus button.
+  var open = document.getElementById('focus-preview'), dlg = document.getElementById('focus-dialog');
+  if (!open || !dlg || !dlg.showModal) { if (open) open.hidden = true; return; }
+  var box = document.querySelector('.preview-box'), stage = document.getElementById('focus-stage'), close = document.getElementById('focus-close'),
+      fp = document.getElementById('focus-pause'), pp = document.getElementById('pause-preview'), mark = null, root = null;
+  function ratio(r){ var vp = r.querySelector('.mt-vp'), a = vp && vp.style.aspectRatio, p = a ? String(a).split('/') : [], n = parseFloat(p[0]), d = parseFloat(p[1]); return n > 0 && d > 0 ? n / d : 16 / 9; }
+  var sizing = false;
+  function size(){
+    if (!root || sizing) return; sizing = true; var ar = ratio(root), vw = window.innerWidth - 32, vh = window.innerHeight - 24 - 44 - 10 - 56;   // padding, title bar, gap, the film's own control row
+    var w = Math.max(160, Math.min(vw, vh * ar)); dlg.style.setProperty('--focus-w', Math.floor(w) + 'px'); dlg.style.setProperty('--focus-h', Math.floor(window.innerHeight - 24 - 44 - 10) + 'px');
+    window.dispatchEvent(new Event('resize')); sizing = false;   // the film re-fits itself on resize; the flag stops our own listener answering that event
+  }
+  function syncPause(){ if (!pp) return; var on = pp.getAttribute('aria-pressed') === 'true'; fp.setAttribute('aria-pressed', String(on)); fp.lastChild.textContent = on ? ' Paused' : ' Pause'; }
+  function sync(){ open.hidden = box.classList.contains('is-custom'); }
+  new MutationObserver(sync).observe(box, { attributes: true, attributeFilter: ['class'] }); sync();
+  if (pp) new MutationObserver(syncPause).observe(pp, { attributes: true, attributeFilter: ['aria-pressed'] });
+  open.addEventListener('click', function(){
+    root = box.querySelector('.mt-root'); if (!root) return;
+    mark = document.createComment('focus'); root.parentNode.insertBefore(mark, root); stage.appendChild(root);
+    syncPause(); dlg.showModal(); size(); close.focus();
+  });
+  fp.addEventListener('click', function(){ if (pp) { pp.click(); syncPause(); } });
+  var zoom = document.getElementById('focus-zoom');
+  zoom.addEventListener('click', function(){
+    var on = zoom.getAttribute('aria-pressed') !== 'true'; zoom.setAttribute('aria-pressed', String(on)); zoom.textContent = on ? 'Zoom 1\u00d7' : 'Zoom 2\u00d7';
+    zoom.setAttribute('aria-label', on ? 'Zoom out to fit the screen' : 'Zoom in to read small labels'); dlg.style.setProperty('--focus-zoom', on ? '2' : '1'); stage.scrollTop = 0; stage.scrollLeft = 0; size();
+  });
+  close.addEventListener('click', function(){ dlg.close(); });
+  dlg.addEventListener('click', function(e){ if (e.target === dlg) dlg.close(); });
+  dlg.addEventListener('close', function(){
+    if (root && mark && mark.parentNode) { mark.parentNode.insertBefore(root, mark); mark.parentNode.removeChild(mark); }
+    root = null; mark = null; dlg.style.removeProperty('--focus-w'); dlg.style.removeProperty('--focus-h'); dlg.style.removeProperty('--focus-zoom'); zoom.setAttribute('aria-pressed', 'false'); zoom.textContent = 'Zoom 2\u00d7'; sizing = true; window.dispatchEvent(new Event('resize')); sizing = false; open.focus();
+  });
+  window.addEventListener('resize', function(){ if (dlg.open) size(); });
 })();
 </script>"""
 
@@ -1976,6 +2056,7 @@ clasp push &amp;&amp; clasp deploy</code></pre>
   {PAGER_JS}
   {LIKES_JS}
   {PREVIEW_JS}
+  {FOCUS_JS if 'id="focus-preview"' in preview else ''}
   {INSPECTOR_JS}
   {editor_js()}
   {EXPORT_JS_BLOCK if _export_html else ''}
