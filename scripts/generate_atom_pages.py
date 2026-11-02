@@ -1193,13 +1193,15 @@ def live_preview(atom):
     # them though, so per-control labels would be fabricated; giving the
     # whole demo region one accurate group name is the honest fix.
     moving = bool(re.search(r"@keyframes|animation\s*:|<script|requestAnimationFrame|__a2uiMotion", html))
-    pause = (f'<button type="button" class="pause-btn" id="pause-preview" aria-pressed="false" aria-label="Pause {_esc_attr(str(display))}">'
-             f'<span aria-hidden="true">\u23f8</span> Pause</button>') if moving else ""
+    # Always in the page; hidden when the static preview does not move. The payload editor shows it when a custom render is running, because the
+    # visitor's own payload may move (WCAG 2.2.2).
+    pause = (f'<button type="button" class="pause-btn" id="pause-preview" aria-pressed="false" aria-label="Pause {_esc_attr(str(display))}"{"" if moving else " hidden"}>'
+             f'<span aria-hidden="true">\u23f8</span> Pause</button>')
     return f"""
 <div class="section">
   <div class="label">Live preview</div>
   <div class="preview-box" role="group" aria-label="Live preview of {_esc_attr(str(display))}">{html}</div>
-  {('<div class="preview-tools">' + pause + '</div>') if pause else ''}
+  <div class="preview-tools">{pause}</div>
 </div>"""
 
 
@@ -1551,9 +1553,15 @@ ATOM_PAGE_CSS = r"""<style>
 .payload-status{margin:0;min-height:1.4em;font-size:13px;color:var(--text-muted)}
 .payload-status.err{color:color-mix(in srgb,#d92d20 55%,var(--text))}
 .payload-status.ok{color:var(--text)}
-.preview-box.is-custom{padding:0;overflow:hidden}
-.preview-box.is-custom iframe{display:block;width:100%;min-height:240px;border:0;background:#fff;border-radius:inherit}
-.custom-badge{position:absolute;top:8px;right:8px;z-index:1;padding:3px 10px;border-radius:999px;background:var(--accent);color:var(--accent-contrast);font:600 12px/1.4 inherit}
+.preview-box.is-custom{padding:0;overflow:hidden;box-sizing:border-box}   /* height is pinned in px by the script to the static preview's own height: no layout shift on Render */
+.preview-box.is-custom iframe{display:block;width:100%;height:100%;min-height:0;border:0;background:#fff;border-radius:inherit}
+.preview-box.is-custom iframe:focus-visible{outline:3px solid var(--accent);outline-offset:-3px}   /* the frame scrolls its own content: it is a keyboard stop */
+.custom-loading,.custom-paused{position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:20px;text-align:center;background:#fff;color:#1a1a1a;font-size:14px}
+.custom-paused{background:repeating-linear-gradient(135deg,#f6f7fa,#f6f7fa 12px,#eef0f6 12px,#eef0f6 24px);color:#333}
+.custom-spin{width:28px;height:28px;border-radius:50%;border:3px solid #d6d9e6;border-top-color:var(--accent);animation:cspin .8s linear infinite}
+@keyframes cspin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.custom-spin{animation:none;border-top-color:#d6d9e6;border-right-color:var(--accent)}}
+.custom-badge{position:absolute;top:8px;right:8px;z-index:1;padding:3px 10px;border-radius:999px;background:var(--accent);color:var(--accent-contrast);font-weight:600;font-size:12px;line-height:1.4}
 @media(max-width:640px){.payload-editor textarea{min-height:220px;font-size:16px}.insp-actions .copy-btn{min-height:44px}}
 .copy-btn:focus-visible,.export-btn:focus-visible,.export-cancel:focus-visible,.pause-btn:focus-visible,.like-btn:focus-visible,.pg-btn:focus-visible,.pg-all:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 .schema-hero{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:16px;min-height:320px;padding:28px;border:1px solid var(--border-strong);border-radius:14px;box-shadow:var(--shadow);
@@ -1562,6 +1570,7 @@ ATOM_PAGE_CSS = r"""<style>
 .schema-hero pre code{font-size:14px}
 .schema-pill{font-size:12px;font-weight:700;letter-spacing:.02em;color:var(--accent-text);background:var(--accent-soft-bg);border:1px solid var(--border);border-radius:999px;padding:4px 12px;max-width:100%}
 .preview-tools{margin-top:10px}
+.preview-tools:has(.pause-btn[hidden]){display:none}   /* a static preview that does not move has no Pause row */
 .pause-btn{min-height:44px;padding:0 16px}
 @media(max-width:1000px){
   .atom-grid{grid-template-columns:minmax(0,1fr);grid-template-areas:"preview" "insp" "about"}
@@ -1668,9 +1677,14 @@ EDITOR_JS = r"""<script>
   var status = document.getElementById('payload-status'), count = document.getElementById('payload-count');
   if (!code || !wrap || !ta || !target || !window.postMessage || !bRender || !bReset) return;
   var MAX = 20000, ORIGIN = 'https://play.a2uicatalog.ai', BUNDLE = ORIGIN + '/renderer-bundle?v=__BUNDLE_HASH__';
-  var orig = code.textContent, pre = code.closest('pre'), kept = null, badge = null, frame = null, ready = false, pending = null, waitTimer = null;
+  var orig = code.textContent, pre = code.closest('pre'), kept = null, badge = null, frame = null, ready = false, pending = null, waitTimer = null, veil = null, veilTimer = null, sizeReports = 0, paused = false, note2 = null;
   ta.value = orig; pre.hidden = true; wrap.hidden = false; bRender.hidden = false; bReset.hidden = false; note.hidden = false;
-  var pause = document.getElementById('pause-preview');
+  var pause = document.getElementById('pause-preview'), staticMoves = !!(pause && !pause.hidden);
+  function pauseBtn(on){ if (!pause) return; pause.setAttribute('aria-pressed', String(on)); if (pause.lastChild) pause.lastChild.textContent = on ? ' Paused' : ' Pause'; }
+  // The Pause button belongs to PREVIEW_JS (static film clock). While a custom render is showing, the same button drives the frame: watch its state.
+  if (pause && window.MutationObserver) new MutationObserver(function(){
+    if (target.classList.contains('is-custom')) setPaused(pause.getAttribute('aria-pressed') === 'true');
+  }).observe(pause, { attributes: true, attributeFilter: ['aria-pressed'] });
   function say(msg, cls){ status.textContent = msg; status.className = 'payload-status' + (cls ? ' ' + cls : ''); ta.setAttribute('aria-invalid', cls === 'err' ? 'true' : 'false'); }
   function tally(){ var n = ta.value.length; count.textContent = n.toLocaleString('en') + ' / ' + MAX.toLocaleString('en') + ' characters'; }
   function where(e, t){
@@ -1687,7 +1701,7 @@ EDITOR_JS = r"""<script>
       throw new Error('Each block needs a "type", for example {"type": "treemap", ...}. You can also paste a list of blocks.');
     return b;
   }
-  function theme(){ var t = document.documentElement.getAttribute('data-theme'); return t === 'dark' || t === 'light' ? t : (window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'); }
+  function theme(){ return 'light'; }   // the preview box is a white surface in both page themes (like the static preview): a dark-theme render puts light text on it
   function post(m){ if (frame && frame.contentWindow) frame.contentWindow.postMessage(m, ORIGIN); }
   function deliver(){
     if (!frame || !ready || !pending) return;
@@ -1705,33 +1719,74 @@ EDITOR_JS = r"""<script>
     } else if (m.method === 'ui/notifications/initialized') {
       ready = true; deliver();
     } else if (m.method === 'ui/notifications/size-changed') {
-      var h = m.params && m.params.height;
-      if (typeof h === 'number' && isFinite(h)) frame.style.height = Math.min(1600, Math.max(200, Math.ceil(h) + 2)) + 'px';
+      // Deliberately ignored for sizing. The renderer reports its document height; if the host sizes the frame to that number plus any slack, the
+      // renderer measures the slack and reports it back, and the frame grows 2 px every ~100 ms without end (measured). The box is a fixed size, the
+      // frame scrolls inside it. The first report after a Render only tells us the frame has painted, so the loading veil can go.
+      sizeReports++; if (sizeReports === 1) unveil();
     } else if (hasId) {
       post({ jsonrpc: '2.0', id: m.id, error: { code: -32601, message: 'not available from this page' } });   // tools/call, open-link, anything else: refused
     }
   });
-  function show(blocks){
-    pending = blocks;
-    if (frame && target.contains(frame)) { deliver(); return; }
-    if (!kept) { kept = document.createDocumentFragment(); while (target.firstChild) kept.appendChild(target.firstChild); }
-    else while (target.firstChild) target.removeChild(target.firstChild);
-    ready = false;
+  var vh = function(){ return window.innerHeight || document.documentElement.clientHeight || 800; };
+  function pinHeight(){
+    // Same height as the static preview had, never above 80% of the screen (60% on a phone); taller content scrolls inside the frame.
+    var phone = window.innerWidth <= 640, cap = Math.max(240, Math.round(vh() * (phone ? 0.6 : 0.8)));
+    target.style.height = Math.min(cap, Math.max(240, Math.round(boxH))) + 'px';
+  }
+  var boxH = 320;
+  function unveil(){ clearTimeout(veilTimer); if (veil && veil.parentNode) veil.parentNode.removeChild(veil); veil = null; }
+  function addVeil(){
+    unveil(); veil = document.createElement('div'); veil.className = 'custom-loading'; veil.setAttribute('aria-hidden', 'true');
+    var sp = document.createElement('span'); sp.className = 'custom-spin'; var tx = document.createElement('span'); tx.textContent = 'Rendering your payload…'; veil.appendChild(sp); veil.appendChild(tx);
+    target.appendChild(veil); veilTimer = setTimeout(unveil, 2500);
+  }
+  function setPaused(on){
+    // The renderer exposes no pause message and a frame on another origin cannot be reached, so Pause tears the frame down and Play builds it again
+    // (the film restarts from the beginning). A still of the running film cannot be captured across origins.
+    if (!frame || !target.classList.contains('is-custom')) return;
+    if (on === paused) return; paused = on;
+    if (on) {
+      unveil(); ready = false; clearTimeout(waitTimer);
+      if (frame.parentNode) frame.parentNode.removeChild(frame);
+      note2 = document.createElement('div'); note2.className = 'custom-paused'; note2.setAttribute('role', 'group'); note2.setAttribute('aria-label', 'Paused');
+      var st = document.createElement('strong'); st.textContent = 'Paused'; var sx = document.createElement('span'); sx.textContent = 'Your payload is not running. Press the Paused button again to run it from the start.'; note2.appendChild(st); note2.appendChild(sx);
+      target.appendChild(note2); say('Paused. Press the Paused button under the preview to run your payload again from the start.', 'ok');
+    } else {
+      if (note2 && note2.parentNode) note2.parentNode.removeChild(note2); note2 = null;
+      if (pending) start(); 
+    }
+  }
+  function start(){
+    sizeReports = 0; ready = false; addVeil();
     frame = document.createElement('iframe');
-    frame.title = 'Rendered preview of your payload'; frame.className = 'custom-frame';
+    frame.title = 'Rendered preview of your payload (scrolls if the content is taller)'; frame.className = 'custom-frame'; frame.tabIndex = 0;
     frame.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox');
     frame.setAttribute('referrerpolicy', 'no-referrer'); frame.setAttribute('loading', 'eager');
-    frame.style.height = '320px';
-    target.classList.add('is-custom'); badge = document.createElement('span'); badge.className = 'custom-badge'; badge.textContent = 'Your payload';
-    target.appendChild(badge); target.appendChild(frame); frame.src = BUNDLE;
-    if (pause) pause.hidden = true;
+    target.insertBefore(frame, veil); frame.src = BUNDLE;
     clearTimeout(waitTimer);
-    waitTimer = setTimeout(function(){ if (!ready) { bRender.disabled = false; say('The renderer did not answer. Check your connection and press Render again.', 'err'); } }, 10000);
+    waitTimer = setTimeout(function(){ if (!ready) { unveil(); bRender.disabled = false; say('The renderer did not answer. Check your connection and press Render again.', 'err'); } }, 10000);
+  }
+  function show(blocks){
+    pending = blocks;
+    if (paused) { paused = false; if (note2 && note2.parentNode) note2.parentNode.removeChild(note2); note2 = null; }
+    pauseBtn(false);   // Render means run it (a reduced-motion setting is honoured by the renderer itself: it stills its films)
+    if (frame && target.contains(frame)) { sizeReports = 0; addVeil(); deliver(); return; }
+    if (!kept) { boxH = target.getBoundingClientRect().height || 320; kept = document.createDocumentFragment(); while (target.firstChild) kept.appendChild(target.firstChild); }
+    else while (target.firstChild) target.removeChild(target.firstChild);
+    pinHeight();
+    target.classList.add('is-custom'); target.classList.remove('paused'); badge = document.createElement('span'); badge.className = 'custom-badge'; badge.textContent = 'Your payload';
+    target.appendChild(badge); start();
+    if (pause) { pause.hidden = false; }
   }
   function reset(){
-    clearTimeout(waitTimer); frame = null; ready = false; pending = null; bRender.disabled = false;
+    clearTimeout(waitTimer); unveil(); frame = null; ready = false; pending = null; bRender.disabled = false; paused = false; note2 = null;
     if (kept) { while (target.firstChild) target.removeChild(target.firstChild); target.appendChild(kept); kept = null; }
-    target.classList.remove('is-custom'); if (pause) pause.hidden = false;
+    target.classList.remove('is-custom'); target.style.height = '';
+    if (pause) {
+      var rm = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);   // back to the static preview: stay still for a reduced-motion visitor
+      pauseBtn(rm && staticMoves); target.classList.toggle('paused', rm && staticMoves); pause.hidden = !staticMoves;
+      var mm = window.__a2uiMotion || {}; Object.keys(mm).forEach(function(k){ try { (rm && staticMoves) ? mm[k].pause() : mm[k].play(); } catch (e) {} });
+    }
     ta.value = orig; tally(); say('Back to the example.', 'ok');
   }
   function render(){

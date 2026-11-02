@@ -61,3 +61,53 @@ def test_hostile_strings_are_escaped_by_the_renderer_the_editor_calls():
         assert "<script>window.__pwn" not in out
         assert not re.search(r"<(img|svg)[^>]*\son(error|load)=", out), out[:400]
         assert "&lt;" in out
+
+
+def test_the_box_is_fixed_and_a_size_report_never_resizes_it():
+    """Root cause of the runaway height: the host sized the frame to the renderer's reported height + 2, the renderer measured its own (now taller)
+    document and reported +2 again, forever (measured 50-59 reports in 6 s, 2 px each, to the cap). The host no longer feeds sizes back."""
+    js = g.editor_js()
+    assert "frame.style.height" not in js                                   # no code path sizes the frame from a report
+    assert "Math.min(1600" not in js
+    body = js[js.index("ui/notifications/size-changed"):]
+    body = body[:body.index("else if (hasId)")]
+    assert "style.height" not in body and "sizeReports++" in body           # a report only lifts the loading veil, once
+    assert "target.style.height = Math.min(cap" in js                       # pinned in px to the static preview's height, clamped
+    assert "0.6 : 0.8" in js                                                # 60% of the screen on a phone, 80% elsewhere
+    css = g.ATOM_PAGE_CSS
+    assert ".preview-box.is-custom iframe{display:block;width:100%;height:100%" in css   # the frame fills the box and scrolls inside it
+    assert "frame.tabIndex = 0" in js                                       # the scrolling frame is a keyboard stop
+
+
+def test_a_render_has_one_path_and_no_server_fallback():
+    js = g.editor_js()
+    assert "api/render" not in js and "fetch(" not in js and "XMLHttpRequest" not in js
+    assert "did not answer" in js and "10000" in js                          # the 10 s error message stays
+
+
+def test_loading_veil_sits_inside_the_same_box_and_respects_reduced_motion():
+    js, css = g.editor_js(), g.ATOM_PAGE_CSS
+    assert "custom-loading" in js and ".custom-loading" in css
+    assert "@media (prefers-reduced-motion:reduce){.custom-spin{animation:none" in css
+
+
+def test_pause_button_is_in_every_page_and_hidden_unless_something_moves():
+    static = page()
+    assert 'id="pause-preview"' in static and re.search(r'id="pause-preview"[^>]*\shidden', static)       # treemap does not move: hidden
+    moving = g.render_page({"type": "message_lanes", "description": "d", "fields": {}, "surfaces": {"works_on": ["web"]}})
+    m = re.search(r'<button[^>]*id="pause-preview"[^>]*>', moving)
+    assert m and " hidden" not in m.group(0) and 'aria-pressed="false"' in m.group(0) and 'aria-label="Pause ' in m.group(0)
+
+
+def test_pause_drives_the_custom_frame_and_keeps_its_label_and_state_in_sync():
+    js = g.editor_js()
+    assert "MutationObserver" in js and "attributeFilter: ['aria-pressed']" in js        # follows the one Pause button
+    assert "function setPaused" in js and "custom-paused" in js
+    assert "removeChild(frame)" in js or "frame.parentNode.removeChild(frame)" in js     # no pause message exists: the frame is torn down
+    assert "pauseBtn(false)" in js                                                       # Render means run it; Reset restores the static state
+    assert "matchMedia('(prefers-reduced-motion: reduce)')" in js                        # Reset keeps a reduced-motion visitor still
+    assert "postMessage(m, '*')" not in js
+
+
+def test_the_frame_is_always_told_the_light_theme_because_its_box_is_white():
+    assert "function theme(){ return 'light'; }" in g.editor_js()
