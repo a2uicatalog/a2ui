@@ -1,5 +1,4 @@
-"""The atom page's payload editor (design pass stage 2b-1): a Render button sends the edited payload to /api/render and shows the answer in an
-iframe that can run nothing. These tests pin the page contract and the escaping the renderer owes us for hostile payloads."""
+"""The atom page's payload editor (design pass stage 2b-1): a Render button hands the edited payload to the site's own MCP Apps renderer (separate origin, postMessage) in an iframe. These tests pin the page contract and the escaping the renderer owes us for hostile payloads."""
 import re
 import sys
 from pathlib import Path
@@ -25,20 +24,25 @@ def test_page_keeps_static_payload_and_adds_labelled_editor():
     assert 'role="status" aria-live="polite"' in html                   # parse and schema errors are announced
 
 
-def test_render_result_goes_into_an_iframe_that_cannot_run_scripts():
-    js = g.EDITOR_JS
-    assert "setAttribute('sandbox', 'allow-same-origin')" in js
-    assert "allow-scripts" not in js and "allow-top-navigation" not in js and "allow-popups" not in js
-    assert "innerHTML" not in js                                         # the answer is never parsed into the page itself
-    assert "f.srcdoc = htmlText" in js
+def test_render_runs_in_the_separate_origin_renderer_and_the_page_checks_every_message():
+    js = g.editor_js()
+    assert "https://play.a2uicatalog.ai/renderer-bundle?v=" in js.replace("' + '", "").replace("ORIGIN + '/renderer-bundle?v=", "https://play.a2uicatalog.ai/renderer-bundle?v=")
+    assert "__BUNDLE_HASH__" not in js and re.search(r"renderer-bundle\?v=[0-9a-f]+", js)       # cache-buster stamped
+    assert "srcdoc" not in js and "innerHTML" not in js and "fetch(" not in js                 # nothing parsed into the page, no server call
+    assert "ev.source !== frame.contentWindow" in js and "ev.origin !== ORIGIN" in js
+    assert "m.jsonrpc !== '2.0'" in js
+    assert "postMessage(m, ORIGIN)" in js and "postMessage(m, '*')" not in js                  # outgoing messages name the origin
+    assert "allow-top-navigation" not in js and "allow-forms" not in js and "allow-modals" not in js
+    assert "-32601" in js                                                                      # tools/call and open-link from the frame are refused
 
 
-def test_editor_has_a_size_cap_and_a_daily_limit_message():
-    js = g.EDITOR_JS
-    assert "MAX = 20000" in js
-    assert "r.status === 429" in js and "50 renders" in js
+def test_editor_has_a_size_cap_and_says_where_rendering_happens():
+    js = g.editor_js()
+    assert "MAX = 20000" in js and "t.length > MAX" in js
     assert "Ctrl+Enter" in page() and "e.ctrlKey || e.metaKey" in js
-    assert "nothing is stored" in page()                                 # the page says it sends the payload; it must say what happens to it
+    html = page()
+    assert "drawn in your browser" in html and "play.a2uicatalog.ai" in html
+    assert "50 renders" not in html and "sends the payload" not in html
 
 
 def test_copy_payload_reads_the_edited_text():
