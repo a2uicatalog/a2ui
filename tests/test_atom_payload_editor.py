@@ -38,7 +38,7 @@ def test_render_runs_in_the_separate_origin_renderer_and_the_page_checks_every_m
 
 def test_editor_has_a_size_cap_and_says_where_rendering_happens():
     js = g.editor_js()
-    assert "MAX = 20000" in js and "t.length > MAX" in js
+    assert "MAX = 60000" in js and "t.length > MAX" in js
     assert "Ctrl+Enter" in page() and "e.ctrlKey || e.metaKey" in js
     html = page()
     assert "drawn in your browser" in html and "play.a2uicatalog.ai" in html

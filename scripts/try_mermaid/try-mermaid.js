@@ -4,7 +4,7 @@
  * only ever put into the page with textContent (no HTML parsing of any kind). Messages from the frame are accepted only from that frame and that origin. */
 (function () {
   'use strict';
-  var MAX_CHARS = 20000, MAX_LINE = 500, MAX_NODES = 12, MAX_EDGES = 16, KILL_MS = 5000, DEBOUNCE_MS = 300, WAIT_MS = 10000;
+  var PAYLOAD_MAX = 60000, MAX_CHARS = 20000, MAX_LINE = 500, MAX_NODES = 12, MAX_EDGES = 16, KILL_MS = 5000, DEBOUNCE_MS = 300, WAIT_MS = 10000;
   var EXAMPLES = {
     flow: { mode: 'mermaid', label: 'Flowchart: agent to screen', text: 'flowchart LR\n  user([User]) -->|asks| agent[Agent]\n  agent -->|looks up| catalogue[(Trusted catalogue)]\n  catalogue -->|returns atoms| agent\n  agent -->|sends payload| renderer[A2UI renderer]\n  renderer -->|draws| screen[Native screen]\n' },
     d2: { mode: 'd2', label: 'D2: web app', text: 'browser: Browser\napi: API\ndb: Database {shape: cylinder}\nbrowser -> api: request\napi -> db: query\ndb -> api: rows\napi -> browser: response\n' },
@@ -96,7 +96,12 @@
       var rows = text.split('\n');
       for (var i = 0; i < rows.length; i++) if (rows[i].length > MAX_LINE) { fail(['line ' + (i + 1) + ' is ' + fmt(rows[i].length) + ' characters; the limit is ' + MAX_LINE + ' per line.'], null); return; }
       if (!window.Worker) { say('This browser cannot run the converter (no Web Worker support).', 'tm-err'); return; }
-      var my = ++jobId; say('Converting…');
+      // A Mermaid diagram pasted while the D2 button is on (or the other way round) would only produce parser errors in the wrong language: switch and say so.
+      var head = (text.split('\n').map(function (l) { return l.trim(); }).filter(function (l) { return l && l.indexOf('%%') !== 0 && l.indexOf('#') !== 0; })[0] || '');
+      var looksMermaid = /^(flowchart|graph|sequenceDiagram|stateDiagram|classDiagram|erDiagram|gantt|pie|journey|mindmap|timeline)\b/i.test(head);
+      var switched = '';
+      if (looksMermaid && mode !== 'mermaid') { setMode('mermaid'); switched = 'This looks like Mermaid, so the Mermaid button is now on. '; }
+      var my = ++jobId; say(switched + 'Converting…');
       try { if (!worker) { worker = new Worker(workerUrl); worker.onmessage = onResult; worker.onerror = function () { killWorker(); say('The converter could not start. Reload the page and try again.', 'tm-err'); }; } } catch (e) { say('The converter could not start.', 'tm-err'); return; }
       clearTimeout(killTimer);
       killTimer = setTimeout(function () { if (my === jobId) { killWorker(); jobId++; fail(['Converting took longer than ' + (KILL_MS / 1000) + ' seconds, so it was stopped. Try a smaller diagram.'], null); } }, KILL_MS);
@@ -110,7 +115,7 @@
       if (!r.ok) { fail((r.errors || []).map(String), r.counts); return; }
       var secs = typeof r.durationSeconds === 'number' ? ' (' + Math.round(r.durationSeconds) + ' s film)' : '';
       last = r; fillText(r);
-      if (inspector) { var txt = JSON.stringify(r.payload, null, 2); if (txt.length > MAX_CHARS) { say('Converted' + secs + ', but the film payload is longer than the ' + fmt(MAX_CHARS) + ' characters the preview accepts. Try a smaller diagram.', 'tm-err'); return; } say('Converted' + secs + '. Playing it in the preview on the left.', ''); window.A2UIEditor.setPayload(txt); return; }
+      if (inspector) { var txt = JSON.stringify(r.payload, null, 2); if (txt.length > PAYLOAD_MAX) { say('Converted' + secs + ', but the film payload is longer than the ' + fmt(PAYLOAD_MAX) + ' characters the preview accepts. Try a smaller diagram.', 'tm-err'); return; } say('Converted' + secs + '. Playing it in the preview on the left.', ''); window.A2UIEditor.setPayload(txt); return; }
       say('Converted' + secs + '. Playing it now.', ''); setAspect(r.payload.blocks[0]); show(r.payload.blocks);
       [bFocus, bCopy, bDown, bPause].forEach(function (b) { b.disabled = false; });
     }

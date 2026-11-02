@@ -82,3 +82,8 @@ def test_motion_arch_inspector_has_a_mermaid_tab_and_no_other_atom_does():
     assert g.mermaid_panel("button") == ""
     assert 'id="tab-mermaid"' in g.atom_inspector({"type": "motion_arch", "fields": []}, "")
     assert "A2UIEditor" in g.EDITOR_JS
+
+
+def test_mermaid_pasted_while_d2_is_on_switches_language():
+    js = (ROOT / "scripts" / "try_mermaid" / "try-mermaid.js").read_text()
+    assert "looksMermaid" in js and "Mermaid button is now on" in js

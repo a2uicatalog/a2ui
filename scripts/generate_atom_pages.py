@@ -1710,7 +1710,7 @@ def atom_inspector(atom, export_html):
                '<button type="button" class="copy-btn" id="reset-payload" hidden>Reset to example</button>'
                '<button type="button" class="copy-btn" id="copy-payload">Copy payload</button></div>'
                '<p class="insp-note" id="payload-note" hidden>Edit the payload and press Render (or Ctrl+Enter). The preview is drawn in your browser, in a separate sandboxed frame from play.a2uicatalog.ai. '
-               'Limit: 20,000 characters.</p></section>')
+               'Limit: 60,000 characters.</p></section>')
     fields = (f'<section class="insp-panel" id="panel-fields" role="tabpanel" aria-labelledby="tab-fields"><h2 class="label">Fields</h2>'
               f'{fields_table(atom)}</section>')
     export = (f'<section class="insp-panel" id="panel-export" role="tabpanel" aria-labelledby="tab-export" hidden><h2 class="label">Export</h2>'
@@ -1759,7 +1759,7 @@ EDITOR_JS = r"""<script>
   var bRender = document.getElementById('render-payload'), bReset = document.getElementById('reset-payload'), note = document.getElementById('payload-note');
   var status = document.getElementById('payload-status'), count = document.getElementById('payload-count');
   if (!code || !wrap || !ta || !target || !window.postMessage || !bRender || !bReset) return;
-  var MAX = 20000, ORIGIN = 'https://play.a2uicatalog.ai', BUNDLE = ORIGIN + '/renderer-bundle?v=__BUNDLE_HASH__';
+  var MAX = 60000, ORIGIN = 'https://play.a2uicatalog.ai', BUNDLE = ORIGIN + '/renderer-bundle?v=__BUNDLE_HASH__';
   var orig = code.textContent, pre = code.closest('pre'), kept = null, badge = null, frame = null, ready = false, pending = null, waitTimer = null, veil = null, veilTimer = null, sizeReports = 0, paused = false, note2 = null;
   ta.value = orig; pre.hidden = true; wrap.hidden = false; bRender.hidden = false; bReset.hidden = false; note.hidden = false;
   var pause = document.getElementById('pause-preview'), staticMoves = !!(pause && !pause.hidden);
