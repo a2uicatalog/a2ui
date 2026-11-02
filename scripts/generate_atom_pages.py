@@ -1914,10 +1914,13 @@ def mermaid_panel(atom_type):
     on the page and hands the film to the payload editor, so the film plays in the one preview on the left."""
     if atom_type != "motion_arch":
         return ""
+    import hashlib
+    src = Path(__file__).resolve().parent / "try_mermaid"
+    v = hashlib.sha256(b"".join((src / f).read_bytes() for f in ("try-mermaid.js", "try-mermaid.css", "worker_main.js"))).hexdigest()[:10]   # cache-buster: a changed build is never served from a stale copy
     return ('<section class="insp-panel" id="panel-mermaid" role="tabpanel" aria-labelledby="tab-mermaid" hidden><h2 class="label">Mermaid or D2</h2>'
-            '<link rel="stylesheet" href="/try-mermaid/try-mermaid.css">'
+            f'<link rel="stylesheet" href="/try-mermaid/try-mermaid.css?v={v}">'
             f'<div id="try-mermaid" data-mode="inspector" data-worker="/try-mermaid/convert.worker.js" data-bundle="https://play.a2uicatalog.ai/renderer-bundle?v={_bundle_hash()}" data-noupload="1"></div>'
-            '<script src="/try-mermaid/try-mermaid.js" defer></script>'
+            f'<script src="/try-mermaid/try-mermaid.js?v={v}" defer></script>'
             '<script>window.addEventListener("DOMContentLoaded",function(){var t=document.getElementById("tab-mermaid"),m=document.getElementById("try-mermaid");'
             'function go(){TryMermaid.mount(m,{});}'
             'if(t&&document.querySelector(".inspector.js-tabs")){t.addEventListener("click",function(){if(!m.classList.contains("tm"))go();});}else{go();}})</script></section>')
