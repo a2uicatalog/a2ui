@@ -312,7 +312,7 @@ _EXAMPLE_BLOCKS = {
     ]},
     "timeline":    {"type": "timeline", "events": [
         {"date": "2024", "title": "A2UI v1", "body": "First atoms defined."},
-        {"date": "2025", "title": "467 atoms", "body": "Full schema published."},
+        {"date": "2025", "title": "Full catalogue", "body": "Full schema published."},
         {"date": "2026", "title": "ARD catalog", "body": "Live on a2uicatalog.ai."},
     ]},
     "before_after": {"type": "before_after", "language": "js",
@@ -464,6 +464,12 @@ def _aa_example(v):
         return {k: _aa_example(x) for k, x in v.items()}
     return v
 
+
+# Curated examples for the 136 atoms whose generated example rendered empty, kept a placeholder `1`, or echoed the field name
+# (scripts/curated_examples.py, written and checked by the examples review of 2026-11-01). They win over example_payload().
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from curated_examples import CURATED_EXAMPLE_BLOCKS  # noqa: E402
+_EXAMPLE_BLOCKS.update(CURATED_EXAMPLE_BLOCKS)
 
 _EXAMPLE_BLOCKS = {k: _aa_example(v) for k, v in _EXAMPLE_BLOCKS.items()}
 
@@ -726,9 +732,11 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 .preview-box{background:#fff;border:1px solid var(--border);border-radius:10px;padding:24px;margin-top:8px;color:#1a1a1a;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;line-height:1.6}
 .preview-box{position:relative;overflow-x:auto}
 .preview-box *{max-width:100%}
+.preview-box [class$="-track"]{max-width:none}   /* a carousel track is wider than its frame by design */
 .preview-box p,.preview-box li,.preview-box td,.preview-box th,.preview-box td:first-child,.preview-box code{color:inherit;font-family:inherit}
 .preview-box pre{background:#f4f4f4;border:1px solid #e0e0e0}
 .preview-box pre code{color:inherit}
+.preview-box pre[style*="#1e1e2e"] code{color:#e6e6f0}   /* a dark code block keeps its light text */
 .preview-box h2,.preview-box h3{color:#111}
 .preview-box a{color:#0969da}
 .preview-box ul{color:#333}
@@ -1144,6 +1152,16 @@ def _scope_preview_css(html):
     return re.sub(r"(<style\b[^>]*>)(.*?)(</style>)", clean, html, flags=re.S)
 
 
+def _name_svgs(html, display):
+    """Give a chart drawn as an <svg> a text alternative: role=img and a label, unless the renderer already hid or named it."""
+    def fix(m):
+        head = m.group(0)
+        if re.search(r"aria-hidden=[\"']true[\"']", head) or re.search(r"aria-label(?:ledby)?=", head) or re.search(r"role=[\"']img[\"']", head):
+            return head
+        return head[:-1] + f' role="img" aria-label="{_esc_attr(display)} graphic">'
+    return re.sub(r"<svg\b[^>]*>", fix, html, flags=re.I)
+
+
 def live_preview(atom):
     atom_type = atom.get("type", "")
     if atom_type not in _RENDERER_TYPES or _web_renderer is None:
@@ -1166,6 +1184,7 @@ def live_preview(atom):
     html = re.sub(r"<h1(\s|>)", r"<div\1", html)
     html = re.sub(r"</h1>", "</div>", html)
     display = atom.get("displayName") or atom_type
+    html = _name_svgs(html, str(display))
     # Unlike card_stage(), this box IS mouse-interactive (no pointer-events:
     # none) — genuinely clickable/typeable, so it must stay reachable by
     # assistive tech, not aria-hidden. Any form controls it contains (e.g. a
@@ -1309,15 +1328,17 @@ def _load_atom_catalogs():
 ATOM_CATALOG = _load_atom_catalogs()
 
 
-def catalog_chip(atom_type):
-    """The atom's catalog as a chip linking to /atoms/ filtered to that catalog, then the type name in mono (design pass: chip + type)."""
+def catalog_chip(atom_type, inline=False):
+    """The atom's catalog as a chip linking to /atoms/ filtered to that catalog, then the type name in mono (design pass: chip + type).
+    inline=True gives a span for the title row; otherwise its own line."""
     slug = ATOM_CATALOG.get(atom_type)
     code = f'<code class="type-code">{html.escape(atom_type)}</code>'
+    tag = "span" if inline else "p"
     if not slug:
-        return f'<p class="cat-line">{code}</p>'
+        return f'<{tag} class="cat-line">{code}</{tag}>'
     label = html.escape(CATALOG_LABELS.get(slug, slug.replace("-", " ").title()))
-    return (f'<p class="cat-line"><span class="sr-only">Category: </span><a class="cat-chip" href="/atoms/?catalog={slug}" '
-            f'title="All atoms in the a2ui-{slug}-v1 catalog">{label}</a> {code}</p>')
+    return (f'<{tag} class="cat-line"><span class="sr-only">Category: </span><a class="cat-chip" href="/atoms/?catalog={slug}" '
+            f'title="All atoms in the a2ui-{slug}-v1 catalog">{label}</a> {code}</{tag}>')
 
 
 # type -> (prev, next) in the /atoms/ hub's A-Z order; filled by main() before the pages render.
@@ -1411,6 +1432,7 @@ EXPORT_JS_BLOCK = """<script>
       });
       nodBox.hidden = !(f.indexOf('mp4') > -1 || f.indexOf('gif') > -1);
       row.hidden = false;
+      var tab = document.getElementById('tab-export'); if (tab) tab.hidden = false;
     }).catch(function(){});
   }
   function busy(on){ btns.querySelectorAll('button').forEach(function(b){ b.disabled = on; }); prog.hidden = !on; }
@@ -1467,6 +1489,147 @@ PREVIEW_JS = """<script>
     else { select(); done(false); }
     function select(){ var r = document.createRange(); r.selectNodeContents(document.getElementById('payload-code')); var g = getSelection(); g.removeAllRanges(); g.addRange(r); }
   });
+})();
+</script>"""
+
+
+ATOM_PAGE_CSS = r"""<style>
+/* Design pass, direction C: the atom page is a two-column workspace. The preview leads on the left; the inspector (Payload / Fields / Export) sits on the right
+   and drops below the preview on a phone. Pager and breadcrumb share one row. */
+.wrap.atom-wide{max-width:1100px}   /* the site header is 1100 wide: keep the page edges aligned with it */
+.atom-top{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px 16px;margin-bottom:20px}
+.atom-top nav.crumb{margin:0}
+.atom-top nav.atom-pager{margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.atom-top nav.atom-pager .pg-btn{flex-direction:row;align-items:center;min-height:40px;padding:0 12px;border-radius:8px}
+.atom-top .pg-dir{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.atom-top .pg-name{font-size:14px;font-weight:600;color:var(--text)}
+.atom-top .pg-prev .pg-name::before{content:"\2190\00a0"}
+.atom-top .pg-next .pg-name::after{content:"\00a0\2192"}
+.atom-top nav.atom-pager .pg-all{font-size:14px}
+.atom-top .pg-hint{grid-column:auto;margin:0;font-size:12px;font-weight:400;color:var(--text-muted);text-align:left}
+.atom-top nav.atom-pager kbd{font-size:12px}
+.title-row{margin-bottom:20px}
+.title-row h1{margin-bottom:0}
+.title-row .cat-line{margin:0;display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap}
+.atom-grid{display:grid;grid-template-columns:minmax(0,1fr) 380px;grid-template-areas:"preview insp" "about insp";gap:20px 24px;align-items:start}
+.a-preview{grid-area:preview;min-width:0}
+.a-insp{grid-area:insp;min-width:0}
+.a-about{grid-area:about;min-width:0}
+.a-preview .section{margin-bottom:0}
+.a-preview .preview-box{min-height:320px;padding:28px;border-radius:14px;border-color:var(--border-strong);box-shadow:var(--shadow)}
+.a-about .section{margin-bottom:28px}
+.a-about .desc{margin-bottom:0;font-size:1.05rem}
+.inspector{border:1px solid var(--border-strong);border-radius:14px;background:var(--surface);overflow:hidden;box-shadow:var(--shadow)}
+.insp-tabs{display:flex;border-bottom:1px solid var(--border)}
+.insp-tabs[hidden],.insp-tab[hidden],.insp-panel[hidden]{display:none}
+.insp-tab{flex:1;min-height:46px;padding:0 8px;border:0;border-bottom:3px solid transparent;border-radius:0;background:var(--surface);color:var(--text-muted);font:600 14px/1.2 inherit;cursor:pointer}
+.insp-tab:hover{color:var(--text)}
+.insp-tab[aria-selected="true"]{color:var(--text);font-weight:700;border-bottom-color:var(--accent)}
+.insp-tab:focus-visible{outline:3px solid var(--accent);outline-offset:-3px}
+.insp-panel{display:flex;flex-direction:column;gap:12px;padding:16px;min-width:0}
+.insp-panel>.label{margin:0}
+.js-tabs .insp-panel>.label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.insp-panel+.insp-panel{border-top:1px solid var(--border)}
+.js-tabs .insp-panel+.insp-panel{border-top:0}
+.insp-panel pre{margin:0;max-height:440px;overflow:auto;padding:14px;font-size:12.5px;line-height:1.6}
+.insp-panel pre code{font-size:12.5px}
+.insp-actions{display:flex;flex-wrap:wrap;gap:8px}
+.copy-btn.primary{border-color:var(--accent);background:var(--accent);color:var(--accent-contrast)}
+.copy-btn.primary:hover{filter:brightness(1.08)}
+.insp-panel .fields{margin:0;border:0;border-radius:0;background:transparent}
+.insp-panel .field-row{grid-template-columns:minmax(0,1fr) auto;padding:10px 0}
+.insp-panel .field-row .f-type{grid-column:1/-1;grid-row:2}
+.insp-panel .export-row{margin:0}
+.insp-panel .export-note{margin-left:0;flex:1 1 100%}
+.insp-note{margin:0;font-size:13px;color:var(--text-muted)}
+.copy-btn:focus-visible,.export-btn:focus-visible,.export-cancel:focus-visible,.pause-btn:focus-visible,.like-btn:focus-visible,.pg-btn:focus-visible,.pg-all:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.schema-hero{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:16px;min-height:320px;padding:28px;border:1px solid var(--border-strong);border-radius:14px;box-shadow:var(--shadow);
+  background-color:var(--surface);background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:22px 22px}
+.schema-hero pre{margin:0;max-width:100%;background:var(--surface-2);border-color:var(--border);padding:16px 20px}
+.schema-hero pre code{font-size:14px}
+.schema-pill{font-size:12px;font-weight:700;letter-spacing:.02em;color:var(--accent-text);background:var(--accent-soft-bg);border:1px solid var(--border);border-radius:999px;padding:4px 12px;max-width:100%}
+.preview-tools{margin-top:10px}
+.pause-btn{min-height:44px;padding:0 16px}
+@media(max-width:1000px){
+  .atom-grid{grid-template-columns:minmax(0,1fr);grid-template-areas:"preview" "insp" "about"}
+}
+@media(max-width:700px){
+  .wrap.atom-wide{padding-left:16px;padding-right:16px}
+  .atom-top{flex-direction:column;align-items:stretch}
+  .atom-top nav.atom-pager{display:grid;grid-template-columns:1fr 1fr}
+  .atom-top nav.atom-pager .pg-btn{min-height:44px}
+  .atom-top nav.atom-pager .pg-next{justify-self:stretch;text-align:right;justify-content:flex-end}
+  .atom-top nav.atom-pager .pg-prev{justify-self:stretch}
+  .atom-top nav.atom-pager .pg-all{grid-column:1/-1;grid-row:2;justify-self:center;min-height:44px;display:inline-flex;align-items:center}
+  .atom-top .pg-hint{display:none}
+  nav.crumb a{display:inline-block;padding:15px 4px;margin:-15px -4px}   /* a 44px tap target around the small breadcrumb links without changing the layout */
+  .a-preview .preview-box,.schema-hero{min-height:200px;padding:16px}
+  .insp-tab{min-height:48px}
+  .insp-panel{padding:14px}
+}
+</style>"""
+
+
+def schema_hero(atom):
+    """The atom page's fallback when an atom has no live preview: the shape of its payload, honestly labelled. Not a blank box."""
+    atom_type = atom.get("type", "")
+    name = html.escape(atom_type.replace("_", " ").title(), quote=True)
+    try:
+        ex = json.loads(example_payload(atom))
+    except Exception:
+        ex = {"type": atom_type}
+    keys = [k for k in ex if k != "type"][:5]
+    rows = [f'  "type": "{html.escape(atom_type)}"'] + [f'  "{html.escape(str(k))}": …' for k in keys]
+    code = "{\n" + ",\n".join(rows) + (",\n  …" if len(ex) - 1 > len(keys) else "") + "\n}"
+    return (f'<div class="section"><div class="label">Preview</div>'
+            f'<div class="schema-hero" role="group" aria-label="{name}: no live preview for this atom, its payload shape is shown instead">'
+            f'<pre tabindex="0"><code>{code}</code></pre>'
+            f'<span class="schema-pill">Schema card · no live preview for this atom</span></div></div>')
+
+
+def atom_inspector(atom, export_html):
+    """The right-hand inspector: Payload, Fields and (when the exporter is part of this build) Export. All panels are in the page, so without JavaScript
+    they simply stack under their headings; the tablist is revealed by INSPECTOR_JS."""
+    tabs = [("payload", "Payload"), ("fields", "Fields")] + ([("export", "Export")] if export_html else [])
+    tablist = ('<div class="insp-tabs" role="tablist" aria-label="Inspector" hidden>' + "".join(
+        f'<button type="button" role="tab" class="insp-tab" id="tab-{k}" aria-controls="panel-{k}" aria-selected="{"true" if i == 0 else "false"}" '
+        f'tabindex="{0 if i == 0 else -1}"{" hidden" if k == "export" else ""}>{label}</button>' for i, (k, label) in enumerate(tabs)) + '</div>')
+    payload = (f'<section class="insp-panel" id="panel-payload" role="tabpanel" aria-labelledby="tab-payload"><h2 class="label">Example payload</h2>'
+               f'<pre tabindex="0"><code id="payload-code">{html.escape(example_payload(atom), quote=False)}</code></pre>'
+               '<div class="insp-actions"><button type="button" class="copy-btn primary" id="copy-payload">Copy payload</button></div></section>')
+    fields = (f'<section class="insp-panel" id="panel-fields" role="tabpanel" aria-labelledby="tab-fields"><h2 class="label">Fields</h2>'
+              f'{fields_table(atom)}</section>')
+    export = (f'<section class="insp-panel" id="panel-export" role="tabpanel" aria-labelledby="tab-export" hidden><h2 class="label">Export</h2>'
+              f'<p class="insp-note">Save the live preview as a file.</p>{export_html}</section>') if export_html else ""
+    return f'<aside class="inspector a-insp" aria-label="Inspector">{tablist}{payload}{fields}{export}</aside>'
+
+
+INSPECTOR_JS = """<script>
+(function(){
+  // Tabs (WAI-ARIA tabs pattern): arrow keys, Home and End move between the visible tabs; the selected tab is the only one in the tab order.
+  var insp = document.querySelector('.inspector'); if (!insp) return;
+  var list = insp.querySelector('[role=tablist]'); if (!list) return;
+  var tabs = [].slice.call(list.querySelectorAll('[role=tab]'));
+  insp.classList.add('js-tabs'); list.hidden = false;
+  function visible(){ return tabs.filter(function(t){ return !t.hidden; }); }
+  function select(t, focus){
+    tabs.forEach(function(x){
+      var on = x === t, p = document.getElementById(x.getAttribute('aria-controls'));
+      x.setAttribute('aria-selected', String(on)); x.tabIndex = on ? 0 : -1; if (p) p.hidden = !on;
+    });
+    if (focus) t.focus();
+  }
+  tabs.forEach(function(t){
+    t.addEventListener('click', function(){ select(t); });
+    t.addEventListener('keydown', function(e){
+      var v = visible(), i = v.indexOf(t), n;
+      if (e.key === 'ArrowRight') n = v[(i + 1) % v.length]; else if (e.key === 'ArrowLeft') n = v[(i - 1 + v.length) % v.length];
+      else if (e.key === 'Home') n = v[0]; else if (e.key === 'End') n = v[v.length - 1]; else return;
+      e.preventDefault(); select(n, true);
+    });
+  });
+  var want = (location.hash || '').replace('#', ''), first = tabs[0];
+  select(tabs.filter(function(t){ return t.id === 'tab-' + want && !t.hidden; })[0] || first);
 })();
 </script>"""
 
@@ -1532,6 +1695,7 @@ def render_page(atom):
     try_btn  = (
         f'<a class="try-btn" href="{make_renderer_url(atom)}" target="_blank" rel="noopener">Try it live →</a>'
     ) if _gas_only else ""
+    _export_html = export_row(atom)
 
     return f"""<!DOCTYPE html>
 <html lang="en">
@@ -1571,44 +1735,39 @@ def render_page(atom):
   <script type="application/ld+json">{_atom_ld}</script>
   {SITE_HEAD_JS}
   {PAGE_CSS}
+  {ATOM_PAGE_CSS}
 </head>
 <body>
   {site_header("atoms")}
-  <div class="wrap">
+  <div class="wrap atom-wide">
+  <div class="atom-top">
   <nav class="crumb">
     <a href="/">A2UI Catalog</a> /
     <a href="/atoms/">atoms</a> / {atom_type}
   </nav>
   {atom_pager(atom_type)}
-
-  <div class="title-row"><h1>{display_name}</h1>{like_button(atom_type, display_name)}</div>
-  {catalog_chip(atom_type)}
-
-  {preview}
-  {export_row(atom)}
-
-  <div class="section">
-    <div class="label-row"><div class="label">Example payload</div><button type="button" class="copy-btn" id="copy-payload">Copy payload</button></div>
-    <pre tabindex="0"><code id="payload-code">{html.escape(example_payload(atom), quote=False)}</code></pre>
   </div>
 
-  <div class="section">
-    <div class="label">What it is</div>
-    <p class="desc">{desc or compact}</p>
-  </div>
+  <div class="title-row"><h1>{display_name}</h1>{like_button(atom_type, display_name)}{catalog_chip(atom_type, inline=True)}</div>
 
-  <div class="section">
-    <div class="label">Surfaces</div>
-    {surface_badges(atom)}
-  </div>
+  <div class="atom-grid">
+    <div class="a-preview">{preview or schema_hero(atom)}</div>
+    {atom_inspector(atom, _export_html)}
+    <div class="a-about">
+      <div class="section">
+        <div class="label">What it is</div>
+        <p class="desc">{desc or compact}</p>
+      </div>
 
-  {degraded_notes(atom)}
+      <div class="section">
+        <div class="label">Surfaces</div>
+        {surface_badges(atom)}
+      </div>
 
-  {templates}
+      {degraded_notes(atom)}
 
-  <div class="section">
-    <div class="label">Fields</div>
-    {fields_table(atom)}
+      {templates}
+    </div>
   </div>
 
   <div class="section">
@@ -1642,7 +1801,8 @@ clasp push &amp;&amp; clasp deploy</code></pre>
   {PAGER_JS}
   {LIKES_JS}
   {PREVIEW_JS}
-  {EXPORT_JS_BLOCK if export_row(atom) else ''}
+  {INSPECTOR_JS}
+  {EXPORT_JS_BLOCK if _export_html else ''}
 {_cursor_glow_html()}
 </body>
 </html>"""
@@ -3523,6 +3683,7 @@ document.addEventListener('click', function (e) {{
   .sa-desc{{font-size:14px;color:var(--muted);margin:4px 0 12px}}
   .preview-box{{background:#fff;border:1px solid var(--border);border-radius:10px;padding:24px;color:#1a1a1a;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;line-height:1.6}}
   .preview-box *{{max-width:100%}}
+  .preview-box [class$="-track"]{{max-width:none}}
   </style>
 </head>
 <body>
@@ -4545,6 +4706,11 @@ def main():
             unique.append(block)
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+
+    # The timeline atom's sample event names the catalogue size; take it from this build so it never goes stale (it said 467 when the catalogue was 573).
+    for ev in _EXAMPLE_BLOCKS.get("timeline", {}).get("events", []):
+        if ev.get("body") == "Full schema published.":
+            ev["title"] = f"{len(unique)} atoms"
 
     order = [t for items in _hub_groups(unique).values() for t, _, _ in items]
     _NEIGHBOURS.clear()

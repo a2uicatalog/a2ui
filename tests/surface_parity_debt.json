@@ -2,6 +2,42 @@
  "threshold": 0.5,
  "note": "Measure: render each stable atom's example block on both surfaces and count how\nmany of the block's display strings (>=4 letters, not URLs/colours/enum words)\nappear in each output. An atom DIVERGES when the two coverages differ by\n>= THRESHOLD, i.e. one surface shows content the other drops.",
  "atoms": {
+  "chartjs_line": {
+   "web": 0.5,
+   "gas": 1.0
+  },
+  "collapsible_panel": {
+   "web": 1.0,
+   "gas": 0.33
+  },
+  "embed_codepen": {
+   "web": 1.0,
+   "gas": 0.0
+  },
+  "embed_gist": {
+   "web": 1.0,
+   "gas": 0.0
+  },
+  "embed_google_slides": {
+   "web": 1.0,
+   "gas": 0.0
+  },
+  "form_radio_group": {
+   "web": 1.0,
+   "gas": 0.4
+  },
+  "loading_skeleton": {
+   "web": 1.0,
+   "gas": 0.0
+  },
+  "scatter_trend": {
+   "web": 0.33,
+   "gas": 1.0
+  },
+  "social_feed_embed": {
+   "web": 0.67,
+   "gas": 0.0
+  },
   "spotlight_card": {
    "web": 0.5,
    "gas": 1.0
