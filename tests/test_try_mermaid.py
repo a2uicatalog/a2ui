@@ -75,8 +75,10 @@ def test_worker_limits_hold_inside_the_worker():
     assert r.returncode == 0, r.stdout[-2500:] + r.stderr[-800:]
 
 
-def test_motion_arch_page_mounts_the_paste_window_and_no_other_atom_does():
+def test_motion_arch_inspector_has_a_mermaid_tab_and_no_other_atom_does():
     import generate_atom_pages as g
-    box = g.mermaid_box("motion_arch")
-    assert 'id="try-mermaid"' in box and "/try-mermaid/try-mermaid.js" in box and "renderer-bundle?v=" in box
-    assert g.mermaid_box("button") == ""
+    box = g.mermaid_panel("motion_arch")
+    assert 'id="panel-mermaid"' in box and 'data-mode="inspector"' in box and "/try-mermaid/try-mermaid.js" in box and "renderer-bundle?v=" in box
+    assert g.mermaid_panel("button") == ""
+    assert 'id="tab-mermaid"' in g.atom_inspector({"type": "motion_arch", "fields": []}, "")
+    assert "A2UIEditor" in g.EDITOR_JS

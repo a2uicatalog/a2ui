@@ -30,6 +30,8 @@
     var mode = 'mermaid', worker = null, jobId = 0, killTimer = null, debounce = null, last = null, frame = null, ready = false, waitTimer = null, veil = null, paused = false, focused = false;
     root.textContent = '';
     root.classList.add('tm'); if (opts.compact || ds.compact === '1') root.classList.add('tm-compact');
+    // Inspector mode (the atom page's Mermaid tab): only the entry is built here; the film goes to the page's payload editor and plays in the page's own preview.
+    var inspector = !!((opts.inspector || ds.mode === 'inspector') && window.A2UIEditor); if (inspector) root.classList.add('tm-inspector');
 
     // ---- controls
     var bMer = el('button', { type: 'button', 'aria-pressed': 'true', text: 'Mermaid' }), bD2 = el('button', { type: 'button', 'aria-pressed': 'false', text: 'D2' });
@@ -69,7 +71,7 @@
     foot.textContent = (verified ? 'Runs in your browser. Your diagram is not uploaded. ' : '') + 'Copy the payload to use it on any atom page or with an agent. MP4 and GIF of your own film are not available here yet.';
     var backdrop = el('div', { class: 'tm-backdrop' }); backdrop.hidden = true;
     var stage = el('div', { class: 'tm-stage' }, [box, bar, details, foot, backdrop]);
-    root.appendChild(controls); root.appendChild(stage);
+    if (inspector) { controls.firstChild.appendChild(details); controls.firstChild.appendChild(foot); root.appendChild(controls); } else { root.appendChild(controls); root.appendChild(stage); }
 
     // ---- helpers
     function say(msg, cls) { status.textContent = msg || ''; status.className = 'tm-status' + (cls ? ' ' + cls : ''); }
@@ -107,8 +109,9 @@
       showList(warns, Array.isArray(r.warnings) ? r.warnings.map(String).slice(0, 8) : []);
       if (!r.ok) { fail((r.errors || []).map(String), r.counts); return; }
       var secs = typeof r.durationSeconds === 'number' ? ' (' + Math.round(r.durationSeconds) + ' s film)' : '';
-      say('Converted' + secs + '. Playing it now.', ''); last = r;
-      fillText(r); setAspect(r.payload.blocks[0]); show(r.payload.blocks);
+      last = r; fillText(r);
+      if (inspector) { var txt = JSON.stringify(r.payload, null, 2); if (txt.length > MAX_CHARS) { say('Converted' + secs + ', but the film payload is longer than the ' + fmt(MAX_CHARS) + ' characters the preview accepts. Try a smaller diagram.', 'tm-err'); return; } say('Converted' + secs + '. Playing it in the preview on the left.', ''); window.A2UIEditor.setPayload(txt); return; }
+      say('Converted' + secs + '. Playing it now.', ''); setAspect(r.payload.blocks[0]); show(r.payload.blocks);
       [bFocus, bCopy, bDown, bPause].forEach(function (b) { b.disabled = false; });
     }
     function fail(list, counts) {

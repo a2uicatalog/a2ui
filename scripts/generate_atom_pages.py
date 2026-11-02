@@ -1694,7 +1694,8 @@ def schema_hero(atom):
 def atom_inspector(atom, export_html):
     """The right-hand inspector: Payload, Fields and (when the exporter is part of this build) Export. All panels are in the page, so without JavaScript
     they simply stack under their headings; the tablist is revealed by INSPECTOR_JS."""
-    tabs = [("payload", "Payload"), ("fields", "Fields")] + ([("export", "Export")] if export_html else [])
+    mer = mermaid_panel(atom.get("type", ""))
+    tabs = [("payload", "Payload"), ("fields", "Fields")] + ([("mermaid", "Mermaid")] if mer else []) + ([("export", "Export")] if export_html else [])
     tablist = ('<div class="insp-tabs" role="tablist" aria-label="Inspector" hidden>' + "".join(
         f'<button type="button" role="tab" class="insp-tab" id="tab-{k}" aria-controls="panel-{k}" aria-selected="{"true" if i == 0 else "false"}" '
         f'tabindex="{0 if i == 0 else -1}"{" hidden" if k == "export" else ""}>{label}</button>' for i, (k, label) in enumerate(tabs)) + '</div>')
@@ -1714,7 +1715,7 @@ def atom_inspector(atom, export_html):
               f'{fields_table(atom)}</section>')
     export = (f'<section class="insp-panel" id="panel-export" role="tabpanel" aria-labelledby="tab-export" hidden><h2 class="label">Export</h2>'
               f'<p class="insp-note">Save the live preview as a file.</p>{export_html}</section>') if export_html else ""
-    return f'<aside class="inspector a-insp" aria-label="Inspector">{tablist}{payload}{fields}{export}</aside>'
+    return f'<aside class="inspector a-insp" aria-label="Inspector">{tablist}{payload}{fields}{mer}{export}</aside>'
 
 
 INSPECTOR_JS = """<script>
@@ -1879,6 +1880,8 @@ EDITOR_JS = r"""<script>
   ta.addEventListener('input', function(){ tally(); if (status.className.indexOf('err') > -1) say(''); });
   ta.addEventListener('keydown', function(e){ if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); render(); } });
   bRender.addEventListener('click', render); bReset.addEventListener('click', function(){ reset(); ta.focus(); });
+  // The Mermaid / D2 tab hands its converted film to this editor, so the film is drawn in the one preview (same renderer, Pause, Focus, Reset).
+  window.A2UIEditor = { setPayload: function(text){ ta.value = text; tally(); render(); } };
   tally();
 })();
 </script>"""
@@ -1906,15 +1909,18 @@ def atom_pager(atom_type):
             + '<p class="pg-hint">Press <kbd>←</kbd> or <kbd>→</kbd> on your keyboard to move between atoms.</p></nav>')
 
 
-def mermaid_box(atom_type):
-    """The Mermaid / D2 paste window (public/try-mermaid/, scripts/gen_try_mermaid.py), mounted on the atoms a pasted diagram turns into."""
+def mermaid_panel(atom_type):
+    """The Mermaid / D2 tab of the inspector (public/try-mermaid/, scripts/gen_try_mermaid.py), on the atoms a pasted diagram turns into. It converts in a worker
+    on the page and hands the film to the payload editor, so the film plays in the one preview on the left."""
     if atom_type != "motion_arch":
         return ""
-    return (f'<section class="section" id="paste-diagram" aria-labelledby="paste-diagram-h"><h2 class="label" id="paste-diagram-h">Make this from a Mermaid or D2 diagram</h2>'
-            f'<link rel="stylesheet" href="/try-mermaid/try-mermaid.css">'
-            f'<div id="try-mermaid" data-worker="/try-mermaid/convert.worker.js" data-bundle="https://play.a2uicatalog.ai/renderer-bundle?v={_bundle_hash()}" data-noupload="1"></div>'
-            f'<script src="/try-mermaid/try-mermaid.js" defer></script>'
-            f'<script>window.addEventListener("DOMContentLoaded",function(){{TryMermaid.mount(document.getElementById("try-mermaid"),{{}})}})</script></section>')
+    return ('<section class="insp-panel" id="panel-mermaid" role="tabpanel" aria-labelledby="tab-mermaid" hidden><h2 class="label">Mermaid or D2</h2>'
+            '<link rel="stylesheet" href="/try-mermaid/try-mermaid.css">'
+            f'<div id="try-mermaid" data-mode="inspector" data-worker="/try-mermaid/convert.worker.js" data-bundle="https://play.a2uicatalog.ai/renderer-bundle?v={_bundle_hash()}" data-noupload="1"></div>'
+            '<script src="/try-mermaid/try-mermaid.js" defer></script>'
+            '<script>window.addEventListener("DOMContentLoaded",function(){var t=document.getElementById("tab-mermaid"),m=document.getElementById("try-mermaid");'
+            'function go(){TryMermaid.mount(m,{});}'
+            'if(t&&document.querySelector(".inspector.js-tabs")){t.addEventListener("click",function(){if(!m.classList.contains("tm"))go();});}else{go();}})</script></section>')
 
 
 def render_page(atom):
@@ -2035,8 +2041,6 @@ def render_page(atom):
       {templates}
     </div>
   </div>
-
-  {mermaid_box(atom_type)}
 
   <div class="section">
     <div class="label">ARD catalog entry</div>

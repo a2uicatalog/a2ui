@@ -60,3 +60,4 @@ body.tm-locked{overflow:hidden}
 @media (max-width:860px){.tm{grid-template-columns:minmax(0,1fr);grid-template-areas:"controls" "stage"}.tm-box{--tm-h:clamp(300px,62vh,520px)}.tm-ta{min-height:200px}}
 
 @media (max-width:480px){.tm-seg,.tm-select{flex:1 1 auto}.tm-opts{display:grid;grid-template-columns:1fr 1fr}.tm-opts label{grid-column:1/-1}.tm-bar{display:grid;grid-template-columns:1fr 1fr}.tm-bar .tm-out{display:contents}}
+.tm.tm-inspector{display:block}.tm-inspector .tm-panel{border:0;padding:0;box-shadow:none;background:transparent}
