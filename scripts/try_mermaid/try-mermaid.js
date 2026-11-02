@@ -37,7 +37,7 @@
     var exSel = el('select', { class: 'tm-select', id: id('ex'), 'aria-label': 'Load an example' }, [el('option', { value: '', text: 'Examples…' })]);
     Object.keys(EXAMPLES).forEach(function (k) { exSel.appendChild(el('option', { value: k, text: EXAMPLES[k].label })); });
     var ta = el('textarea', { class: 'tm-ta', id: id('src'), spellcheck: 'false', autocapitalize: 'off', autocomplete: 'off', autocorrect: 'off', 'aria-describedby': id('count') + ' ' + id('status') });
-    var lab = el('label', { class: 'tm-label', for: id('src'), text: 'Mermaid or D2 source' });
+    var lab = el('label', { class: 'tm-sr', for: id('src'), text: 'Mermaid or D2 source' });
     var cChars = el('span'), cNodes = el('span', { text: 'nodes: –' }), cEdges = el('span', { text: 'edges: –' });
     var counter = el('div', { class: 'tm-counter', id: id('count') }, [cChars, cNodes, cEdges]);
     var cbRel = el('input', { type: 'checkbox', id: id('rel') }), selPace = el('select', { class: 'tm-select', id: id('pace') }), selDir = el('select', { class: 'tm-select', id: id('dir') });
@@ -49,31 +49,31 @@
     var errs = el('ul', { class: 'tm-errs', 'aria-label': 'Problems with the input' }); errs.hidden = true;
     var warns = el('ul', { class: 'tm-warns', 'aria-label': 'Notes about the drawing' }); warns.hidden = true;
     var controls = el('div', { class: 'tm-controls' }, [el('div', { class: 'tm-panel' }, [
-      el('div', { class: 'tm-row' }, [seg, exSel]), lab, ta, counter, status, errs, warns, opt])]);
+      el('div', { class: 'tm-row' }, [seg, exSel]), opt, lab, ta, counter, status, errs, warns])]);
 
     // ---- stage
-    var empty = el('div', { class: 'tm-empty', text: 'Paste a diagram on the left. The film appears here.' });
+    var empty = el('div', { class: 'tm-empty', text: 'Paste a diagram on the right. The film appears here.' });
     var close = el('button', { type: 'button', class: 'tm-btn tm-close', text: 'Close', 'aria-keyshortcuts': 'Escape', title: 'Close (Escape). Escape works while focus is outside the film; from inside it, Shift+Tab reaches Close.' });
     var box = el('div', { class: 'tm-box' }, [empty, close]);
     var bPause = el('button', { type: 'button', class: 'tm-btn', 'aria-pressed': 'false', text: 'Pause' });
     var bFocus = el('button', { type: 'button', class: 'tm-btn', text: 'Focus' }); bFocus.setAttribute('aria-label', 'Focus: enlarge the film');
-    var bCopy = el('button', { type: 'button', class: 'tm-btn', text: 'Copy payload' }), bDown = el('button', { type: 'button', class: 'tm-btn', text: 'Download JSON' });
+    var bCopy = el('button', { type: 'button', class: 'tm-btn tm-primary', text: 'Copy payload' }), bDown = el('button', { type: 'button', class: 'tm-btn', text: 'Download JSON' });
     [bPause, bFocus, bCopy, bDown].forEach(function (b) { b.disabled = true; });
-    var bar = el('div', { class: 'tm-bar', role: 'group', 'aria-label': 'Film controls' }, [bPause, bFocus, bCopy, bDown]);
+    var bar = el('div', { class: 'tm-bar', role: 'group', 'aria-label': 'Film controls' }, [bPause, bFocus, el('div', { class: 'tm-out' }, [bCopy, bDown])]);
     var stepsBody = el('tbody'), msgBody = el('tbody');
     var stepsTable = el('table', null, [el('caption', { text: 'Steps' }), el('thead', null, [el('tr', null, [el('th', { scope: 'col', text: 'Step' }), el('th', { scope: 'col', text: 'Activity' })])]), stepsBody]);
     var msgTable = el('table', null, [el('caption', { text: 'Messages' }), el('thead', null, [el('tr', null, [el('th', { scope: 'col', text: 'Step' }), el('th', { scope: 'col', text: 'Message' }), el('th', { scope: 'col', text: 'Direction' })])]), msgBody]);
     var details = el('details', { class: 'tm-steps' }, [el('summary', { text: 'Steps and messages as text' }), el('div', { class: 'tm-scroll' }, [stepsTable, msgTable])]);
     details.hidden = true;
     var foot = el('p', { class: 'tm-foot' });
-    foot.textContent = (verified ? 'Runs in your browser. Your diagram is not uploaded. ' : '') + 'The diagram is converted by a worker on this page and drawn by the A2UI renderer in a separate frame. Exporting your own film as MP4 or GIF is not available here yet; copy the payload to use it elsewhere.';
+    foot.textContent = (verified ? 'Runs in your browser. Your diagram is not uploaded. ' : '') + 'Copy the payload to use it on any atom page or with an agent. MP4 and GIF of your own film are not available here yet.';
     var backdrop = el('div', { class: 'tm-backdrop' }); backdrop.hidden = true;
     var stage = el('div', { class: 'tm-stage' }, [box, bar, details, foot, backdrop]);
     root.appendChild(controls); root.appendChild(stage);
 
     // ---- helpers
     function say(msg, cls) { status.textContent = msg || ''; status.className = 'tm-status' + (cls ? ' ' + cls : ''); }
-    function showList(ul, items) { ul.textContent = ''; items.forEach(function (t) { ul.appendChild(el('li', { text: t })); }); ul.hidden = !items.length; }
+    function showList(ul, items) { ul.textContent = ''; items.forEach(function (t) { t = String(t); ul.appendChild(el('li', { text: t.charAt(0).toUpperCase() + t.slice(1) })); }); ul.hidden = !items.length; }
     function tally(counts) {
       var len = ta.value.length;
       cChars.textContent = fmt(len) + ' / ' + fmt(MAX_CHARS) + ' characters'; cChars.className = len > MAX_CHARS ? 'tm-over' : '';
@@ -107,7 +107,7 @@
       showList(warns, Array.isArray(r.warnings) ? r.warnings.map(String).slice(0, 8) : []);
       if (!r.ok) { fail((r.errors || []).map(String), r.counts); return; }
       var secs = typeof r.durationSeconds === 'number' ? ' (' + Math.round(r.durationSeconds) + ' s film)' : '';
-      say('Converted' + secs + '. Playing it below.', ''); last = r;
+      say('Converted' + secs + '. Playing it now.', ''); last = r;
       fillText(r); setAspect(r.payload.blocks[0]); show(r.payload.blocks);
       [bFocus, bCopy, bDown, bPause].forEach(function (b) { b.disabled = false; });
     }

@@ -1912,9 +1912,9 @@ def mermaid_box(atom_type):
         return ""
     return (f'<section class="section" id="paste-diagram" aria-labelledby="paste-diagram-h"><h2 class="label" id="paste-diagram-h">Make this from a Mermaid or D2 diagram</h2>'
             f'<link rel="stylesheet" href="/try-mermaid/try-mermaid.css">'
-            f'<div id="try-mermaid" data-worker="/try-mermaid/convert.worker.js" data-bundle="https://play.a2uicatalog.ai/renderer-bundle?v={_bundle_hash()}" data-compact="1"></div>'
+            f'<div id="try-mermaid" data-worker="/try-mermaid/convert.worker.js" data-bundle="https://play.a2uicatalog.ai/renderer-bundle?v={_bundle_hash()}" data-noupload="1"></div>'
             f'<script src="/try-mermaid/try-mermaid.js" defer></script>'
-            f'<script>window.addEventListener("DOMContentLoaded",function(){{TryMermaid.mount(document.getElementById("try-mermaid"),{{compact:true}})}})</script></section>')
+            f'<script>window.addEventListener("DOMContentLoaded",function(){{TryMermaid.mount(document.getElementById("try-mermaid"),{{}})}})</script></section>')
 
 
 def render_page(atom):
