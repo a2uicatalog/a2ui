@@ -73,3 +73,10 @@ def test_worker_limits_hold_inside_the_worker():
     (gen.OUT / "convert.worker.js").write_text(gen.worker_script())
     r = subprocess.run(["node", "--test", str(ROOT / "tests" / "try_mermaid_worker.test.mjs")], capture_output=True, text=True, timeout=180)
     assert r.returncode == 0, r.stdout[-2500:] + r.stderr[-800:]
+
+
+def test_motion_arch_page_mounts_the_paste_window_and_no_other_atom_does():
+    import generate_atom_pages as g
+    box = g.mermaid_box("motion_arch")
+    assert 'id="try-mermaid"' in box and "/try-mermaid/try-mermaid.js" in box and "renderer-bundle?v=" in box
+    assert g.mermaid_box("button") == ""
