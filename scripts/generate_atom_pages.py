@@ -568,6 +568,8 @@ footer a{color:var(--accent-2-text);text-decoration:underline;text-underline-off
 .motion-paused .stage-inner *,.preview-box.paused *{animation-play-state:paused!important}
 .pause-btn{display:inline-flex;align-items:center;gap:6px;min-width:44px;min-height:44px;padding:0 14px;border:1px solid var(--border-strong);border-radius:10px;background:var(--surface);color:var(--text);font:600 14px/1 inherit;cursor:pointer}
 .pause-btn[hidden]{display:none}
+/* A portrait film (9:16) would be taller than the screen in the preview column: cap it at 78vh and centre it */
+.preview-box .mt-root:has(> .mt-vp[style*="aspect-ratio:720/1280"]){max-width:calc(78vh*0.5625);margin-left:auto;margin-right:auto}
 .pause-btn[aria-pressed="true"]{background:var(--accent-soft-bg);border-color:var(--accent);color:var(--accent-text)}
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 /* cursor_glow ships dark-tuned (screen blend ≈ invisible over a white ground);
@@ -1696,7 +1698,7 @@ EDITOR_JS = r"""<script>
   function blocksOf(t){
     if (t.length > MAX) throw new Error('The payload is ' + t.length.toLocaleString('en') + ' characters; the limit is ' + MAX.toLocaleString('en') + '.');
     var v; try { v = JSON.parse(t); } catch (e) { var w = where(e, t); throw new Error('Not valid JSON' + (w ? ' at ' + w : '') + '. ' + String(e.message || '').replace(/^JSON\.parse: /, '').replace(/\s*in JSON at position \d+.*$/, '').replace(/\s*at line \d+ column \d+.*$/, '').replace(/\s*\(line \d+ column \d+\)/, '').slice(0, 160)); }
-    var b = Array.isArray(v) ? v : (v && typeof v === 'object' && Array.isArray(v.blocks) ? v.blocks : [v]);
+    var b = Array.isArray(v) ? v : (v && typeof v === 'object' && typeof v.type !== 'string' && Array.isArray(v.blocks) ? v.blocks : [v]);   // a block with a type is ONE block even when it has children in .blocks (motion_timeline): only an untyped {theme, blocks} object is a surface
     if (!b.length || !b.every(function(x){ return x && typeof x === 'object' && !Array.isArray(x) && typeof x.type === 'string'; }))
       throw new Error('Each block needs a "type", for example {"type": "treemap", ...}. You can also paste a list of blocks.');
     return b;
