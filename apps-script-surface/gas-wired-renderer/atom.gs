@@ -656,9 +656,17 @@ _RENDERERS['table'] = function(b) {
   // column so a long first-column label doesn't pull extra free space from
   // single-glyph ✅/❌ cells; table-layout:fixed only takes effect once
   // explicit widths are given.
-  var colWidths = b.col_widths || [];
-  var tableStyle = colWidths.length ? ' style="table-layout:fixed;width:100%;"' : '';
-  function w(i) { return (i < colWidths.length) ? (' style="width:' + colWidths[i] + ';"') : ''; }
+  // Each width is checked first: a number followed by %, px or rem, nothing else; anything else is dropped (mirrors Python).
+  var colWidths = [];
+  if (Array.isArray(b.col_widths)) {
+    for (var cw = 0; cw < b.col_widths.length; cw++) {
+      var cwv = (typeof b.col_widths[cw] === 'string') ? b.col_widths[cw].trim() : '';
+      colWidths.push(/^[0-9]{1,4}(\.[0-9]{1,3})?(%|px|rem)$/.test(cwv) ? cwv : '');
+    }
+  }
+  var anyWidth = colWidths.some(function(x) { return !!x; });
+  var tableStyle = anyWidth ? ' style="table-layout:fixed;width:100%;"' : '';
+  function w(i) { return (i < colWidths.length && colWidths[i]) ? (' style="width:' + colWidths[i] + ';"') : ''; }
   var html = '<table' + tableStyle + '>';
   // Schema declares `caption`; this never used it at all (surface-parity debt). 2026-09-27.
   if (b.caption) html += '<caption style="padding:8px;font-size:0.8rem;color:var(--a2ui-faint,#757575);text-align:left;">' + _esc(b.caption) + '</caption>';

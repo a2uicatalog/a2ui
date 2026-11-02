@@ -583,6 +583,15 @@ def _render_steps(b: dict) -> str:
     )
 
 
+_TABLE_COL_WIDTH_RE = re.compile(r'^[0-9]{1,4}(\.[0-9]{1,3})?(%|px|rem)$')
+
+
+def _table_col_width(v) -> str:
+    """A table column width, or '' when it is not a number followed by %, px or rem."""
+    v = v.strip() if isinstance(v, str) else ''
+    return v if _TABLE_COL_WIDTH_RE.match(v) else ''
+
+
 def _render_table(b: dict) -> str:
     """HTML table with optional caption."""
     headers = b.get("headers", [])
@@ -16070,12 +16079,14 @@ def _render_table(b: dict) -> str:
     # long first-column label (e.g. "Buttons + server round-trip") pull in
     # extra free space that a row of single-glyph ✅/❌ cells doesn't need.
     # table-layout:fixed only takes effect once explicit widths are given.
-    col_widths = b.get('col_widths') or []
+    # Each width is checked before it reaches the style attribute: a number followed by %, px or rem, nothing else
+    # (a hostile string such as 'x;background:url(...)' is dropped, and that column falls back to automatic width).
+    col_widths = [_table_col_width(w) for w in (b.get('col_widths') or [])] if isinstance(b.get('col_widths'), (list, tuple)) else []
     table_style = 'width:100%;border-collapse:collapse;'
-    if col_widths:
+    if any(col_widths):
         table_style += 'table-layout:fixed;'
     def _w(i):
-        return f'width:{col_widths[i]};' if i < len(col_widths) else ''
+        return f'width:{col_widths[i]};' if i < len(col_widths) and col_widths[i] else ''
     ths = ''.join(f'<th style="padding:8px 14px;text-align:left;font-size:0.78rem;font-weight:700;'
                   f'text-transform:uppercase;color:var(--a2ui-muted,#666666);background:var(--a2ui-surface-muted,#fafafa);{_w(i)}">{_esc(str(h))}</th>'
                   for i, h in enumerate(headers))
@@ -25708,19 +25719,21 @@ def _render_confetti_trigger(b: dict) -> str:
     import hashlib
     uid = 'cf' + hashlib.md5(label.encode()).hexdigest()[:5]
     kf = '@keyframes ' + uid + 'f{0%{transform:translateY(0) rotate(0deg);opacity:1;}100%{transform:translateY(-150px) rotate(720deg);opacity:0;}}'
+    # The handler sits inside a double-quoted onclick attribute, so its own string literals are single-quoted.
+    js = ("(function(){"
+          "var btn=document.getElementById('UIDbtn');"
+          "var colors=['#4f46e5','#ec4899','#f59e0b','#10b981','#06b6d4'];"
+          "for(var i=0;i<30;i++){"
+          "var el=document.createElement('div');"
+          "el.style.cssText='position:absolute;width:8px;height:8px;border-radius:2px;pointer-events:none;left:'"
+          "+(30+Math.random()*40)+'%;top:50%;background:'+colors[i%5]+';'"
+          "+'animation:UIDf '+(0.8+Math.random()*0.6).toFixed(2)+'s '+(Math.random()*0.3).toFixed(2)+'s ease forwards;';"
+          "btn.parentNode.appendChild(el);"
+          "setTimeout(function(e){e.remove();},1500,el);}"
+          "})()").replace('UID', uid)
     return ('<style>' + kf + '</style>'
             '<div style="text-align:center;padding:16px;position:relative;">'
-            '<button id="' + uid + 'btn" onclick="(function(){'
-            "var btn=document.getElementById('" + uid + "btn');"
-            'var colors=["#4f46e5","#ec4899","#f59e0b","#10b981","#06b6d4"];'
-            'for(var i=0;i<30;i++){'
-            'var el=document.createElement("div");'
-            'el.style.cssText="position:absolute;width:8px;height:8px;border-radius:2px;pointer-events:none;left:"'
-            '+(30+Math.random()*40)+"%;top:50%;background:"+colors[i%5]+";"'
-            '+"animation:' + uid + 'f '+(0.8+Math.random()*0.6).toFixed(2)+'s "+(Math.random()*0.3).toFixed(2)+"s ease forwards;";'
-            'btn.parentNode.appendChild(el);'
-            'setTimeout(function(e){e.remove();},1500,el);}'
-            '})()" '
+            '<button id="' + uid + 'btn" onclick="' + js + '" '
             'style="padding:12px 28px;background:#4f46e5;color:#fff;border:none;border-radius:100px;'
             'font-weight:700;font-size:1rem;cursor:pointer;">' + label + '</button></div>')
 _RENDERERS["confetti_trigger"] = _render_confetti_trigger
