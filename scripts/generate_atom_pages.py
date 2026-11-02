@@ -1484,10 +1484,10 @@ PREVIEW_JS = """<script>
   }
   var c = document.getElementById('copy-payload');
   if (c) c.addEventListener('click', function(){
-    var t = document.getElementById('payload-code').textContent, done = function(ok){ c.textContent = ok ? 'Copied' : 'Select and copy'; setTimeout(function(){ c.textContent = 'Copy payload'; }, 1800); };
+    var ed = document.getElementById('payload-editor'), t = (ed && !ed.closest('[hidden]') ? ed.value : document.getElementById('payload-code').textContent), done = function(ok){ c.textContent = ok ? 'Copied' : 'Select and copy'; setTimeout(function(){ c.textContent = 'Copy payload'; }, 1800); };
     if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(function(){ done(true); }, function(){ select(); done(false); });
     else { select(); done(false); }
-    function select(){ var r = document.createRange(); r.selectNodeContents(document.getElementById('payload-code')); var g = getSelection(); g.removeAllRanges(); g.addRange(r); }
+    function select(){ if (ed && !ed.closest('[hidden]')) { ed.focus(); ed.select(); return; } var r = document.createRange(); r.selectNodeContents(document.getElementById('payload-code')); var g = getSelection(); g.removeAllRanges(); g.addRange(r); }
   });
 })();
 </script>"""
@@ -1542,6 +1542,18 @@ ATOM_PAGE_CSS = r"""<style>
 .insp-panel .export-row{margin:0}
 .insp-panel .export-note{margin-left:0;flex:1 1 100%}
 .insp-note{margin:0;font-size:13px;color:var(--text-muted)}
+.payload-editor{display:flex;flex-direction:column;gap:6px}
+.payload-editor textarea{width:100%;min-height:260px;max-height:70vh;resize:vertical;box-sizing:border-box;padding:14px;border:1px solid var(--border-strong);border-radius:10px;background:var(--surface);color:var(--text);font:12.5px/1.6 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;tab-size:2}
+.payload-editor textarea:focus-visible{outline:3px solid var(--accent);outline-offset:1px}
+.payload-editor textarea[aria-invalid="true"]{border-color:color-mix(in srgb,#d92d20 70%,var(--text))}
+.payload-count{margin:0;font-size:12px;color:var(--text-muted);text-align:right}
+.payload-status{margin:0;min-height:1.4em;font-size:13px;color:var(--text-muted)}
+.payload-status.err{color:color-mix(in srgb,#d92d20 55%,var(--text))}
+.payload-status.ok{color:var(--text)}
+.preview-box.is-custom{padding:0;overflow:hidden}
+.preview-box.is-custom iframe{display:block;width:100%;min-height:240px;border:0;background:#fff;border-radius:inherit}
+.custom-badge{position:absolute;top:8px;right:8px;z-index:1;padding:3px 10px;border-radius:999px;background:var(--accent);color:var(--accent-contrast);font:600 12px/1.4 inherit}
+@media(max-width:640px){.payload-editor textarea{min-height:220px;font-size:16px}.insp-actions .copy-btn{min-height:44px}}
 .copy-btn:focus-visible,.export-btn:focus-visible,.export-cancel:focus-visible,.pause-btn:focus-visible,.like-btn:focus-visible,.pg-btn:focus-visible,.pg-all:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 .schema-hero{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:16px;min-height:320px;padding:28px;border:1px solid var(--border-strong);border-radius:14px;box-shadow:var(--shadow);
   background-color:var(--surface);background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:22px 22px}
@@ -1596,7 +1608,16 @@ def atom_inspector(atom, export_html):
         f'tabindex="{0 if i == 0 else -1}"{" hidden" if k == "export" else ""}>{label}</button>' for i, (k, label) in enumerate(tabs)) + '</div>')
     payload = (f'<section class="insp-panel" id="panel-payload" role="tabpanel" aria-labelledby="tab-payload"><h2 class="label">Example payload</h2>'
                f'<pre tabindex="0"><code id="payload-code">{html.escape(example_payload(atom), quote=False)}</code></pre>'
-               '<div class="insp-actions"><button type="button" class="copy-btn primary" id="copy-payload">Copy payload</button></div></section>')
+               '<div class="payload-editor" id="payload-editor-wrap" hidden>'
+               '<label class="label" for="payload-editor">Payload (JSON)</label>'
+               '<textarea id="payload-editor" spellcheck="false" autocapitalize="off" autocomplete="off" rows="14" aria-describedby="payload-status payload-note payload-count"></textarea>'
+               '<p class="payload-count" id="payload-count"></p>'
+               '<p class="payload-status" id="payload-status" role="status" aria-live="polite"></p></div>'
+               '<div class="insp-actions"><button type="button" class="copy-btn primary" id="render-payload" hidden>Render</button>'
+               '<button type="button" class="copy-btn" id="reset-payload" hidden>Reset to example</button>'
+               '<button type="button" class="copy-btn" id="copy-payload">Copy payload</button></div>'
+               '<p class="insp-note" id="payload-note" hidden>Edit the payload and press Render (or Ctrl+Enter). Rendering sends the payload to a2uicatalog.ai and shows the result in the preview; '
+               'nothing is stored. Limit: 20,000 characters, 50 renders a day.</p></section>')
     fields = (f'<section class="insp-panel" id="panel-fields" role="tabpanel" aria-labelledby="tab-fields"><h2 class="label">Fields</h2>'
               f'{fields_table(atom)}</section>')
     export = (f'<section class="insp-panel" id="panel-export" role="tabpanel" aria-labelledby="tab-export" hidden><h2 class="label">Export</h2>'
@@ -1630,6 +1651,73 @@ INSPECTOR_JS = """<script>
   });
   var want = (location.hash || '').replace('#', ''), first = tabs[0];
   select(tabs.filter(function(t){ return t.id === 'tab-' + want && !t.hidden; })[0] || first);
+})();
+</script>"""
+
+
+EDITOR_JS = r"""<script>
+(function(){
+  // Try the payload: edit it, press Render, and the preview shows YOUR payload. Rendering goes through the public /api/render endpoint (CORS open,
+  // 50 renders a day per visitor), so it is a deliberate button, not render-as-you-type. The answer is shown in an iframe with sandbox="allow-same-origin"
+  // and no permission to run scripts: whatever the payload says, nothing in it can run. Without JavaScript the page keeps its static preview and read-only payload.
+  var code = document.getElementById('payload-code'), wrap = document.getElementById('payload-editor-wrap'), ta = document.getElementById('payload-editor');
+  var target = document.querySelector('.preview-box') || document.querySelector('.schema-hero');
+  var bRender = document.getElementById('render-payload'), bReset = document.getElementById('reset-payload'), note = document.getElementById('payload-note');
+  var status = document.getElementById('payload-status'), count = document.getElementById('payload-count');
+  if (!code || !wrap || !ta || !target || !window.fetch || !bRender || !bReset) return;
+  var MAX = 20000, ENDPOINT = 'https://a2uicatalog.ai/api/render', orig = code.textContent, pre = code.closest('pre'), kept = null, badge = null, ctl = null;
+  ta.value = orig; pre.hidden = true; wrap.hidden = false; bRender.hidden = false; bReset.hidden = false; note.hidden = false;
+  var pause = document.getElementById('pause-preview');
+  function say(msg, cls){ status.textContent = msg; status.className = 'payload-status' + (cls ? ' ' + cls : ''); ta.setAttribute('aria-invalid', cls === 'err' ? 'true' : 'false'); }
+  function tally(){ var n = ta.value.length; count.textContent = n.toLocaleString('en') + ' / ' + MAX.toLocaleString('en') + ' characters'; }
+  function where(e, t){
+    var m = /position (\d+)/.exec(e.message || ''), l = /line (\d+) column (\d+)/.exec(e.message || '');
+    if (l) return 'line ' + l[1] + ', column ' + l[2];
+    if (m) { var p = +m[1], pre2 = t.slice(0, p).split('\n'); return 'line ' + pre2.length + ', column ' + (pre2[pre2.length - 1].length + 1); }
+    return '';
+  }
+  function blocksOf(t){
+    if (t.length > MAX) throw new Error('The payload is ' + t.length.toLocaleString('en') + ' characters; the limit is ' + MAX.toLocaleString('en') + '.');
+    var v; try { v = JSON.parse(t); } catch (e) { var w = where(e, t); throw new Error('Not valid JSON' + (w ? ' at ' + w : '') + '. ' + String(e.message || '').replace(/^JSON\.parse: /, '').replace(/\s*in JSON at position \d+.*$/, '').replace(/\s*at line \d+ column \d+.*$/, '').replace(/\s*\(line \d+ column \d+\)/, '').slice(0, 120) + '.'); }
+    var b = Array.isArray(v) ? v : (v && typeof v === 'object' && Array.isArray(v.blocks) ? v.blocks : [v]);
+    if (!b.length || !b.every(function(x){ return x && typeof x === 'object' && !Array.isArray(x) && typeof x.type === 'string'; }))
+      throw new Error('Each block needs a "type", for example {"type": "treemap", ...}. You can also paste a list of blocks.');
+    return b;
+  }
+  function show(htmlText){
+    if (!kept) { kept = document.createDocumentFragment(); while (target.firstChild) kept.appendChild(target.firstChild); }
+    else while (target.firstChild) target.removeChild(target.firstChild);
+    var f = document.createElement('iframe');
+    f.title = 'Rendered preview of your payload'; f.setAttribute('sandbox', 'allow-same-origin'); f.setAttribute('loading', 'eager');
+    f.addEventListener('load', function(){ try { var d = f.contentDocument, bot = 0; [].forEach.call(d.body.children, function(c){ bot = Math.max(bot, c.getBoundingClientRect().bottom); }); f.style.height = Math.max(240, Math.ceil(bot) + 24) + 'px'; } catch (e) {} });
+    target.classList.add('is-custom'); badge = document.createElement('span'); badge.className = 'custom-badge'; badge.textContent = 'Your payload';
+    target.appendChild(badge); target.appendChild(f); f.srcdoc = htmlText;
+    if (pause) pause.hidden = true;
+  }
+  function reset(){
+    if (ctl) ctl.abort();
+    if (kept) { while (target.firstChild) target.removeChild(target.firstChild); target.appendChild(kept); kept = null; }
+    target.classList.remove('is-custom'); if (pause) pause.hidden = false;
+    ta.value = orig; tally(); say('Back to the example.', 'ok');
+  }
+  function render(){
+    var b; try { b = blocksOf(ta.value); } catch (e) { say(e.message, 'err'); return; }
+    if (ctl) ctl.abort(); ctl = new AbortController(); var mine = ctl, timer = setTimeout(function(){ mine.abort(); }, 20000);
+    bRender.disabled = true; say('Rendering…');
+    fetch(ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ title: 'Your payload', theme: 'light', blocks: b }), signal: mine.signal })
+      .then(function(r){ return r.text().then(function(t){ return { ok: r.ok, status: r.status, text: t }; }); })
+      .then(function(r){
+        if (r.status === 429) throw new Error('You have used today\'s 50 renders. Your payload is fine; try again tomorrow.');
+        if (!r.ok) { var m = ''; try { var j = JSON.parse(r.text); m = j.error || j.message || ''; } catch (e) {} throw new Error('The renderer refused this payload' + (m ? ': ' + String(m).slice(0, 200) : ' (status ' + r.status + ')') + '.'); }
+        show(r.text); say('Rendered ' + b.length + (b.length === 1 ? ' block' : ' blocks') + '. ' + (/<script/i.test(r.text) ? 'This atom animates with JavaScript, which the safe renderer does not run, so it can look blank or static here; the example preview above plays it. ' : '') + 'Reset to example brings the original preview back.', 'ok');
+      })
+      .catch(function(e){ say(e.name === 'AbortError' ? 'The render took too long or was cancelled. Try again.' : (e.message || 'Could not reach the renderer. Check your connection and try again.'), 'err'); })
+      .then(function(){ clearTimeout(timer); bRender.disabled = false; });
+  }
+  ta.addEventListener('input', function(){ tally(); if (status.className.indexOf('err') > -1) say(''); });
+  ta.addEventListener('keydown', function(e){ if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); render(); } });
+  bRender.addEventListener('click', render); bReset.addEventListener('click', function(){ reset(); ta.focus(); });
+  tally();
 })();
 </script>"""
 
@@ -1802,6 +1890,7 @@ clasp push &amp;&amp; clasp deploy</code></pre>
   {LIKES_JS}
   {PREVIEW_JS}
   {INSPECTOR_JS}
+  {EDITOR_JS}
   {EXPORT_JS_BLOCK if _export_html else ''}
 {_cursor_glow_html()}
 </body>
