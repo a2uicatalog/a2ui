@@ -13,6 +13,8 @@ import { pathToFileURL, fileURLToPath } from 'node:url';
 const src = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'src', 'worker.js');
 const tmp = path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'worker-')), 'worker.mjs');
 fs.copyFileSync(src, tmp);
+// src/worker.js imports ./likes.js (the atom like counter, I160): it must sit beside the copy or the import fails
+fs.copyFileSync(path.join(path.dirname(src), 'likes.js'), path.join(path.dirname(tmp), 'likes.js'));
 const worker = (await import(pathToFileURL(tmp).href)).default;
 
 const HTML_404 = '<!DOCTYPE html><title>Page not found</title>';
