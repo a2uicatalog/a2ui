@@ -52,17 +52,47 @@ def test_atom_page_breadcrumb_points_at_the_hub():
                                                f"https://a2uicatalog.ai/atoms/{t}/"]
 
 
-def test_atom_pages_page_through_the_hub_order_with_prev_and_next():
-    # Owner 2026-11-01: a "next" shortcut on the atom pages, ideally on the keyboard.
-    # The pager follows the hub's A-Z list, so walking next from the first atom visits every atom once.
-    order = re.findall(r'<li data-q="[^"]*"(?: data-c="[^"]*")?><a href="/atoms/([a-z0-9_]+)/">', HUB.read_text())
-    for i, t in enumerate(order):
+def test_atom_pages_page_through_every_atom_category_by_category():
+    # Owner 2026-11-01: a "next" shortcut on the atom pages, ideally on the keyboard. Design pass 2026-11-05: the order is
+    # category by category (A to Z inside each) so neighbours are related, the pager says "i of n" in the category, and it wraps.
+    packs = yaml.safe_load((ROOT / "atoms" / "atom-packs.yaml").read_text())
+    cat = {t: cid[len("a2ui-"):-len("-v1")] for cid, types in packs.items() if isinstance(types, list) for t in types}
+    published = set(_published())
+    link = lambda s, rel: re.search(r'<a [^>]*rel="' + rel + r'" href="/atoms/([a-z0-9_]+)/"', s).group(1)
+    start = sorted(published)[0]
+    seen, t = [], start
+    while True:
         s = (ROOT / "public" / "atoms" / t / "index.html").read_text()
-        prev = re.search(r'<a [^>]*rel="prev" href="/atoms/([a-z0-9_]+)/"', s)
-        nxt = re.search(r'<a [^>]*rel="next" href="/atoms/([a-z0-9_]+)/"', s)
-        assert (prev.group(1) if prev else None) == (order[i - 1] if i else None), t
-        assert (nxt.group(1) if nxt else None) == (order[i + 1] if i + 1 < len(order) else None), t
         assert "ArrowRight" in s and 'nav.atom-pager a[rel="' in s, t
+        nxt = link(s, "next")
+        assert link((ROOT / "public" / "atoms" / nxt / "index.html").read_text(), "prev") == t, t
+        seen.append(t); t = nxt
+        if t == start:
+            break
+        assert t not in seen, t
+    assert sorted(seen) == sorted(published)
+    # one contiguous run per category, A to Z inside it, and the position shown matches
+    runs = [c for i, c in enumerate(cat[x] for x in seen) if i == 0 or cat[seen[i - 1]] != c]
+    assert len(runs) - (runs[0] == runs[-1] and len(runs) > 1) == len(set(runs)), runs
+    for c in set(runs):
+        members = [x for x in seen if cat[x] == c]
+        assert members == sorted(members) or members[1:] + members[:1] == sorted(members), c
+        first = sorted(members)[0]
+        assert f'<span class="pg-pos">1 of {len(members)}</span>' in (ROOT / "public" / "atoms" / first / "index.html").read_text(), first
+
+
+def test_atom_pages_cross_promote_three_related_atoms():
+    # Design pass 2026-11-05: "More like this" shows three other published atoms, at least one from another category, plus "Keep exploring".
+    packs = yaml.safe_load((ROOT / "atoms" / "atom-packs.yaml").read_text())
+    cat = {t: cid[len("a2ui-"):-len("-v1")] for cid, types in packs.items() if isinstance(types, list) for t in types}
+    published = set(_published())
+    for t in sorted(published):
+        s = (ROOT / "public" / "atoms" / t / "index.html").read_text()
+        sec = s[s.index('<section class="x-more"'):s.index('</section>', s.index('<section class="x-more"'))]
+        rel = re.findall(r'<a class="x-card[^"]*" href="/atoms/([a-z0-9_]+)/">', sec)
+        assert len(rel) == 3 and len(set(rel)) == 3 and t not in rel and set(rel) <= published, (t, rel)
+        assert any(cat[r] != cat[t] for r in rel) or all(cat[x] == cat[t] for x in published), (t, rel)
+        assert 'class="x-up"' in s and 'rel="next"' in s, t
 
 
 def test_every_atom_shows_its_catalog_and_the_hub_filters_cover_all_atoms():

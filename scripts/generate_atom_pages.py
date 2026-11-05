@@ -754,7 +754,8 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 .preview-box{background:#fff;border:1px solid var(--border);border-radius:10px;padding:24px;margin-top:8px;color:#1a1a1a;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;line-height:1.6}
 .preview-box{position:relative;overflow-x:auto}
 .preview-box *{max-width:100%}
-.preview-box [class$="-track"]{max-width:none}   /* a carousel track is wider than its frame by design */
+.preview-box [class$="-track"]{max-width:none}
+.preview-box .mt-vp *{max-width:none}   /* a film stage is a fixed 1280-wide (or 720-wide) canvas the player scales down; capping it at the box width drew every static film at about half size */   /* a carousel track is wider than its frame by design */
 .preview-box p,.preview-box li,.preview-box td,.preview-box th,.preview-box td:first-child,.preview-box code{color:inherit;font-family:inherit}
 .preview-box pre{background:#f4f4f4;border:1px solid #e0e0e0}
 .preview-box pre code{color:inherit}
@@ -1378,6 +1379,110 @@ def catalog_chip(atom_type, inline=False):
 
 # type -> (prev, next) in the /atoms/ hub's A-Z order; filled by main() before the pages render.
 _NEIGHBOURS = {}
+_POSITION = {}      # type -> (catalog slug, 1-based index in that catalog, catalog size)
+_RELATED = {}       # type -> up to 3 types for "More like this"
+_ATOM_LINES = {}    # type -> (display name, one-line description)
+_ATOM_FIELDS = {}   # type -> fields map (fallback similarity for atoms without an embedding)
+
+# Hand-picked "More like this" for launch atoms; everything else is chosen from the embeddings (see _related_atoms).
+CURATED_RELATED = {"motion_arch": ["motion_map3d", "diagram", "motion_bricks"]}
+
+
+def _explore_order(atoms):
+    """Pager order: catalog by catalog (CATALOG_LABELS order, unknown catalogs after, A to Z), atoms A to Z inside each. Neighbours are
+    then related atoms, and the pager can say "12 of 41 in Effects & motion"."""
+    rank = {c: i for i, c in enumerate(CATALOG_LABELS)}
+    types = sorted(a.get("type", "") for a in atoms if a.get("type"))
+    cat = lambda t: ATOM_CATALOG.get(t, "")
+    return sorted(types, key=lambda t: (rank.get(cat(t), len(rank)), cat(t), t))
+
+
+def _related_atoms(order):
+    """Three related atoms per atom: two from its own catalog and one from another, by cosine similarity of the description embeddings
+    (public/catalogue/atoms-embeddings.json); atoms without a vector fall back to shared field names. Ties break A to Z, so the
+    choice is the same on every build. Its own pager neighbours are left out, since the page already links them."""
+    import numpy as np
+    published = set(order)
+    try:
+        emb = json.loads((ROOT / "public" / "catalogue" / "atoms-embeddings.json").read_text())
+        vec = {r["type"]: r["vector"] for r in emb.get("atoms", []) if r.get("type") in published and r.get("vector")}
+    except (OSError, ValueError):
+        vec = {}
+    names = sorted(vec)
+    idx = {t: i for i, t in enumerate(names)}
+    M = np.array([vec[t] for t in names], dtype=float) if names else np.zeros((0, 1))
+    if len(M):
+        M /= np.linalg.norm(M, axis=1, keepdims=True) + 1e-12
+    fields = {t: set((_ATOM_FIELDS.get(t) or {}).keys()) for t in order}
+    out = {}
+    for t in order:
+        prev, nxt = _NEIGHBOURS.get(t, (None, None))
+        skip = {t, prev, nxt}
+        cur = [c for c in CURATED_RELATED.get(t, []) if c in published and c not in skip]
+        if len(cur) >= 3:
+            out[t] = cur[:3]
+            continue
+        if t in idx:
+            sims = M @ M[idx[t]]
+            score = {o: float(sims[idx[o]]) for o in names}
+        else:
+            f = fields[t]
+            score = {o: (len(f & fields[o]) / len(f | fields[o]) if f | fields[o] else 0.0) for o in order}
+        ranked = sorted((o for o in score if o not in skip and o not in cur), key=lambda o: (-score[o], o))
+        mine = ATOM_CATALOG.get(t)
+        same = [o for o in ranked if ATOM_CATALOG.get(o) == mine]
+        other = [o for o in ranked if ATOM_CATALOG.get(o) != mine]
+        pick = cur + [o for o in same if o not in cur][:max(0, 2 - len(cur))]
+        pick += [o for o in other if o not in pick][:1]
+        out[t] = (pick + [o for o in ranked if o not in pick])[:3]
+    return out
+
+
+def _cat_label(slug):
+    return CATALOG_LABELS.get(slug, slug.replace("-", " ").title()) if slug else "Atoms"
+
+
+def _explore_card(t, kicker, cls="", tile=False):
+    """One linked card: a static thumbnail (the homepage's decorative miniature, or a designed name tile when an atom has none), then
+    category and position, the name and the one-line description. One link; its text is the atom name plus the visible lines."""
+    name, line = _ATOM_LINES.get(t, (t.replace("_", " ").title(), ""))
+    stage = None if tile else _STAGES.get(t)
+    thumb = (f'<div class="x-thumb" aria-hidden="true">{stage}</div>' if stage else
+             f'<div class="x-thumb x-tile" aria-hidden="true"><span>{html.escape(name)}</span><code>{html.escape(t)}</code></div>')
+    return (f'<a class="x-card{(" " + cls) if cls else ""}" href="/atoms/{t}/">{thumb}<span class="x-body">'
+            f'<span class="x-kicker">{kicker}</span><span class="x-name">{html.escape(name)}</span>'
+            + (f'<span class="x-desc">{line}</span>' if line else "") + '</span></a>')
+
+
+def _pos_text(t):
+    slug, i, n = _POSITION.get(t, ("", 0, 0))
+    return f"{html.escape(_cat_label(slug))} · {i} of {n}" if n else html.escape(_cat_label(slug))
+
+
+def atom_explore(atom_type):
+    """Below the atom: "More like this" (three related atoms, one from another catalog) and "Up next" (the previous and next atom as
+    large cards; crossing into another catalog says so in words). Static thumbnails only: no extra live frames on the page."""
+    prev, nxt = _NEIGHBOURS.get(atom_type, (None, None))
+    rel = _RELATED.get(atom_type, [])
+    mine = ATOM_CATALOG.get(atom_type)
+    out = []
+    if rel:
+        tiles = atom_type in CURATED_RELATED
+        cards = "".join(_explore_card(t, ("From " + html.escape(_cat_label(ATOM_CATALOG.get(t)))) if ATOM_CATALOG.get(t) != mine else _pos_text(t), tile=tiles) for t in rel)
+        out.append(f'<section class="x-more" aria-labelledby="x-more-h"><h2 id="x-more-h" class="x-h">More like this</h2><div class="x-grid">{cards}</div></section>')
+    if prev or nxt:
+        def side(t, rel_, word):
+            if not t:
+                return "<span></span>"
+            cross = ATOM_CATALOG.get(t) != mine
+            kick = (f'{word} · new category: {html.escape(_cat_label(ATOM_CATALOG.get(t)))}' if cross else f'{word} · {_pos_text(t)}')
+            return _explore_card(t, kick, f"x-{rel_}" + (" x-cross" if cross else "")).replace('<a ', f'<a rel="{rel_}" ', 1)
+        out.append('<nav class="x-up" aria-labelledby="x-up-h"><h2 id="x-up-h" class="x-h">Keep exploring</h2><div class="x-pair">'
+                   + side(prev, "prev", "← Previous") + side(nxt, "next", "Next →") + '</div>'
+                   '<p class="x-hint">Tip: <kbd>←</kbd> and <kbd>→</kbd> on your keyboard move between atoms.</p></nav>')
+    if nxt:
+        out.append(f'<link rel="prefetch" href="/atoms/{nxt}/">')
+    return "\n".join(out)
 
 PAGER_JS = """<script>
 (function(){
@@ -1586,6 +1691,40 @@ ATOM_PAGE_CSS = r"""<style>
 .atom-top nav.crumb{margin:0}
 .atom-top nav.atom-pager{margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:8px}
 .atom-top nav.atom-pager .pg-btn{flex-direction:row;align-items:center;min-height:40px;padding:0 12px;border-radius:8px}
+.insp-tab{white-space:nowrap}
+.x-up + .section,.x-up ~ .section{margin-top:48px}
+/* Explorer (design pass 5 Nov): top pager says where you are ("Effects & motion / 53 of 128"); below the atom, "More like this" and
+   "Keep exploring" cards with static thumbnails. Order is catalog by catalog, so neighbours are related. */
+.atom-top nav.atom-pager .pg-all{display:flex;flex-direction:column;align-items:center;line-height:1.25;text-decoration:none;padding:4px 10px;border-radius:8px;min-height:40px;justify-content:center}
+.atom-top nav.atom-pager .pg-all:hover,.atom-top nav.atom-pager .pg-all:focus-visible{background:var(--accent-soft-bg)}
+.pg-cat{font-size:13px;font-weight:700;color:var(--accent-2-text)}
+.pg-pos{font-size:12px;color:var(--text-muted);font-variant-numeric:tabular-nums}
+.x-more,.x-up{margin:48px 0 0}
+.x-h{font-size:22px;line-height:1.2;letter-spacing:-.015em;margin:0 0 16px;color:var(--text)}
+.x-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.x-pair{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.x-card{display:flex;flex-direction:column;min-width:0;border:1px solid var(--border-strong);border-radius:14px;background:var(--surface);color:var(--text);text-decoration:none;overflow:hidden;contain:layout paint;transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}
+.x-card:hover,.x-card:focus-visible{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 14px 32px -18px color-mix(in srgb,var(--accent) 60%,transparent)}
+.x-card:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.x-thumb{position:relative;height:150px;overflow:hidden;background:#fff;background-image:radial-gradient(#e9ebf3 1px,transparent 1px);background-size:14px 14px;border-bottom:1px solid var(--border)}
+.x-pair .x-thumb{height:190px}
+.x-thumb .stage-inner{width:200%;transform:scale(.5);transform-origin:top left;padding:16px;pointer-events:none;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;line-height:1.6;color:#1a1a1a}
+.x-tile{display:flex;flex-direction:column;justify-content:flex-end;gap:6px;padding:16px 18px;background:#14162b;background-image:radial-gradient(120% 90% at 85% 10%,#5051cf 0,transparent 60%),radial-gradient(80% 70% at 10% 100%,#1f6f8b 0,transparent 70%);color:#fff}
+.x-tile span{font-size:22px;font-weight:700;letter-spacing:-.015em;line-height:1.15;color:#fff}
+.x-tile code{font-size:12px;color:#d6d8ff;background:none;padding:0}
+.x-body{display:flex;flex-direction:column;gap:4px;padding:12px 16px 16px}
+.x-kicker{font-size:12px;font-weight:700;letter-spacing:.02em;color:var(--accent-2-text)}
+.x-name{font-size:17px;font-weight:700;letter-spacing:-.01em}
+.x-desc{font-size:14px;line-height:1.45;color:var(--text-muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.x-pair .x-card[rel=next]{text-align:right}
+.x-pair .x-card[rel=next] .x-tile{align-items:flex-end}
+.x-cross .x-kicker{color:var(--text)}
+.x-hint{font-size:13px;color:var(--text-muted);text-align:center;margin:12px 0 0}
+.x-hint kbd{display:inline-block;min-width:1.6em;padding:0 5px;border:1px solid var(--border-strong);border-bottom-width:2px;border-radius:5px;background:var(--surface-2);font:600 12px/1.5 ui-monospace,'SF Mono',Monaco,monospace;text-align:center}
+@media (hover:none){.x-hint{display:none}}
+@media (prefers-reduced-motion:reduce){.x-card{transition:none}.x-card:hover,.x-card:focus-visible{transform:none}}
+@media (max-width:820px){.x-grid{grid-template-columns:1fr 1fr}}
+@media (max-width:560px){.x-grid,.x-pair{grid-template-columns:1fr}.x-pair .x-card[rel=next]{text-align:left}.x-pair .x-card[rel=next] .x-tile{align-items:flex-start}.x-thumb,.x-pair .x-thumb{height:130px}}
 .atom-top .pg-dir{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .atom-top .pg-name{font-size:14px;font-weight:600;color:var(--text)}
 .atom-top .pg-prev .pg-name::before{content:"\2190\00a0"}
@@ -1637,6 +1776,19 @@ ATOM_PAGE_CSS = r"""<style>
 .payload-status.ok{color:var(--text)}
 .preview-box.is-custom{padding:0;overflow:hidden;box-sizing:border-box}   /* height is pinned in px by the script to the static preview's own height: no layout shift on Render */
 .preview-box.is-custom iframe{display:block;width:100%;height:100%;min-height:0;border:0;background:#fff;border-radius:inherit}
+/* Films (design pass 5 Nov): a dark stage of the film's own shape, never a dark film in a white frame */
+.a-preview .preview-box:has(.mt-root),.preview-box.is-film{background:#0b0d12;border-color:color-mix(in srgb,#0b0d12 60%,var(--border-strong))}
+.a-preview .preview-box:has(.mt-root){padding:0;display:flex;align-items:center;justify-content:center}
+.a-preview .preview-box:has(.mt-root) .mt-root{margin:0!important;width:100%}
+.preview-box.is-film iframe,.preview-box.is-film .custom-loading,.preview-box.is-film .custom-paused{background:#0b0d12;color:#e6e8f0}
+.custom-badge{top:12px;right:12px}
+.hook{display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px;margin:-4px 0 24px}
+.hook-lead{margin:0;font-size:17px;line-height:1.5;color:var(--text);max-width:62ch}
+.hook-btn{min-height:44px;padding:0 20px;border:0;border-radius:10px;background:var(--accent);color:var(--accent-contrast);font:600 15px/1 inherit;font-family:inherit;cursor:pointer;box-shadow:0 6px 18px -8px color-mix(in srgb,var(--accent) 70%,transparent);transition:transform .15s ease,box-shadow .15s ease}
+.hook-btn:hover{transform:translateY(-1px);box-shadow:0 10px 24px -10px color-mix(in srgb,var(--accent) 80%,transparent)}
+.hook-btn:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+@media (prefers-reduced-motion:reduce){.hook-btn{transition:none}.hook-btn:hover{transform:none}}
+.section pre code{white-space:pre-wrap;overflow-wrap:anywhere}
 .preview-box.is-custom iframe:focus-visible{outline:3px solid var(--accent);outline-offset:-3px}   /* the frame scrolls its own content: it is a keyboard stop */
 .custom-loading,.custom-paused{position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:20px;text-align:center;background:#fff;color:#1a1a1a;font-size:14px}
 .custom-paused{background:repeating-linear-gradient(135deg,#f6f7fa,#f6f7fa 12px,#eef0f6 12px,#eef0f6 24px);color:#333}
@@ -1695,7 +1847,7 @@ def atom_inspector(atom, export_html):
     """The right-hand inspector: Payload, Fields and (when the exporter is part of this build) Export. All panels are in the page, so without JavaScript
     they simply stack under their headings; the tablist is revealed by INSPECTOR_JS."""
     mer = mermaid_panel(atom.get("type", ""))
-    tabs = [("payload", "Payload"), ("fields", "Fields")] + ([("mermaid", "Mermaid")] if mer else []) + ([("export", "Export")] if export_html else [])
+    tabs = [("payload", "Payload"), ("fields", "Fields")] + ([("mermaid", "Your diagram")] if mer else []) + ([("export", "Export")] if export_html else [])
     tablist = ('<div class="insp-tabs" role="tablist" aria-label="Inspector" hidden>' + "".join(
         f'<button type="button" role="tab" class="insp-tab" id="tab-{k}" aria-controls="panel-{k}" aria-selected="{"true" if i == 0 else "false"}" '
         f'tabindex="{0 if i == 0 else -1}"{" hidden" if k == "export" else ""}>{label}</button>' for i, (k, label) in enumerate(tabs)) + '</div>')
@@ -1811,11 +1963,25 @@ EDITOR_JS = r"""<script>
     }
   });
   var vh = function(){ return window.innerHeight || document.documentElement.clientHeight || 800; };
+  var aspect = 0, badgeText = 'Your payload';
   function pinHeight(){
     // Same height as the static preview had, never above 80% of the screen (60% on a phone); taller content scrolls inside the frame.
+    // A film (motion_timeline with an aspect) gets a box of its own shape instead, so it is never cropped or letterboxed in white.
     var phone = window.innerWidth <= 640, cap = Math.max(240, Math.round(vh() * (phone ? 0.6 : 0.8)));
+    target.classList.toggle('is-film', !!aspect);
+    if (aspect) {
+      var w = (target.parentNode && target.parentNode.getBoundingClientRect().width) || target.getBoundingClientRect().width || 600, h = w / aspect;
+      if (h > cap) { h = cap; target.style.width = Math.round(cap * aspect) + 'px'; target.style.marginInline = 'auto'; } else { target.style.width = ''; target.style.marginInline = ''; }
+      target.style.height = Math.round(h) + 'px'; return;
+    }
+    target.style.width = ''; target.style.marginInline = '';
     target.style.height = Math.min(cap, Math.max(240, Math.round(boxH))) + 'px';
   }
+  function aspectOf(blocks){
+    var b = blocks && blocks[0], m = b && b.type === 'motion_timeline' && /^(\d+(?:\.\d+)?):(\d+(?:\.\d+)?)$/.exec(String(b.aspect || ''));
+    return m && +m[2] ? (+m[1]) / (+m[2]) : 0;
+  }
+  window.addEventListener('resize', function(){ if (target.classList.contains('is-custom')) pinHeight(); });
   var boxH = 320;
   function unveil(){ clearTimeout(veilTimer); if (veil && veil.parentNode) veil.parentNode.removeChild(veil); veil = null; }
   function addVeil(){
@@ -1850,21 +2016,22 @@ EDITOR_JS = r"""<script>
     waitTimer = setTimeout(function(){ if (!ready) { unveil(); bRender.disabled = false; say('The renderer did not answer. Check your connection and press Render again.', 'err'); } }, 10000);
   }
   function show(blocks){
-    pending = blocks;
+    pending = blocks; aspect = aspectOf(blocks);
+    if (badge) badge.textContent = badgeText;
     if (paused) { paused = false; if (note2 && note2.parentNode) note2.parentNode.removeChild(note2); note2 = null; }
     pauseBtn(false);   // Render means run it (a reduced-motion setting is honoured by the renderer itself: it stills its films)
-    if (frame && target.contains(frame)) { sizeReports = 0; addVeil(); deliver(); return; }
+    if (frame && target.contains(frame)) { pinHeight(); sizeReports = 0; addVeil(); deliver(); return; }
     if (!kept) { boxH = target.getBoundingClientRect().height || 320; kept = document.createDocumentFragment(); while (target.firstChild) kept.appendChild(target.firstChild); }
     else while (target.firstChild) target.removeChild(target.firstChild);
     pinHeight();
-    target.classList.add('is-custom'); target.classList.remove('paused'); badge = document.createElement('span'); badge.className = 'custom-badge'; badge.textContent = 'Your payload';
+    target.classList.add('is-custom'); target.classList.remove('paused'); badge = document.createElement('span'); badge.className = 'custom-badge'; badge.textContent = badgeText;
     target.appendChild(badge); start();
     if (pause) { pause.hidden = false; }
   }
   function reset(){
     clearTimeout(waitTimer); unveil(); frame = null; ready = false; pending = null; bRender.disabled = false; paused = false; note2 = null;
     if (kept) { while (target.firstChild) target.removeChild(target.firstChild); target.appendChild(kept); kept = null; }
-    target.classList.remove('is-custom'); target.style.height = '';
+    target.classList.remove('is-custom', 'is-film'); target.style.height = ''; target.style.width = ''; target.style.marginInline = ''; aspect = 0; badgeText = 'Your payload';
     if (pause) {
       var rm = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);   // back to the static preview: stay still for a reduced-motion visitor
       pauseBtn(rm && staticMoves); target.classList.toggle('paused', rm && staticMoves); pause.hidden = !staticMoves;
@@ -1881,7 +2048,7 @@ EDITOR_JS = r"""<script>
   ta.addEventListener('keydown', function(e){ if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); render(); } });
   bRender.addEventListener('click', render); bReset.addEventListener('click', function(){ reset(); ta.focus(); });
   // The Mermaid / D2 tab hands its converted film to this editor, so the film is drawn in the one preview (same renderer, Pause, Focus, Reset).
-  window.A2UIEditor = { setPayload: function(text){ ta.value = text; tally(); render(); } };
+  window.A2UIEditor = { setPayload: function(text, label){ badgeText = label || 'Your payload'; ta.value = text; tally(); render(); } };
   tally();
 })();
 </script>"""
@@ -1902,11 +2069,14 @@ def atom_pager(atom_type):
         key, word = ("ArrowLeft", "<kbd>←</kbd> Previous") if rel == "prev" else ("ArrowRight", "Next <kbd>→</kbd>")
         return (f'<a class="pg-btn pg-{rel}" rel="{rel}" href="/atoms/{t}/" aria-keyshortcuts="{key}">'
                 f'<span class="pg-dir">{word}</span><span class="pg-name">{name}</span></a>')
+    slug, i, n = _POSITION.get(atom_type, ("", 0, 0))
+    where = (f'<a class="pg-all" href="/atoms/?catalog={slug}"><span class="pg-cat">{html.escape(_cat_label(slug))}</span>'
+             f'<span class="pg-pos">{i} of {n}</span></a>') if n else '<a class="pg-all" href="/atoms/">All atoms</a>'
     return ('<nav class="atom-pager" aria-label="Browse atoms">'
             + (link(prev, "prev") if prev else "<span></span>")
-            + '<a class="pg-all" href="/atoms/">All atoms</a>'
+            + where
             + (link(nxt, "next") if nxt else "<span></span>")
-            + '<p class="pg-hint">Press <kbd>←</kbd> or <kbd>→</kbd> on your keyboard to move between atoms.</p></nav>')
+            + '</nav>')
 
 
 def mermaid_panel(atom_type):
@@ -1921,9 +2091,22 @@ def mermaid_panel(atom_type):
             f'<link rel="stylesheet" href="/try-mermaid/try-mermaid.css?v={v}">'
             f'<div id="try-mermaid" data-mode="inspector" data-worker="/try-mermaid/convert.worker.js" data-bundle="https://play.a2uicatalog.ai/renderer-bundle?v={_bundle_hash()}" data-noupload="1"></div>'
             f'<script src="/try-mermaid/try-mermaid.js?v={v}" defer></script>'
-            '<script>window.addEventListener("DOMContentLoaded",function(){var t=document.getElementById("tab-mermaid"),m=document.getElementById("try-mermaid");'
-            'function go(){TryMermaid.mount(m,{});}'
-            'if(t&&document.querySelector(".inspector.js-tabs")){t.addEventListener("click",function(){if(!m.classList.contains("tm"))go();});}else{go();}})</script></section>')
+            # Mounts the first time the panel is shown, however it is shown (click, arrow keys, the "Try it" button, a #mermaid link).
+            '<script>window.addEventListener("DOMContentLoaded",function(){var t=document.getElementById("tab-mermaid"),m=document.getElementById("try-mermaid"),p=document.getElementById("panel-mermaid");'
+            'function go(){if(!m.classList.contains("tm"))TryMermaid.mount(m,{});}'
+            'if(t&&document.querySelector(".inspector.js-tabs")){new MutationObserver(function(){if(!p.hidden)go();}).observe(p,{attributes:true,attributeFilter:["hidden"]});'
+            'if(location.hash==="#mermaid")t.click();}else{go();}'
+            'document.querySelectorAll("[data-open-mermaid]").forEach(function(b){b.addEventListener("click",function(){if(t)t.click();var n=0,f=function(){var a=m.querySelector("textarea");if(a){a.focus();a.select();}else if(n++<40)setTimeout(f,50);};f();if(window.innerWidth<=1000)p.scrollIntoView({block:"start"});});});'
+            '})</script></section>')
+
+
+def atom_hook(atom_type):
+    """The one-line pitch and call to action under the title, on atoms whose inspector has the paste window."""
+    if atom_type != "motion_arch":
+        return ""
+    return ('<div class="hook"><p class="hook-lead">Paste a Mermaid flowchart or a D2 diagram and watch it draw itself as a film. '
+            'It runs in your browser; nothing is uploaded.</p>'
+            '<button type="button" class="hook-btn" data-open-mermaid aria-controls="panel-mermaid">Try it with your diagram <span aria-hidden="true">→</span></button></div>')
 
 
 def render_page(atom):
@@ -2024,6 +2207,7 @@ def render_page(atom):
   </div>
 
   <div class="title-row"><h1>{display_name}</h1>{like_button(atom_type, display_name)}{catalog_chip(atom_type, inline=True)}</div>
+  {atom_hook(atom_type)}
 
   <div class="atom-grid">
     <div class="a-preview">{preview or schema_hero(atom)}</div>
@@ -2045,12 +2229,13 @@ def render_page(atom):
     </div>
   </div>
 
+  {atom_explore(atom_type)}
+
   <div class="section">
     <div class="label">ARD catalog entry</div>
     <pre tabindex="0"><code>{ard_entry(atom)}</code></pre>
   </div>
 
-  <a class="back" href="/.well-known/ai-catalog.json">← Full ARD catalog</a>
   {try_btn}
 
   <div class="deploy-box">
@@ -2297,7 +2482,18 @@ def _card_label(atom, has_preview):
     return f"{name}: no live thumbnail yet, schema card" + (f". {line}" if line else "")
 
 
+_CARD_CACHE = {}
+
+
 def card_stage(atom):
+    atom_type = atom.get("type", "")
+    if atom_type in _CARD_CACHE:
+        return _CARD_CACHE[atom_type]
+    _CARD_CACHE[atom_type] = out = _card_stage(atom)
+    return out
+
+
+def _card_stage(atom):
     atom_type = atom.get("type", "")
     reason = None
     html = ""
@@ -4989,10 +5185,23 @@ def main():
         if ev.get("body") == "Full schema published.":
             ev["title"] = f"{len(unique)} atoms"
 
-    order = [t for items in _hub_groups(unique).values() for t, _, _ in items]
+    order = _explore_order(unique)
     _NEIGHBOURS.clear()
-    _NEIGHBOURS.update({t: (order[i - 1] if i else None, order[i + 1] if i + 1 < len(order) else None)
-                        for i, t in enumerate(order)})
+    _NEIGHBOURS.update({t: (order[i - 1], order[(i + 1) % len(order)]) for i, t in enumerate(order)})   # wraps at both ends
+    _POSITION.clear()
+    for slug in dict.fromkeys(ATOM_CATALOG.get(t, "") for t in order):
+        members = [t for t in order if ATOM_CATALOG.get(t, "") == slug]
+        _POSITION.update({t: (slug, k + 1, len(members)) for k, t in enumerate(members)})
+    _ATOM_FIELDS.clear()
+    _ATOM_FIELDS.update({a["type"]: a.get("fields") or {} for a in unique if a.get("type")})
+    _ATOM_LINES.clear()
+    _ATOM_LINES.update({a["type"]: (a.get("displayName") or a["type"].replace("_", " ").title(),
+                                    (lambda d: d[:1].upper() + d[1:])(meta_description(a.get("compact_description") or a.get("description", ""))))
+                        for a in unique if a.get("type")})
+    for atom in unique:      # the homepage thumbnails, made now so the atom pages can show their neighbours' (card_stage caches them)
+        card_stage(atom)
+    _RELATED.clear()
+    _RELATED.update(_related_atoms(order))
 
     count = 0
     for atom in unique:

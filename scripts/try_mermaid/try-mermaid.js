@@ -8,7 +8,7 @@
   var EXAMPLES = {
     flow: { mode: 'mermaid', label: 'Flowchart: agent to screen', text: 'flowchart LR\n  user([User]) -->|asks| agent[Agent]\n  agent -->|looks up| catalogue[(Trusted catalogue)]\n  catalogue -->|returns atoms| agent\n  agent -->|sends payload| renderer[A2UI renderer]\n  renderer -->|draws| screen[Native screen]\n' },
     d2: { mode: 'd2', label: 'D2: web app', text: 'browser: Browser\napi: API\ndb: Database {shape: cylinder}\nbrowser -> api: request\napi -> db: query\ndb -> api: rows\napi -> browser: response\n' },
-    seq: { mode: 'mermaid', label: 'Sequence diagram (not supported yet)', text: 'sequenceDiagram\n  User->>Agent: asks\n  Agent->>Renderer: payload\n  Renderer-->>User: screen\n' }
+    // sequenceDiagram is not supported yet: no example offers a dead end
   };
   function el(tag, attrs, kids) {
     var n = document.createElement(tag);
@@ -71,7 +71,7 @@
     foot.textContent = (verified ? 'Runs in your browser. Your diagram is not uploaded. ' : '') + 'Copy the payload to use it on any atom page or with an agent. MP4 and GIF of your own film are not available here yet.';
     var backdrop = el('div', { class: 'tm-backdrop' }); backdrop.hidden = true;
     var stage = el('div', { class: 'tm-stage' }, [box, bar, details, foot, backdrop]);
-    if (inspector) { controls.firstChild.appendChild(details); controls.firstChild.appendChild(foot); root.appendChild(controls); } else { root.appendChild(controls); root.appendChild(stage); }
+    if (inspector) { controls.firstChild.appendChild(el('div', { class: 'tm-row tm-out-row' }, [bCopy, bDown])); controls.firstChild.appendChild(details); controls.firstChild.appendChild(foot); root.appendChild(controls); } else { root.appendChild(controls); root.appendChild(stage); }
 
     // ---- helpers
     function say(msg, cls) { status.textContent = msg || ''; status.className = 'tm-status' + (cls ? ' ' + cls : ''); }
@@ -115,7 +115,9 @@
       if (!r.ok) { fail((r.errors || []).map(String), r.counts); return; }
       var secs = typeof r.durationSeconds === 'number' ? ' (' + Math.round(r.durationSeconds) + ' s film)' : '';
       last = r; fillText(r);
-      if (inspector) { var txt = JSON.stringify(r.payload, null, 2); if (txt.length > PAYLOAD_MAX) { say('Converted' + secs + ', but the film payload is longer than the ' + fmt(PAYLOAD_MAX) + ' characters the preview accepts. Try a smaller diagram.', 'tm-err'); return; } say('Converted' + secs + '. Playing it in the preview on the left.', ''); window.A2UIEditor.setPayload(txt); return; }
+      if (inspector) { var txt = JSON.stringify(r.payload, null, 2); if (txt.length > PAYLOAD_MAX) { say('Converted' + secs + ', but the film payload is longer than the ' + fmt(PAYLOAD_MAX) + ' characters the preview accepts. Try a smaller diagram.', 'tm-err'); return; } say('Converted' + secs + '. Playing it in the preview.', ''); bCopy.disabled = bDown.disabled = false; window.A2UIEditor.setPayload(txt, 'Your diagram');
+        if (window.innerWidth <= 1000 && document.activeElement !== ta) { var pb = document.querySelector('.a-preview .preview-box'); if (pb) pb.scrollIntoView({ block: 'start', behavior: (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) ? 'auto' : 'smooth' }); }
+        return; }
       say('Converted' + secs + '. Playing it now.', ''); setAspect(r.payload.blocks[0]); show(r.payload.blocks);
       [bFocus, bCopy, bDown, bPause].forEach(function (b) { b.disabled = false; });
     }
