@@ -2095,7 +2095,7 @@ def mermaid_panel(atom_type):
             '<script>window.addEventListener("DOMContentLoaded",function(){var t=document.getElementById("tab-mermaid"),m=document.getElementById("try-mermaid"),p=document.getElementById("panel-mermaid");'
             'function go(){if(!m.classList.contains("tm"))TryMermaid.mount(m,{});}'
             'if(t&&document.querySelector(".inspector.js-tabs")){new MutationObserver(function(){if(!p.hidden)go();}).observe(p,{attributes:true,attributeFilter:["hidden"]});'
-            'if(location.hash==="#mermaid")t.click();}else{go();}'
+            'if(location.hash==="#mermaid")t.click();if(!p.hidden)go();}else{go();}'
             'document.querySelectorAll("[data-open-mermaid]").forEach(function(b){b.addEventListener("click",function(){if(t)t.click();var n=0,f=function(){var a=m.querySelector("textarea");if(a){a.focus();a.select();}else if(n++<40)setTimeout(f,50);};f();if(window.innerWidth<=1000)p.scrollIntoView({block:"start"});});});'
             '})</script></section>')
 
