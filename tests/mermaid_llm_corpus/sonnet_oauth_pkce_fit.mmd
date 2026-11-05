@@ -1,0 +1,40 @@
+%% request: draw our OAuth2 PKCE login flow for a mobile app
+%% fixed from tool errors
+flowchart TD
+    classDef app fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#0d47a1
+    classDef browser fill:#fff3e0,stroke:#ef6c00,color:#e65100
+    classDef server fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20
+    classDef err fill:#ffebee,stroke:#c62828,color:#b71c1c
+
+    subgraph Device["Mobile Device"]
+        A([User taps Log in]):::app
+        BC["Generate code_verifier<br/>code_challenge = BASE64URL(SHA256(verifier))"]:::app
+        D[Open system browser<br/>ASWebAuthenticationSession / Custom Tab]:::browser
+        IJ{"Redirect to app via custom scheme:<br/>state matches?"}:::app
+        M[(Secure storage<br/>Keychain / Keystore)]:::app
+    end
+
+    subgraph IdP["Authorization Server"]
+        E[/GET /authorize<br/>client_id, code_challenge, S256, state/]:::server
+        FG{User authenticates + MFA<br/>and grants consent?}:::server
+        K{"POST /token: code, code_verifier<br/>SHA256 of verifier matches challenge?"}:::server
+        N["Issue access_token,<br/>refresh_token, id_token"]:::server
+    end
+
+    API[[Resource API]]:::server
+    X[Show error to user]:::err
+    R[Refresh token grant]:::app
+
+    A --> BC --> D
+    D -->|"1. authorization request"| E
+    E --> FG
+    FG -- Yes, code + state --> IJ
+    FG -- No --> X
+    IJ -- No --> X
+    IJ -- Yes --> K
+    K -- No --> X
+    K -- Yes --> N
+    N ==>|"4. tokens"| M
+    M -.->|"Bearer access_token"| API
+    API -.->|"401 expired"| R
+    R --> K

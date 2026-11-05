@@ -1,0 +1,17 @@
+%% request: e-commerce checkout architecture
+%% fixed from tool errors
+flowchart LR
+    UI[Storefront SPA] --> Edge[CDN + WAF]
+    Edge --> API[[API Gateway]]
+    API --> Cart[Cart service]
+    API --> Price[Pricing + promos]
+    API --> Tax[Tax calc]
+    API --> Order[Order service]
+    Order -->|reserve stock; out of stock = unavailable| Inv[Inventory service]
+    Order --> Pay[Payment orchestrator]
+    Pay -->|primary| Stripe[(Stripe)]
+    Stripe -- decline --> Adyen[(Adyen fallback)]
+    Pay -->|success| PG[(Postgres orders)]
+
+    style Stripe fill:#635bff,color:#fff
+    style Adyen fill:#0abf53,color:#fff

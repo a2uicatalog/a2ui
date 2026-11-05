@@ -1,0 +1,37 @@
+# request: three-tier web app
+direction: right
+
+users: "Users" {
+  shape: person
+}
+
+presentation: "Presentation tier" {
+  style.fill: "#e8f0fe"
+  web: "Web frontend\n(React SPA)"
+  cdn: "CDN" { shape: cloud }
+}
+
+application: "Application tier" {
+  style.fill: "#e6f4ea"
+  api: "REST API\n(Node.js)"
+  auth: "Auth service"
+  worker: "Background worker"
+  api -> auth: "JWT check"
+  api -> worker: "enqueue jobs" { style.stroke-dash: 3 }
+}
+
+data: "Data tier" {
+  style.fill: "#fef7e0"
+  db: "PostgreSQL" { shape: cylinder }
+  cache: "Redis cache" { shape: cylinder }
+  files: "S3 bucket" { shape: cylinder }
+}
+
+users -> presentation.cdn: "HTTPS"
+presentation.cdn -> presentation.web
+presentation.web -> application.api: "JSON over HTTPS"
+application.api -> data.cache: "read-through"
+application.api -> data.db: "SQL"
+application.worker -> data.db
+application.worker -> data.files: "uploads"
+data.cache -> data.db: "miss" { style.stroke-dash: 3 }

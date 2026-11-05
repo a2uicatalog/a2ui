@@ -1,0 +1,51 @@
+# request: LLM agent with tools and memory
+direction: down
+
+user: "User" { shape: person }
+
+agent: "Agent loop" {
+  style.fill: "#e8f0fe"
+  planner: "LLM planner\n(reason + choose action)"
+  executor: "Action executor"
+  check: "Done?" { shape: diamond }
+  planner -> executor: "tool call JSON"
+  executor -> planner: "observation"
+  planner -> check
+  check -> planner: "no" { style.stroke-dash: 3 }
+}
+
+tools: "Tools" {
+  style.fill: "#e6f4ea"
+  search: "Web search"
+  db: "SQL query"
+  code: "Sandboxed Python"
+  email: "Send email" { style.stroke: "#d93025" }
+}
+
+memory: "Memory" {
+  style.fill: "#fef7e0"
+  short: "Short-term\n(context window)" { shape: cylinder }
+  long: "Long-term\n(vector store)" { shape: cylinder }
+  summary: "Rolling summary" { shape: page }
+}
+
+guard: "Guardrails" {
+  policy: "Policy check" { shape: hexagon }
+  approve: "Human approval" { shape: person }
+}
+
+user -> agent.planner: "request"
+agent.executor -> guard.policy: "before side-effect tools"
+guard.policy -> guard.approve: "needs approval" { style.stroke-dash: 3 }
+guard.policy -> tools.search
+guard.policy -> tools.db
+guard.policy -> tools.code
+guard.policy -> tools.email
+tools.search -> agent.executor: "results"
+tools.db -> agent.executor
+tools.code -> agent.executor
+agent.planner -> memory.short: "read/write turns"
+memory.short -> memory.summary: "compact when full"
+memory.summary -> memory.long: "save facts" { style.stroke-dash: 3 }
+memory.long -> agent.planner: "retrieve relevant" { style.stroke-dash: 3 }
+agent.check -> user: "final answer" { style.stroke: "#1e8e3e"; style.stroke-width: 2 }

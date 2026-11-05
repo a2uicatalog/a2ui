@@ -1,0 +1,20 @@
+%% request: a slack bot that answers from our docs
+%% fixed from tool errors
+flowchart LR
+    Member([💬 Team member @mentions bot]) --> Slack{{Slack Events API}}
+    Slack -->|app_mention| Handler[Bolt handler: ack in 3s, queue job]
+    Handler --> Worker[Answer worker]
+    Worker --> Retrieval[Hybrid retrieval + reranker]
+    Retrieval --> LLM[LLM answer from sources]
+    Retrieval -- no sources --> Refuse[🤷 'Not in our docs' + search link]
+    LLM --> Grounded{Answer grounded?}
+    Grounded -- no --> Refuse
+    Grounded -- yes --> Reply[Post threaded reply with source links]
+    Refuse --> Reply
+    Reply --> Slack
+    Reply --> Feedback{{👍 / 👎 reactions}}
+    Feedback -->|down| Log[(Feedback log: weekly gap review)]
+    Sync[(Nightly ingest: Confluence + Git)] --> Retrieval
+
+    style Refuse fill:#fff3cd,stroke:#856404
+    style Reply fill:#d1e7dd,stroke:#0f5132

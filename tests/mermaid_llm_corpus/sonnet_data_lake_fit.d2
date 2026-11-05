@@ -1,0 +1,41 @@
+# request: data lake ingestion with batch and stream paths
+# fixed from tool errors
+direction: right
+
+sources: Sources {
+  db: OLTP Databases {shape: cylinder}
+  files: Partner File Drops {shape: page}
+  events: App Events and IoT Sensors {shape: cloud}
+}
+
+batch: Batch: Airflow, Spark extract, schema validation {style.fill: "#e3f2fd"}
+
+stream: Stream Path {
+  style.fill: "#fff3e0"
+  broker: Kafka {shape: queue}
+  proc: Stream Processor (Flink)
+  broker -> proc: events
+}
+
+lake: Data Lake (S3) {
+  style.fill: "#e8f5e9"
+  raw: Raw Zone {shape: cylinder}
+  curated: Curated Zone {shape: cylinder}
+  analytics: Analytics Zone {shape: cylinder}
+  raw -> curated: clean + dedupe
+  curated -> analytics: aggregate
+}
+
+catalog: Data Catalog {shape: hexagon}
+dwh: Data Warehouse {shape: cylinder; style.fill: "#f3e5f5"}
+bi: BI and ML {shape: rectangle}
+
+sources.db -> batch: nightly CDC
+sources.files -> batch
+sources.events -> stream.broker
+batch -> lake.raw: Parquet
+stream.proc -> lake.raw: micro-batches {style.stroke-dash: 4}
+stream.proc -> dwh: real-time aggregates {style.stroke: "#ef6c00"; style.stroke-width: 3}
+lake.curated -> catalog: register {style.stroke-dash: 3}
+lake.analytics -> dwh: load
+dwh -> bi

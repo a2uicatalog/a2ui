@@ -1,0 +1,41 @@
+%% request: how an MCP client talks to tools and resources
+%% fixed from tool errors
+flowchart LR
+    classDef host fill:#e3f2fd,stroke:#1565c0
+    classDef proto fill:#fff3e0,stroke:#ef6c00
+    classDef srv fill:#e8f5e9,stroke:#2e7d32
+    classDef ext fill:#eceff1,stroke:#455a64
+
+    User([User]) <--> LLM
+
+    subgraph Host["Host Application (e.g. Claude Desktop / IDE)"]
+        LLM[LLM]:::host
+        C1[Client A]:::host
+        C2[Client B]:::host
+        LLM <-->|tool calls| C1
+        LLM <-->|tool calls| C2
+    end
+
+    subgraph S1["MCP Server: Filesystem (local)"]
+        FT["Tools: read_file, write_file"]:::srv
+        FR[Resource: file:///project/*]:::srv
+    end
+
+    subgraph S2["MCP Server: Issue Tracker (remote)"]
+        IT[Tool: create_issue]:::srv
+        IR["Resource: issues://open<br/>Prompt: triage_template"]:::srv
+    end
+
+    C1 <-->|"JSON-RPC 2.0<br/>stdio"| FT
+    C1 <-->|"JSON-RPC 2.0<br/>stdio"| FR
+    C2 <-->|"JSON-RPC 2.0<br/>Streamable HTTP"| IT
+    C2 <-->|"JSON-RPC 2.0<br/>Streamable HTTP"| IR
+
+    FT --- FS[(Local disk)]:::ext
+    FR --- FS
+    IT --- API[Issue Tracker REST API]:::ext
+    IR --- API
+
+    Init["Per client: initialize, tools/list, resources/list, tools/call, resources/read"]:::proto
+    Init -.-> C1
+    Init -.-> C2

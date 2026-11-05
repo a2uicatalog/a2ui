@@ -1,0 +1,42 @@
+%% request: a slack bot that answers from our docs
+flowchart LR
+    Member([💬 Team member @mentions bot]) --> Slack{{Slack Events API}}
+    Slack -->|app_mention| Handler[Bolt handler]
+    Handler --> Ack[⏱️ Ack within 3s]
+    Handler --> Queue[[Job queue]]
+    Queue --> Worker[Answer worker]
+
+    subgraph Retrieval["🔎 Retrieval"]
+        Worker --> Embed[Embed question]
+        Embed --> VecDB[(Vector index)]
+        VecDB --> TopK[Top 8 chunks]
+        Worker --> KW[(Keyword search)]
+        KW --> TopK
+        TopK --> Rerank{{Reranker}}
+    end
+
+    subgraph Gen["🧠 Generation"]
+        Rerank --> Prompt[/Prompt with sources/]
+        Prompt --> LLM[LLM]
+        LLM --> Check{Answer grounded?}
+        Check -- no --> Refuse[🤷 'Not in our docs' + link to search]
+        Check -- yes --> Cite[Add source links]
+    end
+
+    Cite --> Reply[Post threaded reply]
+    Refuse --> Reply
+    Reply --> Slack
+
+    Worker -- no sources --> Refuse
+    Reply --> Feedback{{👍 / 👎 reactions}}
+    Feedback -->|down| Log[(Feedback log)]
+    Log --> Review[Weekly doc gap review]
+
+    subgraph Sync["🔄 Doc sync"]
+        Conf[(Confluence)] --> Ingest[Nightly ingest]
+        Git[(Git docs repo)] --> Ingest
+        Ingest --> VecDB
+    end
+
+    style Refuse fill:#fff3cd,stroke:#856404
+    style Reply fill:#d1e7dd,stroke:#0f5132

@@ -1,0 +1,47 @@
+%% request: machine learning training and serving pipeline
+flowchart TB
+    subgraph Ingest["📥 Data ingestion"]
+        S1[(Event logs)]
+        S2[(Product DB)]
+        S3[/Partner CSV drops/]
+        S1 & S2 & S3 --> Raw[(Raw lake S3)]
+    end
+
+    subgraph Prep["🧹 Feature engineering"]
+        Raw --> Clean[Clean + dedupe]
+        Clean --> Feat[Feature jobs Spark]
+        Feat --> FS[(Feature store)]
+        Clean -- bad rows --> DLQ[/Quarantine bucket/]
+    end
+
+    subgraph Train["🏋️ Training"]
+        FS --> Split{{Time-based split}}
+        Split --> TrainJob[Train job GPU]
+        Split --> Val[Validation set]
+        TrainJob --> Eval{AUC >= 0.82?}
+        Val --> Eval
+        Eval -- no --> Tune[Hyperparam sweep]
+        Tune --> TrainJob
+        Eval -- yes --> Reg[(Model registry)]
+    end
+
+    subgraph Serve["🚀 Serving"]
+        Reg --> Stage[Staging endpoint]
+        Stage --> Shadow{Shadow test OK?}
+        Shadow -- yes --> Canary[Canary 5%]
+        Canary --> Prod[Production API]
+        Shadow -- no --> Rollback([⏪ Keep old model])
+        FS --> Online[(Online features Redis)]
+        Online --> Prod
+    end
+
+    subgraph Monitor["📊 Monitoring"]
+        Prod --> Logs[(Prediction logs)]
+        Logs --> Drift{Drift detected?}
+        Drift -- yes --> Alert[🔔 Alert + retrain trigger]
+        Alert --> TrainJob
+        Drift -- no --> Logs
+    end
+
+    classDef store fill:#eef,stroke:#446
+    class Raw,FS,Reg,Online,Logs store

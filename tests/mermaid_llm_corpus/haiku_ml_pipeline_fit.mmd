@@ -1,0 +1,19 @@
+%% request: machine learning training and serving pipeline
+%% fixed from tool errors
+flowchart TB
+    Raw[(Raw lake S3: events, products, partner CSVs)]
+    Raw --> Feat[Clean, dedupe + Spark feature jobs]
+    Feat --> FS[(Feature store)]
+    FS --> Split{{Time-based split}}
+    Split --> TrainJob[Train job GPU]
+    TrainJob --> Eval{AUC >= 0.82?}
+    Eval -- yes --> Reg[(Model registry)]
+    Reg --> Stage[Staging + shadow test]
+    Stage -- shadow test OK --> Canary[Canary 5%]
+    Canary --> Prod[Production API]
+    Prod --> Logs[(Prediction logs)]
+    Logs --> Drift{Drift detected?}
+    Drift -- yes: retrain --> TrainJob
+
+    classDef store fill:#eef,stroke:#446
+    class Raw,FS,Reg,Logs store

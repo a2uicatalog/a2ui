@@ -1,0 +1,27 @@
+%% request: customer support ticket triage flowchart with decisions
+%% fixed from tool errors
+flowchart TD
+    classDef decision fill:#fff8e1,stroke:#f9a825
+    classDef action fill:#e8f5e9,stroke:#2e7d32
+    classDef urgent fill:#ffebee,stroke:#c62828,stroke-width:2px
+    classDef endnode fill:#eceff1,stroke:#455a64
+
+    A{"New ticket, auto-tagged by channel and tier:<br/>spam or duplicate?"}:::decision
+    A -- Spam or duplicate --> D[Close and flag sender, or merge with existing ticket]:::endnode
+    A -- No --> F{Category?}:::decision
+
+    F -- "Billing, account access, feature request, other" --> Q["Specialist queues: billing (manager approval over 100 USD), identity check, backlog, general"]:::action
+    F -- Technical --> H{Outage or data loss?}:::decision
+
+    H -- Yes --> L[[Page on-call engineer<br/>P1, 15 min SLA]]:::urgent
+    H -- No --> N{Known issue in KB?}:::decision
+    N -- Yes --> O[Send KB article + macro reply]:::action
+    N -- No --> P["Priority by tier: Enterprise P2 to Tier 2,<br/>Standard P3 to Tier 1"]:::action
+
+    L --> U[Agent resolves]:::action
+    P --> U
+    Q --> U
+    O --> V{Customer confirms resolved?}:::decision
+    U --> V
+    V -- No, reopen and escalate --> P
+    V -- Yes --> X[Close ticket + send CSAT survey]:::endnode

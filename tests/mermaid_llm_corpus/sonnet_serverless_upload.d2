@@ -1,0 +1,51 @@
+# request: serverless image upload pipeline
+direction: right
+
+user: User {shape: person}
+client: Web Client
+
+api: API Gateway {shape: hexagon}
+presign: Presign Lambda {style.fill: "#fff3e0"}
+
+s3: S3 Buckets {
+  style.fill: "#e8f5e9"
+  uploads: uploads/ {shape: cylinder}
+  thumbs: thumbnails/ {shape: cylinder}
+  processed: processed/ {shape: cylinder}
+}
+
+events: EventBridge / S3 Event {shape: queue}
+sqs: Processing Queue {shape: queue}
+dlq: Dead Letter Queue {shape: queue; style.stroke: "#c62828"}
+
+workers: Lambda Workers {
+  style.fill: "#e3f2fd"
+  validate: Validate + Virus Scan
+  resize: Resize + Thumbnail
+  meta: Extract Metadata
+  validate -> resize
+  validate -> meta
+}
+
+rekog: Rekognition (moderation) {shape: cloud}
+ddb: DynamoDB {shape: cylinder; style.fill: "#f3e5f5"}
+sns: SNS Notification {shape: queue}
+cdn: CloudFront CDN {shape: cloud}
+
+user -> client
+client -> api: 1. request upload URL
+api -> presign
+presign -> client: pre-signed URL
+client -> s3.uploads: 2. PUT image {style.stroke-width: 3}
+s3.uploads -> events: ObjectCreated
+events -> sqs
+sqs -> workers.validate
+sqs -> dlq: after 3 retries {style.stroke-dash: 4; style.stroke: "#c62828"}
+workers.validate -> rekog: moderate
+workers.resize -> s3.thumbs
+workers.resize -> s3.processed
+workers.meta -> ddb
+workers.resize -> sns: done
+sns -> client: notify {style.stroke-dash: 3}
+s3.processed -> cdn
+cdn -> user: 3. serve image

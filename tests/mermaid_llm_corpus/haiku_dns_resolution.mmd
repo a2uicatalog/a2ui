@@ -1,0 +1,31 @@
+%% request: how DNS resolution works
+flowchart TD
+    User([👤 User types example.com]) --> Browser[Browser cache?]
+    Browser -- hit --> Done([✅ Connect to IP])
+    Browser -- miss --> OS[OS resolver cache?]
+    OS -- hit --> Done
+    OS -- miss --> Stub[Stub resolver /etc/resolv.conf]
+    Stub --> Recursive[(Recursive resolver ISP or 8.8.8.8)]
+    Recursive --> Cache{Cached and fresh?}
+    Cache -- yes --> Answer[Return cached answer]
+    Answer --> Done
+    Cache -- no --> Root[[Root server .]]
+    Root -- "referral to .com" --> TLD[[TLD server .com]]
+    TLD -- "referral to ns1.example.com" --> Auth[[Authoritative server]]
+    Auth -- "A record: 93.184.216.34 TTL 3600" --> Store[(Store in cache for TTL)]
+    Store --> Answer
+
+    subgraph Legend["📖 Legend"]
+        direction LR
+        L1[(Cache)] ~~~ L2[[Server]]
+    end
+
+    Auth -. NXDOMAIN .-> Fail([❌ Name does not exist])
+    Recursive -. timeout .-> Retry{Retry other NS?}
+    Retry -- yes --> Auth
+    Retry -- no --> Fail
+
+    classDef cache fill:#fff7d1,stroke:#b38f00
+    classDef server fill:#e3f2fd,stroke:#1565c0
+    class Browser,OS,Recursive,Store cache
+    class Root,TLD,Auth server

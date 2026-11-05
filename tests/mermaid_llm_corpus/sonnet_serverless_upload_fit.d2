@@ -1,0 +1,37 @@
+# request: serverless image upload pipeline
+# fixed from tool errors
+direction: right
+
+client: User / Web Client {shape: person}
+api: API Gateway + Presign Lambda {shape: hexagon; style.fill: "#fff3e0"}
+s3: S3 (uploads, thumbnails, processed) {shape: cylinder; style.fill: "#e8f5e9"}
+queue: S3 Event to Processing Queue {shape: queue}
+dlq: Dead Letter Queue {shape: queue; style.stroke: "#c62828"}
+
+workers: Lambda Workers {
+  style.fill: "#e3f2fd"
+  validate: Validate + Virus Scan
+  resize: Resize + Thumbnail
+  meta: Extract Metadata
+  validate -> resize
+  validate -> meta
+}
+
+rekog: Rekognition (moderation) {shape: cloud}
+ddb: DynamoDB {shape: cylinder; style.fill: "#f3e5f5"}
+sns: SNS Notification {shape: queue}
+cdn: CloudFront CDN {shape: cloud}
+
+client -> api: 1. request upload URL
+api -> client: pre-signed URL
+client -> s3: 2. PUT image {style.stroke-width: 3}
+s3 -> queue: ObjectCreated
+queue -> workers.validate
+queue -> dlq: after 3 retries {style.stroke-dash: 4; style.stroke: "#c62828"}
+workers.validate -> rekog: moderate
+workers.resize -> s3: thumbnails + processed
+workers.meta -> ddb
+workers.resize -> sns: done
+sns -> client: notify {style.stroke-dash: 3}
+s3 -> cdn
+cdn -> client: 3. serve image

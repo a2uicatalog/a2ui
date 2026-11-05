@@ -1,0 +1,43 @@
+%% request: RAG chatbot architecture
+flowchart TB
+    classDef ingest fill:#e8f5e9,stroke:#2e7d32
+    classDef query fill:#e3f2fd,stroke:#1565c0
+    classDef store fill:#f3e5f5,stroke:#6a1b9a
+    classDef llm fill:#fff3e0,stroke:#ef6c00,stroke-width:2px
+
+    subgraph Ingestion["Offline Ingestion Pipeline"]
+        direction LR
+        S1[(Confluence)]:::ingest
+        S2[(PDF / Docs)]:::ingest
+        S3[(Website crawl)]:::ingest
+        P1[Parse and clean]:::ingest
+        P2[Chunk<br/>512 tokens, 64 overlap]:::ingest
+        P3[Embedding model]:::ingest
+        S1 & S2 & S3 --> P1 --> P2 --> P3
+    end
+
+    VDB[(Vector DB<br/>pgvector / Pinecone)]:::store
+    META[(Metadata store)]:::store
+    P3 --> VDB
+    P2 -.-> META
+
+    subgraph Online["Online Query Path"]
+        U([User]) --> UI[Chat UI]:::query
+        UI --> API[Chat API / Orchestrator]:::query
+        API --> QR["Query rewrite<br/>(use chat history)"]:::query
+        QR --> QE[Embed query]:::query
+        QE --> RET{{Hybrid retrieval<br/>vector + BM25}}:::query
+        RET --> RR[Reranker<br/>cross-encoder]:::query
+        RR --> PB["Prompt builder<br/>system + context + question"]:::query
+        PB --> LLM[[LLM]]:::llm
+        LLM --> GR{Guardrails ok?}:::query
+        GR -- yes --> API
+        GR -- no --> FB[Fallback answer]:::query
+        FB --> API
+    end
+
+    VDB --> RET
+    META --> RET
+    API --> MEM[(Conversation memory)]:::store
+    API -->|answer + citations| UI
+    API -.-> OBS[Logging, feedback, evals]:::query

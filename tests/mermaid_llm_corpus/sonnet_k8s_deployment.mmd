@@ -1,0 +1,47 @@
+%% request: kubernetes deployment with ingress, two services, redis and postgres
+graph LR
+    classDef ext fill:#eceff1,stroke:#455a64
+    classDef ing fill:#fff8e1,stroke:#f9a825,stroke-width:2px
+    classDef svc fill:#e3f2fd,stroke:#1976d2
+    classDef pod fill:#e8f5e9,stroke:#388e3c
+    classDef data fill:#f3e5f5,stroke:#7b1fa2
+
+    User((Internet User)):::ext
+    DNS[DNS<br/>app.example.com]:::ext
+
+    subgraph Cluster["Kubernetes Cluster"]
+        LB[Cloud LoadBalancer]:::ext
+        subgraph NS["namespace: production"]
+            ING{{"Ingress (nginx)<br/>TLS via cert-manager"}}:::ing
+
+            subgraph WebTier["web"]
+                SVC1[Service: web-svc<br/>ClusterIP :80]:::svc
+                D1["Deployment: web<br/>replicas: 3"]:::pod
+            end
+            subgraph ApiTier["api"]
+                SVC2[Service: api-svc<br/>ClusterIP :8080]:::svc
+                D2["Deployment: api<br/>replicas: 2"]:::pod
+            end
+
+            subgraph Data["Stateful"]
+                RS[Service: redis]:::svc
+                RD[(Redis<br/>Deployment)]:::data
+                PS[Service: postgres]:::svc
+                PG[(PostgreSQL<br/>StatefulSet)]:::data
+                PVC[/PersistentVolumeClaim 20Gi/]:::data
+            end
+            CM[ConfigMap / Secret]:::ext
+        end
+    end
+
+    User --> DNS --> LB --> ING
+    ING -->|"/"| SVC1
+    ING -->|"/api"| SVC2
+    SVC1 --> D1
+    SVC2 --> D2
+    D1 -->|REST| SVC2
+    D2 -->|cache| RS --> RD
+    D2 -->|SQL| PS --> PG
+    PG === PVC
+    CM -.-> D1
+    CM -.-> D2

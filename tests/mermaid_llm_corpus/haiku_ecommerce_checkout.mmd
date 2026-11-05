@@ -1,0 +1,57 @@
+%% request: e-commerce checkout architecture
+flowchart LR
+    subgraph Client["🖥️ Browser / Mobile"]
+        UI[Storefront SPA]
+        Cart[(Local cart)]
+    end
+
+    subgraph Edge["🌍 Edge"]
+        CDN[CDN]
+        WAF[WAF + rate limit]
+    end
+
+    subgraph Core["⚙️ Core services"]
+        API[[API Gateway]]
+        CartSvc[Cart service]
+        Order[Order service]
+        Inv[Inventory service]
+        Price[Pricing + promos]
+        Pay[Payment orchestrator]
+        Tax[Tax calc]
+    end
+
+    subgraph Ext["☁️ External"]
+        Stripe[(Stripe)]
+        Adyen[(Adyen fallback)]
+        ShipAPI[Shipping rates API]
+    end
+
+    subgraph Data["🗄️ Data"]
+        PG[(Postgres orders)]
+        Redis[(Redis sessions)]
+        Q{{Kafka: order events}}
+    end
+
+    UI --> CDN --> WAF --> API
+    UI -. cache .-> Cart
+    API --> CartSvc --> Redis
+    API --> Price
+    API --> Tax
+    API --> ShipAPI
+    API --> Order
+    Order -->|reserve stock| Inv
+    Inv -->|ok| Order
+    Inv -->|out of stock| Fail1([Show unavailable])
+    Order --> Pay
+    Pay -->|primary| Stripe
+    Stripe -- decline --> Adyen
+    Pay -->|success| PG
+    PG --> Q
+    Q --> Email[Confirmation email]
+    Q --> Analytics[(Warehouse)]
+    Pay -- timeout --> Retry{{Retry queue}}
+    Retry --> Pay
+
+    style Stripe fill:#635bff,color:#fff
+    style Adyen fill:#0abf53,color:#fff
+    style Fail1 fill:#ffd6d6,stroke:#b00020

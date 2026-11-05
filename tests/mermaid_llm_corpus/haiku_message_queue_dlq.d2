@@ -1,0 +1,33 @@
+# request: message queue with retries and dead letter queue
+direction: right
+
+producer: "Producer service" { shape: rectangle }
+
+broker: "Message broker" {
+  style.fill: "#f1f3f4"
+  main: "orders queue" { shape: queue }
+  retry1: "retry 1s" { shape: queue }
+  retry2: "retry 30s" { shape: queue }
+  dlq: "orders.dlq" { shape: queue; style.fill: "#fde7e9" }
+}
+
+consumer: "Consumer" {
+  handler: "Process message"
+  ok: "Ack" { shape: circle; style.fill: "#e6f4ea" }
+}
+
+monitor: "Ops" {
+  alert: "Alert on-call" { shape: hexagon }
+  replay: "Manual replay tool" { shape: person }
+}
+
+producer -> broker.main: "publish"
+broker.main -> consumer.handler: "deliver"
+consumer.handler -> consumer.ok: "success"
+consumer.handler -> broker.retry1: "fail, attempt 1" { style.stroke: "#f9ab00" }
+broker.retry1 -> consumer.handler: "redeliver"
+consumer.handler -> broker.retry2: "fail, attempt 2"
+broker.retry2 -> consumer.handler: "redeliver"
+consumer.handler -> broker.dlq: "attempt 3 failed" { style.stroke: "#d93025"; style.stroke-width: 2 }
+broker.dlq -> monitor.alert: "depth > 0"
+monitor.replay -> broker.main: "requeue after fix" { style.stroke-dash: 4 }

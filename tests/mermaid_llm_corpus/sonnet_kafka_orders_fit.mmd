@@ -1,0 +1,39 @@
+%% request: event-driven order pipeline with kafka
+%% fixed from tool errors
+flowchart LR
+    classDef svc fill:#e3f2fd,stroke:#1565c0
+    classDef topic fill:#fff3e0,stroke:#ef6c00,stroke-width:2px
+    classDef db fill:#f3e5f5,stroke:#6a1b9a
+    classDef dlq fill:#ffebee,stroke:#c62828,stroke-dasharray: 5 5
+
+    Client([Web / Mobile Client])
+    OS["Order Service<br/>(behind API Gateway)"]:::svc
+    ODB[(Orders DB)]:::db
+
+    subgraph Kafka["Apache Kafka Cluster"]
+        T1>orders.created]:::topic
+        T2>inventory.reserved]:::topic
+        T3>payment.completed]:::topic
+        T4>order.confirmed]:::topic
+        DLQ>orders.dlq]:::dlq
+    end
+
+    INV["Inventory Service<br/>(Inventory DB)"]:::svc
+    PAY["Payment Service<br/>(Payments DB)"]:::svc
+    SN[Shipping + Notification Services]:::svc
+    ANA["Analytics Sink<br/>to Data Warehouse"]:::svc
+
+    Client -->|POST /orders| OS
+    OS --> ODB
+    OS -->|publish| T1
+    T1 -->|consume| INV
+    INV -->|publish| T2
+    T2 --> PAY
+    PAY -->|publish| T3
+    T3 --> OS
+    OS -->|publish| T4
+    T4 --> SN
+    T1 -.-> ANA
+    T4 -.-> ANA
+    INV -. failed .-> DLQ
+    PAY -. failed .-> DLQ

@@ -1,0 +1,45 @@
+%% request: customer support ticket triage flowchart with decisions
+flowchart TD
+    classDef start fill:#e3f2fd,stroke:#1565c0,stroke-width:2px
+    classDef decision fill:#fff8e1,stroke:#f9a825
+    classDef action fill:#e8f5e9,stroke:#2e7d32
+    classDef urgent fill:#ffebee,stroke:#c62828,stroke-width:2px
+    classDef endnode fill:#eceff1,stroke:#455a64
+
+    A([New ticket received]):::start --> B[Auto-tag channel and customer tier]
+    B --> C{Spam or duplicate?}:::decision
+    C -- Spam --> D[Close and flag sender]:::endnode
+    C -- Duplicate --> E[Merge with existing ticket]:::endnode
+    C -- No --> F{Category?}:::decision
+
+    F -- Billing --> G[Billing queue]:::action
+    F -- Technical --> H{Outage or data loss?}:::decision
+    F -- Account access --> I[Identity verification]:::action
+    F -- Feature request --> J[Log in product backlog]:::action
+    F -- Other --> K[General queue]:::action
+
+    H -- Yes --> L[[Page on-call engineer]]:::urgent
+    L --> M[Priority P1 - 15 min SLA]:::urgent
+    H -- No --> N{Known issue in KB?}:::decision
+    N -- Yes --> O[Send KB article + macro reply]:::action
+    N -- No --> P{Customer tier}:::decision
+    P -- Enterprise --> Q[Priority P2 - assign Tier 2]:::action
+    P -- Standard --> R[Priority P3 - Tier 1 queue]:::action
+
+    G --> S{Refund over 100 USD?}:::decision
+    S -- Yes --> T[Manager approval]:::action
+    S -- No --> U[Agent resolves]:::action
+    T --> U
+    I --> U
+    K --> U
+    O --> V
+    Q --> U
+    R --> U
+    M --> U
+    J --> V
+
+    U --> V{Customer confirms resolved?}:::decision
+    V -- No --> W[Reopen and escalate]:::urgent
+    W --> P
+    V -- Yes --> X[Close ticket + send CSAT survey]:::endnode
+    %% TODO: add SLA breach branch
