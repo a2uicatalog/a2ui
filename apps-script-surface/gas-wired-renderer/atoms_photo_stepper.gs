@@ -46,7 +46,7 @@ _RENDERERS['photo_stepper'] = function(b) {
     // Trigger card: a compact preview shown while the overlay is closed.
     // Hidden the moment the checkbox is checked (sibling selector, same
     // mechanism as everything else in this atom).
-    '.' + sid + '-trigger{position:relative;display:block;cursor:pointer;border-radius:12px;overflow:hidden;margin:12px 0;background:#111;text-decoration:none;}' +
+    '.' + sid + '-trigger{position:relative;display:block;min-height:180px;cursor:pointer;border-radius:12px;overflow:hidden;margin:12px 0;background:#111;text-decoration:none;}' +
     '.' + sid + '-trigger img{width:100%;max-height:50vh;object-fit:cover;display:block;opacity:0.85;}' +
     '.' + sid + '-trigger-label{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:10px;background:rgba(0,0,0,0.25);color:#fff;font-size:1.05rem;font-weight:700;text-shadow:0 1px 4px rgba(0,0,0,0.6);}' +
     '#' + mid + ':checked ~ .' + sid + '-trigger{display:none;}' +

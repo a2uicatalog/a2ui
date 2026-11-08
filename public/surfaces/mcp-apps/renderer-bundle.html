@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <title>A2UI Catalog renderer — MCP Apps View</title>
 <style>
-  :root {
+  :root, :host {
     --bg: #ffffff;
     --surface: #f8f9fa;
     --surface2: #f1f3f4;
@@ -36788,7 +36788,7 @@ var first = images[0] || {};
 var triggerLabel = b.trigger_label || 'Browse full screen';
 var css = '<style>' +
 '#' + mid + '{display:none;}' +
-'.' + sid + '-trigger{position:relative;display:block;cursor:pointer;border-radius:12px;overflow:hidden;margin:12px 0;background:#111;text-decoration:none;}' +
+'.' + sid + '-trigger{position:relative;display:block;min-height:180px;cursor:pointer;border-radius:12px;overflow:hidden;margin:12px 0;background:#111;text-decoration:none;}' +
 '.' + sid + '-trigger img{width:100%;max-height:50vh;object-fit:cover;display:block;opacity:0.85;}' +
 '.' + sid + '-trigger-label{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:10px;background:rgba(0,0,0,0.25);color:#fff;font-size:1.05rem;font-weight:700;text-shadow:0 1px 4px rgba(0,0,0,0.6);}' +
 '#' + mid + ':checked ~ .' + sid + '-trigger{display:none;}' +
@@ -38816,7 +38816,7 @@ left + right +
 };
 _RENDERERS['word_reveal'] = function(b) {
 var text     = b.text     || 'Your message here';
-var colour   = b.colour   || 'rgba(255,255,255,0.92)';
+var colour   = b.colour   || 'var(--a2ui-text,var(--text,#111827))';
 var gradient = b.gradient || '';
 var size     = b.size     || 'clamp(2rem,5vw,3.5rem)';
 var weight   = b.weight   || 800;
@@ -38906,7 +38906,7 @@ html += '<span style="color:' + _esc(colour) + ';font-weight:800;">' + _esc(part
 }
 }
 return '<p data-cb="node" data-key="' + _ckey(b.text, 'text_highlight') + '" style="font-size:' + _esc(size) + ';font-weight:' + weight + ';' +
-'line-height:1.6;color:rgba(255,255,255,0.75);text-align:' + _esc(align) + ';margin:12px 0;">' +
+'line-height:1.6;color:var(--a2ui-text,var(--text,#111827));text-align:' + _esc(align) + ';margin:12px 0;">' +
 html + '</p>';
 };
 _RENDERERS['reveal_line'] = function(b) {
@@ -41190,8 +41190,22 @@ node[field] = val.map(function(cid) { return resolveNode(cid, childSeen, scope);
 }
 return node;
 }
+function finishRefs(v, seen) {
+if (Array.isArray(v)) {
+var allIds = v.length > 0 && v.every(function(x) { return typeof x === 'string' && byId[x] && !seen[x]; });
+if (allIds) return v.map(function(cid) { return finishRefs(resolveNode(cid, seen, null), seen); }).filter(Boolean);
+return v.map(function(x) { return finishRefs(x, seen); });
+}
+if (v && typeof v === 'object') {
+var o = {};
+for (var key in v) o[key] = (key === 'id' || key.indexOf('_a2ui') === 0) ? v[key] : finishRefs(v[key], seen);
+return o;
+}
+return v;
+}
 var root = byId['root'];
 var rootNode = root ? resolveNode('root', {}, null) : null;
+if (rootNode) rootNode = finishRefs(rootNode, {});
 var rootChildren = (rootNode && rootNode.blocks) ? rootNode.blocks : [];
 if (interactive) {
 rootChildren = rootChildren.concat([{type: 'A2uiSurfaceRuntime', component: 'A2uiSurfaceRuntime',

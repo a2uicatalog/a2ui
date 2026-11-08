@@ -234,8 +234,27 @@ function _rehydrateV1Surface(surface) {
     return node;
   }
 
+  // 2026-11-07: resolveNode leaves child ids as RAW STRINGS inside `blocks` arrays and inside wrapper items
+  // (reveal: blocks:["stat_card-1",...]; filter_bar: filters:[{blocks:["form_select-2"]}]), so renderAtoms drew empty wrappers
+  // (filter_bar html 189 chars vs 2,438 from the nested block). Finish the job: any uniform list of known component ids that is
+  // still a list of strings becomes the resolved nodes. Same cycle rule as resolveNode (an id may not repeat on its own path).
+  function finishRefs(v, seen) {
+    if (Array.isArray(v)) {
+      var allIds = v.length > 0 && v.every(function(x) { return typeof x === 'string' && byId[x] && !seen[x]; });
+      if (allIds) return v.map(function(cid) { return finishRefs(resolveNode(cid, seen, null), seen); }).filter(Boolean);
+      return v.map(function(x) { return finishRefs(x, seen); });
+    }
+    if (v && typeof v === 'object') {
+      var o = {};
+      for (var key in v) o[key] = (key === 'id' || key.indexOf('_a2ui') === 0) ? v[key] : finishRefs(v[key], seen);
+      return o;
+    }
+    return v;
+  }
+
   var root = byId['root'];
   var rootNode = root ? resolveNode('root', {}, null) : null;
+  if (rootNode) rootNode = finishRefs(rootNode, {});
   var rootChildren = (rootNode && rootNode.blocks) ? rootNode.blocks : [];
   if (interactive) {
     rootChildren = rootChildren.concat([{type: 'A2uiSurfaceRuntime', component: 'A2uiSurfaceRuntime',

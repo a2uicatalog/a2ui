@@ -44374,7 +44374,7 @@ def _render_photo_stepper(b: dict) -> str:
     first = _gx_or(images[0], {})
     trigger_label = _gx_or(_if_g(b, 'trigger_label'), 'Browse full screen')
     a = _if_str(accent)
-    css = ('<style>#' + mid + '{display:none;}.' + sid + '-trigger{position:relative;display:block;cursor:pointer;border-radius:12px;overflow:hidden;margin:12px 0;background:#111;text-decoration:none;}'
+    css = ('<style>#' + mid + '{display:none;}.' + sid + '-trigger{position:relative;display:block;min-height:180px;cursor:pointer;border-radius:12px;overflow:hidden;margin:12px 0;background:#111;text-decoration:none;}'
            '.' + sid + '-trigger img{width:100%;max-height:50vh;object-fit:cover;display:block;opacity:0.85;}'
            '.' + sid + '-trigger-label{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:10px;background:rgba(0,0,0,0.25);color:#fff;font-size:1.05rem;font-weight:700;text-shadow:0 1px 4px rgba(0,0,0,0.6);}'
            '#' + mid + ':checked ~ .' + sid + '-trigger{display:none;}.' + sid + '{display:none;position:fixed;inset:0;z-index:9000;background:#111;overflow:hidden;}#' + mid + ':checked ~ .' + sid + '{display:block;}'
