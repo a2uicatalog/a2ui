@@ -8713,7 +8713,7 @@ def _render_feature_grid(b: dict) -> str:
     return (
         f'<div style="margin:1.5rem 0;">'
         f'{heading_html}{desc_html}'
-        f'<div style="display:grid;grid-template-columns:repeat({columns},1fr);gap:28px 24px;">'
+        f'<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,max(140px,calc((100% - 24px*{columns - 1})/{columns}))),1fr));gap:28px 24px;">'
         f'{items_html}'
         f'</div>'
         f'</div>'
@@ -30657,7 +30657,7 @@ def _render_wall_elevation(b: dict) -> str:
 
     return (
         f'<div data-cb="node" data-key="{_ck(b.get("block_id"), "wall_elevation")}" style="margin:1.2rem 0;padding:14px 16px;border:1px solid #dadce0;border-radius:8px;background:#ffffff;">'
-        f'{svg}'
+        f'<div style="overflow-x:auto;">{svg}</div>'
         '<div style="margin-top:10px;display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));'
         'gap:6px 16px;font-size:0.85rem;color:#3c4043;">'
         f'{summary_rows}'
@@ -31834,7 +31834,7 @@ def _render_demo_wordmark(b: dict) -> str:
     size, acc = _ff_int(b.get('size'), 200, 24, 600), _ff_hex(b.get('accent'), '#38bdf8')
     tn = 'light' if b.get('tone') == 'light' else 'dark'
     ink = '15,23,42' if tn == 'light' else '241,245,249'
-    return ('<div style="font-family:' + _MO_SANS + ';font-size:' + str(size) + 'px;font-weight:800;letter-spacing:-0.04em;line-height:1;white-space:nowrap;color:transparent;-webkit-text-stroke:2px rgba(' + (_ff_rgb(acc) if b.get('outline') == 'accent' else ink) + ',0.9);user-select:none;" aria-hidden="true">' + _cv_esc(_cv_str(b.get('text'), 24)) + '</div>')
+    return ('<div style="font-family:' + _MO_SANS + ';font-size:' + str(size) + 'px;font-weight:800;letter-spacing:-0.04em;line-height:1;white-space:nowrap;overflow-x:clip;max-width:100%;color:transparent;-webkit-text-stroke:2px rgba(' + (_ff_rgb(acc) if b.get('outline') == 'accent' else ink) + ',0.9);user-select:none;" aria-hidden="true">' + _cv_esc(_cv_str(b.get('text'), 24)) + '</div>')
 
 
 def _render_demo_kpis(b: dict) -> str:
@@ -32985,7 +32985,7 @@ def _render_motion_pill(b: dict) -> str:
     look = ('border:2px solid transparent;background:linear-gradient(' + solid + ',' + solid + ') padding-box,linear-gradient(90deg,' + bg_a + ',' + bg_b + ') border-box;') if (bg_a and bg_b) else ('border:1px solid ' + _MO_MIX_LINE + ';background:' + (fill or _MO_MIX_FILL) + ';')
     pgl = ('box-shadow:0 0 ' + str(pglow) + 'px ' + ((bg_a + '88,0 0 ' + str(pglow * 2) + 'px ' + bg_b + '55') if (bg_a and bg_b) else ('color-mix(in srgb,' + acc + ' 60%,transparent)')) + ';') if pglow else ''
     return ('<div style="display:flex;justify-content:' + jc + ';width:100%;">'
-            + '<' + tag + (' href="' + _cv_esc(href) + '"' if href else '') + ' style="' + ('text-decoration:none;cursor:pointer;pointer-events:auto;' if href else '') + 'display:inline-flex;align-items:center;gap:0.55em;box-sizing:border-box;padding:0.55em 1.3em;border-radius:999px;' + look + pgl + 'color:' + color + ';font-family:' + _MO_SANS + ';font-size:' + str(size) + 'px;font-weight:600;line-height:1.1;white-space:nowrap;opacity:clamp(0,var(--p,1),1);transform:translateY(calc((1 - clamp(0,var(--p,1),1))*0.5em));">'
+            + '<' + tag + (' href="' + _cv_esc(href) + '"' if href else '') + ' style="' + ('text-decoration:none;cursor:pointer;pointer-events:auto;' if href else '') + 'display:inline-flex;align-items:center;gap:0.55em;box-sizing:border-box;padding:0.55em 1.3em;border-radius:999px;' + look + pgl + 'color:' + color + ';font-family:' + _MO_SANS + ';font-size:' + str(size) + 'px;font-weight:600;line-height:1.1;white-space:normal;max-width:100%;opacity:clamp(0,var(--p,1),1);transform:translateY(calc((1 - clamp(0,var(--p,1),1))*0.5em));">'
             + _mo_sr(_mo_plain(text))
             + '<span aria-hidden="true" style="display:inline-flex;align-items:center;gap:0.55em;">' + ('<span style="color:' + acc + ';">' + _cv_esc(icon) + '</span>' if icon else '') + '<span>' + _mo_runs(_mo_chars(text), acc) + '</span></span></' + tag + '></div>')
 
@@ -34123,7 +34123,7 @@ def _render_motion_bounce(b: dict) -> str:
             dd = _ff_num(k * 0.012, 0, 0, 1, 3)
             dots += ('<div style="position:absolute;width:' + str(max(3, size // 6)) + 'px;height:' + str(max(3, size // 6)) + 'px;margin:' + str(size // 2) + 'px 0 0 ' + str(size // 2) + 'px;border-radius:50%;background:' + acc + ';opacity:' + _ff_num(0.5 - k * 0.05, 0, 0, 1, 2) + ';' + pos(dd) + '"></div>')
     sq = 'abs(cos(' + ph(0) + '))'
-    return ('<div role="img" aria-label="A bouncing ball" style="position:relative;width:100%;height:' + str(h) + 'px;">' + dots
+    return ('<div role="img" aria-label="A bouncing ball" style="position:relative;width:100%;height:' + str(h) + 'px;overflow-x:clip;">' + dots
             + '<div aria-hidden="true" style="position:absolute;width:' + str(size) + 'px;height:' + str(size) + 'px;border-radius:50%;background:' + acc + ';transform-origin:50% 100%;transform:scale(calc(1 + ' + sq + '*' + sq + '*' + sq + '*0.35),calc(1 - ' + sq + '*' + sq + '*' + sq + '*0.4));' + pos(0) + '"></div>'
             + '<div aria-hidden="true" style="position:absolute;left:0;right:0;bottom:0;height:2px;background:' + _MO_MIX_LINE + ';"></div></div>')
 
@@ -36355,8 +36355,8 @@ def _if_card(extra=''):
 
 
 def _if_table(head, rows):
-    return ('<table style="' + _IF_SR + '"><thead><tr>' + ''.join('<th scope="col">' + _if_s(h, 40) + '</th>' for h in head) + '</tr></thead><tbody>'
-            + ''.join('<tr><th scope="row">' + _if_s(r[0], 60) + '</th>' + ''.join('<td>' + _if_s(c, 60) + '</td>' for c in r[1:]) + '</tr>' for r in rows) + '</tbody></table>')
+    return ('<div style="' + _IF_SR + '"><table style="white-space:nowrap;"><thead><tr>' + ''.join('<th scope="col">' + _if_s(h, 40) + '</th>' for h in head) + '</tr></thead><tbody>'
+            + ''.join('<tr><th scope="row">' + _if_s(r[0], 60) + '</th>' + ''.join('<td>' + _if_s(c, 60) + '</td>' for c in r[1:]) + '</tr>' for r in rows) + '</tbody></table></div>')
 
 
 def _if_seq(a, b):
@@ -36411,7 +36411,7 @@ def _render_bullet_graph(b: dict) -> str:
         r_key = _if_s(_if_g(r, 'label'), 40)
         rows += ('<div data-cb="bar" data-key="' + r_key + '" style="display:grid;grid-template-columns:minmax(110px,28%) 1fr auto;gap:10px;align-items:center;margin:8px 0;' + _if_k(i, len(rows_src)) + '"><div data-cb="label" data-key="' + r_key + '">' + r_key + '</div>'
                  + '<div style="position:relative;height:28px;border:' + _IF_BORDER + ';border-radius:4px;overflow:visible;">' + track + '</div>'
-                 + '<div style="font-weight:700;font-size:0.82rem;white-space:nowrap;">' + _if_fmt(a) + ' / ' + _if_fmt(t) + ' <span style="font-weight:400;color:' + _IF_MUTED + ';">' + ('target met' if a >= t else 'below target') + '</span></div></div>')
+                 + '<div style="font-weight:700;font-size:0.82rem;">' + _if_fmt(a) + ' / ' + _if_fmt(t) + ' <span style="font-weight:400;color:' + _IF_MUTED + ';">' + ('target met' if a >= t else 'below target') + '</span></div></div>')
     return _if_wrap(_if_title(b) + rows + '<div style="font-size:0.75rem;color:' + _IF_MUTED + ';">Dark bar: actual. Red tick: target. Shaded bands: poor, fair, good. The scale starts at 0.</div>')
 
 
@@ -36429,7 +36429,7 @@ def _render_swimlane(b: dict) -> str:
                 lanes += ('<div style="display:flex;gap:6px;align-items:flex-start;border:' + _IF_BORDER + ';border-radius:6px;padding:5px 7px;background:var(--bg,#fff);' + _if_k(ti, n) + _IF_FADE + '">'
                           + '<span style="flex:0 0 auto;min-width:20px;height:20px;border-radius:50%;background:#0369A1;color:#fff;font-size:0.72rem;font-weight:700;text-align:center;line-height:20px;">' + str(ti + 1) + '</span><span>' + _if_s(_if_g(t, 'task'), 60) + '</span></div>')
             lanes += '</div>'
-    return _if_wrap(_if_title(b) + '<div style="display:grid;grid-template-columns:minmax(90px,16%) repeat(' + str(max(len(phases), 1)) + ',1fr);gap:6px;">' + head + lanes + '</div>'
+    return _if_wrap(_if_title(b) + '<div style="display:grid;grid-template-columns:minmax(90px,16%) repeat(' + str(max(len(phases), 1)) + ',1fr);gap:6px;overflow-x:auto;">' + head + lanes + '</div>'
                     + '<div style="font-size:0.75rem;color:' + _IF_MUTED + ';margin-top:6px;">Numbers show the order of the tasks.</div>')
 
 
@@ -36573,7 +36573,7 @@ def _render_maturity_ladder(b: dict) -> str:
         k = _if_s(_if_g(l, 'name'), 30)
         steps += ('<div data-cb="item" data-key="' + k + '" style="flex:1;min-width:0;min-height:' + str(84 + i * 36) + 'px;border:' + _IF_BORDER + ';border-radius:8px;padding:8px 10px;background:' + ('#0369A1' if cur else 'var(--surface,#F8FAFC)') + ';color:' + ('#fff' if cur else 'var(--text,#0F172A)') + ';' + _if_k(i, n) + _IF_FADE + '">'
                   + '<div style="font-weight:700;">Level ' + _if_s(_if_g(l, 'level'), 3) + ': ' + _if_s(_if_g(l, 'name'), 30) + (' [CURRENT]' if cur else '') + '</div><div style="font-size:0.78rem;margin-top:4px;' + ('' if cur else 'color:' + _IF_MUTED + ';') + '">' + _if_s(_if_g(l, 'criteria'), 120) + '</div></div>')
-    return _if_wrap(_if_title(b) + '<div style="display:flex;align-items:flex-end;gap:6px;">' + steps + '</div>')
+    return _if_wrap(_if_title(b) + '<div style="display:flex;align-items:flex-end;gap:6px;overflow-x:auto;">' + steps + '</div>')
 
 
 # Squarified treemap layout: a line-for-line port of d3-hierarchy 3.1.2 treemapSquarify (ISC, Mike Bostock); twin of _tmSquarify in atoms_infographic.gs.
@@ -40047,7 +40047,7 @@ def _render_callout_anatomy(b: dict) -> str:
         return ('<div data-cb="item" data-key="' + c_key + '" style="display:flex;gap:8px;align-items:flex-start;' + _if_card(_if_k(c['id'] - 1, len(co)) + _IF_FADE) + '"><span style="flex:0 0 auto;width:22px;height:22px;border-radius:50%;background:#0369A1;color:#fff;font-size:0.75rem;font-weight:700;text-align:center;line-height:22px;">' + str(c['id']) + '</span>'
                 + '<div><div data-cb="label" data-key="' + c_key + '" style="font-weight:700;">' + c_key + '</div><div style="font-size:0.78rem;color:' + _IF_MUTED + ';">' + _if_s(c['d'], 80) + '</div></div></div>')
     left, right = side('left'), side('right')
-    return _if_wrap(_if_title(b) + '<div style="display:grid;grid-template-columns:1fr minmax(150px,220px) 1fr;gap:12px;align-items:center;"><div style="display:flex;flex-direction:column;gap:8px;">' + ''.join(card(c) for c in left) + '</div>'
+    return _if_wrap(_if_title(b) + '<div style="display:grid;grid-template-columns:1fr minmax(150px,220px) 1fr;gap:12px;align-items:center;overflow-x:auto;"><div style="display:flex;flex-direction:column;gap:8px;">' + ''.join(card(c) for c in left) + '</div>'
                     + '<div style="border:' + _IF_BORDER + ';border-radius:8px;background:#E0E7FF;color:#1E1B4B;font-weight:700;text-align:center;padding:32px 10px;">' + _if_s(_if_g(b, 'central_label'), 40) + '</div>'
                     + '<div style="display:flex;flex-direction:column;gap:8px;">' + ''.join(card(c) for c in right) + '</div></div><div style="font-size:0.75rem;color:' + _IF_MUTED + ';margin-top:6px;">Numbered notes on the left and right describe the parts of the subject.</div>')
 

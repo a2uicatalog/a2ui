@@ -79,8 +79,8 @@ function _ifTitle(b) { return b.title ? '<div style="font-weight:700;font-size:1
 function _ifWrap(inner) { return '<div style="margin:var(--a2ui-block-gap,1.25rem) 0;color:var(--text,#0F172A);font-size:0.9rem;line-height:1.4;">' + inner + '</div>'; }
 function _ifCard(extra) { return 'border:' + _IF_BORDER + ';border-radius:8px;background:var(--surface,#F8FAFC);padding:8px 10px;' + (extra || ''); }
 function _ifTable(head, rows) {
-  return '<table style="' + _IF_SR + '"><thead><tr>' + head.map(function(h) { return '<th scope="col">' + _ifS(h, 40) + '</th>'; }).join('') + '</tr></thead><tbody>' +
-    rows.map(function(r) { return '<tr><th scope="row">' + _ifS(r[0], 60) + '</th>' + r.slice(1).map(function(c) { return '<td>' + _ifS(c, 60) + '</td>'; }).join('') + '</tr>'; }).join('') + '</tbody></table>';
+  return '<div style="' + _IF_SR + '"><table style="white-space:nowrap;"><thead><tr>' + head.map(function(h) { return '<th scope="col">' + _ifS(h, 40) + '</th>'; }).join('') + '</tr></thead><tbody>' +
+    rows.map(function(r) { return '<tr><th scope="row">' + _ifS(r[0], 60) + '</th>' + r.slice(1).map(function(c) { return '<td>' + _ifS(c, 60) + '</td>'; }).join('') + '</tr>'; }).join('') + '</tbody></table></div>';
 }
 
 // ── quadrant ──────────────────────────────────────────────────────────────────────────────────────────────────
@@ -116,7 +116,7 @@ _RENDERERS['bullet_graph'] = function(b) {
     var rKey = _ifS(r.label, 40);
     return '<div data-cb="bar" data-key="' + rKey + '" style="display:grid;grid-template-columns:minmax(110px,28%) 1fr auto;gap:10px;align-items:center;margin:8px 0;' + _ifK(i, all.length) + '"><div data-cb="label" data-key="' + rKey + '">' + rKey + '</div>' +
       '<div style="position:relative;height:28px;border:' + _IF_BORDER + ';border-radius:4px;overflow:visible;">' + track + '</div>' +
-      '<div style="font-weight:700;font-size:0.82rem;white-space:nowrap;">' + _ifFmt(a) + ' / ' + _ifFmt(t) + ' <span style="font-weight:400;color:var(--muted,#475569);">' + (a >= t ? 'target met' : 'below target') + '</span></div></div>';
+      '<div style="font-weight:700;font-size:0.82rem;">' + _ifFmt(a) + ' / ' + _ifFmt(t) + ' <span style="font-weight:400;color:var(--muted,#475569);">' + (a >= t ? 'target met' : 'below target') + '</span></div></div>';
   }).join('');
   return _ifWrap(_ifTitle(b) + rows + '<div style="font-size:0.75rem;color:var(--muted,#475569);">Dark bar: actual. Red tick: target. Shaded bands: poor, fair, good. The scale starts at 0.</div>');
 };
@@ -134,7 +134,7 @@ _RENDERERS['swimlane'] = function(b) {
       }).join('') + '</div>';
     }).join('');
   }).join('');
-  return _ifWrap(_ifTitle(b) + '<div style="display:grid;grid-template-columns:minmax(90px,16%) repeat(' + Math.max(phases.length, 1) + ',1fr);gap:6px;">' + head + lanes + '</div>' +
+  return _ifWrap(_ifTitle(b) + '<div style="display:grid;grid-template-columns:minmax(90px,16%) repeat(' + Math.max(phases.length, 1) + ',1fr);gap:6px;overflow-x:auto;">' + head + lanes + '</div>' +
     '<div style="font-size:0.75rem;color:var(--muted,#475569);margin-top:6px;">Numbers show the order of the tasks.</div>');
 };
 
@@ -238,7 +238,7 @@ _RENDERERS['maturity_ladder'] = function(b) {
     return '<div data-cb="item" data-key="' + k + '" style="flex:1;min-width:0;min-height:' + (84 + i * 36) + 'px;border:' + _IF_BORDER + ';border-radius:8px;padding:8px 10px;background:' + (cur ? '#0369A1' : 'var(--surface,#F8FAFC)') + ';color:' + (cur ? '#fff' : 'var(--text,#0F172A)') + ';' + _ifK(i, n) + _IF_FADE + '">' +
       '<div style="font-weight:700;">Level ' + _ifS(l.level, 3) + ': ' + _ifS(l.name, 30) + (cur ? ' [CURRENT]' : '') + '</div><div style="font-size:0.78rem;margin-top:4px;' + (cur ? '' : 'color:var(--muted,#475569);') + '">' + _ifS(l.criteria, 120) + '</div></div>';
   }).join('');
-  return _ifWrap(_ifTitle(b) + '<div style="display:flex;align-items:flex-end;gap:6px;">' + steps + '</div>');
+  return _ifWrap(_ifTitle(b) + '<div style="display:flex;align-items:flex-end;gap:6px;overflow-x:auto;">' + steps + '</div>');   // OV360: long level names overflow the narrow flex items
 };
 
 // ── treemap ───────────────────────────────────────────────────────────────────────────────────────────────────
@@ -2461,7 +2461,7 @@ _RENDERERS['callout_anatomy'] = function(b) {
       '<div><div data-cb="label" data-key="' + cKey + '" style="font-weight:700;">' + cKey + '</div><div style="font-size:0.78rem;color:var(--muted,#475569);">' + _ifS(c.d, 80) + '</div></div></div>';
   };
   var L = side('left'), R = side('right');
-  return _ifWrap(_ifTitle(b) + '<div style="display:grid;grid-template-columns:1fr minmax(150px,220px) 1fr;gap:12px;align-items:center;"><div style="display:flex;flex-direction:column;gap:8px;">' + L.map(card).join('') + '</div>' +
+  return _ifWrap(_ifTitle(b) + '<div style="display:grid;grid-template-columns:1fr minmax(150px,220px) 1fr;gap:12px;align-items:center;overflow-x:auto;"><div style="display:flex;flex-direction:column;gap:8px;">' + L.map(card).join('') + '</div>' +
     '<div style="border:' + _IF_BORDER + ';border-radius:8px;background:#E0E7FF;color:#1E1B4B;font-weight:700;text-align:center;padding:32px 10px;">' + _ifS(b.central_label, 40) + '</div>' +
     '<div style="display:flex;flex-direction:column;gap:8px;">' + R.map(card).join('') + '</div></div><div style="font-size:0.75rem;color:var(--muted,#475569);margin-top:6px;">Numbered notes on the left and right describe the parts of the subject.</div>');
 };

@@ -513,7 +513,7 @@ _RENDERERS['demo_page'] = function(b) {
 _RENDERERS['demo_wordmark'] = function(b) {
   var size = _ffInt(b.size, 200, 24, 600), acc = _ffHex(b.accent, '#38bdf8'), tn = b.tone === 'light' ? 'light' : 'dark';
   var ink = tn === 'light' ? '15,23,42' : '241,245,249';
-  return '<div style="font-family:' + _MO_SANS + ';font-size:' + size + 'px;font-weight:800;letter-spacing:-0.04em;line-height:1;white-space:nowrap;color:transparent;-webkit-text-stroke:2px rgba(' + (b.outline === 'accent' ? _ffRgb(acc) : ink) + ',0.9);user-select:none;" aria-hidden="true">' + _esc(_moStr(b.text, 24)) + '</div>';
+  return '<div style="font-family:' + _MO_SANS + ';font-size:' + size + 'px;font-weight:800;letter-spacing:-0.04em;line-height:1;white-space:nowrap;overflow-x:clip;max-width:100%;color:transparent;-webkit-text-stroke:2px rgba(' + (b.outline === 'accent' ? _ffRgb(acc) : ink) + ',0.9);user-select:none;" aria-hidden="true">' + _esc(_moStr(b.text, 24)) + '</div>';
 };
 
 _RENDERERS['demo_kpis'] = function(b) {
@@ -1634,7 +1634,7 @@ _RENDERERS['motion_pill'] = function(b) {
   var look = (bgA && bgB) ? 'border:2px solid transparent;background:linear-gradient(' + solid + ',' + solid + ') padding-box,linear-gradient(90deg,' + bgA + ',' + bgB + ') border-box;' : 'border:1px solid ' + _MO_MIX_LINE + ';background:' + (fill || _MO_MIX_FILL) + ';';
   var pgl = pglow ? 'box-shadow:0 0 ' + pglow + 'px ' + ((bgA && bgB) ? bgA + '88,0 0 ' + (pglow * 2) + 'px ' + bgB + '55' : 'color-mix(in srgb,' + acc + ' 60%,transparent)') + ';' : '';
   return '<div style="display:flex;justify-content:' + jc + ';width:100%;">'
-    + '<' + tag + (href ? ' href="' + _esc(href) + '"' : '') + ' style="' + (href ? 'text-decoration:none;cursor:pointer;pointer-events:auto;' : '') + 'display:inline-flex;align-items:center;gap:0.55em;box-sizing:border-box;padding:0.55em 1.3em;border-radius:999px;' + look + pgl + 'color:' + color + ';font-family:' + _MO_SANS + ';font-size:' + size + 'px;font-weight:600;line-height:1.1;white-space:nowrap;opacity:clamp(0,var(--p,1),1);transform:translateY(calc((1 - clamp(0,var(--p,1),1))*0.5em));">'
+    + '<' + tag + (href ? ' href="' + _esc(href) + '"' : '') + ' style="' + (href ? 'text-decoration:none;cursor:pointer;pointer-events:auto;' : '') + 'display:inline-flex;align-items:center;gap:0.55em;box-sizing:border-box;padding:0.55em 1.3em;border-radius:999px;' + look + pgl + 'color:' + color + ';font-family:' + _MO_SANS + ';font-size:' + size + 'px;font-weight:600;line-height:1.1;white-space:normal;max-width:100%;opacity:clamp(0,var(--p,1),1);transform:translateY(calc((1 - clamp(0,var(--p,1),1))*0.5em));">'
     + _moSr(_moPlain(text))
     + '<span aria-hidden="true" style="display:inline-flex;align-items:center;gap:0.55em;">' + (icon ? '<span style="color:' + acc + ';">' + _esc(icon) + '</span>' : '') + '<span>' + _moRuns(_moChars(text), acc) + '</span></span></' + tag + '></div>';
 };
@@ -2623,7 +2623,7 @@ _RENDERERS['motion_bounce'] = function(b) {
   function pos(d) { return 'left:calc(clamp(0,calc(var(--p,1) - ' + d + '),1)*(100% - ' + size + 'px));top:calc(' + h + 'px - ' + size + 'px - abs(sin(' + ph(d) + '))*(' + h + 'px - ' + size + 'px)*(1 - clamp(0,calc(var(--p,1) - ' + d + '),1)*0.6));'; }
   if (trail) for (k = 1; k <= 8; k++) dots += '<div style="position:absolute;width:' + Math.max(3, Math.floor(size / 6)) + 'px;height:' + Math.max(3, Math.floor(size / 6)) + 'px;margin:' + Math.floor(size / 2) + 'px 0 0 ' + Math.floor(size / 2) + 'px;border-radius:50%;background:' + acc + ';opacity:' + _ffNum(0.5 - k * 0.05, 0, 0, 1, 2) + ';' + pos(_ffNum(k * 0.012, 0, 0, 1, 3)) + '"></div>';
   var sq = 'abs(cos(' + ph(0) + '))';
-  return '<div role="img" aria-label="A bouncing ball" style="position:relative;width:100%;height:' + h + 'px;">' + dots
+  return '<div role="img" aria-label="A bouncing ball" style="position:relative;width:100%;height:' + h + 'px;overflow-x:clip;">' + dots
     + '<div aria-hidden="true" style="position:absolute;width:' + size + 'px;height:' + size + 'px;border-radius:50%;background:' + acc + ';transform-origin:50% 100%;transform:scale(calc(1 + ' + sq + '*' + sq + '*' + sq + '*0.35),calc(1 - ' + sq + '*' + sq + '*' + sq + '*0.4));' + pos(0) + '"></div>'
     + '<div aria-hidden="true" style="position:absolute;left:0;right:0;bottom:0;height:2px;background:' + _MO_MIX_LINE + ';"></div></div>';
 };

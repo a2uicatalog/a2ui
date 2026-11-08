@@ -2104,7 +2104,7 @@ _RENDERERS['feature_grid'] = function(b) {
   return (
     '<div style="margin:1.5rem 0;">' +
     heading_html + desc_html +
-    '<div style="display:grid;grid-template-columns:repeat(' + columns + ',1fr);gap:28px 24px;">' +
+    '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,max(140px,calc((100% - 24px*' + (columns - 1) + ')/' + columns + '))),1fr));gap:28px 24px;">' +   // G5: fewer columns when the cards would be narrower than 140px
     items_html +
     '</div>' +
     '</div>'
@@ -3118,7 +3118,7 @@ _RENDERERS['animated_border_card'] = function(b) {
   var text = b.text || b.content || b.body || '';
   var uid = Math.random().toString(36).substr(2, 6);
   return '<style>'
-    + '.abc-' + uid + '{position:relative;border-radius:16px;padding:2px;margin:1rem 0;}'
+    + '.abc-' + uid + '{position:relative;border-radius:16px;padding:2px;margin:1rem 0;overflow-x:clip;}'
     + '.abc-' + uid + '::before{content:"";position:absolute;inset:-2px;border-radius:16px;background:conic-gradient(from 0deg,#4f46e5,#a855f7,#ec4899,#f59e0b,#4f46e5);z-index:0;animation:abc-spin-' + uid + ' 3s linear infinite;}'
     + '.abc-inner-' + uid + '{position:relative;z-index:1;background:#fff;border-radius:14px;padding:24px;}'
     + '@keyframes abc-spin-' + uid + '{to{transform:rotate(360deg);}}'
@@ -4670,7 +4670,7 @@ _RENDERERS['big_reveal'] = function(b) {
   var k = b.text ? _esc(String(b.text)) : 'big_reveal';
   return '<style>@keyframes br-' + uid + '{from{opacity:0;transform:scale(0.35);}to{opacity:1;transform:scale(1);}}</style>'
     + '<div data-cb="node" data-key="' + k + '" style="text-align:center;padding:44px 24px;margin:1rem 0;">'
-    + '<div style="font-size:' + _esc(size) + ';font-weight:900;color:' + _esc(color) + ';line-height:1.05;animation:br-' + uid + ' 0.75s cubic-bezier(0.34,1.56,0.64,1) ' + delay + 's both;">' + _esc(text) + '</div>'
+    + '<div style="font-size:' + _esc(size) + ';font-weight:900;color:' + _esc(color) + ';line-height:1.05;overflow-wrap:anywhere;animation:br-' + uid + ' 0.75s cubic-bezier(0.34,1.56,0.64,1) ' + delay + 's both;">' + _esc(text) + '</div>'
     + (sub ? '<div style="font-size:1.05rem;color:#6b7280;margin-top:14px;font-weight:500;animation:br-' + uid + ' 0.75s cubic-bezier(0.34,1.56,0.64,1) ' + (delay+0.18) + 's both;">' + _esc(sub) + '</div>' : '')
     + '</div>';
 };
