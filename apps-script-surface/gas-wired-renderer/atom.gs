@@ -3,6 +3,81 @@
  * Server-side V8 JavaScript engine for rendering A2UI Atom components.
  */
 
+// ── DK2: dark-theme literal remap ─────────────────────────────────────────────
+// Atoms hard-code light-only colours (dark slate text, white / pastel surfaces, deep brand hues) next to token colours. In theme 'dark' each
+// declaration list (style="" attribute or <style> rule) is rewritten: light surfaces -> surface tokens / dark tints, dark ink -> var(--text),
+// grey -> var(--muted), deep brand hues -> lighter tints. A text colour is left alone when the SAME list sets an opaque colour that is not a known
+// light surface (saturated chips, dark cards keep their own pairing). Only runs when opts.theme === 'dark'.
+var _ASW_DK = (function () {
+  function m(s, v) { var o = {}; s.split(' ').forEach(function (k) { o[k] = v; }); return o; }
+  function mix() { var o = {}; for (var i = 0; i < arguments.length; i++) for (var k in arguments[i]) o[k] = arguments[i][k]; return o; }
+  return {
+    bg: mix(
+      m('#ffffff #fff #fafafa #f9fafb #f8fafc #f8f9fa #f5f5f5 #fdfdfb #f4f4f4 #f7f7f7 #fcfcfc', 'var(--surface)'),
+      m('#f3f4f6 #f1f5f9 #f1f3f4 #eeeeee #eee #e5e7eb #e2e8f0 #ebebeb #e8eaed', 'var(--surface2)'),
+      m('#fef2f2 #fee2e2 #fff1f2', 'rgba(239,68,68,0.16)'),
+      m('#fffbeb #fef7e0 #fef3c7 #fefce8 #fff7ed #ffedd5', 'rgba(245,158,11,0.16)'),
+      m('#f0fdf4 #ecfdf5 #d1fae5 #dcfce7 #e6f4ea', 'rgba(34,197,94,0.16)'),
+      m('#eff6ff #f0f9ff #e8f0fe #dbeafe #f0f4ff #e0f2fe #eef2ff #e0e7ff', 'rgba(59,130,246,0.18)'),
+      m('#f5f3ff #ede9fe #faf5ff #f3e8ff', 'rgba(139,92,246,0.18)'),
+      m('#fef08a #fde68a #fff59d', 'var(--highlight-bg,rgba(255,214,10,0.2))'),
+      m('rgba(255,255,255,0.96) rgba(255,255,255,0.95) rgba(255,255,255,0.92) rgba(255,255,255,0.9) rgba(255,255,255,0.85) rgba(255,255,255,.96) rgba(255,255,255,.9)', 'var(--surface)'),
+      m('rgba(255,255,255,0.45) rgba(255,255,255,0.5) rgba(255,255,255,0.6) rgba(255,255,255,0.7)', 'rgba(255,255,255,0.14)')),
+    ink: m('#111827 #1f2937 #374151 #4b5563 #475569 #334155 #202124 #3c4043 #0f172a #1e293b #141b24 #1b1e1a #5a5a52 #333 #333333 #222 #222222 #444 #444444 #000 #000000 #1a1a1a #111 #1c1c1e #4d5156 #3d3d3d #2d2d2d', 'var(--text)'),
+    mute: m('#6b7280 #5f6368 #666 #666666 #64748b #71717a #6e6e73 #777 #777777 #555 #555555 #52525b #70757a', 'var(--muted)'),
+    hue: {'#7c3aed': '#a78bfa', '#4f46e5': '#818cf8', '#4338ca': '#818cf8', '#6d28d9': '#a78bfa', '#b91c1c': '#f87171', '#991b1b': '#fca5a5', '#dc2626': '#f87171', '#7f1d1d': '#fca5a5',
+      '#2563eb': '#60a5fa', '#1d4ed8': '#93c5fd', '#1e40af': '#93c5fd', '#1e3a8a': '#93c5fd', '#1a73e8': '#8ab4f8', '#e37400': '#fbbf24', '#b45309': '#fbbf24', '#92400e': '#fcd34d',
+      '#166534': '#86efac', '#15803d': '#4ade80', '#064e3b': '#6ee7b7', '#065f46': '#6ee7b7', '#0f766e': '#5eead4', '#0369a1': '#7dd3fc', '#c2410c': '#fdba74', '#be123c': '#fda4af'}
+  };
+})();
+function _aswHx(v) {
+  var m = /^#([0-9a-f])([0-9a-f])([0-9a-f])$/.exec(v);
+  if (m) return [parseInt(m[1] + m[1], 16), parseInt(m[2] + m[2], 16), parseInt(m[3] + m[3], 16)];
+  m = /^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/.exec(v);
+  if (m) return [parseInt(m[1], 16), parseInt(m[2], 16), parseInt(m[3], 16)];
+  m = /^rgb\((\d+),(\d+),(\d+)\)$/.exec(v);
+  return m ? [+m[1], +m[2], +m[3]] : null;
+}
+function _aswLum(c) {
+  var f = function (x) { x /= 255; return x <= 0.03928 ? x / 12.92 : Math.pow((x + 0.055) / 1.055, 2.4); };
+  return 0.2126 * f(c[0]) + 0.7152 * f(c[1]) + 0.0722 * f(c[2]);
+}
+function _aswHex(c) { return '#' + c.map(function (x) { return (x < 16 ? '0' : '') + x.toString(16); }).join(''); }
+function _aswDarkDecl(d) {
+  if (!/(color|background)\s*:/i.test(d)) return d;
+  var parts = d.split(';'), opaque = false, opLum = 1, i, mm, v, c;
+  for (i = 0; i < parts.length; i++) {
+    mm = /^(\s*)(background(?:-color)?)(\s*:\s*)([^]*)$/i.exec(parts[i]);
+    if (!mm) continue;
+    v = mm[4].replace(/\s*!important\s*$/i, '').replace(/\s+/g, '').toLowerCase();
+    if (_ASW_DK.bg[v]) { parts[i] = mm[1] + mm[2] + mm[3] + _ASW_DK.bg[v]; continue; }
+    c = _aswHx(v);
+    if (c) {
+      if (_aswLum(c) > 0.7) parts[i] = mm[1] + mm[2] + mm[3] + 'color-mix(in srgb,' + _aswHex(c) + ' 16%,var(--surface))';   // any other light surface: keep its hue, sit it on the dark surface
+      else { opaque = true; opLum = _aswLum(c); }
+    } else if (/^linear-gradient|^radial-gradient/.test(v)) { opaque = true; opLum = 0.5; }
+  }
+  for (i = 0; i < parts.length; i++) {
+    mm = /^(\s*)color(\s*:\s*)([^]*)$/i.exec(parts[i]);
+    if (!mm) continue;
+    v = mm[3].replace(/\s*!important\s*$/i, '').replace(/\s+/g, '').toLowerCase();
+    c = _aswHx(v);
+    if (!opaque) {
+      if (_ASW_DK.ink[v]) parts[i] = mm[1] + 'color' + mm[2] + _ASW_DK.ink[v];
+      else if (_ASW_DK.mute[v]) parts[i] = mm[1] + 'color' + mm[2] + _ASW_DK.mute[v];
+      else if (c && _aswLum(c) < 0.2) parts[i] = mm[1] + 'color' + mm[2] + 'color-mix(in srgb,' + _aswHex(c) + ' 42%,#fff)';   // deep brand / status hue: lighten
+    } else if (opLum < 0.15 && c && _aswLum(c) < 0.2) {
+      parts[i] = mm[1] + 'color' + mm[2] + 'color-mix(in srgb,' + _aswHex(c) + ' 42%,#fff)';   // dim slate text on a deliberately dark card
+    }
+  }
+  return parts.join(';');
+}
+function _aswDarkLit(h) {
+  return h.replace(/(<style\b[^>]*>)([\s\S]*?)(<\/style>)/g, function (m0, a, css, c) {
+    return a + css.replace(/\{([^{}]*)\}/g, function (m1, d) { return '{' + _aswDarkDecl(d) + '}'; }) + c;
+  }).replace(/(\sstyle=")([^"]*)(")/g, function (m0, a, d, c) { return a + _aswDarkDecl(d) + c; });
+}
+
 /**
  * Main entry point: renders an array of atom blocks to an HTML string.
  *
@@ -77,7 +152,8 @@ function renderAtoms(blocks, opts) {
     }
   }
   
-  return parts.join('\n\n');
+  var _out = parts.join('\n\n');
+  return theme === 'dark' ? _aswDarkLit(_out) : _out;   // DK2: remap light-only literals; light output never passes through it
 }
 
 /**
@@ -3590,7 +3666,7 @@ _RENDERERS['custom_checkbox_group'] = function(b) {
   }).join('');
   return '<style>.ccg' + uid + ' input:focus-visible+label{outline:2px solid #4f46e5;outline-offset:2px;}.ccg' + uid + ' input:checked+label{border-color:#1a73e8;background:#f0f4ff;color:#1a73e8;}.ccg' + uid + ' input:checked+label .box' + uid + '{border-color:#1a73e8;background:#1a73e8;}</style>' +
     '<div class="ccg' + uid + '" style="margin:1rem 0;">' +
-    (label ? '<div style="font-size:0.83rem;font-weight:600;color:#3c4043;margin-bottom:8px;">' + _esc(label) + '</div>' : '') +
+    (label ? '<div style="font-size:0.83rem;font-weight:600;color:var(--a2ui-ink,#3c4043);margin-bottom:8px;">' + _esc(label) + '</div>' : '') +
     '<div style="display:flex;flex-direction:column;gap:6px;">' + items + '</div></div>';
 };
 
@@ -3919,7 +3995,7 @@ _RENDERERS['pdf_preview'] = function(b) {
     : '<div style="width:40px;height:48px;background:#e71414;border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:0.7rem;font-weight:700;flex-shrink:0;">PDF</div>';
 
   var subText = pdfUrl ? 'Click to open PDF' : 'No PDF URL provided';
-  var textHtml = '<div><div style="font-size:0.9rem;font-weight:600;color:#111827;">' + _esc(title) + '</div><div style="font-size:0.75rem;color:var(--muted,#5f6368);margin-top:2px;">' + subText + '</div></div>';
+  var textHtml = '<div><div style="font-size:0.9rem;font-weight:600;color:var(--a2ui-ink,#111827);">' + _esc(title) + '</div><div style="font-size:0.75rem;color:var(--muted,#5f6368);margin-top:2px;">' + subText + '</div></div>';
 
   var key = _ckey(rawPdf, 'pdf_preview');
   var baseStyle = 'display:flex;align-items:center;gap:12px;padding:14px 16px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);text-decoration:none;margin:1rem 0;';
@@ -4008,7 +4084,7 @@ _RENDERERS['empty_state'] = function(b) {
 
   return '<div data-cb="node" data-key="' + key + '" style="text-align:center;padding:40px 24px;color:var(--muted,#5f6368);">' +
     icon_html +
-    '<div style="font-size:1rem;font-weight:700;color:#374151;margin-bottom:6px;">' + _esc(title) + '</div>' +
+    '<div style="font-size:1rem;font-weight:700;color:var(--a2ui-ink,#374151);margin-bottom:6px;">' + _esc(title) + '</div>' +
     (desc ? '<div style=font-size:0.88rem;>' + _md_inline(desc) + '</div>' : '') +
     btn + '</div>';
 };

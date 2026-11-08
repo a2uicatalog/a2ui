@@ -35,14 +35,16 @@
     --surface-2: var(--surface2);
   }
 
-  body.asw-dark-theme {
+  body.asw-dark-theme,
+  :host(.asw-dark-theme),
+  :host([data-theme="dark"]) {
     --bg: #1c1c1e;
     --surface: #2c2c2e;
     --surface2: #3a3a3c;
     --border: #3a3a3c;
     --text: #f2f2f7;
     --muted: #a8a8ad;
-    --accent: #5aa9ff;
+    --accent: #0a84ff;  /* DK2: white on #5aa9ff was 2.46:1 (buttons, badges); iOS dark system blue is 3.7:1 with white and 4.7:1 as text on --bg */
     --accent2: #64d2ff;
     --green: #30d158;
     --red: #ff453a;
@@ -71,7 +73,108 @@
     --a2ui-muted: var(--muted);
     --a2ui-faint: var(--muted);
     --a2ui-shadow: none;
+    /* DK: atoms read var(--a2ui-accent,#4f46e5) (agenda_block, knowledge_check, renderer_stats ...); only the core's dead-in-shadow ':root{--a2ui-accent}' defined it, so dark kept the indigo literal at 2.2-2.9:1. */
+    --a2ui-accent: var(--accent);
+    /* DK: dark-only ink token for atoms that hard-code a dark text literal; the core uses var(--a2ui-ink,#111827) so light (token undefined) stays byte/pixel identical. */
+    --a2ui-ink: var(--text);
+    /* DK2: tokens atoms read with a LIGHT literal fallback (undefined in dark => light surface under light text) */
+    --bg2: var(--surface2);
+    /* journey/editorial atoms (stack_layer, concept_rung ...) read these with the LIGHT palette as fallback: use the core own _JOURNEY_PALETTE_DARK */
+    --paper: #15160F; --paper-raised: #1D1F16; --ink: #EEEAE0; --ink-soft: #ACA997; --line: #34362A;
+    --accent-soft: #3A2F17; --blocked: #DD8862; --blocked-soft: #3B2419; --cleared: #93B382; --cleared-soft: #212F1E;
+    --text-muted: var(--muted);
+    --surface-2: var(--surface2);
   }
+
+  /* DK2: dark overrides generated from this file's own rules (gen_css_dk2.cjs, core _aswDarkDecl); light untouched (scope needs the dark mark) */
+:host(.asw-dark-theme) .a2ui-table-title,
+:host([data-theme="dark"]) .a2ui-table-title,
+body.asw-dark-theme .a2ui-table-title { color: var(--text) !important }
+:host(.asw-dark-theme) .a2ui-data-table tr:hover td,
+:host([data-theme="dark"]) .a2ui-data-table tr:hover td,
+body.asw-dark-theme .a2ui-data-table tr:hover td { background: rgba(59,130,246,0.18) !important }
+:host(.asw-dark-theme) .a2ui-metric-comparison,
+:host([data-theme="dark"]) .a2ui-metric-comparison,
+body.asw-dark-theme .a2ui-metric-comparison { background: var(--surface) !important }
+:host(.asw-dark-theme) .a2ui-metric-cmp-title,
+:host([data-theme="dark"]) .a2ui-metric-cmp-title,
+body.asw-dark-theme .a2ui-metric-cmp-title { color: var(--muted) !important }
+:host(.asw-dark-theme) .a2ui-metric-cmp-val,
+:host([data-theme="dark"]) .a2ui-metric-cmp-val,
+body.asw-dark-theme .a2ui-metric-cmp-val { color: var(--text) !important }
+:host(.asw-dark-theme) .a2ui-metric-unit,
+:host([data-theme="dark"]) .a2ui-metric-unit,
+body.asw-dark-theme .a2ui-metric-unit { color: var(--muted) !important }
+:host(.asw-dark-theme) .a2ui-sparkline-label,
+:host([data-theme="dark"]) .a2ui-sparkline-label,
+body.asw-dark-theme .a2ui-sparkline-label { color: var(--muted) !important }
+:host(.asw-dark-theme) .a2ui-donut-label,
+:host([data-theme="dark"]) .a2ui-donut-label,
+body.asw-dark-theme .a2ui-donut-label { color: var(--muted) !important }
+:host(.asw-dark-theme) .a2ui-cmd-palette,
+:host([data-theme="dark"]) .a2ui-cmd-palette,
+body.asw-dark-theme .a2ui-cmd-palette { background: var(--surface) !important }
+:host(.asw-dark-theme) .a2ui-cmd-input,
+:host([data-theme="dark"]) .a2ui-cmd-input,
+body.asw-dark-theme .a2ui-cmd-input { color: var(--text) !important }
+:host(.asw-dark-theme) .a2ui-cmd-cat,
+:host([data-theme="dark"]) .a2ui-cmd-cat,
+body.asw-dark-theme .a2ui-cmd-cat { background: var(--surface) !important }
+:host(.asw-dark-theme) .a2ui-cmd-item:hover,
+:host([data-theme="dark"]) .a2ui-cmd-item:hover,
+body.asw-dark-theme .a2ui-cmd-item:hover { background: rgba(59,130,246,0.18) !important }
+:host(.asw-dark-theme) .a2ui-cmd-name,
+:host([data-theme="dark"]) .a2ui-cmd-name,
+body.asw-dark-theme .a2ui-cmd-name { color: var(--text) !important }
+:host(.asw-dark-theme) .a2ui-cmd-shortcut,
+:host([data-theme="dark"]) .a2ui-cmd-shortcut,
+body.asw-dark-theme .a2ui-cmd-shortcut { background: var(--surface2) !important; color: var(--text) !important }
+:host(.asw-dark-theme) .a2ui-sr-breadcrumb,
+:host([data-theme="dark"]) .a2ui-sr-breadcrumb,
+body.asw-dark-theme .a2ui-sr-breadcrumb { color: color-mix(in srgb,#1a7f37 42%,#fff) !important }
+:host(.asw-dark-theme) .a2ui-sr-title,
+:host([data-theme="dark"]) .a2ui-sr-title,
+body.asw-dark-theme .a2ui-sr-title { color: color-mix(in srgb,#1a0dab 42%,#fff) !important }
+:host(.asw-dark-theme) .a2ui-sr-date,
+:host([data-theme="dark"]) .a2ui-sr-date,
+body.asw-dark-theme .a2ui-sr-date { color: var(--muted) !important }
+:host(.asw-dark-theme) .a2ui-sr-desc,
+:host([data-theme="dark"]) .a2ui-sr-desc,
+body.asw-dark-theme .a2ui-sr-desc { color: var(--text) !important }
+:host(.asw-dark-theme) .a2ui-sankey-title,
+:host([data-theme="dark"]) .a2ui-sankey-title,
+body.asw-dark-theme .a2ui-sankey-title { color: var(--text) !important }
+:host(.asw-dark-theme) .a2ui-sankey-group,
+:host([data-theme="dark"]) .a2ui-sankey-group,
+body.asw-dark-theme .a2ui-sankey-group { background: var(--surface) !important }
+:host(.asw-dark-theme) .a2ui-sankey-src-hdr,
+:host([data-theme="dark"]) .a2ui-sankey-src-hdr,
+body.asw-dark-theme .a2ui-sankey-src-hdr { color: var(--text) !important }
+:host(.asw-dark-theme) .a2ui-sankey-link,
+:host([data-theme="dark"]) .a2ui-sankey-link,
+body.asw-dark-theme .a2ui-sankey-link { color: var(--text) !important }
+:host(.asw-dark-theme) .a2ui-sankey-from,
+:host([data-theme="dark"]) .a2ui-sankey-from,
+body.asw-dark-theme .a2ui-sankey-from { color: color-mix(in srgb,#6366f1 42%,#fff) !important }
+:host(.asw-dark-theme) .a2ui-sankey-bar-wrap,
+:host([data-theme="dark"]) .a2ui-sankey-bar-wrap,
+body.asw-dark-theme .a2ui-sankey-bar-wrap { background: var(--surface2) !important }
+:host(.asw-dark-theme) .a2ui-cohort-title,
+:host([data-theme="dark"]) .a2ui-cohort-title,
+body.asw-dark-theme .a2ui-cohort-title { color: var(--text) !important }
+:host(.asw-dark-theme) .a2ui-cohort-label,
+:host([data-theme="dark"]) .a2ui-cohort-label,
+body.asw-dark-theme .a2ui-cohort-label { color: var(--text) !important; background: var(--surface) !important }
+:host(.asw-dark-theme) .a2ui-github-grid,
+:host([data-theme="dark"]) .a2ui-github-grid,
+body.asw-dark-theme .a2ui-github-grid { background: var(--surface) !important }
+:host(.asw-dark-theme) .asw-markdown-block blockquote,
+:host([data-theme="dark"]) .asw-markdown-block blockquote,
+body.asw-dark-theme .asw-markdown-block blockquote { color:var(--muted) !important }
+:host(.asw-dark-theme) .asw-markdown-block code,
+:host([data-theme="dark"]) .asw-markdown-block code,
+body.asw-dark-theme .asw-markdown-block code { background:var(--surface2) !important }
+  :host(.asw-dark-theme) .asw-user-avatar, :host([data-theme="dark"]) .asw-user-avatar, body.asw-dark-theme .asw-user-avatar { color: #0b1220 !important }
 
   /* Terminal skin — the catalog brand palette (a2ui-private/spec/brand.md:
      dark-first, monospace, calm). A surface asks for it with theme:"terminal";
@@ -88,7 +191,9 @@
      it, back to the :root light tokens. Scoped to .asw-terminal-theme alone it
      would survive the toggle and "light mode" would still be dark. Specificity
      (0,3,1) also keeps it winning over plain .asw-dark-theme (0,2,1). */
-  body.asw-dark-theme.asw-terminal-theme {
+  body.asw-dark-theme.asw-terminal-theme,
+  :host(.asw-dark-theme.asw-terminal-theme),
+  :host([data-theme="dark"].asw-terminal-theme) {
     --bg: #0a0e17;
     --surface: #111826;
     --surface2: #18202f;
@@ -1000,6 +1105,75 @@ var ALWAYS_ON_PACKS = ["a2ui-atoms-v1"];
  * Google Apps Script Web App Renderer — atom.gs (build: sb-fix)
  * Server-side V8 JavaScript engine for rendering A2UI Atom components.
  */
+var _ASW_DK = (function () {
+function m(s, v) { var o = {}; s.split(' ').forEach(function (k) { o[k] = v; }); return o; }
+function mix() { var o = {}; for (var i = 0; i < arguments.length; i++) for (var k in arguments[i]) o[k] = arguments[i][k]; return o; }
+return {
+bg: mix(
+m('#ffffff #fff #fafafa #f9fafb #f8fafc #f8f9fa #f5f5f5 #fdfdfb #f4f4f4 #f7f7f7 #fcfcfc', 'var(--surface)'),
+m('#f3f4f6 #f1f5f9 #f1f3f4 #eeeeee #eee #e5e7eb #e2e8f0 #ebebeb #e8eaed', 'var(--surface2)'),
+m('#fef2f2 #fee2e2 #fff1f2', 'rgba(239,68,68,0.16)'),
+m('#fffbeb #fef7e0 #fef3c7 #fefce8 #fff7ed #ffedd5', 'rgba(245,158,11,0.16)'),
+m('#f0fdf4 #ecfdf5 #d1fae5 #dcfce7 #e6f4ea', 'rgba(34,197,94,0.16)'),
+m('#eff6ff #f0f9ff #e8f0fe #dbeafe #f0f4ff #e0f2fe #eef2ff #e0e7ff', 'rgba(59,130,246,0.18)'),
+m('#f5f3ff #ede9fe #faf5ff #f3e8ff', 'rgba(139,92,246,0.18)'),
+m('#fef08a #fde68a #fff59d', 'var(--highlight-bg,rgba(255,214,10,0.2))'),
+m('rgba(255,255,255,0.96) rgba(255,255,255,0.95) rgba(255,255,255,0.92) rgba(255,255,255,0.9) rgba(255,255,255,0.85) rgba(255,255,255,.96) rgba(255,255,255,.9)', 'var(--surface)'),
+m('rgba(255,255,255,0.45) rgba(255,255,255,0.5) rgba(255,255,255,0.6) rgba(255,255,255,0.7)', 'rgba(255,255,255,0.14)')),
+ink: m('#111827 #1f2937 #374151 #4b5563 #475569 #334155 #202124 #3c4043 #0f172a #1e293b #141b24 #1b1e1a #5a5a52 #333 #333333 #222 #222222 #444 #444444 #000 #000000 #1a1a1a #111 #1c1c1e #4d5156 #3d3d3d #2d2d2d', 'var(--text)'),
+mute: m('#6b7280 #5f6368 #666 #666666 #64748b #71717a #6e6e73 #777 #777777 #555 #555555 #52525b #70757a', 'var(--muted)'),
+hue: {'#7c3aed': '#a78bfa', '#4f46e5': '#818cf8', '#4338ca': '#818cf8', '#6d28d9': '#a78bfa', '#b91c1c': '#f87171', '#991b1b': '#fca5a5', '#dc2626': '#f87171', '#7f1d1d': '#fca5a5',
+'#2563eb': '#60a5fa', '#1d4ed8': '#93c5fd', '#1e40af': '#93c5fd', '#1e3a8a': '#93c5fd', '#1a73e8': '#8ab4f8', '#e37400': '#fbbf24', '#b45309': '#fbbf24', '#92400e': '#fcd34d',
+'#166534': '#86efac', '#15803d': '#4ade80', '#064e3b': '#6ee7b7', '#065f46': '#6ee7b7', '#0f766e': '#5eead4', '#0369a1': '#7dd3fc', '#c2410c': '#fdba74', '#be123c': '#fda4af'}
+};
+})();
+function _aswHx(v) {
+var m = /^#([0-9a-f])([0-9a-f])([0-9a-f])$/.exec(v);
+if (m) return [parseInt(m[1] + m[1], 16), parseInt(m[2] + m[2], 16), parseInt(m[3] + m[3], 16)];
+m = /^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/.exec(v);
+if (m) return [parseInt(m[1], 16), parseInt(m[2], 16), parseInt(m[3], 16)];
+m = /^rgb\((\d+),(\d+),(\d+)\)$/.exec(v);
+return m ? [+m[1], +m[2], +m[3]] : null;
+}
+function _aswLum(c) {
+var f = function (x) { x /= 255; return x <= 0.03928 ? x / 12.92 : Math.pow((x + 0.055) / 1.055, 2.4); };
+return 0.2126 * f(c[0]) + 0.7152 * f(c[1]) + 0.0722 * f(c[2]);
+}
+function _aswHex(c) { return '#' + c.map(function (x) { return (x < 16 ? '0' : '') + x.toString(16); }).join(''); }
+function _aswDarkDecl(d) {
+if (!/(color|background)\s*:/i.test(d)) return d;
+var parts = d.split(';'), opaque = false, opLum = 1, i, mm, v, c;
+for (i = 0; i < parts.length; i++) {
+mm = /^(\s*)(background(?:-color)?)(\s*:\s*)([^]*)$/i.exec(parts[i]);
+if (!mm) continue;
+v = mm[4].replace(/\s*!important\s*$/i, '').replace(/\s+/g, '').toLowerCase();
+if (_ASW_DK.bg[v]) { parts[i] = mm[1] + mm[2] + mm[3] + _ASW_DK.bg[v]; continue; }
+c = _aswHx(v);
+if (c) {
+if (_aswLum(c) > 0.7) parts[i] = mm[1] + mm[2] + mm[3] + 'color-mix(in srgb,' + _aswHex(c) + ' 16%,var(--surface))';   // any other light surface: keep its hue, sit it on the dark surface
+else { opaque = true; opLum = _aswLum(c); }
+} else if (/^linear-gradient|^radial-gradient/.test(v)) { opaque = true; opLum = 0.5; }
+}
+for (i = 0; i < parts.length; i++) {
+mm = /^(\s*)color(\s*:\s*)([^]*)$/i.exec(parts[i]);
+if (!mm) continue;
+v = mm[3].replace(/\s*!important\s*$/i, '').replace(/\s+/g, '').toLowerCase();
+c = _aswHx(v);
+if (!opaque) {
+if (_ASW_DK.ink[v]) parts[i] = mm[1] + 'color' + mm[2] + _ASW_DK.ink[v];
+else if (_ASW_DK.mute[v]) parts[i] = mm[1] + 'color' + mm[2] + _ASW_DK.mute[v];
+else if (c && _aswLum(c) < 0.2) parts[i] = mm[1] + 'color' + mm[2] + 'color-mix(in srgb,' + _aswHex(c) + ' 42%,#fff)';   // deep brand / status hue: lighten
+} else if (opLum < 0.15 && c && _aswLum(c) < 0.2) {
+parts[i] = mm[1] + 'color' + mm[2] + 'color-mix(in srgb,' + _aswHex(c) + ' 42%,#fff)';   // dim slate text on a deliberately dark card
+}
+}
+return parts.join(';');
+}
+function _aswDarkLit(h) {
+return h.replace(/(<style\b[^>]*>)([\s\S]*?)(<\/style>)/g, function (m0, a, css, c) {
+return a + css.replace(/\{([^{}]*)\}/g, function (m1, d) { return '{' + _aswDarkDecl(d) + '}'; }) + c;
+}).replace(/(\sstyle=")([^"]*)(")/g, function (m0, a, d, c) { return a + _aswDarkDecl(d) + c; });
+}
 /**
  * Main entry point: renders an array of atom blocks to an HTML string.
  *
@@ -1058,7 +1232,8 @@ parts.push('<div class="asw-callout" style="border-left-color:var(--red);">' +
 parts.push('<!-- a2ui: unknown or unsupported atom "' + _esc(btype) + '" -->');
 }
 }
-return parts.join('\n\n');
+var _out = parts.join('\n\n');
+return theme === 'dark' ? _aswDarkLit(_out) : _out;   // DK2: remap light-only literals; light output never passes through it
 }
 /**
  * Apps Script HTML Template include helper.
@@ -4060,7 +4235,7 @@ return '<div><input type="checkbox" id="' + cid + '" name="' + _esc(name) + '" v
 }).join('');
 return '<style>.ccg' + uid + ' input:focus-visible+label{outline:2px solid #4f46e5;outline-offset:2px;}.ccg' + uid + ' input:checked+label{border-color:#1a73e8;background:#f0f4ff;color:#1a73e8;}.ccg' + uid + ' input:checked+label .box' + uid + '{border-color:#1a73e8;background:#1a73e8;}</style>' +
 '<div class="ccg' + uid + '" style="margin:1rem 0;">' +
-(label ? '<div style="font-size:0.83rem;font-weight:600;color:#3c4043;margin-bottom:8px;">' + _esc(label) + '</div>' : '') +
+(label ? '<div style="font-size:0.83rem;font-weight:600;color:var(--a2ui-ink,#3c4043);margin-bottom:8px;">' + _esc(label) + '</div>' : '') +
 '<div style="display:flex;flex-direction:column;gap:6px;">' + items + '</div></div>';
 };
 _RENDERERS['css_slide_panel'] = function(b) {
@@ -4333,7 +4508,7 @@ var mediaHtml = thumbUrl
 ? '<img src="' + _esc(thumbUrl) + '" alt="' + _esc(altText) + '" style="width:40px;height:48px;object-fit:cover;border-radius:4px;flex-shrink:0;" loading="lazy">'
 : '<div style="width:40px;height:48px;background:#e71414;border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:0.7rem;font-weight:700;flex-shrink:0;">PDF</div>';
 var subText = pdfUrl ? 'Click to open PDF' : 'No PDF URL provided';
-var textHtml = '<div><div style="font-size:0.9rem;font-weight:600;color:#111827;">' + _esc(title) + '</div><div style="font-size:0.75rem;color:var(--muted,#5f6368);margin-top:2px;">' + subText + '</div></div>';
+var textHtml = '<div><div style="font-size:0.9rem;font-weight:600;color:var(--a2ui-ink,#111827);">' + _esc(title) + '</div><div style="font-size:0.75rem;color:var(--muted,#5f6368);margin-top:2px;">' + subText + '</div></div>';
 var key = _ckey(rawPdf, 'pdf_preview');
 var baseStyle = 'display:flex;align-items:center;gap:12px;padding:14px 16px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);text-decoration:none;margin:1rem 0;';
 if (pdfUrl) {
@@ -4407,7 +4582,7 @@ _esc(btn_label) + '</a>'
 var key = _ckey ? _ckey(b.title, 'empty_state') : _esc(typeof b.title === 'string' && b.title ? b.title : 'empty_state');
 return '<div data-cb="node" data-key="' + key + '" style="text-align:center;padding:40px 24px;color:var(--muted,#5f6368);">' +
 icon_html +
-'<div style="font-size:1rem;font-weight:700;color:#374151;margin-bottom:6px;">' + _esc(title) + '</div>' +
+'<div style="font-size:1rem;font-weight:700;color:var(--a2ui-ink,#374151);margin-bottom:6px;">' + _esc(title) + '</div>' +
 (desc ? '<div style=font-size:0.88rem;>' + _md_inline(desc) + '</div>' : '') +
 btn + '</div>';
 };
@@ -9554,10 +9729,15 @@ bottomNavHtml + '</div>' +
 'for(var j=0;j<counts[i];j++){if(!(i===cs&&j===cl[i])){var p=g("P"+i+"_"+j);if(p){p.style.background=ps.bg;p.style.color=ps.c;}}}' +
 '}' +
 '}' +
+'var aswS=document.currentScript;' +
+'function aswUp(n){return n.parentElement||(n.getRootNode&&n.getRootNode().host)||null;}' +
+'function aswChain(){var o=[],st=[aswS,window.frameElement],i,n;for(i=0;i<st.length;i++){n=st[i];while(n){o.push(n);n=aswUp(n);}}return o;}' +
+'function aswDark(){try{var c=aswChain();for(var i=0;i<c.length;i++){var e=c[i];if((e.classList&&e.classList.contains("asw-dark-theme"))||(e.getAttribute&&e.getAttribute("data-theme")==="dark"))return true;}}catch(e){}return document.body.classList.contains("asw-dark-theme");}' +
+'function aswWatch(o){var f={attributes:true,attributeFilter:["class","data-theme"]};o.observe(document.body,f);try{var c=aswChain();for(var i=0;i<c.length;i++)if(c[i].nodeType===1&&c[i]!==document.body&&c[i].ownerDocument!==document)o.observe(c[i],f);}catch(e){}}' +
 'var obs=new MutationObserver(function(ms){ms.forEach(function(m){' +
-'if(m.attributeName==="class"){var d=document.body.classList.contains("asw-dark-theme");if(d!==dark)applyTheme(d);}' +
+'if(m.attributeName==="class"||m.attributeName==="data-theme"){var d=aswDark();if(d!==dark)applyTheme(d);}' +
 '});});' +
-'obs.observe(document.body,{attributes:true,attributeFilter:["class"]});' +
+'aswWatch(obs);' +
 'window["' + uid + '"]={' +
 'subj:function(si){' +
 'if(si===cs)return;' +
@@ -9580,7 +9760,7 @@ bottomNavHtml + '</div>' +
 'if(ns)ns.style.display="block";' +
 'window.scrollTo(0,0);' +
 '}};' +
-'applyTheme(document.body.classList.contains("asw-dark-theme"));' +  // sync initial theme on load (auto-dark / saved pref)
+'applyTheme(aswDark());' +  // sync initial theme on load (auto-dark / saved pref)
 '})();<\/script>'
 );
 };
@@ -9703,10 +9883,15 @@ headerHtml +
 'for(var j=0;j<counts[i];j++){if(!(i===cs&&j===cl[i])){var p=g("P"+i+"_"+j);if(p){p.style.background=ps.bg;p.style.color=ps.c;}}}' +
 '}' +
 '}' +
+'var aswS=document.currentScript;' +
+'function aswUp(n){return n.parentElement||(n.getRootNode&&n.getRootNode().host)||null;}' +
+'function aswChain(){var o=[],st=[aswS,window.frameElement],i,n;for(i=0;i<st.length;i++){n=st[i];while(n){o.push(n);n=aswUp(n);}}return o;}' +
+'function aswDark(){try{var c=aswChain();for(var i=0;i<c.length;i++){var e=c[i];if((e.classList&&e.classList.contains("asw-dark-theme"))||(e.getAttribute&&e.getAttribute("data-theme")==="dark"))return true;}}catch(e){}return document.body.classList.contains("asw-dark-theme");}' +
+'function aswWatch(o){var f={attributes:true,attributeFilter:["class","data-theme"]};o.observe(document.body,f);try{var c=aswChain();for(var i=0;i<c.length;i++)if(c[i].nodeType===1&&c[i]!==document.body&&c[i].ownerDocument!==document)o.observe(c[i],f);}catch(e){}}' +
 'var obs=new MutationObserver(function(ms){ms.forEach(function(m){' +
-'if(m.attributeName==="class"){var d=document.body.classList.contains("asw-dark-theme");if(d!==dark)applyTheme(d);}' +
+'if(m.attributeName==="class"||m.attributeName==="data-theme"){var d=aswDark();if(d!==dark)applyTheme(d);}' +
 '});});' +
-'obs.observe(document.body,{attributes:true,attributeFilter:["class"]});' +
+'aswWatch(obs);' +
 'window["' + uid + '"]={' +
 'subj:function(si){' +
 'if(si===cs){var dtl0=g("D"+si);if(dtl0)dtl0.open=true;return;}' +
@@ -9731,7 +9916,7 @@ headerHtml +
 'if(ns)ns.style.display="block";' +
 'window.scrollTo(0,0);' +
 '}};' +
-'applyTheme(document.body.classList.contains("asw-dark-theme"));' +  // sync initial theme on load (auto-dark / saved pref)
+'applyTheme(aswDark());' +  // sync initial theme on load (auto-dark / saved pref)
 '})();<\/script>'
 );
 };
@@ -17781,7 +17966,7 @@ var raw = (Array.isArray(b.items) && b.items.length) ? b.items : b.variants;
 var items = Array.isArray(raw) ? raw.slice(0, 100).filter(function(v) { return (v && typeof v === 'object' && !Array.isArray(v)) || _textLoose(v); }) : [];
 var def = _textLoose(b.default_value);
 var uid = 'vs-' + _payloadUid(b);
-var labelHtml = label ? '<div style="font-size:0.82rem;font-weight:600;color:#374151;margin-bottom:8px;">' + _esc(label) + '</div>' : '';
+var labelHtml = label ? '<div style="font-size:0.82rem;font-weight:600;color:var(--a2ui-ink,#374151);margin-bottom:8px;">' + _esc(label) + '</div>' : '';
 var style = '<style>'
 + '.' + uid + ' label{display:block;padding:10px 14px;border:1px solid #d1d5db;border-radius:8px;cursor:pointer;transition:border-color .15s,background .15s;background:#fff;}'
 + '.' + uid + ' label:has(input:checked){border-color:#1a73e8;background:#eff6ff;}'
@@ -22288,7 +22473,7 @@ rows += '<li style="display:flex;gap:12px;align-items:flex-start;padding:8px 0;b
 '<span style="flex:0 0 22px;height:22px;border-radius:50%;background:' + style.bg + ';color:' + style.fg + ';' +
 'display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.8rem;">' +
 style.mark + '</span>' +
-'<div style="line-height:1.5;"><span style="color:#202124;">' + label + '</span>' +
+'<div style="line-height:1.5;"><span style="color:var(--a2ui-ink,#202124);">' + label + '</span>' +
 noteHtml + '</div></li>';
 }
 var titleHtml = title ? '<div style="font-weight:700;margin-bottom:8px;color:#202124;">' + title + '</div>' : '';
@@ -22420,7 +22605,7 @@ return '<div style="display:flex;gap:16px;margin:1.2rem 0;align-items:flex-start
 '<span style="flex:0 0 28px;height:28px;background:#1a73e8;color:white;border-radius:50%;' +
 'display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.85rem;">' +
 stepNumber + '</span>' +
-'<div style="flex:1;padding-top:3px;"><strong style="color:#202124;">' + title + '</strong>' +
+'<div style="flex:1;padding-top:3px;"><strong style="color:var(--a2ui-ink,#202124);">' + title + '</strong>' +
 '<div style="color:#3c4043;line-height:1.6;margin-top:4px;">' + body + '</div>' + codeHtml + '</div></div>';
 };
 _RENDERERS['stat_inline_badge'] = function(b) {
@@ -23235,8 +23420,12 @@ var _PP_CSS = "\n" +
 ".pp-chat-no{color:var(--text-muted,#5f6368);background:var(--surface,#f1f3f5);}\n" +
 ":root[data-theme=\"dark\"] .pp-chat-yes{color:#7ee2a8;background:#0d2818;}\n" +
 ":root[data-theme=\"dark\"] .pp-chat-partial{color:#e3b341;background:#2b2111;}\n" +
+":host([data-theme=\"dark\"]) .pp-chat-yes{color:#7ee2a8;background:#0d2818;}\n" +
+":host([data-theme=\"dark\"]) .pp-chat-partial{color:#e3b341;background:#2b2111;}\n" +
 "@media (prefers-color-scheme:dark){:root:not([data-theme=\"light\"]) .pp-chat-yes{color:#7ee2a8;background:#0d2818;}\n" +
 ":root:not([data-theme=\"light\"]) .pp-chat-partial{color:#e3b341;background:#2b2111;}}\n" +
+"@media (prefers-color-scheme:dark){:host(:not([data-theme=\"light\"])) .pp-chat-yes{color:#7ee2a8;background:#0d2818;}\n" +
+":host(:not([data-theme=\"light\"])) .pp-chat-partial{color:#e3b341;background:#2b2111;}}\n" +
 ".pp-caption{color:var(--text-muted,#5f6368);max-width:64ch;margin:6px 0 18px;font-size:.94rem;}\n" +
 ".pp-toggles{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;}\n" +
 ".pp-toggles input{position:absolute;opacity:0;width:1px;height:1px;margin:0;}\n" +
@@ -23263,8 +23452,12 @@ var _PP_CSS = "\n" +
 ".pp-badge-client-only{color:#1a7f37;background:#dafbe1;}\n" +
 ":root[data-theme=\"dark\"] .pp-badge-round-trip{color:#fdba74;background:#431407;}\n" +
 ":root[data-theme=\"dark\"] .pp-badge-client-only{color:#7ee2a8;background:#0d2818;}\n" +
+":host([data-theme=\"dark\"]) .pp-badge-round-trip{color:#fdba74;background:#431407;}\n" +
+":host([data-theme=\"dark\"]) .pp-badge-client-only{color:#7ee2a8;background:#0d2818;}\n" +
 "@media (prefers-color-scheme:dark){:root:not([data-theme=\"light\"]) .pp-badge-round-trip{color:#fdba74;background:#431407;}\n" +
 ":root:not([data-theme=\"light\"]) .pp-badge-client-only{color:#7ee2a8;background:#0d2818;}}\n" +
+"@media (prefers-color-scheme:dark){:host(:not([data-theme=\"light\"])) .pp-badge-round-trip{color:#fdba74;background:#431407;}\n" +
+":host(:not([data-theme=\"light\"])) .pp-badge-client-only{color:#7ee2a8;background:#0d2818;}}\n" +
 ".pp-repo{font-family:ui-monospace,monospace;font-size:.72rem;color:var(--text-muted,#5f6368);\n" +
 "  text-decoration:none;border:1px solid var(--border,#e0e0e0);border-radius:999px;padding:2px 10px;\n" +
 "  margin-left:auto;}\n" +

@@ -2711,7 +2711,7 @@ _RENDERERS['variant_selector'] = function(b) {
   var items = Array.isArray(raw) ? raw.slice(0, 100).filter(function(v) { return (v && typeof v === 'object' && !Array.isArray(v)) || _textLoose(v); }) : [];
   var def = _textLoose(b.default_value);
   var uid = 'vs-' + _payloadUid(b);
-  var labelHtml = label ? '<div style="font-size:0.82rem;font-weight:600;color:#374151;margin-bottom:8px;">' + _esc(label) + '</div>' : '';
+  var labelHtml = label ? '<div style="font-size:0.82rem;font-weight:600;color:var(--a2ui-ink,#374151);margin-bottom:8px;">' + _esc(label) + '</div>' : '';
   var style = '<style>'
     + '.' + uid + ' label{display:block;padding:10px 14px;border:1px solid #d1d5db;border-radius:8px;cursor:pointer;transition:border-color .15s,background .15s;background:#fff;}'
     + '.' + uid + ' label:has(input:checked){border-color:#1a73e8;background:#eff6ff;}'
