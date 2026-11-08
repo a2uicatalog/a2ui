@@ -1444,6 +1444,7 @@ var icons = { info: 'ℹ️', success: '✅', warning: '⚠️', critical: '🚨
 icons.error = icons.critical;   // see inline_alert: the two atoms knew
 var colors = { info: 'var(--accent)', success: 'var(--green)', warning: 'var(--orange)', critical: 'var(--red)' };
 colors.error = colors.critical;
+if (!colors[variant]) variant = 'info';   // unknown variant (e.g. "primary") fell through to an undefined icon and colour
 var k = b.variant ? _esc(String(b.variant)) : 'alert_banner';
 return '<div data-cb="node" data-key="' + k + '" class="asw-callout" style="border-left-color:' + colors[variant] + '; background:var(--surface2);">' +
 '<span class="asw-callout-icon">' + (b.icon || icons[variant]) + '</span>' +
@@ -12806,7 +12807,7 @@ return '<style>' +
 'var ch=document.createElement("div");' +
 'ch.className="msp";' +
 'ch.style.color=c;ch.style.borderColor=c+"55";ch.style.background=c+"15";' +
-'ch.textContent=n.label+" "+n.temp;' +
+'ch.textContent=n.label+(n.temp!=null?" "+n.temp:"");' +
 'pool.appendChild(ch);' +
 '});' +
 '})();' +
@@ -21860,7 +21861,7 @@ if (b.delay_ms) delay = parseInt(b.delay_ms, 10);
 else delay = parseFloat(b.delay || 0.4) * 1000;
 var leftItems = beforeItems.map(function(item, i) {
 return '<div id="bas-item-' + uid + '-' + i + '" style="display:flex;align-items:center;gap:8px;padding:7px 0;font-size:0.9rem;color:var(--text);transition:all 0.4s;">'
-+ '<span style="color:var(--muted);font-size:0.75rem;">▸</span>' + _esc(item)
++ '<span style="color:var(--muted);font-size:0.75rem;">▸</span>' + _esc(item && typeof item === 'object' ? (item.label || item.text || item.name || '') : item)
 + '</div>';
 }).join('');
 return '<style>'
@@ -22170,12 +22171,12 @@ return '<div data-cb="node" data-key="' + _ckey(b.label, 'speed_counter') + '" s
 + '</div>'
 + '<script>(function(){'
 + 'var el=document.getElementById("sc-' + uid + '");'
-+ 'var t0=window.performance&&performance.timing?performance.timing.navigationStart:Date.now();'
-+ 'function fmt(ms){var s=ms/1000;return s<60?s.toFixed(2)+"s":Math.floor(s/60)+"m "+Math.round(s%60)+"s";}'
-+ 'var iv=setInterval(function(){el.textContent=fmt(Date.now()-t0);},50);'
++ 'var P=window.performance,t0=Date.now(),el0=P&&P.now?P.now():0;function now(){return P&&P.now?P.now():el0+Date.now()-t0;}'
++ 'function fmt(ms){ms=Math.max(0,ms);var s=ms/1000;return s<60?s.toFixed(2)+"s":Math.floor(s/60)+"m "+Math.round(s%60)+"s";}'
++ 'var iv=setInterval(function(){el.textContent=fmt(now());},50);'
 + 'window.addEventListener("load",function(){'
 + '  clearInterval(iv);'
-+ '  el.textContent=fmt(Date.now()-t0);'
++ '  el.textContent=fmt(now());'
 + '});'
 + '})();<\/script>';
 };

@@ -28068,11 +28068,12 @@ def _render_before_after_stack(b: dict) -> str:
     after_label = _esc(b.get('after_label', 'After'))
     result = _esc(b.get('result', ''))
     accent = _esc(b.get('accent', '#4f46e5'))
-    before_items = [it for it in items if it.get('type') == 'before']
-    after_items = [it for it in items if it.get('type') == 'after']
+    # schema: items is an array of strings (the old-approach items, as the JS renderer reads it); typed {type, text} objects stay accepted
+    before_items = [it for it in items if isinstance(it, str) or it.get('type') == 'before']
+    after_items = [it for it in items if isinstance(it, dict) and it.get('type') == 'after']
     def render_items(lst):
         return ''.join('<div style="padding:6px 0;font-size:0.875rem;color:#374151;">• '
-                       + _esc(it.get('text', '')) + '</div>' for it in lst)
+                       + _esc(it if isinstance(it, str) else it.get('text', '')) + '</div>' for it in lst)
     return ('<div style="margin:1.5rem 0;display:grid;grid-template-columns:1fr 1fr;gap:12px;">'
             '<div style="padding:16px;border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#fee2e2;border:1px solid #fca5a5;">'
             '<div style="font-size:0.75rem;font-weight:700;color:#c82020;margin-bottom:8px;">' + before_label + '</div>'

@@ -386,7 +386,7 @@ _RENDERERS['before_after_stack'] = function(b) {
 
   var leftItems = beforeItems.map(function(item, i) {
     return '<div id="bas-item-' + uid + '-' + i + '" style="display:flex;align-items:center;gap:8px;padding:7px 0;font-size:0.9rem;color:var(--text);transition:all 0.4s;">'
-      + '<span style="color:var(--muted);font-size:0.75rem;">▸</span>' + _esc(item)
+      + '<span style="color:var(--muted);font-size:0.75rem;">▸</span>' + _esc(item && typeof item === 'object' ? (item.label || item.text || item.name || '') : item)
       + '</div>';
   }).join('');
 
@@ -728,12 +728,12 @@ _RENDERERS['speed_counter'] = function(b) {
     + '</div>'
     + '<script>(function(){'
     + 'var el=document.getElementById("sc-' + uid + '");'
-    + 'var t0=window.performance&&performance.timing?performance.timing.navigationStart:Date.now();'
-    + 'function fmt(ms){var s=ms/1000;return s<60?s.toFixed(2)+"s":Math.floor(s/60)+"m "+Math.round(s%60)+"s";}'
-    + 'var iv=setInterval(function(){el.textContent=fmt(Date.now()-t0);},50);'
+    + 'var P=window.performance,t0=Date.now(),el0=P&&P.now?P.now():0;function now(){return P&&P.now?P.now():el0+Date.now()-t0;}'
+    + 'function fmt(ms){ms=Math.max(0,ms);var s=ms/1000;return s<60?s.toFixed(2)+"s":Math.floor(s/60)+"m "+Math.round(s%60)+"s";}'
+    + 'var iv=setInterval(function(){el.textContent=fmt(now());},50);'
     + 'window.addEventListener("load",function(){'
     + '  clearInterval(iv);'
-    + '  el.textContent=fmt(Date.now()-t0);'
+    + '  el.textContent=fmt(now());'
     + '});'
     + '})();<\/script>';
 };

@@ -566,6 +566,7 @@ _RENDERERS['alert_banner'] = function(b) {
                                   // different words for the worst case
   var colors = { info: 'var(--accent)', success: 'var(--green)', warning: 'var(--orange)', critical: 'var(--red)' };
   colors.error = colors.critical;
+  if (!colors[variant]) variant = 'info';   // unknown variant (e.g. "primary") fell through to an undefined icon and colour
   
   var k = b.variant ? _esc(String(b.variant)) : 'alert_banner';
   return '<div data-cb="node" data-key="' + k + '" class="asw-callout" style="border-left-color:' + colors[variant] + '; background:var(--surface2);">' +

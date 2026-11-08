@@ -717,7 +717,7 @@ _RENDERERS['multi_surface'] = function(b) {
           'var ch=document.createElement("div");' +
           'ch.className="msp";' +
           'ch.style.color=c;ch.style.borderColor=c+"55";ch.style.background=c+"15";' +
-          'ch.textContent=n.label+" "+n.temp;' +
+          'ch.textContent=n.label+(n.temp!=null?" "+n.temp:"");' +
           'pool.appendChild(ch);' +
         '});' +
       '})();' +
