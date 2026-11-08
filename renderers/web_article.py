@@ -3776,7 +3776,7 @@ def _render_benchmark_comparison(b: dict) -> str:
     total_h = pad_t + len(items) * (row_h + row_gap) + 20
     chart_w = width - pad_l - pad_r
     title = _c136_txt(b.get('title'))
-    svg = '<svg viewBox="0 0 ' + str(width) + ' ' + str(total_h) + '" width="100%" preserveAspectRatio="xMidYMid meet">'
+    svg = '<svg role="img" aria-label="' + _cv_esc(title or 'Benchmark comparison') + '" viewBox="0 0 ' + str(width) + ' ' + str(total_h) + '" width="100%" preserveAspectRatio="xMidYMid meet">'
     if title:
         svg += '<text x="' + str(width // 2) + '" y="20" text-anchor="middle" font-size="13" font-weight="bold" fill="#1e293b">' + _cv_esc(title) + '</text>'
     for i, d in enumerate(items):

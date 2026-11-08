@@ -205,7 +205,7 @@ _RENDERERS['benchmark_comparison'] = function(b) {
   var totalH = padT + items.length * (rowH + rowGap) + 20;
   var chartW = width - padL - padR;
   var title = _c136Txt(b.title);
-  var svg = '<svg viewBox="0 0 ' + width + ' ' + totalH + '" width="100%" preserveAspectRatio="xMidYMid meet">';
+  var svg = '<svg role="img" aria-label="' + _esc(title || 'Benchmark comparison') + '" viewBox="0 0 ' + width + ' ' + totalH + '" width="100%" preserveAspectRatio="xMidYMid meet">';
   if (title) svg += '<text x="' + Math.floor(width / 2) + '" y="20" text-anchor="middle" font-size="13" font-weight="bold" fill="#1e293b">' + _esc(title) + '</text>';
   items.forEach(function(d, i) {
     var val = vals[i];
