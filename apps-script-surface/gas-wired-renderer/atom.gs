@@ -1828,7 +1828,7 @@ _RENDERERS['steps'] = function(b) {
 };
 
 _RENDERERS['key_value'] = function(b) {
-  var items = b.items || [];
+  var items = b.items || b.pairs || [];   // schema and the curated example use `pairs`
   var title = b.title || '';
   var title_html = title ? '<p style="font-weight:600;margin-bottom:8px;">' + _esc(title) + '</p>' : '';
   var rows = '';

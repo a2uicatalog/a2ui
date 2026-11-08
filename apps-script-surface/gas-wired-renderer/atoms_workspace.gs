@@ -796,8 +796,11 @@ _RENDERERS['jump_nav'] = function(b) {
   var html = '<div style="display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 8px;">';
   links.forEach(function(link) {
     var label  = link.label  || '';
-    var target = link.target || '';
+    var target = link.target || link.id || '';   // the generated example used `url`; an external url becomes a real link, an #anchor a jump target
+    var ext = !target && /^https?:\/\//i.test(link.url || link.href || '') ? (link.url || link.href) : '';
     var lk     = _esc(link.id || link.target || label);
+    if (ext) { html += '<a data-cb="tile" data-key="' + lk + '" href="' + _esc(ext) + '" target="_blank" rel="noopener" style="background:#f1f5f9;border:1px solid #eaeaea;border-radius:6px;padding:6px 14px;font-size:0.8rem;font-weight:600;color:#475569;text-decoration:none;white-space:nowrap;">' + _esc(label) + '</a>'; return; }
+    if (!target) target = String(link.url || link.href || '').replace(/^#/, '');
     html += '<button data-cb="tile" data-key="' + lk + '" onclick="(function(){var el=document.getElementById(\'a2ui-' + _esc(target) + '\');if(el)el.scrollIntoView({behavior:\'smooth\',block:\'start\'});})()"'
           + ' style="background:#f1f5f9;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);padding:6px 14px;font-size:0.8rem;font-weight:600;color:#475569;cursor:pointer;white-space:nowrap;transition:background 0.15s;"'
           + ' onmouseover="this.style.background=\'#e2e8f0\'" onmouseout="this.style.background=\'#f1f5f9\'">'
