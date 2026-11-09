@@ -802,7 +802,7 @@ _RENDERERS['jump_nav'] = function(b) {
     if (ext) { html += '<a data-cb="tile" data-key="' + lk + '" href="' + _esc(ext) + '" target="_blank" rel="noopener" style="background:#f1f5f9;border:1px solid #eaeaea;border-radius:6px;padding:6px 14px;font-size:0.8rem;font-weight:600;color:#475569;text-decoration:none;white-space:nowrap;">' + _esc(label) + '</a>'; return; }
     if (!target) target = String(link.url || link.href || '').replace(/^#/, '');
     html += '<button data-cb="tile" data-key="' + lk + '" onclick="(function(){var el=document.getElementById(\'a2ui-' + _esc(target) + '\');if(el)el.scrollIntoView({behavior:\'smooth\',block:\'start\'});})()"'
-          + ' style="background:#f1f5f9;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);padding:6px 14px;font-size:0.8rem;font-weight:600;color:#475569;cursor:pointer;white-space:nowrap;transition:background 0.15s;"'
+          + ' style="background:#f1f5f9;border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);padding:6px 14px;font-size:0.8rem;font-weight:600;color:#475569;cursor:pointer;white-space:nowrap;transition:background 0.15s;"'
           + ' onmouseover="this.style.background=\'#e2e8f0\'" onmouseout="this.style.background=\'#f1f5f9\'">'
           + _esc(label)
           + '</button>';
@@ -824,7 +824,7 @@ _RENDERERS['command_step'] = function(b) {
 
   return '<div data-cb="node" data-key="' + _ckey(b.command, 'command_step') + '" style="font-family:system-ui,sans-serif;margin:8px 0;">' +
     (label ? '<div style="font-size:0.82rem;font-weight:600;color:#475569;margin-bottom:6px;">' + _esc(label) + '</div>' : '') +
-    '<div style="display:flex;align-items:stretch;border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);opacity:' + cmdOpacity + ';">' +
+    '<div style="display:flex;align-items:stretch;border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);opacity:' + cmdOpacity + ';">' +
       '<div style="flex:1;background:#0f172a;padding:12px 16px;font-family:ui-monospace,monospace;font-size:0.88rem;color:#e2e8f0;white-space:pre-wrap;word-break:break-all;">' +
         '<span style="color:#64748b;user-select:none;">$ </span>' + _esc(cmd) +
       '</div>' +

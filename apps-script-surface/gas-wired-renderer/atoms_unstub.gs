@@ -267,7 +267,7 @@ _RENDERERS['contributor_list'] = function(b) {
     return '<div role="listitem">' + rowHtml + '</div>';
   }).join('');
 
-  return '<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);' +
+  return '<div style="border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);' +
     'border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:10px;margin:1.5rem 0;">' +
     '<div style="font-weight:700;padding:4px 8px;margin-bottom:6px;">' + _esc(titleText) + '</div>' +
     '<div role="list" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:4px;">' +

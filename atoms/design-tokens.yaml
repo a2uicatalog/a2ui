@@ -15,7 +15,7 @@
 # named preset AND the baseline every report atom falls back to; setting
 # preset:"modern" explicitly is now a no-op kept only for payloads that already
 # did. Fallbacks live at the use site (they differ per surface, and dark-theme-
-# chained ones — e.g. var(--a2ui-border,var(--border,...))) are left on the
+# chained ones — e.g. var(--asw-border,var(--border,...))) are left on the
 # page's own theme var, never overwritten); NAMES, palette FIELDS, presets and
 # the value whitelist live here. Order below = emission order.
 tokens:
@@ -29,6 +29,13 @@ tokens:
   - { name: muted,          field: muted_color }
   - { name: faint,          field: faint_color }
   - { name: shadow,         field: shadow }
+
+# Token -> custom-property name where the default --a2ui-<token> collides with the official
+# A2UI default theme (@a2ui/web_core styles/default.js defines --a2ui-border as a border
+# SHORTHAND "1px solid ...", ours is a colour). Checked by tests/test_official_token_clash.py
+# against atoms/official_a2ui_tokens.json (refresh: scripts/gen_official_a2ui_tokens.py).
+css_var_rename:
+  border: asw-border
 
 presets:
   # Geist/shadcn-style: hairline neutral borders, larger radius, soft elevation.

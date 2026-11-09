@@ -1005,7 +1005,7 @@ def _render_actual_vs_estimate(b: dict) -> str:
     cap = ('<div style="padding:0 16px 14px;color:#5a5a52;font-size:.9rem;">%s</div>'
            % _esc(str(b["caption"]))) if b.get("caption") else ""
     k = _esc(str(b['label'])) if b.get('label') else 'actual_vs_estimate'
-    return ('<div data-cb="node" data-key="%s" style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#ffffff;background:var(--a2ui-surface,#ffffff);'
+    return ('<div data-cb="node" data-key="%s" style="border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#ffffff;background:var(--a2ui-surface,#ffffff);'
             'margin:1.5rem 0;overflow:hidden;">%s'
             '<div style="display:flex;flex-wrap:wrap;">%s</div>%s</div>'
             % (k, head, tiles, cap))
@@ -1439,7 +1439,7 @@ def _render_css_modal(b: dict) -> str:
     return (f'<div style="margin:1rem 0;">'
             f'<button style="padding:8px 16px;background:#7c3aed;color:#fff;border:none;border-radius:6px;'
             f'font-size:0.85rem;cursor:pointer;">{_cv_esc(trigger)}</button>'
-            f'<div style="margin-top:8px;padding:16px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);'
+            f'<div style="margin-top:8px;padding:16px;border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);'
             f'background:#ffffff;background:var(--a2ui-surface,#ffffff);box-shadow:0 4px 12px rgba(0,0,0,0.08);font-size:0.85rem;">{content}</div>'
             f'</div>')
 
@@ -1589,7 +1589,7 @@ def _render_loading_skeleton(b: dict) -> str:
     label = b.get("label", b.get("title", b.get("name", "")))
     text  = b.get("text", b.get("content", b.get("value", "")))
     inner = (f"<strong>{_cv_esc(label)}</strong><br/>" if label else "") + (f"{_cv_esc(text)}" if text else f"<em style='color:#6b7280;'>[ loading_skeleton ]</em>")
-    return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);">{inner}</div>'
+    return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);">{inner}</div>'
 
 def _render_empty_state(b: dict) -> str:
     """TODO: A UI pattern displayed when there is no data to show, often with an image, messa"""
@@ -2000,7 +2000,7 @@ def _render_split_pane(b: dict) -> str:
     left_inner  = "".join(_RENDERERS.get(bl.get("type",""), _render_unknown)(bl) for bl in (left.get("blocks")  or []))
     right_inner = "".join(_RENDERERS.get(bl.get("type",""), _render_unknown)(bl) for bl in (right.get("blocks") or []))
     return (
-        f'<div style="display:grid;grid-template-columns:1fr 1fr;border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);margin:1.5rem 0;">'
+        f'<div style="display:grid;grid-template-columns:1fr 1fr;border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);margin:1.5rem 0;">'
         f'<div style="background:{_cv_esc(left_bg)};padding:24px;">{left_inner}</div>'
         f'<div style="background:{_cv_esc(right_bg)};padding:24px;border-left:1px solid #e5e7eb;">{right_inner}</div>'
         f'</div>'
@@ -2068,7 +2068,7 @@ def _render_two_tone_card(b: dict) -> str:
     sub_col   = "#94a3b8" if dark else "rgba(255,255,255,0.8)"
     inner     = "".join(_RENDERERS.get(bl.get("type",""), _render_unknown)(bl) for bl in (b.get("blocks") or b.get("content") or []))
     return (
-        f'<div style="border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);margin:1rem 0;">'
+        f'<div style="border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);margin:1rem 0;">'
         f'<div style="background:{_cv_esc(header_bg)};padding:20px 24px;">'
         + (f'<span style="font-size:24px;margin-bottom:8px;display:block;">{_cv_esc(b["icon"])}</span>' if b.get("icon") else "")
         + f'<div style="font-size:18px;font-weight:800;color:#fff;margin-bottom:4px;">{_cv_esc(b.get("title",""))}</div>'
@@ -2104,7 +2104,7 @@ def _render_metric_row(b: dict) -> str:
             + (f'<div style="font-size:11px;color:var(--muted,#5f6368);margin-top:2px;">{_cv_esc(m["sub"])}</div>' if m.get("sub") else "")
             + '</div>'
         )
-    return f'<div style="display:grid;grid-template-columns:repeat({cols},1fr);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1.5rem 0;background:#ffffff;background:var(--a2ui-surface,#ffffff);">{cells}</div>'
+    return f'<div style="display:grid;grid-template-columns:repeat({cols},1fr);border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1.5rem 0;background:#ffffff;background:var(--a2ui-surface,#ffffff);">{cells}</div>'
 
 
 def _render_numbered_list(b: dict) -> str:
@@ -2302,7 +2302,7 @@ def _render_person_card(b: dict) -> str:
     if b.get("linkedin"): links_html += f'<a href="{_cv_esc(b["linkedin"])}" style="color:{_cv_esc(accent)};font-size:12px;text-decoration:none;margin-left:10px;">in LinkedIn</a>'
     bio_html = f'<div style="font-size:13px;color:#374151;line-height:1.5;margin-bottom:8px;">{_md_inline(b["bio"])}</div>' if b.get("bio") else ""
     return (
-        f'<div data-cb="node" data-key="{_ck(b.get("name"), "person_card")}" style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:20px;display:flex;gap:16px;align-items:flex-start;margin:0.5rem 0;background:#ffffff;background:var(--a2ui-surface,#ffffff);">'
+        f'<div data-cb="node" data-key="{_ck(b.get("name"), "person_card")}" style="border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:20px;display:flex;gap:16px;align-items:flex-start;margin:0.5rem 0;background:#ffffff;background:var(--a2ui-surface,#ffffff);">'
         f'<div style="flex:0 0 56px;height:56px;border-radius:50%;background:{_cv_esc(accent)};display:flex;align-items:center;justify-content:center;overflow:hidden;">{avatar}</div>'
         f'<div style="flex:1;min-width:0;">'
         f'<div style="font-size:16px;font-weight:700;color:#111827;margin-bottom:2px;">{_cv_esc(name)}</div>'
@@ -2465,7 +2465,7 @@ def _render_product_spec_table(b: dict) -> str:
                  f'{_esc(s.get("value",""))}{note_html}</td></tr>')
     title_html = (f'<div style="font-size:15px;font-weight:700;color:#111827;background:#f9fafb;'
                   f'padding:12px 16px;border-bottom:1px solid #e5e7eb;">{product_name}</div>') if product_name else ""
-    return (f'<div style="margin:1rem 0;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);'
+    return (f'<div style="margin:1rem 0;border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);'
             f'border-radius:10px;border-radius:var(--a2ui-radius,10px);overflow:hidden;">'
             f'{title_html}<table style="width:100%;border-collapse:collapse;font-size:14px;">'
             f'<tbody>{rows}</tbody></table></div>')
@@ -2618,7 +2618,7 @@ def _render_flip_card(b: dict) -> str:
             f'<div style="padding:12px;border:2px solid #7c3aed;border-radius:8px;background:#faf5ff;">'
             f'<div style="font-size:0.7rem;font-weight:600;color:#7c3aed;margin-bottom:6px;text-transform:uppercase;">Front</div>'
             f'{front}</div>'
-            f'<div style="padding:12px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);">'
+            f'<div style="padding:12px;border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);">'
             f'<div style="font-size:0.7rem;font-weight:600;color:var(--muted,#5f6368);margin-bottom:6px;text-transform:uppercase;">Back (flipped)</div>'
             f'{back}</div>'
             f'</div>')
@@ -2727,7 +2727,7 @@ def _render_segmented_control(b: dict) -> str:
     ) if label else ""
     return (
         f'{style}<div style="margin:1rem 0;">{label_html}'
-        f'<div class="sgc{uid}" style="display:inline-flex;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);'
+        f'<div class="sgc{uid}" style="display:inline-flex;border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);'
         f'border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;background:#ffffff;background:var(--a2ui-surface,#ffffff);">{items_html}</div></div>'
     )
 
@@ -2801,7 +2801,7 @@ def _render_custom_checkbox_group(b: dict) -> str:
         )
 
     label_html = (
-        f'<div style="font-size:0.83rem;font-weight:600;color:#3c4043;margin-bottom:8px;">{_cv_esc(label)}</div>'
+        f'<div style="font-size:0.83rem;font-weight:600;color:var(--a2ui-ink,#3c4043);margin-bottom:8px;">{_cv_esc(label)}</div>'
     ) if label else ""
     return (
         f'{style}<div class="ccg{uid}" style="margin:1rem 0;">'
@@ -2817,7 +2817,7 @@ def _render_css_slide_panel(b: dict) -> str:
     return (f'<div style="margin:1rem 0;display:flex;gap:12px;align-items:flex-start;">'
             f'<button style="padding:8px 14px;background:#374151;color:#fff;border:none;border-radius:6px;'
             f'font-size:0.82rem;cursor:pointer;white-space:nowrap;">{_cv_esc(trigger)} →</button>'
-            f'<div style="flex:1;padding:12px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#ffffff;background:var(--a2ui-surface,#ffffff);'
+            f'<div style="flex:1;padding:12px;border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#ffffff;background:var(--a2ui-surface,#ffffff);'
             f'border-left:3px solid #374151;font-size:0.85rem;">{content}</div>'
             f'</div>')
 
@@ -2848,7 +2848,7 @@ def _render_testimonial_card(b: dict) -> str:
     ) if author_name else ""
 
     return (
-        f'<div data-cb="node" data-key="{_ck(b.get("author_name"), "testimonial_card")}" style="margin:1rem 0;background:#ffffff;background:var(--a2ui-surface,#ffffff);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);'
+        f'<div data-cb="node" data-key="{_ck(b.get("author_name"), "testimonial_card")}" style="margin:1rem 0;background:#ffffff;background:var(--a2ui-surface,#ffffff);border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);'
         f'border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:20px 22px;">'
         f'{stars_html}'
         f'<blockquote style="margin:0 0 16px;font-size:0.93rem;color:#374151;'
@@ -3006,7 +3006,7 @@ def _render_tabbed_code(b: dict) -> str:
         for i, t in enumerate(tabs)
     )
     return (
-        f'<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1.2rem 0;">'
+        f'<div style="border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1.2rem 0;">'
         f'<div style="display:flex;background:#f9fafb;border-bottom:1px solid #e5e7eb;gap:0;">{labels}</div>'
         f'{panels}</div>'
     )
@@ -3029,7 +3029,7 @@ def _render_http_request_block(b: dict) -> str:
         f'font-size:0.78rem;overflow:auto;color:#374151;">{_cv_esc(body)}</pre>'
     ) if body else ""
     return (
-        f'<div data-cb="node" data-key="{_ck(b.get("url"), "http_request_block")}" style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1.2rem 0;">'
+        f'<div data-cb="node" data-key="{_ck(b.get("url"), "http_request_block")}" style="border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1.2rem 0;">'
         f'<div style="padding:10px 16px;display:flex;align-items:center;gap:10px;background:#f9fafb;">'
         f'<span style="background:{color};color:#fff;font-weight:700;font-size:0.75rem;'
         f'padding:3px 10px;border-radius:5px;font-family:monospace;">{_cv_esc(method)}</span>'
@@ -3756,7 +3756,7 @@ def _render_live_demo_embed(b: dict) -> str:
     safe_label = _h.escape(label)
     safe_title = _h.escape(title)
     return (
-        f'<div style="margin:1.5rem 0;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.06);">'
+        f'<div style="margin:1.5rem 0;border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.06);">'
         f'<div style="padding:8px 14px;background:#f8fafc;border-bottom:1px solid #e5e7eb;display:flex;align-items:center;justify-content:space-between;">'
         f'<span style="font-size:12px;color:var(--muted,#5f6368);font-family:monospace;">{safe_url}</span>'
         f'<a href="{safe_url}" target="_blank" rel="noopener" style="font-size:12px;color:#4f46e5;text-decoration:none;white-space:nowrap;">{safe_label}</a>'
@@ -4759,13 +4759,13 @@ def _render_status_dashboard(b: dict) -> str:
             rows.append((m.get("label", ""), "", None, str(m.get("value", "")),
                          str(m.get("color", "#94a3b8"))))
     if not rows:
-        return ('<div style="margin:1rem 0;padding:12px;border:1px solid var(--a2ui-border,#eaeaea);box-shadow:var(--a2ui-shadow,0 1px 2px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04));'
+        return ('<div style="margin:1rem 0;padding:12px;border:1px solid var(--asw-border,#eaeaea);box-shadow:var(--a2ui-shadow,0 1px 2px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04));'
                 'border-radius:var(--a2ui-radius,12px);color:var(--a2ui-muted,#666666);font-size:.85rem;">No status items provided.</div>')
     keys = {r[2] for r in rows if r[2]}
     overall = next((k for k in ("outage", "degraded", "maintenance") if k in keys), "operational")
     title = b.get("title", "System Status")
     esc = lambda v: _h.escape(str(v))
-    out = [f'<div style="margin:1rem 0;border:1px solid var(--a2ui-border,#eaeaea);box-shadow:var(--a2ui-shadow,0 1px 2px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04));border-radius:var(--a2ui-radius,12px);overflow:hidden;background:var(--a2ui-surface,#ffffff);">',
+    out = [f'<div style="margin:1rem 0;border:1px solid var(--asw-border,#eaeaea);box-shadow:var(--a2ui-shadow,0 1px 2px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04));border-radius:var(--a2ui-radius,12px);overflow:hidden;background:var(--a2ui-surface,#ffffff);">',
            f'<div style="display:flex;align-items:center;gap:10px;padding:14px 16px;background:{COLORS[overall]};color:#fff;">'
            f'<span style="width:10px;height:10px;border-radius:50%;background:var(--a2ui-surface,#ffffff);opacity:.9;flex-shrink:0;"></span>'
            f'<div>' + (f'<div style="font-weight:700;font-size:.95rem;">{esc(title)}</div>' if title else "") +
@@ -4827,7 +4827,7 @@ def _render_uptime_timeline(b: dict) -> str:
                 + _cv_esc(day_title(d, i)) + '</title></rect>')
         x += block_w
     if not days:
-        svg += '<rect x="' + str(pad_l) + '" y="' + str(pad_t) + '" width="' + str(svg_w) + '" height="' + str(block_h) + '" rx="3" style="fill:var(--a2ui-border,#eaeaea)"/>'
+        svg += '<rect x="' + str(pad_l) + '" y="' + str(pad_t) + '" width="' + str(svg_w) + '" height="' + str(block_h) + '" rx="3" style="fill:var(--asw-border,#eaeaea)"/>'
     bx = width - pad_r + 4
     if pct is not None:
         badge = '#22c55e' if pct >= 99 else ('#f59e0b' if pct >= 95 else '#ef4444')
@@ -4923,7 +4923,7 @@ def _render_search_result_card(b: dict) -> str:
 
     return (
         f'<div data-cb="node" data-key="{_ck(b.get("url"), "search_result_card")}" '
-        f'style="margin:1rem 0;padding:12px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);">'
+        f'style="margin:1rem 0;padding:12px;border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);">'
         f'{meta_row}{title_html}{desc_html}</div>'
     )
 
@@ -6521,7 +6521,7 @@ def _render_form(b: dict) -> str:
     fields_html = "".join(_form_field_html(f) for f in fields)
 
     cancel_btn = (
-        f'<button type="button" style="padding:9px 20px;border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);'
+        f'<button type="button" style="padding:9px 20px;border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);'
         f'background:#ffffff;background:var(--a2ui-surface,#ffffff);color:#3c4043;font-size:0.88rem;font-weight:500;cursor:pointer;">'
         f'{_cv_esc(cancel_label)}</button>'
     ) if cancel_label else ""
@@ -6555,7 +6555,7 @@ def _render_form_input(b: dict) -> str:
         f'<label for="{_cv_esc(name)}" style="display:block;font-size:0.83rem;font-weight:600;'
         f'color:#3c4043;margin-bottom:5px;">{_cv_esc(label)}{req_star}</label>'
         f'<input id="{_cv_esc(name)}" type="{_cv_esc(ftype)}" name="{_cv_esc(name)}" placeholder="{_cv_esc(placeholder)}" '
-        f'value="{_cv_esc(value)}" style="width:100%;padding:9px 12px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);'
+        f'value="{_cv_esc(value)}" style="width:100%;padding:9px 12px;border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);'
         f'border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);font-size:0.9rem;color:#3c4043;box-sizing:border-box;" '
         f'{"required" if required else ""}>'
         f'</div>'
@@ -6579,7 +6579,7 @@ def _render_form_select(b: dict) -> str:
         f'<label for="{_cv_esc(name)}" style="display:block;font-size:0.83rem;font-weight:600;'
         f'color:#3c4043;margin-bottom:5px;">{_cv_esc(label)}{req_star}</label>'
         f'<select id="{_cv_esc(name)}" name="{_cv_esc(name)}" style="width:100%;padding:9px 12px;'
-        f'border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);font-size:0.9rem;color:#3c4043;'
+        f'border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);font-size:0.9rem;color:#3c4043;'
         f'background:#ffffff;background:var(--a2ui-surface,#ffffff);box-sizing:border-box;" {"required" if required else ""}>'
         f'{opts}</select>'
         f'</div>'
@@ -6602,7 +6602,7 @@ def _render_form_radio_group(b: dict) -> str:
         desc_html = f'<span style="font-size:0.78rem;color:#5f6368;margin-top:1px;">{_cv_esc(desc)}</span>' if desc else ""
         items_html += (
             f'<label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;'
-            f'padding:10px 12px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#ffffff;background:var(--a2ui-surface,#ffffff);">'
+            f'padding:10px 12px;border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#ffffff;background:var(--a2ui-surface,#ffffff);">'
             f'<input type="radio" name="{_cv_esc(name)}" value="{_cv_esc(val)}" {checked} '
             f'style="margin-top:3px;accent-color:#1a73e8;flex-shrink:0;">'
             f'<span style="display:flex;flex-direction:column;">'
@@ -6633,7 +6633,7 @@ def _render_form_checkbox_group(b: dict) -> str:
         desc_html = f'<span style="font-size:0.78rem;color:#5f6368;margin-top:1px;">{_cv_esc(desc)}</span>' if desc else ""
         items_html += (
             f'<label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;'
-            f'padding:10px 12px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#ffffff;background:var(--a2ui-surface,#ffffff);">'
+            f'padding:10px 12px;border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#ffffff;background:var(--a2ui-surface,#ffffff);">'
             f'<input type="checkbox" name="{_cv_esc(name)}[{_cv_esc(oname)}]" {checked} '
             f'style="margin-top:3px;accent-color:#1a73e8;flex-shrink:0;">'
             f'<span style="display:flex;flex-direction:column;">'
@@ -6694,7 +6694,7 @@ def _render_form_switch_group(b: dict) -> str:
         if label else ""
     )
     return (
-        f'<div style="margin:1rem 0;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;background:#ffffff;background:var(--a2ui-surface,#ffffff);">'
+        f'<div style="margin:1rem 0;border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;background:#ffffff;background:var(--a2ui-surface,#ffffff);">'
         f'{header}'
         f'{rows}'
         f'</div>'
@@ -6760,7 +6760,7 @@ def _render_form_date_picker(b: dict) -> str:
             f'<div style="flex:1;">'
             f'<label style="display:block;font-size:0.75rem;color:#5f6368;margin-bottom:3px;">From</label>'
             f'<input type="date" aria-label="{_cv_esc((label + " ") if label else "")}From" name="{_cv_esc(name)}_from" min="{_cv_esc(mn)}" max="{_cv_esc(mx)}" '
-            f'style="width:100%;padding:9px 12px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);'
+            f'style="width:100%;padding:9px 12px;border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);'
             f'font-size:0.88rem;color:#3c4043;box-sizing:border-box;"></div>'
             f'<div style="flex:1;">'
             f'<label style="display:block;font-size:0.75rem;color:#5f6368;margin-bottom:3px;">To</label>'
@@ -7554,7 +7554,7 @@ def _render_prompt_template(b: dict) -> str:
     label_html = ('<div style="font-size:0.72rem;font-weight:600;color:var(--muted,#5f6368);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;">'
                   + _cv_esc(label) + '</div>') if label else ''
     copy_btn = ('<button type="button" onclick="navigator.clipboard.writeText(document.getElementById(\'' + pid + '-src\').innerText)" '
-                'style="padding:4px 10px;border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);'
+                'style="padding:4px 10px;border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);'
                 'background:#ffffff;background:var(--a2ui-surface,#ffffff);font-size:0.75rem;color:#5f6368;cursor:pointer;flex-shrink:0;">Copy</button>') if copyable else ''
     use_html = ('<span style="font-size:0.72rem;color:var(--muted,#5f6368);">' + _cv_esc(use_case) + '</span>') if use_case else ''
     right = ('<span style="display:flex;align-items:center;gap:10px;">' + use_html + copy_btn + '</span>') if (use_html and copy_btn) else (use_html + copy_btn)
@@ -7644,7 +7644,7 @@ def _render_model_card(b: dict) -> str:
     ) if badges else ""
 
     return (
-        f'<div data-cb="node" data-key="{_ck(b.get("name"), "model_card")}" style="margin:1rem 0;padding:16px 18px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);'
+        f'<div data-cb="node" data-key="{_ck(b.get("name"), "model_card")}" style="margin:1rem 0;padding:16px 18px;border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);'
         f'border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#ffffff;background:var(--a2ui-surface,#ffffff);">'
         f'{provider_html}'
         f'<div style="font-size:1.1rem;font-weight:700;color:#111827;margin-top:2px;">{_cv_esc(name)}</div>'
@@ -7699,7 +7699,7 @@ def _render_shortcut_legend(b: dict) -> str:
         action = item.get("action", "")
         kbd_html = "".join(
             f'<kbd style="display:inline-block;padding:2px 7px;border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);'
-            f'border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);font-family:monospace;'
+            f'border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);font-family:monospace;'
             f'font-size:0.78rem;color:#374151;box-shadow:0 1px 0 #d1d5db;">{_cv_esc(k)}</kbd>'
             for k in keys
         )
@@ -7753,7 +7753,7 @@ def _render_rating_summary_bar(b: dict) -> str:
         )
 
     return (
-        f'<div style="margin:1rem 0;padding:16px 18px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);'
+        f'<div style="margin:1rem 0;padding:16px 18px;border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);'
         f'border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#ffffff;background:var(--a2ui-surface,#ffffff);">'
         f'{header}'
         f'<div style="display:flex;flex-direction:column;gap:6px;">{bars}</div>'
@@ -7805,7 +7805,7 @@ def _render_roadmap_card(b: dict) -> str:
         cols += ('<div style="flex:1;min-width:120px;">'
                  + ('<div style="font-size:0.72rem;font-weight:700;color:var(--muted,#5f6368);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">' + _cv_esc(label) + '</div>' if label else '')
                  + item_rows + '</div>')
-    return ('<div style="margin:1rem 0;padding:16px 18px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);'
+    return ('<div style="margin:1rem 0;padding:16px 18px;border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);'
             'border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#ffffff;background:var(--a2ui-surface,#ffffff);">'
             + title_html + desc_html
             + '<div style="display:flex;gap:16px;flex-wrap:wrap;">' + cols + '</div></div>')
@@ -7970,7 +7970,7 @@ def _render_source_citation(b: dict) -> str:
         note_el = f'<div style="font-size:0.75rem;color:#4b5563;margin-top:4px;background:#f3f4f6;padding:4px 8px;border-radius:4px;">{_cv_esc(note)}</div>' if note else ''
 
         cards.append(
-            f'<li style="display:flex;gap:10px;padding:8px 10px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);">'
+            f'<li style="display:flex;gap:10px;padding:8px 10px;border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);">'
             f'<span style="font-size:0.72rem;font-weight:700;color:#fff;background:#6b7280;border-radius:3px;padding:1px 5px;flex-shrink:0;align-self:flex-start;margin-top:1px;"><span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;">Source </span>[{_cv_esc(num)}]</span>'
             f'<div style="flex:1;min-width:0;">{title_el}{excerpt_el}{meta_el}{publisher_el}{note_el}</div>'
             f'</li>'
@@ -8363,7 +8363,7 @@ def _render_variant_selector(b: dict) -> str:
     items = [v for v in raw[:100] if isinstance(v, dict) or _text_loose(v)] if isinstance(raw, list) else []
     default = _text_loose(b.get('default_value'))
     uid = 'vs-' + _wa_uid(b)
-    label_html = ('<div style="font-size:0.82rem;font-weight:600;color:#374151;margin-bottom:8px;">' + _cv_esc(label) + '</div>') if label else ''
+    label_html = ('<div style="font-size:0.82rem;font-weight:600;color:var(--a2ui-ink,#374151);margin-bottom:8px;">' + _cv_esc(label) + '</div>') if label else ''
     style = ('<style>'
              '.' + uid + ' label{display:block;padding:10px 14px;border:1px solid #d1d5db;border-radius:8px;cursor:pointer;transition:border-color .15s,background .15s;background:#fff;}'
              '.' + uid + ' label:has(input:checked){border-color:#1a73e8;background:#eff6ff;}'
@@ -11187,7 +11187,7 @@ def _render_linkedin_post_image(b: dict) -> str:
             f'text-align:center;border-top:1px solid #e0e0e0;background:#f8f9fa;">{_cv_esc(caption)}</div>'
         ) if caption else ""
         return (
-            f'<div style="aspect-ratio:1.91/1;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);'
+            f'<div style="aspect-ratio:1.91/1;border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);'
             f'overflow:hidden;display:flex;flex-direction:column;margin:1.5rem 0;'
             f'box-shadow:0 2px 8px rgba(0,0,0,0.08);">'
             f'<div style="flex:1;display:flex;overflow:hidden;">'
@@ -13292,7 +13292,7 @@ def _render_accordion_item(b: dict) -> str:
     label = b.get('label') or b.get('title') or b.get('header') or ''
     text = b.get('text') or b.get('content') or b.get('body', '')
     k = _esc(str(b['header'])) if b.get('header') else 'accordion_item'
-    return (f'<details data-cb="node" data-key="{k}" style="margin:0.5rem 0;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;">'
+    return (f'<details data-cb="node" data-key="{k}" style="margin:0.5rem 0;border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;">'
             f'<summary style="padding:10px 14px;background:#f9fafb;font-weight:600;font-size:0.85rem;'
             f'color:#374151;cursor:pointer;list-style:none;"{"" if label else " aria-label=" + chr(34) + "Details" + chr(34)}><span aria-hidden="true">▶</span> {_esc(label)}</summary>'
             f'<div style="padding:12px 14px;font-size:0.85rem;">{_md_inline(text)}</div></details>')
@@ -13422,7 +13422,7 @@ def _render_anchor_list(b: dict) -> str:
             text = item.get('text') or item.get('label', '')
             href = item.get('url', '#')
         rows += f'<li style="margin:4px 0;"><a href="{_esc(href)}" style="color:#7c3aed;text-decoration:none;font-size:0.88rem;">→ {_esc(text)}</a></li>'
-    return (f'<ul style="list-style:none;padding:12px 16px;margin:1rem 0;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);'
+    return (f'<ul style="list-style:none;padding:12px 16px;margin:1rem 0;border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);'
             f'border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);">{rows}</ul>')
 
 _RENDERERS['anchor_list'] = _render_anchor_list
@@ -13534,7 +13534,7 @@ def _render_audio_link(b: dict) -> str:
     label = b.get('label') or b.get('title', 'Audio file')
     k = _esc(str(b['audio_url'])) if b.get('audio_url') else 'audio_link'
     return (f'<a data-cb="node" data-key="{k}" href="{_esc(url)}" target="_blank" rel="noopener" style="display:inline-flex;'
-            f'align-items:center;gap:6px;padding:6px 14px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);'
+            f'align-items:center;gap:6px;padding:6px 14px;border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);'
             f'font-size:0.85rem;color:#374151;text-decoration:none;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);">🎵 {_esc(label)}</a>')
 
 _RENDERERS['audio_link'] = _render_audio_link
@@ -13546,7 +13546,7 @@ def _render_audio_player(b: dict) -> str:
     title_html = f'<div style="font-size:0.85rem;font-weight:600;margin-bottom:8px;">🎵 {_esc(title)}</div>' if title else ''
     audio_html = (f'<audio controls style="width:100%;"><source src="{_esc(url)}"></audio>'
                   if url else '<div style="color:var(--muted,#5f6368);font-size:0.85rem;">No audio source</div>')
-    return (f'<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:12px 16px;'
+    return (f'<div style="border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:12px 16px;'
             f'margin:1rem 0;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);">{title_html}{audio_html}</div>')
 
 _RENDERERS['audio_player'] = _render_audio_player
@@ -13564,7 +13564,7 @@ def _render_author_bio_card(b: dict) -> str:
     links_html = ''.join(f'<a href="{_esc(v)}" target="_blank" rel="noopener" style="font-size:0.78rem;color:var(--muted,#5f6368);text-decoration:none;margin-right:10px;">{_esc(k)}</a>'
                          for k, v in links.items())
     k = _esc(str(b['name'])) if b.get('name') else 'author_bio_card'
-    return (f'<div data-cb="node" data-key="{k}" style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:18px 22px;'
+    return (f'<div data-cb="node" data-key="{k}" style="border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:18px 22px;'
             f'display:flex;gap:16px;align-items:flex-start;margin:1.5rem 0;">'
             f'{avatar_html}<div>'
             f'<div style="font-weight:700;color:#111827;margin-bottom:4px;">{_esc(name)}</div>'
@@ -13730,7 +13730,7 @@ def _render_changelog_entry(b: dict) -> str:
         col, lbl = type_map.get(t, ('#6b7280', t.title()))
         body += f'<div style="margin-bottom:8px;"><span style="display:inline-block;padding:1px 8px;border-radius:4px;background:{col}22;color:{_dk(col)};font-size:0.72rem;font-weight:700;text-transform:uppercase;margin-bottom:4px;">{lbl}</span>'
         body += '<ul style="margin:0;padding-left:18px;">' + ''.join(f'<li style="font-size:0.85rem;color:#374151;">{_md_inline(txt)}</li>' for txt in txts) + '</ul></div>'
-    return (f'<div data-cb="node" data-key="{_ck(b.get("version"), "changelog_entry")}" style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:16px 20px;margin:1.2rem 0;">'
+    return (f'<div data-cb="node" data-key="{_ck(b.get("version"), "changelog_entry")}" style="border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:16px 20px;margin:1.2rem 0;">'
             f'{header}{body}</div>')
 
 _RENDERERS['changelog_entry'] = _render_changelog_entry
@@ -13751,7 +13751,7 @@ def _render_checklist_interactive(b: dict) -> str:
                  f'<input type="checkbox" {checked} style="margin-top:2px;accent-color:#4f46e5;">'
                  f'<span data-cb="label" data-key="{k}" style="font-size:0.88rem;color:#374151;">{_md_inline(text)}</span></label>')
     title_html = f'<div style="font-weight:700;margin-bottom:8px;">{_esc(b["title"])}</div>' if b.get('title') else ''
-    return f'<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:12px 16px;margin:1rem 0;">{title_html}{rows}</div>'
+    return f'<div style="border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:12px 16px;margin:1rem 0;">{title_html}{rows}</div>'
 
 _RENDERERS['checklist_interactive'] = _render_checklist_interactive
 
@@ -13873,7 +13873,7 @@ def _render_code_diff(b: dict) -> str:
     label_html = (f'<div style="padding:6px 12px;background:#f9fafb;border-bottom:1px solid #e5e7eb;'
                   f'font-size:0.78rem;color:var(--muted,#5f6368);font-family:monospace;">{_esc(label)}'
                   f'{"  · " + _esc(lang) if lang else ""}</div>' if label or lang else '')
-    return (f'<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1.2rem 0;">'
+    return (f'<div style="border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1.2rem 0;">'
             f'{label_html}{rows}</div>')
 
 _RENDERERS['code_diff'] = _render_code_diff
@@ -13903,7 +13903,7 @@ def _render_code_snippet_pair(b: dict) -> str:
                      f'font-weight:600;color:#5f6368;border-bottom:2px solid transparent;margin-bottom:-2px;">'
                      f'{_esc(s.get("label",s.get("language",f"Tab {i+1}")))}</label>'
                      for i, s in enumerate(snippets))
-    return (f'<div id="{uid}" style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1.2rem 0;">'
+    return (f'<div id="{uid}" style="border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1.2rem 0;">'
             f'{css}'
             + ''.join(f'<input type="radio" id="s{uid}_{_cv_esc(i)}" name="{uid}" {"checked" if i==0 else ""}>' for i in range(len(snippets)))
             + f'<div class="tabs" style="display:flex;border-bottom:2px solid #e5e7eb;">{labels}</div>'
@@ -13916,7 +13916,7 @@ def _render_collapsible_panel(b: dict) -> str:
     label = b.get('label') or b.get('title', '')
     open_attr = 'open' if b.get('open') else ''
     content = b.get('content') or b.get('text', '')
-    return (f'<details {open_attr} style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:0.75rem 0;">'
+    return (f'<details {open_attr} style="border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:0.75rem 0;">'
             f'<summary style="padding:10px 16px;font-weight:600;cursor:pointer;background:#f9fafb;'
             f'font-size:0.88rem;color:#374151;list-style:none;">▶ {_esc(label)}</summary>'
             f'<div style="padding:14px 16px;font-size:0.88rem;">{_md_inline(content)}</div></details>')
@@ -14037,7 +14037,7 @@ def _render_contact_card(b: dict) -> str:
         rows += f'<div>📧 <a href="mailto:{_esc(email)}" style="color:#7c3aed;font-size:0.85rem;text-decoration:none;">{_esc(email)}</a></div>'
     if phone:
         rows += f'<div>📞 <span style="font-size:0.85rem;color:#374151;">{_esc(phone)}</span></div>'
-    return (f'<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:16px 20px;'
+    return (f'<div style="border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:16px 20px;'
             f'display:flex;gap:16px;align-items:center;margin:1rem 0;">'
             f'{av}<div>'
             f'<div style="font-weight:700;color:#111827;">{_esc(name)}</div>'
@@ -14256,7 +14256,7 @@ def _render_document_link(b: dict) -> str:
 
     return (
         f'<a data-cb="node" data-key="{_ck(raw_url, "document_link")}" href="{_cv_esc(href)}" target="_blank" rel="noopener" '
-        f'style="display:inline-flex;align-items:center;gap:8px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);'
+        f'style="display:inline-flex;align-items:center;gap:8px;border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);'
         f'border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:8px 16px;text-decoration:none;color:#374151;'
         f'font-size:0.86rem;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);margin:0.5rem 0;">'
         f'<span aria-hidden="true">{_cv_esc(icon)}</span> {_cv_esc(label)}{badge_html}</a>'
@@ -14312,7 +14312,7 @@ def _render_empty_state(b: dict) -> str:
            f'{_esc(btn_label)}</a>' if btn_label else '')
     return (f'<div data-cb="node" data-key="{_ck(b.get("title"), "empty_state")}" style="text-align:center;padding:40px 24px;color:var(--muted,#5f6368);">'
             f'{icon_html}'
-            f'<div style="font-size:1rem;font-weight:700;color:#374151;margin-bottom:6px;">{_esc(title)}</div>'
+            f'<div style="font-size:1rem;font-weight:700;color:var(--a2ui-ink,#374151);margin-bottom:6px;">{_esc(title)}</div>'
             f'{"<div style=font-size:0.88rem;>"+_md_inline(desc)+"</div>" if desc else ""}'
             f'{btn}</div>')
 
@@ -14402,7 +14402,7 @@ def _render_faq_accordion(b: dict) -> str:
 
         k = _cv_esc(q)
         rows.append(
-            f'<details data-cb="item" data-key="{k}" style="border-bottom:1px solid #eaeaea;border-bottom:1px solid var(--a2ui-border,#eaeaea);">'
+            f'<details data-cb="item" data-key="{k}" style="border-bottom:1px solid #eaeaea;border-bottom:1px solid var(--asw-border,#eaeaea);">'
             f'<summary data-cb="label" data-key="{k}" style="padding:12px 16px;font-weight:600;cursor:pointer;font-size:0.88rem;color:#111827;list-style:none;">'
             f'<span aria-hidden="true">❓</span> {_cv_esc(q)}</summary>'
             f'<div style="padding:10px 16px 14px;font-size:0.86rem;color:#374151;background:#fafafa;line-height:1.6;">'
@@ -14422,7 +14422,7 @@ def _render_feature_card(b: dict) -> str:
     title = b.get('title', '')
     text = b.get('text') or b.get('description', '')
     accent = b.get('accent', '#4f46e5')
-    return (f'<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:18px;margin:1rem 0;">'
+    return (f'<div style="border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:18px;margin:1rem 0;">'
             f'<div style="font-size:1.6rem;margin-bottom:8px;">{_cv_esc(icon)}</div>'
             f'<div style="font-weight:700;color:{_esc(accent)};margin-bottom:6px;">{_esc(title)}</div>'
             f'<div style="font-size:0.88rem;color:var(--muted,#5f6368);">{_md_inline(text)}</div></div>')
@@ -14572,7 +14572,7 @@ def _render_follow_cta(b: dict) -> str:
 
     return (
         f'<div data-cb="node" data-key="{_ck(b.get("message"), "follow_cta")}" '
-        f'style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:14px 18px;'
+        f'style="border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:14px 18px;'
         f'display:flex;align-items:center;justify-content:space-between;gap:12px;margin:1rem 0;flex-wrap:wrap;">'
         f'<span style="font-size:0.88rem;color:#374151;">{_md_inline(msg)}</span>'
         f'<div style="display:flex;gap:8px;flex-wrap:wrap;">{"".join(btns)}</div></div>'
@@ -14643,7 +14643,7 @@ def _render_framed_screenshot(b: dict) -> str:
         frame_html = f'<div style="border-radius:10px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.1);">{content_html}</div>'
     else:
         chrome_bar = (
-            '<div style="padding:8px 14px;background:#f3f4f6;border-bottom:1px solid #eaeaea;border-bottom:1px solid var(--a2ui-border,#eaeaea);display:flex;align-items:center;gap:6px;">'
+            '<div style="padding:8px 14px;background:#f3f4f6;border-bottom:1px solid #eaeaea;border-bottom:1px solid var(--asw-border,#eaeaea);display:flex;align-items:center;gap:6px;">'
             '<span style="width:10px;height:10px;border-radius:50%;background:#ff5f56;display:inline-block;"></span>'
             '<span style="width:10px;height:10px;border-radius:50%;background:#ffbd2e;display:inline-block;"></span>'
             '<span style="width:10px;height:10px;border-radius:50%;background:#27c93f;display:inline-block;"></span>'
@@ -14690,7 +14690,7 @@ def _render_further_reading(b: dict) -> str:
         else:
             rows += f'<div data-cb="link" data-key="{_cv_esc(key)}" style="display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid #f3f4f6;text-decoration:none;">{inner}</div>'
 
-    return (f'<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:16px 20px;margin:1.2rem 0;">'
+    return (f'<div style="border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:16px 20px;margin:1.2rem 0;">'
             f'<div style="font-weight:700;color:var(--text,#374151);margin-bottom:4px;">📚 {_cv_esc(header_title)}</div>{rows}</div>')
 
 _RENDERERS['further_reading'] = _render_further_reading
@@ -14820,7 +14820,7 @@ def _render_hover_card(b: dict) -> str:
             f'onmouseenter="document.getElementById(\'{uid}\').style.display=\'block\'" '
             f'onmouseleave="document.getElementById(\'{uid}\').style.display=\'none\'">{_esc(trigger)}</span>'
             f'<div id="{uid}" style="display:none;position:absolute;z-index:10;bottom:calc(100% + 8px);left:0;'
-            f'background:#ffffff;background:var(--a2ui-surface,#ffffff);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:12px 14px;'
+            f'background:#ffffff;background:var(--a2ui-surface,#ffffff);border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:12px 14px;'
             f'min-width:200px;box-shadow:0 4px 20px rgba(0,0,0,0.1);font-size:0.84rem;color:#374151;">'
             f'{_md_inline(content)}</div></span>')
 
@@ -15005,7 +15005,7 @@ def _render_json_preview(b: dict) -> str:
     except Exception:
         formatted = str(data)
     escaped = formatted.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
-    title_html = (f'<div style="padding:6px 12px;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);border-bottom:1px solid #eaeaea;border-bottom:1px solid var(--a2ui-border,#eaeaea);'
+    title_html = (f'<div style="padding:6px 12px;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);border-bottom:1px solid #eaeaea;border-bottom:1px solid var(--asw-border,#eaeaea);'
                   f'font-size:0.78rem;color:#6b7280;font-family:monospace;">{_esc(title)}</div>' if title else '')
     return (f'<div style="border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;margin:1rem 0;">'
             f'{title_html}<pre style="margin:0;padding:14px;background:#0f1117;color:#e8eaed;'
@@ -15036,7 +15036,7 @@ def _render_json_tree_viewer(b: dict) -> str:
     elif raw is not None:
         pretty = str(raw)
     escaped = _cv_esc(pretty)
-    return (f'<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1rem 0;">'
+    return (f'<div style="border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1rem 0;">'
             f'<div style="padding:8px 12px;background:#1e1e2e;border-bottom:1px solid #313244;'
             f'font-size:0.78rem;color:#89dceb;font-family:monospace;font-weight:600;">{_cv_esc(title)}</div>'
             f'<pre style="margin:0;padding:14px;background:#1e1e2e;color:#cdd6f4;'
@@ -15083,7 +15083,7 @@ def _render_keyboard_shortcut(b: dict) -> str:
     def key_html(k):
         return (
             f'<kbd style="display:inline-block;padding:2px 7px;background:#ffffff;background:var(--a2ui-surface,#ffffff);'
-            f'border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-bottom:2px solid #9ca3af;'
+            f'border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-bottom:2px solid #9ca3af;'
             f'border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);font-family:monospace;font-size:0.78rem;'
             f'font-weight:600;color:#374151;vertical-align:middle;">{_cv_esc(k)}</kbd>'
         )
@@ -15163,7 +15163,7 @@ def _render_link_card(b: dict) -> str:
     desc = b.get('description') or b.get('text', '')
     icon = b.get('icon', '🔗')
     return (f'<a href="{_esc(url)}" target="_blank" rel="noopener" '
-            f'style="display:block;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:14px 18px;'
+            f'style="display:block;border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:14px 18px;'
             f'text-decoration:none;margin:0.75rem 0;transition:box-shadow 0.15s;">'
             f'<div style="display:flex;align-items:flex-start;gap:12px;">'
             f'<span style="font-size:1.3rem;">{_cv_esc(icon)}</span>'
@@ -15392,10 +15392,10 @@ def _render_pdf_preview(b: dict) -> str:
         media_html = '<div style="width:40px;height:48px;background:#e71414;border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:0.7rem;font-weight:700;flex-shrink:0;">PDF</div>'
 
     sub_text = 'Click to open PDF' if pdf_url else 'No PDF URL provided'
-    text_html = f'<div><div style="font-size:0.9rem;font-weight:600;color:#111827;">{_cv_esc(title)}</div><div style="font-size:0.75rem;color:var(--muted,#5f6368);margin-top:2px;">{sub_text}</div></div>'
+    text_html = f'<div><div style="font-size:0.9rem;font-weight:600;color:var(--a2ui-ink,#111827);">{_cv_esc(title)}</div><div style="font-size:0.75rem;color:var(--muted,#5f6368);margin-top:2px;">{sub_text}</div></div>'
 
     key = _ck(raw_pdf, 'pdf_preview')
-    base_style = 'display:flex;align-items:center;gap:12px;padding:14px 16px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);text-decoration:none;margin:1rem 0;'
+    base_style = 'display:flex;align-items:center;gap:12px;padding:14px 16px;border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);text-decoration:none;margin:1rem 0;'
 
     if pdf_url:
         return f'<a data-cb="node" data-key="{key}" href="{_cv_esc(pdf_url)}" target="_blank" rel="noopener noreferrer" style="{base_style}">{media_html}{text_html}</a>'
@@ -15680,7 +15680,7 @@ def _render_repo_links(b: dict) -> str:
         icon = link.get('icon', '🐙')
         items += (f'<a href="{_esc(url)}" target="_blank" rel="noopener" '
                   f'style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;'
-                  f'border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);text-decoration:none;color:#374151;'
+                  f'border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);text-decoration:none;color:#374151;'
                   f'font-size:0.84rem;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);margin:4px;">{_cv_esc(icon)} {_esc(label)}</a>')
     return f'<div style="margin:1rem 0;">{items}</div>'
 
@@ -15754,7 +15754,7 @@ def _render_roadmap(b: dict) -> str:
         status = phase.get('status', 'planned')
         items = phase.get('items', [])
         fg, status_label = status_cfg.get(status, ('#9ca3af', status))
-        html += (f'<div style="margin-bottom:12px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;">'
+        html += (f'<div style="margin-bottom:12px;border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;">'
                  f'<div style="padding:10px 16px;background:#f9fafb;border-bottom:1px solid #e5e7eb;'
                  f'display:flex;justify-content:space-between;align-items:center;">'
                  f'<span style="font-weight:700;">{_esc(name)}</span>'
@@ -16086,7 +16086,7 @@ def _render_table(b: dict) -> str:
                       f'{_md_inline(str(c))}</td>' for j, c in enumerate(cells))
         body += f'<tr style="background:{"#fff" if i%2==0 else "#f9fafb"};">{tds}</tr>'
     cap = f'<caption style="padding:8px;font-size:0.8rem;color:var(--a2ui-faint,#757575);text-align:left;">{_esc(caption)}</caption>' if caption else ''
-    return (f'<div style="border:1px solid var(--a2ui-border,#eaeaea);border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1.2rem 0;overflow-x:auto;">'
+    return (f'<div style="border:1px solid var(--asw-border,#eaeaea);border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1.2rem 0;overflow-x:auto;">'
             f'<table style="{table_style}">{cap}'
             f'<thead><tr>{ths}</tr></thead><tbody>{body}</tbody></table></div>')
 
@@ -16103,7 +16103,7 @@ def _render_tech_stack(b: dict) -> str:
         name = item if isinstance(item, str) else item.get('name', str(item))
         icon = item.get('icon', '🔧') if isinstance(item, dict) else '🔧'
         desc = item.get('description', '') if isinstance(item, dict) else ''
-        cards += (f'<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:10px 12px;'
+        cards += (f'<div style="border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:10px 12px;'
                   f'display:flex;align-items:center;gap:10px;">'
                   f'<span style="font-size:1.2rem;">{_cv_esc(icon)}</span>'
                   f'<div><div style="font-weight:700;font-size:0.85rem;">{_esc(name)}</div>'
@@ -16168,7 +16168,7 @@ def _render_time_estimate(b: dict) -> str:
         label = b.get('label', 'min read')
     icon = b.get('icon', '⏱')
     return (f'<div data-cb="node" data-key="{_ck(b.get("minutes"), "time_estimate")}" style="display:inline-flex;align-items:center;gap:6px;font-size:0.82rem;'
-            f'color:var(--muted,#5f6368);padding:4px 12px;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:100px;">'
+            f'color:var(--muted,#5f6368);padding:4px 12px;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:100px;">'
             f'{_cv_esc(icon)} <span style="font-weight:600;color:#374151;">{_esc(str(estimate))}</span> {_esc(label)}</div>')
 
 _RENDERERS['time_estimate'] = _render_time_estimate
@@ -16217,7 +16217,7 @@ def _render_timeline(b: dict) -> str:
 
     return (
         f'<div style="margin:1.5rem 0;padding:20px 20px 0;background:var(--a2ui-surface-muted,#fafafa);'
-        f'border-radius:var(--a2ui-radius,12px);border:1px solid var(--a2ui-border,#eaeaea);'
+        f'border-radius:var(--a2ui-radius,12px);border:1px solid var(--asw-border,#eaeaea);'
         f'box-shadow:var(--a2ui-shadow,0 1px 2px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04));">'
         f'{title_html}<ol style="list-style:none;margin:0;padding:0;">{"".join(items)}</ol></div>'
     )
@@ -16323,7 +16323,7 @@ def _render_video_card(b: dict) -> str:
     text_section = f'<div style="padding:12px 14px;">{title_html}{desc_html}</div>' if (title_html or desc_html) else ''
 
     return (
-        f'<div data-cb="node" data-key="{ck_val}" style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);'
+        f'<div data-cb="node" data-key="{ck_val}" style="border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);'
         f'border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1rem 0;">'
         f'{media_html}{text_section}</div>'
     )
@@ -16388,7 +16388,7 @@ def _render_word_scramble(b: dict) -> str:
         if ''.join(letters) != word.upper():
             break
     scrambled = ''.join(letters)
-    return (f'<div data-cb="node" data-key="{_ck(None, "word_scramble")}" style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:18px 22px;margin:1.5rem 0;text-align:center;">'
+    return (f'<div data-cb="node" data-key="{_ck(None, "word_scramble")}" style="border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:18px 22px;margin:1.5rem 0;text-align:center;">'
             f'<div style="font-size:0.82rem;color:var(--muted,#5f6368);margin-bottom:8px;">Unscramble:</div>'
             f'<div style="font-size:1.6rem;font-weight:900;letter-spacing:0.15em;color:#4f46e5;margin-bottom:12px;">'
             f'{_esc(scrambled)}</div>'
@@ -16612,7 +16612,7 @@ def _render_contributor_list(b: dict) -> str:
         items.append(f'<div role="listitem">{row_html}</div>')
 
     return (
-        f'<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);'
+        f'<div style="border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);'
         f'border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:10px;margin:1.5rem 0;">'
         f'<div style="font-weight:700;padding:4px 8px;margin-bottom:6px;">{_cv_esc(title_text)}</div>'
         f'<div role="list" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:4px;">'
@@ -16645,7 +16645,7 @@ def _render_customer_logo_grid(b: dict) -> str:
                   f'{_esc(title)}</div>' if title else '')
     return (f'<div style="margin:1.5rem 0;">{title_html}'
             f'<div style="display:grid;grid-template-columns:repeat({_cv_esc(cols)},1fr);gap:0;'
-            f'border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;">'
+            f'border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;">'
             f'{items}</div></div>')
 
 _RENDERERS['customer_logo_grid'] = _render_customer_logo_grid
@@ -16666,7 +16666,7 @@ def _render_expert_endorsement(b: dict) -> str:
           if avatar else
           f'<div style="width:48px;height:48px;border-radius:50%;background:#e8f0fe;display:flex;'
           f'align-items:center;justify-content:center;font-weight:700;font-size:1.2rem;color:#1a73e8;">{_esc(initial)}</div>')
-    return (f'<div data-cb="node" data-key="{_ck(b.get("expert_name"), "expert_endorsement")}" style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:18px 22px;margin:1.5rem 0;'
+    return (f'<div data-cb="node" data-key="{_ck(b.get("expert_name"), "expert_endorsement")}" style="border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:18px 22px;margin:1.5rem 0;'
             f'background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);">'
             f'<p style="font-style:italic;color:#374151;font-size:0.95rem;margin:0 0 14px;line-height:1.65;">'
             f'"{_md_inline(text)}"</p>'
@@ -16825,7 +16825,7 @@ def _render_image_hotspots(b: dict) -> str:
                   f'style="width:24px;height:24px;border-radius:50%;background:#4f46e5;color:#fff;border:2px solid #fff;'
                   f'cursor:pointer;font-size:0.75rem;font-weight:800;box-shadow:0 2px 6px rgba(0,0,0,0.3);">{i+1}</button>'
                   f'<div id="{sid}" style="display:none;position:absolute;bottom:calc(100%+8px);left:0;'
-                  f'background:#ffffff;background:var(--a2ui-surface,#ffffff);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:10px 12px;'
+                  f'background:#ffffff;background:var(--a2ui-surface,#ffffff);border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:10px 12px;'
                   f'min-width:160px;box-shadow:0 4px 12px rgba(0,0,0,0.12);font-size:0.82rem;">'
                   f'{strong}{_esc(desc)}</div></div>')
     img_style = 'width:100%;height:auto;display:block;border-radius:8px;' if image else ''
@@ -17298,7 +17298,7 @@ def _render_browser_frame(b: dict) -> str:
     content = b.get('content', '')
     image = b.get('image', '')
     height = b.get('height', '320px')
-    return (f'<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1.5rem 0;'
+    return (f'<div style="border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1.5rem 0;'
             f'box-shadow:0 4px 20px rgba(0,0,0,0.1);">'
             f'<div style="background:#f3f4f6;padding:8px 12px;display:flex;align-items:center;gap:8px;'
             f'border-bottom:1px solid #e5e7eb;">'
@@ -17350,7 +17350,7 @@ def _render_calendar_event(b: dict) -> str:
     description = b.get('description', '')
     accent = b.get('accent', '#4f46e5')
     return (f'<div style="border-left:4px solid {_esc(accent)};border-radius:0 10px 10px 0;'
-            f'padding:14px 18px;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-left:4px solid {_esc(accent)};'
+            f'padding:14px 18px;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-left:4px solid {_esc(accent)};'
             f'margin:1rem 0;">'
             f'<div style="font-weight:700;color:#111827;font-size:0.95rem;">{_esc(title)}</div>'
             f'<div style="font-size:0.82rem;color:var(--muted,#5f6368);margin-top:4px;">📅 {_esc(start)}'
@@ -17575,7 +17575,7 @@ def _render_countdown(b: dict) -> str:
     uid = _wa_uid(b)
     target = b.get('target') or b.get('date', '')
     label = b.get('label', 'Time remaining')
-    return (f'<div style="text-align:center;padding:20px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);margin:1.5rem 0;">'
+    return (f'<div style="text-align:center;padding:20px;border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);margin:1.5rem 0;">'
             f'<div style="font-size:0.82rem;color:var(--muted,#5f6368);margin-bottom:10px;">{_esc(label)}</div>'
             f'<div id="{uid}" style="font-size:2rem;font-weight:900;color:#111827;letter-spacing:0.05em;">'
             f'00:00:00:00</div>'
@@ -17599,7 +17599,7 @@ def _render_dark_mode_toggle(b: dict) -> str:
             f'd.classList.toggle(\'dark\');'
             f'el.textContent=d.classList.contains(\'dark\')?"{_esc(light_label)}":"{_esc(dark_label)}";}})('
             f'document.getElementById(\'{uid}\'))" '
-            f'style="background:#f3f4f6;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:100px;padding:6px 14px;'
+            f'style="background:#f3f4f6;border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:100px;padding:6px 14px;'
             f'cursor:pointer;font-size:1rem;font-family:inherit;">{_esc(dark_label)}</button>')
 
 _RENDERERS['dark_mode_toggle'] = _render_dark_mode_toggle
@@ -17657,7 +17657,7 @@ def _render_event_card(b: dict) -> str:
     accent = b.get('accent', '#4f46e5')
     img_html = (f'<img src="{_esc(image)}" alt="{_esc(title)}" style="width:100%;aspect-ratio:16/9;'
                 f'object-fit:cover;border-radius:8px 8px 0 0;">' if image else '')
-    return (f'<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1rem 0;max-width:340px;">'
+    return (f'<div style="border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1rem 0;max-width:340px;">'
             f'{img_html}'
             f'<div style="padding:14px 16px;">'
             f'<div style="font-weight:800;font-size:0.95rem;color:#111827;margin-bottom:6px;">{_esc(title)}</div>'
@@ -17874,7 +17874,7 @@ def _render_meeting_notes(b: dict) -> str:
     atts = ', '.join(_esc(a) for a in attendees)
     agenda_html = (''.join(f'<li style="font-size:0.85rem;">{_esc(a)}</li>' for a in agenda)) if agenda else ''
     dec_html = (''.join(f'<li style="font-size:0.85rem;">✅ {_esc(d)}</li>' for d in decisions)) if decisions else ''
-    return (f'<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:16px 20px;margin:1.5rem 0;">'
+    return (f'<div style="border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:16px 20px;margin:1.5rem 0;">'
             f'<div style="display:flex;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:6px;">'
             f'<span style="font-weight:700;font-size:1rem;">📝 Meeting Notes</span>'
             f'{"<span style=font-size:0.82rem;color:var(--muted,#5f6368);>"+_esc(date)+"</span>" if date else ""}</div>'
@@ -17923,7 +17923,7 @@ def _render_nps_score(b: dict) -> str:
         f'cursor:pointer;font-size:0.84rem;font-weight:700;">{i}</span></label>'
         for i in range(0, 11)
     )
-    return (f'<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:16px 20px;margin:1.5rem 0;">'
+    return (f'<div style="border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:16px 20px;margin:1.5rem 0;">'
             f'<div style="font-weight:600;margin-bottom:12px;font-size:0.9rem;">{_esc(question)}</div>'
             f'<div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px;">{buttons}</div>'
             f'<div style="display:flex;justify-content:space-between;font-size:0.72rem;color:var(--muted,#5f6368);">'
@@ -17950,7 +17950,7 @@ def _render_profile_card(b: dict) -> str:
         stats_html += (f'<div style="text-align:center;">'
                        f'<div style="font-weight:800;font-size:1rem;color:#111827;">{_esc(str(val))}</div>'
                        f'<div style="font-size:0.72rem;color:var(--muted,#5f6368);">{_esc(lbl)}</div></div>')
-    return (f'<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:20px;text-align:center;max-width:280px;margin:1rem auto;">'
+    return (f'<div style="border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:20px;text-align:center;max-width:280px;margin:1rem auto;">'
             f'{av}'
             f'<div style="font-weight:800;font-size:1rem;color:#111827;margin-top:10px;">{_esc(name)}</div>'
             f'{"<div style=font-size:0.82rem;color:var(--muted,#5f6368);margin-top:2px;>"+_esc(title)+"</div>" if title else ""}'
@@ -18077,7 +18077,7 @@ def _render_service_card(b: dict) -> str:
     cta = b.get('cta', '')
     url = b.get('url', '#')
     accent = b.get('accent', '#4f46e5')
-    return (f'<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:20px;max-width:280px;margin:1rem 0;">'
+    return (f'<div style="border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:20px;max-width:280px;margin:1rem 0;">'
             f'<div style="font-size:2rem;margin-bottom:10px;">{_cv_esc(icon)}</div>'
             f'<div style="font-weight:800;color:#111827;font-size:0.95rem;margin-bottom:6px;">{_esc(title)}</div>'
             f'{"<p style=font-size:0.85rem;color:var(--muted,#5f6368);margin:0 0 12px;>"+_md_inline(description)+"</p>" if description else ""}'
@@ -18122,7 +18122,7 @@ def _render_social_links(b: dict) -> str:
         icon = link.get('icon') or icons_map.get(platform, '🔗') if isinstance(link, dict) else '🔗'
         items += (f'<a href="{_esc(url)}" target="_blank" rel="noopener" title="{_esc(label)}" '
                   f'style="display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;'
-                  f'border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);font-size:1.1rem;text-decoration:none;">{_cv_esc(icon)}</a>')
+                  f'border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);font-size:1.1rem;text-decoration:none;">{_cv_esc(icon)}</a>')
     return f'<div style="display:flex;gap:8px;flex-wrap:wrap;margin:1rem 0;">{items}</div>'
 
 _RENDERERS['social_links'] = _render_social_links
@@ -18139,7 +18139,7 @@ def _render_stats_grid(b: dict) -> str:
         delta = s.get('delta', '') if isinstance(s, dict) else ''
         is_up = s.get('is_up', None) if isinstance(s, dict) else None
         delta_col = '#10b981' if is_up else '#ef4444' if is_up is False else '#9ca3af'
-        items += (f'<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:14px;text-align:center;">'
+        items += (f'<div style="border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:14px;text-align:center;">'
                   f'{"<div style=font-size:1.4rem;margin-bottom:4px;>"+_cv_esc(icon)+"</div>" if icon else ""}'
                   f'<div style="font-size:1.6rem;font-weight:900;color:#111827;">{_esc(str(value))}</div>'
                   f'<div style="font-size:0.78rem;color:var(--muted,#5f6368);margin-top:2px;">{_esc(label)}</div>'
@@ -18212,7 +18212,7 @@ def _render_table_of_contents(b: dict) -> str:
     toc_label = _first_text(b.get('title')) or 'Table of contents'
     return (
         f'<nav aria-label="{_cv_esc(toc_label)}" '
-        f'style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);'
+        f'style="border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);'
         f'padding:14px 18px;margin:1.5rem 0;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);">'
         f'<div style="font-weight:700;margin-bottom:8px;font-size:0.9rem;">'
         f'<span aria-hidden="true">📋</span> {_cv_esc(title_text)}</div>'
@@ -18240,7 +18240,7 @@ def _render_tabs(b: dict) -> str:
     panels = ''.join(f'<div class="p{uid}_{_cv_esc(i)}" style="padding:14px;">'
                      f'{_md_inline(t.get("content","") if isinstance(t, dict) else "")}</div>'
                      for i, t in enumerate(tabs))
-    return (f'<div id="{uid}" style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1.2rem 0;">'
+    return (f'<div id="{uid}" style="border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1.2rem 0;">'
             f'{css}{inputs}'
             f'<div class="ta" style="border-bottom:2px solid #e5e7eb;">'
             f'<div style="display:flex;flex-wrap:wrap;">{labels}</div></div>'
@@ -18264,7 +18264,7 @@ def _render_team_grid(b: dict) -> str:
               if avatar else
               f'<div style="width:60px;height:60px;border-radius:50%;background:#e8f0fe;display:flex;'
               f'align-items:center;justify-content:center;font-weight:800;font-size:1.3rem;color:#1a73e8;">{_esc(initial)}</div>')
-        content = (f'<div style="text-align:center;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:14px;">'
+        content = (f'<div style="text-align:center;border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:14px;">'
                    f'<div style="margin:0 auto 8px;">{av}</div>'
                    f'<div style="font-weight:700;font-size:0.88rem;">{_esc(name)}</div>'
                    f'{"<div style=font-size:0.78rem;color:var(--muted,#5f6368);>"+_esc(role)+"</div>" if role else ""}'
@@ -18292,7 +18292,7 @@ def _render_testimonial(b: dict) -> str:
           if avatar else
           f'<div style="width:44px;height:44px;border-radius:50%;background:#e8f0fe;display:flex;'
           f'align-items:center;justify-content:center;font-weight:700;font-size:1.1rem;color:#1a73e8;">{_esc(initial)}</div>')
-    return (f'<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:18px 22px;margin:1rem 0;">'
+    return (f'<div style="border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:18px 22px;margin:1rem 0;">'
             f'{"<div style=margin-bottom:8px;>"+stars+"</div>" if stars else ""}'
             f'<p style="font-style:italic;color:#374151;font-size:0.92rem;line-height:1.65;margin:0 0 14px;">'
             f'"{_md_inline(text)}"</p>'
@@ -18316,7 +18316,7 @@ def _render_ticker_tape(b: dict) -> str:
     speed = b.get('speed', 30)
     separator = b.get('separator', ' · ')
     content = _esc(separator).join(_esc(str(i if isinstance(i, str) else i.get('text', str(i)))) for i in items)
-    return (f'<div style="overflow:hidden;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);'
+    return (f'<div style="overflow:hidden;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);'
             f'padding:8px 0;margin:1rem 0;">'
             f'<style>@keyframes a2ui-ticker{uid}{{from{{transform:translateX(100%);}}to{{transform:translateX(-100%);}}}}'
             f'[id="{uid}"]{{animation:a2ui-ticker{uid} {_cv_esc(speed)}s linear infinite;white-space:nowrap;display:inline-block;}}</style>'
@@ -18346,7 +18346,7 @@ def _render_waitlist_form(b: dict) -> str:
     placeholder = b.get('placeholder', 'your@email.com')
     button = b.get('button_label', 'Join waitlist')
     success = b.get('success_message', "✅ You're on the list!")
-    return (f'<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:20px;margin:1.5rem 0;text-align:center;">'
+    return (f'<div style="border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:20px;margin:1.5rem 0;text-align:center;">'
             f'<div style="font-weight:700;font-size:1rem;margin-bottom:12px;">{_esc(title)}</div>'
             f'<form id="{uid}" onsubmit="event.preventDefault();document.getElementById(\'{uid}\').innerHTML='
             f"'<div style=color:#10b981;font-weight:700;padding:12px;>'+\"{_esc(success)}\"+'</div>'" \
@@ -18369,7 +18369,7 @@ def _render_embed_codepen(b: dict) -> str:
     height = b.get('height', '400px')
     url = b.get('url') or (f'https://codepen.io/{_cv_esc(user)}/pen/{_cv_esc(slug)}' if user and slug else '#')
     title = b.get('title', 'CodePen Embed')
-    return (f'<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1.5rem 0;">'
+    return (f'<div style="border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1.5rem 0;">'
             f'<div style="padding:7px 12px;background:#1e1e2e;border-bottom:1px solid #333;'
             f'font-size:0.78rem;color:#aaa;font-family:monospace;">✏️ CodePen · {_esc(title)}</div>'
             f'<iframe src="{_esc(url)}/embed/result" title="{_esc(title)}" height="{_esc(str(height))}" '
@@ -18396,7 +18396,7 @@ def _render_embed_google_slides(b: dict) -> str:
     title = b.get('title', 'Google Slides')
     height = b.get('height', '420px')
     embed_url = url.replace('/pub?', '/embed?') if '/pub?' in url else url
-    return (f'<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1.5rem 0;">'
+    return (f'<div style="border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1.5rem 0;">'
             f'<div style="padding:7px 12px;background:#f9fafb;border-bottom:1px solid #e5e7eb;'
             f'font-size:0.78rem;color:var(--muted,#5f6368);">📊 {_esc(title)}</div>'
             f'<iframe src="{_esc(embed_url)}" title="{_esc(title)}" height="{_esc(str(height))}" '
@@ -18410,7 +18410,7 @@ def _render_embed_stackblitz(b: dict) -> str:
     url = b.get('url') or (f'https://stackblitz.com/edit/{_cv_esc(project_id)}?embed=1' if project_id else '#')
     title = b.get('title', 'StackBlitz')
     height = b.get('height', '400px')
-    return (f'<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1.5rem 0;">'
+    return (f'<div style="border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1.5rem 0;">'
             f'<div style="padding:7px 12px;background:#1a1a2e;border-bottom:1px solid #2a2a3e;'
             f'font-size:0.78rem;color:#89dceb;font-family:monospace;">⚡ StackBlitz · {_esc(title)}</div>'
             f'<iframe src="{_esc(url)}" title="{_esc(title)}" height="{_esc(str(height))}" '
@@ -18424,7 +18424,7 @@ def _render_figma_embed(b: dict) -> str:
     title = b.get('title', 'Figma Design')
     height = b.get('height', '450px')
     embed_url = f'https://www.figma.com/embed?embed_host=a2ui&url={_wa_h.escape(url)}' if url else ''
-    return (f'<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1.5rem 0;">'
+    return (f'<div style="border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1.5rem 0;">'
             f'<div style="padding:7px 12px;background:#f9fafb;border-bottom:1px solid #e5e7eb;'
             f'font-size:0.78rem;color:var(--muted,#5f6368);">🎨 Figma · {_esc(title)}</div>'
             f'{"<iframe src="+chr(34)+_esc(embed_url)+chr(34)+" height="+chr(34)+_esc(str(height))+chr(34)+" style=width:100%;border:none;display:block; allowfullscreen loading=lazy></iframe>" if embed_url else "<div style=padding:20px;text-align:center;color:var(--muted,#5f6368);>No Figma URL</div>"}'
@@ -18583,7 +18583,7 @@ def _render_shortcut_row(b: dict) -> str:
         keys = sc.get('keys', []) if isinstance(sc, dict) else []
         label = sc.get('label', '') if isinstance(sc, dict) else str(sc)
         keys_html = '<span style="color:var(--muted,#5f6368);font-size:0.8rem;margin:0 4px;">+</span>'.join(
-            f'<kbd style="display:inline-block;padding:2px 6px;background:#ffffff;background:var(--a2ui-surface,#ffffff);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);'
+            f'<kbd style="display:inline-block;padding:2px 6px;background:#ffffff;background:var(--a2ui-surface,#ffffff);border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);'
             f'border-bottom:2px solid #9ca3af;border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);font-family:monospace;font-size:0.75rem;">{_esc(k)}</kbd>'
             for k in keys)
         rows += (f'<div style="display:flex;align-items:center;justify-content:space-between;'
@@ -18639,7 +18639,7 @@ def _render_address_card(b: dict) -> str:
     country = b.get('country', '')
     phone = b.get('phone', '')
     email = b.get('email', '')
-    return (f'<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:14px 18px;margin:1rem 0;">'
+    return (f'<div style="border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:14px 18px;margin:1rem 0;">'
             f'{"<div style=font-weight:700;font-size:0.9rem;margin-bottom:8px;>"+_esc(name)+"</div>" if name else ""}'
             f'{"<div style=font-size:0.85rem;color:#374151;>"+_esc(street)+"</div>" if street else ""}'
             f'{"<div style=font-size:0.85rem;color:#374151;>"+_esc(city)+", "+_esc(state)+" "+_esc(postal)+"</div>" if city else ""}'
@@ -18664,7 +18664,7 @@ def _render_bio_page(b: dict) -> str:
           f'display:flex;align-items:center;justify-content:center;font-weight:800;font-size:2rem;color:#1a73e8;">{_esc(initial)}</div>')
     links_html = ''.join(f'<a href="{_esc(l.get("url","#") if isinstance(l,dict) else l)}" '
                          f'target="_blank" rel="noopener" '
-                         f'style="display:block;padding:10px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);'
+                         f'style="display:block;padding:10px;border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);'
                          f'text-align:center;text-decoration:none;font-weight:600;color:#374151;font-size:0.88rem;">'
                          f'{_esc(l.get("label","Link") if isinstance(l,dict) else l)}</a>'
                          for l in links)
@@ -18687,7 +18687,7 @@ def _render_map_embed(b: dict) -> str:
     if not url and query:
         import urllib.parse
         url = f'https://www.google.com/maps?q={urllib.parse.quote(query)}&output=embed'
-    return (f'<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1.5rem 0;">'
+    return (f'<div style="border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1.5rem 0;">'
             f'<div style="padding:7px 12px;background:#f9fafb;border-bottom:1px solid #e5e7eb;'
             f'font-size:0.78rem;color:var(--muted,#5f6368);">🗺 {_esc(title)}</div>'
             f'{"<iframe src="+chr(34)+_esc(url)+chr(34)+" height="+chr(34)+_esc(str(height))+chr(34)+" style=width:100%;border:none;display:block; allowfullscreen loading=lazy></iframe>" if url else "<div style=padding:20px;text-align:center;color:var(--muted,#5f6368);>No map URL</div>"}'
@@ -19929,7 +19929,7 @@ def _render_feedback_prompt(b: dict) -> str:
     text_html = (
         f'<textarea name="{fid}_comment" placeholder="{_cv_esc(placeholder)}" '
         f'style="display:block;margin-top:10px;width:100%;box-sizing:border-box;padding:8px 10px;'
-        f'border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);font-size:0.85rem;color:#3c4043;'
+        f'border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);font-size:0.85rem;color:#3c4043;'
         f'resize:vertical;min-height:64px;background:#ffffff;background:var(--a2ui-surface,#ffffff);"></textarea>'
     ) if placeholder else ""
 
@@ -20778,7 +20778,7 @@ def _render_score_summary(b: dict) -> str:
     continue_label = _text_loose(b.get('continue_label'))
     time_html = ('<div style="text-align:center;margin-top:8px;font-size:0.8rem;color:#6b7280;">Time: ' + _cv_esc(time_taken) + '</div>') if time_taken else ''
     retry = ('<button type="button" onclick="location.reload();" style="margin-right:8px;padding:8px 18px;border-radius:12px;border-radius:var(--a2ui-radius,12px);'
-             'border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);background:transparent;font-family:inherit;font-size:0.85rem;cursor:pointer;color:#374151;">'
+             'border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);background:transparent;font-family:inherit;font-size:0.85rem;cursor:pointer;color:#374151;">'
              + _cv_esc(retry_label) + '</button>') if retry_label else ''
     cont = ('<a href="' + _cv_esc(_safe_href(b.get('continue_url')) or '#') + '" target="_top" style="padding:8px 18px;border-radius:8px;'
             'background:#4f46e5;color:#fff;font-size:0.85rem;text-decoration:none;display:inline-block;">'
@@ -20907,7 +20907,7 @@ def _render_knowledge_check(b: dict) -> str:
     opts_html = ''.join(
         f'<button onclick="{uid}pick({_cv_esc(i)})" style="display:block;width:100%;text-align:left;'
         f'padding:11px 14px;border-radius:9px;margin-bottom:7px;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);'
-        f'border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);cursor:pointer;font-size:0.88rem;">{_esc(str(o))}</button>'
+        f'border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);cursor:pointer;font-size:0.88rem;">{_esc(str(o))}</button>'
         for i, o in enumerate(options)
     )
     explain_div = f'<div id="{uid}ex" style="display:none;margin-top:10px;padding:12px;background:#f0fdf4;border-radius:8px;font-size:0.85rem;">{explain}</div>' if explain else ''
@@ -23613,7 +23613,7 @@ def _render_leaderboard_card(b: dict) -> str:
 
     return (
         f'<div style="font-family:system-ui,sans-serif;padding:18px;border-radius:12px;border-radius:var(--a2ui-radius,12px);'
-        f'background:#ffffff;background:var(--a2ui-surface,#ffffff);border:1px solid #e5e7eb;border:1px solid var(--a2ui-border,#e5e7eb);">'
+        f'background:#ffffff;background:var(--a2ui-surface,#ffffff);border:1px solid #e5e7eb;border:1px solid var(--asw-border,#e5e7eb);">'
         f'<div style="font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted,#5f6368);margin-bottom:14px;">🏆 {_cv_esc(title_text)}</div>'
         + (f'<ol style="list-style:none;margin:0;padding:0;">{"".join(items_html)}</ol>' if items_html else
            '<p style="margin:0;font-size:0.85rem;color:var(--muted,#5f6368);">No scores yet</p>')
@@ -23672,7 +23672,7 @@ def _render_module_map(b: dict) -> str:
         cards += (
             f'<a href="{_esc(url)}" style="text-decoration:none;">'
             f'<div data-cb="tile" data-key="{_mk}" style="border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:20px;min-height:150px;box-sizing:border-box;'
-            f'background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);cursor:pointer;'
+            f'background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);cursor:pointer;'
             f'transition:border-color 0.2s;height:100%;">'
             f'<div style="font-size:1.5rem;margin-bottom:8px;">{icon}</div>'
             f'<div data-cb="label" data-key="{_mk}" style="font-weight:700;font-size:0.9rem;margin-bottom:4px;">{name}</div>'
@@ -23758,7 +23758,7 @@ def _render_onboarding_stepper(b: dict) -> str:
         )
     return (
         f'<div style="font-family:system-ui,sans-serif;padding:20px;border-radius:12px;border-radius:var(--a2ui-radius,12px);'
-        f'background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);">'
+        f'background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);">'
         f'<div style="font-weight:700;margin-bottom:16px;">{title}</div>'
         f'{steps_html}</div>'
     )
@@ -23791,7 +23791,7 @@ def _render_course_progress_card(b: dict) -> str:
     course_title = b.get('course_title', 'Course Progress')
     return (
         f'<div style="font-family:system-ui,sans-serif;padding:20px;border-radius:12px;border-radius:var(--a2ui-radius,12px);'
-        f'background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);">'
+        f'background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);">'
         f'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">'
         f'<div style="font-weight:700;">{_esc(course_title)}</div>'
         f'<div style="font-size:1.4rem;font-weight:800;color:{_esc(accent)};">{overall_pct}%</div></div>'
@@ -23988,7 +23988,7 @@ def _render_info_card(b: dict) -> str:
     text = _md_inline(b.get('text', ''))
     title_html = ('<div style="font-weight:700;font-size:0.9rem;color:var(--text,#111827);'
                   'margin-bottom:6px;">' + title + '</div>') if title else ''
-    return ('<div data-cb="node" data-key="' f'{_ck(b.get("title"), "info_card")}' '" style="margin:1.25rem 0;padding:16px 20px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);'
+    return ('<div data-cb="node" data-key="' f'{_ck(b.get("title"), "info_card")}' '" style="margin:1.25rem 0;padding:16px 20px;border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);'
             'border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);">' + title_html
             + '<div style="font-size:0.875rem;line-height:1.65;color:var(--text,#374151);">'
             + text + '</div></div>')
@@ -24211,7 +24211,7 @@ def _render_counter_group(b: dict) -> str:
                   '<div data-cb="label" data-key="' + label + '" style="font-size:0.78rem;color:var(--muted,#5f6368);margin-top:4px;text-transform:uppercase;'
                   'letter-spacing:0.08em;">' + label + '</div></div>')
     return ('<div style="margin:1.5rem 0;display:flex;flex-wrap:wrap;justify-content:center;'
-            'gap:8px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);">'
+            'gap:8px;border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);">'
             + items + '</div>')
 _RENDERERS["counter_group"] = _render_counter_group
 
@@ -24324,7 +24324,7 @@ def _render_user_profile_card(b: dict) -> str:
     initials = ''.join(w[0].upper() for w in raw_name.split()[:2]) or 'U'
     sub_div = ('<div style="font-size:0.82rem;color:var(--muted,#5f6368);">' + subtitle + '</div>') if subtitle else ''
     email_div = ('<div style="font-size:0.78rem;color:var(--muted,#5f6368);">' + email + '</div>') if email else ''
-    return ('<div data-cb="node" data-key="' + _ck(b.get('email'), 'user_profile_card') + '" style="margin:1rem 0;padding:20px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);'
+    return ('<div data-cb="node" data-key="' + _ck(b.get('email'), 'user_profile_card') + '" style="margin:1rem 0;padding:20px;border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);'
             'background:#ffffff;background:var(--a2ui-surface,#ffffff);display:flex;align-items:center;gap:16px;">'
             '<div style="width:52px;height:52px;border-radius:50%;background:' + accent + ';'
             'color:#fff;display:flex;align-items:center;justify-content:center;'
@@ -24738,7 +24738,7 @@ def _render_drive_file_card(b: dict) -> str:
              'application/vnd.google-apps.presentation': '📽️',
              'application/pdf': '📄'}
     icon = icons.get(mime, '📁')
-    return ('<div data-cb="node" data-key="' f'{_ck(b.get("name"), "drive_file_card")}' '" style="margin:0.5rem 0;padding:12px 16px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);'
+    return ('<div data-cb="node" data-key="' f'{_ck(b.get("name"), "drive_file_card")}' '" style="margin:0.5rem 0;padding:12px 16px;border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);'
             'background:#ffffff;background:var(--a2ui-surface,#ffffff);display:flex;align-items:center;gap:12px;">'
             '<span style="font-size:1.4rem;">' + icon + '</span>'
             '<div style="flex:1;min-width:0;">'
@@ -24754,7 +24754,7 @@ def _render_drive_file_list(b: dict) -> str:
     folder_id = _esc(b.get('folder_id', ''))
     max_r = int(b.get('max_results', 10))
     note = ('Folder ID: ' + folder_id) if folder_id else 'No folder_id set'
-    return ('<div data-cb="node" data-key="' f'{_ck(b.get("folder_id"), "drive_file_list")}' '" style="margin:1rem 0;padding:14px 18px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);'
+    return ('<div data-cb="node" data-key="' f'{_ck(b.get("folder_id"), "drive_file_list")}' '" style="margin:1rem 0;padding:14px 18px;border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);'
             'background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);">'
             '<div style="font-size:0.75rem;color:var(--muted,#5f6368);font-style:italic;">'
             '🗂️ Drive file list — ' + note + ' (max ' + str(max_r) + ' results). '
@@ -24823,7 +24823,7 @@ def _render_drive_storage_usage(b: dict) -> str:
     total = float(b.get('total_gb', 15))
     pct = min(100, round(used / total * 100)) if total else 0
     color = '#ef4444' if pct > 85 else '#f59e0b' if pct > 65 else accent
-    return ('<div data-cb="node" data-key="' f'{_ck(b.get("label"), "drive_storage_usage")}' '" style="margin:1rem 0;padding:16px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#ffffff;background:var(--a2ui-surface,#ffffff);">'
+    return ('<div data-cb="node" data-key="' f'{_ck(b.get("label"), "drive_storage_usage")}' '" style="margin:1rem 0;padding:16px;border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#ffffff;background:var(--a2ui-surface,#ffffff);">'
             '<div style="display:flex;justify-content:space-between;font-size:0.875rem;'
             'color:#374151;margin-bottom:8px;">'
             '<span style="font-weight:600;">' + label + '</span>'
@@ -24869,7 +24869,7 @@ _RENDERERS["gmail_inbox"] = _render_gmail_inbox
 def _render_gmail_summary(b: dict) -> str:
     query = _esc(b.get('query', ''))
     max_r = int(b.get('max_results', 5))
-    return ('<div data-cb="node" data-key="' f'{_ck(b.get("query"), "gmail_summary")}' '" style="margin:1rem 0;padding:14px 18px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);'
+    return ('<div data-cb="node" data-key="' f'{_ck(b.get("query"), "gmail_summary")}' '" style="margin:1rem 0;padding:14px 18px;border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);'
             'background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);">'
             '<div style="font-size:0.82rem;color:#374151;">'
             '📧 Gmail summary — query: <code style="background:#e5e7eb;padding:1px 6px;border-radius:3px;">'
@@ -24911,7 +24911,7 @@ def _render_tasks_today(b: dict) -> str:
                  '<span>' + icon + '</span>'
                  '<span style="font-size:0.875rem;' + style + '">' + text + '</span></div>')
     empty = '<div style="color:var(--muted,#5f6368);font-size:0.82rem;font-style:italic;">No tasks</div>'
-    return ('<div style="margin:1rem 0;padding:16px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#ffffff;background:var(--a2ui-surface,#ffffff);">'
+    return ('<div style="margin:1rem 0;padding:16px;border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#ffffff;background:var(--a2ui-surface,#ffffff);">'
             '<div style="font-weight:700;font-size:0.875rem;color:#111827;margin-bottom:10px;">'
             '✅ ' + title + '</div>'
             + (rows if rows else empty) + '</div>')
@@ -24923,7 +24923,7 @@ def _render_sheet_preview(b: dict) -> str:
     sheet = _esc(b.get('sheet_name', 'Sheet1'))
     rng = _esc(b.get('range', 'A1:E10'))
     url = ('https://docs.google.com/spreadsheets/d/' + sid) if sid else '#'
-    return (f'<div data-cb="node" data-key="{_ck(b.get("spreadsheet_id"), "sheet_preview")}" style="margin:1rem 0;padding:14px 18px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);">'
+    return (f'<div data-cb="node" data-key="{_ck(b.get("spreadsheet_id"), "sheet_preview")}" style="margin:1rem 0;padding:14px 18px;border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);">'
             '<div style="font-size:0.82rem;color:#374151;">'
             '📊 Sheets preview — <a href="' + url + '" target="_blank" rel="noopener noreferrer" '
             'style="color:#4f46e5;">' + (sid[:20] + '…' if len(sid) > 20 else sid) + '</a>'
@@ -24934,7 +24934,7 @@ _RENDERERS["sheet_preview"] = _render_sheet_preview
 def _render_sheet_stats(b: dict) -> str:
     label = _esc(b.get('label', 'Sheet Stats'))
     accent = _esc(b.get('accent', '#4f46e5'))
-    return (f'<div data-cb="node" data-key="{_ck(b.get("label"), "sheet_stats")}" style="margin:1rem 0;padding:14px 18px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);">'
+    return (f'<div data-cb="node" data-key="{_ck(b.get("label"), "sheet_stats")}" style="margin:1rem 0;padding:14px 18px;border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);">'
             '<div style="font-size:0.82rem;color:#374151;">📊 ' + label
             + ' — live stats require server-side auth.</div></div>')
 _RENDERERS["sheet_stats"] = _render_sheet_stats
@@ -24958,7 +24958,7 @@ def _render_sheet_form_submit(b: dict) -> str:
                    '<label style="display:block;font-size:0.82rem;font-weight:600;color:#374151;margin-bottom:4px;">'
                    + _cv_esc(flabel) + '</label>'
                    '<input type="' + _cv_esc(ftype) + '" name="' + _cv_esc(fname) + '" '
-                   'style="width:100%;padding:8px 12px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);'
+                   'style="width:100%;padding:8px 12px;border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);'
                    'font-size:0.875rem;box-sizing:border-box;"></div>')
     return ('<div style="margin:1rem 0;padding:20px;border:1px solid #e5e7eb;border-radius:10px;background:#fff;">'
             '<div style="font-weight:700;font-size:0.9rem;color:#111827;margin-bottom:14px;">' + title + '</div>'
@@ -25029,7 +25029,7 @@ def _render_prompt_to_schema(b: dict) -> str:
             rows += ('<div style="margin-bottom:10px;">'
                      '<div style="font-size:0.72rem;font-weight:700;color:' + accent + ';'
                      'letter-spacing:0.08em;text-transform:uppercase;margin-bottom:3px;">' + lbl + '</div>'
-                     '<div style="background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);'
+                     '<div style="background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);'
                      'padding:8px 12px;font-size:0.82rem;color:#374151;">' + val + '</div></div>')
     return ('<div style="margin:1rem 0;padding:16px;border:1px solid ' + accent + '33;'
             'border-radius:10px;background:' + accent + '06;">' + rows + '</div>')
@@ -25189,7 +25189,7 @@ def _render_calendar_today(b: dict) -> str:
     title = _esc(b.get('title', "Today's Calendar"))
     max_r = int(b.get('max_results', 5))
     k = _esc(str(b['title'])) if b.get('title') else 'calendar_today'
-    return ('<div data-cb="node" data-key="' + k + '" style="margin:1rem 0;padding:16px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#ffffff;background:var(--a2ui-surface,#ffffff);">'
+    return ('<div data-cb="node" data-key="' + k + '" style="margin:1rem 0;padding:16px;border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#ffffff;background:var(--a2ui-surface,#ffffff);">'
             '<div style="font-weight:700;font-size:0.875rem;color:#111827;margin-bottom:10px;">'
             '📅 ' + title + '</div>'
             '<div style="color:var(--muted,#5f6368);font-size:0.82rem;font-style:italic;">'
@@ -25199,7 +25199,7 @@ _RENDERERS["calendar_today"] = _render_calendar_today
 
 def _render_calendar_upcoming(b: dict) -> str:
     max_r = int(b.get('max_results', 5))
-    return ('<div data-cb="node" data-key="' f'{_ck(None, "calendar_upcoming")}' '" style="margin:1rem 0;padding:16px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#ffffff;background:var(--a2ui-surface,#ffffff);">'
+    return ('<div data-cb="node" data-key="' f'{_ck(None, "calendar_upcoming")}' '" style="margin:1rem 0;padding:16px;border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#ffffff;background:var(--a2ui-surface,#ffffff);">'
             '<div style="font-weight:700;font-size:0.875rem;color:#111827;margin-bottom:10px;">📅 Upcoming Events</div>'
             '<div style="color:var(--muted,#5f6368);font-size:0.82rem;font-style:italic;">'
             'Live calendar events require Google Calendar auth (max ' + str(max_r) + ').</div></div>')
@@ -25537,7 +25537,7 @@ def _render_depth_stack(b: dict) -> str:
         k = _cv_esc(title)
         stack_html = ('<div data-cb="tile" data-key="' + k + '" style="position:absolute;top:' + str(offset) + 'px;left:' + str(offset) + 'px;'
                       'right:' + str(offset) + 'px;padding:20px;border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#ffffff;background:var(--a2ui-surface,#ffffff);'
-                      'border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);box-shadow:0 4px 12px rgba(0,0,0,0.08);'
+                      'border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);box-shadow:0 4px 12px rgba(0,0,0,0.08);'
                       'transform:scale(' + format(scale / 100, 'g') + ');opacity:' + format(opacity / 100, 'g') + ';'
                       'transform-origin:top center;z-index:' + str(len(items) - i) + ';">'
                       + ('<div data-cb="label" data-key="' + k + '" style="font-weight:700;color:#111827;">' + _cv_esc(title) + '</div>' if title else '')
@@ -25607,7 +25607,7 @@ def _render_split_reveal(b: dict) -> str:
             f'@media (prefers-reduced-motion:reduce){{.sr-t-{uid},.sr-b-{uid}{{display:none;}}}}'
             '</style>'
             f'<div data-cb="node" data-key="{_ck(b.get("title"), "split_reveal")}" style="position:relative;border-radius:16px;overflow:hidden;margin:1rem 0;">'
-            f'<div style="padding:32px;background:#ffffff;background:var(--a2ui-surface,#ffffff);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:16px;">'
+            f'<div style="padding:32px;background:#ffffff;background:var(--a2ui-surface,#ffffff);border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:16px;">'
             f'{title_html}{text_html}</div>'
             f'<div class="sr-t-{uid}"></div>'
             f'<div class="sr-b-{uid}"></div>'
@@ -25979,7 +25979,7 @@ def _render_progress_store(b: dict) -> str:
     course_id = _esc(b.get('course_id', 'default'))
     import hashlib
     uid = 'ps' + hashlib.md5(course_id.encode()).hexdigest()[:5]
-    return ('<div id="' + uid + '" style="margin:1rem 0;padding:14px 18px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);'
+    return ('<div id="' + uid + '" style="margin:1rem 0;padding:14px 18px;border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);'
             'border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);">'
             '<div style="display:flex;justify-content:space-between;font-size:0.82rem;'
             'color:#374151;margin-bottom:6px;">'
@@ -26035,7 +26035,7 @@ def _render_stagger_list(b: dict) -> str:
             items_html.append(
                 f'<div class="sl-{uid}" style="animation-delay:{dly_str};padding:10px 14px;'
                 f'background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);'
-                f'border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);'
+                f'border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);'
                 f'border-radius:12px;border-radius:var(--a2ui-radius,12px);'
                 f'font-size:0.9rem;color:#374151;">{_md_inline(it)}</div>'
             )
@@ -26083,7 +26083,7 @@ def _render_step_reveal_sequence(b: dict) -> str:
             parts.append((_text_loose(s), ''))
     inputs = ''.join('<input type="radio" id="' + uid + '-' + str(i) + '" name="' + uid + '"' + (' checked' if i == 0 else '') + ' style="position:absolute;opacity:0;width:1px;height:1px;margin:0;">' for i in range(len(steps)))
     nav = ('<div class="' + uid + '-nav" style="display:flex;gap:6px;flex-wrap:wrap;padding:12px 16px;border-bottom:1px solid #e5e7eb;">'
-           + ''.join('<label for="' + uid + '-' + str(i) + '" class="' + uid + '-lbl" style="cursor:pointer;padding:6px 14px;border-radius:20px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);font-size:0.8rem;font-weight:600;color:var(--muted,#5f6368);transition:all 0.15s;">'
+           + ''.join('<label for="' + uid + '-' + str(i) + '" class="' + uid + '-lbl" style="cursor:pointer;padding:6px 14px;border-radius:20px;border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);font-size:0.8rem;font-weight:600;color:var(--muted,#5f6368);transition:all 0.15s;">'
                      + str(i + 1) + (('. ' + _cv_esc(t)) if t else '') + '</label>' for i, (t, _x) in enumerate(parts))
            + '</div>')
     body = ('<div class="' + uid + '-body">'
@@ -26121,7 +26121,7 @@ def _render_quiz_set(b: dict) -> str:
                          'btn.style.borderColor=correct?\'#10b981\':\'#ef4444\';'
                          '})(this,' + ('true' if is_correct else 'false') + ')" '
                          'style="display:block;width:100%;text-align:left;padding:8px 14px;'
-                         'margin:4px 0;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);background:#ffffff;background:var(--a2ui-surface,#ffffff);'
+                         'margin:4px 0;border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);background:#ffffff;background:var(--a2ui-surface,#ffffff);'
                          'font-size:0.875rem;cursor:pointer;">' + opt_text + '</button>')
         q_html += ('<div class="a2ui-q" style="margin-bottom:16px;">'
                    '<div style="font-weight:600;font-size:0.875rem;color:#111827;margin-bottom:8px;">'
@@ -28011,7 +28011,7 @@ def _render_url_anatomy(b: dict) -> str:
         legend += ('<span style="display:inline-flex;align-items:center;gap:4px;margin-right:12px;font-size:0.72rem;">'
                    '<span style="width:8px;height:8px;border-radius:50%;background:' + color + ';display:inline-block;"></span>'
                    + _esc(label) + '</span>')
-    return ('<div data-cb="node" data-key="' + _ck(b.get('type'), 'url_anatomy') + '" style="margin:1rem 0;padding:20px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);">'
+    return ('<div data-cb="node" data-key="' + _ck(b.get('type'), 'url_anatomy') + '" style="margin:1rem 0;padding:20px;border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);">'
             '<div style="font-family:ui-monospace,monospace;font-size:0.85rem;word-break:break-all;'
             'background:#0d1117;color:#cdd6f4;padding:12px 16px;border-radius:8px;margin-bottom:10px;">'
             + url_html + '</div>'
@@ -28037,7 +28037,7 @@ def _render_playbook(b: dict) -> str:
                        + ('<div style="font-size:0.9rem;line-height:1.7;color:#374151;">' + text + '</div>' if text else '')
                        + '</div>')
     n = len(slides)
-    return ('<div style="margin:1rem 0;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#ffffff;background:var(--a2ui-surface,#ffffff);overflow:hidden;">'
+    return ('<div style="margin:1rem 0;border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#ffffff;background:var(--a2ui-surface,#ffffff);overflow:hidden;">'
             + slide_html
             + '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;'
             'background:#f9fafb;border-top:1px solid #e5e7eb;">'
@@ -28100,7 +28100,7 @@ def _render_comparison_morph(b: dict) -> str:
             '<div id="' + uid + 'sl" style="position:absolute;left:50%;top:0;bottom:0;width:3px;background:#4f46e5;cursor:col-resize;"></div>'
             '</div>'
             '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">'
-            '<div style="padding:14px;border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);">'
+            '<div style="padding:14px;border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);">'
             '<div style="font-size:0.72rem;font-weight:700;color:var(--muted,#5f6368);margin-bottom:6px;">BEFORE</div>'
             '<div style="font-size:0.875rem;color:#374151;">' + before + '</div></div>'
             '<div style="padding:14px;border-radius:8px;background:#f0fdf4;border:1px solid #86efac;">'
@@ -28877,7 +28877,7 @@ def _render_tooltip_glossary(b: dict) -> str:
             '.tg-tip{display:none;position:absolute;bottom:120%;left:50%;transform:translateX(-50%);background:#1f2937;color:#fff;font-size:0.78rem;padding:6px 12px;border-radius:8px;white-space:nowrap;z-index:20;box-shadow:0 4px 14px rgba(0,0,0,0.22);}'
             '.tg-tip::after{content:"";position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:#1f2937;}'
             '.tg-term:hover .tg-tip,.tg-term:focus .tg-tip{display:block;}</style>'
-            '<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:20px;margin:1rem 0;">'
+            '<div style="border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:20px;margin:1rem 0;">'
             + intro_html + rows + '</div>')
 
 
@@ -29725,7 +29725,7 @@ def _render_verdict_checklist(b: dict) -> str:
             f'<span style="flex:0 0 22px;height:22px;border-radius:50%;background:{bg};color:{fg};'
             f'display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.8rem;">'
             f'{mark}</span>'
-            f'<div style="line-height:1.5;"><span style="color:#202124;">{label}</span>'
+            f'<div style="line-height:1.5;"><span style="color:var(--a2ui-ink,#202124);">{label}</span>'
             f'{note_html}'
             '</div></li>'
         )
@@ -29897,7 +29897,7 @@ def _render_trace_step(b: dict) -> str:
         f'<span style="flex:0 0 28px;height:28px;background:#1a73e8;color:white;border-radius:50%;'
         f'display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.85rem;">'
         f'{step_number}</span>'
-        f'<div style="flex:1;padding-top:3px;"><strong style="color:#202124;">{title}</strong>'
+        f'<div style="flex:1;padding-top:3px;"><strong style="color:var(--a2ui-ink,#202124);">{title}</strong>'
         f'<div style="color:#3c4043;line-height:1.6;margin-top:4px;">{body}</div>{code_html}</div></div>'
     )
 
@@ -30955,7 +30955,7 @@ def _render_option_plan_builder(b: dict) -> str:
     )
 
     return (
-        f'<div style="margin:1rem 0;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:12px 16px;">'
+        f'<div style="margin:1rem 0;border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:12px 16px;">'
         f'{options_html}'
         f'<div style="display:flex;justify-content:space-between;margin-top:10px;padding-top:8px;'
         f'border-top:1.5px solid #dadce0;font-weight:600;font-size:0.9rem;color:#3c4043;">'
@@ -31295,7 +31295,7 @@ def _first_text(*vals):
 # component CSS of the chart atoms that style themselves with classes (twin: AtomStyles.html and atoms_charts.gs), emitted with the markup so a page without the GAS stylesheet draws them too
 _METRIC_CSS = '.a2ui-metric-comparison{background: #fff;border: 1px solid #e2e8f0;border-radius: 12px;padding: 20px;display: inline-block;min-width: 260px;}.a2ui-metric-cmp-title{font-size: 13px;font-weight: 600;color: #64748b;margin-bottom: 14px;text-transform: uppercase;letter-spacing: 0.04em;}.a2ui-metric-cmp-body{display: flex;align-items: center;gap: 16px;}.a2ui-metric-cmp-col{flex: 1;text-align: center;}.a2ui-metric-cmp-lbl{font-size: 11px;color: #94a3b8;margin-bottom: 4px;}.a2ui-metric-cmp-val{font-size: 28px;font-weight: 700;color: #1e293b;line-height: 1.1;}.a2ui-metric-unit{font-size: 14px;font-weight: 400;color: #64748b;}.a2ui-metric-cmp-delta{font-size: 18px;font-weight: 700;padding: 6px 12px;border-radius: 8px;border: 1.5px solid;white-space: nowrap;}'
 _SPARK_CSS = '.a2ui-sparkline-set{display: flex;flex-direction: column;gap: 10px;padding: 8px 0;}.a2ui-sparkline-row{display: flex;align-items: center;gap: 10px;}.a2ui-sparkline-label{font-size: 12px;color: #64748b;width: 100px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;}.a2ui-sparkline-val{font-size: 13px;font-weight: 600;min-width: 48px;}'
-_ENTITY_CSS = '.a2ui-entity-list{width: 100%;}.a2ui-entity-list-title{font-size: 14px;font-weight: 600;color: var(--a2ui-text,#171717);margin-bottom: 12px;}.a2ui-entity-grid{display: flex;flex-direction: column;gap: 8px;}.a2ui-entity-card{display: flex;align-items: flex-start;gap: 12px;padding: 12px 14px;background: var(--a2ui-surface,#ffffff);border: 1px solid var(--a2ui-border,#eaeaea);border-radius: var(--a2ui-radius,12px);box-shadow: var(--a2ui-shadow,0 1px 2px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04));transition: box-shadow 0.15s;color: inherit;}.a2ui-entity-card:hover{box-shadow: 0 2px 10px rgba(0,0,0,0.08);border-color: #c7d2fe;}.a2ui-entity-avatar{flex-shrink: 0;}.a2ui-entity-initials{width: 40px;height: 40px;border-radius: 50%;display: flex;align-items: center;justify-content: center;font-size: 16px;font-weight: 700;color: #fff;}.a2ui-entity-info{flex: 1;display: flex;flex-direction: column;gap: 3px;}.a2ui-entity-name{font-size: 14px;font-weight: 600;color: var(--a2ui-text,#171717);}.a2ui-entity-type{font-size: 10px;font-weight: 600;padding: 1px 7px;border-radius: 999px;display: inline-block;text-transform: capitalize;letter-spacing: 0.02em;}.a2ui-entity-desc{font-size: 12px;color: var(--a2ui-muted,#666666);margin-top: 2px;line-height: 1.4;}.a2ui-entity-meta{font-size: 11px;color: var(--a2ui-faint,#757575);}'
+_ENTITY_CSS = '.a2ui-entity-list{width: 100%;}.a2ui-entity-list-title{font-size: 14px;font-weight: 600;color: var(--a2ui-text,#171717);margin-bottom: 12px;}.a2ui-entity-grid{display: flex;flex-direction: column;gap: 8px;}.a2ui-entity-card{display: flex;align-items: flex-start;gap: 12px;padding: 12px 14px;background: var(--a2ui-surface,#ffffff);border: 1px solid var(--asw-border,#eaeaea);border-radius: var(--a2ui-radius,12px);box-shadow: var(--a2ui-shadow,0 1px 2px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04));transition: box-shadow 0.15s;color: inherit;}.a2ui-entity-card:hover{box-shadow: 0 2px 10px rgba(0,0,0,0.08);border-color: #c7d2fe;}.a2ui-entity-avatar{flex-shrink: 0;}.a2ui-entity-initials{width: 40px;height: 40px;border-radius: 50%;display: flex;align-items: center;justify-content: center;font-size: 16px;font-weight: 700;color: #fff;}.a2ui-entity-info{flex: 1;display: flex;flex-direction: column;gap: 3px;}.a2ui-entity-name{font-size: 14px;font-weight: 600;color: var(--a2ui-text,#171717);}.a2ui-entity-type{font-size: 10px;font-weight: 600;padding: 1px 7px;border-radius: 999px;display: inline-block;text-transform: capitalize;letter-spacing: 0.02em;}.a2ui-entity-desc{font-size: 12px;color: var(--a2ui-muted,#666666);margin-top: 2px;line-height: 1.4;}.a2ui-entity-meta{font-size: 11px;color: var(--a2ui-faint,#757575);}'
 
 
 def _fixed_str(x, d):
@@ -32451,7 +32451,7 @@ def _mo_stage_tokens(st_bg: str) -> str:
     d = _CV_THEMES['dark']
     ink, mute, line, soft = d['ink'], d['mute'], d['line'], d['soft']
     return ('--a2ui-text:' + ink + ';--a2ui-muted:' + mute + ';--a2ui-faint:' + mute + ';--a2ui-surface:' + soft + ';--a2ui-surface-muted:' + soft
-            + ';--a2ui-border:' + line + ';--a2ui-border-soft:' + line + ';--a2ui-shadow:none;--text:' + ink + ';--text-muted:' + mute + ';--muted:' + mute
+            + ';--asw-border:' + line + ';--a2ui-border-soft:' + line + ';--a2ui-shadow:none;--text:' + ink + ';--text-muted:' + mute + ';--muted:' + mute
             + ';--surface:' + soft + ';--surface2:' + soft + ';--surface-2:' + soft + ';--border:' + line + ';--bg:' + st_bg + ';')
 
 
@@ -43253,7 +43253,7 @@ def _render_command_step(b: dict) -> str:
     cmd_opacity = '0.5' if done else '1'
     return ('<div data-cb="node" data-key="' f'{_ck(b.get("command"), "command_step")}' '" style="font-family:system-ui,sans-serif;margin:8px 0;">'
             + (('<div style="font-size:0.82rem;font-weight:600;color:#475569;margin-bottom:6px;">' + _gx_esc(label) + '</div>') if _if_truthy(label) else '')
-            + '<div style="display:flex;align-items:stretch;border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);opacity:' + cmd_opacity + ';">'
+            + '<div style="display:flex;align-items:stretch;border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);opacity:' + cmd_opacity + ';">'
             '<div style="flex:1;background:#0f172a;padding:12px 16px;font-family:ui-monospace,monospace;font-size:0.88rem;color:#e2e8f0;white-space:pre-wrap;word-break:break-all;">'
             '<span style="color:#64748b;user-select:none;">$ </span>' + _gx_esc(cmd) + '</div>'
             '<button id="' + uid + '_copy" data-cmd="' + _gx_esc(cmd) + '" onclick="(function(b){'
@@ -43277,7 +43277,7 @@ def _render_jump_nav(b: dict) -> str:
         label, target = _gx_or(_gx_get(link, 'label'), ''), _gx_or(_gx_get(link, 'target'), '')
         lk = _gx_esc(_gx_or(_gx_get(link, 'id'), _gx_or(_gx_get(link, 'target'), label)))
         html += ("<button data-cb=\"tile\" data-key=\"" + lk + "\" onclick=\"(function(){var el=document.getElementById('a2ui-" + _gx_esc(target) + "');if(el)el.scrollIntoView({behavior:'smooth',block:'start'});})()\""
-                 ' style="background:#f1f5f9;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);padding:6px 14px;font-size:0.8rem;font-weight:600;color:#475569;cursor:pointer;white-space:nowrap;transition:background 0.15s;"'
+                 ' style="background:#f1f5f9;border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);padding:6px 14px;font-size:0.8rem;font-weight:600;color:#475569;cursor:pointer;white-space:nowrap;transition:background 0.15s;"'
                  " onmouseover=\"this.style.background='#e2e8f0'\" onmouseout=\"this.style.background='#f1f5f9'\">" + _gx_esc(label) + '</button>')
     return html + '</div>'
 

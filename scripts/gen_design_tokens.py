@@ -36,6 +36,13 @@ def load():
     return d, order
 
 
+def var_name(d, token):
+    """CSS custom-property name (without the leading --) for a token. `css_var_rename` in the
+    YAML maps a token to a private name where the default --a2ui-<name> collides with the
+    official A2UI theme (--a2ui-border there is a border SHORTHAND)."""
+    return d.get("css_var_rename", {}).get(token, "a2ui-" + token)
+
+
 # border/border-* are shorthands: every use in this codebase is "1px solid <colour>", never a
 # different width or style, so the property's colour-only token value gets this prefix. Not
 # true of border-radius, background or box-shadow, which take the token's value as-is.
@@ -54,7 +61,7 @@ def chrome_styles(d):
         for prop, token in props.items():
             v = modern[token]
             prefix = "1px solid " if prop in _BORDER_PROPS else ""
-            css += f"{prop}:{prefix}{v};{prop}:{prefix}var(--a2ui-{token},{v});"
+            css += f"{prop}:{prefix}{v};{prop}:{prefix}var(--{var_name(d, token)},{v});"
         out[recipe] = css
     return out
 
@@ -64,6 +71,7 @@ def render_py(d, order):
 import re
 
 TOKEN_ORDER = {json.dumps(order)}
+TOKEN_VARS = {json.dumps({n: var_name(d, n) for _, n in order})}
 TOKEN_PRESETS = {json.dumps(d["presets"], indent=4)}
 _SAFE = re.compile(r"[{d["safe_chars"]}]{{1,{d["safe_max_len"]}}}")
 
@@ -83,7 +91,7 @@ def token_css(b):
         if not (isinstance(v, str) and v):
             v = preset.get(name)
         if isinstance(v, str) and _SAFE.fullmatch(v):
-            out += "--a2ui-" + name + ":" + v + ";"
+            out += "--" + TOKEN_VARS.get(name, "a2ui-" + name) + ":" + v + ";"
     return out
 '''
 
@@ -92,6 +100,7 @@ def render_gs(d, order):
     safe = d["safe_chars"].replace("/", "\\/")
     return f'''// {HEADER}
 var _TOKEN_ORDER = {json.dumps(order)};
+var _TOKEN_VARS = {json.dumps({n: var_name(d, n) for _, n in order})};
 var _TOKEN_PRESETS = {json.dumps(d["presets"], indent=2)};
 var _TOKEN_SAFE = /^[{safe}]{{1,{d["safe_max_len"]}}}$/;
 
@@ -109,7 +118,7 @@ function _tokenCss(b) {{
     var field = _TOKEN_ORDER[i][0], name = _TOKEN_ORDER[i][1];
     var v = b[field];
     if (!(typeof v === 'string' && v)) v = preset[name];
-    if (typeof v === 'string' && _TOKEN_SAFE.test(v)) out += '--a2ui-' + name + ':' + v + ';';
+    if (typeof v === 'string' && _TOKEN_SAFE.test(v)) out += '--' + (_TOKEN_VARS[name] || ('a2ui-' + name)) + ':' + v + ';';
   }}
   return out;
 }}

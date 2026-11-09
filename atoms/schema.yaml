@@ -17640,7 +17640,7 @@ blocks:
   preset: 'string (optional). "modern" = Geist/shadcn-style tokens (12px radius, hairline #eaeaea borders, soft shadow). Explicit fields below override the preset.'
   radius: CSS length (optional). Card corner radius token --a2ui-radius. Read by the report-cluster atoms (metric_delta, status_dashboard, entity_list, timeline, badge, table; uptime_timeline on web only). Token names and presets are declared in atoms/design-tokens.yaml.
   radius_sm: CSS length (optional). Small-element radius token --a2ui-radius-sm.
-  border_color: colour (optional). Card border token --a2ui-border.
+  border_color: colour (optional). Card border token --asw-border.
   border_soft_color: colour (optional). Row divider token --a2ui-border-soft.
   surface_color: colour (optional). Card background token --a2ui-surface.
   surface_muted_color: colour (optional). Zebra/header background token --a2ui-surface-muted.

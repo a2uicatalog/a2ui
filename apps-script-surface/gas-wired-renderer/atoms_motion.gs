@@ -1234,7 +1234,7 @@ function _moStageTokens(stBg) {
   if (!_moStageDark(stBg)) return '';
   var d = _CV_THEMES.dark, ink = d.ink, mute = d.mute, line = d.line, soft = d.soft;
   return '--a2ui-text:' + ink + ';--a2ui-muted:' + mute + ';--a2ui-faint:' + mute + ';--a2ui-surface:' + soft + ';--a2ui-surface-muted:' + soft
-    + ';--a2ui-border:' + line + ';--a2ui-border-soft:' + line + ';--a2ui-shadow:none;--text:' + ink + ';--text-muted:' + mute + ';--muted:' + mute
+    + ';--asw-border:' + line + ';--a2ui-border-soft:' + line + ';--a2ui-shadow:none;--text:' + ink + ';--text-muted:' + mute + ';--muted:' + mute
     + ';--surface:' + soft + ';--surface2:' + soft + ';--surface-2:' + soft + ';--border:' + line + ';--bg:' + stBg + ';';
 }
 
