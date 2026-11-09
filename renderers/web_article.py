@@ -21498,6 +21498,11 @@ def _render_workspace_logo_strip(b: dict) -> str:
 _RENDERERS["workspace_logo_strip"] = _render_workspace_logo_strip
 
 
+def _raf_unless_rm(fn: str) -> str:
+    """Twin of _rafUnlessRM (atoms_canvas.gs): requestAnimationFrame call that is skipped under prefers-reduced-motion."""
+    return 'if(!(window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches))requestAnimationFrame(' + fn + ');'
+
+
 def _render_canvas_plexus(b: dict) -> str:
     uid = 'plx' + _wa_uid(b)[:6]
     count = int(b.get('count', 80))
@@ -21516,7 +21521,7 @@ def _render_canvas_plexus(b: dict) -> str:
         f'window.addEventListener("resize",resize);'
         f'for(var i=0;i<{count};i++)nodes.push({{x:Math.random()*W,y:Math.random()*H,'
         f'vx:(Math.random()-0.5)*{speed},vy:(Math.random()-0.5)*{speed}}});'
-        f'(function loop(){{requestAnimationFrame(loop);x.fillStyle="{_esc(bg)}";x.fillRect(0,0,W,H);'
+        f'(function loop(){{{_raf_unless_rm("loop")}x.fillStyle="{_esc(bg)}";x.fillRect(0,0,W,H);'
         f'nodes.forEach(function(n){{n.x+=n.vx;n.y+=n.vy;'
         f'if(n.x<0||n.x>W)n.vx*=-1;if(n.y<0||n.y>H)n.vy*=-1;'
         f'x.beginPath();x.arc(n.x,n.y,{dot_size},0,Math.PI*2);x.fillStyle="{_esc(colour)}";x.fill();}});'
@@ -23357,7 +23362,7 @@ def _render_isometric_mesh(b: dict) -> str:
         f'{label_html}'
         f'<script>(function(){{var c=document.getElementById("{uid}"),x=c.getContext("2d");'
         f'var W,H;function resize(){{W=c.width=c.offsetWidth;H=c.height=c.offsetHeight;}}resize();'
-        f'var t=0;(function loop(){{requestAnimationFrame(loop);x.fillStyle="{_esc(bg)}";x.fillRect(0,0,W,H);'
+        f'var t=0;(function loop(){{{_raf_unless_rm("loop")}x.fillStyle="{_esc(bg)}";x.fillRect(0,0,W,H);'
         f'var cols=16,rows=16,cx=W/2,cy=H*0.45,s=W/cols*0.9;'
         f'for(var i=0;i<cols;i++)for(var j=0;j<rows;j++){{'
         f'var dx=(i-cols/2)*s,dy=(j-rows/2)*s,dz=Math.sin((i+j)*0.4+t)*12;'
@@ -27475,7 +27480,7 @@ def _render_geo_contour_waves(b: dict) -> str:
             'var W=c.width,H=c.height,x=c.getContext("2d");'
             'var col="' + color + '",inten=' + f'{intensity:.2f}' + ',t=0;'
             '(function loop(){'
-            'requestAnimationFrame(loop);'
+            + _raf_unless_rm('loop') +
             'x.clearRect(0,0,W,H);'
             'var rows=12;'
             'for(var r=0;r<rows;r++){'
@@ -27582,7 +27587,7 @@ def _render_geo_iso_fleet(b: dict) -> str:
             'var planes=Array.from({length:6},function(_,i){'
             'return{x:Math.random()*W,y:H*0.15+i*(H*0.65/6),spd:0.4+Math.random()*0.6};});'
             '(function loop(){'
-            'requestAnimationFrame(loop);'
+            + _raf_unless_rm('loop') +
             'x.clearRect(0,0,W,H);'
             'planes.forEach(function(p){'
             'p.x+=p.spd;if(p.x>W+30)p.x=-30;'
@@ -27608,7 +27613,7 @@ def _render_geo_iso_heli_hover(b: dict) -> str:
             'var W=c.width,H=c.height,x=c.getContext("2d");'
             'var t=0;'
             '(function loop(){'
-            'requestAnimationFrame(loop);'
+            + _raf_unless_rm('loop') +
             'x.clearRect(0,0,W,H);'
             'var hy=H/2+Math.sin(t*2)*8;'
             'x.save();x.translate(W/2,hy);'
@@ -27637,7 +27642,7 @@ def _render_geo_iso_rocket_launch(b: dict) -> str:
             'var W=c.width,H=c.height,x=c.getContext("2d");'
             'var t=0;'
             '(function loop(){'
-            'requestAnimationFrame(loop);'
+            + _raf_unless_rm('loop') +
             'x.clearRect(0,0,W,H);'
             'var ry=H-40-Math.pow(t,1.4)*60;ry=Math.max(30,ry);'
             'x.save();x.translate(W/2,ry);'

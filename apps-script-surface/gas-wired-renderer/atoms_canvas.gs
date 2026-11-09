@@ -2,6 +2,15 @@
 // Zero dependencies. Pure canvas + requestAnimationFrame. GAS CSP-safe.
 // Surfaces: G M W
 
+// requestAnimationFrame call for an atom's own inline <script>, skipped under
+// prefers-reduced-motion: the frame that has just been drawn stays on screen
+// (WCAG 2.2.2 / 2.3.3). Without this a canvas loop ran for ever, 60 fps, for
+// users who asked for no motion, and a page that renders many such atoms in turn
+// kept every earlier canvas's GPU work queued (genui-ledger sweep: floor 10-20x).
+function _rafUnlessRM(fn) {
+  return 'if(!(window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches))requestAnimationFrame(' + fn + ');';
+}
+
 // ── canvas_plexus ─────────────────────────────────────────────────────────────
 // Floating particle network: nodes drift independently, connect with
 // proximity-weighted lines, repel from cursor with inverse-gravity physics.
@@ -104,7 +113,7 @@ _RENDERERS['canvas_plexus'] = function(b) {
           'ctx.arc(nodes[i].x,nodes[i].y,DS,0,Math.PI*2);' +
           'ctx.fill();' +
         '}' +
-        'requestAnimationFrame(frame);' +
+        _rafUnlessRM('frame') +
       '}' +
       'frame();' +
     '})();<\/script>';
@@ -546,7 +555,7 @@ _RENDERERS['isometric_mesh'] = function(b) {
       'c.addEventListener("mousedown",function(){AR=false;});' +
       '(function spin(){' +
         'if(AR){theta+=0.004;draw();}' +
-        'requestAnimationFrame(spin);' +
+        _rafUnlessRM('spin') +
       '})();' +
       'draw();' +
     '})();<\/script>';
@@ -607,7 +616,7 @@ _RENDERERS['geo_contour_waves'] = function(b) {
           '}' +
           'ctx.stroke();' +
         '}' +
-        'requestAnimationFrame(draw);' +
+        _rafUnlessRM('draw') +
       '}' +
       'c.addEventListener("mousedown",function(e){drag=true;lx=e.clientX;ly=e.clientY;c.style.cursor="grabbing";});' +
       'document.addEventListener("mouseup",function(){drag=false;c.style.cursor="grab";});' +
@@ -1855,7 +1864,7 @@ _RENDERERS['geo_iso_rocket_launch'] = function(b) {
         'drawSolidRocketCylinder(0,2.8,35,2.5,segs,b2x,b2y,0,"booster");' +
         'drawSolidRocketCylinder(0,7,55,7,segs,0,posY,0,"core");' +
         'drawSolidRocketCylinder(55,7,75,0.2,segs,0,posY,0,"payload");' +
-        'requestAnimationFrame(draw);' +
+        _rafUnlessRM('draw') +
       '}' +
       'draw();' +
     '})();<\/script>';
@@ -2402,7 +2411,7 @@ _RENDERERS['geo_iso_heli_hover'] = function(b) {
           'ctx.lineTo(fHub.x+Math.sin(fAng)*fR,fHub.y+Math.cos(fAng)*fR);ctx.stroke();' +
         '}' +
 
-        'requestAnimationFrame(frame);' +
+        _rafUnlessRM('frame') +
       '}' +
       'frame();' +
     '})();<\/script>';
@@ -2730,7 +2739,7 @@ _RENDERERS['geo_iso_fleet'] = function(b){
         '}else if(tab==="ac")drawAC();'+
         'else if(tab==="rk")drawRK();'+
         'else drawHH();'+
-        'requestAnimationFrame(loop);'+
+        _rafUnlessRM('loop')+
       '}'+
       'loop();'+
     '})();<\/script>';

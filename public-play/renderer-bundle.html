@@ -7808,7 +7808,7 @@ return 'var _SPL_CALLS=[' + codeArr.join(',') + '];' +
 '}' +
 '}' +
 'function frame(){' +
-'requestAnimationFrame(frame);' +
+_rafUnlessRM('frame') +
 'var _cw=c.offsetWidth||window.innerWidth||700,_ch=c.offsetHeight||window.innerHeight||520;' +
 'if(_cw!==c.width||_ch!==c.height){c.width=_cw;c.height=_ch;W=_cw;H=_ch;CX=W/2;CY=H*0.48;}' +
 (spotlight
@@ -12369,6 +12369,9 @@ _brickMount.toString() + ')((' + _brickKit.toString() + ')(),' + json + ',"' + u
 
 
 // ==== atoms_canvas.gs ====
+function _rafUnlessRM(fn) {
+return 'if(!(window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches))requestAnimationFrame(' + fn + ');';
+}
 _RENDERERS['canvas_plexus'] = function(b) {
 var count  = parseInt(b.count, 10) || 80;
 var colour = b.colour   || '#4f46e5';
@@ -12452,7 +12455,7 @@ return '<div style="border-radius:14px;overflow:hidden;">' +
 'ctx.arc(nodes[i].x,nodes[i].y,DS,0,Math.PI*2);' +
 'ctx.fill();' +
 '}' +
-'requestAnimationFrame(frame);' +
+_rafUnlessRM('frame') +
 '}' +
 'frame();' +
 '})();<\/script>';
@@ -12850,7 +12853,7 @@ return '<canvas aria-hidden="true" id="' + uid + '" height="' + h + '" ' +
 'c.addEventListener("mousedown",function(){AR=false;});' +
 '(function spin(){' +
 'if(AR){theta+=0.004;draw();}' +
-'requestAnimationFrame(spin);' +
+_rafUnlessRM('spin') +
 '})();' +
 'draw();' +
 '})();<\/script>';
@@ -12900,7 +12903,7 @@ _esc(title) +
 '}' +
 'ctx.stroke();' +
 '}' +
-'requestAnimationFrame(draw);' +
+_rafUnlessRM('draw') +
 '}' +
 'c.addEventListener("mousedown",function(e){drag=true;lx=e.clientX;ly=e.clientY;c.style.cursor="grabbing";});' +
 'document.addEventListener("mouseup",function(){drag=false;c.style.cursor="grab";});' +
@@ -13952,7 +13955,7 @@ return '<style>' +
 'drawSolidRocketCylinder(0,2.8,35,2.5,segs,b2x,b2y,0,"booster");' +
 'drawSolidRocketCylinder(0,7,55,7,segs,0,posY,0,"core");' +
 'drawSolidRocketCylinder(55,7,75,0.2,segs,0,posY,0,"payload");' +
-'requestAnimationFrame(draw);' +
+_rafUnlessRM('draw') +
 '}' +
 'draw();' +
 '})();<\/script>';
@@ -14401,7 +14404,7 @@ return '<style>' +
 'ctx.beginPath();ctx.moveTo(fHub.x-Math.sin(fAng)*fR,fHub.y-Math.cos(fAng)*fR);' +
 'ctx.lineTo(fHub.x+Math.sin(fAng)*fR,fHub.y+Math.cos(fAng)*fR);ctx.stroke();' +
 '}' +
-'requestAnimationFrame(frame);' +
+_rafUnlessRM('frame') +
 '}' +
 'frame();' +
 '})();<\/script>';
@@ -14726,7 +14729,7 @@ return '<style>'+
 '}else if(tab==="ac")drawAC();'+
 'else if(tab==="rk")drawRK();'+
 'else drawHH();'+
-'requestAnimationFrame(loop);'+
+_rafUnlessRM('loop')+
 '}'+
 'loop();'+
 '})();<\/script>';

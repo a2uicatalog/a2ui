@@ -761,7 +761,7 @@ _RENDERERS['airspace_command_deck'] = function(b) {
       '}' +
 
       'function frame(){' +
-        'requestAnimationFrame(frame);' +
+        _rafUnlessRM('frame') +
         // Resize canvas if it was initialised while hidden (slide was display:none)
         'var _cw=c.offsetWidth||window.innerWidth||700,_ch=c.offsetHeight||window.innerHeight||520;' +
         'if(_cw!==c.width||_ch!==c.height){c.width=_cw;c.height=_ch;W=_cw;H=_ch;CX=W/2;CY=H*0.48;}' +
