@@ -8240,7 +8240,7 @@ headerRow +
 '"GMMN":"CASABLANCA","DTTA":"TUNIS","DAAG":"ALGER",' +
 '"CYUL":"MONTRÉAL","KJFK":"NEW YORK","OMDB":"DUBAI"' +
 '};' +
-'google.script.run' +
+'if(typeof google!=="undefined"&&google.script&&google.script.run){google.script.run' +
 '.withSuccessHandler(function(result){' +
 'if(!result||result.error||!result.flights)return;' +
 'var now=new Date();' +
@@ -8259,7 +8259,7 @@ headerRow +
 'var srcEl=document.getElementById("' + uid + 'src");' +
 'if(srcEl)srcEl.textContent="DONNÉES LIVE OPENSKY · " + result.flights.length + " VOLS";' +
 '})' +
-'.getFlightsLFBO("' + _esc(mode) + '","' + _esc(airport) + '");' +
+'.getFlightsLFBO("' + _esc(mode) + '","' + _esc(airport) + '");}' +
 (dataSource ?
 '(function(){' +
 'var LFBO_LAT=43.629,LFBO_LON=1.363;' +
