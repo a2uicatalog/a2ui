@@ -26896,7 +26896,7 @@ def _render_globe_3d(b: dict) -> str:
     js = (
         '(function(){'
         'var c=document.getElementById("' + uid + '");if(!c)return;'
-        'var C=' + cfg + ';var x=c.getContext("2d");if(!x)return;'
+        'var C=' + cfg + ';var x=c.getContext("2d",(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches)?{willReadFrequently:true}:undefined);if(!x)return;'
         'var G=(' + _GEO_LIB_JS + ')();var sv=document.getElementById("' + uid + 's");'
         'var col=C.color||(getComputedStyle(c).getPropertyValue("--accent").trim())||"#4f46e5";'
         'var S=C.size,k=c.width/S,f=G.focus(C),aY=-f[0]*G.D2R,aX=f[1]*G.D2R,shown=false;'

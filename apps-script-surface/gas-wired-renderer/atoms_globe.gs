@@ -182,6 +182,9 @@ function _g3dClean(b) {
   return {dots: dots, arcs: arcs};
 }
 
+// Reduced motion draws one still frame, so the 2x canvas asks for a CPU context (willReadFrequently):
+// on a software-GL page the single 600x600 GPU draw queued ~0.3-0.6 s of raster work that landed on the
+// NEXT render (genui-ledger sweep: floor 330-570 ms after globe_3d, 40 ms with this).
 // globe_3d: orthographic projection (d3.geoOrthographic) + d3.geoGraticule + great-circle arcs (d3.geoInterpolate).
 // The SVG is rendered here, server-side, and is complete without script; the canvas on top is the progressive
 // enhancement (drag, inertia, wheel zoom, spin, pulses) drawing the same scene from the same maths.
@@ -206,7 +209,7 @@ _RENDERERS['globe_3d'] = function(b) {
     + _g3dAltHtml(b.dots, b.arcs)
     + '</div>'
     + '<script>(function(){'
-    + 'var c=document.getElementById("' + uid + '");var x=c.getContext("2d");'
+    + 'var c=document.getElementById("' + uid + '");var x=c.getContext("2d",(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches)?{willReadFrequently:true}:undefined);'
     + 'var C=' + G.js(C) + ';var G=(' + _geoLib.toString() + ')();'
     + 'var sv=document.getElementById("' + uid + 's"),wr=document.getElementById("' + uid + 'w"),col=C.color;'
     + 'var S=C.size,k=c.width/S,f=G.focus(C),aY=-f[0]*G.D2R,aX=f[1]*G.D2R,shown=false;'

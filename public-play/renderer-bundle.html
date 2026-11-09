@@ -24316,7 +24316,7 @@ return '<div style="overflow:visible;display:flex;justify-content:center;margin:
 + _g3dAltHtml(b.dots, b.arcs)
 + '</div>'
 + '<script>(function(){'
-+ 'var c=document.getElementById("' + uid + '");var x=c.getContext("2d");'
++ 'var c=document.getElementById("' + uid + '");var x=c.getContext("2d",(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches)?{willReadFrequently:true}:undefined);'
 + 'var C=' + G.js(C) + ';var G=(' + _geoLib.toString() + ')();'
 + 'var sv=document.getElementById("' + uid + 's"),wr=document.getElementById("' + uid + 'w"),col=C.color;'
 + 'var S=C.size,k=c.width/S,f=G.focus(C),aY=-f[0]*G.D2R,aX=f[1]*G.D2R,shown=false;'
