@@ -3363,7 +3363,7 @@ _RENDERERS['halftone_wave'] = function(b) {
   var cfg = '{sp:' + sp + ',sc:0.0045,spd:' + spd + ',wave:"' + wave + '",focus:"' + focus + '",ink:"' + ink + '",paper:"' + paper + '",acc:"' + (acc || ink) + '",hasAcc:' + (acc ? 'true' : 'false') + ',inter:' + inter + '}';
   var pal = [_ffRgb(acc || ink)];
   var text = _ffOverlay(align, _ffRgb(paper), pal, b.eyebrow || '', b.title || '', b.body || '', ink);
-  return _ffPanel(height, paper, _ffCanvas('hw-' + uid) + text + _ffScript(_HALFTONE_WAVE_JS, uid, cfg));
+  return '<!--asw-keep-->' + _ffPanel(height, paper, _ffCanvas('hw-' + uid) + text + _ffScript(_HALFTONE_WAVE_JS, uid, cfg)) + '<!--/asw-keep-->';   // fixed light paper canvas: skip the dark remap
 };
 _RENDERERS['message_lanes'] = function(b) {
   var uid = Math.random().toString(36).substr(2, 6);

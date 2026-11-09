@@ -1170,6 +1170,9 @@ parts[i] = mm[1] + 'color' + mm[2] + 'color-mix(in srgb,' + _aswHex(c) + ' 42%,#
 return parts.join(';');
 }
 function _aswDarkLit(h) {
+if (h.indexOf('<!--asw-keep-->') >= 0) {
+return h.split(/<!--asw-keep-->([\s\S]*?)<!--\/asw-keep-->/).map(function (seg, i) { return i % 2 ? seg : _aswDarkLit(seg); }).join('');
+}
 return h.replace(/(<style\b[^>]*>)([\s\S]*?)(<\/style>)/g, function (m0, a, css, c) {
 return a + css.replace(/\{([^{}]*)\}/g, function (m1, d) { return '{' + _aswDarkDecl(d) + '}'; }) + c;
 }).replace(/(\sstyle=")([^"]*)(")/g, function (m0, a, d, c) { return a + _aswDarkDecl(d) + c; });
@@ -1233,7 +1236,8 @@ parts.push('<!-- a2ui: unknown or unsupported atom "' + _esc(btype) + '" -->');
 }
 }
 var _out = parts.join('\n\n');
-return theme === 'dark' ? _aswDarkLit(_out) : _out;   // DK2: remap light-only literals; light output never passes through it
+if (theme !== 'dark') return _out.indexOf('<!--asw-keep-->') >= 0 ? _out.replace(/<!--\/?asw-keep-->/g, '') : _out;
+return _aswDarkLit(_out);   // DK2: remap light-only literals; light output never passes through it
 }
 /**
  * Apps Script HTML Template include helper.
@@ -4393,6 +4397,7 @@ return '<style>'
 + '.fcf' + uid + ',.fcb' + uid + '{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:12px;padding:20px;box-sizing:border-box;overflow:hidden;}'
 + '.fcf' + uid + '{background:' + frontBg + ';border:2px solid ' + accent + '33;}'
 + '.fcb' + uid + '{background:' + backBg + ';color:#fff;transform:rotateY(180deg);}'
++ '.fcb' + uid + ' p{color:inherit;}'   // the global p{color:var(--muted)} made the back text grey on the accent (2.7:1)
 + '.fch' + uid + '{position:absolute;bottom:10px;right:14px;font-size:0.62rem;opacity:0.45;pointer-events:none;}'
 + hoverRule
 + '</style>'
@@ -15265,7 +15270,7 @@ var inter = b.interactive === false ? 'false' : 'true';
 var cfg = '{sp:' + sp + ',sc:0.0045,spd:' + spd + ',wave:"' + wave + '",focus:"' + focus + '",ink:"' + ink + '",paper:"' + paper + '",acc:"' + (acc || ink) + '",hasAcc:' + (acc ? 'true' : 'false') + ',inter:' + inter + '}';
 var pal = [_ffRgb(acc || ink)];
 var text = _ffOverlay(align, _ffRgb(paper), pal, b.eyebrow || '', b.title || '', b.body || '', ink);
-return _ffPanel(height, paper, _ffCanvas('hw-' + uid) + text + _ffScript(_HALFTONE_WAVE_JS, uid, cfg));
+return '<!--asw-keep-->' + _ffPanel(height, paper, _ffCanvas('hw-' + uid) + text + _ffScript(_HALFTONE_WAVE_JS, uid, cfg)) + '<!--/asw-keep-->';   // fixed light paper canvas: skip the dark remap
 };
 _RENDERERS['message_lanes'] = function(b) {
 var uid = Math.random().toString(36).substr(2, 6);

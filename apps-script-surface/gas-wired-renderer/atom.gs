@@ -72,7 +72,13 @@ function _aswDarkDecl(d) {
   }
   return parts.join(';');
 }
+// Segments wrapped in <!--asw-keep-->...<!--/asw-keep--> are NOT remapped: for atoms whose canvas paints a fixed light "paper"
+// (halftone_wave), remapping only the text/panel would put white text on the light canvas (1.04:1). The markers are stripped
+// from the output in both themes, so light output stays byte-identical.
 function _aswDarkLit(h) {
+  if (h.indexOf('<!--asw-keep-->') >= 0) {
+    return h.split(/<!--asw-keep-->([\s\S]*?)<!--\/asw-keep-->/).map(function (seg, i) { return i % 2 ? seg : _aswDarkLit(seg); }).join('');
+  }
   return h.replace(/(<style\b[^>]*>)([\s\S]*?)(<\/style>)/g, function (m0, a, css, c) {
     return a + css.replace(/\{([^{}]*)\}/g, function (m1, d) { return '{' + _aswDarkDecl(d) + '}'; }) + c;
   }).replace(/(\sstyle=")([^"]*)(")/g, function (m0, a, d, c) { return a + _aswDarkDecl(d) + c; });
@@ -153,7 +159,8 @@ function renderAtoms(blocks, opts) {
   }
   
   var _out = parts.join('\n\n');
-  return theme === 'dark' ? _aswDarkLit(_out) : _out;   // DK2: remap light-only literals; light output never passes through it
+  if (theme !== 'dark') return _out.indexOf('<!--asw-keep-->') >= 0 ? _out.replace(/<!--\/?asw-keep-->/g, '') : _out;
+  return _aswDarkLit(_out);   // DK2: remap light-only literals; light output never passes through it
 }
 
 /**
@@ -3850,6 +3857,7 @@ _RENDERERS['flip_card'] = function(b) {
     + '.fcf' + uid + ',.fcb' + uid + '{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:12px;padding:20px;box-sizing:border-box;overflow:hidden;}'
     + '.fcf' + uid + '{background:' + frontBg + ';border:2px solid ' + accent + '33;}'
     + '.fcb' + uid + '{background:' + backBg + ';color:#fff;transform:rotateY(180deg);}'
+    + '.fcb' + uid + ' p{color:inherit;}'   // the global p{color:var(--muted)} made the back text grey on the accent (2.7:1)
     + '.fch' + uid + '{position:absolute;bottom:10px;right:14px;font-size:0.62rem;opacity:0.45;pointer-events:none;}'
     + hoverRule
     + '</style>'
