@@ -30,6 +30,13 @@
 // The vote button on each slide reuses photo_grid's click contract exactly
 // (data-row-json + the same generalised [data-row-json] binder in
 // A2UIState.html) — not a new mechanism, the third consumer of that one.
+// loading="lazy" defers a fetch; a data: URL has nothing to fetch, so lazy only
+// strands the image. The slides sit in a display:none overlay until the
+// checkbox is ticked, and a lazy image in a display:none subtree never starts
+// loading, so img.complete stayed false for ever and anything that waits for
+// images (the genui-ledger sweep: 7 of 7 settle timeouts) never settled.
+// Remote URLs keep loading="lazy" (hidden slides should not all download up front).
+function _psLazy(url) { return /^\s*data:/i.test(String(url == null ? '' : url)) ? '' : ' loading="lazy"'; }
 _RENDERERS['photo_stepper'] = function(b) {
   var images = b.images || b.rows || [];
   if (!images.length) return '<p style="color:#617592;font-style:italic;">Nothing to show yet.</p>';
@@ -163,7 +170,7 @@ _RENDERERS['photo_stepper'] = function(b) {
     // on a Maison board tile 2026-08-16. The slide's own dark background
     // already reads as empty; this just doesn't draw the broken icon on it.
     var media = img.url
-      ? '<img src="' + _esc(img.url) + '" alt="' + _esc(img.alt || '') + '" loading="lazy">'
+      ? '<img src="' + _esc(img.url) + '" alt="' + _esc(img.alt || '') + '"' + _psLazy(img.url) + '>'
       : '<div style="width:100%;height:100%;display:flex;align-items:center;' +
         'justify-content:center;color:#6b7280;font-size:1rem;background:#000;">No photo available</div>';
     var imgK = img.id || img.name || img.alt || '';
@@ -184,7 +191,7 @@ _RENDERERS['photo_stepper'] = function(b) {
 
   return css +
     '<label for="' + mid + '" class="' + sid + '-trigger">' +
-    '<img src="' + _esc(first.url || '') + '" alt="" loading="lazy">' +
+    '<img src="' + _esc(first.url || '') + '" alt=""' + _psLazy(first.url) + '>' +
     '<span class="' + sid + '-trigger-label">' + _esc(triggerLabel) + ' &middot; ' + n + ' photos</span>' +
     '</label>' +
     '<input type="checkbox" id="' + mid + '">' +

@@ -44362,6 +44362,11 @@ def _render_photo_grid(b: dict) -> str:
     return css + '<div class="' + gid + '" data-photo-grid="1">' + _photo_grid_items(images) + '</div>'
 
 
+def _ps_lazy(url) -> str:
+    """Twin of _psLazy (atoms_photo_stepper.gs): no loading="lazy" on data: URLs (nothing to defer; hidden-overlay images never completed)."""
+    return '' if re.match(r'\s*data:', str('' if url is None else url), re.I) else ' loading="lazy"'
+
+
 def _render_photo_stepper(b: dict) -> str:
     images_v = _gx_or(_gx_or(_if_g(b, 'images'), _if_g(b, 'rows')), [])
     if not _if_truthy(_gx_len(images_v)):
@@ -44414,14 +44419,14 @@ def _render_photo_stepper(b: dict) -> str:
         voters = ('<div class="ps-voters">' + _gx_esc(sv) + '</div>') if _if_truthy(sv) else ''
         price = ('<div class="ps-price">' + _gx_esc(pv) + '</div>') if _if_truthy(pv) else ''
         source = ('<a class="' + sid + '-source" href="' + _gx_esc(su) + '" target="_blank" rel="noopener">Open source listing &#8599;</a>') if _if_truthy(su) else ''
-        media = (('<img src="' + _gx_esc(url) + '" alt="' + _gx_esc(_gx_or(_gx_get(img, 'alt'), '')) + '" loading="lazy">') if _if_truthy(url)
+        media = (('<img src="' + _gx_esc(url) + '" alt="' + _gx_esc(_gx_or(_gx_get(img, 'alt'), '')) + '"' + _ps_lazy(url) + '>') if _if_truthy(url)
                  else '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#6b7280;font-size:1rem;background:#000;">No photo available</div>')
         img_k = _gx_or(_gx_get(img, 'id'), _gx_or(_gx_get(img, 'name'), _gx_or(_gx_get(img, 'alt'), '')))
         slides_html += ('<div data-cb="tile" data-key="' + _gx_esc(_if_str(img_k)) + '" class="' + sid + '-slide" data-ps-slide="' + str(i) + '" data-ps-id="' + _gx_esc(_if_str(_gx_or(_gx_get(img, 'id'), ''))) + '">' + media + badge
                         + '<div class="' + sid + '-cap"><div data-cb="label" data-key="' + _gx_esc(_if_str(img_k)) + '" class="ps-name">' + _gx_esc(_gx_or(_gx_get(img, 'name'), _gx_or(_gx_get(img, 'alt'), ''))) + '</div>' + price + voters
                         + '<button type="button" class="' + sid + '-vote" data-row-json="' + row_json + '">' + ('★ Starred — tap to unstar' if active else '☆ Star this one') + '</button>' + source + '</div></div>')
     counters = ''.join('<span class="' + sid + '-count ' + sid + '-count' + str(i + 1) + '">' + str(i + 1) + ' / ' + str(n) + '</span>' for i in range(n))
-    return (css + '<label for="' + mid + '" class="' + sid + '-trigger"><img src="' + _gx_esc(_gx_or(_gx_get(first, 'url'), '')) + '" alt="" loading="lazy"><span class="' + sid + '-trigger-label">' + _gx_esc(trigger_label) + ' &middot; ' + str(n) + ' photos</span></label>'
+    return (css + '<label for="' + mid + '" class="' + sid + '-trigger"><img src="' + _gx_esc(_gx_or(_gx_get(first, 'url'), '')) + '" alt=""' + _ps_lazy(_gx_get(first, 'url')) + '><span class="' + sid + '-trigger-label">' + _gx_esc(trigger_label) + ' &middot; ' + str(n) + ' photos</span></label>'
             '<input type="checkbox" id="' + mid + '">' + per_slide + '<div class="' + sid + '" data-photo-stepper="1">' + inputs + '<div class="' + sid + '-inner"><div class="' + sid + '-topbar"><label for="' + mid + '" class="' + sid + '-close">&larr; Back</label>' + counters + '</div>'
             + nav_sets + '<div class="' + sid + '-track">' + slides_html + '</div></div></div>')
 

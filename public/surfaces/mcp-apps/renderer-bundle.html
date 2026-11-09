@@ -36975,6 +36975,7 @@ media + badge + cap + '</figure>';
 
 
 // ==== atoms_photo_stepper.gs ====
+function _psLazy(url) { return /^\s*data:/i.test(String(url == null ? '' : url)) ? '' : ' loading="lazy"'; }
 _RENDERERS['photo_stepper'] = function(b) {
 var images = b.images || b.rows || [];
 if (!images.length) return '<p style="color:#617592;font-style:italic;">Nothing to show yet.</p>';
@@ -37043,7 +37044,7 @@ var price = img.price_display ? '<div class="ps-price">' + _esc(img.price_displa
 var source = img.source_url ? '<a class="' + sid + '-source" href="' + _esc(img.source_url) +
 '" target="_blank" rel="noopener">Open source listing &#8599;</a>' : '';
 var media = img.url
-? '<img src="' + _esc(img.url) + '" alt="' + _esc(img.alt || '') + '" loading="lazy">'
+? '<img src="' + _esc(img.url) + '" alt="' + _esc(img.alt || '') + '"' + _psLazy(img.url) + '>'
 : '<div style="width:100%;height:100%;display:flex;align-items:center;' +
 'justify-content:center;color:#6b7280;font-size:1rem;background:#000;">No photo available</div>';
 var imgK = img.id || img.name || img.alt || '';
@@ -37062,7 +37063,7 @@ return '<span class="' + sid + '-count ' + sid + '-count' + (i + 1) + '">' + (i 
 }).join('');
 return css +
 '<label for="' + mid + '" class="' + sid + '-trigger">' +
-'<img src="' + _esc(first.url || '') + '" alt="" loading="lazy">' +
+'<img src="' + _esc(first.url || '') + '" alt=""' + _psLazy(first.url) + '>' +
 '<span class="' + sid + '-trigger-label">' + _esc(triggerLabel) + ' &middot; ' + n + ' photos</span>' +
 '</label>' +
 '<input type="checkbox" id="' + mid + '">' +
