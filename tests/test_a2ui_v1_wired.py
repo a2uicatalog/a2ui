@@ -44,8 +44,8 @@ def _paths(obj):
     """Collect every JSON-Pointer `path` string appearing in a binding object."""
     out = []
     if isinstance(obj, dict):
-        if "path" in obj and isinstance(obj["path"], str):
-            out.append(obj["path"])
+        if "@path" in obj and isinstance(obj["@path"], str):   # 1.0 DataBinding spelling
+            out.append(obj["@path"])
         for v in obj.values():
             out.extend(_paths(v))
     elif isinstance(obj, list):

@@ -37,7 +37,7 @@ def test_wrap_shape_matches_the_specs_own_worked_example():
     `kind`, and `metadata` as three top-level siblings -- `metadata` NOT
     nested inside `data` (the mistake an earlier, less careful read of
     this doc made)."""
-    dp = wrap_messages([{"version": "v1.0", "action": {
+    dp = wrap_messages([{"version": "1.0", "action": {
         "name": "submit_form", "surfaceId": "s1", "sourceComponentId": "btn",
         "timestamp": "2026-01-15T12:00:00Z", "context": {}}}])
     assert set(dp.keys()) == {"data", "kind", "metadata"}
@@ -55,7 +55,7 @@ def test_agent_to_renderer_batch_conforms():
 
 
 def test_renderer_to_agent_batch_conforms():
-    action_msg = {"version": "v1.0", "action": {
+    action_msg = {"version": "1.0", "action": {
         "name": "submit_form", "surfaceId": "contact_form_1",
         "sourceComponentId": "submit_button", "timestamp": "2026-01-15T12:00:00Z",
         "context": {"email": "user@example.com"}}}
@@ -65,7 +65,7 @@ def test_renderer_to_agent_batch_conforms():
 
 
 def test_unwrap_round_trips():
-    msgs = [{"version": "v1.0", "deleteSurface": {"surfaceId": "s1"}}]
+    msgs = [{"version": "1.0", "deleteSurface": {"surfaceId": "s1"}}]
     dp = wrap_messages(msgs)
     assert unwrap_data_part(dp) == msgs
 
@@ -83,7 +83,7 @@ def test_unwrap_rejects_missing_metadata():
 def test_unwrap_rejects_non_list_data():
     """Real spec's own words: 'It MUST be an array of messages.'"""
     with pytest.raises(NotAnA2uiDataPart):
-        unwrap_data_part({"data": {"version": "v1.0"}, "kind": "data",
+        unwrap_data_part({"data": {"version": "1.0"}, "kind": "data",
                           "metadata": {"mimeType": A2UI_MIME_TYPE}})
 
 
@@ -119,20 +119,20 @@ def test_agent_card_extension_matches_the_specs_worked_example_shape():
     assert entry["required"] is False
     assert entry["params"]["acceptsInlineCatalogs"] is True
     # Real schema check: agent_capabilities.json's top-level shape wraps
-    # everything under a "v1.0" key (required: ["v1.0"]) -- confirmed by
+    # everything under a "v1.0" key (required: ["1.0"]) -- confirmed by
     # reading the schema directly, not assumed; entry["params"] is that
-    # inner object, so it validates as {"v1.0": entry["params"]}.
+    # inner object, so it validates as {"1.0": entry["params"]}.
     schema = json.loads((FIXTURES / "json" / "agent_capabilities.json").read_text())
     validator = _RegexAwareValidator(schema, registry=_REGISTRY)
-    errors = list(validator.iter_errors({"v1.0": entry["params"]}))
+    errors = list(validator.iter_errors({"1.0": entry["params"]}))
     assert not errors, errors
 
 
 def test_renderer_capabilities_namespaced_under_v1_0():
     caps = renderer_capabilities(["https://example.com/catalog.json"])
-    assert caps == {"v1.0": {"supportedCatalogIds": ["https://example.com/catalog.json"]}}
+    assert caps == {"1.0": {"supportedCatalogIds": ["https://example.com/catalog.json"]}}
 
 
 def test_renderer_data_model_shape():
     dm = renderer_data_model({"main_surface_id": {"user_id": "12345"}})
-    assert dm == {"version": "v1.0", "surfaces": {"main_surface_id": {"user_id": "12345"}}}
+    assert dm == {"version": "1.0", "surfaces": {"main_surface_id": {"user_id": "12345"}}}

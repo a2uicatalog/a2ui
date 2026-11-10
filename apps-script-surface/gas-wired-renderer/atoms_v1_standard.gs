@@ -198,7 +198,7 @@ var _A2UI_V1_RUNTIME = function(root, model, sid) {
     if (!btn || !root.contains(btn)) return;
     e.preventDefault();
     var a; try { a = JSON.parse(btn.getAttribute('data-a2ui-action')); } catch (x) { return; }
-    var msg = {version: 'v1.0', action: {name: a.name, surfaceId: sid, sourceComponentId: btn.getAttribute('data-a2ui-src') || '',
+    var msg = {version: '1.0', action: {name: a.name, surfaceId: sid, sourceComponentId: btn.getAttribute('data-a2ui-src') || '',
                timestamp: new Date().toISOString(), context: resolve(a.context || {})}};
     if (a.userMessage !== undefined) msg.action.userMessage = String(resolve(a.userMessage));
     root.dispatchEvent(new CustomEvent('a2ui:action', {bubbles: true, detail: msg}));

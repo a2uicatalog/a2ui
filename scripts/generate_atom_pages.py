@@ -2812,7 +2812,7 @@ MCP_APPS_HOST_JS = r"""
     // Without this, a wired surface (type, no blocks) got wrapped as a single
     // unknown ATOM (the black-page incident, 2026-07-11).
     if (payload && (payload.type === 'a2ui_wired_surface' ||
-                    (payload.version === 'v1.0' && payload.createSurface))) {
+                    ((payload.version === '1.0' || payload.version === 'v1.0') && payload.createSurface))) {
       // Session token from the link (&t=): injected as app.session so the
       // view's action transport namespaces the store per tournament/session.
       var tk = (location.hash.match(/[#&]t=([\w-]{1,64})/) || [])[1];

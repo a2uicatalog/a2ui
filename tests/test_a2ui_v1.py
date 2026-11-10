@@ -275,7 +275,7 @@ def test_call_renderer_function_and_agent_function_response():
     assert call_msg["callRendererFunction"]["functionCallId"] == "fc-1"
     assert call_msg["callRendererFunction"]["callFunction"] == {
         "catalogId": "https://a2ui.org/specification/v1_0/catalog.json",
-        "call": "openUrl", "args": {"url": "https://example.com"}}
+        "@call": "openUrl", "args": {"url": "https://example.com"}}
     assert "wantResponse" not in call_msg   # not a real field, confirmed 2026-08-24
     assert_conforms(call_msg, AGENT_TO_RENDERER)
 

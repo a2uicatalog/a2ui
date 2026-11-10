@@ -46,16 +46,16 @@ def test_parses_googles_v09_client_form():
 
 
 def test_parses_v10_spec_renderer_form():
-    caps = _caps(DEFAULT_CATALOG_ID, key="a2uiRendererCapabilities", version="v1.0")
-    assert caps.version == "v1.0" and caps.supports(DEFAULT_CATALOG_ID)
+    caps = _caps(DEFAULT_CATALOG_ID, key="a2uiRendererCapabilities", version="1.0")
+    assert caps.version == "1.0" and caps.supports(DEFAULT_CATALOG_ID)
 
 
 def test_v091_emits_as_v09_and_v10_preferred_when_both_offered():
     assert _caps(V09_BASIC, version="v0.9.1").version == "v0.9"
     both = parse_client_capabilities({"a2uiRendererCapabilities": {
         "v0.9": {"supportedCatalogIds": [V09_BASIC]},
-        "v1.0": {"supportedCatalogIds": [V10_BASIC]}}})
-    assert both.version == "v1.0"
+        "1.0": {"supportedCatalogIds": [V10_BASIC]}}})
+    assert both.version == "1.0"
 
 
 @pytest.mark.parametrize("meta", [None, {}, {"other": 1}, {"a2uiClientCapabilities": {"v2.0": {}}}, "x"])
@@ -128,7 +128,7 @@ def test_v09_splits_components_into_update_components():
 
 def test_v10_client_gets_one_message():
     msgs = emit_messages(copy.deepcopy(PAYLOAD), _caps(DEFAULT_CATALOG_ID, key="a2uiRendererCapabilities", version="v1.0"))
-    assert len(msgs) == 1 and msgs[0]["version"] == "v1.0"
+    assert len(msgs) == 1 and msgs[0]["version"] == "1.0"
 
 
 # ── portable standard components ──────────────────────────────────────────────

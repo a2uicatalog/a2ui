@@ -3,7 +3,7 @@ sends it something it can't.
 
 Two wire forms exist today, both namespaced by protocol version:
   * the v1.0 spec: transport metadata `a2uiRendererCapabilities`
-    ({"v1.0": {"supportedCatalogIds": [...]}}, see renderers/a2a_extension.py's
+    ({"1.0": {"supportedCatalogIds": [...]}}, see renderers/a2a_extension.py's
     renderer_capabilities(), which builds the same shape);
   * Google's androidx.a2ui 1.0.0-alpha01: `a2uiClientCapabilities`
     ({"v0.9": {"supportedCatalogIds": [...], "inlineCatalogs": [...]}}), sent
@@ -17,7 +17,8 @@ from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
 
 BASIC_CATALOG_IDS = {
-    "v1.0": "https://a2ui.org/specification/v1_0/catalogs/basic/catalog.json",
+    "1.0": "https://a2ui.org/specification/v1_0/catalogs/basic/catalog.json",
+    "v1.0": "https://a2ui.org/specification/v1_0/catalogs/basic/catalog.json",   # legacy early-draft key
     "v0.9": "https://a2ui.org/specification/v0_9/catalogs/basic/catalog.json",
 }
 
@@ -31,13 +32,13 @@ BASIC_COMPONENTS = frozenset({
 
 # Versions we can emit, best first. "v0.9.1" is accepted by Google's parser and
 # is wire-identical to v0.9 for everything the emitter produces.
-_VERSIONS = ("v1.0", "v0.9", "v0.9.1")
+_VERSIONS = ("1.0", "v1.0", "v0.9", "v0.9.1")   # final spec keys capabilities by "1.0"; "v1.0" = early-draft spelling, still read
 _METADATA_KEYS = ("a2uiRendererCapabilities", "a2uiClientCapabilities")
 
 
 @dataclass(frozen=True)
 class ClientCapabilities:
-    version: str                     # protocol version to emit: "v1.0" or "v0.9"
+    version: str                     # protocol version to emit: "1.0" or "v0.9"
     supported_catalog_ids: tuple     # catalogue ids the renderer can draw
 
     def supports(self, catalog_id: str) -> bool:
@@ -67,6 +68,6 @@ def parse_client_capabilities(metadata: Optional[Dict[str, Any]]) -> Optional[Cl
             body = cand.get(version)
             if isinstance(body, dict) and isinstance(body.get("supportedCatalogIds"), list):
                 ids = tuple(x for x in body["supportedCatalogIds"] if isinstance(x, str))
-                emit_version = "v0.9" if version.startswith("v0.9") else version
+                emit_version = "v0.9" if version.startswith("v0.9") else "1.0"
                 return ClientCapabilities(version=emit_version, supported_catalog_ids=ids)
     return None

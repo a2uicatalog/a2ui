@@ -152,7 +152,7 @@ window.addEventListener('load', function () {
     m = re.search(r'<pre id="out">(.*?)</pre>', p.stdout, re.S)
     assert m, p.stdout[-800:]
     msg = json.loads(m.group(1).replace("&quot;", '"').replace("&amp;", "&"))
-    assert msg["version"] == "v1.0"
+    assert msg["version"] == "1.0"
     a = msg["action"]
     assert a["name"] == "book" and a["surfaceId"] == "booking" and a["sourceComponentId"] == "go" and a["timestamp"]
     assert a["context"] == {"who": "Grace", "agree": True, "size": ["s"], "guests": 5, "day": "2026-10-20", "source": "test"}
@@ -188,7 +188,7 @@ def test_basic_only_client_gets_real_inputs():
     assert by["form-0-f1"]["variant"] == "obscured"
     assert cs["dataModel"]["form-0"]["name"] == "" and cs["dataModel"]["remember"] is True
     ctx = by["form-0-submit"]["action"]["event"]["context"]
-    assert ctx["name"] == {"path": "/form-0/name"} and ctx["form"] == "form-0" and len(ctx) == 7
+    assert ctx["name"] == {"@path": "/form-0/name"} and ctx["form"] == "form-0" and len(ctx) == 7
 
 
 def test_catalog_client_keeps_the_richer_form_atoms():
@@ -225,7 +225,7 @@ def test_v09_downgrade_conforms_to_the_v09_spec(with_catalog):
 
 
 def test_default_emit_is_still_v1():
-    assert emit_messages(FORM_PAYLOAD)[0]["version"] == "v1.0"
+    assert emit_messages(FORM_PAYLOAD)[0]["version"] == "1.0"
 
 
 # ── the fuzzers in a2ui-private/security/xss-fuzz drive schema.yaml ATOMS; the 18 spec components

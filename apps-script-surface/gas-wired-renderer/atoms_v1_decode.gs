@@ -88,7 +88,7 @@ function _a2uiResolveDynamic(val, model, scope) {
 var _A2UI_SURFACES = (typeof window !== 'undefined') ? (window._A2UI_SURFACES = window._A2UI_SURFACES || {}) : {};
 
 function _a2uiIsV1Message(m) {
-  return !!m && typeof m === 'object' && m.version === 'v1.0' &&
+  return !!m && typeof m === 'object' && (m.version === '1.0' || m.version === 'v1.0') &&
     !!(m.createSurface || m.updateComponents || m.updateDataModel || m.deleteSurface);
 }
 
@@ -140,7 +140,22 @@ function _a2uiAbsEvent(ev, scope) {
   return out;
 }
 
+// Final spec (1.0): DataBinding is {"@path"} and FunctionCall is {"@call"}. The runtime below was written
+// against the early-draft spelling ({path} / {call}), so rewrite ONLY those two positions (an object whose
+// sole key is "@path", or that carries "@call") at the boundary. ChildList templates keep "path" in both.
+function _a2uiNormV1(n) {
+  if (Array.isArray(n)) return n.map(_a2uiNormV1);
+  if (!n || typeof n !== 'object') return n;
+  var ks = Object.keys(n), o = {}, i;
+  if (ks.length === 1 && ks[0] === '@path') return {path: n['@path']};
+  for (i = 0; i < ks.length; i++) o[ks[i] === '@call' ? 'call' : ks[i]] = _a2uiNormV1(n[ks[i]]);
+  return o;
+}
+
 function _rehydrateV1Surface(surface) {
+  if (surface && Array.isArray(surface.components)) {
+    surface = Object.assign({}, surface, {components: _a2uiNormV1(surface.components)});
+  }
   var interactive = false;
   var byId = {};
   (surface.components || []).forEach(function(c) { byId[c.id] = c; });

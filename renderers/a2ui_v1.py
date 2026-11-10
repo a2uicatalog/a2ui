@@ -10,7 +10,9 @@ carries a required `catalogId`; this emitter produces conformant messages so tha
     a violation).
 
 Scope (tiers 1 + 2-core, plus Track B1 + C1 + Phase 0 schema-driven children):
-  - Full envelope/metadata: version, surfaceId, catalogId, surfaceProperties.
+  - Full envelope/metadata: version "1.0", surfaceId, catalogId (optional in 1.0),
+    components + dataModel inline in ONE createSurface, metadata.extensions
+    (no surfaceProperties and no theme field: both gone in the final spec).
   - Deterministic ID minting; flat `components` list with parent→child ID refs.
   - Standard-component mapping for clean atoms; common container inversion
     (columns, color_section, card, tabs, modal, generic `blocks`).
@@ -30,10 +32,10 @@ Scope (tiers 1 + 2-core, plus Track B1 + C1 + Phase 0 schema-driven children):
   - Safe pass-through for everything else (extension components, and any
     field this cut doesn't recognize as child-bearing at all).
   - Action-contract adapter: {ok,data,total,error} -> actionResponse {value|error}.
-  - C1 client-facing function RPC: call_function() builds the `callFunction`
-    request; function_response() adapts the catalogue envelope into the
-    `functionResponse` (success) / `error` (failure) reply pair, keyed by
-    functionCallId.
+  - C1 function RPC: call_renderer_function() builds `callRendererFunction`
+    (its `callFunction` is a FunctionCall with "@call"); agent_function_response()
+    adapts the catalogue envelope into `agentFunctionResponse` (value | error),
+    keyed by functionCallId.
 
 Deferred (flagged, not faked): the wired dialect itself (state_primitives /
 #node.prop reactive graph → catalogId: a2ui-state-v1) — row_open/row_close are
@@ -51,7 +53,8 @@ try:
 except ImportError:                                    # direct-script use, as catalog_map below
     from a2ui_capabilities import BASIC_COMPONENTS, ClientCapabilities
 
-A2UI_VERSION = "v1.0"
+A2UI_VERSION = "1.0"          # final spec: the wire `version` const is "1.0" (the early drafts used "v1.0")
+A2UI_MIME_TYPE = "application/a2ui+json"   # final spec MIME type for A2UI payloads
 # catalogId MUST be a resolvable URI (Google's basic catalog uses its full URL) — a
 # bare token can't be dereferenced by a host. This is what createSurface.catalogId
 # carries; it points at public/catalogue/a2ui-atoms-v1.json served from the site.
@@ -593,8 +596,8 @@ def emit_surface(payload: Dict[str, Any], surface_id: Optional[str] = None,
     surface_ext: Dict[str, Any] = {}
     if payload.get("title"):
         surface_ext["title"] = payload["title"]
-    if payload.get("theme"):
-        surface_ext["theme"] = payload["theme"]
+    if payload.get("theme"):                      # the final spec has NO theme field on createSurface/catalog:
+        surface_ext["theme"] = payload["theme"]   # keep it as our own metadata, never as a protocol field
 
     # Auto-declare the catalogs this surface draws from — DETERMINISTIC, derived from the
     # payload's atoms (renderers.catalog_map), never hand-picked. catalogId stays the base
@@ -687,7 +690,7 @@ def _basic_input(cid: str, ftype: str, f: Dict[str, Any], path: str):
     """One form field (form_* atom, or a `form` atom's field entry) -> (Basic Catalog component, initial value).
     None when the type has no input equivalent."""
     label = str(f.get("label") or f.get("name") or "")
-    bind = {"path": path}
+    bind = {"@path": path}          # DataBinding position: "@path" in 1.0
     if ftype in ("form_input", "form_textarea", "text", "email", "url", "password", "number", "textarea"):
         sub = f.get("type") if ftype == "form_input" else ftype
         variant = "longText" if ftype == "form_textarea" else _TEXT_VARIANT.get(str(sub), "shortText")
@@ -753,7 +756,7 @@ def _form_to_basic(c: Dict[str, Any], data_model: Dict[str, Any]):
             _set_ptr(data_model, path, init)
             extra.append(comp)
             kids.append(comp["id"])
-            ctx[name] = {"path": path}
+            ctx[name] = {"@path": path}
         extra.append({"id": f"{cid}-submit-t", "component": "Text", "text": str(c.get("submit_label") or "Submit")})
         extra.append({"id": f"{cid}-submit", "component": "Button", "variant": "primary", "child": f"{cid}-submit-t",
                       "action": {"event": {"name": "submit", "context": dict(ctx, form=cid)}}})
@@ -847,6 +850,21 @@ def _v09_text(c: Dict[str, Any]) -> Dict[str, Any]:
     return dict(c, text=m.group(2), variant=f"h{len(m.group(1))}")
 
 
+def _downgrade_to_v09(node: Any) -> Any:
+    """Inverse of the 1.0 `@` prefix, for DynamicValue/FunctionCall positions ONLY: an object whose sole
+    key is "@path" (DataBinding) becomes {"path": ...}; one with "@call" (FunctionCall) gets "call".
+    ChildList templates already use the unprefixed "path" in both versions and are not touched."""
+    if isinstance(node, list):
+        return [_downgrade_to_v09(x) for x in node]
+    if isinstance(node, dict):
+        if set(node) == {"@path"}:
+            return {"path": node["@path"]}
+        if "@call" in node:
+            return {("call" if k == "@call" else k): _downgrade_to_v09(v) for k, v in node.items()}
+        return {k: _downgrade_to_v09(v) for k, v in node.items()}
+    return node
+
+
 def emit_messages(payload: Dict[str, Any], capabilities: Optional[ClientCapabilities] = None,
                   surface_id: Optional[str] = None,
                   catalog_id: str = DEFAULT_CATALOG_ID) -> List[Dict[str, Any]]:
@@ -866,6 +884,9 @@ def emit_messages(payload: Dict[str, Any], capabilities: Optional[ClientCapabili
     # a v0.9 message carrying it is invalid v0.9 (androidx's alpha parser happens to tolerate it). Checked
     # against the vendored v0.9 spec, tests/fixtures/a2ui_v0_9_spec (2026-10-05).
     create.pop("metadata", None)
+    components = _downgrade_to_v09(components)
+    if data_model is not None:
+        data_model = _downgrade_to_v09(data_model)
     out = [{"version": "v0.9", "createSurface": create}]
     if data_model:                                   # before the components, so input bindings resolve at once
         out.append({"version": "v0.9", "updateDataModel": {"surfaceId": create["surfaceId"], "path": "/", "value": data_model}})
@@ -923,7 +944,7 @@ def call_renderer_function(catalog_id: str, call: str, args: Optional[Dict[str, 
         "version": A2UI_VERSION,
         "callRendererFunction": {
             "functionCallId": fid,
-            "callFunction": {"catalogId": catalog_id, "call": call, "args": args or {}},
+            "callFunction": {"catalogId": catalog_id, "@call": call, "args": args or {}},
         },
     }
 

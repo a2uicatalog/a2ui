@@ -20,7 +20,7 @@ def test_a_minimal_real_createsurface_conforms():
     proves the registry/$ref resolution chain works at all before any test
     relies on it to catch a REAL problem."""
     assert_conforms({
-        "version": "v1.0",
+        "version": "1.0",
         "createSurface": {
             "surfaceId": "s1",
             "components": [{"id": "root", "component": "Text", "text": "hi"}],
@@ -34,7 +34,7 @@ def test_surfaceproperties_is_rejected():
     the validator actually catches it, not just theoretically would."""
     with pytest.raises(AssertionError):
         assert_conforms({
-            "version": "v1.0",
+            "version": "1.0",
             "createSurface": {
                 "surfaceId": "s1",
                 "components": [{"id": "root", "component": "Text", "text": "hi"}],
@@ -45,7 +45,7 @@ def test_surfaceproperties_is_rejected():
 
 def test_updatecomponents_conforms():
     assert_conforms({
-        "version": "v1.0",
+        "version": "1.0",
         "updateComponents": {"surfaceId": "s1",
                              "components": [{"id": "a", "component": "Text", "text": "hi"}]},
     }, AGENT_TO_RENDERER)
@@ -53,13 +53,13 @@ def test_updatecomponents_conforms():
 
 def test_updatedatamodel_conforms():
     assert_conforms({
-        "version": "v1.0",
+        "version": "1.0",
         "updateDataModel": {"surfaceId": "s1", "path": "/count", "value": 5},
     }, AGENT_TO_RENDERER)
 
 
 def test_deletesurface_conforms():
-    assert_conforms({"version": "v1.0", "deleteSurface": {"surfaceId": "s1"}}, AGENT_TO_RENDERER)
+    assert_conforms({"version": "1.0", "deleteSurface": {"surfaceId": "s1"}}, AGENT_TO_RENDERER)
 
 
 def test_callrendererfunction_conforms():
@@ -70,11 +70,11 @@ def test_callrendererfunction_conforms():
     function, confirmed by reading catalog.json directly (its own `call`
     field is a `const: "openUrl"`, `args.url` required)."""
     assert_conforms({
-        "version": "v1.0",
+        "version": "1.0",
         "callRendererFunction": {
             "functionCallId": "call-1",
             "callFunction": {"catalogId": "https://a2ui.org/specification/v1_0/catalog.json",
-                             "call": "openUrl", "args": {"url": "https://example.com"}},
+                             "@call": "openUrl", "args": {"url": "https://example.com"}},
         },
     }, AGENT_TO_RENDERER)
 
@@ -87,14 +87,14 @@ def test_actionresponse_is_not_a_real_message_type():
     that finding so it can't silently regress back into "assumed real"."""
     with pytest.raises(AssertionError):
         assert_conforms({
-            "version": "v1.0", "actionId": "a1",
+            "version": "1.0", "actionId": "a1",
             "actionResponse": {"value": {"ok": True}},
         }, AGENT_TO_RENDERER)
 
 
 def test_action_conforms_on_the_renderer_to_agent_side():
     assert_conforms({
-        "version": "v1.0",
+        "version": "1.0",
         "action": {"name": "submit", "surfaceId": "s1", "sourceComponentId": "btn-1",
                    "timestamp": "2026-08-24T00:00:00Z", "context": {}},
     }, RENDERER_TO_AGENT)
@@ -109,10 +109,10 @@ def test_wantresponse_is_not_a_real_field():
     false at the message-object level via their enclosing oneOf)."""
     with pytest.raises(AssertionError):
         assert_conforms({
-            "version": "v1.0", "wantResponse": True,
+            "version": "1.0", "wantResponse": True,
             "callRendererFunction": {
                 "functionCallId": "call-1",
                 "callFunction": {"catalogId": "https://a2ui.org/specification/v1_0/catalog.json",
-                                 "call": "openUrl", "args": {"url": "https://example.com"}},
+                                 "@call": "openUrl", "args": {"url": "https://example.com"}},
             },
         }, AGENT_TO_RENDERER)

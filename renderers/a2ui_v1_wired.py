@@ -10,7 +10,7 @@ rest as a `catalogId: a2ui-state-v1` extension.
 
 The conformance seam (why this mapping is honest, not lossy-by-accident):
 A2UI v1.0 keeps the client simple — a `dataModel` JSON object, JSON-Pointer
-property bindings ({"text": {"path": "/x/y"}}), a `List` template
+property bindings ({"text": {"@path": "/x/y"}}), a `List` template
 (children: {path, componentId}), and an `action`/`actionResponse` RPC
 (https://a2ui.org/specification/v1.0-a2ui/). The catalogue's own normative
 derivation boundary (spec/gas-actions-v1.yaml + spec/a2ui-state.yaml:
@@ -23,7 +23,7 @@ CONFORMANT SUBSET (emitted as bare A2UI v1.0)
     [{id, component, ...props FLATTENED}], root Column, deterministic IDs
     (reuses a2ui_v1's _IdGen + STANDARD_MAP for text-ish atoms).
   - ValueStore primitive        →  dataModel entry {"<id>": {"value": initialValue}};
-    read wire `#id.value` → {"path": "/<id>/value"}.
+    read wire `#id.value` → {"@path": "/<id>/value"}.
   - input atom wire onChange:"#mem.setValue"  →  two-way `value: {path}` binding
     (per spec: "the client immediately updates the value at the bound path in the
     local Data Model") + createSurface.sendDataModel: true.
@@ -32,10 +32,10 @@ CONFORMANT SUBSET (emitted as bare A2UI v1.0)
     and embedded directly in createSurface.dataModel at /<actionId>/result —
     no client round-trip needed, a strict simplification.
   - server-array reads `#action.result` (sheet_query / store_read / store_derive
-    outputs) → {"path": "/<actionId>/result"}.
+    outputs) → {"@path": "/<actionId>/result"}.
   - data_table with a conformant rows source → Column[header Row + List] where
     List.children = {path: "/<actionId>/result", componentId: "<id>-row"} and the
-    row template's cells use RELATIVE JSON-Pointer bindings ({"path": "colKey"}),
+    row template's cells use RELATIVE JSON-Pointer bindings ({"@path": "colKey"}),
     per the spec's collection-scope rule.
   - button wire onClick:"#action.run" + actions[].props.collect →
     action: {event: {name, context: <collect with wire refs resolved to {path}
@@ -61,7 +61,7 @@ CONFORMANT SUBSET (emitted as bare A2UI v1.0)
     needs the same re-verification a2ui_v1.py just got, not assumed still
     true because a2ui_v1.py's fix landed.
 
-DEGRADED-BUT-RENDERABLE (documented in surfaceProperties.extensions.notes)
+DEGRADED-BUT-RENDERABLE (documented in metadata.extensions.a2uicatalog_wired.notes)
   - a read of `#arrayFilter.output` is traced ONE conformant hop to the filter's
     delivered source array (action push wire / wire.source / static props.source)
     and bound there UNFILTERED. A bare host renders the full array; a host
@@ -69,7 +69,7 @@ DEGRADED-BUT-RENDERABLE (documented in surfaceProperties.extensions.notes)
     props.source arrays are embedded at /<filterId>/source.
 
 EXTENSION-ONLY (emitted under catalogId a2ui-state-v1 — pass-through, flagged in
-surfaceProperties.extensions; NOT forced into bare A2UI)
+metadata.extensions.a2uicatalog_wired; NOT forced into bare A2UI)
   - reactive primitives: ArrayFilter, Computed, DerivedStore, StringValidator,
     NumericThreshold, Timer, StepNavigator — emitted as non-visual flat
     components {id, component: <Primitive>, ...props, wire} outside the root
@@ -168,6 +168,7 @@ class _WiredContext:
         self.extension_ids: Set[str] = set()
         self.notes: List[str] = []
         self.send_data_model = False
+        self.action_meta: Dict[str, Any] = {}
 
     # ---- read-wire resolution: '#node.field' -> JSON Pointer or None ---------
     def resolve_read(self, ref: Any, _seen: Optional[Set[str]] = None) -> Optional[str]:
@@ -225,7 +226,7 @@ class _WiredContext:
         for key, val in collect.items():
             path = self.resolve_read(val)
             if path:
-                context[key] = {"path": path}     # resolved at fire time from dataModel
+                context[key] = {"@path": path}     # resolved at fire time from dataModel
             else:
                 if _parse_ref(val):
                     self.notes.append(
@@ -241,21 +242,13 @@ class _WiredContext:
             self.notes.append(
                 f"action '{action_id}': clearOnSuccess deferred to "
                 f"{self.state_catalog_id} (no bare-A2UI form-reset primitive)")
-        return {
-            "event": {
-                "name": action_id,
-                "context": context,
-                "wantResponse": True,
-                "responsePath": f"/{target}/result",
-            },
-            # deterministic correlation id so this emitter's server side can
-            # answer via update_data_model(surface_id, value=envelope, path=
-            # responsePath) — see this module's own top docstring, updated
-            # 2026-08-24, for why there is no special reply envelope to
-            # build here any more (hosts may mint their own per-fire ids;
-            # this one makes the round trip testable).
-            "actionId": action_id,
-        }
+        # The final `action.event` is closed ({name, userMessage?, context}): the
+        # wantResponse/responsePath/actionId correlation this emitter used to
+        # put on it is not part of the protocol. It is kept as OUR metadata
+        # (ctx.action_meta -> metadata.extensions.a2uicatalog_wired.actions) so a
+        # host of ours can still answer with update_data_model(path=responsePath).
+        self.action_meta[action_id] = {"wantResponse": True, "responsePath": f"/{target}/result"}
+        return {"event": {"name": action_id, "context": context}}
 
 
 # ── layout emission ────────────────────────────────────────────────────────────
@@ -275,7 +268,7 @@ def _emit_table(cid: str, props: Dict[str, Any], rows_path: str,
         components.append({"id": hid, "component": "Text", "text": str(label)})
         header_ids.append(hid)
         tid = ids.take({"id": f"{cid}-c-{key}", "type": "text"})
-        components.append({"id": tid, "component": "Text", "text": {"path": key}})
+        components.append({"id": tid, "component": "Text", "text": {"@path": key}})
         cell_ids.append(tid)
     header_id = ids.take({"id": f"{cid}-header", "type": "row"})
     components.append({"id": header_id, "component": "Row", "children": header_ids})
@@ -338,9 +331,9 @@ def _emit_layout_entry(entry: Dict[str, Any], components: List[Dict[str, Any]],
             if k != "label":
                 node[k] = v
         if twoway_path:
-            node["value"] = {"path": twoway_path}
+            node["value"] = {"@path": twoway_path}
         for prop, path in bindings.items():
-            node[prop] = {"path": path}
+            node[prop] = {"@path": path}
         if ext_wires:
             node["wire"] = ext_wires
             ctx.extension_ids.add(cid)
@@ -354,7 +347,7 @@ def _emit_layout_entry(entry: Dict[str, Any], components: List[Dict[str, Any]],
         if node is not None:
             node["id"] = cid
             for prop, path in bindings.items():
-                node[prop] = {"path": path}
+                node[prop] = {"@path": path}
             if action_obj is not None:
                 node["action"] = action_obj
             if ext_wires:
@@ -367,7 +360,7 @@ def _emit_layout_entry(entry: Dict[str, Any], components: List[Dict[str, Any]],
     node = {"id": cid, "component": atom}
     node.update(props)
     for prop, path in bindings.items():   # keep what DID resolve — a bare host
-        node[prop] = {"path": path}       # ignores the rest, a state host upgrades
+        node[prop] = {"@path": path}       # ignores the rest, a state host upgrades
     if action_obj is not None:
         node["action"] = action_obj
     if ext_wires:
@@ -451,16 +444,22 @@ def emit_wired_surface(payload: Dict[str, Any], surface_id: Optional[str] = None
         data_model.setdefault(aid, {"result": []})
     data_model.update(ctx.static_embeds)
 
-    surface_props: Dict[str, Any] = {}
+    # Final spec: no `surfaceProperties`, no theme field. Our own metadata rides in
+    # metadata.extensions under non-`a2ui_` keys (a2ui_ is reserved for official extensions).
+    ext_meta: Dict[str, Any] = {}
+    surf_meta: Dict[str, Any] = {}
     if payload.get("title"):
-        surface_props["title"] = payload["title"]
+        surf_meta["title"] = payload["title"]
     if payload.get("theme"):
-        surface_props["theme"] = payload["theme"]
-    if ctx.extension_ids or ctx.notes:
-        surface_props["extensions"] = {
+        surf_meta["theme"] = payload["theme"]
+    if surf_meta:
+        ext_meta["a2uicatalog_surface"] = surf_meta
+    if ctx.extension_ids or ctx.notes or ctx.action_meta:
+        ext_meta["a2uicatalog_wired"] = {
             "catalogId": state_catalog_id,
             "componentIds": sorted(ctx.extension_ids),
             "notes": ctx.notes,
+            "actions": ctx.action_meta,
         }
 
     surface: Dict[str, Any] = {
@@ -472,8 +471,8 @@ def emit_wired_surface(payload: Dict[str, Any], surface_id: Optional[str] = None
         surface["dataModel"] = data_model
     if ctx.send_data_model:
         surface["sendDataModel"] = True
-    if surface_props:
-        surface["surfaceProperties"] = surface_props
+    if ext_meta:
+        surface["metadata"] = {"extensions": ext_meta}
 
     return {"version": A2UI_VERSION, "createSurface": surface}
 
