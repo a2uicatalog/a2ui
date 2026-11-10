@@ -2437,6 +2437,12 @@ def generate_index(atoms):
           }},
           {{
             "@type": "Question",
+            "name": "Is there a sandbox or test environment?",
+            "acceptedAnswer": {{ "@type": "Answer",
+              "text": "Production doubles as the sandbox: the REST endpoints hold no production data and are side-effect free, so a test call cannot change anything, and the playground at https://play.a2uicatalog.ai lets you try payloads by hand. See https://a2uicatalog.ai/docs/#sandbox." }}
+          }},
+          {{
+            "@type": "Question",
             "name": "Is there a paid tier or enterprise plan?",
             "acceptedAnswer": {{ "@type": "Answer",
               "text": "No. The vocabulary is MIT licensed and the renderers are in the public repository, so anything you hit a rate limit on, you can self-host and run without limits instead of upgrading." }}

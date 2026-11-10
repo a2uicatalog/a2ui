@@ -179,6 +179,11 @@ key, no signup, <code>POST</code> JSON-RPC 2.0 directly. Documentation questions
 specification</a>. Packages: <a href="/sdks/">SDKs &amp; client libraries</a>. Guide:
 <a href="/developers/">developer portal</a>.</p>
 
+<h2 id="sandbox">Sandbox and test mode</h2>
+<p>There is no separate sandbox host because the REST endpoints hold no production data: /api/render, /api/render/batch, /api/render/jobs, /api/compose and /api/data are side-effect free, so a test call against production cannot change anything; its only cost is quota. To try payloads by hand, use the playground at <a href="https://play.a2uicatalog.ai">play.a2uicatalog.ai</a>. On the MCP server, every tool that stores,
+sends or deletes something is annotated <code>readOnlyHint: false</code>; the read-only tools are safe to call freely
+while building an integration.</p>
+
 <h2>REST Endpoints</h2>
 <table style="width:100%;border-collapse:collapse;margin:1rem 0;font-size:.92rem;">
 <tr><td style="padding:6px 10px 6px 0;"><code>POST /api/render</code></td><td>Render atom payload to standalone HTML page (50 req/day)</td></tr>
@@ -346,7 +351,7 @@ npx @a2uicatalog/mcp</code></pre>
 <h2>2. Agent Skills Integration</h2>
 <p>Installable agent skills for Claude, Cursor, and Agent Skills-compatible clients:</p>
 <pre style="background:#0e1116;color:#c7d1e0;padding:14px 16px;border-radius:8px;overflow-x:auto;"><code>npx skills add a2uicatalog/a2ui</code></pre>
-<p>Includes skills for catalog discovery (<code>a2ui-catalog</code>), composition (<code>a2ui-compose</code>), and MCP server connection (<code>a2ui-mcp</code>).</p>
+<p>Includes skills for catalog discovery (<code>a2ui-catalog</code>), composition (<code>a2ui-compose</code>), MCP server connection (<code>a2ui-mcp</code>), and plain-HTTP use from scripts and CI (<code>a2ui-rest</code>).</p>
 
 {PY_HTML}<h2>{3 + bool(PYPI_PUBLISHED)}. Python &amp; A2A SDK Integration</h2>
 <p>For Python applications using Google's A2A protocol (<code>a2a-sdk</code>), connect over JSON-RPC or use the typed extension wrappers in the open-source repository (<code>renderers/a2a_extension.py</code>).</p>

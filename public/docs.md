@@ -13,6 +13,10 @@ Developer and API documentation for the A2UI Atomic Catalog. All developer resou
 
 Primary integration surface: [the MCP server at https://a2uicatalog.ai/mcp](https://a2uicatalog.ai/mcp) — no API key, no signup, `POST` JSON-RPC 2.0 directly. Documentation questions: [the docs MCP server at /mcp-docs](https://a2uicatalog.ai/mcp-docs). Contract: [OpenAPI 3.1 specification](https://a2uicatalog.ai/openapi.json). Packages: [SDKs & client libraries](https://a2uicatalog.ai/sdks/). Guide: [developer portal](https://a2uicatalog.ai/developers/).
 
+## Sandbox and test mode
+
+There is no separate sandbox host because the REST endpoints hold no production data: /api/render, /api/render/batch, /api/render/jobs, /api/compose and /api/data are side-effect free, so a test call against production cannot change anything; its only cost is quota. To try payloads by hand, use the playground at [play.a2uicatalog.ai](https://play.a2uicatalog.ai). On the MCP server, every tool that stores, sends or deletes something is annotated `readOnlyHint: false`; the read-only tools are safe to call freely while building an integration.
+
 ## REST Endpoints
 
  ``
