@@ -185,10 +185,10 @@ def test_basic_only_client_gets_real_inputs():
     assert all(k in SPEC_COMPONENTS for k in kinds), kinds
     for k in ("TextField", "Slider", "ChoicePicker", "DateTimeInput", "CheckBox", "Button"):
         assert k in kinds, k
-    assert by["form-0-f1"]["variant"] == "obscured"
-    assert cs["dataModel"]["form-0"]["name"] == "" and cs["dataModel"]["remember"] is True
-    ctx = by["form-0-submit"]["action"]["event"]["context"]
-    assert ctx["name"] == {"@path": "/form-0/name"} and ctx["form"] == "form-0" and len(ctx) == 7
+    assert by["form_0_f1"]["variant"] == "obscured"
+    assert cs["dataModel"]["form_0"]["name"] == "" and cs["dataModel"]["remember"] is True
+    ctx = by["form_0_submit"]["action"]["event"]["context"]
+    assert ctx["name"] == {"@path": "/form_0/name"} and ctx["form"] == "form_0" and len(ctx) == 7
 
 
 def test_catalog_client_keeps_the_richer_form_atoms():
@@ -201,13 +201,13 @@ def test_catalog_client_keeps_the_richer_form_atoms():
 def test_v09_split_sends_the_data_before_the_components():
     msgs = emit_messages(FORM_PAYLOAD, capabilities=_caps("v0.9"))
     assert [next(k for k in m if k != "version") for m in msgs] == ["createSurface", "updateDataModel", "updateComponents"]
-    assert msgs[1]["updateDataModel"]["path"] == "/" and "form-0" in msgs[1]["updateDataModel"]["value"]
+    assert msgs[1]["updateDataModel"]["path"] == "/" and "form_0" in msgs[1]["updateDataModel"]["value"]
     assert "dataModel" not in msgs[0]["createSurface"]
 
 
 def test_degraded_form_is_interactive_in_our_own_web_renderer(core_js):
     html = _render(core_js, emit_surface(FORM_PAYLOAD, capabilities=_caps("1.0"))["createSurface"])
-    assert 'data-a2ui-bind="/form-0/name"' in html and 'id="a2rt-' in html and "data-a2ui-action=" in html
+    assert 'data-a2ui-bind="/form_0/name"' in html and 'id="a2rt-' in html and "data-a2ui-action=" in html
 
 
 # ── v0.9 is a DOWNGRADE for renderers that ask for it: validate it against v0.9 itself ───────

@@ -41128,7 +41128,10 @@ if (Array.isArray(n)) return n.map(_a2uiNormV1);
 if (!n || typeof n !== 'object') return n;
 var ks = Object.keys(n), o = {}, i;
 if (ks.length === 1 && ks[0] === '@path') return {path: n['@path']};
-for (i = 0; i < ks.length; i++) o[ks[i] === '@call' ? 'call' : ks[i]] = _a2uiNormV1(n[ks[i]]);
+for (i = 0; i < ks.length; i++) {
+var k = ks[i] === '@call' ? 'call' : (ks[i].indexOf('@@') === 0 ? ks[i].slice(1) : ks[i]);
+o[k] = _a2uiNormV1(n[ks[i]]);
+}
 return o;
 }
 function _rehydrateV1Surface(surface) {

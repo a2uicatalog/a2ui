@@ -97,7 +97,7 @@ def test_v09_downgrade_maps_back_only_at_binding_positions():
 
 
 def test_call_renderer_function_uses_at_call():
-    m = call_renderer_function(BASIC_CATALOG_IDS["1.0"], "openUrl", {"url": "https://example.com"}, "c1")
+    m = call_renderer_function(BASIC_CATALOG_IDS["1.0"], "openUrl", {"url": "https://example.com"}, "c1", check_callers=False)
     assert m["callRendererFunction"]["callFunction"]["@call"] == "openUrl"
     assert "call" not in m["callRendererFunction"]["callFunction"]
 
@@ -107,3 +107,30 @@ def test_modal_is_trigger_and_content():
     assert_conforms(m, AGENT_TO_RENDERER_STRICT)
     modal = [c for c in m["createSurface"]["components"] if c["component"] == "Modal"][0]
     assert set(modal) == {"id", "component", "trigger", "content"}
+
+
+def test_v09_downgrade_leaves_the_data_model_literal():
+    """F15: literal data is never rewritten by the v0.9 downgrade; component bindings are."""
+    payload = {"title": "t", "blocks": [{"type": "body", "text": "x"}]}
+    import renderers.a2ui_v1 as v1
+    msg = v1.emit_surface(payload)
+    msg["createSurface"]["dataModel"] = {"a": {"@call": "keep-me"}, "b": {"@path": "kept-literal"}}
+    orig = v1.emit_surface
+    v1.emit_surface = lambda *a, **k: msg
+    try:
+        out = v1.emit_messages(payload, ClientCapabilities(version="v0.9", supported_catalog_ids=(BASIC_CATALOG_IDS["v0.9"],)))
+    finally:
+        v1.emit_surface = orig
+    dm = [m for m in out if "updateDataModel" in m][0]["updateDataModel"]["value"]
+    assert dm == {"a": {"@call": "keep-me"}, "b": {"@path": "kept-literal"}}
+
+
+def test_v09_downgrade_of_form_atoms_is_valid_v09():
+    """F10: TextField.placeholder / Video.posterUrl / Slider.steps are v1.0-only and are dropped on the v0.9 path."""
+    from tests.a2ui_v09_conformance import SERVER_TO_CLIENT as V09
+    caps = ClientCapabilities(version="v0.9", supported_catalog_ids=(BASIC_CATALOG_IDS["v0.9"],))
+    for payload in ({"title": "f", "blocks": [{"type": "form_input", "label": "L", "name": "n", "placeholder": "p"}]},
+                    {"title": "f", "blocks": [{"type": "form", "fields": [{"type": "text", "label": "L", "name": "n", "placeholder": "p"}]}]}):
+        msgs = emit_messages(payload, caps)
+        assert all(not list(V09.iter_errors(m)) for m in msgs)
+        assert not any("placeholder" in json.dumps(m) for m in msgs)

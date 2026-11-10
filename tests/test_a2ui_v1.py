@@ -272,7 +272,7 @@ def test_call_renderer_function_and_agent_function_response():
     # name fails validation for a DIFFERENT reason than what's under test.
     call_msg = call_renderer_function(
         "https://a2ui.org/specification/v1_0/catalog.json",
-        "openUrl", args={"url": "https://example.com"}, function_call_id="fc-1")
+        "openUrl", args={"url": "https://example.com"}, function_call_id="fc-1", check_callers=False)
     assert call_msg["version"] == A2UI_VERSION
     assert call_msg["callRendererFunction"]["functionCallId"] == "fc-1"
     assert call_msg["callRendererFunction"]["callFunction"] == {
@@ -280,6 +280,10 @@ def test_call_renderer_function_and_agent_function_response():
         "@call": "openUrl", "args": {"url": "https://example.com"}}
     assert "wantResponse" not in call_msg   # not a real field, confirmed 2026-08-24
     assert_conforms(call_msg, AGENT_TO_RENDERER)
+
+    # F13: the Basic functions are rendererOnly, so the default refuses to build an agent call to one
+    with pytest.raises(ValueError):
+        call_renderer_function("https://a2ui.org/specification/v1_0/catalog.json", "openUrl", {"url": "https://example.com"})
 
     # auto-minted functionCallId when omitted
     auto = call_renderer_function("https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json", "ping")
@@ -328,8 +332,8 @@ def test_all_declared_children_atoms_are_flattened():
                 inner = spec["inner_path"].split(".")[0]
                 block[field] = {inner: [dict(leaf)]}
         _, by_id = _assert_valid_surface(emit_surface({"title": "t", "blocks": [block]}))
-        emitted = by_id.get(f"{atom_type}-0")
-        assert emitted is not None, f"{atom_type}: expected component id '{atom_type}-0' not found"
+        emitted = by_id.get(f"{atom_type}_0")
+        assert emitted is not None, f"{atom_type}: expected component id '{atom_type}_0' not found"
         for field in decl:
             val = emitted.get(field)
             assert val is not None, f"{atom_type}.{field}: declared child field missing from emitted component"

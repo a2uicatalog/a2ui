@@ -255,7 +255,7 @@ def test_bom_atom_map_drives_component_choice(envelope):
 
 
 def test_piege_downgrade_is_declared_not_silent(envelope):
-    e = envelope["_emitter"]
+    e = envelope["createSurface"]["metadata"]["extensions"]["a2uicatalog_bom"]
     assert e["piege_downgrades"] > 0, "maths curriculum has PIÈGE callouts"
     comps = {c["id"]: c for c in envelope["createSurface"]["components"]}
     assert comps["tpl_piege"]["component"] == "callout"   # no invented MCQs

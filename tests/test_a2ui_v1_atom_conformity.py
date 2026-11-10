@@ -69,3 +69,36 @@ def test_tabs_atoms_with_no_tabs_still_emit_a_valid_tabs_component():
         assert not list(AGENT_TO_RENDERER_STRICT.iter_errors(m)), atom
         tabs = [c for c in m["createSurface"]["components"] if c["component"] == "Tabs"]
         assert tabs and all(len(t["tabs"]) >= 1 for t in tabs)
+
+
+def test_alias_table_matches_the_published_aliases_and_aliases_emit_canonically():
+    from renderers.a2ui_v1 import ATOM_ALIASES
+    spec = json.load(open(os.path.join(ROOT, "public", "spec.json")))["atoms"]
+    published = {a: x["type"] for x in spec for a in x.get("aliases", [])}
+    assert ATOM_ALIASES == published
+    m = emit_surface({"title": "t", "blocks": [{"type": "data_table", "columns": [], "rows": []}]})
+    names = {c["component"] for c in m["createSurface"]["components"]}
+    assert "data_table" not in names and "data_table_sortable" in names
+
+
+def test_every_component_id_is_a_uax31_identifier_and_references_resolve():
+    """v1.0 requires every ComponentId to be a UAX #31 identifier (`user_card` valid, `user-card` / `1st_item` not).
+    The JSON schema does not check it (ComponentId is a bare string); the stock v1.0 MessageProcessor does."""
+    import regex
+    rx = regex.compile(r"[\p{XID_Start}_][\p{XID_Continue}]*")
+    bad = []
+    for name in sorted(CATALOG["components"]):
+        payload = {"title": name, "blocks": [dict(b.DEMO.get(name) or _stub(name), type=name)]}
+        comps = emit_surface(copy.deepcopy(payload))["createSurface"]["components"]
+        ids = {c["id"] for c in comps}
+        bad += [(name, i) for i in ids if not rx.fullmatch(i)]
+        for c in comps:                                  # string child refs point at emitted ids
+            for ref in (c.get("children") if isinstance(c.get("children"), list) else []):
+                if isinstance(ref, str) and ref not in ids:
+                    bad.append((name, "dangling " + ref))
+    assert not bad, bad[:10]
+    # author-supplied ids are sanitised, not passed through
+    m = emit_surface({"title": "t", "blocks": [{"type": "body", "id": "my-id 1", "text": "x"},
+                                                 {"type": "body", "id": "1st", "text": "y"}]})
+    got = [c["id"] for c in m["createSurface"]["components"] if c["id"] != "root"]
+    assert got == ["my_id_1", "_1st"], got

@@ -80,21 +80,35 @@ DEFERRED_CONTAINERS: set = {"motion_timeline"}
 
 
 # ── ID minting ────────────────────────────────────────────────────────────────
+def _uax31(s: str) -> str:
+    """Make `s` a Unicode UAX #31 identifier (`^[\\p{XID_Start}_][\\p{XID_Continue}]*$`), which v1.0 REQUIRES of
+    every ComponentId (a2ui_protocol.md, Catalog Entity Naming Rules: `user_card` is valid, `user-card` and
+    `1st_item` are not). Characters that are not word characters become `_`; a leading digit gets a `_` prefix.
+    Already-valid identifiers are returned unchanged."""
+    out = re.sub(r"\W", "_", s, flags=re.UNICODE)
+    if not out:
+        return "_"
+    return "_" + out if out[0].isdigit() else out
+
+
 class _IdGen:
-    """Deterministic, collision-free component IDs. Honours an author-supplied
-    `id` when present and unique; otherwise mints `<type>-<n>`."""
+    """Deterministic, collision-free component IDs, all valid v1.0 identifiers (UAX #31). Honours an
+    author-supplied `id` when present (sanitised if it is not an identifier) and unique; otherwise mints
+    `<type>_<n>`."""
     def __init__(self) -> None:
         self._used: set = set()
         self._n = 0
 
     def take(self, block: Dict[str, Any]) -> str:
         cid = block.get("id")
-        if isinstance(cid, str) and cid and cid not in self._used:
-            self._used.add(cid)
-            return cid
-        base = str(block.get("type", "block")).replace(" ", "_")
+        if isinstance(cid, str) and cid:
+            cid = _uax31(cid)
+            if cid not in self._used:
+                self._used.add(cid)
+                return cid
+        base = _uax31(str(block.get("type", "block")))
         while True:
-            cand = f"{base}-{self._n}"
+            cand = f"{base}_{self._n}"
             self._n += 1
             if cand not in self._used:
                 self._used.add(cand)
@@ -487,9 +501,16 @@ def _emit_declared_children(b: Dict[str, Any], cid: str, components: List[Dict[s
     return cid
 
 
+# Published atom aliases (atoms/schema.yaml `aliases`, spec.json): the v1.0 catalogue defines the CANONICAL name only, so an
+# alias is emitted under its canonical type (tests/test_a2ui_v1_atom_conformity.py keeps this equal to spec.json).
+ATOM_ALIASES = {"data_table": "data_table_sortable", "text_input": "form_input"}
+
+
 def _emit_block(b: Dict[str, Any], components: List[Dict[str, Any]], ids: _IdGen) -> str:
     """Append the flattened component(s) for `b` (and its descendants) to
     `components`; return this block's minted component id."""
+    if b.get("type") in ATOM_ALIASES:                       # a catalogue defines the canonical name only
+        b = dict(b, type=ATOM_ALIASES[b["type"]])
     cid = ids.take(b)
 
     if b.get("type") == "hub":
@@ -810,14 +831,14 @@ def _form_to_basic(c: Dict[str, Any], data_model: Dict[str, Any]):
     if ctype == "form":
         kids, extra, ctx = [], [], {}
         if c.get("title"):
-            extra.append({"id": f"{cid}-title", "component": "Text", "text": f"## {c['title']}"})
-            kids.append(f"{cid}-title")
+            extra.append({"id": f"{cid}_title", "component": "Text", "text": f"## {c['title']}"})
+            kids.append(f"{cid}_title")
         for i, f in enumerate(c.get("fields") or []):
             if not isinstance(f, dict):
                 continue
             name = str(f.get("name") or f"field{i}")
             path = f"/{_ptr_seg(cid)}/{_ptr_seg(name)}"
-            got = _basic_input(f"{cid}-f{i}", str(f.get("type") or "text"), f, path)
+            got = _basic_input(f"{cid}_f{i}", str(f.get("type") or "text"), f, path)
             if got is None:
                 continue
             comp, init = got
@@ -825,10 +846,10 @@ def _form_to_basic(c: Dict[str, Any], data_model: Dict[str, Any]):
             extra.append(comp)
             kids.append(comp["id"])
             ctx[name] = {"@path": path}
-        extra.append({"id": f"{cid}-submit-t", "component": "Text", "text": str(c.get("submit_label") or "Submit")})
-        extra.append({"id": f"{cid}-submit", "component": "Button", "variant": "primary", "child": f"{cid}-submit-t",
+        extra.append({"id": f"{cid}_submit_t", "component": "Text", "text": str(c.get("submit_label") or "Submit")})
+        extra.append({"id": f"{cid}_submit", "component": "Button", "variant": "primary", "child": f"{cid}_submit_t",
                       "action": {"event": {"name": "submit", "context": dict(ctx, form=cid)}}})
-        kids.append(f"{cid}-submit")
+        kids.append(f"{cid}_submit")
         return {"id": cid, "component": "Column", "children": kids}, extra
     if not str(ctype).startswith("form_") and ctype != "toggle_switch":
         return None
@@ -921,6 +942,17 @@ def _v09_text(c: Dict[str, Any]) -> Dict[str, Any]:
     return dict(c, text=m.group(2), variant=f"h{len(m.group(1))}")
 
 
+# Basic-component props that exist only in v1.0 (the v0.9 Basic components are closed): dropped on the v0.9 path,
+# or the whole message is invalid v0.9 (review F10: TextField.placeholder made `form`/`form_input` invalid).
+# Lossy by necessity: v0.9 has no equivalent (no placeholder, poster image or slider step).
+_V10_ONLY_PROPS = {"TextField": ("placeholder",), "Video": ("posterUrl",), "Slider": ("steps",)}
+
+
+def _v09_drop_v10_props(c: Dict[str, Any]) -> Dict[str, Any]:
+    drop = _V10_ONLY_PROPS.get(c.get("component"))
+    return {k: v for k, v in c.items() if k not in drop} if drop else c
+
+
 def _downgrade_to_v09(node: Any) -> Any:
     """Inverse of the 1.0 `@` prefix, for DynamicValue/FunctionCall positions ONLY: an object whose sole
     key is "@path" (DataBinding) becomes {"path": ...}; one with "@call" (FunctionCall) gets "call".
@@ -949,7 +981,8 @@ def emit_messages(payload: Dict[str, Any], capabilities: Optional[ClientCapabili
     if capabilities is None or capabilities.version != "v0.9":
         return [msg]
     create = dict(msg["createSurface"])
-    components = [_v09_text({k: v for k, v in c.items() if k != "catalogId"}) for c in create.pop("components")]
+    components = [_v09_drop_v10_props(_v09_text({k: v for k, v in c.items() if k != "catalogId"}))
+                  for c in create.pop("components")]
     if "degraded" not in (((msg["createSurface"].get("metadata") or {}).get("extensions") or {})
                           .get("a2uicatalog_surface") or {}):
         create["catalogId"] = catalog_id              # v0.9 path unchanged: our catalogue is the surface default
@@ -958,9 +991,10 @@ def emit_messages(payload: Dict[str, Any], capabilities: Optional[ClientCapabili
     # a v0.9 message carrying it is invalid v0.9 (androidx's alpha parser happens to tolerate it). Checked
     # against the vendored v0.9 spec, tests/fixtures/a2ui_v0_9_spec (2026-10-05).
     create.pop("metadata", None)
+    # Only COMPONENT props are downgraded (binding/call positions: Basic props and, because the catalogue types
+    # every extension prop as a Dynamic* value, extension props). The dataModel is literal data and is never
+    # rewritten (review F15): in 1.0 a sole-key "@path" object cannot occur in it, a literal one is "@@path".
     components = _downgrade_to_v09(components)
-    if data_model is not None:
-        data_model = _downgrade_to_v09(data_model)
     out = [{"version": "v0.9", "createSurface": create}]
     if data_model:                                   # before the components, so input bindings resolve at once
         out.append({"version": "v0.9", "updateDataModel": {"surfaceId": create["surfaceId"], "path": "/", "value": data_model}})
@@ -1005,14 +1039,32 @@ def emit_messages(payload: Dict[str, Any], capabilities: Optional[ClientCapabili
 # Both response messages wrap the SAME common_types.json#/$defs/FunctionResponse
 # shape ({functionCallId, value|error} — no `call` field at all, confirmed;
 # the old function_response()'s assumption of one was never real either).
+# Every function in the v1.0 Basic catalog is `allowedCallers: rendererOnly` (the default; `openUrl` also
+# requiresUserActivation). A conformant renderer answers an agent's callRendererFunction for one of them with
+# INVALID_FUNCTION_CALL, so building that message is a bug (review F13), not a request.
+BASIC_RENDERER_ONLY_FUNCTIONS = frozenset({
+    "required", "regex", "length", "numeric", "email", "formatString", "formatNumber", "formatCurrency",
+    "formatDate", "pluralize", "openUrl", "and", "or", "not"})
+_BASIC_CATALOG_ALIASES = ("https://a2ui.org/specification/v1_0/catalog.json",)
+
+
 def call_renderer_function(catalog_id: str, call: str, args: Optional[Dict[str, Any]] = None,
-                           function_call_id: Optional[str] = None) -> Dict[str, Any]:
+                           function_call_id: Optional[str] = None, check_callers: bool = True) -> Dict[str, Any]:
     """Build a v1.0 `callRendererFunction` message: ask the renderer to
     execute `call` (a function registered under `catalog_id`) with `args`.
     catalogId is REQUIRED on the real schema — unlike everything else in
     this module, there is no sensible default; the caller must know which
     catalog the function it's calling belongs to. Auto-mints a
-    functionCallId if the caller doesn't supply one."""
+    functionCallId if the caller doesn't supply one.
+
+    Raises ValueError when `call` is a Basic-catalog function: all of them are rendererOnly, so a
+    conformant renderer would reject the call (pass check_callers=False only to build a deliberately
+    non-callable message, e.g. for a negative test). Functions of other catalogs are not checked here:
+    their `allowedCallers` lives in that catalog's definition."""
+    if check_callers and catalog_id in (BASIC_V1_CATALOG_ID,) + _BASIC_CATALOG_ALIASES \
+            and call in BASIC_RENDERER_ONLY_FUNCTIONS:
+        raise ValueError(f"{call!r} is a rendererOnly function of the Basic catalog: an agent may not call it "
+                         "(renderer answers INVALID_FUNCTION_CALL)")
     fid = function_call_id or f"{call}-{uuid.uuid4().hex[:8]}"
     return {
         "version": A2UI_VERSION,

@@ -100,7 +100,7 @@ def test_end_to_end_real_emitter_through_wrap_unwrap_validate():
     surface_msg = emit_surface(payload, surface_id="dash-1")
     call_msg = call_renderer_function(
         "https://a2ui.org/specification/v1_0/catalog.json", "openUrl",
-        args={"url": "https://example.com"})
+        args={"url": "https://example.com"}, check_callers=False)
     update_msg = update_data_model("dash-1", value={"revenue": 42}, path="/metrics")
 
     dp = wrap_messages([surface_msg, call_msg, update_msg])

@@ -90,13 +90,13 @@ import re
 from typing import Any, Callable, Dict, List, Optional, Set, Tuple
 
 try:  # package import (tests: `from renderers.a2ui_v1_wired import ...`)
-    from .a2ui_v1 import (A2UI_VERSION, BASIC_V1_CATALOG_ID, STANDARD_MAP, _IdGen, _default_surface_id,
+    from .a2ui_v1 import (ATOM_ALIASES, A2UI_VERSION, BASIC_V1_CATALOG_ID, STANDARD_MAP, _IdGen, _default_surface_id,
                           _tag_extensions)
 except ImportError:  # direct CLI run from repo root or renderers/
     import os as _os
     import sys as _sys
     _sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
-    from a2ui_v1 import (A2UI_VERSION, BASIC_V1_CATALOG_ID, STANDARD_MAP, _IdGen, _default_surface_id,  # noqa: F401
+    from a2ui_v1 import (ATOM_ALIASES, A2UI_VERSION, BASIC_V1_CATALOG_ID, STANDARD_MAP, _IdGen, _default_surface_id,  # noqa: F401
                          _tag_extensions)
 
 __all__ = ["emit_wired_surface", "A2UI_VERSION",
@@ -105,6 +105,10 @@ __all__ = ["emit_wired_surface", "A2UI_VERSION",
 # resolvable URIs, not bare tokens — see renderers/a2ui_v1.py
 DEFAULT_CATALOG_ID = "https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json"
 DEFAULT_STATE_CATALOG_ID = "https://a2uicatalog.ai/catalogue/a2ui-state-v1.json"
+# the components public/catalogue/a2ui-state-v1.json defines (tests/test_a2ui_v1_wired.py keeps this in sync)
+STATE_CATALOG_COMPONENTS = frozenset({
+    "ArrayFilter", "Computed", "DerivedStore", "NumericThreshold", "ObjectFields", "RowBinder", "StepNavigator",
+    "StringTemplate", "StringValidator", "Timer", "ValueStore", "badge", "claim", "delete", "resolve", "sla_badge"})
 
 # state primitives that dissolve into the A2UI dataModel (no component emitted)
 CONFORMANT_PRIMITIVES = {"ValueStore"}
@@ -294,17 +298,17 @@ def _emit_table(cid: str, props: Dict[str, Any], rows_path: str,
             label = col.get("label") or key
         else:
             key, label = str(col), str(col)
-        hid = ids.take({"id": f"{cid}-h-{key}", "type": "text"})
+        hid = ids.take({"id": f"{cid}_h_{key}", "type": "text"})
         components.append({"id": hid, "component": "Text", "text": str(label)})
         header_ids.append(hid)
-        tid = ids.take({"id": f"{cid}-c-{key}", "type": "text"})
+        tid = ids.take({"id": f"{cid}_c_{key}", "type": "text"})
         components.append({"id": tid, "component": "Text", "text": {"@path": key}})
         cell_ids.append(tid)
-    header_id = ids.take({"id": f"{cid}-header", "type": "row"})
+    header_id = ids.take({"id": f"{cid}_header", "type": "row"})
     components.append({"id": header_id, "component": "Row", "children": header_ids})
-    row_tpl_id = ids.take({"id": f"{cid}-row", "type": "row"})
+    row_tpl_id = ids.take({"id": f"{cid}_row", "type": "row"})
     components.append({"id": row_tpl_id, "component": "Row", "children": cell_ids})
-    list_id = ids.take({"id": f"{cid}-list", "type": "list"})
+    list_id = ids.take({"id": f"{cid}_list", "type": "list"})
     components.append({"id": list_id, "component": "List",
                        "children": {"path": rows_path, "componentId": row_tpl_id}})
     components.append({"id": cid, "component": "Column",
@@ -400,7 +404,7 @@ def _emit_layout_entry(entry: Dict[str, Any], components: List[Dict[str, Any]],
             return cid
 
     # 4) pass-through: extension component under the atoms/state catalogs.
-    node = {"id": cid, "component": atom}
+    node = {"id": cid, "component": ATOM_ALIASES.get(atom, atom)}   # catalogues define the canonical name only
     node.update(props)
     for prop, path in bindings.items():   # keep what DID resolve — a bare host
         node[prop] = {"@path": path}       # ignores the rest, a state host upgrades
@@ -513,7 +517,12 @@ def emit_wired_surface(payload: Dict[str, Any], surface_id: Optional[str] = None
 
     # v1.0 catalog mixing: Basic is the surface default; extension components carry their own catalogId
     # (the state catalogue for those that need its engine, else the atoms catalogue).
-    components = _tag_extensions(components, catalog_id, {i: state_catalog_id for i in ctx.extension_ids})
+    # Only components DEFINED in the state catalogue (primitives, column render-hints, state badges) resolve under it;
+    # every other extension atom (key_value, jump_nav, ripple_button, ...) is an atoms-catalogue component even
+    # when it carries wires (found 2026-11-10: the stock v1.0 processor rejected them as unknown under the state catalogue).
+    by_id = {c["id"]: c.get("component") for c in components}
+    components = _tag_extensions(components, catalog_id, {i: state_catalog_id for i in ctx.extension_ids
+                                                          if by_id.get(i) in STATE_CATALOG_COMPONENTS})
     surface: Dict[str, Any] = {
         "surfaceId": surface_id or _default_surface_id(payload),
         "catalogId": BASIC_V1_CATALOG_ID,

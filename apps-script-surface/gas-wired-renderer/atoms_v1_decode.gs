@@ -148,7 +148,12 @@ function _a2uiNormV1(n) {
   if (!n || typeof n !== 'object') return n;
   var ks = Object.keys(n), o = {}, i;
   if (ks.length === 1 && ks[0] === '@path') return {path: n['@path']};
-  for (i = 0; i < ks.length; i++) o[ks[i] === '@call' ? 'call' : ks[i]] = _a2uiNormV1(n[ks[i]]);
+  // v1.0 escape: a literal key that starts with "@" is written "@@..." on the wire; unescape it here.
+  // (Not applied to the {"@path"} / "@call" positions above and below.)
+  for (i = 0; i < ks.length; i++) {
+    var k = ks[i] === '@call' ? 'call' : (ks[i].indexOf('@@') === 0 ? ks[i].slice(1) : ks[i]);
+    o[k] = _a2uiNormV1(n[ks[i]]);
+  }
   return o;
 }
 

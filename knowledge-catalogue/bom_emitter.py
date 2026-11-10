@@ -17,7 +17,7 @@ The judgment lives in the DECLARED artifacts, not in a prompt:
 Honesty rules (deterministic means never inventing):
   - `piege` maps to knowledge_check in the BOM, but an MCQ needs invented
     distractors — a judgment call. The emitter DOWNGRADES piège to a warning
-    callout and records the downgrade in the envelope's _emitter block.
+    callout and records the downgrade in metadata.extensions.a2uicatalog_bom.
   - A required_competency with no section still appears (flagged card), the
     same completeness contract Prompt 2 enforces.
 
@@ -421,7 +421,7 @@ def emit(bom_path, curriculum_paths):
             slide_col = f"s{si}_g{gi}"
             components.append({"id": slide_col, "component": "Column",
                                "children": slide_children})
-            slide_tab_entries.append({"label": group["title"], "child": slide_col})
+            slide_tab_entries.append({"title": group["title"], "child": slide_col})
 
         # completeness contract: schema competencies with no section, flagged
         missing = [c for c in front.get("required_competencies", [])
@@ -431,7 +431,7 @@ def emit(bom_path, curriculum_paths):
             gap_id = f"s{si}_gaps"
             components.append({"id": gap_id, "component": "callout", "icon": "🕳️",
                                "text": {"@path": f"/subjects/{si}/gaps"}})
-            slide_tab_entries.append({"label": "⚠ Lacunes", "child": gap_id})
+            slide_tab_entries.append({"title": "⚠ Lacunes", "child": gap_id})
 
         exam = meta.get("exam", {}) or front.get("exam", {}) or {}
         subj_data = {"label": meta.get("label", front.get("name", subj_key)),
@@ -449,7 +449,7 @@ def emit(bom_path, curriculum_paths):
         components.append({"id": subj_col, "component": "Column",
                            "children": [head_id, inner_id]})
         icon = meta.get("hub_icon", "")
-        subj_tab_entries.append({"label": (icon + " " if icon else "") + subj_data["label"],
+        subj_tab_entries.append({"title": (icon + " " if icon else "") + subj_data["label"],
                                  "child": subj_col})
 
     components.append({"id": "subjects_tabs", "component": "Tabs", "tabs": subj_tab_entries})
@@ -470,17 +470,19 @@ def emit(bom_path, curriculum_paths):
             # hand rather than calling that one, so it had the identical
             # bug independently. Same fix: the real spec's own extension
             # point.
+            # the emitter's diagnostics ride in a legal extension key (a top-level `_emitter` sibling of
+            # createSurface is outside the v1.0 message schema)
             "metadata": {"extensions": {"a2uicatalog_surface": {
-                "title": bom.get("name", "Knowledge Surface"), "theme": "dark"}}},
+                "title": bom.get("name", "Knowledge Surface"), "theme": "dark"},
+                "a2uicatalog_bom": {
+                    "name": "bom_emitter", "bom": str(bom_path),
+                    "curricula": [str(p) for p in curriculum_paths],
+                    "piege_downgrades": downgrades,     # knowledge_check needs invented MCQs → callout
+                    "uncovered_competencies": uncovered,  # never silent
+                }}},
             "dataModel": {"subjects": data_subjects},
             "components": [c if c["component"] in _BASIC_NAMES else dict(c, catalogId=ATOMS_CATALOG_ID)
                            for c in components],
-        },
-        "_emitter": {
-            "name": "bom_emitter", "bom": str(bom_path),
-            "curricula": [str(p) for p in curriculum_paths],
-            "piege_downgrades": downgrades,     # knowledge_check needs invented MCQs → callout
-            "uncovered_competencies": uncovered,  # never silent
         },
     }
 
@@ -494,7 +496,7 @@ def main():
     envelope = emit(args.schema, args.curricula)
     Path(args.out).write_text(json.dumps(envelope, ensure_ascii=False, indent=1))
     raw = len(json.dumps(envelope))
-    e = envelope["_emitter"]
+    e = envelope["createSurface"]["metadata"]["extensions"]["a2uicatalog_bom"]
     print(f"wrote {args.out} — {raw} bytes raw, "
           f"{len(envelope['createSurface']['components'])} components, "
           f"{e['piege_downgrades']} piège downgrades, "
