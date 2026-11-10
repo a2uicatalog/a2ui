@@ -308,6 +308,13 @@ def extract_section(sect):
 # the ChildList template's Child Scope. THIS is the whole runbook-as-data bet:
 # authored once, stamped N times by data.
 
+BASIC_V1_CATALOG_ID = "https://a2ui.org/specification/v1_0/catalogs/basic/catalog.json"
+ATOMS_CATALOG_ID = "https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json"
+_BASIC_NAMES = frozenset({"AudioPlayer", "Button", "Card", "CheckBox", "ChoicePicker", "Column", "DateTimeInput",
+                          "Divider", "Icon", "Image", "List", "Modal", "Row", "Slider", "Tabs", "Text", "TextField",
+                          "Video"})
+
+
 def template_components(atom_map):
     def atom_for(kind, default):
         return atom_map.get(kind, default)
@@ -315,41 +322,41 @@ def template_components(atom_map):
         "concept": [
             {"id": "tpl_concept", "component": atom_for("concept", "flashcard_deck"),
              "label_front": "CONCEPT", "accent": "#6366f1",
-             "title": {"path": "title"}, "cards": {"path": "cards"}},
+             "title": {"@path": "title"}, "cards": {"@path": "cards"}},
         ],
         "glossary": [
             {"id": "tpl_glossary", "component": atom_for("glossary", "flashcard_deck"),
              "label_front": "TERME", "accent": "#0ea5e9",
-             "title": {"path": "title"}, "cards": {"path": "cards"}},
+             "title": {"@path": "title"}, "cards": {"@path": "cards"}},
         ],
         "drill": [
             # brevet_automatismes renders no title of its own — the authored
             # subtree pairs a heading with the atom (one template, two nodes)
             {"id": "tpl_drill", "component": "Column",
              "children": ["tpl_drill_head", "tpl_drill_atom"]},
-            {"id": "tpl_drill_head", "component": "subheading", "text": {"path": "title"}},
+            {"id": "tpl_drill_head", "component": "subheading", "text": {"@path": "title"}},
             {"id": "tpl_drill_atom", "component": atom_for("drill", "brevet_automatismes"),
-             "questions": {"path": "questions"}},
+             "questions": {"@path": "questions"}},
         ],
         "method": [
             {"id": "tpl_method", "component": atom_for("method", "steps"),
-             "title": {"path": "title"}, "items": {"path": "items"}},
+             "title": {"@path": "title"}, "items": {"@path": "items"}},
         ],
         "key_takeaways": [
             {"id": "tpl_takeaways", "component": atom_for("checklist", "key_takeaways"),
-             "points": {"path": "points"}},
+             "points": {"@path": "points"}},
         ],
         "timeline": [
             {"id": "tpl_timeline", "component": atom_for("timeline", "brevet_timeline"),
-             "title": {"path": "title"}, "events": {"path": "events"}},
+             "title": {"@path": "title"}, "events": {"@path": "events"}},
         ],
         "piege": [
             # deterministic DOWNGRADE from the BOM's knowledge_check (see header)
             {"id": "tpl_piege", "component": "callout", "icon": "⚠️",
-             "text": {"path": "text"}},
+             "text": {"@path": "text"}},
         ],
         "other": [
-            {"id": "tpl_other", "component": "body", "text": {"path": "text"}},
+            {"id": "tpl_other", "component": "body", "text": {"@path": "text"}},
         ],
     }
 
@@ -423,7 +430,7 @@ def emit(bom_path, curriculum_paths):
             uncovered += [c["id"] for c in missing]
             gap_id = f"s{si}_gaps"
             components.append({"id": gap_id, "component": "callout", "icon": "🕳️",
-                               "text": {"path": f"/subjects/{si}/gaps"}})
+                               "text": {"@path": f"/subjects/{si}/gaps"}})
             slide_tab_entries.append({"label": "⚠ Lacunes", "child": gap_id})
 
         exam = meta.get("exam", {}) or front.get("exam", {}) or {}
@@ -438,7 +445,7 @@ def emit(bom_path, curriculum_paths):
         subj_col = f"subj_{si}"
         head_id = f"subj_{si}_head"
         components.append({"id": head_id, "component": "subheading",
-                           "text": {"path": f"/subjects/{si}/label"}})
+                           "text": {"@path": f"/subjects/{si}/label"}})
         components.append({"id": subj_col, "component": "Column",
                            "children": [head_id, inner_id]})
         icon = meta.get("hub_icon", "")
@@ -452,10 +459,11 @@ def emit(bom_path, curriculum_paths):
         components.extend(tpl_lib[akey])
 
     return {
-        "version": "v1.0",
+        "version": "1.0",    # final v1.0: "@path" bindings (relative inside templates); ChildList keeps "path"
         "createSurface": {
             "surfaceId": bom.get("id", "bom-surface"),
-            "catalogId": "https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json",
+            # v1.0 catalog mixing: Basic is the surface default so Column/Tabs resolve; our atoms carry their own
+            "catalogId": BASIC_V1_CATALOG_ID,
             # 2026-08-24: surfaceProperties isn't a real v1.0 field (same
             # finding, fixed the same day, in renderers/a2ui_v1.py's own
             # emit_surface()) -- this emitter built its createSurface by
@@ -465,7 +473,8 @@ def emit(bom_path, curriculum_paths):
             "metadata": {"extensions": {"a2uicatalog_surface": {
                 "title": bom.get("name", "Knowledge Surface"), "theme": "dark"}}},
             "dataModel": {"subjects": data_subjects},
-            "components": components,
+            "components": [c if c["component"] in _BASIC_NAMES else dict(c, catalogId=ATOMS_CATALOG_ID)
+                           for c in components],
         },
         "_emitter": {
             "name": "bom_emitter", "bom": str(bom_path),

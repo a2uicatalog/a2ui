@@ -412,3 +412,19 @@ def test_minimal_clean_fixture_parses():
 def test_malformed_fixture_raises_missing_frontmatter():
     with pytest.raises(ValueError, match="missing YAML frontmatter"):
         bom_emitter.parse_curriculum(FIXTURES_DIR / "malformed-missing-frontmatter.curriculum.md")
+
+
+def test_envelope_is_final_v1_0_bindings_and_catalog_mixing(envelope):
+    """W3-FIX: version "1.0", "@path" bindings in extension props (ChildList keeps "path"), Basic surface default
+    with our atoms carrying their own catalogId."""
+    assert envelope["version"] == "1.0"
+    cs = envelope["createSurface"]
+    assert cs["catalogId"].endswith("/catalogs/basic/catalog.json")
+    for c in cs["components"]:
+        for v in c.values():
+            if isinstance(v, dict) and set(v) == {"path"}:
+                raise AssertionError(f"old {{path}} binding left in {c['id']}")
+        if c["component"] in ("Column", "Tabs"):
+            assert "catalogId" not in c
+        else:
+            assert c["catalogId"].endswith("a2ui-atoms-v1.json"), c["id"]
