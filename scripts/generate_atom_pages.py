@@ -1312,7 +1312,7 @@ def render_page(atom):
              "additionalProperty": [
                  {"@type": "PropertyValue", "name": "works on", "value": ", ".join(_surfaces)},
                  {"@type": "PropertyValue", "name": "fields", "value": ", ".join(sorted(_fields)) if isinstance(_fields, dict) else ""},
-                 {"@type": "PropertyValue", "name": "A2UI version", "value": "v1.0"},
+                 {"@type": "PropertyValue", "name": "A2UI version", "value": "1.0"},
                  {"@type": "PropertyValue", "name": "JSON Schema", "value": "https://a2uicatalog.ai/catalogue/atoms-json-schema.json"},
                  {"@type": "PropertyValue", "name": "markdown", "value": f"https://a2uicatalog.ai/atoms/{atom_type}.md"},
              ]},

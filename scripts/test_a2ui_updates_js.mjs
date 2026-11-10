@@ -20,7 +20,7 @@ const eq = (name, got, want) => {
   console.log((ok ? "  ✓ " : "  ✗ ") + name + (ok ? "" : `\n     got ${JSON.stringify(got)}\n     want ${JSON.stringify(want)}`));
   ok ? pass++ : fail++;
 };
-const CREATE = { version: "v1.0", createSurface: {
+const CREATE = { version: "1.0", createSurface: {
   surfaceId: "s1", catalogId: "a2ui-atoms-v1",
   components: [{ id: "root", component: "Column", children: ["t"] },
               { id: "t", component: "Text", text: "old" }],
@@ -28,7 +28,7 @@ const CREATE = { version: "v1.0", createSurface: {
 
 // updateComponents upserts by id
 let st = stateFromCreate(CREATE);
-applyUpdate(st, { version: "v1.0", updateComponents: { surfaceId: "s1", components: [
+applyUpdate(st, { version: "1.0", updateComponents: { surfaceId: "s1", components: [
   { id: "t", component: "Text", text: "new" }, { id: "t2", component: "Text", text: "added" }] } });
 eq("upsert updates existing", st.components.t.text, "new");
 eq("upsert adds new", st.components.t2.text, "added");
@@ -36,33 +36,33 @@ eq("upsert leaves others", st.components.root.component, "Column");
 
 // updateDataModel pointer patch + auto-vivify
 st = stateFromCreate(CREATE);
-applyUpdate(st, { version: "v1.0", updateDataModel: { surfaceId: "s1", path: "/user/name", value: "B" } });
+applyUpdate(st, { version: "1.0", updateDataModel: { surfaceId: "s1", path: "/user/name", value: "B" } });
 eq("pointer patch", st.dataModel.user.name, "B");
 eq("sibling untouched", st.dataModel.count, 1);
-applyUpdate(st, { version: "v1.0", updateDataModel: { surfaceId: "s1", path: "/a/b/c", value: 9 } });
+applyUpdate(st, { version: "1.0", updateDataModel: { surfaceId: "s1", path: "/a/b/c", value: 9 } });
 eq("auto-vivify deep path", st.dataModel.a.b.c, 9);
 
 // whole-model replace (path '/') + remove (2026-08-24: real delete signal
 // is an EXPLICIT null, not an omitted value -- value is REQUIRED on the
 // real schema; matches the same fix in renderers/a2ui_v1_updates.py)
 st = stateFromCreate(CREATE);
-applyUpdate(st, { version: "v1.0", updateDataModel: { surfaceId: "s1", path: "/", value: { fresh: true } } });
+applyUpdate(st, { version: "1.0", updateDataModel: { surfaceId: "s1", path: "/", value: { fresh: true } } });
 eq("path '/' replaces all", st.dataModel, { fresh: true });
 st = stateFromCreate(CREATE);
-applyUpdate(st, { version: "v1.0", updateDataModel: { surfaceId: "s1", path: "/count", value: null } });
+applyUpdate(st, { version: "1.0", updateDataModel: { surfaceId: "s1", path: "/count", value: null } });
 eq("explicit null removes key", st.dataModel.hasOwnProperty("count"), false);
 eq("remove leaves siblings", st.dataModel.user.name, "A");
 
 // deleteSurface tears down
 st = stateFromCreate(CREATE);
-applyUpdate(st, { version: "v1.0", deleteSurface: { surfaceId: "s1" } });
+applyUpdate(st, { version: "1.0", deleteSurface: { surfaceId: "s1" } });
 eq("delete sets flag", st.deleted, true);
 eq("delete clears components", st.components, {});
 
 // surfaceId guard
 st = stateFromCreate(CREATE);
 let threw = false;
-try { applyUpdate(st, { version: "v1.0", updateDataModel: { surfaceId: "WRONG", path: "/count", value: 1 } }); }
+try { applyUpdate(st, { version: "1.0", updateDataModel: { surfaceId: "WRONG", path: "/count", value: 1 } }); }
 catch (e) { threw = /surfaceId mismatch/.test(e.message); }
 eq("surfaceId guard throws", threw, true);
 
@@ -71,7 +71,7 @@ st = stateFromCreate(CREATE);
 [{ updateDataModel: { surfaceId: "s1", path: "/count", value: 2 } },
  { updateComponents: { surfaceId: "s1", components: [{ id: "t", component: "Text", text: "live" }] } },
  { updateDataModel: { surfaceId: "s1", path: "/user", value: { name: "Z" } } }]
-  .forEach((m) => applyUpdate(st, { version: "v1.0", ...m }));
+  .forEach((m) => applyUpdate(st, { version: "1.0", ...m }));
 eq("session: count", st.dataModel.count, 2);
 eq("session: component", st.components.t.text, "live");
 eq("session: user", st.dataModel.user, { name: "Z" });
