@@ -180,7 +180,8 @@ specification</a>. Packages: <a href="/sdks/">SDKs &amp; client libraries</a>. G
 <a href="/developers/">developer portal</a>.</p>
 
 <h2 id="sandbox">Sandbox and test mode</h2>
-<p>There is no separate sandbox host because the REST endpoints hold no production data: /api/render, /api/render/batch, /api/render/jobs, /api/compose and /api/data are side-effect free, so a test call against production cannot change anything; its only cost is quota. To try payloads by hand, use the playground at <a href="https://play.a2uicatalog.ai">play.a2uicatalog.ai</a>. On the MCP server, every tool that stores,
+<p>Sandbox server: <code>https://a2uicatalog.ai/api/sandbox</code>. It serves the render routes with the same code on its own allowance of 20 requests per IP per day, so test calls never spend the production one: <code>POST https://a2uicatalog.ai/api/sandbox/api/render</code>, <code>.../api/render/batch</code> and <code>.../api/render/jobs</code>. Every reply carries <code>X-A2UI-Sandbox: true</code>.</p>
+<p>Production is also safe to test against: the REST endpoints hold no production data: /api/render, /api/render/batch, /api/render/jobs, /api/compose and /api/data are side-effect free, so a test call against production cannot change anything; its only cost is quota. To try payloads by hand, use the playground at <a href="https://play.a2uicatalog.ai">play.a2uicatalog.ai</a>. On the MCP server, every tool that stores,
 sends or deletes something is annotated <code>readOnlyHint: false</code>; the read-only tools are safe to call freely
 while building an integration.</p>
 

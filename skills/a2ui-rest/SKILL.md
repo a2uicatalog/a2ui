@@ -56,8 +56,11 @@ compatibility policy (`X-A2UI-Degraded` and `X-A2UI-Incompatible` name what chan
 
 ## Sandbox
 
-There is no separate sandbox host: these endpoints hold no production data and change
-nothing, so a test call against production is safe. Its only cost is quota. To try payloads
+`https://a2uicatalog.ai/api/sandbox` serves the render routes with the same code on their own
+allowance (20 requests per IP per day), so building an integration never spends the
+production one: `POST https://a2uicatalog.ai/api/sandbox/api/render`, `.../api/render/batch`,
+`.../api/render/jobs`. Replies carry `X-A2UI-Sandbox: true`. Production is also safe to test
+against: these endpoints hold no production data and change nothing; the only cost is quota. To try payloads
 by hand, use the playground at https://play.a2uicatalog.ai.
 
 ## Failure modes

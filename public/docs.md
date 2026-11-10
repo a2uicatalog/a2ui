@@ -15,7 +15,9 @@ Primary integration surface: [the MCP server at https://a2uicatalog.ai/mcp](http
 
 ## Sandbox and test mode
 
-There is no separate sandbox host because the REST endpoints hold no production data: /api/render, /api/render/batch, /api/render/jobs, /api/compose and /api/data are side-effect free, so a test call against production cannot change anything; its only cost is quota. To try payloads by hand, use the playground at [play.a2uicatalog.ai](https://play.a2uicatalog.ai). On the MCP server, every tool that stores, sends or deletes something is annotated `readOnlyHint: false`; the read-only tools are safe to call freely while building an integration.
+Sandbox server: `https://a2uicatalog.ai/api/sandbox`. It serves the render routes with the same code on its own allowance of 20 requests per IP per day, so test calls never spend the production one: `POST https://a2uicatalog.ai/api/sandbox/api/render`, `.../api/render/batch` and `.../api/render/jobs`. Every reply carries `X-A2UI-Sandbox: true`.
+
+Production is also safe to test against: the REST endpoints hold no production data: /api/render, /api/render/batch, /api/render/jobs, /api/compose and /api/data are side-effect free, so a test call against production cannot change anything; its only cost is quota. To try payloads by hand, use the playground at [play.a2uicatalog.ai](https://play.a2uicatalog.ai). On the MCP server, every tool that stores, sends or deletes something is annotated `readOnlyHint: false`; the read-only tools are safe to call freely while building an integration.
 
 ## REST Endpoints
 

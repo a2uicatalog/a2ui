@@ -2439,7 +2439,7 @@ def generate_index(atoms):
             "@type": "Question",
             "name": "Is there a sandbox or test environment?",
             "acceptedAnswer": {{ "@type": "Answer",
-              "text": "Production doubles as the sandbox: the REST endpoints hold no production data and are side-effect free, so a test call cannot change anything, and the playground at https://play.a2uicatalog.ai lets you try payloads by hand. See https://a2uicatalog.ai/docs/#sandbox." }}
+              "text": "Yes. The sandbox server https://a2uicatalog.ai/api/sandbox runs the render routes (POST /api/sandbox/api/render, /batch, /jobs) on their own daily allowance, so tests never spend the production one. Production is also safe to test against: the REST endpoints hold no production data and are side-effect free, and the playground at https://play.a2uicatalog.ai lets you try payloads by hand. See https://a2uicatalog.ai/docs/#sandbox." }}
           }},
           {{
             "@type": "Question",

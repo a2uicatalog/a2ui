@@ -80,7 +80,11 @@ def build_openapi(n_atoms, n_surfaces):
                 "version they were built against. Full "
                 "policy: https://a2uicatalog.ai/versioning.md\n\n"
                 "## Sandbox and test mode\n\n"
-                "There is no separate sandbox host because the REST endpoints here hold "
+                "Sandbox server: https://a2uicatalog.ai/api/sandbox (the second entry in "
+                "`servers`) serves /api/render, /api/render/batch and /api/render/jobs with "
+                "the same code on its own allowance of 20 requests per IP per day, so test "
+                "calls never spend the production one; replies carry `X-A2UI-Sandbox: true`. "
+                "Production is safe to test against too, because the REST endpoints here hold "
                 "no production data to touch: /api/render, /api/render/batch, "
                 "/api/compose and /api/data/{source} are side-effect free (rendering is "
                 "a pure function of the payload, and data sources are read-only), so a "
@@ -95,7 +99,12 @@ def build_openapi(n_atoms, n_surfaces):
             "contact": {"name": "A2UI Atomic Catalog",
                         "url": "https://github.com/a2uicatalog/a2ui"},
         },
-        "servers": [{"url": BASE, "description": "Production"}],
+        "servers": [{"url": BASE, "description": "Production"},
+                    {"url": f"{BASE}/api/sandbox",
+                     "description": ("Sandbox for the render routes (/api/render, /api/render/batch, "
+                                     "/api/render/jobs): the same code on its own allowance of 20 "
+                                     "requests per IP per day, so test calls never spend the "
+                                     "production one. Replies carry X-A2UI-Sandbox: true.")}],
         "externalDocs": {"description": "Agent-facing overview (llms.txt)",
                          "url": f"{BASE}/llms.txt"},
         "tags": [
@@ -681,7 +690,7 @@ LLMS_TXT = """# A2UI Catalog (the A2UI Atomic Catalog)
 - [Developer portal]({base}/developers/): Human and agent developer portal, integration guide, REST surfaces, code samples, and self-hosting runbooks.
 - [SDKs & client libraries]({base}/sdks/): Official SDK documentation, npm CLI package, Agent Skills, and client code generators.
 - [API docs]({base}/docs/): API documentation for REST endpoints (/api/render, /api/compose, /ask), request/response schemas, and error shapes.
-- [Sandbox and test mode]({base}/docs/#sandbox): There is no separate sandbox host because the REST endpoints hold no production data: /api/render, /api/render/batch, /api/render/jobs, /api/compose and /api/data are side-effect free, so a test call against production cannot change anything; its only cost is quota. To try payloads by hand, use the playground at https://play.a2uicatalog.ai. MCP tools that store, send or delete are annotated `readOnlyHint: false`; the rest are safe to call while building.
+- [Sandbox and test mode]({base}/docs/#sandbox): Sandbox server https://a2uicatalog.ai/api/sandbox serves /api/render, /batch and /jobs (e.g. POST https://a2uicatalog.ai/api/sandbox/api/render) with the same code on its own 20/day allowance, so tests never spend the production one. Production is also safe to test against: the REST endpoints hold no production data: /api/render, /api/render/batch, /api/render/jobs, /api/compose and /api/data are side-effect free, so a test call against production cannot change anything; its only cost is quota. To try payloads by hand, use the playground at https://play.a2uicatalog.ai. MCP tools that store, send or delete are annotated `readOnlyHint: false`; the rest are safe to call while building.
 - [OpenAPI spec]({base}/openapi.json): Full OpenAPI 3.1 specification for all endpoints and schemas.
 - [Auth docs]({base}/auth/): Authentication documentation, enterprise OAuth discovery metadata, and public unauthenticated access policies.
 - [Auth & rate limits]({base}/.well-known/agent-auth.md): No API key or signup — the actual per-tool call limits.

@@ -27,7 +27,7 @@
       "description": "Call the A2UI Atomic Catalog over plain HTTP, with no MCP client — from a script, a CI job or code an agent writes. Covers finding atoms (/ask, /spec.json), turning a request into blocks (/api/compose",
       "type": "skill-md",
       "url": "https://raw.githubusercontent.com/a2uicatalog/a2ui/main/skills/a2ui-rest/SKILL.md",
-      "digest": "sha256:83efe645e5e19ca8273c47ea6bfd6707475a6322f8174415592d3f398d078d81"
+      "digest": "sha256:442a0e016c11cad53c37a4e40ad379e07f3128e43aa9b73167b06039f6c4348c"
     }
   ]
 }
