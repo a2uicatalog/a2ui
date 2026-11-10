@@ -254,6 +254,65 @@ def _paths():
                 "413": {"description": "Body larger than 256 KB",
                         "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}},
                 "429": {"$ref": "#/components/responses/RateLimited"}}}},
+        "/api/render/jobs": {"post": {
+            "tags": ["render"], "operationId": "createRenderJob",
+            "summary": "Render as an async job (202 Accepted, then poll)",
+            "description": ("The async-job form of POST /api/render: same body, query, limits and "
+                            "quota. Returns 202 Accepted with a job_id, a Location header and a "
+                            "status_url to poll; the rendered page is at result_url. Renders "
+                            "currently finish within the request, so status is already \"done\", "
+                            "but a client that polls keeps working if rendering moves to a queue. "
+                            "A bad payload or an exhausted quota fails immediately, exactly as on "
+                            "/api/render, and creates no job. Jobs are kept for one hour."),
+            "parameters": [{"name": "surface", "in": "query", "required": False,
+                            "schema": {"type": "string",
+                                       "enum": ["web", "mcp-apps", "google-apps-script-web", "google-meet-stage"]},
+                            "description": "Same surface policy as /api/render."}],
+            "requestBody": {"$ref": "#/components/requestBodies/RenderPayload"},
+            "responses": {
+                "202": {"description": "Job accepted",
+                        "headers": {"Location": {"description": "The job's status URL.",
+                                                 "schema": {"type": "string", "format": "uri"}},
+                                    "X-API-Version": {"$ref": "#/components/headers/ApiVersion"},
+                                    "Deprecation": {"$ref": "#/components/headers/Deprecation"},
+                                    "Sunset": {"$ref": "#/components/headers/Sunset"},
+                                    "X-RateLimit-Limit": {"$ref": "#/components/headers/XRateLimitLimit"},
+                                    "X-RateLimit-Remaining": {"$ref": "#/components/headers/XRateLimitRemaining"},
+                                    "RateLimit-Policy": {"$ref": "#/components/headers/RateLimitPolicy"},
+                                    "RateLimit": {"$ref": "#/components/headers/RateLimit"}},
+                        "content": {"application/json": {"schema": {"$ref": "#/components/schemas/RenderJob"}}}},
+                "400": {"description": "Malformed payload, unrenderable atom, or limit exceeded",
+                        "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}},
+                "413": {"description": "Body larger than 256 KB",
+                        "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}},
+                "429": {"$ref": "#/components/responses/RateLimited"}}}},
+        "/api/render/jobs/{job_id}": {"get": {
+            "tags": ["render"], "operationId": "getRenderJob",
+            "summary": "Render job status",
+            "description": "Poll a job made by POST /api/render/jobs. Polling spends no quota.",
+            "parameters": [{"name": "job_id", "in": "path", "required": True,
+                            "schema": {"type": "string", "pattern": "^[0-9a-f]{32}$"}}],
+            "responses": {
+                "200": {"description": "Job status",
+                        "headers": {"X-API-Version": {"$ref": "#/components/headers/ApiVersion"},
+                                    "Deprecation": {"$ref": "#/components/headers/Deprecation"},
+                                    "Sunset": {"$ref": "#/components/headers/Sunset"}},
+                        "content": {"application/json": {"schema": {"$ref": "#/components/schemas/RenderJob"}}}},
+                "400": {"description": "Malformed job id",
+                        "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}},
+                "404": {"description": "Unknown or expired job",
+                        "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}}}}},
+        "/api/render/jobs/{job_id}/result": {"get": {
+            "tags": ["render"], "operationId": "getRenderJobResult",
+            "summary": "Render job result",
+            "description": "The rendered HTML page of a finished job, with the same X-A2UI-* headers /api/render sends.",
+            "parameters": [{"name": "job_id", "in": "path", "required": True,
+                            "schema": {"type": "string", "pattern": "^[0-9a-f]{32}$"}}],
+            "responses": {
+                "200": {"description": "Rendered HTML page",
+                        "content": {"text/html": {"schema": {"type": "string"}}}},
+                "404": {"description": "Unknown or expired job",
+                        "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}}}}},
         "/api/render/batch": {"post": {
             "tags": ["render"], "operationId": "renderSurfaceBatch",
             "summary": "Render many payloads in one call",
@@ -406,6 +465,14 @@ def _paths():
 
 def _components():
     return {
+        "requestBodies": {
+            "RenderPayload": {"required": True, "content": {"application/json": {
+                "schema": {"type": "object", "required": ["blocks"], "properties": {
+                    "title": {"type": "string", "description": "Page title"},
+                    "theme": {"type": "string", "enum": ["light", "dark"]},
+                    "blocks": {"type": "array", "items": {"type": "object"},
+                               "description": "A2UI blocks-dialect atoms — see /spec.json"}}}}}},
+        },
         "parameters": {
             "ApiVersion": {
                 "name": "X-API-Version", "in": "header", "required": False,
@@ -484,6 +551,14 @@ def _components():
                 "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}},
         },
         "schemas": {
+            "RenderJob": {"type": "object", "required": ["job_id", "status"], "properties": {
+                "job_id": {"type": "string", "pattern": "^[0-9a-f]{32}$"},
+                "status": {"type": "string", "enum": ["queued", "running", "done", "failed"],
+                           "description": "Always done today: renders finish within the request."},
+                "created": {"type": "string", "format": "date-time"},
+                "expires": {"type": "string", "format": "date-time"},
+                "status_url": {"type": "string", "format": "uri"},
+                "result_url": {"type": "string", "format": "uri"}}},
             "ErrorResponse": {
                 "type": "object",
                 "description": ("Shape of every non-2xx JSON response on the REST surface (the "

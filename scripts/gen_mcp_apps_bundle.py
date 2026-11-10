@@ -339,6 +339,8 @@ HANDSHAKE = """
     var _terminal = payload.theme === 'terminal';
     document.body.classList.toggle('asw-dark-theme', payload.theme === 'dark' || _terminal);
     document.body.classList.toggle('asw-terminal-theme', _terminal);
+    // Native controls and scrollbars follow the payload theme, not the OS.
+    document.documentElement.style.colorScheme = (payload.theme === 'dark' || _terminal) ? 'dark' : 'light';
     // Wired dialect (spec/wired-transport-v0.1.md): expand templates, render the
     // layout with the SAME extracted loop GAS uses, then boot the state engine —
     // actions route through _a2uiActionTransport (host tools/call on this surface).
@@ -769,6 +771,7 @@ def build_bundle(boot_block=None, title="A2UI Catalog renderer — MCP Apps View
 <html>
 <head>
 <meta charset="utf-8">{viewport_meta}
+<meta name="color-scheme" content="light">
 <title>{title}</title>
 {atom_styles}
 <style>
@@ -865,6 +868,8 @@ HTTP_BOOT = """
     var _terminal = payload.theme === 'terminal';
     document.body.classList.toggle('asw-dark-theme', payload.theme === 'dark' || _terminal);
     document.body.classList.toggle('asw-terminal-theme', _terminal);
+    // Native controls and scrollbars follow the payload theme, not the OS.
+    document.documentElement.style.colorScheme = (payload.theme === 'dark' || _terminal) ? 'dark' : 'light';
     if (payload.type === 'a2ui_wired_surface') {
       if (payload.variants || payload.wired_templates) {
         payload = _expandWiredSurface(payload, '', '');
