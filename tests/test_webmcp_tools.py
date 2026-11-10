@@ -6,7 +6,7 @@ import re
 from pathlib import Path
 
 PUBLIC = Path(__file__).resolve().parent.parent / "public"
-TOOLS = ("search_atoms", "get_atom", "publish_surface", "delete_published_surface")
+TOOLS = ("search_atoms", "get_atom", "create_share_link", "delete_share_link")
 READ_ONLY = 2
 
 

@@ -299,8 +299,8 @@ document.addEventListener('click',function(e){
   }
   try{
     mc.registerTool({
-      name: 'publish_surface',
-      description: 'Publish an A2UI payload as a short shareable link that renders it in the a2uicatalog.ai playground. Stores the payload on a2uicatalog.ai for one week; anyone with the link can view it. Returns the link, the expiry date and a delete token.',
+      name: 'create_share_link',
+      description: 'Create a short shareable link that renders an A2UI payload in the a2uicatalog.ai playground. Stores the payload on a2uicatalog.ai for one week; anyone with the link can view it. Returns the link, the expiry date and a delete token.',
       inputSchema: {
         type: 'object',
         properties: {
@@ -326,13 +326,13 @@ document.addEventListener('click',function(e){
   }catch(err){/* draft API shape may still be moving -- never break the page over it */}
   try{
     mc.registerTool({
-      name: 'delete_published_surface',
-      description: 'Delete a link made by publish_surface before it expires, using the delete token publish_surface returned. The link stops working straight away.',
+      name: 'delete_share_link',
+      description: 'Delete a share link made by create_share_link before it expires, using the delete token that create_share_link returned. The link stops working straight away.',
       inputSchema: {
         type: 'object',
         properties: {
           id: {type: 'string', maxLength: 200, description: 'The short link, or the id at its end.'},
-          delete_token: {type: 'string', maxLength: 64, description: 'The delete token publish_surface returned.'}
+          delete_token: {type: 'string', maxLength: 64, description: 'The delete token create_share_link returned.'}
         },
         required: ['id', 'delete_token'],
         additionalProperties: false
