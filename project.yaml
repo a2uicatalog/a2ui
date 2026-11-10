@@ -455,6 +455,14 @@ generators:
     publish: ci (deploy.yml on push -> Cloudflare) — must run AFTER
       generate_atom_pages/gen_public_catalog/gen_mcp_apps_bundle so it
       sees the real build output, not a stale/partial tree
+  gen_page_twins:
+    script: scripts/gen_page_twins.py
+    source: public/sitemap-pages.xml + the built public/<path>/index.html
+      pages (atoms/ and blog/ excluded, they have their own twins)
+    outputs: [public/about.md, public/docs.md, public/surfaces/web.md]  # one twin per sitemap page; three named for the existence check
+    publish: ci (deploy.yml on push -> Cloudflare) — runs after
+      generate_atom_pages; never overwrites a hand-written twin (only files
+      carrying its generated_by front-matter line)
   gen_openapi:
     script: scripts/gen_openapi.py
     source: public/spec.json (itself compiled from atoms/schema.yaml by gen_public_catalog)
