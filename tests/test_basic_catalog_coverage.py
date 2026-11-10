@@ -179,7 +179,7 @@ def _caps(version):
 
 
 def test_basic_only_client_gets_real_inputs():
-    cs = emit_surface(FORM_PAYLOAD, capabilities=_caps("v1.0"))["createSurface"]
+    cs = emit_surface(FORM_PAYLOAD, capabilities=_caps("1.0"))["createSurface"]
     by = {c["id"]: c for c in cs["components"]}
     kinds = sorted(c["component"] for c in cs["components"])
     assert all(k in SPEC_COMPONENTS for k in kinds), kinds
@@ -192,8 +192,8 @@ def test_basic_only_client_gets_real_inputs():
 
 
 def test_catalog_client_keeps_the_richer_form_atoms():
-    caps = parse_client_capabilities({"a2uiClientCapabilities": {"v1.0": {"supportedCatalogIds": [
-        BASIC_CATALOG_IDS["v1.0"], "https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json"]}}})
+    caps = parse_client_capabilities({"a2uiClientCapabilities": {"1.0": {"supportedCatalogIds": [
+        BASIC_CATALOG_IDS["1.0"], "https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json"]}}})
     cs = emit_surface(FORM_PAYLOAD, capabilities=caps)["createSurface"]
     assert "form" in [c["component"] for c in cs["components"]] and "dataModel" not in cs
 
@@ -206,7 +206,7 @@ def test_v09_split_sends_the_data_before_the_components():
 
 
 def test_degraded_form_is_interactive_in_our_own_web_renderer(core_js):
-    html = _render(core_js, emit_surface(FORM_PAYLOAD, capabilities=_caps("v1.0"))["createSurface"])
+    html = _render(core_js, emit_surface(FORM_PAYLOAD, capabilities=_caps("1.0"))["createSurface"])
     assert 'data-a2ui-bind="/form-0/name"' in html and 'id="a2rt-' in html and "data-a2ui-action=" in html
 
 

@@ -9,7 +9,7 @@ import glob
 import os
 import pytest
 
-from renderers.a2ui_v1 import (
+from renderers.a2ui_v1 import (BASIC_V1_CATALOG_ID,
     emit_surface, call_renderer_function, agent_function_response, A2UI_VERSION,
 )
 from tests.a2ui_v1_conformance import AGENT_TO_RENDERER, assert_conforms
@@ -80,7 +80,9 @@ def test_envelope_and_metadata():
     cs, by_id = _assert_valid_surface(msg)
     props = cs["metadata"]["extensions"]["a2uicatalog_surface"]
     assert props["title"] == "Demo Surface" and props["theme"] == "dark"
-    assert cs["catalogId"] == "a2ui-atoms-v1"
+    assert cs["catalogId"] == BASIC_V1_CATALOG_ID                     # v1.0 mixing: Basic is the surface default
+    ext = [c for c in cs["components"] if c["component"] == "glowing_stat"]
+    assert ext and all(c["catalogId"] == "a2ui-atoms-v1" for c in ext)   # extension components name our catalogue
     # catalogs is auto-declared, DETERMINISTIC from the payload's atoms:
     # base always present; the glowing_stat extension pulls in a2ui-effects-v1.
     cats = props["catalogs"]

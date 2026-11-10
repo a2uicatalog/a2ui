@@ -5,9 +5,9 @@ Positioning: a2uicatalog is a CATALOG for the A2UI protocol. v1.0's `createSurfa
 carries a required `catalogId`; this emitter produces conformant messages so that:
   - the ~78 high-frequency "standard-mappable" atoms render on a BARE A2UI host
     (mapped to the 18 basic-catalog components: Text/Image/Button/Card/…), and
-  - the ~421 extension atoms travel as valid components under `catalogId`
-    (a host without the catalog simply skips them — correct A2UI behaviour, not
-    a violation).
+  - the ~421 extension atoms travel as components that each carry their own `catalogId`
+    (ours); the surface default is the Basic v1.0 catalog so Text/Column resolve on a conformant renderer
+    (a host without our catalogue skips the extension ones, correct A2UI behaviour).
 
 Scope (tiers 1 + 2-core, plus Track B1 + C1 + Phase 0 schema-driven children):
   - Full envelope/metadata: version "1.0", surfaceId, catalogId (optional in 1.0),
@@ -44,6 +44,7 @@ broader reactive-binding graph is not. See DEFERRED_CONTAINERS.
 
 Reference: https://a2ui.org/specification/v1.0-a2ui/
 """
+import json
 import uuid
 import re
 from typing import List, Dict, Any, Optional, Tuple
@@ -55,10 +56,14 @@ except ImportError:                                    # direct-script use, as c
 
 A2UI_VERSION = "1.0"          # final spec: the wire `version` const is "1.0" (the early drafts used "v1.0")
 A2UI_MIME_TYPE = "application/a2ui+json"   # final spec MIME type for A2UI payloads
-# catalogId MUST be a resolvable URI (Google's basic catalog uses its full URL) — a
+# catalogId is an identifier (the Basic catalog uses its URL) (Google's basic catalog uses its full URL) — a
 # bare token can't be dereferenced by a host. This is what createSurface.catalogId
 # carries; it points at public/catalogue/a2ui-atoms-v1.json served from the site.
 DEFAULT_CATALOG_ID = "https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json"
+# v1.0 catalog resolution (evolution_guide 2.7): a component uses its own `catalogId`, else the surface's
+# default, else it is NOT rendered. Our extension catalogue defines no Text/Column/..., so the surface default
+# is the Basic v1.0 catalog and every EXTENSION component names our catalogue itself (catalog mixing).
+BASIC_V1_CATALOG_ID = "https://a2ui.org/specification/v1_0/catalogs/basic/catalog.json"
 
 # Container atom types this cut does NOT yet transform to A2UI primitives; they
 # pass through as extension components (renderable only by a host carrying the
@@ -126,10 +131,24 @@ def _map_video(b):
     return {"component": "Video", "url": b.get("url", b.get("video_url", ""))}
 
 def _map_audio(b):
-    return {"component": "AudioPlayer", "url": b.get("audio_url", b.get("url", "")), "description": b.get("title", "")}
+    node = {"component": "AudioPlayer", "url": b.get("audio_url", b.get("url", ""))}
+    desc = b.get("description") or b.get("title")
+    if desc:
+        node["description"] = desc
+    return node
+
+_BASIC_ICON_NAMES = frozenset(['accountCircle', 'add', 'arrowBack', 'arrowForward', 'attachFile', 'calendarToday', 'call', 'camera', 'check', 'close', 'delete', 'download', 'edit', 'error', 'event', 'fastForward', 'favorite', 'favoriteOff', 'folder', 'help', 'home', 'info', 'locationOn', 'lock', 'lockOpen', 'mail', 'menu', 'moreHoriz', 'moreVert', 'notifications', 'notificationsOff', 'pause', 'payment', 'person', 'phone', 'photo', 'play', 'print', 'refresh', 'rewind', 'search', 'send', 'settings', 'share', 'shoppingCart', 'skipNext', 'skipPrevious', 'star', 'starHalf', 'starOff', 'stop', 'upload', 'visibility', 'visibilityOff', 'volumeDown', 'volumeMute', 'volumeOff', 'volumeUp', 'warning'])
+
+def _icon_basic_name(raw):
+    words = [w for w in re.split(r"[\s_\-]+", str(raw or "").strip()) if w]
+    if not words:
+        return None
+    name = words[0].lower() + "".join(w[:1].upper() + w[1:].lower() for w in words[1:])
+    return name if name in _BASIC_ICON_NAMES else None
 
 def _map_icon(b):
-    return {"component": "Icon", "name": b.get("name", b.get("icon", ""))}
+    name = _icon_basic_name(b.get("name", b.get("icon", "")))
+    return {"component": "Icon", "name": name} if name else None
 
 def _list(marker: str):
     def m(b):
@@ -505,22 +524,25 @@ def _emit_block(b: Dict[str, Any], components: List[Dict[str, Any]], ids: _IdGen
             return cid
 
         if comp_type == "Modal":
-            # Final basic-catalog Modal is {trigger, content}: two component ids, no `children`/`title`
-            # (the earlier emitter put a children list + title on it, which no spec version allows).
-            # content = the modal body (one child direct, else a synthetic Column); trigger = a Button
-            # labelled with the modal's title, as upstream's own 36_modal example does.
-            if len(child_ids) == 1:
-                content_id = child_ids[0]
+            content_ids = list(child_ids)
+            if b.get("title"):
+                head_id = ids.take({"type": "modal_title"})
+                components.append({"id": head_id, "component": "Text", "text": "## " + str(b["title"])})
+                content_ids.insert(0, head_id)
+            if len(content_ids) == 1:
+                content_id = content_ids[0]
+            elif content_ids:
+                content_id = ids.take({"type": "modal_content"})
+                components.append({"id": content_id, "component": "Column", "children": content_ids})
             else:
                 content_id = ids.take({"type": "modal_content"})
-                components.append({"id": content_id, "component": "Column", "children": child_ids or []})
-                if not child_ids:
-                    components[-1] = {"id": content_id, "component": "Text", "text": ""}
+                components.append({"id": content_id, "component": "Text", "text": ""})
             label_id = ids.take({"type": "modal_trigger_label"})
-            components.append({"id": label_id, "component": "Text", "text": str(b.get("title") or b.get("label") or "Open")})
+            components.append({"id": label_id, "component": "Text",
+                               "text": str(b.get("trigger_label") or b.get("title") or b.get("label") or "Open")})
             trigger_id = ids.take({"type": "modal_trigger"})
             components.append({"id": trigger_id, "component": "Button", "child": label_id,
-                               "action": {"event": {"name": "open_modal", "context": {}}}})
+                               "action": {"event": {"name": "open_modal", "context": {"modal": cid}}}})
             components.append({"id": cid, "component": "Modal", "trigger": trigger_id, "content": content_id})
             return cid
 
@@ -638,9 +660,13 @@ def emit_surface(payload: Dict[str, Any], surface_id: Optional[str] = None,
         catalog_id = basic_id
         surface_ext["degraded"] = degraded
 
+    surface_default = catalog_id
+    if "degraded" not in surface_ext and catalog_id != BASIC_V1_CATALOG_ID:
+        components = _tag_extensions(components, catalog_id)   # v1.0 mixing: Basic by default, ours per component
+        surface_default = BASIC_V1_CATALOG_ID
     surface: Dict[str, Any] = {
-        "surfaceId": surface_id or _slugify(payload.get("title", "surface")),
-        "catalogId": catalog_id,
+        "surfaceId": surface_id or _default_surface_id(payload),
+        "catalogId": surface_default,
         "components": components,
     }
     if data_model:
@@ -649,6 +675,17 @@ def emit_surface(payload: Dict[str, Any], surface_id: Optional[str] = None,
         surface["metadata"] = {"extensions": {"a2uicatalog_surface": surface_ext}}
 
     return {"version": A2UI_VERSION, "createSurface": surface}
+
+
+def _tag_extensions(components: List[Dict[str, Any]], ext_catalog_id: str,
+                    overrides: Optional[Dict[str, str]] = None) -> List[Dict[str, Any]]:
+    """Give every non-Basic component its own `catalogId` (a copy; input untouched)."""
+    out = []
+    for c in components:
+        if c.get("component") not in BASIC_COMPONENTS and "catalogId" not in c:
+            c = dict(c, catalogId=(overrides or {}).get(c.get("id"), ext_catalog_id))
+        out.append(c)
+    return out
 
 
 # Fields an atom's readable text usually lives in, most descriptive first.
@@ -902,7 +939,10 @@ def emit_messages(payload: Dict[str, Any], capabilities: Optional[ClientCapabili
     if capabilities is None or capabilities.version != "v0.9":
         return [msg]
     create = dict(msg["createSurface"])
-    components = [_v09_text(c) for c in create.pop("components")]
+    components = [_v09_text({k: v for k, v in c.items() if k != "catalogId"}) for c in create.pop("components")]
+    if "degraded" not in (((msg["createSurface"].get("metadata") or {}).get("extensions") or {})
+                          .get("a2uicatalog_surface") or {}):
+        create["catalogId"] = catalog_id              # v0.9 path unchanged: our catalogue is the surface default
     data_model = create.pop("dataModel", None)        # v0.9 sets data with its own message, not in createSurface
     # v0.9's createSurface is closed (surfaceId, catalogId, theme): metadata.extensions arrived in v1.0, so
     # a v0.9 message carrying it is invalid v0.9 (androidx's alpha parser happens to tolerate it). Checked
@@ -994,6 +1034,15 @@ def agent_function_response(envelope: Dict[str, Any], function_call_id: str) -> 
     envelope into the real FunctionResponse shape."""
     return {"version": A2UI_VERSION,
             "agentFunctionResponse": _function_response_body(envelope, function_call_id)}
+
+
+def _default_surface_id(payload: Dict[str, Any]) -> str:
+    """slug(title) + a short digest of the payload. v1.0 makes a duplicate surfaceId an error, and two
+    payloads titled "Report" (or none: "surface") used to collide. The digest is deterministic, so the same
+    payload always yields the same id; pass surface_id= to choose one."""
+    import hashlib
+    body = json.dumps(payload, sort_keys=True, default=str, ensure_ascii=False).encode("utf-8")
+    return f"{_slugify(payload.get('title', 'surface'))}-{hashlib.sha1(body).hexdigest()[:8]}"
 
 
 def _slugify(s: str) -> str:

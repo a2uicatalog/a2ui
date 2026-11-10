@@ -90,12 +90,14 @@ import re
 from typing import Any, Callable, Dict, List, Optional, Set, Tuple
 
 try:  # package import (tests: `from renderers.a2ui_v1_wired import ...`)
-    from .a2ui_v1 import A2UI_VERSION, STANDARD_MAP, _IdGen, _slugify
+    from .a2ui_v1 import (A2UI_VERSION, BASIC_V1_CATALOG_ID, STANDARD_MAP, _IdGen, _default_surface_id,
+                          _tag_extensions)
 except ImportError:  # direct CLI run from repo root or renderers/
     import os as _os
     import sys as _sys
     _sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
-    from a2ui_v1 import A2UI_VERSION, STANDARD_MAP, _IdGen, _slugify  # noqa: F401
+    from a2ui_v1 import (A2UI_VERSION, BASIC_V1_CATALOG_ID, STANDARD_MAP, _IdGen, _default_surface_id,  # noqa: F401
+                         _tag_extensions)
 
 __all__ = ["emit_wired_surface", "A2UI_VERSION",
            "DEFAULT_CATALOG_ID", "DEFAULT_STATE_CATALOG_ID"]
@@ -110,6 +112,32 @@ CONFORMANT_PRIMITIVES = {"ValueStore"}
 ACTION_LIFECYCLE_FIELDS = {"isPending", "isSuccess", "isError", "error", "status"}
 
 # wired input atoms -> A2UI standard input components (two-way `value` binding)
+# Basic v1.0 props each wired input component can carry (catalogs/basic/catalog.json); anything else is parked in metadata
+_BASIC_INPUT_PROPS = {
+    "TextField": {"label", "value", "placeholder", "variant", "weight"},
+    "CheckBox": {"label", "value", "weight"},
+    "Slider": {"label", "min", "max", "value", "steps", "weight"},
+    "DateTimeInput": {"value", "enableDate", "enableTime", "min", "max", "label", "weight"},
+}
+_BASIC_INPUT_REQUIRED = {   # required by the schema even when nothing is bound or authored
+    "TextField": {"label": "", "value": ""},
+    "CheckBox": {"label": "", "value": False},
+    "Slider": {"value": 0, "max": 100},
+    "DateTimeInput": {"value": ""},
+}
+_INPUT_TYPE_VARIANT = {"number": "number", "password": "obscured", "textarea": "longText", "longtext": "longText"}
+
+
+def _text_field_variant(atom: str, *hints: Any) -> Optional[str]:
+    """Basic TextField.variant (shortText|longText|number|obscured) from the wired atom and its inputType/type hints."""
+    if atom == "textarea":
+        return "longText"
+    for h in hints:
+        if isinstance(h, str) and h.strip().lower() in _INPUT_TYPE_VARIANT:
+            return _INPUT_TYPE_VARIANT[h.strip().lower()]
+    return None
+
+
 WIRED_INPUT_MAP = {
     "text_input": "TextField",
     "form_input": "TextField",
@@ -169,6 +197,8 @@ class _WiredContext:
         self.notes: List[str] = []
         self.send_data_model = False
         self.action_meta: Dict[str, Any] = {}
+        self.component_wires: Dict[str, Dict[str, Any]] = {}   # Basic component id -> raw wires (not valid on a Basic node)
+        self.component_props: Dict[str, Dict[str, Any]] = {}   # Basic component id -> static props the Basic schema has no slot for
 
     # ---- read-wire resolution: '#node.field' -> JSON Pointer or None ---------
     def resolve_read(self, ref: Any, _seen: Optional[Set[str]] = None) -> Optional[str]:
@@ -318,24 +348,37 @@ def _emit_layout_entry(entry: Dict[str, Any], components: List[Dict[str, Any]],
         leftover = dict(bindings)
         leftover.update(ext_wires)
         if leftover:
-            node["wire"] = {k: wire[k] for k in wire if k != "rows"}
+            ctx.component_wires[cid] = {k: wire[k] for k in wire if k != "rows"}
             ctx.extension_ids.add(cid)
         return cid
 
     # 2) standard input atoms → two-way bound input component
     if atom in WIRED_INPUT_MAP:
-        node = {"id": cid, "component": WIRED_INPUT_MAP[atom]}
-        if props.get("label"):
-            node["label"] = props["label"]
-        for k, v in props.items():       # carry remaining static props flat
-            if k != "label":
+        comp = WIRED_INPUT_MAP[atom]
+        node = {"id": cid, "component": comp}
+        static = dict(props)
+        if comp == "TextField":
+            variant = _text_field_variant(atom, static.pop("inputType", None), static.pop("type", None))
+            if variant:
+                node["variant"] = variant
+        extra: Dict[str, Any] = {}
+        for k, v in static.items():      # keep static props the Basic schema knows; park the rest
+            if k in _BASIC_INPUT_PROPS[comp]:
                 node[k] = v
+            elif k == "checked" and comp == "CheckBox":
+                node["value"] = bool(v)
+            else:
+                extra[k] = v
+        if extra:
+            ctx.component_props[cid] = extra
         if twoway_path:
             node["value"] = {"@path": twoway_path}
         for prop, path in bindings.items():
             node[prop] = {"@path": path}
+        for req, dflt in _BASIC_INPUT_REQUIRED[comp].items():
+            node.setdefault(req, dflt)
         if ext_wires:
-            node["wire"] = ext_wires
+            ctx.component_wires[cid] = ext_wires
             ctx.extension_ids.add(cid)
         components.append(node)
         return cid
@@ -343,7 +386,7 @@ def _emit_layout_entry(entry: Dict[str, Any], components: List[Dict[str, Any]],
     # 3) blocks-dialect standard mapping (headings, text, buttons, media, …)
     mapper = STANDARD_MAP.get(atom)
     if mapper is not None:
-        node = mapper({"type": atom, **props})
+        node = mapper({**props, "type": atom})    # the atom name wins over a prop called `type`
         if node is not None:
             node["id"] = cid
             for prop, path in bindings.items():
@@ -351,7 +394,7 @@ def _emit_layout_entry(entry: Dict[str, Any], components: List[Dict[str, Any]],
             if action_obj is not None:
                 node["action"] = action_obj
             if ext_wires:
-                node["wire"] = ext_wires
+                ctx.component_wires[cid] = ext_wires
                 ctx.extension_ids.add(cid)
             components.append(node)
             return cid
@@ -461,10 +504,19 @@ def emit_wired_surface(payload: Dict[str, Any], surface_id: Optional[str] = None
             "notes": ctx.notes,
             "actions": ctx.action_meta,
         }
+        if ctx.component_wires:      # raw wires of Basic components (the Basic schema has no `wire` slot)
+            ext_meta["a2uicatalog_wired"]["componentWires"] = ctx.component_wires
+        if ctx.component_props:
+            ext_meta["a2uicatalog_wired"]["componentProps"] = ctx.component_props
+    elif ctx.component_props:
+        ext_meta["a2uicatalog_wired"] = {"catalogId": state_catalog_id, "componentProps": ctx.component_props}
 
+    # v1.0 catalog mixing: Basic is the surface default; extension components carry their own catalogId
+    # (the state catalogue for those that need its engine, else the atoms catalogue).
+    components = _tag_extensions(components, catalog_id, {i: state_catalog_id for i in ctx.extension_ids})
     surface: Dict[str, Any] = {
-        "surfaceId": surface_id or _slugify(payload.get("title", "surface")),
-        "catalogId": catalog_id,
+        "surfaceId": surface_id or _default_surface_id(payload),
+        "catalogId": BASIC_V1_CATALOG_ID,
         "components": components,
     }
     if data_model:

@@ -18,7 +18,7 @@ from typing import Any, Dict, List, Optional
 
 BASIC_CATALOG_IDS = {
     "1.0": "https://a2ui.org/specification/v1_0/catalogs/basic/catalog.json",
-    "v1.0": "https://a2ui.org/specification/v1_0/catalogs/basic/catalog.json",   # legacy early-draft key
+    "v1.0": "https://a2ui.org/specification/v1_0/catalogs/basic/catalog.json",   # legacy early-draft key (lookup only; never negotiated)
     "v0.9": "https://a2ui.org/specification/v0_9/catalogs/basic/catalog.json",
 }
 
@@ -32,7 +32,12 @@ BASIC_COMPONENTS = frozenset({
 
 # Versions we can emit, best first. "v0.9.1" is accepted by Google's parser and
 # is wire-identical to v0.9 for everything the emitter produces.
-_VERSIONS = ("1.0", "v1.0", "v0.9", "v0.9.1")   # final spec keys capabilities by "1.0"; "v1.0" = early-draft spelling, still read
+# Final spec keys capabilities by "1.0". The early-draft spelling "v1.0" (draft-era renderers: payload
+# version "v1.0", {"path"} bindings) is NOT negotiated: we now emit "1.0"/@path, which such a renderer
+# cannot read. Rule: "v1.0" never wins over v0.9; a renderer offering "v1.0" and v0.9 gets v0.9; one
+# offering "v1.0" alone gets None (no negotiated capabilities), same as sending none.
+_VERSIONS = ("1.0", "v0.9", "v0.9.1")
+_LEGACY_VERSION = "v1.0"
 _METADATA_KEYS = ("a2uiRendererCapabilities", "a2uiClientCapabilities")
 
 
