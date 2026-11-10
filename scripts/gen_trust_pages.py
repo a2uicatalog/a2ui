@@ -133,7 +133,6 @@ server so it cannot go stale:</p>
 <ul>
 <li><a href="/openapi.json">OpenAPI Spec (OpenAPI 3.1)</a> — every endpoint, request/response schemas, examples</li>
 <li><a href="/docs/">API Docs</a> — REST endpoints, error models, and rate limits</li>
-<li><a href="/api-docs/">API Reference &amp; Docs</a> — complete endpoint and parameter directory</li>
 <li><a href="/sdks/">SDKs &amp; Client Libraries</a> — npm CLI/MCP package, Python A2A tools, and SDK generators</li>
 <li><a href="/auth/">Auth Docs</a> — authentication overview, rate limits, and enterprise OAuth</li>
 <li><a href="/webhooks/">Webhooks Docs</a> — SSE streaming, event delivery, and chat integrations</li>
@@ -163,17 +162,22 @@ access (e.g. Gemini Enterprise's BYO-MCP model).</p>
 <h2>Source</h2>
 <p>MIT licensed. Full source, issues and pull requests: <a href="{REPO}">{REPO.replace('https://','')}</a>.</p>"""),
         "docs": dict(
-            title="API Documentation",
-            desc=(f"A2UI Atomic Catalog API documentation: endpoints, OpenAPI 3.1 specification, "
-                  f"JSON schemas, MCP servers, and REST routes for AI agents."),
+            title="API Docs, OpenAPI Spec &amp; MCP Server",
+            desc=(f"A2UI Atomic Catalog API docs: the MCP server, REST endpoints, OpenAPI 3.1 "
+                  f"specification, JSON schemas and SDKs for AI agents. Free, no API key."),
             jsonld=json.dumps({
                 "@context": "https://schema.org", "@type": "APIReference",
-                "url": f"{BASE}/docs/", "name": "API Documentation — A2UI Atomic Catalog",
+                "url": f"{BASE}/docs/", "name": "API Docs, OpenAPI Spec & MCP Server — A2UI Atomic Catalog",
                 "publisher": {"@id": f"{BASE}/#org"},
             }, indent=2),
             body=f"""
 <p>Developer and API documentation for the A2UI Atomic Catalog. All developer resources are free,
 unauthenticated, and machine-readable.</p>
+<p>Primary integration surface: <a href="/mcp">the MCP server at https://a2uicatalog.ai/mcp</a> — no API
+key, no signup, <code>POST</code> JSON-RPC 2.0 directly. Documentation questions:
+<a href="/mcp-docs">the docs MCP server at /mcp-docs</a>. Contract: <a href="/openapi.json">OpenAPI 3.1
+specification</a>. Packages: <a href="/sdks/">SDKs &amp; client libraries</a>. Guide:
+<a href="/developers/">developer portal</a>.</p>
 
 <h2>REST Endpoints</h2>
 <table style="width:100%;border-collapse:collapse;margin:1rem 0;font-size:.92rem;">
@@ -206,30 +210,6 @@ unauthenticated, and machine-readable.</p>
 <li><a href="/versioning.md">Versioning Policy</a> — API versioning (X-API-Version) and deprecation rules</li>
 <li><a href="/.well-known/api-catalog">RFC 9727 API Catalog</a> — linkset of all API surfaces</li>
 <li><a href="/.well-known/ard.json">ARD Discovery Catalog</a> — AI Resource Discovery index</li>
-</ul>"""),
-        "api-docs": dict(
-            title="API Docs & Reference",
-            desc=(f"A2UI Atomic Catalog API docs and reference: OpenAPI 3.1 spec, endpoints, "
-                  f"MCP servers, and integration guides."),
-            jsonld=json.dumps({
-                "@context": "https://schema.org", "@type": "APIReference",
-                "url": f"{BASE}/api-docs/", "name": "API Docs & Reference — A2UI Atomic Catalog",
-                "publisher": {"@id": f"{BASE}/#org"},
-            }, indent=2),
-            body=f"""
-<p>Predictable entry point for developer resources and API reference documents.</p>
-<p>Primary integration surface: <a href="/mcp">the MCP server at /mcp</a> — no API key, no
-signup, <code>POST</code> JSON-RPC 2.0 directly.</p>
-<ul>
-<li><a href="/docs/">API Documentation</a> — complete endpoint and protocol reference</li>
-<li><a href="/openapi.json">OpenAPI 3.1 Specification</a> — raw JSON OpenAPI contract</li>
-<li><a href="/developers/">Developers Guide</a> — human integration guide</li>
-<li><a href="/sdks/">SDKs &amp; Client Libraries</a> — packages, CLI, and integration libraries</li>
-<li><a href="/llms.txt">llms.txt</a> — LLM overview and quick links</li>
-<li><a href="/spec.json">spec.json</a> — {n} atom definitions and field contracts</li>
-<li><a href="/auth.md">Authentication Guide</a> and <a href="/.well-known/agent-auth.md">Rate Limits</a></li>
-<li><a href="/sdk.md">SDK Documentation (Markdown)</a></li>
-<li><a href="/webhooks/">Webhooks &amp; Events</a> — real-time event streaming and delivery patterns</li>
 </ul>"""),
         "auth": dict(
             title="Authentication &amp; Security Docs",

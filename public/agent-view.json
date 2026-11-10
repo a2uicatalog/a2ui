@@ -23,7 +23,7 @@
     "openapi_yaml": "https://a2uicatalog.ai/openapi.yaml",
     "developers": "https://a2uicatalog.ai/developers/",
     "api_docs": "https://a2uicatalog.ai/docs/",
-    "api_reference": "https://a2uicatalog.ai/api-docs/",
+    "api_reference": "https://a2uicatalog.ai/docs/",
     "auth_docs": "https://a2uicatalog.ai/auth/",
     "webhooks": "https://a2uicatalog.ai/webhooks/",
     "versioning_docs": "https://a2uicatalog.ai/versioning/",

@@ -16,7 +16,7 @@
 - [Developer portal](https://a2uicatalog.ai/developers/): Human and agent developer portal, integration guide, REST surfaces, code samples, and self-hosting runbooks.
 - [SDKs & client libraries](https://a2uicatalog.ai/sdks/): Official SDK documentation, npm CLI package, Agent Skills, and client code generators.
 - [API docs](https://a2uicatalog.ai/docs/): API documentation for REST endpoints (/api/render, /api/compose, /ask), request/response schemas, and error shapes.
-- [API reference](https://a2uicatalog.ai/api-docs/): Predictable entry point for developer resources, OpenAPI specs, and MCP endpoints.
+- [API docs](https://a2uicatalog.ai/docs/): API docs, OpenAPI spec, MCP servers and REST endpoints in one place.
 - [OpenAPI spec](https://a2uicatalog.ai/openapi.json): Full OpenAPI 3.1 specification for all endpoints and schemas.
 - [Auth docs](https://a2uicatalog.ai/auth/): Authentication documentation, enterprise OAuth discovery metadata, and public unauthenticated access policies.
 - [Auth & rate limits](https://a2uicatalog.ai/.well-known/agent-auth.md): No API key or signup — the actual per-tool call limits.

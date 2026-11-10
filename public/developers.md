@@ -41,7 +41,6 @@ curl -H "Accept: application/json" https://a2uicatalog.ai/mcp
 
 - [OpenAPI Spec (OpenAPI 3.1)](https://a2uicatalog.ai/openapi.json) — every endpoint, request/response schemas, examples
 - [API Docs](https://a2uicatalog.ai/docs/) — REST endpoints, error models, and rate limits
-- [API Reference & Docs](https://a2uicatalog.ai/api-docs/) — complete endpoint and parameter directory
 - [SDKs & Client Libraries](https://a2uicatalog.ai/sdks/) — npm CLI/MCP package, Python A2A tools, and SDK generators
 - [Auth Docs](https://a2uicatalog.ai/auth/) — authentication overview, rate limits, and enterprise OAuth
 - [Webhooks Docs](https://a2uicatalog.ai/webhooks/) — SSE streaming, event delivery, and chat integrations

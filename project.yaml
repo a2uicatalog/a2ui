@@ -51,7 +51,6 @@ policy:
     # Markdown twins of the hand-kept pages, written by scripts/gen_page_twins.py
     # (2026-11-10, Ora's Markdown URL fallback check sampled /about.md).
     - public/about.md
-    - public/api-docs.md
     - public/contact.md
     - public/developers.md
     - public/docs.md
@@ -84,7 +83,6 @@ policy:
     # same path the Worker is routed on — a subrequest loop. Moving is the
     # cheaper correct answer than fighting the routing.
     - public/docs/**
-    - public/api-docs/**
     - public/developers/**
     - public/sdks/**
     - public/auth/**
@@ -487,7 +485,7 @@ generators:
   gen_trust_pages:
     script: scripts/gen_trust_pages.py
     source: public/spec.json (itself compiled from atoms/schema.yaml by gen_public_catalog)
-    outputs: [public/developers/, public/docs/, public/api-docs/, public/auth/, public/webhooks/, public/about/, public/contact/, public/privacy/, public/404.html, public/agents.md, public/index.md, public/surfaces/llms.txt]
+    outputs: [public/developers/, public/docs/, public/auth/, public/webhooks/, public/about/, public/contact/, public/privacy/, public/404.html, public/agents.md, public/index.md, public/surfaces/llms.txt]
     publish: ci (deploy.yml on push -> Cloudflare). Answers three agent-readiness
       audit findings from 2026-07-31 — trust anchor pages 0/2, agent discovery file
       0/2, and the markdown-fallback checks — /agents.md is served as real

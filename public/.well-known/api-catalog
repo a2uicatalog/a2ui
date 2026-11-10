@@ -100,9 +100,9 @@
           "title": "API documentation and endpoint reference"
         },
         {
-          "href": "https://a2uicatalog.ai/api-docs/",
+          "href": "https://a2uicatalog.ai/docs/",
           "type": "text/html",
-          "title": "API docs and reference directory"
+          "title": "API docs and reference"
         },
         {
           "href": "https://a2uicatalog.ai/sdks/",

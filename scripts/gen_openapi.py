@@ -681,7 +681,7 @@ LLMS_TXT = """# A2UI Catalog (the A2UI Atomic Catalog)
 - [Developer portal]({base}/developers/): Human and agent developer portal, integration guide, REST surfaces, code samples, and self-hosting runbooks.
 - [SDKs & client libraries]({base}/sdks/): Official SDK documentation, npm CLI package, Agent Skills, and client code generators.
 - [API docs]({base}/docs/): API documentation for REST endpoints (/api/render, /api/compose, /ask), request/response schemas, and error shapes.
-- [API reference]({base}/api-docs/): Predictable entry point for developer resources, OpenAPI specs, and MCP endpoints.
+- [API docs]({base}/docs/): API docs, OpenAPI spec, MCP servers and REST endpoints in one place.
 - [OpenAPI spec]({base}/openapi.json): Full OpenAPI 3.1 specification for all endpoints and schemas.
 - [Auth docs]({base}/auth/): Authentication documentation, enterprise OAuth discovery metadata, and public unauthenticated access policies.
 - [Auth & rate limits]({base}/.well-known/agent-auth.md): No API key or signup — the actual per-tool call limits.
@@ -765,7 +765,7 @@ def build_api_catalog():
             "describes": [
                 item(f"{BASE}/developers/", "text/html", "Developer documentation and API guide"),
                 item(f"{BASE}/docs/", "text/html", "API documentation and endpoint reference"),
-                item(f"{BASE}/api-docs/", "text/html", "API docs and reference directory"),
+                item(f"{BASE}/docs/", "text/html", "API docs and reference"),
                 item(f"{BASE}/sdks/", "text/html", "SDKs and client libraries documentation"),
                 item(f"{BASE}/auth/", "text/html", "Authentication and security documentation"),
                 item(f"{BASE}/webhooks/", "text/html", "Webhooks and event delivery documentation"),
@@ -814,7 +814,7 @@ def build_agent_view(n_atoms, n_surfaces):
             "openapi_yaml": f"{BASE}/openapi.yaml",
             "developers": f"{BASE}/developers/",
             "api_docs": f"{BASE}/docs/",
-            "api_reference": f"{BASE}/api-docs/",
+            "api_reference": f"{BASE}/docs/",
             "auth_docs": f"{BASE}/auth/",
             "webhooks": f"{BASE}/webhooks/",
             "versioning_docs": f"{BASE}/versioning/",

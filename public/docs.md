@@ -1,15 +1,17 @@
 ---
-title: API Documentation — A2UI Atomic Catalog
-description: A2UI Atomic Catalog API documentation: endpoints, OpenAPI 3.1 specification, JSON schemas, MCP servers, and REST routes for AI agents.
+title: API Docs, OpenAPI Spec & MCP Server — A2UI Atomic Catalog
+description: A2UI Atomic Catalog API docs: the MCP server, REST endpoints, OpenAPI 3.1 specification, JSON schemas and SDKs for AI agents. Free, no API key.
 canonical: https://a2uicatalog.ai/docs/
 generated_by: gen_page_twins.py
 ---
 
-# A2UI Atomic Catalog — API Documentation
+# A2UI Atomic Catalog — API Docs, OpenAPI Spec & MCP Server
 
 ## Developer & Agent Documentation
 
 Developer and API documentation for the A2UI Atomic Catalog. All developer resources are free, unauthenticated, and machine-readable.
+
+Primary integration surface: [the MCP server at https://a2uicatalog.ai/mcp](https://a2uicatalog.ai/mcp) — no API key, no signup, `POST` JSON-RPC 2.0 directly. Documentation questions: [the docs MCP server at /mcp-docs](https://a2uicatalog.ai/mcp-docs). Contract: [OpenAPI 3.1 specification](https://a2uicatalog.ai/openapi.json). Packages: [SDKs & client libraries](https://a2uicatalog.ai/sdks/). Guide: [developer portal](https://a2uicatalog.ai/developers/).
 
 ## REST Endpoints
 
