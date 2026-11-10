@@ -164,7 +164,7 @@ footer a{color:var(--accent-2-text);text-decoration:underline;text-underline-off
        "why here, not a2uicatalog.ai itself" reasoning -- same bundle,
        same iframe, same rationale, both templates kept in sync by hand
        like every other sandbox/src change to #mcp-view. -->
-  <iframe id="mcp-view" sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation" src="https://play.a2uicatalog.ai/renderer-bundle?v=82f0248748" title="A2UI MCP Apps view"></iframe>
+  <iframe id="mcp-view" sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation" src="https://play.a2uicatalog.ai/renderer-bundle?v=b020ebc535" title="A2UI MCP Apps view"></iframe>
 
   <input type="checkbox" id="mcp-drawer-toggle">
   <aside class="play-drawer">
@@ -321,7 +321,7 @@ document.addEventListener('click',function(e){
     // Without this, a wired surface (type, no blocks) got wrapped as a single
     // unknown ATOM (the black-page incident, 2026-07-11).
     if (payload && (payload.type === 'a2ui_wired_surface' ||
-                    (payload.version === 'v1.0' && payload.createSurface))) {
+                    ((payload.version === '1.0' || payload.version === 'v1.0') && payload.createSurface))) {
       // Session token from the link (&t=): injected as app.session so the
       // view's action transport namespaces the store per tournament/session.
       var tk = (location.hash.match(/[#&]t=([\w-]{1,64})/) || [])[1];
