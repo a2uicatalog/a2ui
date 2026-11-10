@@ -55,5 +55,5 @@ The A2UI emitters now produce the final v1.0 wire format **by default**. This is
 - Surface ids: the default `surfaceId` is now `slug(title)-<8 hex digest of the payload>`. Callers that relied on the bare slug must pass `surface_id=`.
 - Capabilities: the legacy `"v1.0"` key is no longer negotiated. A renderer offering it together with `v0.9` gets v0.9; one offering only the legacy key is treated as having sent no capabilities. The v0.9 downgrade path is unchanged.
 - Consumers: the Apps Script decoder, the MCP Apps / play renderer bundles and their pages accept `"1.0"` (with `@path`/`@call`, normalised by `_a2uiNormV1`), the draft `"v1.0"` with `{path}`, and v0.9.
-- Converter `v09_to_v10`: idempotent; drops `returnType` (reported); escapes literal `@` keys by doubling.
+- A v0.9 to v1.0 payload converter exists as a local tool outside this repository (idempotent; drops `returnType`, reported; escapes literal `@` keys by doubling); it is not part of this change.
 - Not done: our extension catalogue file (`public/catalogue/a2ui-atoms-v1.json`) still lacks `protocolVersion` and relative `$ref`s, so a strict v1.0 renderer cannot load it; no render proof on an official v1.0 renderer; the JSON-LD on the atom pages still says "v1.0".
