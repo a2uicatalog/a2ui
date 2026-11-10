@@ -48,6 +48,17 @@ policy:
     - public/sdk.md
     - public/sdks.md
     - public/versioning.md
+    # Markdown twins of the hand-kept pages, written by scripts/gen_page_twins.py
+    # (2026-11-10, Ora's Markdown URL fallback check sampled /about.md).
+    - public/about.md
+    - public/api-docs.md
+    - public/contact.md
+    - public/developers.md
+    - public/docs.md
+    - public/privacy.md
+    - public/renderer.md
+    - public/webhooks.md
+    - public/what-is-a2ui.md
     - public/404.html
     # Agent-readiness artefacts, declared 2026-08-02 against an external scan.
     # pricing.md exists because agents need machine-readable cost to recommend
