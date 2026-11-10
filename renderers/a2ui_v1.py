@@ -288,6 +288,16 @@ def _child_blocklists(b: Dict[str, Any]) -> Optional[Tuple[str, List[Dict[str, A
     return None
 
 
+def _append_tabs(cid: str, tabs: List[Dict[str, Any]], components: List[Dict[str, Any]], ids: "_IdGen") -> None:
+    """Append a Basic Tabs component. v1.0 `Tabs.tabs` has minItems 1, so an atom with no tabs (empty
+    data) gets one untitled empty pane instead of an invalid empty array."""
+    if not tabs:
+        pane = ids.take({"type": "tab_pane"})
+        components.append({"id": pane, "component": "Column", "children": []})
+        tabs = [{"title": "", "child": pane}]
+    components.append({"id": cid, "component": "Tabs", "tabs": tabs})
+
+
 def _emit_hub(b: Dict[str, Any], cid: str, components: List[Dict[str, Any]], ids: _IdGen) -> str:
     """B1: hub (2-level subject/slide deck nav, fields: subjects[].{id,label,
     color,slides[].{id,label,blocks}}) -> nested Tabs. A2UI's basic catalog has
@@ -314,9 +324,9 @@ def _emit_hub(b: Dict[str, Any], cid: str, components: List[Dict[str, Any]], ids
             components.append({"id": col_id, "component": "Column", "children": slide_children})
             inner_tabs.append({"title": slide.get("label", ""), "child": col_id})
         inner_id = ids.take({"type": "hub_subject"})
-        components.append({"id": inner_id, "component": "Tabs", "tabs": inner_tabs})
+        _append_tabs(inner_id, inner_tabs, components, ids)
         outer_tabs.append({"title": subj.get("label", ""), "child": inner_id})
-    components.append({"id": cid, "component": "Tabs", "tabs": outer_tabs})
+    _append_tabs(cid, outer_tabs, components, ids)
     return cid
 
 
@@ -333,7 +343,7 @@ def _emit_content_tabs(b: Dict[str, Any], cid: str, components: List[Dict[str, A
         col_id = ids.take({"type": "content_tab_pane"})
         components.append({"id": col_id, "component": "Column", "children": children})
         out_tabs.append({"title": tab.get("label", ""), "child": col_id})
-    components.append({"id": cid, "component": "Tabs", "tabs": out_tabs})
+    _append_tabs(cid, out_tabs, components, ids)
     return cid
 
 
@@ -364,7 +374,7 @@ def _emit_tabs(b: Dict[str, Any], cid: str, components: List[Dict[str, Any]], id
         col_id = ids.take({"type": "tab_pane"})
         components.append({"id": col_id, "component": "Column", "children": children})
         out_tabs.append({"title": tab.get("label", ""), "child": col_id})
-    components.append({"id": cid, "component": "Tabs", "tabs": out_tabs})
+    _append_tabs(cid, out_tabs, components, ids)
     return cid
 
 

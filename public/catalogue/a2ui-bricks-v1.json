@@ -19,8 +19,8 @@
      "description": "string (optional, max 12). Builds the word in bricks: A-Z, 0-9 and . , ! ? - : ' (others leave a gap)."
     },
     "bricks": {
-     "description": "array (optional). Explicit toy-brick model (procedural boxes, up to 3000), same format as brick_build_3d: {x, y, z, w, d, h, c} or [x, y, z, w, d, c] / [x, y, z, w, d, h, c]. Used when text is absent.",
-     "type": "array"
+     "$ref": "common_types.json#/$defs/DynamicValue",
+     "description": "array (optional). Explicit toy-brick model (procedural boxes, up to 3000), same format as brick_build_3d: {x, y, z, w, d, h, c} or [x, y, z, w, d, c] / [x, y, z, w, d, h, c]. Used when text is absent."
     },
     "shape": {
      "$ref": "common_types.json#/$defs/DynamicString",
@@ -31,12 +31,12 @@
      "description": "string (optional). A \"#rrggbb\" colour. One colour for every lettering brick; otherwise letters cycle through palette or the classic brick colours."
     },
     "palette": {
-     "description": "array of \"#rrggbb\" (optional). Colours for lettering (cycled per letter) and for integer colour indexes in bricks.",
-     "type": "array"
+     "$ref": "common_types.json#/$defs/DynamicValue",
+     "description": "array of \"#rrggbb\" (optional). Colours for lettering (cycled per letter) and for integer colour indexes in bricks."
     },
     "depth": {
-     "description": "integer (optional). Lettering depth in studs, 1-4. Default 2.",
-     "type": "number"
+     "$ref": "common_types.json#/$defs/DynamicNumber",
+     "description": "integer (optional). Lettering depth in studs, 1-4. Default 2."
     },
     "base": {
      "$ref": "common_types.json#/$defs/DynamicString",
@@ -47,28 +47,28 @@
      "description": "string (optional). One of \"studio\", \"instructions\". Default \"studio\". studio: a product shot (glossy ABS, softbox reflections, edges that catch light, no outlines). instructions: the building-instructions style of brick_build_3d (dark edge lines)."
     },
     "angle": {
-     "description": "number (optional). Starting turn in degrees, -360 to 360. Default 24.",
-     "type": "number"
+     "$ref": "common_types.json#/$defs/DynamicNumber",
+     "description": "number (optional). Starting turn in degrees, -360 to 360. Default 24."
     },
     "elevation": {
-     "description": "number (optional). Camera elevation in degrees, 7-75. Default 26.",
-     "type": "number"
+     "$ref": "common_types.json#/$defs/DynamicNumber",
+     "description": "number (optional). Camera elevation in degrees, 7-75. Default 26."
     },
     "turns": {
-     "description": "number (optional). Full turns per unit of --s, -8 to 8. Default 1.",
-     "type": "number"
+     "$ref": "common_types.json#/$defs/DynamicNumber",
+     "description": "number (optional). Full turns per unit of --s, -8 to 8. Default 1."
     },
     "motion": {
-     "description": "object (optional). How the bricks arrive; absent = the plain build-up. Every key is optional and clamped, unknown keys are ignored, and a value that is not a number or a known name falls back to its default. order: \"index\" (the brick list order) | \"base-up\" (layer by layer) | \"diagonal\" | \"radial\" (default \"diagonal\"). from: \"above\" | \"outward\" | \"scatter\" (where bricks start; default \"above\"). spinAxis: \"y\" | \"x\" | \"z\" (default \"y\"). window: 0-30, default 2.4, how widely the launch times are spread. flight: 0.1-5, default 0.62, how long one brick is in the air; together they set the pace, since p 0 to 1 covers window + flight. distance: 0-60, default 9, start distance in stud units. tilt: 0-360, default 70, random start tumble in degrees. spin: -8 to 8, default 0.5, extra turns while flying. gravity: 0-1, default 0.5, how strongly lower bricks go first (diagonal and radial orders). jitter: 0-1, default 0.15, random shuffle of the order. support: 0 or 1, default 1, a brick never launches before the brick it rests on. seed: integer 0-2147483646, default 7. overshoot 0-1 (0.12), rotOvershoot 0-0.5 (0.08), recoil 0-1 (0.45), travel 0.2-0.9 (0.58), sharpness 1.5-8 (4): the seat-and-settle curve. direction: [x, y, z], default [1, 0.55, 0.8], the sweep direction for the diagonal order.",
-     "type": "object"
+     "$ref": "common_types.json#/$defs/DynamicValue",
+     "description": "object (optional). How the bricks arrive; absent = the plain build-up. Every key is optional and clamped, unknown keys are ignored, and a value that is not a number or a known name falls back to its default. order: \"index\" (the brick list order) | \"base-up\" (layer by layer) | \"diagonal\" | \"radial\" (default \"diagonal\"). from: \"above\" | \"outward\" | \"scatter\" (where bricks start; default \"above\"). spinAxis: \"y\" | \"x\" | \"z\" (default \"y\"). window: 0-30, default 2.4, how widely the launch times are spread. flight: 0.1-5, default 0.62, how long one brick is in the air; together they set the pace, since p 0 to 1 covers window + flight. distance: 0-60, default 9, start distance in stud units. tilt: 0-360, default 70, random start tumble in degrees. spin: -8 to 8, default 0.5, extra turns while flying. gravity: 0-1, default 0.5, how strongly lower bricks go first (diagonal and radial orders). jitter: 0-1, default 0.15, random shuffle of the order. support: 0 or 1, default 1, a brick never launches before the brick it rests on. seed: integer 0-2147483646, default 7. overshoot 0-1 (0.12), rotOvershoot 0-0.5 (0.08), recoil 0-1 (0.45), travel 0.2-0.9 (0.58), sharpness 1.5-8 (4): the seat-and-settle curve. direction: [x, y, z], default [1, 0.55, 0.8], the sweep direction for the diagonal order."
     },
     "ratio": {
      "$ref": "common_types.json#/$defs/DynamicString",
      "description": "string (optional). One of \"16:9\", \"4:3\", \"1:1\", \"3:4\", \"9:16\". Default \"16:9\"."
     },
     "fill": {
-     "description": "boolean (optional). Fill the placed box height instead of using ratio. Default false.",
-     "type": "boolean"
+     "$ref": "common_types.json#/$defs/DynamicBoolean",
+     "description": "boolean (optional). Fill the placed box height instead of using ratio. Default false."
     },
     "label": {
      "$ref": "common_types.json#/$defs/DynamicString",
@@ -98,64 +98,64 @@
      "description": "string (optional). One of \"heart\", \"sphere\", \"torus\", \"helix\", \"pyramid\", \"house\". Default \"heart\". Ignored when bricks is set."
     },
     "bricks": {
-     "description": "array (optional). Explicit model — objects {x, y, z, w, d, h, c}. x and z are stud positions, y is the layer (0 sits on the baseplate), w and d the footprint in studs, h the height in bricks (default 1), c a '#rrggbb' colour or a palette index. A brick may also be a compact array [x, y, z, w, d, c] or [x, y, z, w, d, h, c], about a third of the size. Up to 3000 bricks. A data-model binding such as {path '/bricks'} arrives resolved.",
-     "type": "array"
+     "$ref": "common_types.json#/$defs/DynamicValue",
+     "description": "array (optional). Explicit model — objects {x, y, z, w, d, h, c}. x and z are stud positions, y is the layer (0 sits on the baseplate), w and d the footprint in studs, h the height in bricks (default 1), c a '#rrggbb' colour or a palette index. A brick may also be a compact array [x, y, z, w, d, c] or [x, y, z, w, d, h, c], about a third of the size. Up to 3000 bricks. A data-model binding such as {path '/bricks'} arrives resolved."
     },
     "palette": {
-     "description": "array of \"#rrggbb\" (optional). Up to 256 colours. A brick's c may be an integer index into it, which keeps large models small.",
-     "type": "array"
+     "$ref": "common_types.json#/$defs/DynamicValue",
+     "description": "array of \"#rrggbb\" (optional). Up to 256 colours. A brick's c may be an integer index into it, which keeps large models small."
     },
     "mode": {
      "$ref": "common_types.json#/$defs/DynamicString",
      "description": "string (optional). One of \"animate\", \"steps\". Default \"animate\"."
     },
     "step": {
-     "description": "integer (optional). Initial instruction step when mode is steps. Default 1.",
-     "type": "number"
+     "$ref": "common_types.json#/$defs/DynamicNumber",
+     "description": "integer (optional). Initial instruction step when mode is steps. Default 1."
     },
     "speed": {
-     "description": "number (optional). Animation speed multiplier. Default 1.",
-     "type": "number"
+     "$ref": "common_types.json#/$defs/DynamicNumber",
+     "description": "number (optional). Animation speed multiplier. Default 1."
     },
     "orbit": {
-     "description": "boolean (optional). Slow auto-orbit; dragging always orbits. Default true.",
-     "type": "boolean"
+     "$ref": "common_types.json#/$defs/DynamicBoolean",
+     "description": "boolean (optional). Slow auto-orbit; dragging always orbits. Default true."
     },
     "height": {
-     "description": "integer (optional). Canvas height px, 160 to 900. Default 380.",
-     "type": "number"
+     "$ref": "common_types.json#/$defs/DynamicNumber",
+     "description": "integer (optional). Canvas height px, 160 to 900. Default 380."
     },
     "bg": {
      "$ref": "common_types.json#/$defs/DynamicString",
      "description": "string (optional). Canvas background colour. Transparent on the studio gradient by default."
     },
     "scrubber": {
-     "description": "boolean (optional). Show the animate/instructions toggle and step slider. Default true.",
-     "type": "boolean"
+     "$ref": "common_types.json#/$defs/DynamicBoolean",
+     "description": "boolean (optional). Show the animate/instructions toggle and step slider. Default true."
     },
     "checks": {
-     "description": "boolean (optional). Show the build-check verdicts. Default true.",
-     "type": "boolean"
+     "$ref": "common_types.json#/$defs/DynamicBoolean",
+     "description": "boolean (optional). Show the build-check verdicts. Default true."
     },
     "parts": {
-     "description": "boolean (optional). Show the parts list with an indicative cost. Default false.",
-     "type": "boolean"
+     "$ref": "common_types.json#/$defs/DynamicBoolean",
+     "description": "boolean (optional). Show the parts list with an indicative cost. Default false."
     },
     "models": {
-     "description": "array (optional). Named models for the picker dropdown — up to 8 objects {name, bricks, palette}, each bricks array as above (up to 3000 bricks each; palette optional, else the top-level one). Entries with no usable bricks are skipped; a missing name becomes Model N. The dropdown lists the six built-in shapes followed by these.",
-     "type": "array"
+     "$ref": "common_types.json#/$defs/DynamicValue",
+     "description": "array (optional). Named models for the picker dropdown — up to 8 objects {name, bricks, palette}, each bricks array as above (up to 3000 bricks each; palette optional, else the top-level one). Entries with no usable bricks are skipped; a missing name becomes Model N. The dropdown lists the six built-in shapes followed by these."
     },
     "model": {
      "$ref": "common_types.json#/$defs/DynamicString",
      "description": "string (optional). Name of the entry in models to show first. Ignored when bricks is set."
     },
     "picker": {
-     "description": "boolean (optional). Show the model dropdown. Default true when models is given, otherwise false; set true to get a dropdown of the six built-in shapes alone.",
-     "type": "boolean"
+     "$ref": "common_types.json#/$defs/DynamicBoolean",
+     "description": "boolean (optional). Show the model dropdown. Default true when models is given, otherwise false; set true to get a dropdown of the six built-in shapes alone."
     },
     "partsModel": {
-     "description": "array (optional). Real parts from the LDraw.org Parts Library (CC BY) instead of procedural boxes, as [partId, x, y, z, rotation, colour] tuples (a real LDraw part id, x y z in LDraw units (20 per stud, 24 per brick height), a 0-23 rotation index, an LDraw colour code), or objects {p, x, y, z, r, c}. Takes precedence over bricks/shape when present, same \"explicit wins\" rule as bricks vs. shape. Up to 3000 parts.",
-     "type": "array"
+     "$ref": "common_types.json#/$defs/DynamicValue",
+     "description": "array (optional). Real parts from the LDraw.org Parts Library (CC BY) instead of procedural boxes, as [partId, x, y, z, rotation, colour] tuples (a real LDraw part id, x y z in LDraw units (20 per stud, 24 per brick height), a 0-23 rotation index, an LDraw colour code), or objects {p, x, y, z, r, c}. Takes precedence over bricks/shape when present, same \"explicit wins\" rule as bricks vs. shape. Up to 3000 parts."
     },
     "look": {
      "$ref": "common_types.json#/$defs/DynamicString",
@@ -184,20 +184,20 @@
      "const": "block_robot"
     },
     "motion": {
-     "description": "object (optional). How the bricks arrive, same keys and defaults as motion_bricks motion (order, from, window, flight, distance, tilt, spin, spinAxis, gravity, jitter, support, seed, overshoot, rotOvershoot, recoil, travel, sharpness, direction). Absent = the plain build-up.",
-     "type": "object"
+     "$ref": "common_types.json#/$defs/DynamicValue",
+     "description": "object (optional). How the bricks arrive, same keys and defaults as motion_bricks motion (order, from, window, flight, distance, tilt, spin, spinAxis, gravity, jitter, support, seed, overshoot, rotOvershoot, recoil, travel, sharpness, direction). Absent = the plain build-up."
     },
     "angle": {
-     "description": "number (optional). Starting turn in degrees, -360 to 360. Default 24.",
-     "type": "number"
+     "$ref": "common_types.json#/$defs/DynamicNumber",
+     "description": "number (optional). Starting turn in degrees, -360 to 360. Default 24."
     },
     "elevation": {
-     "description": "number (optional). Camera elevation in degrees, 7-75. Default 26.",
-     "type": "number"
+     "$ref": "common_types.json#/$defs/DynamicNumber",
+     "description": "number (optional). Camera elevation in degrees, 7-75. Default 26."
     },
     "turns": {
-     "description": "number (optional). Full turns per unit of --s, -8 to 8. Default 1.",
-     "type": "number"
+     "$ref": "common_types.json#/$defs/DynamicNumber",
+     "description": "number (optional). Full turns per unit of --s, -8 to 8. Default 1."
     },
     "look": {
      "$ref": "common_types.json#/$defs/DynamicString",
@@ -212,8 +212,8 @@
      "description": "string (optional). One of \"16:9\", \"4:3\", \"1:1\", \"3:4\", \"9:16\". Default \"16:9\"."
     },
     "fill": {
-     "description": "boolean (optional). Fill the placed box height instead of using ratio. Default false.",
-     "type": "boolean"
+     "$ref": "common_types.json#/$defs/DynamicBoolean",
+     "description": "boolean (optional). Fill the placed box height instead of using ratio. Default false."
     },
     "label": {
      "$ref": "common_types.json#/$defs/DynamicString",
@@ -245,20 +245,20 @@
      "const": "block_rocket"
     },
     "motion": {
-     "description": "object (optional). How the bricks arrive, same keys and defaults as motion_bricks motion (order, from, window, flight, distance, tilt, spin, spinAxis, gravity, jitter, support, seed, overshoot, rotOvershoot, recoil, travel, sharpness, direction). Absent = the plain build-up.",
-     "type": "object"
+     "$ref": "common_types.json#/$defs/DynamicValue",
+     "description": "object (optional). How the bricks arrive, same keys and defaults as motion_bricks motion (order, from, window, flight, distance, tilt, spin, spinAxis, gravity, jitter, support, seed, overshoot, rotOvershoot, recoil, travel, sharpness, direction). Absent = the plain build-up."
     },
     "angle": {
-     "description": "number (optional). Starting turn in degrees, -360 to 360. Default 24.",
-     "type": "number"
+     "$ref": "common_types.json#/$defs/DynamicNumber",
+     "description": "number (optional). Starting turn in degrees, -360 to 360. Default 24."
     },
     "elevation": {
-     "description": "number (optional). Camera elevation in degrees, 7-75. Default 26.",
-     "type": "number"
+     "$ref": "common_types.json#/$defs/DynamicNumber",
+     "description": "number (optional). Camera elevation in degrees, 7-75. Default 26."
     },
     "turns": {
-     "description": "number (optional). Full turns per unit of --s, -8 to 8. Default 1.",
-     "type": "number"
+     "$ref": "common_types.json#/$defs/DynamicNumber",
+     "description": "number (optional). Full turns per unit of --s, -8 to 8. Default 1."
     },
     "look": {
      "$ref": "common_types.json#/$defs/DynamicString",
@@ -273,8 +273,8 @@
      "description": "string (optional). One of \"16:9\", \"4:3\", \"1:1\", \"3:4\", \"9:16\". Default \"16:9\"."
     },
     "fill": {
-     "description": "boolean (optional). Fill the placed box height instead of using ratio. Default false.",
-     "type": "boolean"
+     "$ref": "common_types.json#/$defs/DynamicBoolean",
+     "description": "boolean (optional). Fill the placed box height instead of using ratio. Default false."
     },
     "label": {
      "$ref": "common_types.json#/$defs/DynamicString",
