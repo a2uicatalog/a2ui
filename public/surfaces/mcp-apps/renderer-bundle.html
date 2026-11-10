@@ -41077,7 +41077,7 @@ return res;
 }
 var _A2UI_SURFACES = (typeof window !== 'undefined') ? (window._A2UI_SURFACES = window._A2UI_SURFACES || {}) : {};
 function _a2uiIsV1Message(m) {
-return !!m && typeof m === 'object' && m.version === 'v1.0' &&
+return !!m && typeof m === 'object' && (m.version === '1.0' || m.version === 'v1.0') &&
 !!(m.createSurface || m.updateComponents || m.updateDataModel || m.deleteSurface);
 }
 function _a2uiAcceptV1(payload) {
@@ -41123,7 +41123,18 @@ var out = {name: ev.name, context: abs(ev.context || {})};
 if (ev.userMessage !== undefined) out.userMessage = abs(ev.userMessage);
 return out;
 }
+function _a2uiNormV1(n) {
+if (Array.isArray(n)) return n.map(_a2uiNormV1);
+if (!n || typeof n !== 'object') return n;
+var ks = Object.keys(n), o = {}, i;
+if (ks.length === 1 && ks[0] === '@path') return {path: n['@path']};
+for (i = 0; i < ks.length; i++) o[ks[i] === '@call' ? 'call' : ks[i]] = _a2uiNormV1(n[ks[i]]);
+return o;
+}
 function _rehydrateV1Surface(surface) {
+if (surface && Array.isArray(surface.components)) {
+surface = Object.assign({}, surface, {components: _a2uiNormV1(surface.components)});
+}
 var interactive = false;
 var byId = {};
 (surface.components || []).forEach(function(c) { byId[c.id] = c; });
@@ -41375,7 +41386,7 @@ var _A2UI_V1_RUNTIME = function(root, model, sid) {
     if (!btn || !root.contains(btn)) return;
     e.preventDefault();
     var a; try { a = JSON.parse(btn.getAttribute('data-a2ui-action')); } catch (x) { return; }
-    var msg = {version: 'v1.0', action: {name: a.name, surfaceId: sid, sourceComponentId: btn.getAttribute('data-a2ui-src') || '',
+    var msg = {version: '1.0', action: {name: a.name, surfaceId: sid, sourceComponentId: btn.getAttribute('data-a2ui-src') || '',
                timestamp: new Date().toISOString(), context: resolve(a.context || {})}};
     if (a.userMessage !== undefined) msg.action.userMessage = String(resolve(a.userMessage));
     root.dispatchEvent(new CustomEvent('a2ui:action', {bubbles: true, detail: msg}));
