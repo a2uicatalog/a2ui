@@ -771,7 +771,7 @@ def build_bundle(boot_block=None, title="A2UI Catalog renderer — MCP Apps View
 <html>
 <head>
 <meta charset="utf-8">{viewport_meta}
-<meta name="color-scheme" content="light">
+<meta name="color-scheme" content="light dark">
 <title>{title}</title>
 {atom_styles}
 <style>
