@@ -75,8 +75,21 @@ def build_openapi(n_atoms, n_surfaces):
                 "affected responses via `Deprecation` (RFC 9745) and `Sunset` "
                 "(RFC 8594) headers with a minimum 90 days between them. Backward "
                 "compatibility is enforced in CI by a parity gate that fails the "
-                "deploy if any response shape changes without being declared. Full "
-                "policy: https://a2uicatalog.ai/versioning.md"
+                "deploy if any response shape changes without being declared. Clients "
+                "may send the same `X-API-Version` header on a request to name the "
+                "version they were built against. Full "
+                "policy: https://a2uicatalog.ai/versioning.md\n\n"
+                "## Sandbox and test mode\n\n"
+                "There is no separate sandbox host because the REST endpoints here hold "
+                "no production data to touch: /api/render, /api/render/batch, "
+                "/api/compose and /api/data/{source} are side-effect free (rendering is "
+                "a pure function of the payload, and data sources are read-only), so a "
+                "test call against production cannot change anything. Its only cost is "
+                "quota, reported in the RateLimit headers. To try payloads by hand, use "
+                "the playground at https://play.a2uicatalog.ai. On the MCP server, every "
+                "tool that stores, sends or deletes something is annotated "
+                "`readOnlyHint: false`; the read-only tools are safe to call freely "
+                "while building an integration."
             ),
             "license": {"name": "MIT", "identifier": "MIT"},
             "contact": {"name": "A2UI Atomic Catalog",
@@ -91,9 +104,21 @@ def build_openapi(n_atoms, n_surfaces):
             {"name": "compose", "description": "Natural language to atom blocks"},
             {"name": "data", "description": "Declared, rate-limited data sources for live atoms"},
         ],
-        "paths": _paths(),
+        "paths": _with_version_param(_paths()),
         "components": _components(),
     }
+
+
+def _with_version_param(paths):
+    """Every /api/ operation accepts the X-API-Version request header."""
+    for route, ops in paths.items():
+        if not route.startswith("/api/"):
+            continue
+        for op in ops.values():
+            if isinstance(op, dict) and "responses" in op:
+                op.setdefault("parameters", []).append(
+                    {"$ref": "#/components/parameters/ApiVersion"})
+    return paths
 
 
 def _paths():
@@ -217,6 +242,8 @@ def _paths():
             "responses": {
                 "200": {"description": "Rendered HTML page",
                         "headers": {"X-API-Version": {"$ref": "#/components/headers/ApiVersion"},
+                                    "Deprecation": {"$ref": "#/components/headers/Deprecation"},
+                                    "Sunset": {"$ref": "#/components/headers/Sunset"},
                                     "X-RateLimit-Limit": {"$ref": "#/components/headers/XRateLimitLimit"},
                                     "X-RateLimit-Remaining": {"$ref": "#/components/headers/XRateLimitRemaining"},
                                     "RateLimit-Policy": {"$ref": "#/components/headers/RateLimitPolicy"},
@@ -380,6 +407,13 @@ def _paths():
 def _components():
     return {
         "parameters": {
+            "ApiVersion": {
+                "name": "X-API-Version", "in": "header", "required": False,
+                "schema": {"type": "string", "enum": ["1"]},
+                "description": ("Optional. The wire-format version the client was built "
+                                "against. Only version 1 exists today; the response carries "
+                                "the version it was served in the same header."),
+            },
             "IdempotencyKey": {
                 "name": "Idempotency-Key", "in": "header", "required": False,
                 "schema": {"type": "string", "maxLength": 200},

@@ -29,7 +29,21 @@ info:
     on the affected responses via `Deprecation` (RFC 9745) and `Sunset` (RFC 8594)
     headers with a minimum 90 days between them. Backward compatibility is enforced
     in CI by a parity gate that fails the deploy if any response shape changes without
-    being declared. Full policy: https://a2uicatalog.ai/versioning.md'
+    being declared. Clients may send the same `X-API-Version` header on a request
+    to name the version they were built against. Full policy: https://a2uicatalog.ai/versioning.md
+
+
+    ## Sandbox and test mode
+
+
+    There is no separate sandbox host because the REST endpoints here hold no production
+    data to touch: /api/render, /api/render/batch, /api/compose and /api/data/{source}
+    are side-effect free (rendering is a pure function of the payload, and data sources
+    are read-only), so a test call against production cannot change anything. Its
+    only cost is quota, reported in the RateLimit headers. To try payloads by hand,
+    use the playground at https://play.a2uicatalog.ai. On the MCP server, every tool
+    that stores, sends or deletes something is annotated `readOnlyHint: false`; the
+    read-only tools are safe to call freely while building an integration.'
   license:
     name: MIT
     identifier: MIT
@@ -248,6 +262,7 @@ paths:
           and answering half-honestly about portability is worse than not answering.
           Omit for no policy.'
       - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/ApiVersion'
       requestBody:
         required: true
         content:
@@ -286,6 +301,10 @@ paths:
           headers:
             X-API-Version:
               $ref: '#/components/headers/ApiVersion'
+            Deprecation:
+              $ref: '#/components/headers/Deprecation'
+            Sunset:
+              $ref: '#/components/headers/Sunset'
             X-RateLimit-Limit:
               $ref: '#/components/headers/XRateLimitLimit'
             X-RateLimit-Remaining:
@@ -336,6 +355,7 @@ paths:
           - google-meet-stage
         description: One surface for the whole batch; applied to every payload.
       - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/ApiVersion'
       requestBody:
         required: true
         content:
@@ -420,6 +440,7 @@ paths:
         (free-tier inference).
       parameters:
       - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/ApiVersion'
       requestBody:
         required: true
         content:
@@ -488,6 +509,7 @@ paths:
           maximum: 200
         description: Max items to return, for list-shaped sources. Source-defined
           default.
+      - $ref: '#/components/parameters/ApiVersion'
       responses:
         '200':
           description: Source payload, unpaginated by default (backward compatible
@@ -643,6 +665,17 @@ paths:
           $ref: '#/components/responses/NotFound'
 components:
   parameters:
+    ApiVersion:
+      name: X-API-Version
+      in: header
+      required: false
+      schema:
+        type: string
+        enum:
+        - '1'
+      description: Optional. The wire-format version the client was built against.
+        Only version 1 exists today; the response carries the version it was served
+        in the same header.
     IdempotencyKey:
       name: Idempotency-Key
       in: header
