@@ -42,15 +42,22 @@ BASE_URL = "https://a2uicatalog.ai"
 # under the top-level `components`/`functions` keys, each component carrying a
 # `component: {const: <name>}` discriminator and referencing ComponentCommon.
 JSON_SCHEMA_DRAFT = "https://json-schema.org/draft/2020-12/schema"
-_COMMON_TYPES = "https://a2ui.org/specification/v1_0/common_types.json#/$defs/"
-COMPONENT_COMMON_REF = _COMMON_TYPES + "ComponentCommon"
+# v1.0 rule (evolution_guide, "Use relative standard type references"; catalog loaders reject any
+# $ref that is not the catalog's own #/components|functions|$defs or common_types.json): RELATIVE refs.
+# ComponentCommon (id/accessibility/catalogId/metadata) is composed by the ENVELOPE (agent_to_renderer
+# Component), exactly as the Basic catalog does, so component definitions do NOT $ref it.
+_COMMON_TYPES = "common_types.json#/$defs/"
+PROTOCOL_VERSION = "1.0"
+# ComponentCommon property names: an atom field with the same name would shadow the envelope's own
+# property (e.g. `id` = the ComponentId), so such fields are not declared in the component schema.
+_ENVELOPE_PROPS = {"id", "catalogId", "accessibility", "metadata"}
 # typed, BINDABLE property refs — v1.0 conformance: a host learns which props accept
 # a `{path}` data-binding from these (Google's basic catalog types every prop this way).
 DYNAMIC_STRING_REF = _COMMON_TYPES + "DynamicString"
 CHILD_LIST_REF = _COMMON_TYPES + "ChildList"
 ATOMS_CATALOG_ID = "a2ui-atoms-v1"                                   # slug / filename
-# The catalogId/$id MUST be a resolvable URI (Google's is the full catalog.json URL);
-# a bare token can't be dereferenced. This is what createSurface.catalogId points at.
+# The catalogId/$id is an identifier; we use the URL the document is served at (as the Basic catalog does).
+# This is what createSurface.catalogId points at.
 ATOMS_CATALOG_URI = f"{BASE_URL}/catalogue/{ATOMS_CATALOG_ID}.json"
 
 # field-name hints for component-child lists (-> ChildList of ComponentId refs)
@@ -185,6 +192,8 @@ def _component_def(atom: dict) -> dict:
     props = {"component": {"const": atom["type"]}}
     required = ["component"]
     for fname, fspec in (atom.get("fields") or {}).items():
+        if fname in _ENVELOPE_PROPS:
+            continue
         props[fname] = _prop_schema(fname, fspec)
         # requiredness is OPT-IN: only fields whose spec explicitly says "required".
         # The old rule (required unless the word "optional" appeared) marked 215
@@ -193,12 +202,13 @@ def _component_def(atom: dict) -> dict:
         # for a catalog; the durable fix is structured field metadata in schema.yaml.
         if "required" in str(fspec).lower():
             required.append(fname)
-    inner = {"type": "object", "properties": props, "required": required}
+    # Same shape as the Basic / VegaChart catalogs: {type, description, properties, required};
+    # no unevaluatedProperties:false (it would reject the envelope's id/catalogId/accessibility).
     definition = {
         "type": "object",
         "description": atom.get("description", ""),
-        "allOf": [{"$ref": COMPONENT_COMMON_REF}, inner],
-        "unevaluatedProperties": False,
+        "properties": props,
+        "required": required,
     }
     surfaces = atom.get("surfaces", {}).get("works_on")
     if surfaces:
@@ -210,6 +220,18 @@ def _component_def(atom: dict) -> dict:
     if atom.get("intent_phrases"):
         definition["x-intent-phrases"] = atom["intent_phrases"]
     return definition
+
+
+def catalog_defs(components, functions=None):
+    """`$defs.anyComponent` / `anyFunction` (required by the catalog definition schema): oneOf the
+    catalog's own components/functions with the `component` discriminator, as Basic and VegaChart do.
+    No functions -> anyFunction is `{"not": {}}` (the VegaChart idiom: nothing matches)."""
+    return {
+        "anyComponent": {"oneOf": [{"$ref": f"#/components/{n}"} for n in components],
+                         "discriminator": {"propertyName": "component"}},
+        "anyFunction": ({"oneOf": [{"$ref": f"#/functions/{n}"} for n in functions]}
+                        if functions else {"not": {}}),
+    }
 
 
 def gen_atoms_catalog(blocks):
@@ -224,6 +246,7 @@ def gen_atoms_catalog(blocks):
     return {
         "$schema": JSON_SCHEMA_DRAFT,
         "$id": ATOMS_CATALOG_URI,
+        "protocolVersion": PROTOCOL_VERSION,
         "catalogId": ATOMS_CATALOG_URI,
         "title": "A2UI Atoms Catalog",
         "description": ("The A2UI multi-surface atom vocabulary as an A2UI-v1.0 "
@@ -238,6 +261,7 @@ def gen_atoms_catalog(blocks):
                          f"spec (descriptions, surfaces, attribution): {BASE_URL}/spec.json"),
         "components": components,
         "functions": {},
+        "$defs": catalog_defs(components),
     }
 
 
