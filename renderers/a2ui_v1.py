@@ -126,7 +126,7 @@ def _map_video(b):
     return {"component": "Video", "url": b.get("url", b.get("video_url", ""))}
 
 def _map_audio(b):
-    return {"component": "AudioPlayer", "url": b.get("audio_url", b.get("url", "")), "title": b.get("title", "")}
+    return {"component": "AudioPlayer", "url": b.get("audio_url", b.get("url", "")), "description": b.get("title", "")}
 
 def _map_icon(b):
     return {"component": "Icon", "name": b.get("name", b.get("icon", ""))}
@@ -504,6 +504,26 @@ def _emit_block(b: Dict[str, Any], components: List[Dict[str, Any]], ids: _IdGen
             components.append(node)
             return cid
 
+        if comp_type == "Modal":
+            # Final basic-catalog Modal is {trigger, content}: two component ids, no `children`/`title`
+            # (the earlier emitter put a children list + title on it, which no spec version allows).
+            # content = the modal body (one child direct, else a synthetic Column); trigger = a Button
+            # labelled with the modal's title, as upstream's own 36_modal example does.
+            if len(child_ids) == 1:
+                content_id = child_ids[0]
+            else:
+                content_id = ids.take({"type": "modal_content"})
+                components.append({"id": content_id, "component": "Column", "children": child_ids or []})
+                if not child_ids:
+                    components[-1] = {"id": content_id, "component": "Text", "text": ""}
+            label_id = ids.take({"type": "modal_trigger_label"})
+            components.append({"id": label_id, "component": "Text", "text": str(b.get("title") or b.get("label") or "Open")})
+            trigger_id = ids.take({"type": "modal_trigger"})
+            components.append({"id": trigger_id, "component": "Button", "child": label_id,
+                               "action": {"event": {"name": "open_modal", "context": {}}}})
+            components.append({"id": cid, "component": "Modal", "trigger": trigger_id, "content": content_id})
+            return cid
+
         node = {"id": cid, "component": comp_type, "children": child_ids}
         # carry a light label/flourish where present (Card/Tabs/Modal titles;
         # row_bracket align). 2026-08-24: confirmed against the real basic
@@ -513,8 +533,6 @@ def _emit_block(b: Dict[str, Any], components: List[Dict[str, Any]], ids: _IdGen
         # (real, checked loss, not an oversight -- same "no basic-catalog
         # equivalent" pattern this file's own hub docstring already
         # documents for subject/slide color and hub-level background).
-        if b.get("title") and comp_type in ("Modal",):
-            node["title"] = b["title"]
         if b.get("type") == "row_bracket" and b.get("align") is not None:
             node["align"] = b["align"]
         components.append(node)
@@ -653,6 +671,9 @@ def _refs(c: Dict[str, Any]) -> List[str]:
         out += [x for x in ch if isinstance(x, str)]
     if isinstance(c.get("child"), str):
         out.append(c["child"])
+    for k in ("trigger", "content"):                      # Modal
+        if isinstance(c.get(k), str):
+            out.append(c[k])
     for t in c.get("tabs") or []:
         if isinstance(t, dict) and isinstance(t.get("child"), str):
             out.append(t["child"])
@@ -790,6 +811,9 @@ def _degrade_to_basic(components: List[Dict[str, Any]], data_model: Optional[Dic
         if c.get("component") in BASIC_COMPONENTS:
             if isinstance(c.get("child"), str):
                 single_refs.add(c["child"])
+            for k in ("trigger", "content"):
+                if isinstance(c.get(k), str):
+                    single_refs.add(c[k])
             for t in c.get("tabs") or []:
                 if isinstance(t, dict) and isinstance(t.get("child"), str):
                     single_refs.add(t["child"])
