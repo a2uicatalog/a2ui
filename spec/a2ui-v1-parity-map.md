@@ -46,3 +46,14 @@ as part of PR 2 itself, not deferred again.
 - `a2uithoughts.md` logs the investigation that produced this map, with a
   link back here for the durable reference (thoughts entries are a
   narrative log; this file is the thing to actually consult later).
+
+## Change log: A2UI v1.0 wire format (2026-11-10)
+
+The A2UI emitters now produce the final v1.0 wire format **by default**. This is a default, not an enforcement: v0.9 output and v0.9 consumers still work, and the deployed consumers accept the new and the draft spelling.
+
+- Output: `version: "1.0"`; `@path` / `@call` in binding and function-call positions only; closed `action.event`; no `theme`; surface `catalogId` is the Basic v1.0 catalog and each extension component carries our catalogue's `catalogId`. The draft spelling `"v1.0"` with `{path}` is no longer emitted.
+- Surface ids: the default `surfaceId` is now `slug(title)-<8 hex digest of the payload>`. Callers that relied on the bare slug must pass `surface_id=`.
+- Capabilities: the legacy `"v1.0"` key is no longer negotiated. A renderer offering it together with `v0.9` gets v0.9; one offering only the legacy key is treated as having sent no capabilities. The v0.9 downgrade path is unchanged.
+- Consumers: the Apps Script decoder, the MCP Apps / play renderer bundles and their pages accept `"1.0"` (with `@path`/`@call`, normalised by `_a2uiNormV1`), the draft `"v1.0"` with `{path}`, and v0.9.
+- Converter `v09_to_v10`: idempotent; drops `returnType` (reported); escapes literal `@` keys by doubling.
+- Not done: our extension catalogue file (`public/catalogue/a2ui-atoms-v1.json`) still lacks `protocolVersion` and relative `$ref`s, so a strict v1.0 renderer cannot load it; no render proof on an official v1.0 renderer; the JSON-LD on the atom pages still says "v1.0".
