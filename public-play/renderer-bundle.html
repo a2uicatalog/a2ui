@@ -2,6 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8">
+<meta name="color-scheme" content="light dark">
 <title>A2UI Catalog renderer — MCP Apps View</title>
 <style>
   :root {
@@ -45703,6 +45704,8 @@ window._a2uiExtractPdfText = async function (file, onProgress) {
     var _terminal = payload.theme === 'terminal';
     document.body.classList.toggle('asw-dark-theme', payload.theme === 'dark' || _terminal);
     document.body.classList.toggle('asw-terminal-theme', _terminal);
+    // Native controls and scrollbars follow the payload theme, not the OS.
+    document.documentElement.style.colorScheme = (payload.theme === 'dark' || _terminal) ? 'dark' : 'light';
     // Wired dialect (spec/wired-transport-v0.1.md): expand templates, render the
     // layout with the SAME extracted loop GAS uses, then boot the state engine —
     // actions route through _a2uiActionTransport (host tools/call on this surface).

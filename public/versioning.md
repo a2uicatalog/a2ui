@@ -16,6 +16,9 @@ Every JSON response carries the wire-format version as a header:
 X-API-Version: 1
 ```
 
+A client may send the same header on a request to name the version it was built
+against; the response always says which version it was served in.
+
 Version 1 is the only version. There is deliberately **no `/v1/` path prefix**: the MCP
 endpoint URL (`https://a2uicatalog.ai/mcp`) lives in users' client configuration files —
 in `claude_desktop_config.json`, in Gemini Enterprise connector settings, in scripts.

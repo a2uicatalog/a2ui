@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>API Documentation — A2UI Atomic Catalog</title>
-<meta name="description" content="A2UI Atomic Catalog API documentation: endpoints, OpenAPI 3.1 specification, JSON schemas, MCP servers, and REST routes for AI agents.">
+<title>API Docs, OpenAPI Spec &amp; MCP Server — A2UI Atomic Catalog</title>
+<meta name="description" content="A2UI Atomic Catalog API docs: the MCP server, REST endpoints, OpenAPI 3.1 specification, JSON schemas and SDKs for AI agents. Free, no API key.">
 <link rel="canonical" href="https://a2uicatalog.ai/docs/">
 <meta property="og:type" content="website">
-<meta property="og:title" content="API Documentation — A2UI Atomic Catalog">
-<meta property="og:description" content="A2UI Atomic Catalog API documentation: endpoints, OpenAPI 3.1 specification, JSON schemas, MCP servers, and REST routes for AI agents.">
+<meta property="og:title" content="API Docs, OpenAPI Spec &amp; MCP Server — A2UI Atomic Catalog">
+<meta property="og:description" content="A2UI Atomic Catalog API docs: the MCP server, REST endpoints, OpenAPI 3.1 specification, JSON schemas and SDKs for AI agents. Free, no API key.">
 <meta property="og:url" content="https://a2uicatalog.ai/docs/">
 <meta property="og:image" content="https://a2uicatalog.ai/brand/og-card.png">
 <script type="application/ld+json">
@@ -16,7 +16,7 @@
   "@context": "https://schema.org",
   "@type": "APIReference",
   "url": "https://a2uicatalog.ai/docs/",
-  "name": "API Documentation \u2014 A2UI Atomic Catalog",
+  "name": "API Docs, OpenAPI Spec & MCP Server \u2014 A2UI Atomic Catalog",
   "publisher": {
     "@id": "https://a2uicatalog.ai/#org"
   }
@@ -147,11 +147,22 @@ footer a{color:var(--accent-2-text);text-decoration:underline;text-underline-off
   </div></header>
 <main class="trust">
 <div class="wrap">
-<h1>A2UI Atomic Catalog — API Documentation</h1>
+<h1>A2UI Atomic Catalog — API Docs, OpenAPI Spec &amp; MCP Server</h1>
 <h2 class="k">Developer &amp; Agent Documentation</h2>
 
 <p>Developer and API documentation for the A2UI Atomic Catalog. All developer resources are free,
 unauthenticated, and machine-readable.</p>
+<p>Primary integration surface: <a href="/mcp">the MCP server at https://a2uicatalog.ai/mcp</a> — no API
+key, no signup, <code>POST</code> JSON-RPC 2.0 directly. Documentation questions:
+<a href="/mcp-docs">the docs MCP server at /mcp-docs</a>. Contract: <a href="/openapi.json">OpenAPI 3.1
+specification</a>. Packages: <a href="/sdks/">SDKs &amp; client libraries</a>. Guide:
+<a href="/developers/">developer portal</a>.</p>
+
+<h2 id="sandbox">Sandbox and test mode</h2>
+<p>Sandbox server: <code>https://a2uicatalog.ai/api/sandbox</code>. It serves the render routes with the same code on its own allowance of 20 requests per IP per day, so test calls never spend the production one: <code>POST https://a2uicatalog.ai/api/sandbox/api/render</code>, <code>.../api/render/batch</code> and <code>.../api/render/jobs</code>. Every reply carries <code>X-A2UI-Sandbox: true</code>.</p>
+<p>Production is also safe to test against: the REST endpoints hold no production data: /api/render, /api/render/batch, /api/render/jobs, /api/compose and /api/data are side-effect free, so a test call against production cannot change anything; its only cost is quota. To try payloads by hand, use the playground at <a href="https://play.a2uicatalog.ai">play.a2uicatalog.ai</a>. On the MCP server, every tool that stores,
+sends or deletes something is annotated <code>readOnlyHint: false</code>; the read-only tools are safe to call freely
+while building an integration.</p>
 
 <h2>REST Endpoints</h2>
 <table style="width:100%;border-collapse:collapse;margin:1rem 0;font-size:.92rem;">
@@ -290,6 +301,75 @@ document.addEventListener('click',function(e){
           return {type: a.type, description: a.description, fields: a.fields,
                   surfaces: a.surfaces, source: a.source, url: SITE+'/atoms/'+a.type+'/'};
         });
+      }
+    });
+  }catch(err){/* draft API shape may still be moving -- never break the page over it */}
+  // The two write tools call the site's own MCP server (same-origin /mcp),
+  // so they can only do what an agent connected to that server can already
+  // do. consequentialHint asks the agent to confirm with the person first.
+  function callMcp(name, args){
+    return fetch('/mcp', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json', 'Accept': 'application/json, text/event-stream'},
+      body: JSON.stringify({jsonrpc: '2.0', id: 1, method: 'tools/call', params: {name: name, arguments: args}})
+    }).then(function(r){ return r.text(); }).then(function(t){
+      t = t.trim();
+      if(t.charAt(0) !== '{'){
+        var data = t.split('\n').filter(function(l){ return l.indexOf('data:')===0; }).pop() || '';
+        t = data.slice(5);
+      }
+      var msg = JSON.parse(t);
+      if(msg.error) throw new Error(msg.error.message || 'MCP error');
+      var res = msg.result || {};
+      if(res.structuredContent) return res.structuredContent;
+      var text = (res.content || []).map(function(c){ return c.text || ''; }).join('');
+      try{ return JSON.parse(text); }catch(e){ return {result: text}; }
+    });
+  }
+  try{
+    mc.registerTool({
+      name: 'create_share_link',
+      description: 'Create a short shareable link that renders an A2UI payload in the a2uicatalog.ai playground. Stores the payload on a2uicatalog.ai for one week; anyone with the link can view it. Returns the link, the expiry date and a delete token.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          payload: {
+            type: 'object',
+            description: 'The A2UI payload to publish: blocks built from catalogue atoms (see search_atoms and get_atom).',
+            properties: {
+              title: {type: 'string', maxLength: 200, description: 'Page title shown above the blocks.'},
+              theme: {type: 'string', enum: ['light', 'dark', 'terminal'], description: 'Colour theme for the rendered page.'},
+              blocks: {type: 'array', minItems: 1, items: {type: 'object'}, description: 'Atoms in order, each an object with a type and that atom\'s fields.'}
+            },
+            required: ['blocks']
+          }
+        },
+        required: ['payload'],
+        additionalProperties: false
+      },
+      annotations: {readOnlyHint: false, consequentialHint: true},
+      execute: function(input){
+        return callMcp('publish_url', {payload: (input||{}).payload, acknowledge_storage: true, target: 'play'});
+      }
+    });
+  }catch(err){/* draft API shape may still be moving -- never break the page over it */}
+  try{
+    mc.registerTool({
+      name: 'delete_share_link',
+      description: 'Delete a share link made by create_share_link before it expires, using the delete token that create_share_link returned. The link stops working straight away.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          id: {type: 'string', maxLength: 200, description: 'The short link, or the id at its end.'},
+          delete_token: {type: 'string', maxLength: 64, description: 'The delete token create_share_link returned.'}
+        },
+        required: ['id', 'delete_token'],
+        additionalProperties: false
+      },
+      annotations: {readOnlyHint: false, destructiveHint: true, consequentialHint: true},
+      execute: function(input){
+        input = input || {};
+        return callMcp('unpublish_url', {id: input.id, delete_token: input.delete_token});
       }
     });
   }catch(err){/* draft API shape may still be moving -- never break the page over it */}

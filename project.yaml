@@ -48,6 +48,16 @@ policy:
     - public/sdk.md
     - public/sdks.md
     - public/versioning.md
+    # Markdown twins of the hand-kept pages, written by scripts/gen_page_twins.py
+    # (2026-11-10, Ora's Markdown URL fallback check sampled /about.md).
+    - public/about.md
+    - public/contact.md
+    - public/developers.md
+    - public/docs.md
+    - public/privacy.md
+    - public/renderer.md
+    - public/webhooks.md
+    - public/what-is-a2ui.md
     - public/404.html
     # Agent-readiness artefacts, declared 2026-08-02 against an external scan.
     # pricing.md exists because agents need machine-readable cost to recommend
@@ -73,7 +83,6 @@ policy:
     # same path the Worker is routed on — a subrequest loop. Moving is the
     # cheaper correct answer than fighting the routing.
     - public/docs/**
-    - public/api-docs/**
     - public/developers/**
     - public/sdks/**
     - public/auth/**
@@ -455,6 +464,14 @@ generators:
     publish: ci (deploy.yml on push -> Cloudflare) — must run AFTER
       generate_atom_pages/gen_public_catalog/gen_mcp_apps_bundle so it
       sees the real build output, not a stale/partial tree
+  gen_page_twins:
+    script: scripts/gen_page_twins.py
+    source: public/sitemap-pages.xml + the built public/<path>/index.html
+      pages (atoms/ and blog/ excluded, they have their own twins)
+    outputs: [public/about.md, public/docs.md, public/surfaces/web.md]  # one twin per sitemap page; three named for the existence check
+    publish: ci (deploy.yml on push -> Cloudflare) — runs after
+      generate_atom_pages; never overwrites a hand-written twin (only files
+      carrying its generated_by front-matter line)
   gen_openapi:
     script: scripts/gen_openapi.py
     source: public/spec.json (itself compiled from atoms/schema.yaml by gen_public_catalog)
@@ -468,7 +485,7 @@ generators:
   gen_trust_pages:
     script: scripts/gen_trust_pages.py
     source: public/spec.json (itself compiled from atoms/schema.yaml by gen_public_catalog)
-    outputs: [public/developers/, public/docs/, public/api-docs/, public/auth/, public/webhooks/, public/about/, public/contact/, public/privacy/, public/404.html, public/agents.md, public/index.md, public/surfaces/llms.txt]
+    outputs: [public/developers/, public/docs/, public/auth/, public/webhooks/, public/about/, public/contact/, public/privacy/, public/404.html, public/agents.md, public/index.md, public/surfaces/llms.txt]
     publish: ci (deploy.yml on push -> Cloudflare). Answers three agent-readiness
       audit findings from 2026-07-31 — trust anchor pages 0/2, agent discovery file
       0/2, and the markdown-fallback checks — /agents.md is served as real

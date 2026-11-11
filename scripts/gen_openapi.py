@@ -75,14 +75,36 @@ def build_openapi(n_atoms, n_surfaces):
                 "affected responses via `Deprecation` (RFC 9745) and `Sunset` "
                 "(RFC 8594) headers with a minimum 90 days between them. Backward "
                 "compatibility is enforced in CI by a parity gate that fails the "
-                "deploy if any response shape changes without being declared. Full "
-                "policy: https://a2uicatalog.ai/versioning.md"
+                "deploy if any response shape changes without being declared. Clients "
+                "may send the same `X-API-Version` header on a request to name the "
+                "version they were built against. Full "
+                "policy: https://a2uicatalog.ai/versioning.md\n\n"
+                "## Sandbox and test mode\n\n"
+                "Sandbox server: https://a2uicatalog.ai/api/sandbox (the second entry in "
+                "`servers`) serves /api/render, /api/render/batch and /api/render/jobs with "
+                "the same code on its own allowance of 20 requests per IP per day, so test "
+                "calls never spend the production one; replies carry `X-A2UI-Sandbox: true`. "
+                "Production is safe to test against too, because the REST endpoints here hold "
+                "no production data to touch: /api/render, /api/render/batch, "
+                "/api/compose and /api/data/{source} are side-effect free (rendering is "
+                "a pure function of the payload, and data sources are read-only), so a "
+                "test call against production cannot change anything. Its only cost is "
+                "quota, reported in the RateLimit headers. To try payloads by hand, use "
+                "the playground at https://play.a2uicatalog.ai. On the MCP server, every "
+                "tool that stores, sends or deletes something is annotated "
+                "`readOnlyHint: false`; the read-only tools are safe to call freely "
+                "while building an integration."
             ),
             "license": {"name": "MIT", "identifier": "MIT"},
             "contact": {"name": "A2UI Atomic Catalog",
                         "url": "https://github.com/a2uicatalog/a2ui"},
         },
-        "servers": [{"url": BASE, "description": "Production"}],
+        "servers": [{"url": BASE, "description": "Production"},
+                    {"url": f"{BASE}/api/sandbox",
+                     "description": ("Sandbox for the render routes (/api/render, /api/render/batch, "
+                                     "/api/render/jobs): the same code on its own allowance of 20 "
+                                     "requests per IP per day, so test calls never spend the "
+                                     "production one. Replies carry X-A2UI-Sandbox: true.")}],
         "externalDocs": {"description": "Agent-facing overview (llms.txt)",
                          "url": f"{BASE}/llms.txt"},
         "tags": [
@@ -91,9 +113,21 @@ def build_openapi(n_atoms, n_surfaces):
             {"name": "compose", "description": "Natural language to atom blocks"},
             {"name": "data", "description": "Declared, rate-limited data sources for live atoms"},
         ],
-        "paths": _paths(),
+        "paths": _with_version_param(_paths()),
         "components": _components(),
     }
+
+
+def _with_version_param(paths):
+    """Every /api/ operation accepts the X-API-Version request header."""
+    for route, ops in paths.items():
+        if not route.startswith("/api/"):
+            continue
+        for op in ops.values():
+            if isinstance(op, dict) and "responses" in op:
+                op.setdefault("parameters", []).append(
+                    {"$ref": "#/components/parameters/ApiVersion"})
+    return paths
 
 
 def _paths():
@@ -217,6 +251,8 @@ def _paths():
             "responses": {
                 "200": {"description": "Rendered HTML page",
                         "headers": {"X-API-Version": {"$ref": "#/components/headers/ApiVersion"},
+                                    "Deprecation": {"$ref": "#/components/headers/Deprecation"},
+                                    "Sunset": {"$ref": "#/components/headers/Sunset"},
                                     "X-RateLimit-Limit": {"$ref": "#/components/headers/XRateLimitLimit"},
                                     "X-RateLimit-Remaining": {"$ref": "#/components/headers/XRateLimitRemaining"},
                                     "RateLimit-Policy": {"$ref": "#/components/headers/RateLimitPolicy"},
@@ -227,6 +263,65 @@ def _paths():
                 "413": {"description": "Body larger than 256 KB",
                         "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}},
                 "429": {"$ref": "#/components/responses/RateLimited"}}}},
+        "/api/render/jobs": {"post": {
+            "tags": ["render"], "operationId": "createRenderJob",
+            "summary": "Render as an async job (202 Accepted, then poll)",
+            "description": ("The async-job form of POST /api/render: same body, query, limits and "
+                            "quota. Returns 202 Accepted with a job_id, a Location header and a "
+                            "status_url to poll; the rendered page is at result_url. Renders "
+                            "currently finish within the request, so status is already \"done\", "
+                            "but a client that polls keeps working if rendering moves to a queue. "
+                            "A bad payload or an exhausted quota fails immediately, exactly as on "
+                            "/api/render, and creates no job. Jobs are kept for one hour."),
+            "parameters": [{"name": "surface", "in": "query", "required": False,
+                            "schema": {"type": "string",
+                                       "enum": ["web", "mcp-apps", "google-apps-script-web", "google-meet-stage"]},
+                            "description": "Same surface policy as /api/render."}],
+            "requestBody": {"$ref": "#/components/requestBodies/RenderPayload"},
+            "responses": {
+                "202": {"description": "Job accepted",
+                        "headers": {"Location": {"description": "The job's status URL.",
+                                                 "schema": {"type": "string", "format": "uri"}},
+                                    "X-API-Version": {"$ref": "#/components/headers/ApiVersion"},
+                                    "Deprecation": {"$ref": "#/components/headers/Deprecation"},
+                                    "Sunset": {"$ref": "#/components/headers/Sunset"},
+                                    "X-RateLimit-Limit": {"$ref": "#/components/headers/XRateLimitLimit"},
+                                    "X-RateLimit-Remaining": {"$ref": "#/components/headers/XRateLimitRemaining"},
+                                    "RateLimit-Policy": {"$ref": "#/components/headers/RateLimitPolicy"},
+                                    "RateLimit": {"$ref": "#/components/headers/RateLimit"}},
+                        "content": {"application/json": {"schema": {"$ref": "#/components/schemas/RenderJob"}}}},
+                "400": {"description": "Malformed payload, unrenderable atom, or limit exceeded",
+                        "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}},
+                "413": {"description": "Body larger than 256 KB",
+                        "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}},
+                "429": {"$ref": "#/components/responses/RateLimited"}}}},
+        "/api/render/jobs/{job_id}": {"get": {
+            "tags": ["render"], "operationId": "getRenderJob",
+            "summary": "Render job status",
+            "description": "Poll a job made by POST /api/render/jobs. Polling spends no quota.",
+            "parameters": [{"name": "job_id", "in": "path", "required": True,
+                            "schema": {"type": "string", "pattern": "^[0-9a-f]{32}$"}}],
+            "responses": {
+                "200": {"description": "Job status",
+                        "headers": {"X-API-Version": {"$ref": "#/components/headers/ApiVersion"},
+                                    "Deprecation": {"$ref": "#/components/headers/Deprecation"},
+                                    "Sunset": {"$ref": "#/components/headers/Sunset"}},
+                        "content": {"application/json": {"schema": {"$ref": "#/components/schemas/RenderJob"}}}},
+                "400": {"description": "Malformed job id",
+                        "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}},
+                "404": {"description": "Unknown or expired job",
+                        "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}}}}},
+        "/api/render/jobs/{job_id}/result": {"get": {
+            "tags": ["render"], "operationId": "getRenderJobResult",
+            "summary": "Render job result",
+            "description": "The rendered HTML page of a finished job, with the same X-A2UI-* headers /api/render sends.",
+            "parameters": [{"name": "job_id", "in": "path", "required": True,
+                            "schema": {"type": "string", "pattern": "^[0-9a-f]{32}$"}}],
+            "responses": {
+                "200": {"description": "Rendered HTML page",
+                        "content": {"text/html": {"schema": {"type": "string"}}}},
+                "404": {"description": "Unknown or expired job",
+                        "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}}}}},
         "/api/render/batch": {"post": {
             "tags": ["render"], "operationId": "renderSurfaceBatch",
             "summary": "Render many payloads in one call",
@@ -379,7 +474,22 @@ def _paths():
 
 def _components():
     return {
+        "requestBodies": {
+            "RenderPayload": {"required": True, "content": {"application/json": {
+                "schema": {"type": "object", "required": ["blocks"], "properties": {
+                    "title": {"type": "string", "description": "Page title"},
+                    "theme": {"type": "string", "enum": ["light", "dark"]},
+                    "blocks": {"type": "array", "items": {"type": "object"},
+                               "description": "A2UI blocks-dialect atoms — see /spec.json"}}}}}},
+        },
         "parameters": {
+            "ApiVersion": {
+                "name": "X-API-Version", "in": "header", "required": False,
+                "schema": {"type": "string", "enum": ["1"]},
+                "description": ("Optional. The wire-format version the client was built "
+                                "against. Only version 1 exists today; the response carries "
+                                "the version it was served in the same header."),
+            },
             "IdempotencyKey": {
                 "name": "Idempotency-Key", "in": "header", "required": False,
                 "schema": {"type": "string", "maxLength": 200},
@@ -450,6 +560,14 @@ def _components():
                 "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}},
         },
         "schemas": {
+            "RenderJob": {"type": "object", "required": ["job_id", "status"], "properties": {
+                "job_id": {"type": "string", "pattern": "^[0-9a-f]{32}$"},
+                "status": {"type": "string", "enum": ["queued", "running", "done", "failed"],
+                           "description": "Always done today: renders finish within the request."},
+                "created": {"type": "string", "format": "date-time"},
+                "expires": {"type": "string", "format": "date-time"},
+                "status_url": {"type": "string", "format": "uri"},
+                "result_url": {"type": "string", "format": "uri"}}},
             "ErrorResponse": {
                 "type": "object",
                 "description": ("Shape of every non-2xx JSON response on the REST surface (the "
@@ -568,11 +686,11 @@ LLMS_TXT = """# A2UI Catalog (the A2UI Atomic Catalog)
 - [MCP server]({base}/mcp): Live JSON-RPC endpoint, no auth/signup required. GET with `Accept: application/json` returns a machine-readable server descriptor listing every tool.
 - [Documentation MCP server]({base}/mcp-docs): A separate MCP identity (`a2uicatalog-docs`) for questions FROM this product's own docs — `search_docs(query)` and `list_docs()`. The product server above takes actions (compose/render/publish); this one only answers doc questions.
 - [CLI / local MCP server (npm registry)](https://registry.npmjs.org/@a2uicatalog/mcp): `npx -p @a2uicatalog/mcp a2ui render page.json` renders a payload to HTML with no account and no MCP client. Also runs as a local MCP server (`a2uicatalog-mcp` bin) for Claude Desktop/Cursor, and deploys `training.md` to your own Google Apps Script web app via `build_app`. Source: `mcp/` in the [GitHub repository](https://github.com/a2uicatalog/a2ui). (npm's own package-page web UI 403s plain HTTP clients — the registry API link above is the one that resolves for a bot; `npm view @a2uicatalog/mcp` or a browser both work fine for a human.)
-{pylink}- [Agent Skills](https://a2uicatalog.ai/.well-known/agent-skills/index.json): three `SKILL.md` files (`a2ui-catalog`, `a2ui-compose`, `a2ui-mcp` — picking atoms, composing/rendering a payload, connecting a new agent over MCP) installable via `npx skills add a2uicatalog/a2ui`. Source: `skills/` in the GitHub repository.
+{pylink}- [Agent Skills](https://a2uicatalog.ai/.well-known/agent-skills/index.json): four `SKILL.md` files (`a2ui-catalog`, `a2ui-compose`, `a2ui-mcp`, `a2ui-rest` — picking atoms, composing/rendering a payload, connecting a new agent over MCP, calling the catalog over plain HTTP from scripts and CI) installable via `npx skills add a2uicatalog/a2ui`. Source: `skills/` in the GitHub repository.
 - [Developer portal]({base}/developers/): Human and agent developer portal, integration guide, REST surfaces, code samples, and self-hosting runbooks.
 - [SDKs & client libraries]({base}/sdks/): Official SDK documentation, npm CLI package, Agent Skills, and client code generators.
 - [API docs]({base}/docs/): API documentation for REST endpoints (/api/render, /api/compose, /ask), request/response schemas, and error shapes.
-- [API reference]({base}/api-docs/): Predictable entry point for developer resources, OpenAPI specs, and MCP endpoints.
+- [Sandbox and test mode]({base}/docs/#sandbox): Sandbox server https://a2uicatalog.ai/api/sandbox serves /api/render, /batch and /jobs (e.g. POST https://a2uicatalog.ai/api/sandbox/api/render) with the same code on its own 20/day allowance, so tests never spend the production one. Production is also safe to test against: the REST endpoints hold no production data: /api/render, /api/render/batch, /api/render/jobs, /api/compose and /api/data are side-effect free, so a test call against production cannot change anything; its only cost is quota. To try payloads by hand, use the playground at https://play.a2uicatalog.ai. MCP tools that store, send or delete are annotated `readOnlyHint: false`; the rest are safe to call while building.
 - [OpenAPI spec]({base}/openapi.json): Full OpenAPI 3.1 specification for all endpoints and schemas.
 - [Auth docs]({base}/auth/): Authentication documentation, enterprise OAuth discovery metadata, and public unauthenticated access policies.
 - [Auth & rate limits]({base}/.well-known/agent-auth.md): No API key or signup — the actual per-tool call limits.
@@ -656,7 +774,7 @@ def build_api_catalog():
             "describes": [
                 item(f"{BASE}/developers/", "text/html", "Developer documentation and API guide"),
                 item(f"{BASE}/docs/", "text/html", "API documentation and endpoint reference"),
-                item(f"{BASE}/api-docs/", "text/html", "API docs and reference directory"),
+                item(f"{BASE}/docs/", "text/html", "API docs and reference"),
                 item(f"{BASE}/sdks/", "text/html", "SDKs and client libraries documentation"),
                 item(f"{BASE}/auth/", "text/html", "Authentication and security documentation"),
                 item(f"{BASE}/webhooks/", "text/html", "Webhooks and event delivery documentation"),
@@ -705,7 +823,7 @@ def build_agent_view(n_atoms, n_surfaces):
             "openapi_yaml": f"{BASE}/openapi.yaml",
             "developers": f"{BASE}/developers/",
             "api_docs": f"{BASE}/docs/",
-            "api_reference": f"{BASE}/api-docs/",
+            "api_reference": f"{BASE}/docs/",
             "auth_docs": f"{BASE}/auth/",
             "webhooks": f"{BASE}/webhooks/",
             "versioning_docs": f"{BASE}/versioning/",
