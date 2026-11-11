@@ -41152,7 +41152,12 @@ if (!src) return null;
 var node = {};
 for (var k in src) {
 if (k === 'id' || k === 'children' || k === 'properties') continue;
-node[k] = _a2uiResolveDynamic(src[k], model, scope);
+var nk = k;
+if (k === '@catalogId' || k === '@metadata' || k === '@accessibility' || k === '@checks') {
+nk = k.slice(1);
+if (nk in src) continue;
+}
+node[nk] = _a2uiResolveDynamic(src[k], model, scope);
 }
 if (src.properties && typeof src.properties === 'object' && !Array.isArray(src.properties)) {
 for (var pk in src.properties) node[pk] = _a2uiResolveDynamic(src.properties[pk], model, scope);
