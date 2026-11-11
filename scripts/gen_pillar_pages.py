@@ -109,12 +109,14 @@ A2UI is Google's protocol; MCP is Anthropic's. Maintained by <a href="{li}">Curt
 
 
 def _faq(body_md):
-    """**Question?** line + following paragraph(s) under '## FAQ' -> [(q, a_plain)]."""
+    """**Question?** line or ### Question? heading + following paragraph(s) under '## FAQ' -> [(q, a_plain)]."""
     m = re.search(r"^## FAQ\s*\n(.*?)(?=^## |\Z)", body_md, re.S | re.M)
     if not m:
         return []
     out = []
-    for q, a in re.findall(r"^\*\*(.+?)\*\*\s*\n(.*?)(?=^\*\*|\Z)", m.group(1), re.S | re.M):
+    # a question is a "**Question?**" line or a "### Question?" heading; its answer runs to the next one
+    for q1, q2, a in re.findall(r"^(?:\*\*(.+?)\*\*|#{3,4}[ \t]+(.+?))[ \t]*\n(.*?)(?=^\*\*|^#{3,4}[ \t]|\Z)", m.group(1), re.S | re.M):
+        q = q1 or q2
         plain = re.sub(r"\[([^\]]+)\]\([^)]+\)", r"\1", a)         # links -> their text
         plain = re.sub(r"[`*_]", "", " ".join(plain.split()))
         if plain:

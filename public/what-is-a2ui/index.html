@@ -52,6 +52,83 @@
      "item": "https://a2uicatalog.ai/what-is-a2ui/"
     }
    ]
+  },
+  {
+   "@type": "FAQPage",
+   "mainEntity": [
+    {
+     "@type": "Question",
+     "name": "Is A2UI a Google project?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "Google created it, with contributions from CopilotKit and the open-source community, and it is developed in the open at github.com/a2ui-project/a2ui. The A2UI Atomic Catalog is an independent open-source catalog built on it."
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "Does the agent generate HTML?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "No. It sends JSON that names components. The renderer draws them with code the app trusts."
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "What happens if an agent asks for a component the app doesn't have?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "That depends on the renderer. Google's Android renderer refuses unknown types, so the catalog's emitter reads which catalogs an app supports and sends a simpler version to apps that lack them."
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "Which AI models can use it?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "Any model that can produce JSON. The catalog's MCP server and per-atom JSON Schemas help models produce valid payloads."
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "Is it free?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "Yes. The protocol is Apache 2.0, and the A2UI Atomic Catalog is MIT-licensed."
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "How is A2UI different from AG-UI?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "A2UI describes the user interface. AG-UI, the Agent–User Interaction protocol, carries the interaction between an agent and an app: messages, tool calls, state and user actions. A2UI often travels over AG-UI; as a2ui.org puts it, \"use AG-UI as the pipe, A2UI as the content.\""
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "Where does macro expansion happen?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "On the application server, before the messages reach the renderer. The renderer receives ordinary components and never sees the macro."
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "Which languages support macros?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "The upstream guide says macros are currently available in the Python agent SDK, with support for other languages coming next."
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "What happens if a macro fails?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "By default, a macro that raises an argument or runtime exception during expansion is logged and left unexpanded, so sibling components still expand. Client renderers do not implement unexpanded macro components. The server can instead be set to raise, so an agent can send the error back to the model. Structural errors, such as recursion, catalog errors and protocol-version mismatches, always raise."
+     }
+    }
+   ]
   }
  ]
 }
