@@ -49,8 +49,8 @@ arrive, and an agent can update one number without resending the whole screen. W
 acts (presses a button, submits a form) the renderer sends the action back to the agent.
 
 The protocol doesn't care how messages travel. The spec describes bindings for AG-UI, A2A
-and MCP, and it also runs over server-sent events, WebSockets or plain REST. Version 0.9.1
-is the current production release and 1.0 is a release candidate. Renderers say which
+and MCP, and it also runs over server-sent events, WebSockets or plain REST. Version 1.0
+is the current specification and 0.9.1 the previous one. Renderers say which
 version and which catalogs they support, so an agent can send what each one understands:
 the catalog's emitter, for example, sends v0.9 to Google's Android renderer and v1.0 elsewhere.
 
@@ -115,7 +115,7 @@ A2UI defines a small Basic Catalog: text, rows, columns, cards, buttons, images 
 inputs. Real answers need more: stat cards, charts, timelines, comparison tables, status
 boards, animated explainers.
 
-The [A2UI Atomic Catalog](/) is an open-source (MIT) catalog of 545 published components,
+The [A2UI Atomic Catalog](/) is an open-source (MIT) catalog of 573 published components,
 each with typed fields, a JSON Schema and a live preview. Agents reach it through an MCP
 server at `a2uicatalog.ai/mcp`, or read its machine-readable vocabulary at
 [`/spec.json`](/spec.json).
