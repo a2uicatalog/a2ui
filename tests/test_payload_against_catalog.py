@@ -79,8 +79,7 @@ def test_catalog_required_fields_hold_on_emitted_payloads():
             cdef = comps.get(c["component"])
             if not cdef:
                 continue
-            inner = cdef["allOf"][1]
-            for req in inner.get("required", []):
+            for req in cdef.get("required", []):
                 if req not in c:
                     violations.append(f"{c['component']}.{req} (component id {c['id']})")
     assert not violations, (
@@ -93,7 +92,7 @@ def test_requiredness_is_opt_in_not_heuristic():
     (~105 of 1865 fields), never balloon back toward required-by-default."""
     comps = _catalog()
     total_required = sum(
-        len(c["allOf"][1].get("required", [])) - 1        # minus 'component' itself
+        len(c.get("required", [])) - 1        # minus 'component' itself
         for c in comps.values())
     assert total_required < 300, (
         f"{total_required} required fields across the catalog — smells like the "

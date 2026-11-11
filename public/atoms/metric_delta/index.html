@@ -22,7 +22,7 @@
     ]
   }
   </script>
-  <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "@id": "https://a2uicatalog.ai/atoms/metric_delta/#page", "url": "https://a2uicatalog.ai/atoms/metric_delta/", "headline": "Metric Delta: A2UI atom", "description": "Renders a key performance indicator with its current value and a numerical", "about": {"@id": "https://a2uicatalog.ai/atoms/metric_delta/#atom"}, "isPartOf": {"@type": "WebSite", "name": "A2UI Catalog", "url": "https://a2uicatalog.ai/"}, "inLanguage": "en", "license": "https://opensource.org/licenses/MIT"}, {"@type": "DefinedTerm", "@id": "https://a2uicatalog.ai/atoms/metric_delta/#atom", "name": "Metric Delta", "termCode": "metric_delta", "description": "big number metric with directional change indicator or percentage", "url": "https://a2uicatalog.ai/atoms/metric_delta/", "inDefinedTermSet": {"@type": "DefinedTermSet", "@id": "https://a2uicatalog.ai/#atoms", "name": "A2UI Atomic Catalog", "url": "https://a2uicatalog.ai/spec.json"}, "additionalProperty": [{"@type": "PropertyValue", "name": "works on", "value": "web, google-meet-stage, google-chat, email, pdf, google-apps-script-web, mcp-apps, android, slides, pptx"}, {"@type": "PropertyValue", "name": "fields", "value": "current_value, delta_type, delta_value, label, previous_period_label, unit"}, {"@type": "PropertyValue", "name": "A2UI version", "value": "v1.0"}, {"@type": "PropertyValue", "name": "JSON Schema", "value": "https://a2uicatalog.ai/catalogue/atoms-json-schema.json"}, {"@type": "PropertyValue", "name": "markdown", "value": "https://a2uicatalog.ai/atoms/metric_delta.md"}]}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "A2UI Catalog", "item": "https://a2uicatalog.ai/"}, {"@type": "ListItem", "position": 2, "name": "Atoms", "item": "https://a2uicatalog.ai/atoms/"}, {"@type": "ListItem", "position": 3, "name": "Metric Delta", "item": "https://a2uicatalog.ai/atoms/metric_delta/"}]}]}</script>
+  <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "@id": "https://a2uicatalog.ai/atoms/metric_delta/#page", "url": "https://a2uicatalog.ai/atoms/metric_delta/", "headline": "Metric Delta: A2UI atom", "description": "Renders a key performance indicator with its current value and a numerical", "about": {"@id": "https://a2uicatalog.ai/atoms/metric_delta/#atom"}, "isPartOf": {"@type": "WebSite", "name": "A2UI Catalog", "url": "https://a2uicatalog.ai/"}, "inLanguage": "en", "license": "https://opensource.org/licenses/MIT"}, {"@type": "DefinedTerm", "@id": "https://a2uicatalog.ai/atoms/metric_delta/#atom", "name": "Metric Delta", "termCode": "metric_delta", "description": "big number metric with directional change indicator or percentage", "url": "https://a2uicatalog.ai/atoms/metric_delta/", "inDefinedTermSet": {"@type": "DefinedTermSet", "@id": "https://a2uicatalog.ai/#atoms", "name": "A2UI Atomic Catalog", "url": "https://a2uicatalog.ai/spec.json"}, "additionalProperty": [{"@type": "PropertyValue", "name": "works on", "value": "web, google-meet-stage, google-chat, email, pdf, google-apps-script-web, mcp-apps, android, slides, pptx"}, {"@type": "PropertyValue", "name": "fields", "value": "current_value, delta_type, delta_value, label, previous_period_label, unit"}, {"@type": "PropertyValue", "name": "A2UI version", "value": "1.0"}, {"@type": "PropertyValue", "name": "JSON Schema", "value": "https://a2uicatalog.ai/catalogue/atoms-json-schema.json"}, {"@type": "PropertyValue", "name": "markdown", "value": "https://a2uicatalog.ai/atoms/metric_delta.md"}]}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "A2UI Catalog", "item": "https://a2uicatalog.ai/"}, {"@type": "ListItem", "position": 2, "name": "Atoms", "item": "https://a2uicatalog.ai/atoms/"}, {"@type": "ListItem", "position": 3, "name": "Metric Delta", "item": "https://a2uicatalog.ai/atoms/metric_delta/"}]}]}</script>
   <script>
 (function(){var t='light';try{var s=localStorage.getItem('a2ui-theme');if(s==='dark'||s==='light')t=s}catch(e){}
 document.documentElement.setAttribute('data-theme',t)})();
@@ -376,6 +376,75 @@ document.addEventListener('click',function(e){
           return {type: a.type, description: a.description, fields: a.fields,
                   surfaces: a.surfaces, source: a.source, url: SITE+'/atoms/'+a.type+'/'};
         });
+      }
+    });
+  }catch(err){/* draft API shape may still be moving -- never break the page over it */}
+  // The two write tools call the site's own MCP server (same-origin /mcp),
+  // so they can only do what an agent connected to that server can already
+  // do. consequentialHint asks the agent to confirm with the person first.
+  function callMcp(name, args){
+    return fetch('/mcp', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json', 'Accept': 'application/json, text/event-stream'},
+      body: JSON.stringify({jsonrpc: '2.0', id: 1, method: 'tools/call', params: {name: name, arguments: args}})
+    }).then(function(r){ return r.text(); }).then(function(t){
+      t = t.trim();
+      if(t.charAt(0) !== '{'){
+        var data = t.split('\n').filter(function(l){ return l.indexOf('data:')===0; }).pop() || '';
+        t = data.slice(5);
+      }
+      var msg = JSON.parse(t);
+      if(msg.error) throw new Error(msg.error.message || 'MCP error');
+      var res = msg.result || {};
+      if(res.structuredContent) return res.structuredContent;
+      var text = (res.content || []).map(function(c){ return c.text || ''; }).join('');
+      try{ return JSON.parse(text); }catch(e){ return {result: text}; }
+    });
+  }
+  try{
+    mc.registerTool({
+      name: 'create_share_link',
+      description: 'Create a short shareable link that renders an A2UI payload in the a2uicatalog.ai playground. Stores the payload on a2uicatalog.ai for one week; anyone with the link can view it. Returns the link, the expiry date and a delete token.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          payload: {
+            type: 'object',
+            description: 'The A2UI payload to publish: blocks built from catalogue atoms (see search_atoms and get_atom).',
+            properties: {
+              title: {type: 'string', maxLength: 200, description: 'Page title shown above the blocks.'},
+              theme: {type: 'string', enum: ['light', 'dark', 'terminal'], description: 'Colour theme for the rendered page.'},
+              blocks: {type: 'array', minItems: 1, items: {type: 'object'}, description: 'Atoms in order, each an object with a type and that atom\'s fields.'}
+            },
+            required: ['blocks']
+          }
+        },
+        required: ['payload'],
+        additionalProperties: false
+      },
+      annotations: {readOnlyHint: false, consequentialHint: true},
+      execute: function(input){
+        return callMcp('publish_url', {payload: (input||{}).payload, acknowledge_storage: true, target: 'play'});
+      }
+    });
+  }catch(err){/* draft API shape may still be moving -- never break the page over it */}
+  try{
+    mc.registerTool({
+      name: 'delete_share_link',
+      description: 'Delete a share link made by create_share_link before it expires, using the delete token that create_share_link returned. The link stops working straight away.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          id: {type: 'string', maxLength: 200, description: 'The short link, or the id at its end.'},
+          delete_token: {type: 'string', maxLength: 64, description: 'The delete token create_share_link returned.'}
+        },
+        required: ['id', 'delete_token'],
+        additionalProperties: false
+      },
+      annotations: {readOnlyHint: false, destructiveHint: true, consequentialHint: true},
+      execute: function(input){
+        input = input || {};
+        return callMcp('unpublish_url', {id: input.id, delete_token: input.delete_token});
       }
     });
   }catch(err){/* draft API shape may still be moving -- never break the page over it */}

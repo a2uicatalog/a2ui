@@ -147,7 +147,7 @@ _PERMISSIVE_EXTENSION_BRANCH = {
 }
 
 
-def _registry() -> Registry:
+def _registry(permissive_extensions: bool = True) -> Registry:
     resources = []
     schema_files = list((FIXTURES / "json").glob("*.json")) + \
         list((FIXTURES / "catalogs" / "basic").glob("*.json"))
@@ -157,7 +157,8 @@ def _registry() -> Registry:
             # Deep-copy the one $def being extended -- never mutate the
             # vendored file's own parsed dict in place.
             doc = json.loads(json.dumps(doc))
-            doc["$defs"]["anyComponent"]["oneOf"].append(_PERMISSIVE_EXTENSION_BRANCH)
+            if permissive_extensions:
+                doc["$defs"]["anyComponent"]["oneOf"].append(_PERMISSIVE_EXTENSION_BRANCH)
         real_id = doc.get("$id")
         if not real_id:
             continue
@@ -170,18 +171,21 @@ def _registry() -> Registry:
 
 
 _REGISTRY = _registry()
+_STRICT_REGISTRY = _registry(permissive_extensions=False)   # basic catalog only: any extension component is an error
 
 
-def _validator_for(schema_filename: str) -> Draft202012Validator:
+def _validator_for(schema_filename: str, permissive_extensions: bool = True) -> Draft202012Validator:
     """schema_filename: e.g. 'agent_to_renderer.json' (agent->renderer
     envelopes: createSurface/updateComponents/updateDataModel/deleteSurface/
     callRendererFunction/agentFunctionResponse) or 'renderer_to_agent.json'
     (action/callAgentFunction/rendererFunctionResponse/error)."""
     schema = json.loads((FIXTURES / "json" / schema_filename).read_text())
-    return _RegexAwareValidator(schema, registry=_REGISTRY)
+    reg = _REGISTRY if permissive_extensions else _STRICT_REGISTRY
+    return _RegexAwareValidator(schema, registry=reg)
 
 
 AGENT_TO_RENDERER = _validator_for("agent_to_renderer.json")
+AGENT_TO_RENDERER_STRICT = _validator_for("agent_to_renderer.json", permissive_extensions=False)
 RENDERER_TO_AGENT = _validator_for("renderer_to_agent.json")
 
 

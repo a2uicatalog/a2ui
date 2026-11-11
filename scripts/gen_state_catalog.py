@@ -28,9 +28,9 @@ BAR = "━" * 51
 
 # A2UI v1.0 catalog-document constants (github.com/google/A2UI basic catalog).
 JSON_SCHEMA_DRAFT = "https://json-schema.org/draft/2020-12/schema"
-COMPONENT_COMMON_REF = (
-    "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
-)
+PROTOCOL_VERSION = "1.0"   # catalogs targeting 1.0 MUST declare it (evolution_guide)
+# ComponentCommon is composed by the envelope (as in the Basic catalog), so definitions do not $ref it;
+# a v1.0 catalog may only $ref its own definitions or the relative common_types.json.
 
 
 def _state_component(prim):
@@ -38,12 +38,11 @@ def _state_component(prim):
     props = {"component": {"const": prim["id"]}}
     for k, v in (prim.get("props") or {}).items():
         props[k] = {"description": str(v)}
-    inner = {"type": "object", "properties": props, "required": ["component"]}
     d = {
         "type": "object",
         "description": prim.get("purpose", ""),
-        "allOf": [{"$ref": COMPONENT_COMMON_REF}, inner],
-        "unevaluatedProperties": False,
+        "properties": props,
+        "required": ["component"],
     }
     if prim.get("readable_fields"):
         d["x-readableFields"] = prim["readable_fields"]
@@ -59,12 +58,11 @@ def _hint_component(hint):
     if isinstance(extra, dict):
         for k, v in extra.items():
             props[k] = {"description": str(v)}
-    inner = {"type": "object", "properties": props, "required": ["component"]}
     d = {
         "type": "object",
         "description": hint.get("renders", ""),
-        "allOf": [{"$ref": COMPONENT_COMMON_REF}, inner],
-        "unevaluatedProperties": False,
+        "properties": props,
+        "required": ["component"],
     }
     if isinstance(extra, list):
         d["x-extraProps"] = extra
@@ -82,11 +80,10 @@ def _op_function(op):
         "description": op.get("output", ""),
         "returnType": "any",
         "properties": {
-            "call": {"const": op["op"]},
+            "@call": {"const": op["op"]},          # v1.0 FunctionCall discriminator (was `call` in v0.9)
             "args": {"type": "object", "properties": args_props},
         },
-        "required": ["call"],
-        "unevaluatedProperties": False,
+        "required": ["@call"],
     }
 
 
@@ -104,6 +101,11 @@ def _compose_instructions(src):
         "",
         f"Wire syntax: `{ws.get('form', '#node.field')}` — the `#` prefix is required. "
         "Atoms in `layout` use `wire` to subscribe to a primitive/action output field.",
+        "",
+        "Component envelope keys are `@`-prefixed in A2UI v1.0: `@catalogId` (set it on every component of "
+        "this catalogue when the surface default is another catalog), `@metadata`, `@accessibility`, "
+        "`@checks`; only `id` and `component` are unprefixed, and a plain `catalogId`, `metadata`, "
+        "`accessibility` or `checks` is an ordinary component property.",
         "",
         "Full prose descriptions, examples, and wiring patterns: see "
         f"{BASE_URL}/spec.json and the a2ui-state spec.",
@@ -131,12 +133,19 @@ def main():
     catalog = {
         "$schema": JSON_SCHEMA_DRAFT,
         "$id": catalog_uri,
+        "protocolVersion": PROTOCOL_VERSION,
         "catalogId": catalog_uri,
         "title": src.get("displayName", "A2UI State Catalog"),
         "description": " ".join(src["description"].split()),
         "instructions": _compose_instructions(src),
         "components": components,   # the 8 state primitives + column render-hints
         "functions": functions,     # the derived-store ops
+        "$defs": {                  # required by the v1.0 catalog definition schema
+            "anyComponent": {"oneOf": [{"$ref": f"#/components/{n}"} for n in components],
+                             "discriminator": {"propertyName": "component"}},
+            "anyFunction": ({"oneOf": [{"$ref": f"#/functions/{n}"} for n in functions]}
+                            if functions else {"not": {}}),
+        },
     }
 
     os.makedirs(os.path.dirname(OUT), exist_ok=True)

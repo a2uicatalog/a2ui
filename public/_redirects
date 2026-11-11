@@ -14,8 +14,9 @@
 # Predictable documentation, API reference, OpenAPI, auth, and webhook paths
 # mapped directly to their published destinations.
 /api /developers/ 301
-/api-docs /api-docs/ 301
-/api-reference /api-docs/ 301
+/api-docs /docs/ 301
+/api-docs/ /docs/ 301
+/api-reference /docs/ 301
 /docs /docs/ 301
 /docs/api /docs/ 301
 /documentation /docs/ 301

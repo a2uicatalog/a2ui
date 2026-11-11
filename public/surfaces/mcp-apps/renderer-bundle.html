@@ -2,6 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8">
+<meta name="color-scheme" content="light dark">
 <title>A2UI Catalog renderer — MCP Apps View</title>
 <style>
   :root {
@@ -41077,7 +41078,7 @@ return res;
 }
 var _A2UI_SURFACES = (typeof window !== 'undefined') ? (window._A2UI_SURFACES = window._A2UI_SURFACES || {}) : {};
 function _a2uiIsV1Message(m) {
-return !!m && typeof m === 'object' && m.version === 'v1.0' &&
+return !!m && typeof m === 'object' && (m.version === '1.0' || m.version === 'v1.0') &&
 !!(m.createSurface || m.updateComponents || m.updateDataModel || m.deleteSurface);
 }
 function _a2uiAcceptV1(payload) {
@@ -41123,7 +41124,21 @@ var out = {name: ev.name, context: abs(ev.context || {})};
 if (ev.userMessage !== undefined) out.userMessage = abs(ev.userMessage);
 return out;
 }
+function _a2uiNormV1(n) {
+if (Array.isArray(n)) return n.map(_a2uiNormV1);
+if (!n || typeof n !== 'object') return n;
+var ks = Object.keys(n), o = {}, i;
+if (ks.length === 1 && ks[0] === '@path') return {path: n['@path']};
+for (i = 0; i < ks.length; i++) {
+var k = ks[i] === '@call' ? 'call' : (ks[i].indexOf('@@') === 0 ? ks[i].slice(1) : ks[i]);
+o[k] = _a2uiNormV1(n[ks[i]]);
+}
+return o;
+}
 function _rehydrateV1Surface(surface) {
+if (surface && Array.isArray(surface.components)) {
+surface = Object.assign({}, surface, {components: _a2uiNormV1(surface.components)});
+}
 var interactive = false;
 var byId = {};
 (surface.components || []).forEach(function(c) { byId[c.id] = c; });
@@ -41137,7 +41152,12 @@ if (!src) return null;
 var node = {};
 for (var k in src) {
 if (k === 'id' || k === 'children' || k === 'properties') continue;
-node[k] = _a2uiResolveDynamic(src[k], model, scope);
+var nk = k;
+if (k === '@catalogId' || k === '@metadata' || k === '@accessibility' || k === '@checks') {
+nk = k.slice(1);
+if (nk in src) continue;
+}
+node[nk] = _a2uiResolveDynamic(src[k], model, scope);
 }
 if (src.properties && typeof src.properties === 'object' && !Array.isArray(src.properties)) {
 for (var pk in src.properties) node[pk] = _a2uiResolveDynamic(src.properties[pk], model, scope);
@@ -41375,7 +41395,7 @@ var _A2UI_V1_RUNTIME = function(root, model, sid) {
     if (!btn || !root.contains(btn)) return;
     e.preventDefault();
     var a; try { a = JSON.parse(btn.getAttribute('data-a2ui-action')); } catch (x) { return; }
-    var msg = {version: 'v1.0', action: {name: a.name, surfaceId: sid, sourceComponentId: btn.getAttribute('data-a2ui-src') || '',
+    var msg = {version: '1.0', action: {name: a.name, surfaceId: sid, sourceComponentId: btn.getAttribute('data-a2ui-src') || '',
                timestamp: new Date().toISOString(), context: resolve(a.context || {})}};
     if (a.userMessage !== undefined) msg.action.userMessage = String(resolve(a.userMessage));
     root.dispatchEvent(new CustomEvent('a2ui:action', {bubbles: true, detail: msg}));
@@ -45689,6 +45709,8 @@ window._a2uiExtractPdfText = async function (file, onProgress) {
     var _terminal = payload.theme === 'terminal';
     document.body.classList.toggle('asw-dark-theme', payload.theme === 'dark' || _terminal);
     document.body.classList.toggle('asw-terminal-theme', _terminal);
+    // Native controls and scrollbars follow the payload theme, not the OS.
+    document.documentElement.style.colorScheme = (payload.theme === 'dark' || _terminal) ? 'dark' : 'light';
     // Wired dialect (spec/wired-transport-v0.1.md): expand templates, render the
     // layout with the SAME extracted loop GAS uses, then boot the state engine —
     // actions route through _a2uiActionTransport (host tools/call on this surface).

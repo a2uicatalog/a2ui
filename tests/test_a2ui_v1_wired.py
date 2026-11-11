@@ -44,8 +44,8 @@ def _paths(obj):
     """Collect every JSON-Pointer `path` string appearing in a binding object."""
     out = []
     if isinstance(obj, dict):
-        if "path" in obj and isinstance(obj["path"], str):
-            out.append(obj["path"])
+        if "@path" in obj and isinstance(obj["@path"], str):   # 1.0 DataBinding spelling
+            out.append(obj["@path"])
         for v in obj.values():
             out.extend(_paths(v))
     elif isinstance(obj, list):
@@ -117,3 +117,26 @@ def test_reactive_primitive_rides_as_extension_not_crash():
     # must not raise
     cs, by_id = _valid_wired_surface(emit_wired_surface(payload))
     assert cs["components"]
+
+
+def test_wired_extension_components_resolve_under_the_right_catalogue_and_ids_are_identifiers():
+    import glob
+    import regex
+    from renderers.a2ui_v1_wired import STATE_CATALOG_COMPONENTS, emit_wired_surface
+    state = set(json.load(open(os.path.join(ROOT, "public", "catalogue", "a2ui-state-v1.json")))["components"])
+    assert set(STATE_CATALOG_COMPONENTS) == state
+    atoms = set(json.load(open(os.path.join(ROOT, "public", "catalogue", "a2ui-atoms-v1.json")))["components"])
+    rx = regex.compile(r"[\p{XID_Start}_][\p{XID_Continue}]*")
+    n = 0
+    for f in sorted(glob.glob(os.path.join(ROOT, "payloads", "*.json"))):
+        d = json.load(open(f))
+        if not (isinstance(d, dict) and "layout" in d):
+            continue
+        n += 1
+        for c in emit_wired_surface(d)["createSurface"]["components"]:
+            assert rx.fullmatch(c["id"]), (f, c["id"])
+            if "catalogId" in c and c["catalogId"].endswith("a2ui-state-v1.json"):
+                assert c["component"] in state, (f, c["component"])
+            elif "catalogId" in c and c["catalogId"].endswith("a2ui-atoms-v1.json") and c["component"] in state - atoms:
+                raise AssertionError((f, c["component"], "state-only component tagged with the atoms catalogue"))
+    assert n >= 13

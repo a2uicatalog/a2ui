@@ -22,12 +22,12 @@ CATALOGUE = os.path.join(ROOT, "public", "catalogue")
 # v1.0: catalog.json is restricted to these root-level keys — STRICT, no local
 # allowlist (the R2 roast caught us exempting our own extra keys; they now live
 # in `instructions` where the spec puts informational prose).
-ALLOWED_TOP = {"$schema", "$id", "title", "description", "catalogId",
+ALLOWED_TOP = {"$schema", "$id", "protocolVersion", "title", "description", "catalogId",
                "instructions", "components", "functions", "$defs"}
 # UAX #31: XID_Start|_, then XID_Continue; no leading digit, no hyphen/space.
 UAX31 = re.compile(r"^[^\W\d]\w*$", re.UNICODE)   # \w includes _ ; [^\W\d] = letter or _
 
-CATALOG_FILES = ["a2ui-atoms-v1.json", "a2ui-state-v1.json"]
+CATALOG_FILES = ["a2ui-atoms-v1.json", "a2ui-state-v1.json", "a2ui-bricks-v1.json"]
 
 
 @pytest.mark.parametrize("fname", CATALOG_FILES)
@@ -42,6 +42,8 @@ def test_catalog_document_conformant(fname):
 
     assert d["$schema"], f"{fname}: missing $schema"
     assert d["$id"], f"{fname}: missing $id"
+    # catalogs targeting 1.0 MUST declare it (an omitted value defaults to "0.9")
+    assert d.get("protocolVersion") == "1.0", f"{fname}: protocolVersion must be '1.0'"
     assert d["catalogId"] == d["$id"], f"{fname}: catalogId must equal $id"
     # RESOLVABLE URI, not a bare token — Google's catalogId is the catalog.json URL;
     # a host dereferences createSurface.catalogId, so it must be fetchable.
@@ -80,11 +82,10 @@ def test_atoms_catalog_covers_extension_passthrough():
     assert "glowing_stat" in d["components"], "extension atom missing from resolved catalog"
 
 
-# The EXACT component-definition shape from Google's real basic catalog
-# (a2ui.org/specification/v1_0/catalogs/basic/catalog.json, verified 2026-07-05):
-# {type:object, allOf:[{$ref .../ComponentCommon}, {type:object, properties:{
-#   component:{const:<name>}, ...}, required:[component, ...]}], unevaluatedProperties:false}
-COMMON_TYPES = "https://a2ui.org/specification/v1_0/common_types.json#/$defs/"
+# The component-definition shape of the final v1.0 Basic catalog (and upstream's VegaChart custom catalog):
+# {type:object, properties:{component:{const:<name>}, ...}, required:[component, ...]}; ComponentCommon is
+# composed by the ENVELOPE, not $ref'd by the catalog; standard types are referenced RELATIVELY.
+COMMON_TYPES = "common_types.json#/$defs/"
 
 
 @pytest.mark.parametrize("fname", CATALOG_FILES)
@@ -94,17 +95,37 @@ def test_conforms_to_google_component_pattern(fname):
     d = json.load(open(os.path.join(CATALOGUE, fname)))
     for name, c in d["components"].items():
         assert c.get("type") == "object", f"{fname}:{name} not type:object"
-        assert c.get("unevaluatedProperties") is False, f"{fname}:{name} missing unevaluatedProperties:false"
-        allof = c.get("allOf")
-        assert isinstance(allof, list) and len(allof) >= 2, f"{fname}:{name} missing allOf[ComponentCommon, inner]"
-        assert allof[0].get("$ref") == COMMON_TYPES + "ComponentCommon", f"{fname}:{name} not composed over ComponentCommon"
-        inner = allof[1]
-        assert inner["properties"]["component"]["const"] == name, f"{fname}:{name} component const mismatch"
-        assert "component" in inner["required"], f"{fname}:{name} component not required"
+        assert "allOf" not in c and "unevaluatedProperties" not in c, f"{fname}:{name} still composes ComponentCommon"
+        assert c["properties"]["component"]["const"] == name, f"{fname}:{name} component const mismatch"
+        assert "component" in c["required"], f"{fname}:{name} component not required"
+        assert not set(c["properties"]) & {"id", "catalogId", "accessibility", "metadata"}, \
+            f"{fname}:{name} redeclares an envelope (ComponentCommon) property"
     # any common-type $ref we emit must target the canonical common_types URL
     refs = [r for r in _all_refs(d["components"]) if "common_types.json" in r]
     for r in refs:
         assert r.startswith(COMMON_TYPES), f"{fname}: non-canonical common-type ref {r}"
+
+
+@pytest.mark.parametrize("fname", ["a2ui-atoms-v1.json", "a2ui-state-v1.json", "a2ui-bricks-v1.json"])
+def test_v1_catalog_rules(fname):
+    """Upstream loader rules (evolution_guide 2.x): $ref only to the catalog's own #/ definitions or the
+    relative common_types.json (rule 3); $defs.anyComponent/anyFunction present and covering every
+    definition; functions use the `@call` discriminator and declare a returnType."""
+    d = json.load(open(os.path.join(CATALOGUE, fname)))
+    bad = [r for r in _all_refs({k: d.get(k) for k in ("components", "functions", "$defs")})
+           if not (r.startswith("#/") or r.startswith("common_types.json#/"))]
+    assert not bad, f"{fname}: {len(bad)} non-relative/foreign $refs, e.g. {sorted(set(bad))[:3]}"
+    any_c = {x["$ref"].rsplit("/", 1)[1] for x in d["$defs"]["anyComponent"]["oneOf"]}
+    assert any_c == set(d["components"]), f"{fname}: anyComponent does not list exactly the components"
+    fns = d.get("functions", {})
+    if fns:
+        any_f = {x["$ref"].rsplit("/", 1)[1] for x in d["$defs"]["anyFunction"]["oneOf"]}
+        assert any_f == set(fns)
+    else:
+        assert d["$defs"]["anyFunction"] == {"not": {}}
+    for n, f in fns.items():
+        assert f["properties"]["@call"]["const"] == n and "@call" in f["required"], f"{fname}:{n} not @call-shaped"
+        assert f.get("returnType"), f"{fname}:{n} missing returnType"
 
 
 def test_bindable_props_are_typed():

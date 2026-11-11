@@ -127,7 +127,6 @@ def test_developer_resource_pages_exist_and_include_product_name():
     name explicitly present in <title> and headings (ora.ai developer-resource-discoverability)."""
     predictable_pages = [
         ("docs", "index.html"),
-        ("api-docs", "index.html"),
         ("developers", "index.html"),
         ("sdks", "index.html"),
         ("auth", "index.html"),
@@ -153,7 +152,9 @@ def test_predictable_redirects_route_correctly():
     lines = [l.strip() for l in redirects_content.splitlines() if l.strip() and not l.startswith("#")]
     redirect_map = dict(l.split()[:2] for l in lines)
 
-    assert redirect_map.get("/api-docs") == "/api-docs/"
+    # /api-docs/ folded into /docs/ (2026-11-10): one page to rank for "API docs".
+    assert redirect_map.get("/api-docs") == "/docs/"
+    assert redirect_map.get("/api-docs/") == "/docs/"
     assert redirect_map.get("/docs") == "/docs/"
     assert redirect_map.get("/developer") == "/developers/"
     assert redirect_map.get("/developer-portal") == "/developers/"

@@ -305,3 +305,18 @@ def test_brick_build_3d_bricks_path_binding_reaches_the_renderer(core_js):
         "bricks {path} binding did not resolve into the renderer's baked payload"
     assert '"path"' not in r["html"], \
         "an unresolved {path} binding leaked into the rendered output"
+
+
+def test_v10_at_at_escaped_literal_key_is_unescaped_and_path_binding_still_resolves(core_js):
+    """v1.0: a literal key that starts with "@" travels as "@@..." (F12). The decoder shim unescapes it,
+    and a real {"@path"} binding still resolves."""
+    surface = {
+        "dataModel": {"n": "Curtis"},
+        "components": [
+            {"id": "root", "component": "Column", "children": ["x"]},
+            {"id": "x", "component": "some_ext", "schema": {"@@type": "Article"}, "who": {"@path": "/n"}},
+        ],
+    }
+    node = _decode(core_js, surface)["out"]["blocks"][0]
+    assert node["schema"] == {"@type": "Article"}
+    assert node["who"] == "Curtis"

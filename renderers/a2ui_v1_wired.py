@@ -10,7 +10,7 @@ rest as a `catalogId: a2ui-state-v1` extension.
 
 The conformance seam (why this mapping is honest, not lossy-by-accident):
 A2UI v1.0 keeps the client simple — a `dataModel` JSON object, JSON-Pointer
-property bindings ({"text": {"path": "/x/y"}}), a `List` template
+property bindings ({"text": {"@path": "/x/y"}}), a `List` template
 (children: {path, componentId}), and an `action`/`actionResponse` RPC
 (https://a2ui.org/specification/v1.0-a2ui/). The catalogue's own normative
 derivation boundary (spec/gas-actions-v1.yaml + spec/a2ui-state.yaml:
@@ -23,7 +23,7 @@ CONFORMANT SUBSET (emitted as bare A2UI v1.0)
     [{id, component, ...props FLATTENED}], root Column, deterministic IDs
     (reuses a2ui_v1's _IdGen + STANDARD_MAP for text-ish atoms).
   - ValueStore primitive        →  dataModel entry {"<id>": {"value": initialValue}};
-    read wire `#id.value` → {"path": "/<id>/value"}.
+    read wire `#id.value` → {"@path": "/<id>/value"}.
   - input atom wire onChange:"#mem.setValue"  →  two-way `value: {path}` binding
     (per spec: "the client immediately updates the value at the bound path in the
     local Data Model") + createSurface.sendDataModel: true.
@@ -32,10 +32,10 @@ CONFORMANT SUBSET (emitted as bare A2UI v1.0)
     and embedded directly in createSurface.dataModel at /<actionId>/result —
     no client round-trip needed, a strict simplification.
   - server-array reads `#action.result` (sheet_query / store_read / store_derive
-    outputs) → {"path": "/<actionId>/result"}.
+    outputs) → {"@path": "/<actionId>/result"}.
   - data_table with a conformant rows source → Column[header Row + List] where
     List.children = {path: "/<actionId>/result", componentId: "<id>-row"} and the
-    row template's cells use RELATIVE JSON-Pointer bindings ({"path": "colKey"}),
+    row template's cells use RELATIVE JSON-Pointer bindings ({"@path": "colKey"}),
     per the spec's collection-scope rule.
   - button wire onClick:"#action.run" + actions[].props.collect →
     action: {event: {name, context: <collect with wire refs resolved to {path}
@@ -61,7 +61,7 @@ CONFORMANT SUBSET (emitted as bare A2UI v1.0)
     needs the same re-verification a2ui_v1.py just got, not assumed still
     true because a2ui_v1.py's fix landed.
 
-DEGRADED-BUT-RENDERABLE (documented in surfaceProperties.extensions.notes)
+DEGRADED-BUT-RENDERABLE (documented in metadata.extensions.a2uicatalog_wired.notes)
   - a read of `#arrayFilter.output` is traced ONE conformant hop to the filter's
     delivered source array (action push wire / wire.source / static props.source)
     and bound there UNFILTERED. A bare host renders the full array; a host
@@ -69,7 +69,7 @@ DEGRADED-BUT-RENDERABLE (documented in surfaceProperties.extensions.notes)
     props.source arrays are embedded at /<filterId>/source.
 
 EXTENSION-ONLY (emitted under catalogId a2ui-state-v1 — pass-through, flagged in
-surfaceProperties.extensions; NOT forced into bare A2UI)
+metadata.extensions.a2uicatalog_wired; NOT forced into bare A2UI)
   - reactive primitives: ArrayFilter, Computed, DerivedStore, StringValidator,
     NumericThreshold, Timer, StepNavigator — emitted as non-visual flat
     components {id, component: <Primitive>, ...props, wire} outside the root
@@ -90,12 +90,14 @@ import re
 from typing import Any, Callable, Dict, List, Optional, Set, Tuple
 
 try:  # package import (tests: `from renderers.a2ui_v1_wired import ...`)
-    from .a2ui_v1 import A2UI_VERSION, STANDARD_MAP, _IdGen, _slugify
+    from .a2ui_v1 import (ATOM_ALIASES, A2UI_VERSION, BASIC_V1_CATALOG_ID, STANDARD_MAP, _IdGen, _default_surface_id,
+                          _tag_extensions)
 except ImportError:  # direct CLI run from repo root or renderers/
     import os as _os
     import sys as _sys
     _sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
-    from a2ui_v1 import A2UI_VERSION, STANDARD_MAP, _IdGen, _slugify  # noqa: F401
+    from a2ui_v1 import (ATOM_ALIASES, A2UI_VERSION, BASIC_V1_CATALOG_ID, STANDARD_MAP, _IdGen, _default_surface_id,  # noqa: F401
+                         _tag_extensions)
 
 __all__ = ["emit_wired_surface", "A2UI_VERSION",
            "DEFAULT_CATALOG_ID", "DEFAULT_STATE_CATALOG_ID"]
@@ -103,6 +105,10 @@ __all__ = ["emit_wired_surface", "A2UI_VERSION",
 # resolvable URIs, not bare tokens — see renderers/a2ui_v1.py
 DEFAULT_CATALOG_ID = "https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json"
 DEFAULT_STATE_CATALOG_ID = "https://a2uicatalog.ai/catalogue/a2ui-state-v1.json"
+# the components public/catalogue/a2ui-state-v1.json defines (tests/test_a2ui_v1_wired.py keeps this in sync)
+STATE_CATALOG_COMPONENTS = frozenset({
+    "ArrayFilter", "Computed", "DerivedStore", "NumericThreshold", "ObjectFields", "RowBinder", "StepNavigator",
+    "StringTemplate", "StringValidator", "Timer", "ValueStore", "badge", "claim", "delete", "resolve", "sla_badge"})
 
 # state primitives that dissolve into the A2UI dataModel (no component emitted)
 CONFORMANT_PRIMITIVES = {"ValueStore"}
@@ -110,6 +116,32 @@ CONFORMANT_PRIMITIVES = {"ValueStore"}
 ACTION_LIFECYCLE_FIELDS = {"isPending", "isSuccess", "isError", "error", "status"}
 
 # wired input atoms -> A2UI standard input components (two-way `value` binding)
+# Basic v1.0 props each wired input component can carry (catalogs/basic/catalog.json); anything else is parked in metadata
+_BASIC_INPUT_PROPS = {
+    "TextField": {"label", "value", "placeholder", "variant", "weight"},
+    "CheckBox": {"label", "value", "weight"},
+    "Slider": {"label", "min", "max", "value", "steps", "weight"},
+    "DateTimeInput": {"value", "enableDate", "enableTime", "min", "max", "label", "weight"},
+}
+_BASIC_INPUT_REQUIRED = {   # required by the schema even when nothing is bound or authored
+    "TextField": {"label": "", "value": ""},
+    "CheckBox": {"label": "", "value": False},
+    "Slider": {"value": 0, "max": 100},
+    "DateTimeInput": {"value": ""},
+}
+_INPUT_TYPE_VARIANT = {"number": "number", "password": "obscured", "textarea": "longText", "longtext": "longText"}
+
+
+def _text_field_variant(atom: str, *hints: Any) -> Optional[str]:
+    """Basic TextField.variant (shortText|longText|number|obscured) from the wired atom and its inputType/type hints."""
+    if atom == "textarea":
+        return "longText"
+    for h in hints:
+        if isinstance(h, str) and h.strip().lower() in _INPUT_TYPE_VARIANT:
+            return _INPUT_TYPE_VARIANT[h.strip().lower()]
+    return None
+
+
 WIRED_INPUT_MAP = {
     "text_input": "TextField",
     "form_input": "TextField",
@@ -168,6 +200,9 @@ class _WiredContext:
         self.extension_ids: Set[str] = set()
         self.notes: List[str] = []
         self.send_data_model = False
+        self.action_meta: Dict[str, Any] = {}
+        self.component_wires: Dict[str, Dict[str, Any]] = {}   # Basic component id -> raw wires (not valid on a Basic node)
+        self.component_props: Dict[str, Dict[str, Any]] = {}   # Basic component id -> static props the Basic schema has no slot for
 
     # ---- read-wire resolution: '#node.field' -> JSON Pointer or None ---------
     def resolve_read(self, ref: Any, _seen: Optional[Set[str]] = None) -> Optional[str]:
@@ -225,7 +260,7 @@ class _WiredContext:
         for key, val in collect.items():
             path = self.resolve_read(val)
             if path:
-                context[key] = {"path": path}     # resolved at fire time from dataModel
+                context[key] = {"@path": path}     # resolved at fire time from dataModel
             else:
                 if _parse_ref(val):
                     self.notes.append(
@@ -241,21 +276,13 @@ class _WiredContext:
             self.notes.append(
                 f"action '{action_id}': clearOnSuccess deferred to "
                 f"{self.state_catalog_id} (no bare-A2UI form-reset primitive)")
-        return {
-            "event": {
-                "name": action_id,
-                "context": context,
-                "wantResponse": True,
-                "responsePath": f"/{target}/result",
-            },
-            # deterministic correlation id so this emitter's server side can
-            # answer via update_data_model(surface_id, value=envelope, path=
-            # responsePath) — see this module's own top docstring, updated
-            # 2026-08-24, for why there is no special reply envelope to
-            # build here any more (hosts may mint their own per-fire ids;
-            # this one makes the round trip testable).
-            "actionId": action_id,
-        }
+        # The final `action.event` is closed ({name, userMessage?, context}): the
+        # wantResponse/responsePath/actionId correlation this emitter used to
+        # put on it is not part of the protocol. It is kept as OUR metadata
+        # (ctx.action_meta -> metadata.extensions.a2uicatalog_wired.actions) so a
+        # host of ours can still answer with update_data_model(path=responsePath).
+        self.action_meta[action_id] = {"wantResponse": True, "responsePath": f"/{target}/result"}
+        return {"event": {"name": action_id, "context": context}}
 
 
 # ── layout emission ────────────────────────────────────────────────────────────
@@ -271,17 +298,17 @@ def _emit_table(cid: str, props: Dict[str, Any], rows_path: str,
             label = col.get("label") or key
         else:
             key, label = str(col), str(col)
-        hid = ids.take({"id": f"{cid}-h-{key}", "type": "text"})
+        hid = ids.take({"id": f"{cid}_h_{key}", "type": "text"})
         components.append({"id": hid, "component": "Text", "text": str(label)})
         header_ids.append(hid)
-        tid = ids.take({"id": f"{cid}-c-{key}", "type": "text"})
-        components.append({"id": tid, "component": "Text", "text": {"path": key}})
+        tid = ids.take({"id": f"{cid}_c_{key}", "type": "text"})
+        components.append({"id": tid, "component": "Text", "text": {"@path": key}})
         cell_ids.append(tid)
-    header_id = ids.take({"id": f"{cid}-header", "type": "row"})
+    header_id = ids.take({"id": f"{cid}_header", "type": "row"})
     components.append({"id": header_id, "component": "Row", "children": header_ids})
-    row_tpl_id = ids.take({"id": f"{cid}-row", "type": "row"})
+    row_tpl_id = ids.take({"id": f"{cid}_row", "type": "row"})
     components.append({"id": row_tpl_id, "component": "Row", "children": cell_ids})
-    list_id = ids.take({"id": f"{cid}-list", "type": "list"})
+    list_id = ids.take({"id": f"{cid}_list", "type": "list"})
     components.append({"id": list_id, "component": "List",
                        "children": {"path": rows_path, "componentId": row_tpl_id}})
     components.append({"id": cid, "component": "Column",
@@ -325,24 +352,37 @@ def _emit_layout_entry(entry: Dict[str, Any], components: List[Dict[str, Any]],
         leftover = dict(bindings)
         leftover.update(ext_wires)
         if leftover:
-            node["wire"] = {k: wire[k] for k in wire if k != "rows"}
+            ctx.component_wires[cid] = {k: wire[k] for k in wire if k != "rows"}
             ctx.extension_ids.add(cid)
         return cid
 
     # 2) standard input atoms → two-way bound input component
     if atom in WIRED_INPUT_MAP:
-        node = {"id": cid, "component": WIRED_INPUT_MAP[atom]}
-        if props.get("label"):
-            node["label"] = props["label"]
-        for k, v in props.items():       # carry remaining static props flat
-            if k != "label":
+        comp = WIRED_INPUT_MAP[atom]
+        node = {"id": cid, "component": comp}
+        static = dict(props)
+        if comp == "TextField":
+            variant = _text_field_variant(atom, static.pop("inputType", None), static.pop("type", None))
+            if variant:
+                node["variant"] = variant
+        extra: Dict[str, Any] = {}
+        for k, v in static.items():      # keep static props the Basic schema knows; park the rest
+            if k in _BASIC_INPUT_PROPS[comp]:
                 node[k] = v
+            elif k == "checked" and comp == "CheckBox":
+                node["value"] = bool(v)
+            else:
+                extra[k] = v
+        if extra:
+            ctx.component_props[cid] = extra
         if twoway_path:
-            node["value"] = {"path": twoway_path}
+            node["value"] = {"@path": twoway_path}
         for prop, path in bindings.items():
-            node[prop] = {"path": path}
+            node[prop] = {"@path": path}
+        for req, dflt in _BASIC_INPUT_REQUIRED[comp].items():
+            node.setdefault(req, dflt)
         if ext_wires:
-            node["wire"] = ext_wires
+            ctx.component_wires[cid] = ext_wires
             ctx.extension_ids.add(cid)
         components.append(node)
         return cid
@@ -350,24 +390,24 @@ def _emit_layout_entry(entry: Dict[str, Any], components: List[Dict[str, Any]],
     # 3) blocks-dialect standard mapping (headings, text, buttons, media, …)
     mapper = STANDARD_MAP.get(atom)
     if mapper is not None:
-        node = mapper({"type": atom, **props})
+        node = mapper({**props, "type": atom})    # the atom name wins over a prop called `type`
         if node is not None:
             node["id"] = cid
             for prop, path in bindings.items():
-                node[prop] = {"path": path}
+                node[prop] = {"@path": path}
             if action_obj is not None:
                 node["action"] = action_obj
             if ext_wires:
-                node["wire"] = ext_wires
+                ctx.component_wires[cid] = ext_wires
                 ctx.extension_ids.add(cid)
             components.append(node)
             return cid
 
     # 4) pass-through: extension component under the atoms/state catalogs.
-    node = {"id": cid, "component": atom}
+    node = {"id": cid, "component": ATOM_ALIASES.get(atom, atom)}   # catalogues define the canonical name only
     node.update(props)
     for prop, path in bindings.items():   # keep what DID resolve — a bare host
-        node[prop] = {"path": path}       # ignores the rest, a state host upgrades
+        node[prop] = {"@path": path}       # ignores the rest, a state host upgrades
     if action_obj is not None:
         node["action"] = action_obj
     if ext_wires:
@@ -451,29 +491,49 @@ def emit_wired_surface(payload: Dict[str, Any], surface_id: Optional[str] = None
         data_model.setdefault(aid, {"result": []})
     data_model.update(ctx.static_embeds)
 
-    surface_props: Dict[str, Any] = {}
+    # Final spec: no `surfaceProperties`, no theme field. Our own metadata rides in
+    # metadata.extensions under non-`a2ui_` keys (a2ui_ is reserved for official extensions).
+    ext_meta: Dict[str, Any] = {}
+    surf_meta: Dict[str, Any] = {}
     if payload.get("title"):
-        surface_props["title"] = payload["title"]
+        surf_meta["title"] = payload["title"]
     if payload.get("theme"):
-        surface_props["theme"] = payload["theme"]
-    if ctx.extension_ids or ctx.notes:
-        surface_props["extensions"] = {
+        surf_meta["theme"] = payload["theme"]
+    if surf_meta:
+        ext_meta["a2uicatalog_surface"] = surf_meta
+    if ctx.extension_ids or ctx.notes or ctx.action_meta:
+        ext_meta["a2uicatalog_wired"] = {
             "catalogId": state_catalog_id,
             "componentIds": sorted(ctx.extension_ids),
             "notes": ctx.notes,
+            "actions": ctx.action_meta,
         }
+        if ctx.component_wires:      # raw wires of Basic components (the Basic schema has no `wire` slot)
+            ext_meta["a2uicatalog_wired"]["componentWires"] = ctx.component_wires
+        if ctx.component_props:
+            ext_meta["a2uicatalog_wired"]["componentProps"] = ctx.component_props
+    elif ctx.component_props:
+        ext_meta["a2uicatalog_wired"] = {"catalogId": state_catalog_id, "componentProps": ctx.component_props}
 
+    # v1.0 catalog mixing: Basic is the surface default; extension components carry their own catalogId
+    # (the state catalogue for those that need its engine, else the atoms catalogue).
+    # Only components DEFINED in the state catalogue (primitives, column render-hints, state badges) resolve under it;
+    # every other extension atom (key_value, jump_nav, ripple_button, ...) is an atoms-catalogue component even
+    # when it carries wires (found 2026-11-10: the stock v1.0 processor rejected them as unknown under the state catalogue).
+    by_id = {c["id"]: c.get("component") for c in components}
+    components = _tag_extensions(components, catalog_id, {i: state_catalog_id for i in ctx.extension_ids
+                                                          if by_id.get(i) in STATE_CATALOG_COMPONENTS})
     surface: Dict[str, Any] = {
-        "surfaceId": surface_id or _slugify(payload.get("title", "surface")),
-        "catalogId": catalog_id,
+        "surfaceId": surface_id or _default_surface_id(payload),
+        "catalogId": BASIC_V1_CATALOG_ID,
         "components": components,
     }
     if data_model:
         surface["dataModel"] = data_model
     if ctx.send_data_model:
         surface["sendDataModel"] = True
-    if surface_props:
-        surface["surfaceProperties"] = surface_props
+    if ext_meta:
+        surface["metadata"] = {"extensions": ext_meta}
 
     return {"version": A2UI_VERSION, "createSurface": surface}
 

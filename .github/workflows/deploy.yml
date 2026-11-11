@@ -48,6 +48,9 @@ jobs:
       - name: Build atom pages
         run: python3 scripts/generate_atom_pages.py
 
+      - name: Build Markdown twins for the other site pages (/<path>.md)
+        run: python3 scripts/gen_page_twins.py
+
       - name: Build machine-readable catalog (spec.json, compact index, runbooks)
         run: python3 scripts/gen_public_catalog.py
 
