@@ -2164,7 +2164,9 @@
     "current_page": "integer",
     "total_pages": "integer",
     "base_url": "string (the URL prefix for all page links)",
-    "page_param": "string (e.g., 'page', the query parameter name for the page number)"
+    "page_param": "string (e.g., 'page', the query parameter name for the page number)",
+    "current": "integer. Read by the renderer; declared from the shipped demo.",
+    "total": "integer. Read by the renderer; declared from the shipped demo."
    },
    "source": {
     "name": "a2uicatalog",
@@ -2290,7 +2292,8 @@
     ]
    },
    "fields": {
-    "anchors": "list of {label: string, url: string, target_id: string (optional, for in-document navigation on web/pdf)}"
+    "anchors": "list of {label: string, url: string, target_id: string (optional, for in-document navigation on web/pdf)}",
+    "items": "array of objects. Read by the renderer; declared from the shipped demo."
    },
    "source": {
     "name": "a2uicatalog",
@@ -2616,7 +2619,8 @@
     "trigger_element": "string The text or element that, when hovered, reveals the card.",
     "card_title": "string The title of the hover card.",
     "card_content": "string The main content of the hover card, can include rich text or simple HTML.",
-    "card_image_url": "string, optional An optional image to display within the card."
+    "card_image_url": "string, optional An optional image to display within the card.",
+    "content": "string. Read by the renderer; declared from the shipped demo."
    },
    "source": {
     "name": "a2uicatalog",
@@ -2661,7 +2665,8 @@
    "fields": {
     "toggle_label": "string The text for the control that expands/collapses the content.",
     "initial_state": "string, default \"collapsed\" The initial state of the panel (\"expanded\" or \"collapsed\").",
-    "content": "string The main content to be shown or hidden."
+    "content": "string The main content to be shown or hidden.",
+    "title": "string. Read by the renderer; declared from the shipped demo."
    },
    "source": {
     "name": "a2uicatalog",
@@ -3030,7 +3035,8 @@
     "right_code": "string",
     "language": "string",
     "left_label": "string",
-    "right_label": "string"
+    "right_label": "string",
+    "snippets": "array of objects. Read by the renderer; declared from the shipped demo."
    },
    "source": {
     "name": "a2uicatalog",
@@ -3448,7 +3454,8 @@
    "fields": {
     "rating": "integer The current rating value (e.g., 3 for 3 stars).",
     "max_rating": "integer The maximum possible rating (e.g., 5 for 5 stars).",
-    "is_interactive": "boolean Indicates if the stars are clickable for user input."
+    "is_interactive": "boolean Indicates if the stars are clickable for user input.",
+    "label": "string. Read by the renderer; declared from the shipped demo."
    },
    "source": {
     "name": "UIverse.io community",
@@ -3950,7 +3957,8 @@
    },
    "fields": {
     "capability_names": "array",
-    "items": "array"
+    "items": "array",
+    "title": "string. Read by the renderer; declared from the shipped demo."
    },
    "source": {
     "name": "a2uicatalog",
@@ -4219,7 +4227,8 @@
    "fields": {
     "max_stars": "integer",
     "initial_rating": "integer",
-    "name": "string"
+    "name": "string",
+    "label": "string. Read by the renderer; declared from the shipped demo."
    },
    "source": {
     "name": "UIverse.io community",
@@ -4881,7 +4890,8 @@
    "fields": {
     "command": "string. The execution command displayed at the prompt.",
     "output": "string. The stdout or stderr text block response from the command.",
-    "shell": "string: bash | zsh | powershell | cmd. The console design theme."
+    "shell": "string: bash | zsh | powershell | cmd. The console design theme.",
+    "lines": "array of objects. Read by the renderer; declared from the shipped demo."
    },
    "source": {
     "name": "a2uicatalog",
@@ -5517,7 +5527,8 @@
     ]
    },
    "fields": {
-    "text": "string. The summary narrative block."
+    "text": "string. The summary narrative block.",
+    "title": "string. Read by the renderer; declared from the shipped demo."
    },
    "source": {
     "name": "shadcn/ui",
@@ -7018,7 +7029,8 @@
    },
    "fields": {
     "pen_id": "string. Alphanumeric identity of the target snippet.",
-    "user_handle": "string. Profile handle owning the snippet."
+    "user_handle": "string. Profile handle owning the snippet.",
+    "url": "string. Read by the renderer; declared from the shipped demo."
    },
    "source": {
     "name": "a2uicatalog",
@@ -7062,7 +7074,8 @@
     ]
    },
    "fields": {
-    "project_id": "string. Folder identity indicator for active workspace."
+    "project_id": "string. Folder identity indicator for active workspace.",
+    "url": "string. Read by the renderer; declared from the shipped demo."
    },
    "source": {
     "name": "a2uicatalog",
@@ -7102,7 +7115,8 @@
     ]
    },
    "fields": {
-    "gist_id": "string. Hexadecimal identifier for target file fragments."
+    "gist_id": "string. Hexadecimal identifier for target file fragments.",
+    "url": "string. Read by the renderer; declared from the shipped demo."
    },
    "source": {
     "name": "a2uicatalog",
@@ -7146,7 +7160,8 @@
     ]
    },
    "fields": {
-    "tweet_id": "string. Unique snowflake identifier for the post."
+    "tweet_id": "string. Unique snowflake identifier for the post.",
+    "url": "string. Read by the renderer; declared from the shipped demo."
    },
    "source": {
     "name": "a2uicatalog",
@@ -7190,7 +7205,8 @@
     ]
    },
    "fields": {
-    "presentation_id": "string. Asset identifier for the slide file."
+    "presentation_id": "string. Asset identifier for the slide file.",
+    "url": "string. Read by the renderer; declared from the shipped demo."
    },
    "source": {
     "name": "a2uicatalog",
@@ -7235,7 +7251,8 @@
    },
    "fields": {
     "src_url": "string. Direct reference path to remote asset configuration.",
-    "loop": "boolean. Whether playback recreates endlessly."
+    "loop": "boolean. Whether playback recreates endlessly.",
+    "url": "string. Read by the renderer; declared from the shipped demo."
    },
    "source": {
     "name": "a2uicatalog",
@@ -7279,7 +7296,8 @@
     ]
    },
    "fields": {
-    "embed_url": "string. Absolute sharing path generated by Figma."
+    "embed_url": "string. Absolute sharing path generated by Figma.",
+    "url": "string. Read by the renderer; declared from the shipped demo."
    },
    "source": {
     "name": "a2uicatalog",
@@ -7581,7 +7599,8 @@
     "label": "string. Metric name.",
     "value": "number. Current value.",
     "previous": "number. Previous period value.",
-    "lower_is_better": "boolean (optional, default true). Which direction is GOOD, which decides whether the delta is green or red. Defaults to true because this card was written for response times; set false for traffic, revenue or any metric where a rise is the good outcome."
+    "lower_is_better": "boolean (optional, default true). Which direction is GOOD, which decides whether the delta is green or red. Defaults to true because this card was written for response times; set false for traffic, revenue or any metric where a rise is the good outcome.",
+    "unit": "string. Read by the renderer; declared from the shipped demo."
    },
    "source": {
     "name": "a2uicatalog",
@@ -7684,7 +7703,8 @@
     ]
    },
    "fields": {
-    "uptime": "number. Uptime percentage (0–100)."
+    "uptime": "number. Uptime percentage (0–100).",
+    "days": "integer. Read by the renderer; declared from the shipped demo."
    },
    "source": {
     "name": "a2uicatalog",
@@ -8299,7 +8319,8 @@
     "title": "string (optional, e.g., 'Call Mood & Themes Summary')",
     "moods": "list of dictionaries representing call emotions: [{'mood': 'Collaborative', 'intensity': 85, 'color': '#10b981'}, ...]",
     "themes": "list of dictionaries representing keywords/themes: [{'term': 'Pricing', 'weight': 90, 'sentiment': 'neutral'}, ...]",
-    "summary": "string (optional summary paragraph)"
+    "summary": "string (optional summary paragraph)",
+    "mood": "string. Read by the renderer; declared from the shipped demo."
    },
    "source": {
     "name": "a2uicatalog",
@@ -8625,7 +8646,8 @@
      "type": "array",
      "description": "List of {name, label, description?, default_checked?} entries."
     },
-    "rules": "array of strings (optional)."
+    "rules": "array of strings (optional).",
+    "options": "array of objects. Read by the renderer; declared from the shipped demo."
    },
    "source": {
     "name": "OpenUI / Thesys",
@@ -8733,7 +8755,8 @@
     "step": "number (optional). Increment size. Omit for continuous.",
     "default_value": "number (optional). Initial thumb position.",
     "variant": "string (optional). One of: continuous, discrete. Default: continuous.",
-    "rules": "array of strings (optional)."
+    "rules": "array of strings (optional).",
+    "value": "integer. Read by the renderer; declared from the shipped demo."
    },
    "source": {
     "name": "OpenUI / Thesys",

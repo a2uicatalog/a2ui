@@ -1937,6 +1937,14 @@
     "page_param": {
      "$ref": "common_types.json#/$defs/DynamicString",
      "description": "string (e.g., 'page', the query parameter name for the page number)"
+    },
+    "current": {
+     "$ref": "common_types.json#/$defs/DynamicNumber",
+     "description": "integer. Read by the renderer; declared from the shipped demo."
+    },
+    "total": {
+     "$ref": "common_types.json#/$defs/DynamicNumber",
+     "description": "integer. Read by the renderer; declared from the shipped demo."
     }
    },
    "required": [
@@ -2037,6 +2045,10 @@
     "anchors": {
      "$ref": "common_types.json#/$defs/DynamicValue",
      "description": "list of {label: string, url: string, target_id: string (optional, for in-document navigation on web/pdf)}"
+    },
+    "items": {
+     "$ref": "common_types.json#/$defs/DynamicValue",
+     "description": "array of objects. Read by the renderer; declared from the shipped demo."
     }
    },
    "required": [
@@ -2348,6 +2360,10 @@
     "card_image_url": {
      "$ref": "common_types.json#/$defs/DynamicString",
      "description": "string, optional An optional image to display within the card."
+    },
+    "content": {
+     "$ref": "common_types.json#/$defs/DynamicString",
+     "description": "string. Read by the renderer; declared from the shipped demo."
     }
    },
    "required": [
@@ -2385,6 +2401,10 @@
     "content": {
      "$ref": "common_types.json#/$defs/DynamicString",
      "description": "string The main content to be shown or hidden."
+    },
+    "title": {
+     "$ref": "common_types.json#/$defs/DynamicString",
+     "description": "string. Read by the renderer; declared from the shipped demo."
     }
    },
    "required": [
@@ -2769,6 +2789,10 @@
     "right_label": {
      "$ref": "common_types.json#/$defs/DynamicString",
      "description": "string"
+    },
+    "snippets": {
+     "$ref": "common_types.json#/$defs/DynamicValue",
+     "description": "array of objects. Read by the renderer; declared from the shipped demo."
     }
    },
    "required": [
@@ -3164,6 +3188,10 @@
     "is_interactive": {
      "$ref": "common_types.json#/$defs/DynamicBoolean",
      "description": "boolean Indicates if the stars are clickable for user input."
+    },
+    "label": {
+     "$ref": "common_types.json#/$defs/DynamicString",
+     "description": "string. Read by the renderer; declared from the shipped demo."
     }
    },
    "required": [
@@ -3658,6 +3686,10 @@
     "items": {
      "$ref": "common_types.json#/$defs/DynamicValue",
      "description": "array"
+    },
+    "title": {
+     "$ref": "common_types.json#/$defs/DynamicString",
+     "description": "string. Read by the renderer; declared from the shipped demo."
     }
    },
    "required": [
@@ -3879,6 +3911,10 @@
     "name": {
      "$ref": "common_types.json#/$defs/DynamicString",
      "description": "string"
+    },
+    "label": {
+     "$ref": "common_types.json#/$defs/DynamicString",
+     "description": "string. Read by the renderer; declared from the shipped demo."
     }
    },
    "required": [
@@ -4484,6 +4520,10 @@
     "shell": {
      "$ref": "common_types.json#/$defs/DynamicString",
      "description": "string: bash | zsh | powershell | cmd. The console design theme."
+    },
+    "lines": {
+     "$ref": "common_types.json#/$defs/DynamicValue",
+     "description": "array of objects. Read by the renderer; declared from the shipped demo."
     }
    },
    "required": [
@@ -4961,6 +5001,10 @@
     "text": {
      "$ref": "common_types.json#/$defs/DynamicString",
      "description": "string. The summary narrative block."
+    },
+    "title": {
+     "$ref": "common_types.json#/$defs/DynamicString",
+     "description": "string. Read by the renderer; declared from the shipped demo."
     }
    },
    "required": [
@@ -6285,6 +6329,10 @@
     "user_handle": {
      "$ref": "common_types.json#/$defs/DynamicString",
      "description": "string. Profile handle owning the snippet."
+    },
+    "url": {
+     "$ref": "common_types.json#/$defs/DynamicString",
+     "description": "string. Read by the renderer; declared from the shipped demo."
     }
    },
    "required": [
@@ -6312,6 +6360,10 @@
     "project_id": {
      "$ref": "common_types.json#/$defs/DynamicString",
      "description": "string. Folder identity indicator for active workspace."
+    },
+    "url": {
+     "$ref": "common_types.json#/$defs/DynamicString",
+     "description": "string. Read by the renderer; declared from the shipped demo."
     }
    },
    "required": [
@@ -6339,6 +6391,10 @@
     "gist_id": {
      "$ref": "common_types.json#/$defs/DynamicString",
      "description": "string. Hexadecimal identifier for target file fragments."
+    },
+    "url": {
+     "$ref": "common_types.json#/$defs/DynamicString",
+     "description": "string. Read by the renderer; declared from the shipped demo."
     }
    },
    "required": [
@@ -6366,6 +6422,10 @@
     "tweet_id": {
      "$ref": "common_types.json#/$defs/DynamicString",
      "description": "string. Unique snowflake identifier for the post."
+    },
+    "url": {
+     "$ref": "common_types.json#/$defs/DynamicString",
+     "description": "string. Read by the renderer; declared from the shipped demo."
     }
    },
    "required": [
@@ -6393,6 +6453,10 @@
     "presentation_id": {
      "$ref": "common_types.json#/$defs/DynamicString",
      "description": "string. Asset identifier for the slide file."
+    },
+    "url": {
+     "$ref": "common_types.json#/$defs/DynamicString",
+     "description": "string. Read by the renderer; declared from the shipped demo."
     }
    },
    "required": [
@@ -6424,6 +6488,10 @@
     "loop": {
      "$ref": "common_types.json#/$defs/DynamicBoolean",
      "description": "boolean. Whether playback recreates endlessly."
+    },
+    "url": {
+     "$ref": "common_types.json#/$defs/DynamicString",
+     "description": "string. Read by the renderer; declared from the shipped demo."
     }
    },
    "required": [
@@ -6451,6 +6519,10 @@
     "embed_url": {
      "$ref": "common_types.json#/$defs/DynamicString",
      "description": "string. Absolute sharing path generated by Figma."
+    },
+    "url": {
+     "$ref": "common_types.json#/$defs/DynamicString",
+     "description": "string. Read by the renderer; declared from the shipped demo."
     }
    },
    "required": [
@@ -6761,6 +6833,10 @@
     "lower_is_better": {
      "$ref": "common_types.json#/$defs/DynamicBoolean",
      "description": "boolean (optional, default true). Which direction is GOOD, which decides whether the delta is green or red. Defaults to true because this card was written for response times; set false for traffic, revenue or any metric where a rise is the good outcome."
+    },
+    "unit": {
+     "$ref": "common_types.json#/$defs/DynamicString",
+     "description": "string. Read by the renderer; declared from the shipped demo."
     }
    },
    "required": [
@@ -6852,6 +6928,10 @@
     "uptime": {
      "$ref": "common_types.json#/$defs/DynamicNumber",
      "description": "number. Uptime percentage (0–100)."
+    },
+    "days": {
+     "$ref": "common_types.json#/$defs/DynamicNumber",
+     "description": "integer. Read by the renderer; declared from the shipped demo."
     }
    },
    "required": [
@@ -7496,6 +7576,10 @@
     "summary": {
      "$ref": "common_types.json#/$defs/DynamicString",
      "description": "string (optional summary paragraph)"
+    },
+    "mood": {
+     "$ref": "common_types.json#/$defs/DynamicString",
+     "description": "string. Read by the renderer; declared from the shipped demo."
     }
    },
    "required": [
@@ -7770,6 +7854,10 @@
     "rules": {
      "$ref": "common_types.json#/$defs/DynamicValue",
      "description": "array of strings (optional)."
+    },
+    "options": {
+     "$ref": "common_types.json#/$defs/DynamicValue",
+     "description": "array of objects. Read by the renderer; declared from the shipped demo."
     }
    },
    "required": [
@@ -7864,6 +7952,10 @@
     "rules": {
      "$ref": "common_types.json#/$defs/DynamicValue",
      "description": "array of strings (optional)."
+    },
+    "value": {
+     "$ref": "common_types.json#/$defs/DynamicNumber",
+     "description": "integer. Read by the renderer; declared from the shipped demo."
     }
    },
    "required": [
