@@ -73,6 +73,8 @@ PAGE = """<!DOCTYPE html>
 .pillar-body strong{{color:var(--text)}}
 .pillar-body a{{color:var(--accent);text-underline-offset:2px}}
 .pillar-body code{{background:var(--code-bg);padding:2px 6px;border-radius:5px;font-size:.9em;font-family:ui-monospace,'SF Mono',Monaco,monospace}}
+.pillar-body pre{{background:var(--code-bg);padding:12px 14px;border-radius:8px;overflow-x:auto;font-size:.86rem;line-height:1.5;margin:0 0 1.1rem}}
+.pillar-body pre code{{background:none;padding:0;font-size:inherit}}
 .pillar-body table{{width:100%;border-collapse:collapse;margin:1.2rem 0;font-size:.95rem}}
 .pillar-body th,.pillar-body td{{text-align:left;padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:top}}
 .pillar-body th{{font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted)}}

@@ -23,8 +23,8 @@
    "description": "A2UI is a declarative protocol that lets AI agents generate native UI from JSON. Learn how it works, where to use it, and how it differs from generated HTML.",
    "url": "https://a2uicatalog.ai/what-is-a2ui/",
    "mainEntityOfPage": "https://a2uicatalog.ai/what-is-a2ui/",
-   "datePublished": "2026-10-05",
-   "dateModified": "2026-10-05",
+   "datePublished": "2026-11-11",
+   "dateModified": "2026-11-11",
    "inLanguage": "en",
    "author": {
     "@type": "Person",
@@ -166,6 +166,8 @@ footer a{color:var(--accent-2-text);text-decoration:underline;text-underline-off
 .pillar-body strong{color:var(--text)}
 .pillar-body a{color:var(--accent);text-underline-offset:2px}
 .pillar-body code{background:var(--code-bg);padding:2px 6px;border-radius:5px;font-size:.9em;font-family:ui-monospace,'SF Mono',Monaco,monospace}
+.pillar-body pre{background:var(--code-bg);padding:12px 14px;border-radius:8px;overflow-x:auto;font-size:.86rem;line-height:1.5;margin:0 0 1.1rem}
+.pillar-body pre code{background:none;padding:0;font-size:inherit}
 .pillar-body table{width:100%;border-collapse:collapse;margin:1.2rem 0;font-size:.95rem}
 .pillar-body th,.pillar-body td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:top}
 .pillar-body th{font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted)}
@@ -204,7 +206,7 @@ show a user real interface instead of writing HTML. The agent sends a stream of 
 names components, such as a chart, a form or a checklist, and fills in their data. The app
 draws those components with its own trusted code. The agent never sends code, so what can
 appear on screen is whatever the app has chosen to support.</p>
-<p class="pillar-meta">5 min read &middot; Updated 5 October 2026</p>
+<p class="pillar-meta">8 min read &middot; Updated 11 November 2026</p>
 </header>
 <article class="pillar-body">
 <p>A2UI was created by Google, with contributions from CopilotKit and the open-source
@@ -255,30 +257,35 @@ lists four reasons to use them:</p>
 <li>"Look up data from server-side databases and APIs, accepting an identifier from the model and populating the components on the server."</li>
 <li>"Ship new domain components with a server deployment alone, using catalog components the client already renders."</li>
 </ul>
-<p>One measured example from this catalog's tests: asked to draw the latest run of five
+<p>One measured example from this catalog's own tests (not yet published): asked to draw the latest run of five
 workflows of a public repository, the model wrote this (the first two stages are shown, the
 rest is elided):</p>
 <pre><code>root = IsoPipeline(&quot;Latest run of five a2uicatalog/a2ui workflows&quot;,
   [{name: &quot;c567e65&quot;, kind: &quot;commit&quot;, state: &quot;latest&quot;},
    {name: &quot;build-apps&quot;, kind: &quot;build&quot;, state: &quot;passed&quot;}, ...three more stages...], &quot;teal&quot;)
 </code></pre>
-<p>The full call was 365 bytes (173 output tokens). The server expanded it into 37,728 bytes of
+<p>The model's whole reply, the call inside its <code>&lt;a2ui&gt;</code> tags, was 365 bytes (173 output tokens),
+identical in all ten runs on Claude Sonnet 5.5. The server expanded it into 37,728 bytes of
 A2UI: five stock Basic Catalog components (a Card, a Column, a title Text, an Image and a
-caption Text), with the picture carried in the Image. This was one scene, one prompt and one
-machine, with ten runs per lane.</p>
-<p>Limits, stated plainly. Per the guide, "Macros are currently available in the Python agent
-SDK (<code>a2ui-agent-sdk</code>), with support for other languages coming next." By default, a macro
-that raises an error during expansion is logged and left unexpanded so its sibling components
-still expand, and client renderers do not implement unexpanded macro components; the server
-can instead be set to raise so an agent can retry. In the Image approach, each patch reloads
-the whole image, and reduced-motion preferences are not honoured inside an Image's SVG.</p>
-<h2 id="how-far-can-the-basic-catalog-go">How far can the Basic catalog go?</h2>
-<p>The Basic Catalog is small, but the stock renderer goes further than its component list
-suggests. Macros let a server build larger trees from a short call. An Image can carry an
-animated picture that small patches update. A Connect Four board has been built on the
-stock components, with a macro-drawn board and ordinary buttons for the moves. Each of these
-has limits, and the macro work above is the best-measured of them. The details are in the
-Macros section.</p>
+caption Text), with the picture carried in the Image. The saving is in output, not input: the
+system prompt that carries the macro was about 5,100 input tokens, against about 1,300 for a
+prompt that had the model draw the picture itself. This was one scene, one prompt and one
+machine.</p>
+<p>Limits: per the guide, "Macros are currently available in the Python agent SDK
+(<code>a2ui-agent-sdk</code>), with support for other languages coming next." By default, a macro that
+raises an argument or runtime exception during expansion is logged and left unexpanded so its
+sibling components still expand, and client renderers do not implement unexpanded macro
+components; the server can instead be set to raise so an agent can retry. Structural errors,
+such as recursion, catalog errors and protocol-version mismatches, always raise. In the Image
+approach, each patch reloads the whole image, and reduced-motion preferences are not honoured
+inside an Image's SVG (tested in Chromium).</p>
+<h2 id="how-far-can-the-basic-catalog-go">How far can the Basic Catalog go?</h2>
+<p>The Basic Catalog has few components; three techniques build more on top of them. Macros let
+a server build larger trees from a short call. An Image can carry an animated picture that
+small patches update. A Connect Four game has also been built on the stock components (Text,
+Image, Row, Column and Button), with the board drawn as one picture by server code and
+ordinary buttons for the moves; it is not yet published. Each has limits; the macro example
+above is the only one measured on this page.</p>
 <h2 id="the-a2ui-atomic-catalog">The A2UI Atomic Catalog</h2>
 <p>A2UI defines a small Basic Catalog: text, rows, columns, cards, buttons, images and a few
 inputs. Real answers need more: stat cards, charts, timelines, comparison tables, status
@@ -377,9 +384,11 @@ ordinary components and never sees the macro.</p>
 <p>The upstream guide says macros are currently available in the Python agent SDK, with support
 for other languages coming next.</p>
 <h3 id="what-happens-if-a-macro-fails">What happens if a macro fails?</h3>
-<p>By default, a macro that raises during expansion is logged and left unexpanded, so sibling
-components still expand. Client renderers do not implement unexpanded macro components. The
-server can instead be set to raise, so an agent can send the error back to the model.</p>
+<p>By default, a macro that raises an argument or runtime exception during expansion is logged
+and left unexpanded, so sibling components still expand. Client renderers do not implement
+unexpanded macro components. The server can instead be set to raise, so an agent can send the
+error back to the model. Structural errors, such as recursion, catalog errors and
+protocol-version mismatches, always raise.</p>
 </article>
 <p class="pillar-foot">Independent, unofficial catalog: not affiliated with, endorsed by, or sponsored by Google or Anthropic.
 A2UI is Google's protocol; MCP is Anthropic's. Maintained by <a href="https://www.linkedin.com/in/curtiskrygier">Curtis Krygier</a>. MIT License.</p>
