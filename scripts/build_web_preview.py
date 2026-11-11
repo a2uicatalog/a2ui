@@ -300,7 +300,7 @@ DEMO = {
                              "rows": [["data_grid", "IBM Carbon", "web, stage, pdf"],
                                       ["sprint_board", "Atlassian", "web, stage, pdf"],
                                       ["product_thumbnail", "Polaris", "web, stage, email, pdf"]]},
-    "metric_comparison_card": {"label": "Atom Count", "value": 220, "previous": 211, "unit": "atoms"},
+    "metric_comparison_card": {"label": "Atom Count", "value": 220, "previous": 211},
     "metric_grid":      {"metrics": [{"label": "Total Atoms", "value": "220", "delta": "+9"},
                                       {"label": "Vendors", "value": "8", "delta": "+3"},
                                       {"label": "Surfaces", "value": "5"}]},
@@ -317,7 +317,7 @@ DEMO = {
                                        {"name": "WebSocket Fiber", "status": "operational"},
                                        {"name": "Renderer", "status": "operational"},
                                        {"name": "Firestore Sync", "status": "degraded"}]},
-    "uptime_timeline":  {"uptime": 99.7, "days": 30},
+    "uptime_timeline":  {"uptime": 99.7, "days": [{"status": (1 if i % 11 else 0.5 if i % 2 else 0), "date": "Day %d" % (i + 1)} for i in range(30)]},
 
     # Timeline & Progress
     "milestone_tracker": {"milestones": [{"label": "v1.0 — 100 atoms", "done": True},
@@ -406,7 +406,7 @@ DEMO = {
                                      {"value": "email", "title": "Email", "description": "Static HTML, no interactivity"}]},
 
     # Notifications
-    "call_mood_board":  {"mood": "Engaged", "themes": [{"theme": "Architecture", "score": 90}, {"theme": "Timeline", "score": 65}]},
+    "call_mood_board":  {"moods": [{"mood": "Engaged", "intensity": 85, "color": "#10b981"}, {"mood": "Curious", "intensity": 60, "color": "#3b82f6"}], "themes": [{"theme": "Architecture", "score": 90}, {"theme": "Timeline", "score": 65}]},
     "inline_alert":     {"type": "info", "message": "This atom embeds inline in content flow without disrupting layout.",
                           "detail": "Distinct from alert_banner (full-width) and toast_notification (overlay)."},
     "notification_stack": {"title": "Recent Activity", "items": [

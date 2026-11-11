@@ -6833,10 +6833,6 @@
     "lower_is_better": {
      "$ref": "common_types.json#/$defs/DynamicBoolean",
      "description": "boolean (optional, default true). Which direction is GOOD, which decides whether the delta is green or red. Defaults to true because this card was written for response times; set false for traffic, revenue or any metric where a rise is the good outcome."
-    },
-    "unit": {
-     "$ref": "common_types.json#/$defs/DynamicString",
-     "description": "string. Unit label such as atoms. Not shown from this top-level key; units display only inside the baseline and comparison objects."
     }
    },
    "required": [
@@ -6930,8 +6926,8 @@
      "description": "number. Uptime percentage (0–100)."
     },
     "days": {
-     "$ref": "common_types.json#/$defs/DynamicNumber",
-     "description": "integer. Day entries drawn as coloured blocks (last 240 shown), each a status number or {status, date}. A bare integer draws no blocks."
+     "$ref": "common_types.json#/$defs/DynamicValue",
+     "description": "array of {status, date?}. Daily entries drawn as one coloured block each (last 240 shown). Status 1 or true is green, 0.5 or more amber, below that red; date is the hover label. Plain status values are accepted."
     }
    },
    "required": [
@@ -7576,10 +7572,6 @@
     "summary": {
      "$ref": "common_types.json#/$defs/DynamicString",
      "description": "string (optional summary paragraph)"
-    },
-    "mood": {
-     "$ref": "common_types.json#/$defs/DynamicString",
-     "description": "string. Mood name. Not drawn from this top-level key; the card renders only the entries of moods, each with mood, intensity and color."
     }
    },
    "required": [

@@ -7599,8 +7599,7 @@
     "label": "string. Metric name.",
     "value": "number. Current value.",
     "previous": "number. Previous period value.",
-    "lower_is_better": "boolean (optional, default true). Which direction is GOOD, which decides whether the delta is green or red. Defaults to true because this card was written for response times; set false for traffic, revenue or any metric where a rise is the good outcome.",
-    "unit": "string. Unit label such as atoms. Not shown from this top-level key; units display only inside the baseline and comparison objects."
+    "lower_is_better": "boolean (optional, default true). Which direction is GOOD, which decides whether the delta is green or red. Defaults to true because this card was written for response times; set false for traffic, revenue or any metric where a rise is the good outcome."
    },
    "source": {
     "name": "a2uicatalog",
@@ -7704,7 +7703,7 @@
    },
    "fields": {
     "uptime": "number. Uptime percentage (0–100).",
-    "days": "integer. Day entries drawn as coloured blocks (last 240 shown), each a status number or {status, date}. A bare integer draws no blocks."
+    "days": "array of {status, date?}. Daily entries drawn as one coloured block each (last 240 shown). Status 1 or true is green, 0.5 or more amber, below that red; date is the hover label. Plain status values are accepted."
    },
    "source": {
     "name": "a2uicatalog",
@@ -8319,8 +8318,7 @@
     "title": "string (optional, e.g., 'Call Mood & Themes Summary')",
     "moods": "list of dictionaries representing call emotions: [{'mood': 'Collaborative', 'intensity': 85, 'color': '#10b981'}, ...]",
     "themes": "list of dictionaries representing keywords/themes: [{'term': 'Pricing', 'weight': 90, 'sentiment': 'neutral'}, ...]",
-    "summary": "string (optional summary paragraph)",
-    "mood": "string. Mood name. Not drawn from this top-level key; the card renders only the entries of moods, each with mood, intensity and color."
+    "summary": "string (optional summary paragraph)"
    },
    "source": {
     "name": "a2uicatalog",
