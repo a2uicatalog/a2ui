@@ -82,7 +82,7 @@ def test_envelope_and_metadata():
     assert props["title"] == "Demo Surface" and props["theme"] == "dark"
     assert cs["catalogId"] == BASIC_V1_CATALOG_ID                     # v1.0 mixing: Basic is the surface default
     ext = [c for c in cs["components"] if c["component"] == "glowing_stat"]
-    assert ext and all(c["catalogId"] == "a2ui-atoms-v1" for c in ext)   # extension components name our catalogue
+    assert ext and all(c["@catalogId"] == "a2ui-atoms-v1" for c in ext)   # extension components name our catalogue
     # catalogs is auto-declared, DETERMINISTIC from the payload's atoms:
     # base always present; the glowing_stat extension pulls in a2ui-effects-v1.
     cats = props["catalogs"]

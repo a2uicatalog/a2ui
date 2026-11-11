@@ -425,6 +425,6 @@ def test_envelope_is_final_v1_0_bindings_and_catalog_mixing(envelope):
             if isinstance(v, dict) and set(v) == {"path"}:
                 raise AssertionError(f"old {{path}} binding left in {c['id']}")
         if c["component"] in ("Column", "Tabs"):
-            assert "catalogId" not in c
+            assert "@catalogId" not in c and "catalogId" not in c
         else:
-            assert c["catalogId"].endswith("a2ui-atoms-v1.json"), c["id"]
+            assert c["@catalogId"].endswith("a2ui-atoms-v1.json"), c["id"]

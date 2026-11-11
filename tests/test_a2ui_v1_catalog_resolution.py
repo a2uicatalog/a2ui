@@ -27,7 +27,7 @@ def _resolve_all(cs):
     """Apply the spec's rule to every component; return (component, catalogId) pairs, raising on no catalog."""
     out = []
     for c in cs["components"]:
-        cid = c.get("catalogId") or cs.get("catalogId")
+        cid = c.get("@catalogId") or cs.get("catalogId")
         assert cid, f"{c['id']}: neither a component nor a surface catalogId"
         out.append((c, cid))
     return out
@@ -57,15 +57,15 @@ def test_default_emit_resolves_against_the_saved_basic_catalog_for_every_demo_at
         cs = emit_surface(copy.deepcopy(payload))["createSurface"]
         assert cs["catalogId"] == BASIC_V1_CATALOG_ID, k
         _assert_resolves(cs)
-        seen_ext += sum(1 for c in cs["components"] if c.get("catalogId"))
-        seen_basic += sum(1 for c in cs["components"] if not c.get("catalogId"))
+        seen_ext += sum(1 for c in cs["components"] if c.get("@catalogId"))
+        seen_basic += sum(1 for c in cs["components"] if not c.get("@catalogId"))
     assert seen_ext > 100 and seen_basic > 100          # both kinds are exercised
 
 
 def test_explicit_catalog_id_names_the_extension_components():
     cs = emit_surface({"blocks": [{"type": "glowing_stat", "value": "1"}]}, catalog_id="https://x.test/c.json")["createSurface"]
     assert cs["catalogId"] == BASIC_V1_CATALOG_ID
-    assert [c["catalogId"] for c in cs["components"] if c["component"] == "glowing_stat"] == ["https://x.test/c.json"]
+    assert [c["@catalogId"] for c in cs["components"] if c["component"] == "glowing_stat"] == ["https://x.test/c.json"]
 
 
 def test_extension_component_with_catalogid_still_validates():
@@ -76,7 +76,7 @@ def test_extension_component_with_catalogid_still_validates():
 def test_basic_only_client_gets_a_pure_basic_surface_without_per_component_ids():
     caps = ClientCapabilities("1.0", (BASIC_V1_CATALOG_ID,))
     cs = emit_surface({"blocks": [{"type": "glowing_stat", "value": "1", "label": "L"}]}, capabilities=caps)["createSurface"]
-    assert cs["catalogId"] == BASIC_V1_CATALOG_ID and not any("catalogId" in c for c in cs["components"])
+    assert cs["catalogId"] == BASIC_V1_CATALOG_ID and not any(("@catalogId" in c or "catalogId" in c) for c in cs["components"])
 
 
 def test_v09_path_is_unchanged_by_the_catalog_split():
@@ -84,7 +84,7 @@ def test_v09_path_is_unchanged_by_the_catalog_split():
     msgs = emit_messages({"blocks": [{"type": "glowing_stat", "value": "1"}, {"type": "body", "text": "t"}]}, caps)
     assert msgs[0]["createSurface"]["catalogId"] == DEFAULT_CATALOG_ID
     comps = msgs[-1]["updateComponents"]["components"]
-    assert comps and not any("catalogId" in c for c in comps)
+    assert comps and not any(("@catalogId" in c or "catalogId" in c) for c in comps)
 
 
 # ── wired emitter: all repo wired payloads ───────────────────────────────────────

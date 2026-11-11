@@ -60,7 +60,7 @@ A2UI_MIME_TYPE = "application/a2ui+json"   # final spec MIME type for A2UI paylo
 # bare token can't be dereferenced by a host. This is what createSurface.catalogId
 # carries; it points at public/catalogue/a2ui-atoms-v1.json served from the site.
 DEFAULT_CATALOG_ID = "https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json"
-# v1.0 catalog resolution (evolution_guide 2.7): a component uses its own `catalogId`, else the surface's
+# v1.0 catalog resolution (evolution_guide 2.7): a component uses its own `@catalogId`, else the surface's
 # default, else it is NOT rendered. Our extension catalogue defines no Text/Column/..., so the surface default
 # is the Basic v1.0 catalog and every EXTENSION component names our catalogue itself (catalog mixing).
 BASIC_V1_CATALOG_ID = "https://a2ui.org/specification/v1_0/catalogs/basic/catalog.json"
@@ -710,11 +710,15 @@ def emit_surface(payload: Dict[str, Any], surface_id: Optional[str] = None,
 
 def _tag_extensions(components: List[Dict[str, Any]], ext_catalog_id: str,
                     overrides: Optional[Dict[str, str]] = None) -> List[Dict[str, Any]]:
-    """Give every non-Basic component its own `catalogId` (a copy; input untouched)."""
+    """Give every non-Basic component its own `@catalogId` (a copy; input untouched).
+
+    v1.0 component envelope mixins are `@`-prefixed since upstream 24d1bf9 (a2ui-project/a2ui#4044): `@catalogId`,
+    `@metadata`, `@accessibility`, `@checks`; a bare `catalogId` on a component is an ordinary catalog property."""
     out = []
     for c in components:
-        if c.get("component") not in BASIC_COMPONENTS and "catalogId" not in c:
-            c = dict(c, catalogId=(overrides or {}).get(c.get("id"), ext_catalog_id))
+        if c.get("component") not in BASIC_COMPONENTS and "@catalogId" not in c:
+            c = dict(c)
+            c["@catalogId"] = (overrides or {}).get(c.get("id"), ext_catalog_id)
         out.append(c)
     return out
 
@@ -981,7 +985,7 @@ def emit_messages(payload: Dict[str, Any], capabilities: Optional[ClientCapabili
     if capabilities is None or capabilities.version != "v0.9":
         return [msg]
     create = dict(msg["createSurface"])
-    components = [_v09_drop_v10_props(_v09_text({k: v for k, v in c.items() if k != "catalogId"}))
+    components = [_v09_drop_v10_props(_v09_text({k: v for k, v in c.items() if k != "@catalogId"}))
                   for c in create.pop("components")]
     if "degraded" not in (((msg["createSurface"].get("metadata") or {}).get("extensions") or {})
                           .get("a2uicatalog_surface") or {}):

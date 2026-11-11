@@ -102,6 +102,11 @@ def _compose_instructions(src):
         f"Wire syntax: `{ws.get('form', '#node.field')}` — the `#` prefix is required. "
         "Atoms in `layout` use `wire` to subscribe to a primitive/action output field.",
         "",
+        "Component envelope keys are `@`-prefixed in A2UI v1.0: `@catalogId` (set it on every component of "
+        "this catalogue when the surface default is another catalog), `@metadata`, `@accessibility`, "
+        "`@checks`; only `id` and `component` are unprefixed, and a plain `catalogId`, `metadata`, "
+        "`accessibility` or `checks` is an ordinary component property.",
+        "",
         "Full prose descriptions, examples, and wiring patterns: see "
         f"{BASE_URL}/spec.json and the a2ui-state spec.",
     ])

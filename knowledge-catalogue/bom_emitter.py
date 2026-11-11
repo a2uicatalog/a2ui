@@ -481,7 +481,7 @@ def emit(bom_path, curriculum_paths):
                     "uncovered_competencies": uncovered,  # never silent
                 }}},
             "dataModel": {"subjects": data_subjects},
-            "components": [c if c["component"] in _BASIC_NAMES else dict(c, catalogId=ATOMS_CATALOG_ID)
+            "components": [c if c["component"] in _BASIC_NAMES else dict(c, **{"@catalogId": ATOMS_CATALOG_ID})
                            for c in components],
         },
     }

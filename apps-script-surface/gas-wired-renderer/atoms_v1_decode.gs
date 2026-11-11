@@ -179,7 +179,15 @@ function _rehydrateV1Surface(surface) {
     var node = {};
     for (var k in src) {
       if (k === 'id' || k === 'children' || k === 'properties') continue;
-      node[k] = _a2uiResolveDynamic(src[k], model, scope);
+      // v1.0 component envelope mixins are "@"-prefixed (upstream 24d1bf9): read "@catalogId" / "@metadata" /
+      // "@accessibility" / "@checks" and the early-draft bare spellings alike. The @ key lands under its bare
+      // name unless the bare key is also present (then it is a real property of the atom, e.g. brick_build_3d.checks).
+      var nk = k;
+      if (k === '@catalogId' || k === '@metadata' || k === '@accessibility' || k === '@checks') {
+        nk = k.slice(1);
+        if (nk in src) continue;
+      }
+      node[nk] = _a2uiResolveDynamic(src[k], model, scope);
     }
     if (src.properties && typeof src.properties === 'object' && !Array.isArray(src.properties)) {
       for (var pk in src.properties) node[pk] = _a2uiResolveDynamic(src.properties[pk], model, scope);

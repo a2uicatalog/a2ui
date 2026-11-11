@@ -45,13 +45,21 @@ BASE_URL = "https://a2uicatalog.ai"
 JSON_SCHEMA_DRAFT = "https://json-schema.org/draft/2020-12/schema"
 # v1.0 rule (evolution_guide, "Use relative standard type references"; catalog loaders reject any
 # $ref that is not the catalog's own #/components|functions|$defs or common_types.json): RELATIVE refs.
-# ComponentCommon (id/accessibility/catalogId/metadata) is composed by the ENVELOPE (agent_to_renderer
+# ComponentCommon (id/@accessibility/@catalogId/@metadata, + Checkable's @checks) is composed by the ENVELOPE (agent_to_renderer
 # Component), exactly as the Basic catalog does, so component definitions do NOT $ref it.
 _COMMON_TYPES = "common_types.json#/$defs/"
 PROTOCOL_VERSION = "1.0"
 # ComponentCommon property names: an atom field with the same name would shadow the envelope's own
 # property (e.g. `id` = the ComponentId), so such fields are not declared in the component schema.
-_ENVELOPE_PROPS = {"id", "catalogId", "accessibility", "metadata"}
+# Since upstream a2ui-project/a2ui 24d1bf9 (#4044) the other envelope mixins live in the reserved `@` namespace
+# (`@catalogId`, `@metadata`, `@accessibility`, `@checks`), so an atom MAY declare a plain `catalogId`,
+# `metadata`, `accessibility` or `checks` property (brick_build_3d's `checks` is one): it no longer collides.
+_ENVELOPE_PROPS = {"id", "@catalogId", "@accessibility", "@metadata", "@checks"}
+# Sentence carried in each extension catalogue's `instructions` (agents read it): the v1.0 component envelope keys.
+ENVELOPE_NOTE = ("Component envelope keys are `@`-prefixed in A2UI v1.0: `@catalogId` (set it on every component of "
+                 "this catalogue when the surface default is another catalog), `@metadata`, `@accessibility`, "
+                 "`@checks`; only `id` and `component` are unprefixed, and a plain `catalogId`, `metadata`, "
+                 "`accessibility` or `checks` is an ordinary component property.")
 # typed, BINDABLE property refs — v1.0 conformance: a host learns which props accept
 # a `{path}` data-binding from these (Google's basic catalog types every prop this way).
 DYNAMIC_STRING_REF = _COMMON_TYPES + "DynamicString"
@@ -224,7 +232,7 @@ def _component_def(atom: dict) -> dict:
         if _is_required(fspec):
             required.append(fname)
     # Same shape as the Basic / VegaChart catalogs: {type, description, properties, required};
-    # no unevaluatedProperties:false (it would reject the envelope's id/catalogId/accessibility).
+    # no unevaluatedProperties:false (it would reject the envelope's id/@catalogId/@accessibility).
     definition = {
         "type": "object",
         "description": atom.get("description", ""),
@@ -278,7 +286,7 @@ def gen_atoms_catalog(blocks):
         "instructions": ("Every key under `components` is a valid `component` value "
                          f"({len(components)} components). Compose layouts with "
                          "Column/Row containers; each component's fields are its "
-                         f"properties. Canonical URI: {ATOMS_CATALOG_URI} — full prose "
+                         f"properties. {ENVELOPE_NOTE} Canonical URI: {ATOMS_CATALOG_URI} — full prose "
                          f"spec (descriptions, surfaces, attribution): {BASE_URL}/spec.json"),
         "components": components,
         "functions": {},

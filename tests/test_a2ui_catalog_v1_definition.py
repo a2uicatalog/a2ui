@@ -36,8 +36,10 @@ def test_extension_component_validates_against_its_definition():
         "components": comps,
     }
     v = _RegexAwareValidator(schema, registry=_REGISTRY)
-    good = {"id": "s1", "component": "glowing_stat", "catalogId": d["$id"], "value": {"@path": "/v"}, "label": "ok"}
+    good = {"id": "s1", "component": "glowing_stat", "@catalogId": d["$id"], "value": {"@path": "/v"}, "label": "ok"}
     assert not list(v.iter_errors(good))
+    # the pre-24d1bf9 bare `catalogId` is an ordinary (undeclared) property now; the catalogue stays open, so it still validates
+    assert not list(v.iter_errors(dict(good, catalogId="x")))
     bad = dict(good, id=5)                 # envelope-level: id must be a ComponentId string
     assert list(v.iter_errors(bad))
     bad2 = dict(good, value={"path": "/v", "extra": 1})   # DynamicString: an object that is neither binding nor call
