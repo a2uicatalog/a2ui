@@ -60,6 +60,50 @@ Google maintains official renderers for React, Lit, Angular, Flutter (the GenUI 
 Jetpack Compose, with SwiftUI planned; a2ui.org also
 [lists community renderers](https://a2ui.org/reference/renderers/).
 
+## Macros: the model writes one call, the server writes the tree
+
+A macro is a function on the application server. The model writes one short call, and the
+server expands it into ordinary A2UI components before anything reaches the renderer, so the
+renderer never sees a macro. The upstream
+[Using Macros](https://a2ui.org/guides/macros/) guide, in its "How macros work" section,
+lists four reasons to use them:
+
+- "Reduce output tokens and latency by letting the model write one call instead of a nested component tree."
+- "Keep layouts consistent across turns because your server code constructs the component hierarchy."
+- "Look up data from server-side databases and APIs, accepting an identifier from the model and populating the components on the server."
+- "Ship new domain components with a server deployment alone, using catalog components the client already renders."
+
+One measured example from this catalog's tests: asked to draw the latest run of five
+workflows of a public repository, the model wrote this (the first two stages are shown, the
+rest is elided):
+
+```
+root = IsoPipeline("Latest run of five a2uicatalog/a2ui workflows",
+  [{name: "c567e65", kind: "commit", state: "latest"},
+   {name: "build-apps", kind: "build", state: "passed"}, ...three more stages...], "teal")
+```
+
+The full call was 365 bytes (173 output tokens). The server expanded it into 37,728 bytes of
+A2UI: five stock Basic Catalog components (a Card, a Column, a title Text, an Image and a
+caption Text), with the picture carried in the Image. This was one scene, one prompt and one
+machine, with ten runs per lane.
+
+Limits, stated plainly. Per the guide, "Macros are currently available in the Python agent
+SDK (`a2ui-agent-sdk`), with support for other languages coming next." By default, a macro
+that raises an error during expansion is logged and left unexpanded so its sibling components
+still expand, and client renderers do not implement unexpanded macro components; the server
+can instead be set to raise so an agent can retry. In the Image approach, each patch reloads
+the whole image, and reduced-motion preferences are not honoured inside an Image's SVG.
+
+## How far can the Basic catalog go?
+
+The Basic Catalog is small, but the stock renderer goes further than its component list
+suggests. Macros let a server build larger trees from a short call. An Image can carry an
+animated picture that small patches update. A Connect Four board has been built on the
+stock components, with a macro-drawn board and ordinary buttons for the moves. Each of these
+has limits, and the macro work above is the best-measured of them. The details are in the
+Macros section.
+
 ## The A2UI Atomic Catalog
 
 A2UI defines a small Basic Catalog: text, rows, columns, cards, buttons, images and a few
@@ -143,3 +187,16 @@ Yes. The protocol is Apache 2.0, and the A2UI Atomic Catalog is MIT-licensed.
 A2UI describes the user interface. AG-UI, the Agent–User Interaction protocol, carries the
 interaction between an agent and an app: messages, tool calls, state and user actions. A2UI
 often travels over AG-UI; as a2ui.org puts it, "use AG-UI as the pipe, A2UI as the content."
+
+### Where does macro expansion happen?
+On the application server, before the messages reach the renderer. The renderer receives
+ordinary components and never sees the macro.
+
+### Which languages support macros?
+The upstream guide says macros are currently available in the Python agent SDK, with support
+for other languages coming next.
+
+### What happens if a macro fails?
+By default, a macro that raises during expansion is logged and left unexpanded, so sibling
+components still expand. Client renderers do not implement unexpanded macro components. The
+server can instead be set to raise, so an agent can send the error back to the model.
