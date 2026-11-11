@@ -1775,6 +1775,8 @@ blocks:
     total_pages: integer
     base_url: string (the URL prefix for all page links)
     page_param: string (e.g., 'page', the query parameter name for the page number)
+    current: integer. Read by the renderer; declared from the shipped demo.
+    total: integer. Read by the renderer; declared from the shipped demo.
 - type: stepper
   description: Vertical step sequence where completed steps show an animated SVG checkmark
     draw, the active step pulses with a sonar-style glow ring, and pending steps are
@@ -1875,6 +1877,7 @@ blocks:
   fields:
     anchors: 'list of {label: string, url: string, target_id: string (optional, for
       in-document navigation on web/pdf)}'
+    items: array of objects. Read by the renderer; declared from the shipped demo.
 - type: faq_accordion
   description: Renders a list of questions and answers, where answers are hidden until
   compact_description: collapsible FAQ question and answer list the question is clicked.
@@ -2131,6 +2134,7 @@ blocks:
     card_content: string The main content of the hover card, can include rich text
       or simple HTML.
     card_image_url: string, optional An optional image to display within the card.
+    content: string. Read by the renderer; declared from the shipped demo.
 - type: collapsible_panel
   description: Renders a standalone section of content that can be toggled between
   compact_description: expandable content panel with header toggle visible and hidden
@@ -2167,6 +2171,7 @@ blocks:
     initial_state: string, default "collapsed" The initial state of the panel ("expanded"
       or "collapsed").
     content: string The main content to be shown or hidden.
+    title: string. Read by the renderer; declared from the shipped demo.
 - type: css_modal
   description: "Renders a modal dialog that appears on click and can be dismissed, controlled purely by CSS without JavaScript."
   compact_description: "pure-CSS modal dialog triggered by checkbox"
@@ -2449,6 +2454,7 @@ blocks:
     language: string
     left_label: string
     right_label: string
+    snippets: array of objects. Read by the renderer; declared from the shipped demo.
 - type: framed_screenshot
   description: "Renders an image within a decorative frame, simulating a device (e.g., browser, phone)."
   compact_description: "device-framed screenshot with optional caption"
@@ -2749,6 +2755,7 @@ blocks:
     rating: integer The current rating value (e.g., 3 for 3 stars).
     max_rating: integer The maximum possible rating (e.g., 5 for 5 stars).
     is_interactive: boolean Indicates if the stars are clickable for user input.
+    label: string. Read by the renderer; declared from the shipped demo.
 - type: progress_circle
   chat_raster: svg
   description: SVG circular progress arc that animates from 0 to the target value
@@ -3128,6 +3135,7 @@ blocks:
   fields:
     capability_names: array
     items: array
+    title: string. Read by the renderer; declared from the shipped demo.
 - type: toggle_switch
   description: Renders a visual on/off switch.
   compact_description: CSS toggle switch input
@@ -3396,6 +3404,7 @@ blocks:
     max_stars: integer
     initial_rating: integer
     name: string
+    label: string. Read by the renderer; declared from the shipped demo.
 - type: segmented_control
   description: Renders a group of mutually exclusive buttons for selection, styled
   compact_description: mutually exclusive option selector strip as a single control.
@@ -3869,6 +3878,7 @@ blocks:
     command: string. The execution command displayed at the prompt.
     output: string. The stdout or stderr text block response from the command.
     shell: 'string: bash | zsh | powershell | cmd. The console design theme.'
+    lines: array of objects. Read by the renderer; declared from the shipped demo.
   source:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
@@ -4321,6 +4331,7 @@ blocks:
       note: Container spacing and custom padding are compressed.
   fields:
     text: string. The summary narrative block.
+    title: string. Read by the renderer; declared from the shipped demo.
   source:
     name: shadcn/ui
     url: https://github.com/a2uicatalog/a2ui
@@ -5440,6 +5451,7 @@ blocks:
   fields:
     pen_id: string. Alphanumeric identity of the target snippet.
     user_handle: string. Profile handle owning the snippet.
+    url: string. Read by the renderer; declared from the shipped demo.
   source:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
@@ -5469,6 +5481,7 @@ blocks:
       note: external iframe — depends on site's X-Frame-Options; test before use
   fields:
     project_id: string. Folder identity indicator for active workspace.
+    url: string. Read by the renderer; declared from the shipped demo.
   source:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
@@ -5495,6 +5508,7 @@ blocks:
       note: external iframe — depends on site's X-Frame-Options; test before use
   fields:
     gist_id: string. Hexadecimal identifier for target file fragments.
+    url: string. Read by the renderer; declared from the shipped demo.
   source:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
@@ -5524,6 +5538,7 @@ blocks:
       note: Twitter/X iframe often blocked by X-Frame-Options
   fields:
     tweet_id: string. Unique snowflake identifier for the post.
+    url: string. Read by the renderer; declared from the shipped demo.
   source:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
@@ -5553,6 +5568,7 @@ blocks:
       note: works if viewer has access; Google Slides embeds are generally allowed
   fields:
     presentation_id: string. Asset identifier for the slide file.
+    url: string. Read by the renderer; declared from the shipped demo.
   source:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
@@ -5584,6 +5600,7 @@ blocks:
   fields:
     src_url: string. Direct reference path to remote asset configuration.
     loop: boolean. Whether playback recreates endlessly.
+    url: string. Read by the renderer; declared from the shipped demo.
   source:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
@@ -5613,6 +5630,7 @@ blocks:
       note: Figma iframes require Figma auth; test before use
   fields:
     embed_url: string. Absolute sharing path generated by Figma.
+    url: string. Read by the renderer; declared from the shipped demo.
   source:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
@@ -5842,6 +5860,7 @@ blocks:
       GOOD, which decides whether the delta is green or red. Defaults to
       true because this card was written for response times; set false for
       traffic, revenue or any metric where a rise is the good outcome.
+    unit: string. Read by the renderer; declared from the shipped demo.
   source:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
@@ -5918,6 +5937,7 @@ blocks:
       note: Colour blocks may collapse.
   fields:
     uptime: number. Uptime percentage (0–100).
+    days: integer. Read by the renderer; declared from the shipped demo.
   source:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
@@ -6415,6 +6435,7 @@ blocks:
     themes: 'list of dictionaries representing keywords/themes: [{''term'': ''Pricing'',
       ''weight'': 90, ''sentiment'': ''neutral''}, ...]'
     summary: string (optional summary paragraph)
+    mood: string. Read by the renderer; declared from the shipped demo.
   source:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
@@ -6783,6 +6804,7 @@ blocks:
       type: array
       description: List of {name, label, description?, default_checked?} entries.
     rules: array of strings (optional).
+    options: array of objects. Read by the renderer; declared from the shipped demo.
   source:
     name: OpenUI / Thesys
     url: https://github.com/thesysdev/openui
@@ -6860,6 +6882,7 @@ blocks:
     default_value: number (optional). Initial thumb position.
     variant: 'string (optional). One of: continuous, discrete. Default: continuous.'
     rules: array of strings (optional).
+    value: integer. Read by the renderer; declared from the shipped demo.
   source:
     name: OpenUI / Thesys
     url: https://github.com/thesysdev/openui
