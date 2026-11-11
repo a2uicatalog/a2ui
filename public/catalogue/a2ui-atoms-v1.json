@@ -1940,11 +1940,11 @@
     },
     "current": {
      "$ref": "common_types.json#/$defs/DynamicNumber",
-     "description": "integer. Read by the renderer; declared from the shipped demo."
+     "description": "integer. The currently active page number. Defaults to 1."
     },
     "total": {
      "$ref": "common_types.json#/$defs/DynamicNumber",
-     "description": "integer. Read by the renderer; declared from the shipped demo."
+     "description": "integer. Total number of pages in the pagination control. Defaults to 1."
     }
    },
    "required": [
@@ -2048,7 +2048,7 @@
     },
     "items": {
      "$ref": "common_types.json#/$defs/DynamicValue",
-     "description": "array of objects. Read by the renderer; declared from the shipped demo."
+     "description": "array of objects. Links shown as a list, each a string or an object with text or label, and url (default '#')."
     }
    },
    "required": [
@@ -2363,7 +2363,7 @@
     },
     "content": {
      "$ref": "common_types.json#/$defs/DynamicString",
-     "description": "string. Read by the renderer; declared from the shipped demo."
+     "description": "string. Card body content rendered as inline Markdown inside the hover popup."
     }
    },
    "required": [
@@ -2404,7 +2404,7 @@
     },
     "title": {
      "$ref": "common_types.json#/$defs/DynamicString",
-     "description": "string. Read by the renderer; declared from the shipped demo."
+     "description": "string. Text of the clickable summary line; used when label is not given."
     }
    },
    "required": [
@@ -2792,7 +2792,7 @@
     },
     "snippets": {
      "$ref": "common_types.json#/$defs/DynamicValue",
-     "description": "array of objects. Read by the renderer; declared from the shipped demo."
+     "description": "array of objects. Tabbed code snippet definitions with code, language, and optional tab label."
     }
    },
    "required": [
@@ -3191,7 +3191,7 @@
     },
     "label": {
      "$ref": "common_types.json#/$defs/DynamicString",
-     "description": "string. Read by the renderer; declared from the shipped demo."
+     "description": "string. Optional text label displayed above the rating stars."
     }
    },
    "required": [
@@ -3689,7 +3689,7 @@
     },
     "title": {
      "$ref": "common_types.json#/$defs/DynamicString",
-     "description": "string. Read by the renderer; declared from the shipped demo."
+     "description": "string. Bold heading shown above the capability table or list."
     }
    },
    "required": [
@@ -3914,7 +3914,7 @@
     },
     "label": {
      "$ref": "common_types.json#/$defs/DynamicString",
-     "description": "string. Read by the renderer; declared from the shipped demo."
+     "description": "string. Optional label text displayed above the star rating input."
     }
    },
    "required": [
@@ -4523,7 +4523,7 @@
     },
     "lines": {
      "$ref": "common_types.json#/$defs/DynamicValue",
-     "description": "array of objects. Read by the renderer; declared from the shipped demo."
+     "description": "array of objects. Terminal lines, each a string or an object with type (command or output) and content; command lines get a '$ ' prefix."
     }
    },
    "required": [
@@ -5004,7 +5004,7 @@
     },
     "title": {
      "$ref": "common_types.json#/$defs/DynamicString",
-     "description": "string. Read by the renderer; declared from the shipped demo."
+     "description": "string. Header text displayed at the top of the summary box, defaults to 'Summary'."
     }
    },
    "required": [
@@ -6332,7 +6332,7 @@
     },
     "url": {
      "$ref": "common_types.json#/$defs/DynamicString",
-     "description": "string. Read by the renderer; declared from the shipped demo."
+     "description": "string. CodePen pen URL; '/embed/result' is appended to form the iframe source."
     }
    },
    "required": [
@@ -6363,7 +6363,7 @@
     },
     "url": {
      "$ref": "common_types.json#/$defs/DynamicString",
-     "description": "string. Read by the renderer; declared from the shipped demo."
+     "description": "string. Direct URL to the StackBlitz project, displayed inside an iframe."
     }
    },
    "required": [
@@ -6394,7 +6394,7 @@
     },
     "url": {
      "$ref": "common_types.json#/$defs/DynamicString",
-     "description": "string. Read by the renderer; declared from the shipped demo."
+     "description": "string. Gist URL; '.js' is appended for the embed script, and the plain URL is the no-script fallback link."
     }
    },
    "required": [
@@ -6425,7 +6425,7 @@
     },
     "url": {
      "$ref": "common_types.json#/$defs/DynamicString",
-     "description": "string. Read by the renderer; declared from the shipped demo."
+     "description": "string. Destination link URL rendered on the author handle."
     }
    },
    "required": [
@@ -6456,7 +6456,7 @@
     },
     "url": {
      "$ref": "common_types.json#/$defs/DynamicString",
-     "description": "string. Read by the renderer; declared from the shipped demo."
+     "description": "string. Google Slides URL shown in an iframe; a '/pub?' link is rewritten to '/embed?'."
     }
    },
    "required": [
@@ -6491,7 +6491,7 @@
     },
     "url": {
      "$ref": "common_types.json#/$defs/DynamicString",
-     "description": "string. Read by the renderer; declared from the shipped demo."
+     "description": "string. URL of the Lottie animation JSON asset to display."
     }
    },
    "required": [
@@ -6522,7 +6522,7 @@
     },
     "url": {
      "$ref": "common_types.json#/$defs/DynamicString",
-     "description": "string. Read by the renderer; declared from the shipped demo."
+     "description": "string. Figma file or prototype URL, encoded into the embed iframe source."
     }
    },
    "required": [
@@ -6836,7 +6836,7 @@
     },
     "unit": {
      "$ref": "common_types.json#/$defs/DynamicString",
-     "description": "string. Read by the renderer; declared from the shipped demo."
+     "description": "string. Unit label such as atoms. Not shown from this top-level key; units display only inside the baseline and comparison objects."
     }
    },
    "required": [
@@ -6931,7 +6931,7 @@
     },
     "days": {
      "$ref": "common_types.json#/$defs/DynamicNumber",
-     "description": "integer. Read by the renderer; declared from the shipped demo."
+     "description": "integer. Day entries drawn as coloured blocks (last 240 shown), each a status number or {status, date}. A bare integer draws no blocks."
     }
    },
    "required": [
@@ -7579,7 +7579,7 @@
     },
     "mood": {
      "$ref": "common_types.json#/$defs/DynamicString",
-     "description": "string. Read by the renderer; declared from the shipped demo."
+     "description": "string. Mood name. Not drawn from this top-level key; the card renders only the entries of moods, each with mood, intensity and color."
     }
    },
    "required": [
@@ -7857,7 +7857,7 @@
     },
     "options": {
      "$ref": "common_types.json#/$defs/DynamicValue",
-     "description": "array of objects. Read by the renderer; declared from the shipped demo."
+     "description": "array of objects. Checkbox option objects containing name, label, optional description, and default_checked."
     }
    },
    "required": [
@@ -7955,7 +7955,7 @@
     },
     "value": {
      "$ref": "common_types.json#/$defs/DynamicNumber",
-     "description": "integer. Read by the renderer; declared from the shipped demo."
+     "description": "integer. Initial slider position, also shown as text with the unit; defaults to min."
     }
    },
    "required": [
