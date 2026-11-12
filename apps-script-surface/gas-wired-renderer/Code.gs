@@ -2008,7 +2008,7 @@ function _renderWiredSurface(payload, navSlug) {
 
 function _renderFromPayload(payload, from) {
   try {
-    if (!Array.isArray(payload) && payload.version === 'v1.0' && payload.createSurface) {
+    if (!Array.isArray(payload) && (payload.version === '1.0' || payload.version === 'v1.0') && payload.createSurface) {
       payload = _rehydrateV1Surface(payload.createSurface);
     }
     if (!Array.isArray(payload) && payload.type === 'a2ui_wired_surface') {

@@ -1,8 +1,8 @@
 ---
 title: "What is A2UI? The Agent-to-UI Protocol"
-date: 2026-10-05
+date: 2026-11-11
 summary: "A2UI is a declarative protocol that lets AI agents generate native UI from JSON. Learn how it works, where to use it, and how it differs from generated HTML."
-read_minutes: 5
+read_minutes: 8
 ---
 
 
@@ -49,8 +49,8 @@ arrive, and an agent can update one number without resending the whole screen. W
 acts (presses a button, submits a form) the renderer sends the action back to the agent.
 
 The protocol doesn't care how messages travel. The spec describes bindings for AG-UI, A2A
-and MCP, and it also runs over server-sent events, WebSockets or plain REST. Version 0.9.1
-is the current production release and 1.0 is a release candidate. Renderers say which
+and MCP, and it also runs over server-sent events, WebSockets or plain REST. Version 1.0
+is the current specification and 0.9.1 the previous one. Renderers say which
 version and which catalogs they support, so an agent can send what each one understands:
 the catalog's emitter, for example, sends v0.9 to Google's Android renderer and v1.0 elsewhere.
 
@@ -60,13 +60,62 @@ Google maintains official renderers for React, Lit, Angular, Flutter (the GenUI 
 Jetpack Compose, with SwiftUI planned; a2ui.org also
 [lists community renderers](https://a2ui.org/reference/renderers/).
 
+## Macros: the model writes one call, the server writes the tree
+
+A macro is a function on the application server. The model writes one short call, and the
+server expands it into ordinary A2UI components before anything reaches the renderer, so the
+renderer never sees a macro. The upstream
+[Using Macros](https://a2ui.org/guides/macros/) guide, in its "How macros work" section,
+lists four reasons to use them:
+
+- "Reduce output tokens and latency by letting the model write one call instead of a nested component tree."
+- "Keep layouts consistent across turns because your server code constructs the component hierarchy."
+- "Look up data from server-side databases and APIs, accepting an identifier from the model and populating the components on the server."
+- "Ship new domain components with a server deployment alone, using catalog components the client already renders."
+
+One measured example from this catalog's own tests (not yet published): asked to draw the latest run of five
+workflows of a public repository, the model wrote this (the first two stages are shown, the
+rest is elided):
+
+```
+root = IsoPipeline("Latest run of five a2uicatalog/a2ui workflows",
+  [{name: "c567e65", kind: "commit", state: "latest"},
+   {name: "build-apps", kind: "build", state: "passed"}, ...three more stages...], "teal")
+```
+
+The model's whole reply, the call inside its `<a2ui>` tags, was 365 bytes (173 output tokens),
+identical in all ten runs on Claude Sonnet 5.5. The server expanded it into 37,728 bytes of
+A2UI: five stock Basic Catalog components (a Card, a Column, a title Text, an Image and a
+caption Text), with the picture carried in the Image. The saving is in output, not input: the
+system prompt that carries the macro was about 5,100 input tokens, against about 1,300 for a
+prompt that had the model draw the picture itself. This was one scene, one prompt and one
+machine.
+
+Limits: per the guide, "Macros are currently available in the Python agent SDK
+(`a2ui-agent-sdk`), with support for other languages coming next." By default, a macro that
+raises an argument or runtime exception during expansion is logged and left unexpanded so its
+sibling components still expand, and client renderers do not implement unexpanded macro
+components; the server can instead be set to raise so an agent can retry. Structural errors,
+such as recursion, catalog errors and protocol-version mismatches, always raise. In the Image
+approach, each patch reloads the whole image, and reduced-motion preferences are not honoured
+inside an Image's SVG (tested in Chromium).
+
+## How far can the Basic Catalog go?
+
+The Basic Catalog has few components; three techniques build more on top of them. Macros let
+a server build larger trees from a short call. An Image can carry an animated picture that
+small patches update. A Connect Four game has also been built on the stock components (Text,
+Image, Row, Column and Button), with the board drawn as one picture by server code and
+ordinary buttons for the moves; it is not yet published. Each has limits; the macro example
+above is the only one measured on this page.
+
 ## The A2UI Atomic Catalog
 
 A2UI defines a small Basic Catalog: text, rows, columns, cards, buttons, images and a few
 inputs. Real answers need more: stat cards, charts, timelines, comparison tables, status
 boards, animated explainers.
 
-The [A2UI Atomic Catalog](/) is an open-source (MIT) catalog of 545 published components,
+The [A2UI Atomic Catalog](/) is an open-source (MIT) catalog of 573 published components,
 each with typed fields, a JSON Schema and a live preview. Agents reach it through an MCP
 server at `a2uicatalog.ai/mcp`, or read its machine-readable vocabulary at
 [`/spec.json`](/spec.json).
@@ -143,3 +192,18 @@ Yes. The protocol is Apache 2.0, and the A2UI Atomic Catalog is MIT-licensed.
 A2UI describes the user interface. AG-UI, the Agent–User Interaction protocol, carries the
 interaction between an agent and an app: messages, tool calls, state and user actions. A2UI
 often travels over AG-UI; as a2ui.org puts it, "use AG-UI as the pipe, A2UI as the content."
+
+### Where does macro expansion happen?
+On the application server, before the messages reach the renderer. The renderer receives
+ordinary components and never sees the macro.
+
+### Which languages support macros?
+The upstream guide says macros are currently available in the Python agent SDK, with support
+for other languages coming next.
+
+### What happens if a macro fails?
+By default, a macro that raises an argument or runtime exception during expansion is logged
+and left unexpanded, so sibling components still expand. Client renderers do not implement
+unexpanded macro components. The server can instead be set to raise, so an agent can send the
+error back to the model. Structural errors, such as recursion, catalog errors and
+protocol-version mismatches, always raise.

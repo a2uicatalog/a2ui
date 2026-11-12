@@ -9,7 +9,7 @@ import glob
 import os
 import pytest
 
-from renderers.a2ui_v1 import (
+from renderers.a2ui_v1 import (BASIC_V1_CATALOG_ID,
     emit_surface, call_renderer_function, agent_function_response, A2UI_VERSION,
 )
 from tests.a2ui_v1_conformance import AGENT_TO_RENDERER, assert_conforms
@@ -80,7 +80,9 @@ def test_envelope_and_metadata():
     cs, by_id = _assert_valid_surface(msg)
     props = cs["metadata"]["extensions"]["a2uicatalog_surface"]
     assert props["title"] == "Demo Surface" and props["theme"] == "dark"
-    assert cs["catalogId"] == "a2ui-atoms-v1"
+    assert cs["catalogId"] == BASIC_V1_CATALOG_ID                     # v1.0 mixing: Basic is the surface default
+    ext = [c for c in cs["components"] if c["component"] == "glowing_stat"]
+    assert ext and all(c["@catalogId"] == "a2ui-atoms-v1" for c in ext)   # extension components name our catalogue
     # catalogs is auto-declared, DETERMINISTIC from the payload's atoms:
     # base always present; the glowing_stat extension pulls in a2ui-effects-v1.
     cats = props["catalogs"]
@@ -270,14 +272,18 @@ def test_call_renderer_function_and_agent_function_response():
     # name fails validation for a DIFFERENT reason than what's under test.
     call_msg = call_renderer_function(
         "https://a2ui.org/specification/v1_0/catalog.json",
-        "openUrl", args={"url": "https://example.com"}, function_call_id="fc-1")
+        "openUrl", args={"url": "https://example.com"}, function_call_id="fc-1", check_callers=False)
     assert call_msg["version"] == A2UI_VERSION
     assert call_msg["callRendererFunction"]["functionCallId"] == "fc-1"
     assert call_msg["callRendererFunction"]["callFunction"] == {
         "catalogId": "https://a2ui.org/specification/v1_0/catalog.json",
-        "call": "openUrl", "args": {"url": "https://example.com"}}
+        "@call": "openUrl", "args": {"url": "https://example.com"}}
     assert "wantResponse" not in call_msg   # not a real field, confirmed 2026-08-24
     assert_conforms(call_msg, AGENT_TO_RENDERER)
+
+    # F13: the Basic functions are rendererOnly, so the default refuses to build an agent call to one
+    with pytest.raises(ValueError):
+        call_renderer_function("https://a2ui.org/specification/v1_0/catalog.json", "openUrl", {"url": "https://example.com"})
 
     # auto-minted functionCallId when omitted
     auto = call_renderer_function("https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json", "ping")
@@ -326,8 +332,8 @@ def test_all_declared_children_atoms_are_flattened():
                 inner = spec["inner_path"].split(".")[0]
                 block[field] = {inner: [dict(leaf)]}
         _, by_id = _assert_valid_surface(emit_surface({"title": "t", "blocks": [block]}))
-        emitted = by_id.get(f"{atom_type}-0")
-        assert emitted is not None, f"{atom_type}: expected component id '{atom_type}-0' not found"
+        emitted = by_id.get(f"{atom_type}_0")
+        assert emitted is not None, f"{atom_type}: expected component id '{atom_type}_0' not found"
         for field in decl:
             val = emitted.get(field)
             assert val is not None, f"{atom_type}.{field}: declared child field missing from emitted component"

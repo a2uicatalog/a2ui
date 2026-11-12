@@ -157,12 +157,12 @@ def agent_card_extension(supported_catalog_ids: List[str],
 
 def renderer_capabilities(supported_catalog_ids: List[str]) -> Dict[str, Any]:
     """Build message.metadata["a2uiRendererCapabilities"] -- namespaced
-    under "v1.0", per the spec's own worked example. Lives on the A2A
+    under "1.0", per the spec's own worked example. Lives on the A2A
     `message` object itself, NOT the DataPart -- a different location from
     wrap_messages()'s own metadata, easy to conflate, kept as two
     separate functions rather than one to keep that distinction visible
     at every call site."""
-    return {"v1.0": {"supportedCatalogIds": supported_catalog_ids}}
+    return {"1.0": {"supportedCatalogIds": supported_catalog_ids}}
 
 
 def renderer_data_model(surfaces_data_model: Dict[str, Dict[str, Any]]) -> Dict[str, Any]:
@@ -171,4 +171,4 @@ def renderer_data_model(surfaces_data_model: Dict[str, Dict[str, Any]]) -> Dict[
     surface has Data Model Sync enabled (createSurface.sendDataModel:
     true). `surfaces_data_model` maps surfaceId -> that surface's current
     data model, e.g. {"main_surface_id": {"user_id": "12345"}}."""
-    return {"version": "v1.0", "surfaces": surfaces_data_model}
+    return {"version": "1.0", "surfaces": surfaces_data_model}

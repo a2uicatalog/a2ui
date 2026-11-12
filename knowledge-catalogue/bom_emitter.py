@@ -17,7 +17,7 @@ The judgment lives in the DECLARED artifacts, not in a prompt:
 Honesty rules (deterministic means never inventing):
   - `piege` maps to knowledge_check in the BOM, but an MCQ needs invented
     distractors — a judgment call. The emitter DOWNGRADES piège to a warning
-    callout and records the downgrade in the envelope's _emitter block.
+    callout and records the downgrade in metadata.extensions.a2uicatalog_bom.
   - A required_competency with no section still appears (flagged card), the
     same completeness contract Prompt 2 enforces.
 
@@ -308,6 +308,13 @@ def extract_section(sect):
 # the ChildList template's Child Scope. THIS is the whole runbook-as-data bet:
 # authored once, stamped N times by data.
 
+BASIC_V1_CATALOG_ID = "https://a2ui.org/specification/v1_0/catalogs/basic/catalog.json"
+ATOMS_CATALOG_ID = "https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json"
+_BASIC_NAMES = frozenset({"AudioPlayer", "Button", "Card", "CheckBox", "ChoicePicker", "Column", "DateTimeInput",
+                          "Divider", "Icon", "Image", "List", "Modal", "Row", "Slider", "Tabs", "Text", "TextField",
+                          "Video"})
+
+
 def template_components(atom_map):
     def atom_for(kind, default):
         return atom_map.get(kind, default)
@@ -315,41 +322,41 @@ def template_components(atom_map):
         "concept": [
             {"id": "tpl_concept", "component": atom_for("concept", "flashcard_deck"),
              "label_front": "CONCEPT", "accent": "#6366f1",
-             "title": {"path": "title"}, "cards": {"path": "cards"}},
+             "title": {"@path": "title"}, "cards": {"@path": "cards"}},
         ],
         "glossary": [
             {"id": "tpl_glossary", "component": atom_for("glossary", "flashcard_deck"),
              "label_front": "TERME", "accent": "#0ea5e9",
-             "title": {"path": "title"}, "cards": {"path": "cards"}},
+             "title": {"@path": "title"}, "cards": {"@path": "cards"}},
         ],
         "drill": [
             # brevet_automatismes renders no title of its own — the authored
             # subtree pairs a heading with the atom (one template, two nodes)
             {"id": "tpl_drill", "component": "Column",
              "children": ["tpl_drill_head", "tpl_drill_atom"]},
-            {"id": "tpl_drill_head", "component": "subheading", "text": {"path": "title"}},
+            {"id": "tpl_drill_head", "component": "subheading", "text": {"@path": "title"}},
             {"id": "tpl_drill_atom", "component": atom_for("drill", "brevet_automatismes"),
-             "questions": {"path": "questions"}},
+             "questions": {"@path": "questions"}},
         ],
         "method": [
             {"id": "tpl_method", "component": atom_for("method", "steps"),
-             "title": {"path": "title"}, "items": {"path": "items"}},
+             "title": {"@path": "title"}, "items": {"@path": "items"}},
         ],
         "key_takeaways": [
             {"id": "tpl_takeaways", "component": atom_for("checklist", "key_takeaways"),
-             "points": {"path": "points"}},
+             "points": {"@path": "points"}},
         ],
         "timeline": [
             {"id": "tpl_timeline", "component": atom_for("timeline", "brevet_timeline"),
-             "title": {"path": "title"}, "events": {"path": "events"}},
+             "title": {"@path": "title"}, "events": {"@path": "events"}},
         ],
         "piege": [
             # deterministic DOWNGRADE from the BOM's knowledge_check (see header)
             {"id": "tpl_piege", "component": "callout", "icon": "⚠️",
-             "text": {"path": "text"}},
+             "text": {"@path": "text"}},
         ],
         "other": [
-            {"id": "tpl_other", "component": "body", "text": {"path": "text"}},
+            {"id": "tpl_other", "component": "body", "text": {"@path": "text"}},
         ],
     }
 
@@ -414,7 +421,7 @@ def emit(bom_path, curriculum_paths):
             slide_col = f"s{si}_g{gi}"
             components.append({"id": slide_col, "component": "Column",
                                "children": slide_children})
-            slide_tab_entries.append({"label": group["title"], "child": slide_col})
+            slide_tab_entries.append({"title": group["title"], "child": slide_col})
 
         # completeness contract: schema competencies with no section, flagged
         missing = [c for c in front.get("required_competencies", [])
@@ -423,8 +430,8 @@ def emit(bom_path, curriculum_paths):
             uncovered += [c["id"] for c in missing]
             gap_id = f"s{si}_gaps"
             components.append({"id": gap_id, "component": "callout", "icon": "🕳️",
-                               "text": {"path": f"/subjects/{si}/gaps"}})
-            slide_tab_entries.append({"label": "⚠ Lacunes", "child": gap_id})
+                               "text": {"@path": f"/subjects/{si}/gaps"}})
+            slide_tab_entries.append({"title": "⚠ Lacunes", "child": gap_id})
 
         exam = meta.get("exam", {}) or front.get("exam", {}) or {}
         subj_data = {"label": meta.get("label", front.get("name", subj_key)),
@@ -438,11 +445,11 @@ def emit(bom_path, curriculum_paths):
         subj_col = f"subj_{si}"
         head_id = f"subj_{si}_head"
         components.append({"id": head_id, "component": "subheading",
-                           "text": {"path": f"/subjects/{si}/label"}})
+                           "text": {"@path": f"/subjects/{si}/label"}})
         components.append({"id": subj_col, "component": "Column",
                            "children": [head_id, inner_id]})
         icon = meta.get("hub_icon", "")
-        subj_tab_entries.append({"label": (icon + " " if icon else "") + subj_data["label"],
+        subj_tab_entries.append({"title": (icon + " " if icon else "") + subj_data["label"],
                                  "child": subj_col})
 
     components.append({"id": "subjects_tabs", "component": "Tabs", "tabs": subj_tab_entries})
@@ -452,26 +459,30 @@ def emit(bom_path, curriculum_paths):
         components.extend(tpl_lib[akey])
 
     return {
-        "version": "v1.0",
+        "version": "1.0",    # final v1.0: "@path" bindings (relative inside templates); ChildList keeps "path"
         "createSurface": {
             "surfaceId": bom.get("id", "bom-surface"),
-            "catalogId": "https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json",
+            # v1.0 catalog mixing: Basic is the surface default so Column/Tabs resolve; our atoms carry their own
+            "catalogId": BASIC_V1_CATALOG_ID,
             # 2026-08-24: surfaceProperties isn't a real v1.0 field (same
             # finding, fixed the same day, in renderers/a2ui_v1.py's own
             # emit_surface()) -- this emitter built its createSurface by
             # hand rather than calling that one, so it had the identical
             # bug independently. Same fix: the real spec's own extension
             # point.
+            # the emitter's diagnostics ride in a legal extension key (a top-level `_emitter` sibling of
+            # createSurface is outside the v1.0 message schema)
             "metadata": {"extensions": {"a2uicatalog_surface": {
-                "title": bom.get("name", "Knowledge Surface"), "theme": "dark"}}},
+                "title": bom.get("name", "Knowledge Surface"), "theme": "dark"},
+                "a2uicatalog_bom": {
+                    "name": "bom_emitter", "bom": str(bom_path),
+                    "curricula": [str(p) for p in curriculum_paths],
+                    "piege_downgrades": downgrades,     # knowledge_check needs invented MCQs → callout
+                    "uncovered_competencies": uncovered,  # never silent
+                }}},
             "dataModel": {"subjects": data_subjects},
-            "components": components,
-        },
-        "_emitter": {
-            "name": "bom_emitter", "bom": str(bom_path),
-            "curricula": [str(p) for p in curriculum_paths],
-            "piege_downgrades": downgrades,     # knowledge_check needs invented MCQs → callout
-            "uncovered_competencies": uncovered,  # never silent
+            "components": [c if c["component"] in _BASIC_NAMES else dict(c, **{"@catalogId": ATOMS_CATALOG_ID})
+                           for c in components],
         },
     }
 
@@ -485,7 +496,7 @@ def main():
     envelope = emit(args.schema, args.curricula)
     Path(args.out).write_text(json.dumps(envelope, ensure_ascii=False, indent=1))
     raw = len(json.dumps(envelope))
-    e = envelope["_emitter"]
+    e = envelope["createSurface"]["metadata"]["extensions"]["a2uicatalog_bom"]
     print(f"wrote {args.out} — {raw} bytes raw, "
           f"{len(envelope['createSurface']['components'])} components, "
           f"{e['piege_downgrades']} piège downgrades, "

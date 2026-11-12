@@ -46,3 +46,20 @@ as part of PR 2 itself, not deferred again.
 - `a2uithoughts.md` logs the investigation that produced this map, with a
   link back here for the durable reference (thoughts entries are a
   narrative log; this file is the thing to actually consult later).
+
+## Change log: A2UI v1.0 wire format (2026-11-10)
+
+The A2UI emitters now produce the final v1.0 wire format **by default**. This is a default, not an enforcement: v0.9 output and v0.9 consumers still work, and the deployed consumers accept the new and the draft spelling.
+
+- Output: `version: "1.0"`; `@path` / `@call` in binding and function-call positions only; closed `action.event`; no `theme`; surface `catalogId` is the Basic v1.0 catalog and each extension component carries our catalogue's `catalogId`. The draft spelling `"v1.0"` with `{path}` is no longer emitted.
+- Surface ids: the default `surfaceId` is now `slug(title)-<8 hex digest of the payload>`. Callers that relied on the bare slug must pass `surface_id=`.
+- Capabilities: the legacy `"v1.0"` key is no longer negotiated. A renderer offering it together with `v0.9` gets v0.9; one offering only the legacy key is treated as having sent no capabilities. The v0.9 downgrade path is unchanged.
+- Consumers: the Apps Script decoder, the MCP Apps / play renderer bundles and their pages accept `"1.0"` (with `@path`/`@call`, normalised by `_a2uiNormV1`), the draft `"v1.0"` with `{path}`, and v0.9.
+- A v0.9 to v1.0 payload converter exists as a local tool outside this repository (idempotent; drops `returnType`, reported; escapes literal `@` keys by doubling); it is not part of this change.
+## Change log: v1.0 conformity pass (2026-11-10, branch v1-conformity-2026-11-10)
+
+- Extension catalogues (`a2ui-atoms-v1`, `a2ui-bricks-v1`, `a2ui-state-v1`) are v1.0 catalog documents: `protocolVersion: "1.0"`, relative `common_types.json#/$defs/...` refs only, component definitions in the Basic / VegaChart shape (ComponentCommon is composed by the envelope), `$defs.anyComponent` / `anyFunction`, state functions use the `@call` discriminator. Loaded by the upstream `a2ui_core` `Catalog.from_json` (declared and forced 1.0).
+- Catalogue typing: props are Dynamic* values (a prop can be a literal, `@path` or `@call`); `ChildList` is no longer guessed from field names (it made 41 of 179 demo components invalid against our own catalogue); `required` only where the field text marks it, not on the word anywhere (18 false requireds removed).
+- Emitters: every ComponentId is a UAX #31 identifier (`<type>_<n>`, was `<type>-<n>`; author ids are sanitised; the form data-model keys follow, `/form_0/...`); Tabs always has at least one tab; aliases (`data_table`, `text_input`) are emitted under their canonical type; wired extension atoms are tagged with the atoms catalogue (only components the state catalogue defines carry the state catalogue id); `bom_emitter` puts its diagnostics in `metadata.extensions.a2uicatalog_bom` and uses `title` on Tabs entries; `call_renderer_function` refuses Basic (rendererOnly) functions; the v0.9 downgrade drops the 1.0-only props `TextField.placeholder`, `Video.posterUrl`, `Slider.steps` and leaves the dataModel untouched.
+- Decoder shim: `_a2uiNormV1` unescapes `@@` literal keys. A literal sole-key `{"path": ...}` object in a 1.0 payload is still read as a binding by the old-dialect runtime (needs a runtime change; no emitter produces one).
+- Still not done: no render proof on an official v1.0 renderer (none is released); the preview/private atoms are not in the public catalogue, so a surface using them does not resolve against it.

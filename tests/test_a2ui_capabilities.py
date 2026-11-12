@@ -13,7 +13,7 @@ from renderers.a2ui_v1 import DEFAULT_CATALOG_ID, emit_messages, emit_surface
 from tests.a2ui_v1_conformance import AGENT_TO_RENDERER, assert_conforms
 
 V09_BASIC = BASIC_CATALOG_IDS["v0.9"]
-V10_BASIC = BASIC_CATALOG_IDS["v1.0"]
+V10_BASIC = BASIC_CATALOG_IDS["1.0"]
 
 PAYLOAD = {"title": "Caps", "blocks": [
     {"type": "heading", "text": "Hello"},
@@ -46,16 +46,16 @@ def test_parses_googles_v09_client_form():
 
 
 def test_parses_v10_spec_renderer_form():
-    caps = _caps(DEFAULT_CATALOG_ID, key="a2uiRendererCapabilities", version="v1.0")
-    assert caps.version == "v1.0" and caps.supports(DEFAULT_CATALOG_ID)
+    caps = _caps(DEFAULT_CATALOG_ID, key="a2uiRendererCapabilities", version="1.0")
+    assert caps.version == "1.0" and caps.supports(DEFAULT_CATALOG_ID)
 
 
 def test_v091_emits_as_v09_and_v10_preferred_when_both_offered():
     assert _caps(V09_BASIC, version="v0.9.1").version == "v0.9"
     both = parse_client_capabilities({"a2uiRendererCapabilities": {
         "v0.9": {"supportedCatalogIds": [V09_BASIC]},
-        "v1.0": {"supportedCatalogIds": [V10_BASIC]}}})
-    assert both.version == "v1.0"
+        "1.0": {"supportedCatalogIds": [V10_BASIC]}}})
+    assert both.version == "1.0"
 
 
 @pytest.mark.parametrize("meta", [None, {}, {"other": 1}, {"a2uiClientCapabilities": {"v2.0": {}}}, "x"])
@@ -74,7 +74,7 @@ def test_client_with_our_catalogue_gets_the_full_surface():
     assert ours == full
 
 
-@pytest.mark.parametrize("basic_id,version", [(V09_BASIC, "v0.9"), (V10_BASIC, "v1.0")])
+@pytest.mark.parametrize("basic_id,version", [(V09_BASIC, "v0.9"), (V10_BASIC, "1.0")])
 def test_basic_only_client_never_receives_an_undeclared_type(basic_id, version):
     msgs = emit_messages(copy.deepcopy(PAYLOAD), _caps(basic_id, version=version))
     comps = _components(msgs)
@@ -127,8 +127,8 @@ def test_v09_splits_components_into_update_components():
 
 
 def test_v10_client_gets_one_message():
-    msgs = emit_messages(copy.deepcopy(PAYLOAD), _caps(DEFAULT_CATALOG_ID, key="a2uiRendererCapabilities", version="v1.0"))
-    assert len(msgs) == 1 and msgs[0]["version"] == "v1.0"
+    msgs = emit_messages(copy.deepcopy(PAYLOAD), _caps(DEFAULT_CATALOG_ID, key="a2uiRendererCapabilities", version="1.0"))
+    assert len(msgs) == 1 and msgs[0]["version"] == "1.0"
 
 
 # ── portable standard components ──────────────────────────────────────────────
@@ -144,5 +144,28 @@ def test_v10_headings_stay_markdown_v09_headings_get_the_variant():
 
 
 def test_degraded_v10_surface_conforms_to_the_real_schema():
-    msg = emit_surface(copy.deepcopy(PAYLOAD), capabilities=_caps(V10_BASIC, version="v1.0"))
+    msg = emit_surface(copy.deepcopy(PAYLOAD), capabilities=_caps(V10_BASIC, version="1.0"))
     assert_conforms(msg, AGENT_TO_RENDERER)
+
+
+# ── legacy early-draft "v1.0" key is never negotiated (review F4) ─────────────
+def _legacy_meta(*versions):
+    return {"a2uiClientCapabilities": {v: {"supportedCatalogIds": [V10_BASIC if v == "v1.0" else V09_BASIC]} for v in versions}}
+
+
+def test_legacy_v1_0_key_never_outranks_v09():
+    caps = parse_client_capabilities(_legacy_meta("v1.0", "v0.9"))
+    assert caps.version == "v0.9"
+    msgs = emit_messages(copy.deepcopy(PAYLOAD), caps)
+    assert all(m["version"] == "v0.9" for m in msgs)
+
+
+def test_legacy_v1_0_key_alone_is_not_negotiated():
+    assert parse_client_capabilities(_legacy_meta("v1.0")) is None
+
+
+def test_final_1_0_key_still_wins_over_v09():
+    both = parse_client_capabilities({"a2uiRendererCapabilities": {"v1.0": {"supportedCatalogIds": [V10_BASIC]},
+                                                                  "1.0": {"supportedCatalogIds": [V10_BASIC]},
+                                                                  "v0.9": {"supportedCatalogIds": [V09_BASIC]}}})
+    assert both.version == "1.0"

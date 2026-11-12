@@ -133,7 +133,6 @@ server so it cannot go stale:</p>
 <ul>
 <li><a href="/openapi.json">OpenAPI Spec (OpenAPI 3.1)</a> — every endpoint, request/response schemas, examples</li>
 <li><a href="/docs/">API Docs</a> — REST endpoints, error models, and rate limits</li>
-<li><a href="/api-docs/">API Reference &amp; Docs</a> — complete endpoint and parameter directory</li>
 <li><a href="/sdks/">SDKs &amp; Client Libraries</a> — npm CLI/MCP package, Python A2A tools, and SDK generators</li>
 <li><a href="/auth/">Auth Docs</a> — authentication overview, rate limits, and enterprise OAuth</li>
 <li><a href="/webhooks/">Webhooks Docs</a> — SSE streaming, event delivery, and chat integrations</li>
@@ -163,17 +162,28 @@ access (e.g. Gemini Enterprise's BYO-MCP model).</p>
 <h2>Source</h2>
 <p>MIT licensed. Full source, issues and pull requests: <a href="{REPO}">{REPO.replace('https://','')}</a>.</p>"""),
         "docs": dict(
-            title="API Documentation",
-            desc=(f"A2UI Atomic Catalog API documentation: endpoints, OpenAPI 3.1 specification, "
-                  f"JSON schemas, MCP servers, and REST routes for AI agents."),
+            title="API Docs, OpenAPI Spec &amp; MCP Server",
+            desc=(f"A2UI Atomic Catalog API docs: the MCP server, REST endpoints, OpenAPI 3.1 "
+                  f"specification, JSON schemas and SDKs for AI agents. Free, no API key."),
             jsonld=json.dumps({
                 "@context": "https://schema.org", "@type": "APIReference",
-                "url": f"{BASE}/docs/", "name": "API Documentation — A2UI Atomic Catalog",
+                "url": f"{BASE}/docs/", "name": "API Docs, OpenAPI Spec & MCP Server — A2UI Atomic Catalog",
                 "publisher": {"@id": f"{BASE}/#org"},
             }, indent=2),
             body=f"""
 <p>Developer and API documentation for the A2UI Atomic Catalog. All developer resources are free,
 unauthenticated, and machine-readable.</p>
+<p>Primary integration surface: <a href="/mcp">the MCP server at https://a2uicatalog.ai/mcp</a> — no API
+key, no signup, <code>POST</code> JSON-RPC 2.0 directly. Documentation questions:
+<a href="/mcp-docs">the docs MCP server at /mcp-docs</a>. Contract: <a href="/openapi.json">OpenAPI 3.1
+specification</a>. Packages: <a href="/sdks/">SDKs &amp; client libraries</a>. Guide:
+<a href="/developers/">developer portal</a>.</p>
+
+<h2 id="sandbox">Sandbox and test mode</h2>
+<p>Sandbox server: <code>https://a2uicatalog.ai/api/sandbox</code>. It serves the render routes with the same code on its own allowance of 20 requests per IP per day, so test calls never spend the production one: <code>POST https://a2uicatalog.ai/api/sandbox/api/render</code>, <code>.../api/render/batch</code> and <code>.../api/render/jobs</code>. Every reply carries <code>X-A2UI-Sandbox: true</code>.</p>
+<p>Production is also safe to test against: the REST endpoints hold no production data: /api/render, /api/render/batch, /api/render/jobs, /api/compose and /api/data are side-effect free, so a test call against production cannot change anything; its only cost is quota. To try payloads by hand, use the playground at <a href="https://play.a2uicatalog.ai">play.a2uicatalog.ai</a>. On the MCP server, every tool that stores,
+sends or deletes something is annotated <code>readOnlyHint: false</code>; the read-only tools are safe to call freely
+while building an integration.</p>
 
 <h2>REST Endpoints</h2>
 <table style="width:100%;border-collapse:collapse;margin:1rem 0;font-size:.92rem;">
@@ -206,30 +216,6 @@ unauthenticated, and machine-readable.</p>
 <li><a href="/versioning.md">Versioning Policy</a> — API versioning (X-API-Version) and deprecation rules</li>
 <li><a href="/.well-known/api-catalog">RFC 9727 API Catalog</a> — linkset of all API surfaces</li>
 <li><a href="/.well-known/ard.json">ARD Discovery Catalog</a> — AI Resource Discovery index</li>
-</ul>"""),
-        "api-docs": dict(
-            title="API Docs & Reference",
-            desc=(f"A2UI Atomic Catalog API docs and reference: OpenAPI 3.1 spec, endpoints, "
-                  f"MCP servers, and integration guides."),
-            jsonld=json.dumps({
-                "@context": "https://schema.org", "@type": "APIReference",
-                "url": f"{BASE}/api-docs/", "name": "API Docs & Reference — A2UI Atomic Catalog",
-                "publisher": {"@id": f"{BASE}/#org"},
-            }, indent=2),
-            body=f"""
-<p>Predictable entry point for developer resources and API reference documents.</p>
-<p>Primary integration surface: <a href="/mcp">the MCP server at /mcp</a> — no API key, no
-signup, <code>POST</code> JSON-RPC 2.0 directly.</p>
-<ul>
-<li><a href="/docs/">API Documentation</a> — complete endpoint and protocol reference</li>
-<li><a href="/openapi.json">OpenAPI 3.1 Specification</a> — raw JSON OpenAPI contract</li>
-<li><a href="/developers/">Developers Guide</a> — human integration guide</li>
-<li><a href="/sdks/">SDKs &amp; Client Libraries</a> — packages, CLI, and integration libraries</li>
-<li><a href="/llms.txt">llms.txt</a> — LLM overview and quick links</li>
-<li><a href="/spec.json">spec.json</a> — {n} atom definitions and field contracts</li>
-<li><a href="/auth.md">Authentication Guide</a> and <a href="/.well-known/agent-auth.md">Rate Limits</a></li>
-<li><a href="/sdk.md">SDK Documentation (Markdown)</a></li>
-<li><a href="/webhooks/">Webhooks &amp; Events</a> — real-time event streaming and delivery patterns</li>
 </ul>"""),
         "auth": dict(
             title="Authentication &amp; Security Docs",
@@ -366,7 +352,7 @@ npx @a2uicatalog/mcp</code></pre>
 <h2>2. Agent Skills Integration</h2>
 <p>Installable agent skills for Claude, Cursor, and Agent Skills-compatible clients:</p>
 <pre style="background:#0e1116;color:#c7d1e0;padding:14px 16px;border-radius:8px;overflow-x:auto;"><code>npx skills add a2uicatalog/a2ui</code></pre>
-<p>Includes skills for catalog discovery (<code>a2ui-catalog</code>), composition (<code>a2ui-compose</code>), and MCP server connection (<code>a2ui-mcp</code>).</p>
+<p>Includes skills for catalog discovery (<code>a2ui-catalog</code>), composition (<code>a2ui-compose</code>), MCP server connection (<code>a2ui-mcp</code>), and plain-HTTP use from scripts and CI (<code>a2ui-rest</code>).</p>
 
 {PY_HTML}<h2>{3 + bool(PYPI_PUBLISHED)}. Python &amp; A2A SDK Integration</h2>
 <p>For Python applications using Google's A2A protocol (<code>a2a-sdk</code>), connect over JSON-RPC or use the typed extension wrappers in the open-source repository (<code>renderers/a2a_extension.py</code>).</p>

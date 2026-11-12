@@ -583,6 +583,180 @@ document.addEventListener('click',function(e){
   r.setAttribute('data-theme',t);
   try{localStorage.setItem('a2ui-theme',t)}catch(err){}
 });
+// WebMCP (W3C Web Machine Learning CG draft; Chrome origin trial 149-156,
+// shipping targeted for 157): register the catalogue's read-only tools on
+// document.modelContext, falling back to the deprecated navigator.modelContext
+// alias only when it is missing. The definitions are written out literally,
+// not built from the DOM, so tools that read them from the page source can
+// grade them. Fully inert on browsers without the API. Both tools only read
+// the public catalogue spec (same-origin /spec.json), fetched once on first call.
+(function(){
+  var mc = (typeof document!=='undefined' && document.modelContext) ||
+           (typeof navigator!=='undefined' && navigator.modelContext);
+  if(!mc || typeof mc.registerTool!=='function') return;
+  var SITE = 'https://a2uicatalog.ai';
+  var specP = null;
+  function spec(){
+    if(!specP) specP = fetch('/spec.json').then(function(r){
+      if(!r.ok) throw new Error('spec.json returned HTTP '+r.status);
+      return r.json();
+    }).catch(function(e){ specP = null; throw e; });
+    return specP;
+  }
+  function list(v){ return Array.isArray(v) ? v : []; }
+  function worksOn(a){ return list(a.surfaces && a.surfaces.works_on); }
+  function findAtom(s, t){
+    for(var i=0;i<s.atoms.length;i++){
+      var a = s.atoms[i];
+      if(a.type===t || list(a.aliases).indexOf(t)>=0) return a;
+    }
+    return null;
+  }
+  try{
+    mc.registerTool({
+      name: 'search_atoms',
+      description: 'Search the A2UI Atomic Catalog for UI atoms that fit a plain-language need, such as "image gallery" or "status timeline". Returns the best matches first, each with its type name, a one-line summary, the surfaces it works on and its page URL.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          query: {type: 'string', minLength: 1, maxLength: 200, description: 'What the UI should show or do, in plain words.'},
+          surface: {type: 'string', description: 'Only return atoms that work on this surface, such as web, email, google-chat, slides or android.'},
+          limit: {type: 'integer', minimum: 1, maximum: 25, description: 'Maximum number of matches to return (default 10).'}
+        },
+        required: ['query'],
+        additionalProperties: false
+      },
+      annotations: {readOnlyHint: true},
+      execute: function(input){
+        input = input || {};
+        var words = String(input.query||'').toLowerCase().split(/[^a-z0-9]+/).filter(function(w){ return w.length>1; });
+        var limit = Math.max(1, Math.min(25, parseInt(input.limit,10) || 10));
+        return spec().then(function(s){
+          var hits = [];
+          s.atoms.forEach(function(a){
+            if(input.surface && worksOn(a).indexOf(input.surface)<0) return;
+            var name = a.type.replace(/_/g,' ');
+            var text = [a.compact_description, a.description, a.routing_text,
+                        list(a.intent_phrases).join(' '), list(a.aliases).join(' ')].join(' ').toLowerCase();
+            var score = 0;
+            words.forEach(function(w){ if(name.indexOf(w)>=0) score += 3; else if(text.indexOf(w)>=0) score += 1; });
+            if(score) hits.push({score: score, atom: a});
+          });
+          hits.sort(function(x,y){ return y.score-x.score || (x.atom.type<y.atom.type ? -1 : 1); });
+          return {
+            query: input.query,
+            matches: hits.length,
+            atoms: hits.slice(0, limit).map(function(h){
+              var a = h.atom;
+              return {type: a.type, summary: a.compact_description || a.description,
+                      surfaces: worksOn(a), url: SITE+'/atoms/'+a.type+'/'};
+            })
+          };
+        });
+      }
+    });
+  }catch(err){/* draft API shape may still be moving -- never break the page over it */}
+  try{
+    mc.registerTool({
+      name: 'get_atom',
+      description: 'Get one A2UI Atomic Catalog atom by its type name, as returned by search_atoms. Returns its description, the payload fields it takes, where it works or degrades, its source credit and its page URL.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          type: {type: 'string', pattern: '^[a-z0-9_]+$', maxLength: 80, description: 'Atom type name, such as gallery or status_timeline.'}
+        },
+        required: ['type'],
+        additionalProperties: false
+      },
+      annotations: {readOnlyHint: true},
+      execute: function(input){
+        var t = String((input||{}).type || '');
+        return spec().then(function(s){
+          var a = findAtom(s, t);
+          if(!a) return {error: 'No atom named "'+t+'". Call search_atoms to find one.'};
+          return {type: a.type, description: a.description, fields: a.fields,
+                  surfaces: a.surfaces, source: a.source, url: SITE+'/atoms/'+a.type+'/'};
+        });
+      }
+    });
+  }catch(err){/* draft API shape may still be moving -- never break the page over it */}
+  // The two write tools call the site's own MCP server (same-origin /mcp),
+  // so they can only do what an agent connected to that server can already
+  // do. consequentialHint asks the agent to confirm with the person first.
+  function callMcp(name, args){
+    return fetch('/mcp', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json', 'Accept': 'application/json, text/event-stream'},
+      body: JSON.stringify({jsonrpc: '2.0', id: 1, method: 'tools/call', params: {name: name, arguments: args}})
+    }).then(function(r){ return r.text(); }).then(function(t){
+      t = t.trim();
+      if(t.charAt(0) !== '{'){
+        var data = t.split('\\n').filter(function(l){ return l.indexOf('data:')===0; }).pop() || '';
+        t = data.slice(5);
+      }
+      var msg = JSON.parse(t);
+      if(msg.error) throw new Error(msg.error.message || 'MCP error');
+      var res = msg.result || {};
+      if(res.structuredContent) return res.structuredContent;
+      var text = (res.content || []).map(function(c){ return c.text || ''; }).join('');
+      try{ return JSON.parse(text); }catch(e){ return {result: text}; }
+    });
+  }
+  try{
+    mc.registerTool({
+      name: 'create_share_link',
+      description: 'Create a short shareable link that renders an A2UI payload in the a2uicatalog.ai playground. Stores the payload on a2uicatalog.ai for one week; anyone with the link can view it. Returns the link, the expiry date and a delete token.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          payload: {
+            type: 'object',
+            description: 'The A2UI payload to publish: blocks built from catalogue atoms (see search_atoms and get_atom).',
+            properties: {
+              title: {type: 'string', maxLength: 200, description: 'Page title shown above the blocks.'},
+              theme: {type: 'string', enum: ['light', 'dark', 'terminal'], description: 'Colour theme for the rendered page.'},
+              blocks: {type: 'array', minItems: 1, items: {type: 'object'}, description: 'Atoms in order, each an object with a type and that atom\\'s fields.'}
+            },
+            required: ['blocks']
+          }
+        },
+        required: ['payload'],
+        additionalProperties: false
+      },
+      annotations: {readOnlyHint: false, consequentialHint: true},
+      execute: function(input){
+        return callMcp('publish_url', {payload: (input||{}).payload, acknowledge_storage: true, target: 'play'});
+      }
+    });
+  }catch(err){/* draft API shape may still be moving -- never break the page over it */}
+  try{
+    mc.registerTool({
+      name: 'delete_share_link',
+      description: 'Delete a share link made by create_share_link before it expires, using the delete token that create_share_link returned. The link stops working straight away.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          id: {type: 'string', maxLength: 200, description: 'The short link, or the id at its end.'},
+          delete_token: {type: 'string', maxLength: 64, description: 'The delete token create_share_link returned.'}
+        },
+        required: ['id', 'delete_token'],
+        additionalProperties: false
+      },
+      annotations: {readOnlyHint: false, destructiveHint: true, consequentialHint: true},
+      execute: function(input){
+        input = input || {};
+        return callMcp('unpublish_url', {id: input.id, delete_token: input.delete_token});
+      }
+    });
+  }catch(err){/* draft API shape may still be moving -- never break the page over it */}
+})();
+</script>"""
+
+
+# WebMCP for the pages that carry a [toolname] form (/try/, /frugal-ai-ops/):
+# kept separate from SITE_FOOT_JS so the catalogue tools on every other page
+# stay fully readable from the page source.
+FORM_TOOLS_JS = """<script>
 // WebMCP (W3C draft, Chrome 157+): register any [toolname]-tagged form on
 // this page as an in-page tool. Feature-guarded (navigator.modelContext is
 // the deprecated pre-Chrome-150 alias, checked as a fallback) so this is
@@ -1322,7 +1496,7 @@ def render_page(atom):
              "additionalProperty": [
                  {"@type": "PropertyValue", "name": "works on", "value": ", ".join(_surfaces)},
                  {"@type": "PropertyValue", "name": "fields", "value": ", ".join(sorted(_fields)) if isinstance(_fields, dict) else ""},
-                 {"@type": "PropertyValue", "name": "A2UI version", "value": "v1.0"},
+                 {"@type": "PropertyValue", "name": "A2UI version", "value": "1.0"},
                  {"@type": "PropertyValue", "name": "JSON Schema", "value": "https://a2uicatalog.ai/catalogue/atoms-json-schema.json"},
                  {"@type": "PropertyValue", "name": "markdown", "value": f"https://a2uicatalog.ai/atoms/{atom_type}.md"},
              ]},
@@ -2273,6 +2447,12 @@ def generate_index(atoms):
           }},
           {{
             "@type": "Question",
+            "name": "Is there a sandbox or test environment?",
+            "acceptedAnswer": {{ "@type": "Answer",
+              "text": "Yes. The sandbox server https://a2uicatalog.ai/api/sandbox runs the render routes (POST /api/sandbox/api/render, /batch, /jobs) on their own daily allowance, so tests never spend the production one. Production is also safe to test against: the REST endpoints hold no production data and are side-effect free, and the playground at https://play.a2uicatalog.ai lets you try payloads by hand. See https://a2uicatalog.ai/docs/#sandbox." }}
+          }},
+          {{
+            "@type": "Question",
             "name": "Is there a paid tier or enterprise plan?",
             "acceptedAnswer": {{ "@type": "Answer",
               "text": "No. The vocabulary is MIT licensed and the renderers are in the public repository, so anything you hit a rate limit on, you can self-host and run without limits instead of upgrading." }}
@@ -2822,7 +3002,7 @@ MCP_APPS_HOST_JS = r"""
     // Without this, a wired surface (type, no blocks) got wrapped as a single
     // unknown ATOM (the black-page incident, 2026-07-11).
     if (payload && (payload.type === 'a2ui_wired_surface' ||
-                    (payload.version === 'v1.0' && payload.createSurface))) {
+                    ((payload.version === '1.0' || payload.version === 'v1.0') && payload.createSurface))) {
       // Session token from the link (&t=): injected as app.session so the
       // view's action transport namespaces the store per tournament/session.
       var tk = (location.hash.match(/[#&]t=([\w-]{1,64})/) || [])[1];
@@ -3606,6 +3786,7 @@ def render_try_page(atom_count):
   </footer>
   </div>
   {SITE_FOOT_JS}
+  {FORM_TOOLS_JS}
   <script>
 (function(){{
   var form = document.getElementById('try-form');
@@ -3900,6 +4081,7 @@ def render_frugal_ai_ops_page():
   </footer>
   </div>
   {SITE_FOOT_JS}
+  {FORM_TOOLS_JS}
   <script type="module">
 {pdfjs_module_block()}
   </script>

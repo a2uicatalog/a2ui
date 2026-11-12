@@ -5,12 +5,14 @@ Positioning: a2uicatalog is a CATALOG for the A2UI protocol. v1.0's `createSurfa
 carries a required `catalogId`; this emitter produces conformant messages so that:
   - the ~78 high-frequency "standard-mappable" atoms render on a BARE A2UI host
     (mapped to the 18 basic-catalog components: Text/Image/Button/Card/…), and
-  - the ~421 extension atoms travel as valid components under `catalogId`
-    (a host without the catalog simply skips them — correct A2UI behaviour, not
-    a violation).
+  - the ~421 extension atoms travel as components that each carry their own `catalogId`
+    (ours); the surface default is the Basic v1.0 catalog so Text/Column resolve on a conformant renderer
+    (a host without our catalogue skips the extension ones, correct A2UI behaviour).
 
 Scope (tiers 1 + 2-core, plus Track B1 + C1 + Phase 0 schema-driven children):
-  - Full envelope/metadata: version, surfaceId, catalogId, surfaceProperties.
+  - Full envelope/metadata: version "1.0", surfaceId, catalogId (optional in 1.0),
+    components + dataModel inline in ONE createSurface, metadata.extensions
+    (no surfaceProperties and no theme field: both gone in the final spec).
   - Deterministic ID minting; flat `components` list with parent→child ID refs.
   - Standard-component mapping for clean atoms; common container inversion
     (columns, color_section, card, tabs, modal, generic `blocks`).
@@ -30,10 +32,10 @@ Scope (tiers 1 + 2-core, plus Track B1 + C1 + Phase 0 schema-driven children):
   - Safe pass-through for everything else (extension components, and any
     field this cut doesn't recognize as child-bearing at all).
   - Action-contract adapter: {ok,data,total,error} -> actionResponse {value|error}.
-  - C1 client-facing function RPC: call_function() builds the `callFunction`
-    request; function_response() adapts the catalogue envelope into the
-    `functionResponse` (success) / `error` (failure) reply pair, keyed by
-    functionCallId.
+  - C1 function RPC: call_renderer_function() builds `callRendererFunction`
+    (its `callFunction` is a FunctionCall with "@call"); agent_function_response()
+    adapts the catalogue envelope into `agentFunctionResponse` (value | error),
+    keyed by functionCallId.
 
 Deferred (flagged, not faked): the wired dialect itself (state_primitives /
 #node.prop reactive graph → catalogId: a2ui-state-v1) — row_open/row_close are
@@ -42,6 +44,7 @@ broader reactive-binding graph is not. See DEFERRED_CONTAINERS.
 
 Reference: https://a2ui.org/specification/v1.0-a2ui/
 """
+import json
 import uuid
 import re
 from typing import List, Dict, Any, Optional, Tuple
@@ -51,11 +54,16 @@ try:
 except ImportError:                                    # direct-script use, as catalog_map below
     from a2ui_capabilities import BASIC_COMPONENTS, ClientCapabilities
 
-A2UI_VERSION = "v1.0"
-# catalogId MUST be a resolvable URI (Google's basic catalog uses its full URL) — a
+A2UI_VERSION = "1.0"          # final spec: the wire `version` const is "1.0" (the early drafts used "v1.0")
+A2UI_MIME_TYPE = "application/a2ui+json"   # final spec MIME type for A2UI payloads
+# catalogId is an identifier (the Basic catalog uses its URL) (Google's basic catalog uses its full URL) — a
 # bare token can't be dereferenced by a host. This is what createSurface.catalogId
 # carries; it points at public/catalogue/a2ui-atoms-v1.json served from the site.
 DEFAULT_CATALOG_ID = "https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json"
+# v1.0 catalog resolution (evolution_guide 2.7): a component uses its own `@catalogId`, else the surface's
+# default, else it is NOT rendered. Our extension catalogue defines no Text/Column/..., so the surface default
+# is the Basic v1.0 catalog and every EXTENSION component names our catalogue itself (catalog mixing).
+BASIC_V1_CATALOG_ID = "https://a2ui.org/specification/v1_0/catalogs/basic/catalog.json"
 
 # Container atom types this cut does NOT yet transform to A2UI primitives; they
 # pass through as extension components (renderable only by a host carrying the
@@ -72,21 +80,35 @@ DEFERRED_CONTAINERS: set = {"motion_timeline"}
 
 
 # ── ID minting ────────────────────────────────────────────────────────────────
+def _uax31(s: str) -> str:
+    """Make `s` a Unicode UAX #31 identifier (`^[\\p{XID_Start}_][\\p{XID_Continue}]*$`), which v1.0 REQUIRES of
+    every ComponentId (a2ui_protocol.md, Catalog Entity Naming Rules: `user_card` is valid, `user-card` and
+    `1st_item` are not). Characters that are not word characters become `_`; a leading digit gets a `_` prefix.
+    Already-valid identifiers are returned unchanged."""
+    out = re.sub(r"\W", "_", s, flags=re.UNICODE)
+    if not out:
+        return "_"
+    return "_" + out if out[0].isdigit() else out
+
+
 class _IdGen:
-    """Deterministic, collision-free component IDs. Honours an author-supplied
-    `id` when present and unique; otherwise mints `<type>-<n>`."""
+    """Deterministic, collision-free component IDs, all valid v1.0 identifiers (UAX #31). Honours an
+    author-supplied `id` when present (sanitised if it is not an identifier) and unique; otherwise mints
+    `<type>_<n>`."""
     def __init__(self) -> None:
         self._used: set = set()
         self._n = 0
 
     def take(self, block: Dict[str, Any]) -> str:
         cid = block.get("id")
-        if isinstance(cid, str) and cid and cid not in self._used:
-            self._used.add(cid)
-            return cid
-        base = str(block.get("type", "block")).replace(" ", "_")
+        if isinstance(cid, str) and cid:
+            cid = _uax31(cid)
+            if cid not in self._used:
+                self._used.add(cid)
+                return cid
+        base = _uax31(str(block.get("type", "block")))
         while True:
-            cand = f"{base}-{self._n}"
+            cand = f"{base}_{self._n}"
             self._n += 1
             if cand not in self._used:
                 self._used.add(cand)
@@ -123,10 +145,24 @@ def _map_video(b):
     return {"component": "Video", "url": b.get("url", b.get("video_url", ""))}
 
 def _map_audio(b):
-    return {"component": "AudioPlayer", "url": b.get("audio_url", b.get("url", "")), "title": b.get("title", "")}
+    node = {"component": "AudioPlayer", "url": b.get("audio_url", b.get("url", ""))}
+    desc = b.get("description") or b.get("title")
+    if desc:
+        node["description"] = desc
+    return node
+
+_BASIC_ICON_NAMES = frozenset(['accountCircle', 'add', 'arrowBack', 'arrowForward', 'attachFile', 'calendarToday', 'call', 'camera', 'check', 'close', 'delete', 'download', 'edit', 'error', 'event', 'fastForward', 'favorite', 'favoriteOff', 'folder', 'help', 'home', 'info', 'locationOn', 'lock', 'lockOpen', 'mail', 'menu', 'moreHoriz', 'moreVert', 'notifications', 'notificationsOff', 'pause', 'payment', 'person', 'phone', 'photo', 'play', 'print', 'refresh', 'rewind', 'search', 'send', 'settings', 'share', 'shoppingCart', 'skipNext', 'skipPrevious', 'star', 'starHalf', 'starOff', 'stop', 'upload', 'visibility', 'visibilityOff', 'volumeDown', 'volumeMute', 'volumeOff', 'volumeUp', 'warning'])
+
+def _icon_basic_name(raw):
+    words = [w for w in re.split(r"[\s_\-]+", str(raw or "").strip()) if w]
+    if not words:
+        return None
+    name = words[0].lower() + "".join(w[:1].upper() + w[1:].lower() for w in words[1:])
+    return name if name in _BASIC_ICON_NAMES else None
 
 def _map_icon(b):
-    return {"component": "Icon", "name": b.get("name", b.get("icon", ""))}
+    name = _icon_basic_name(b.get("name", b.get("icon", "")))
+    return {"component": "Icon", "name": name} if name else None
 
 def _list(marker: str):
     def m(b):
@@ -266,6 +302,16 @@ def _child_blocklists(b: Dict[str, Any]) -> Optional[Tuple[str, List[Dict[str, A
     return None
 
 
+def _append_tabs(cid: str, tabs: List[Dict[str, Any]], components: List[Dict[str, Any]], ids: "_IdGen") -> None:
+    """Append a Basic Tabs component. v1.0 `Tabs.tabs` has minItems 1, so an atom with no tabs (empty
+    data) gets one untitled empty pane instead of an invalid empty array."""
+    if not tabs:
+        pane = ids.take({"type": "tab_pane"})
+        components.append({"id": pane, "component": "Column", "children": []})
+        tabs = [{"title": "", "child": pane}]
+    components.append({"id": cid, "component": "Tabs", "tabs": tabs})
+
+
 def _emit_hub(b: Dict[str, Any], cid: str, components: List[Dict[str, Any]], ids: _IdGen) -> str:
     """B1: hub (2-level subject/slide deck nav, fields: subjects[].{id,label,
     color,slides[].{id,label,blocks}}) -> nested Tabs. A2UI's basic catalog has
@@ -292,9 +338,9 @@ def _emit_hub(b: Dict[str, Any], cid: str, components: List[Dict[str, Any]], ids
             components.append({"id": col_id, "component": "Column", "children": slide_children})
             inner_tabs.append({"title": slide.get("label", ""), "child": col_id})
         inner_id = ids.take({"type": "hub_subject"})
-        components.append({"id": inner_id, "component": "Tabs", "tabs": inner_tabs})
+        _append_tabs(inner_id, inner_tabs, components, ids)
         outer_tabs.append({"title": subj.get("label", ""), "child": inner_id})
-    components.append({"id": cid, "component": "Tabs", "tabs": outer_tabs})
+    _append_tabs(cid, outer_tabs, components, ids)
     return cid
 
 
@@ -311,7 +357,7 @@ def _emit_content_tabs(b: Dict[str, Any], cid: str, components: List[Dict[str, A
         col_id = ids.take({"type": "content_tab_pane"})
         components.append({"id": col_id, "component": "Column", "children": children})
         out_tabs.append({"title": tab.get("label", ""), "child": col_id})
-    components.append({"id": cid, "component": "Tabs", "tabs": out_tabs})
+    _append_tabs(cid, out_tabs, components, ids)
     return cid
 
 
@@ -342,7 +388,7 @@ def _emit_tabs(b: Dict[str, Any], cid: str, components: List[Dict[str, Any]], id
         col_id = ids.take({"type": "tab_pane"})
         components.append({"id": col_id, "component": "Column", "children": children})
         out_tabs.append({"title": tab.get("label", ""), "child": col_id})
-    components.append({"id": cid, "component": "Tabs", "tabs": out_tabs})
+    _append_tabs(cid, out_tabs, components, ids)
     return cid
 
 
@@ -455,9 +501,16 @@ def _emit_declared_children(b: Dict[str, Any], cid: str, components: List[Dict[s
     return cid
 
 
+# Published atom aliases (atoms/schema.yaml `aliases`, spec.json): the v1.0 catalogue defines the CANONICAL name only, so an
+# alias is emitted under its canonical type (tests/test_a2ui_v1_atom_conformity.py keeps this equal to spec.json).
+ATOM_ALIASES = {"data_table": "data_table_sortable", "text_input": "form_input"}
+
+
 def _emit_block(b: Dict[str, Any], components: List[Dict[str, Any]], ids: _IdGen) -> str:
     """Append the flattened component(s) for `b` (and its descendants) to
     `components`; return this block's minted component id."""
+    if b.get("type") in ATOM_ALIASES:                       # a catalogue defines the canonical name only
+        b = dict(b, type=ATOM_ALIASES[b["type"]])
     cid = ids.take(b)
 
     if b.get("type") == "hub":
@@ -501,6 +554,29 @@ def _emit_block(b: Dict[str, Any], components: List[Dict[str, Any]], ids: _IdGen
             components.append(node)
             return cid
 
+        if comp_type == "Modal":
+            content_ids = list(child_ids)
+            if b.get("title"):
+                head_id = ids.take({"type": "modal_title"})
+                components.append({"id": head_id, "component": "Text", "text": "## " + str(b["title"])})
+                content_ids.insert(0, head_id)
+            if len(content_ids) == 1:
+                content_id = content_ids[0]
+            elif content_ids:
+                content_id = ids.take({"type": "modal_content"})
+                components.append({"id": content_id, "component": "Column", "children": content_ids})
+            else:
+                content_id = ids.take({"type": "modal_content"})
+                components.append({"id": content_id, "component": "Text", "text": ""})
+            label_id = ids.take({"type": "modal_trigger_label"})
+            components.append({"id": label_id, "component": "Text",
+                               "text": str(b.get("trigger_label") or b.get("title") or b.get("label") or "Open")})
+            trigger_id = ids.take({"type": "modal_trigger"})
+            components.append({"id": trigger_id, "component": "Button", "child": label_id,
+                               "action": {"event": {"name": "open_modal", "context": {"modal": cid}}}})
+            components.append({"id": cid, "component": "Modal", "trigger": trigger_id, "content": content_id})
+            return cid
+
         node = {"id": cid, "component": comp_type, "children": child_ids}
         # carry a light label/flourish where present (Card/Tabs/Modal titles;
         # row_bracket align). 2026-08-24: confirmed against the real basic
@@ -510,8 +586,6 @@ def _emit_block(b: Dict[str, Any], components: List[Dict[str, Any]], ids: _IdGen
         # (real, checked loss, not an oversight -- same "no basic-catalog
         # equivalent" pattern this file's own hub docstring already
         # documents for subject/slide color and hub-level background).
-        if b.get("title") and comp_type in ("Modal",):
-            node["title"] = b["title"]
         if b.get("type") == "row_bracket" and b.get("align") is not None:
             node["align"] = b["align"]
         components.append(node)
@@ -593,8 +667,8 @@ def emit_surface(payload: Dict[str, Any], surface_id: Optional[str] = None,
     surface_ext: Dict[str, Any] = {}
     if payload.get("title"):
         surface_ext["title"] = payload["title"]
-    if payload.get("theme"):
-        surface_ext["theme"] = payload["theme"]
+    if payload.get("theme"):                      # the final spec has NO theme field on createSurface/catalog:
+        surface_ext["theme"] = payload["theme"]   # keep it as our own metadata, never as a protocol field
 
     # Auto-declare the catalogs this surface draws from — DETERMINISTIC, derived from the
     # payload's atoms (renderers.catalog_map), never hand-picked. catalogId stays the base
@@ -617,9 +691,13 @@ def emit_surface(payload: Dict[str, Any], surface_id: Optional[str] = None,
         catalog_id = basic_id
         surface_ext["degraded"] = degraded
 
+    surface_default = catalog_id
+    if "degraded" not in surface_ext and catalog_id != BASIC_V1_CATALOG_ID:
+        components = _tag_extensions(components, catalog_id)   # v1.0 mixing: Basic by default, ours per component
+        surface_default = BASIC_V1_CATALOG_ID
     surface: Dict[str, Any] = {
-        "surfaceId": surface_id or _slugify(payload.get("title", "surface")),
-        "catalogId": catalog_id,
+        "surfaceId": surface_id or _default_surface_id(payload),
+        "catalogId": surface_default,
         "components": components,
     }
     if data_model:
@@ -628,6 +706,21 @@ def emit_surface(payload: Dict[str, Any], surface_id: Optional[str] = None,
         surface["metadata"] = {"extensions": {"a2uicatalog_surface": surface_ext}}
 
     return {"version": A2UI_VERSION, "createSurface": surface}
+
+
+def _tag_extensions(components: List[Dict[str, Any]], ext_catalog_id: str,
+                    overrides: Optional[Dict[str, str]] = None) -> List[Dict[str, Any]]:
+    """Give every non-Basic component its own `@catalogId` (a copy; input untouched).
+
+    v1.0 component envelope mixins are `@`-prefixed since upstream 24d1bf9 (a2ui-project/a2ui#4044): `@catalogId`,
+    `@metadata`, `@accessibility`, `@checks`; a bare `catalogId` on a component is an ordinary catalog property."""
+    out = []
+    for c in components:
+        if c.get("component") not in BASIC_COMPONENTS and "@catalogId" not in c:
+            c = dict(c)
+            c["@catalogId"] = (overrides or {}).get(c.get("id"), ext_catalog_id)
+        out.append(c)
+    return out
 
 
 # Fields an atom's readable text usually lives in, most descriptive first.
@@ -650,6 +743,9 @@ def _refs(c: Dict[str, Any]) -> List[str]:
         out += [x for x in ch if isinstance(x, str)]
     if isinstance(c.get("child"), str):
         out.append(c["child"])
+    for k in ("trigger", "content"):                      # Modal
+        if isinstance(c.get(k), str):
+            out.append(c[k])
     for t in c.get("tabs") or []:
         if isinstance(t, dict) and isinstance(t.get("child"), str):
             out.append(t["child"])
@@ -687,7 +783,7 @@ def _basic_input(cid: str, ftype: str, f: Dict[str, Any], path: str):
     """One form field (form_* atom, or a `form` atom's field entry) -> (Basic Catalog component, initial value).
     None when the type has no input equivalent."""
     label = str(f.get("label") or f.get("name") or "")
-    bind = {"path": path}
+    bind = {"@path": path}          # DataBinding position: "@path" in 1.0
     if ftype in ("form_input", "form_textarea", "text", "email", "url", "password", "number", "textarea"):
         sub = f.get("type") if ftype == "form_input" else ftype
         variant = "longText" if ftype == "form_textarea" else _TEXT_VARIANT.get(str(sub), "shortText")
@@ -739,25 +835,25 @@ def _form_to_basic(c: Dict[str, Any], data_model: Dict[str, Any]):
     if ctype == "form":
         kids, extra, ctx = [], [], {}
         if c.get("title"):
-            extra.append({"id": f"{cid}-title", "component": "Text", "text": f"## {c['title']}"})
-            kids.append(f"{cid}-title")
+            extra.append({"id": f"{cid}_title", "component": "Text", "text": f"## {c['title']}"})
+            kids.append(f"{cid}_title")
         for i, f in enumerate(c.get("fields") or []):
             if not isinstance(f, dict):
                 continue
             name = str(f.get("name") or f"field{i}")
             path = f"/{_ptr_seg(cid)}/{_ptr_seg(name)}"
-            got = _basic_input(f"{cid}-f{i}", str(f.get("type") or "text"), f, path)
+            got = _basic_input(f"{cid}_f{i}", str(f.get("type") or "text"), f, path)
             if got is None:
                 continue
             comp, init = got
             _set_ptr(data_model, path, init)
             extra.append(comp)
             kids.append(comp["id"])
-            ctx[name] = {"path": path}
-        extra.append({"id": f"{cid}-submit-t", "component": "Text", "text": str(c.get("submit_label") or "Submit")})
-        extra.append({"id": f"{cid}-submit", "component": "Button", "variant": "primary", "child": f"{cid}-submit-t",
+            ctx[name] = {"@path": path}
+        extra.append({"id": f"{cid}_submit_t", "component": "Text", "text": str(c.get("submit_label") or "Submit")})
+        extra.append({"id": f"{cid}_submit", "component": "Button", "variant": "primary", "child": f"{cid}_submit_t",
                       "action": {"event": {"name": "submit", "context": dict(ctx, form=cid)}}})
-        kids.append(f"{cid}-submit")
+        kids.append(f"{cid}_submit")
         return {"id": cid, "component": "Column", "children": kids}, extra
     if not str(ctype).startswith("form_") and ctype != "toggle_switch":
         return None
@@ -787,6 +883,9 @@ def _degrade_to_basic(components: List[Dict[str, Any]], data_model: Optional[Dic
         if c.get("component") in BASIC_COMPONENTS:
             if isinstance(c.get("child"), str):
                 single_refs.add(c["child"])
+            for k in ("trigger", "content"):
+                if isinstance(c.get(k), str):
+                    single_refs.add(c[k])
             for t in c.get("tabs") or []:
                 if isinstance(t, dict) and isinstance(t.get("child"), str):
                     single_refs.add(t["child"])
@@ -847,6 +946,32 @@ def _v09_text(c: Dict[str, Any]) -> Dict[str, Any]:
     return dict(c, text=m.group(2), variant=f"h{len(m.group(1))}")
 
 
+# Basic-component props that exist only in v1.0 (the v0.9 Basic components are closed): dropped on the v0.9 path,
+# or the whole message is invalid v0.9 (review F10: TextField.placeholder made `form`/`form_input` invalid).
+# Lossy by necessity: v0.9 has no equivalent (no placeholder, poster image or slider step).
+_V10_ONLY_PROPS = {"TextField": ("placeholder",), "Video": ("posterUrl",), "Slider": ("steps",)}
+
+
+def _v09_drop_v10_props(c: Dict[str, Any]) -> Dict[str, Any]:
+    drop = _V10_ONLY_PROPS.get(c.get("component"))
+    return {k: v for k, v in c.items() if k not in drop} if drop else c
+
+
+def _downgrade_to_v09(node: Any) -> Any:
+    """Inverse of the 1.0 `@` prefix, for DynamicValue/FunctionCall positions ONLY: an object whose sole
+    key is "@path" (DataBinding) becomes {"path": ...}; one with "@call" (FunctionCall) gets "call".
+    ChildList templates already use the unprefixed "path" in both versions and are not touched."""
+    if isinstance(node, list):
+        return [_downgrade_to_v09(x) for x in node]
+    if isinstance(node, dict):
+        if set(node) == {"@path"}:
+            return {"path": node["@path"]}
+        if "@call" in node:
+            return {("call" if k == "@call" else k): _downgrade_to_v09(v) for k, v in node.items()}
+        return {k: _downgrade_to_v09(v) for k, v in node.items()}
+    return node
+
+
 def emit_messages(payload: Dict[str, Any], capabilities: Optional[ClientCapabilities] = None,
                   surface_id: Optional[str] = None,
                   catalog_id: str = DEFAULT_CATALOG_ID) -> List[Dict[str, Any]]:
@@ -860,12 +985,20 @@ def emit_messages(payload: Dict[str, Any], capabilities: Optional[ClientCapabili
     if capabilities is None or capabilities.version != "v0.9":
         return [msg]
     create = dict(msg["createSurface"])
-    components = [_v09_text(c) for c in create.pop("components")]
+    components = [_v09_drop_v10_props(_v09_text({k: v for k, v in c.items() if k != "@catalogId"}))
+                  for c in create.pop("components")]
+    if "degraded" not in (((msg["createSurface"].get("metadata") or {}).get("extensions") or {})
+                          .get("a2uicatalog_surface") or {}):
+        create["catalogId"] = catalog_id              # v0.9 path unchanged: our catalogue is the surface default
     data_model = create.pop("dataModel", None)        # v0.9 sets data with its own message, not in createSurface
     # v0.9's createSurface is closed (surfaceId, catalogId, theme): metadata.extensions arrived in v1.0, so
     # a v0.9 message carrying it is invalid v0.9 (androidx's alpha parser happens to tolerate it). Checked
     # against the vendored v0.9 spec, tests/fixtures/a2ui_v0_9_spec (2026-10-05).
     create.pop("metadata", None)
+    # Only COMPONENT props are downgraded (binding/call positions: Basic props and, because the catalogue types
+    # every extension prop as a Dynamic* value, extension props). The dataModel is literal data and is never
+    # rewritten (review F15): in 1.0 a sole-key "@path" object cannot occur in it, a literal one is "@@path".
+    components = _downgrade_to_v09(components)
     out = [{"version": "v0.9", "createSurface": create}]
     if data_model:                                   # before the components, so input bindings resolve at once
         out.append({"version": "v0.9", "updateDataModel": {"surfaceId": create["surfaceId"], "path": "/", "value": data_model}})
@@ -910,20 +1043,38 @@ def emit_messages(payload: Dict[str, Any], capabilities: Optional[ClientCapabili
 # Both response messages wrap the SAME common_types.json#/$defs/FunctionResponse
 # shape ({functionCallId, value|error} — no `call` field at all, confirmed;
 # the old function_response()'s assumption of one was never real either).
+# Every function in the v1.0 Basic catalog is `allowedCallers: rendererOnly` (the default; `openUrl` also
+# requiresUserActivation). A conformant renderer answers an agent's callRendererFunction for one of them with
+# INVALID_FUNCTION_CALL, so building that message is a bug (review F13), not a request.
+BASIC_RENDERER_ONLY_FUNCTIONS = frozenset({
+    "required", "regex", "length", "numeric", "email", "formatString", "formatNumber", "formatCurrency",
+    "formatDate", "pluralize", "openUrl", "and", "or", "not"})
+_BASIC_CATALOG_ALIASES = ("https://a2ui.org/specification/v1_0/catalog.json",)
+
+
 def call_renderer_function(catalog_id: str, call: str, args: Optional[Dict[str, Any]] = None,
-                           function_call_id: Optional[str] = None) -> Dict[str, Any]:
+                           function_call_id: Optional[str] = None, check_callers: bool = True) -> Dict[str, Any]:
     """Build a v1.0 `callRendererFunction` message: ask the renderer to
     execute `call` (a function registered under `catalog_id`) with `args`.
     catalogId is REQUIRED on the real schema — unlike everything else in
     this module, there is no sensible default; the caller must know which
     catalog the function it's calling belongs to. Auto-mints a
-    functionCallId if the caller doesn't supply one."""
+    functionCallId if the caller doesn't supply one.
+
+    Raises ValueError when `call` is a Basic-catalog function: all of them are rendererOnly, so a
+    conformant renderer would reject the call (pass check_callers=False only to build a deliberately
+    non-callable message, e.g. for a negative test). Functions of other catalogs are not checked here:
+    their `allowedCallers` lives in that catalog's definition."""
+    if check_callers and catalog_id in (BASIC_V1_CATALOG_ID,) + _BASIC_CATALOG_ALIASES \
+            and call in BASIC_RENDERER_ONLY_FUNCTIONS:
+        raise ValueError(f"{call!r} is a rendererOnly function of the Basic catalog: an agent may not call it "
+                         "(renderer answers INVALID_FUNCTION_CALL)")
     fid = function_call_id or f"{call}-{uuid.uuid4().hex[:8]}"
     return {
         "version": A2UI_VERSION,
         "callRendererFunction": {
             "functionCallId": fid,
-            "callFunction": {"catalogId": catalog_id, "call": call, "args": args or {}},
+            "callFunction": {"catalogId": catalog_id, "@call": call, "args": args or {}},
         },
     }
 
@@ -949,6 +1100,15 @@ def agent_function_response(envelope: Dict[str, Any], function_call_id: str) -> 
     envelope into the real FunctionResponse shape."""
     return {"version": A2UI_VERSION,
             "agentFunctionResponse": _function_response_body(envelope, function_call_id)}
+
+
+def _default_surface_id(payload: Dict[str, Any]) -> str:
+    """slug(title) + a short digest of the payload. v1.0 makes a duplicate surfaceId an error, and two
+    payloads titled "Report" (or none: "surface") used to collide. The digest is deterministic, so the same
+    payload always yields the same id; pass surface_id= to choose one."""
+    import hashlib
+    body = json.dumps(payload, sort_keys=True, default=str, ensure_ascii=False).encode("utf-8")
+    return f"{_slugify(payload.get('title', 'surface'))}-{hashlib.sha1(body).hexdigest()[:8]}"
 
 
 def _slugify(s: str) -> str:

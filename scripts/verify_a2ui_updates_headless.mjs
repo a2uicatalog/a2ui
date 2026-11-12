@@ -54,13 +54,13 @@ try {
 
   await step("initial render (ValueStore initialValue=0)", null, "0");
   await step("updateDataModel /msg_count value=42 repaints",
-    () => window.__engine.applyA2uiUpdate({ version: "v1.0", updateDataModel: { surfaceId: "s", path: "/msg_count", value: 42 } }),
+    () => window.__engine.applyA2uiUpdate({ version: "1.0", updateDataModel: { surfaceId: "s", path: "/msg_count", value: 42 } }),
     "42");
   await step("updateDataModel /msg_count value={a:1}",
-    () => window.__engine.applyA2uiUpdate({ version: "v1.0", updateDataModel: { surfaceId: "s", path: "/msg_count", value: { a: 1 } } }),
+    () => window.__engine.applyA2uiUpdate({ version: "1.0", updateDataModel: { surfaceId: "s", path: "/msg_count", value: { a: 1 } } }),
     JSON.stringify({ a: 1 }));
   await step("deep-path patch /msg_count/a value=9 repaints",
-    () => window.__engine.applyA2uiUpdate({ version: "v1.0", updateDataModel: { surfaceId: "s", path: "/msg_count/a", value: 9 } }),
+    () => window.__engine.applyA2uiUpdate({ version: "1.0", updateDataModel: { surfaceId: "s", path: "/msg_count/a", value: 9 } }),
     JSON.stringify({ a: 9 }));
 
   if (errors.length) { console.log("  page errors: " + errors.join(" | ")); fail += errors.length; }

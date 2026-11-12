@@ -1,0 +1,18 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "ai.a2uicatalog/catalog",
+  "title": "A2UI Atomic Catalog",
+  "description": "500+ typed UI atoms an agent composes into real rendered interfaces. Free, no API key.",
+  "websiteUrl": "https://a2uicatalog.ai/",
+  "repository": {
+    "url": "https://github.com/a2uicatalog/a2ui",
+    "source": "github"
+  },
+  "version": "1.0.0",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://a2uicatalog.ai/mcp"
+    }
+  ]
+}

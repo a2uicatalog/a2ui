@@ -152,7 +152,7 @@ window.addEventListener('load', function () {
     m = re.search(r'<pre id="out">(.*?)</pre>', p.stdout, re.S)
     assert m, p.stdout[-800:]
     msg = json.loads(m.group(1).replace("&quot;", '"').replace("&amp;", "&"))
-    assert msg["version"] == "v1.0"
+    assert msg["version"] == "1.0"
     a = msg["action"]
     assert a["name"] == "book" and a["surfaceId"] == "booking" and a["sourceComponentId"] == "go" and a["timestamp"]
     assert a["context"] == {"who": "Grace", "agree": True, "size": ["s"], "guests": 5, "day": "2026-10-20", "source": "test"}
@@ -179,21 +179,21 @@ def _caps(version):
 
 
 def test_basic_only_client_gets_real_inputs():
-    cs = emit_surface(FORM_PAYLOAD, capabilities=_caps("v1.0"))["createSurface"]
+    cs = emit_surface(FORM_PAYLOAD, capabilities=_caps("1.0"))["createSurface"]
     by = {c["id"]: c for c in cs["components"]}
     kinds = sorted(c["component"] for c in cs["components"])
     assert all(k in SPEC_COMPONENTS for k in kinds), kinds
     for k in ("TextField", "Slider", "ChoicePicker", "DateTimeInput", "CheckBox", "Button"):
         assert k in kinds, k
-    assert by["form-0-f1"]["variant"] == "obscured"
-    assert cs["dataModel"]["form-0"]["name"] == "" and cs["dataModel"]["remember"] is True
-    ctx = by["form-0-submit"]["action"]["event"]["context"]
-    assert ctx["name"] == {"path": "/form-0/name"} and ctx["form"] == "form-0" and len(ctx) == 7
+    assert by["form_0_f1"]["variant"] == "obscured"
+    assert cs["dataModel"]["form_0"]["name"] == "" and cs["dataModel"]["remember"] is True
+    ctx = by["form_0_submit"]["action"]["event"]["context"]
+    assert ctx["name"] == {"@path": "/form_0/name"} and ctx["form"] == "form_0" and len(ctx) == 7
 
 
 def test_catalog_client_keeps_the_richer_form_atoms():
-    caps = parse_client_capabilities({"a2uiClientCapabilities": {"v1.0": {"supportedCatalogIds": [
-        BASIC_CATALOG_IDS["v1.0"], "https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json"]}}})
+    caps = parse_client_capabilities({"a2uiClientCapabilities": {"1.0": {"supportedCatalogIds": [
+        BASIC_CATALOG_IDS["1.0"], "https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json"]}}})
     cs = emit_surface(FORM_PAYLOAD, capabilities=caps)["createSurface"]
     assert "form" in [c["component"] for c in cs["components"]] and "dataModel" not in cs
 
@@ -201,13 +201,13 @@ def test_catalog_client_keeps_the_richer_form_atoms():
 def test_v09_split_sends_the_data_before_the_components():
     msgs = emit_messages(FORM_PAYLOAD, capabilities=_caps("v0.9"))
     assert [next(k for k in m if k != "version") for m in msgs] == ["createSurface", "updateDataModel", "updateComponents"]
-    assert msgs[1]["updateDataModel"]["path"] == "/" and "form-0" in msgs[1]["updateDataModel"]["value"]
+    assert msgs[1]["updateDataModel"]["path"] == "/" and "form_0" in msgs[1]["updateDataModel"]["value"]
     assert "dataModel" not in msgs[0]["createSurface"]
 
 
 def test_degraded_form_is_interactive_in_our_own_web_renderer(core_js):
-    html = _render(core_js, emit_surface(FORM_PAYLOAD, capabilities=_caps("v1.0"))["createSurface"])
-    assert 'data-a2ui-bind="/form-0/name"' in html and 'id="a2rt-' in html and "data-a2ui-action=" in html
+    html = _render(core_js, emit_surface(FORM_PAYLOAD, capabilities=_caps("1.0"))["createSurface"])
+    assert 'data-a2ui-bind="/form_0/name"' in html and 'id="a2rt-' in html and "data-a2ui-action=" in html
 
 
 # ── v0.9 is a DOWNGRADE for renderers that ask for it: validate it against v0.9 itself ───────
@@ -225,7 +225,7 @@ def test_v09_downgrade_conforms_to_the_v09_spec(with_catalog):
 
 
 def test_default_emit_is_still_v1():
-    assert emit_messages(FORM_PAYLOAD)[0]["version"] == "v1.0"
+    assert emit_messages(FORM_PAYLOAD)[0]["version"] == "1.0"
 
 
 # ── the fuzzers in a2ui-private/security/xss-fuzz drive schema.yaml ATOMS; the 18 spec components

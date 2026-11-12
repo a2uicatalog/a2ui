@@ -19,6 +19,7 @@ Run:
 """
 import json
 import os
+import re
 import shutil
 import sys
 
@@ -42,35 +43,57 @@ BASE_URL = "https://a2uicatalog.ai"
 # under the top-level `components`/`functions` keys, each component carrying a
 # `component: {const: <name>}` discriminator and referencing ComponentCommon.
 JSON_SCHEMA_DRAFT = "https://json-schema.org/draft/2020-12/schema"
-_COMMON_TYPES = "https://a2ui.org/specification/v1_0/common_types.json#/$defs/"
-COMPONENT_COMMON_REF = _COMMON_TYPES + "ComponentCommon"
+# v1.0 rule (evolution_guide, "Use relative standard type references"; catalog loaders reject any
+# $ref that is not the catalog's own #/components|functions|$defs or common_types.json): RELATIVE refs.
+# ComponentCommon (id/@accessibility/@catalogId/@metadata, + Checkable's @checks) is composed by the ENVELOPE (agent_to_renderer
+# Component), exactly as the Basic catalog does, so component definitions do NOT $ref it.
+_COMMON_TYPES = "common_types.json#/$defs/"
+PROTOCOL_VERSION = "1.0"
+# ComponentCommon property names: an atom field with the same name would shadow the envelope's own
+# property (e.g. `id` = the ComponentId), so such fields are not declared in the component schema.
+# Since upstream a2ui-project/a2ui 24d1bf9 (#4044) the other envelope mixins live in the reserved `@` namespace
+# (`@catalogId`, `@metadata`, `@accessibility`, `@checks`), so an atom MAY declare a plain `catalogId`,
+# `metadata`, `accessibility` or `checks` property (brick_build_3d's `checks` is one): it no longer collides.
+_ENVELOPE_PROPS = {"id", "@catalogId", "@accessibility", "@metadata", "@checks"}
+# Sentence carried in each extension catalogue's `instructions` (agents read it): the v1.0 component envelope keys.
+ENVELOPE_NOTE = ("Component envelope keys are `@`-prefixed in A2UI v1.0: `@catalogId` (set it on every component of "
+                 "this catalogue when the surface default is another catalog), `@metadata`, `@accessibility`, "
+                 "`@checks`; only `id` and `component` are unprefixed, and a plain `catalogId`, `metadata`, "
+                 "`accessibility` or `checks` is an ordinary component property.")
 # typed, BINDABLE property refs — v1.0 conformance: a host learns which props accept
 # a `{path}` data-binding from these (Google's basic catalog types every prop this way).
 DYNAMIC_STRING_REF = _COMMON_TYPES + "DynamicString"
-CHILD_LIST_REF = _COMMON_TYPES + "ChildList"
+DYNAMIC_NUMBER_REF = _COMMON_TYPES + "DynamicNumber"
+DYNAMIC_BOOLEAN_REF = _COMMON_TYPES + "DynamicBoolean"
+DYNAMIC_VALUE_REF = _COMMON_TYPES + "DynamicValue"
 ATOMS_CATALOG_ID = "a2ui-atoms-v1"                                   # slug / filename
-# The catalogId/$id MUST be a resolvable URI (Google's is the full catalog.json URL);
-# a bare token can't be dereferenced. This is what createSurface.catalogId points at.
+# The catalogId/$id is an identifier; we use the URL the document is served at (as the Basic catalog does).
+# This is what createSurface.catalogId points at.
 ATOMS_CATALOG_URI = f"{BASE_URL}/catalogue/{ATOMS_CATALOG_ID}.json"
 
-# field-name hints for component-child lists (-> ChildList of ComponentId refs)
-_CHILD_FIELDS = {"blocks", "children", "items", "tabs", "slides", "panes", "content"}
 
 
 def _prop_schema(fname, fspec):
-    """Type a component property. Bindable display strings -> DynamicString; child
-    block-lists -> ChildList; everything else keeps a loose json type + description.
-    Conservative: types the common bindable cases so a host/validator isn't blind to
-    them, without over-asserting a precise type for every prose field hint."""
+    """Type a component property with the v1.0 Dynamic* types, so a host learns that any prop
+    may be bound (`{"@path"}`) or computed (`{"@call"}`) as well as a literal: display strings ->
+    DynamicString, numbers -> DynamicNumber, booleans -> DynamicBoolean, arrays/objects ->
+    DynamicValue. ChildList (an array of component IDs / a template) is deliberately NOT inferred
+    from field names: our atoms carry inline data arrays and inline atom objects under names like
+    `items`/`blocks`/`tabs`/`content`, which are not component IDs (typing them ChildList made 41 of
+    179 demo components invalid against this very catalogue, found by the 2026-11-10 conformity sweep).
+    Fields whose type cannot be inferred carry only their description."""
     s = str(fspec)
     low = s.lower()
-    if fname in _CHILD_FIELDS or ("array" in low and any(w in low for w in
-            ("block", "component", "atom", "slide"))):
-        return {"$ref": CHILD_LIST_REF, "description": s}
     if low.startswith("string") and "array" not in low:            # bindable display string
         return {"$ref": DYNAMIC_STRING_REF, "description": s}
     prop = {"description": s}
     jt = _json_type(fspec)
+    if jt == "number":
+        return {"$ref": DYNAMIC_NUMBER_REF, "description": s}
+    if jt == "boolean":
+        return {"$ref": DYNAMIC_BOOLEAN_REF, "description": s}
+    if jt in ("array", "object"):
+        return {"$ref": DYNAMIC_VALUE_REF, "description": s}
     if jt:
         prop["type"] = jt
     return prop
@@ -178,6 +201,19 @@ def _json_type(field_spec: str):
     return None
 
 
+# "required" as a marker, not as a word in prose. The old test (the word anywhere in the field text) made 18
+# fields required by accident ("e.g. ['required']" validation-rule examples, "required HTTP headers", "XP
+# required to reach the next level", one-of groups), so a conformant v1.0 loader rejected real payloads
+# (found by the 2026-11-10 conformity sweep). Marker forms: "(required...)" or a leading "required".
+_REQUIRED_MARK = re.compile(r"\(\s*required\b|^\s*(?:\w+\s+)?required\b", re.I)
+_LEADING_OPTIONAL = re.compile(r"^\W*\w+\W*\(\s*optional", re.I)
+
+
+def _is_required(fspec) -> bool:
+    s = str(fspec)
+    return bool(_REQUIRED_MARK.search(s)) and not _LEADING_OPTIONAL.search(s)
+
+
 def _component_def(atom: dict) -> dict:
     """One A2UI-v1.0 component definition for an atom: a JSON-Schema object
     with the `component: {const: <type>}` discriminator + a property per field,
@@ -185,20 +221,23 @@ def _component_def(atom: dict) -> dict:
     props = {"component": {"const": atom["type"]}}
     required = ["component"]
     for fname, fspec in (atom.get("fields") or {}).items():
+        if fname in _ENVELOPE_PROPS:
+            continue
         props[fname] = _prop_schema(fname, fspec)
         # requiredness is OPT-IN: only fields whose spec explicitly says "required".
         # The old rule (required unless the word "optional" appeared) marked 215
         # defaulted/example fields required — strict validators then REJECTED real
         # payloads (whole-system roast, 2026-07-05). False-accept beats false-reject
         # for a catalog; the durable fix is structured field metadata in schema.yaml.
-        if "required" in str(fspec).lower():
+        if _is_required(fspec):
             required.append(fname)
-    inner = {"type": "object", "properties": props, "required": required}
+    # Same shape as the Basic / VegaChart catalogs: {type, description, properties, required};
+    # no unevaluatedProperties:false (it would reject the envelope's id/@catalogId/@accessibility).
     definition = {
         "type": "object",
         "description": atom.get("description", ""),
-        "allOf": [{"$ref": COMPONENT_COMMON_REF}, inner],
-        "unevaluatedProperties": False,
+        "properties": props,
+        "required": required,
     }
     surfaces = atom.get("surfaces", {}).get("works_on")
     if surfaces:
@@ -210,6 +249,18 @@ def _component_def(atom: dict) -> dict:
     if atom.get("intent_phrases"):
         definition["x-intent-phrases"] = atom["intent_phrases"]
     return definition
+
+
+def catalog_defs(components, functions=None):
+    """`$defs.anyComponent` / `anyFunction` (required by the catalog definition schema): oneOf the
+    catalog's own components/functions with the `component` discriminator, as Basic and VegaChart do.
+    No functions -> anyFunction is `{"not": {}}` (the VegaChart idiom: nothing matches)."""
+    return {
+        "anyComponent": {"oneOf": [{"$ref": f"#/components/{n}"} for n in components],
+                         "discriminator": {"propertyName": "component"}},
+        "anyFunction": ({"oneOf": [{"$ref": f"#/functions/{n}"} for n in functions]}
+                        if functions else {"not": {}}),
+    }
 
 
 def gen_atoms_catalog(blocks):
@@ -224,6 +275,7 @@ def gen_atoms_catalog(blocks):
     return {
         "$schema": JSON_SCHEMA_DRAFT,
         "$id": ATOMS_CATALOG_URI,
+        "protocolVersion": PROTOCOL_VERSION,
         "catalogId": ATOMS_CATALOG_URI,
         "title": "A2UI Atoms Catalog",
         "description": ("The A2UI multi-surface atom vocabulary as an A2UI-v1.0 "
@@ -234,10 +286,11 @@ def gen_atoms_catalog(blocks):
         "instructions": ("Every key under `components` is a valid `component` value "
                          f"({len(components)} components). Compose layouts with "
                          "Column/Row containers; each component's fields are its "
-                         f"properties. Canonical URI: {ATOMS_CATALOG_URI} — full prose "
+                         f"properties. {ENVELOPE_NOTE} Canonical URI: {ATOMS_CATALOG_URI} — full prose "
                          f"spec (descriptions, surfaces, attribution): {BASE_URL}/spec.json"),
         "components": components,
         "functions": {},
+        "$defs": catalog_defs(components),
     }
 
 
