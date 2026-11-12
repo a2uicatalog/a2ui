@@ -3193,6 +3193,11 @@ def generate_index(atoms):
   <title>A2UI Atomic Catalog — A2UI Components for AI Agents &amp; MCP</title>
   <meta name="description" content="A2UI Atomic Catalog (a2uicatalog): {atom_count_rounded} typed A2UI components for AI agents. MCP-ready, no model-written HTML; renders on web, Meet, Chat, Android, Slides.">
   <link rel="canonical" href="https://a2uicatalog.ai/">
+  <!-- French landing page (2026-11-12): a French search for "catalogue A2UI" ranked a
+       French page above us. The brand stays "Catalog"; /fr/ carries the French spelling. -->
+  <link rel="alternate" hreflang="en" href="https://a2uicatalog.ai/">
+  <link rel="alternate" hreflang="fr" href="https://a2uicatalog.ai/fr/">
+  <link rel="alternate" hreflang="x-default" href="https://a2uicatalog.ai/">
   <link rel="ai-catalog" type="application/json" href="/.well-known/ard.json">
   <link rel="ard-catalog" type="application/json" href="/.well-known/ard.json">
   <!-- The machine surface, advertised from the front door. Added 2026-08-02:
@@ -3227,7 +3232,7 @@ def generate_index(atoms):
         "@type": "SoftwareApplication",
         "@id": "https://a2uicatalog.ai/#software",
         "name": "A2UI Catalog",
-        "alternateName": ["A2UI Atomic Catalog", "a2uicatalog"],
+        "alternateName": ["A2UI Atomic Catalog", "a2uicatalog", "A2UI Catalogue", "Catalogue A2UI"],
         "url": "https://a2uicatalog.ai",
         "description": "{atom_count_rounded} typed UI atoms for web, Google Meet, Apps Script, MCP Apps, and Chat. ARD-compliant catalog.",
         "applicationCategory": "DeveloperApplication",
@@ -3424,7 +3429,7 @@ def generate_index(atoms):
   <div class="grid" id="grid">
 {cards_html}  </div>
   <footer>
-    <span>A2UI Atomic Catalog · <a href="/atoms/">All atoms A–Z</a> · <a href="/docs/">API Documentation</a> · <a href="/developers/">Developers</a> · <a href="https://github.com/a2uicatalog/a2ui">GitHub</a> · Maintained by <a href="https://www.linkedin.com/in/curtiskrygier" rel="me author">Curtis Krygier</a></span>
+    <span>A2UI Atomic Catalog · <a href="/atoms/">All atoms A–Z</a> · <a href="/docs/">API Documentation</a> · <a href="/developers/">Developers</a> · <a href="https://github.com/a2uicatalog/a2ui">GitHub</a> · <a href="/fr/" hreflang="fr" lang="fr">Catalogue A2UI en français</a> · Maintained by <a href="https://www.linkedin.com/in/curtiskrygier" rel="me author">Curtis Krygier</a></span>
     <span><strong>A2UI is an open protocol (a2ui.org). a2uicatalog.ai is an independent catalogue of components built on it.</strong> Independent, unofficial catalog — not affiliated with, endorsed by, or sponsored by Google, Anthropic or OpenAI. A2UI is Google's protocol; official spec at <a href="https://a2ui.org">a2ui.org</a>. MCP is Anthropic's protocol; Claude, the Claude logo and Anthropic are trademarks of Anthropic PBC. ChatGPT and OpenAI are trademarks of OpenAI, L.L.C. All other marks belong to their respective owners.</span>
     <span><a href="/.well-known/ard.json">ARD discovery catalog (JSON)</a></span>
   </footer>

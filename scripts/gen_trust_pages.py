@@ -638,6 +638,98 @@ Static channels (`email`, `pdf`) need the image/print path, not interactive atom
 """
 
 
+# French landing page (2026-11-12, owner go). A French search for "catalogue A2UI" ranked a
+# French competitor's page above us: their title and <h1> were the exact words, ours spell it
+# "Catalog". The brand stays "A2UI Atomic Catalog" (owner: "as long as we retain catalog"); this
+# page carries the French spelling and wording, paired with the homepage by hreflang both ways.
+FR_PAGE = """<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Catalogue A2UI — composants A2UI pour agents IA · A2UI Atomic Catalog</title>
+<meta name="description" content="Catalogue A2UI open source : {n} composants A2UI typés pour agents IA. Serveur MCP gratuit, sans clé ni inscription. Rendu web, Google Meet, Apps Script, Chat, Android, Slides.">
+<link rel="canonical" href="{base}/fr/">
+<link rel="alternate" hreflang="en" href="{base}/">
+<link rel="alternate" hreflang="fr" href="{base}/fr/">
+<link rel="alternate" hreflang="x-default" href="{base}/">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:title" content="Catalogue A2UI — A2UI Atomic Catalog">
+<meta property="og:description" content="{n} composants A2UI typés avec lesquels un agent IA construit de vraies interfaces, au lieu de générer du HTML.">
+<meta property="og:url" content="{base}/fr/">
+<meta property="og:image" content="{base}/brand/og-card.png">
+<script type="application/ld+json">
+{jsonld}
+</script>
+{site_head_js}
+<style>{site_css}
+.trust{{max-width:860px;margin:0 auto;padding:36px 24px 72px}}
+.trust .wrap{{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+ padding:40px 44px;box-shadow:var(--shadow)}}
+.trust h1{{margin:0 0 6px;font-size:2rem;font-weight:800;letter-spacing:-.02em}}
+.trust h2{{font-size:1.15rem;margin:2rem 0 .5rem}}
+.trust p.k{{color:var(--text-muted);font-size:.78rem;letter-spacing:.09em;text-transform:uppercase;font-weight:650;margin:0 0 26px}}
+.trust .wrap p,.trust .wrap li{{color:var(--text)}}
+.trust a{{color:var(--accent)}}
+.trust code{{background:var(--code-bg);padding:2px 6px;border-radius:5px;font-size:.9em;font-family:ui-monospace,'SF Mono',Monaco,monospace}}
+.trust pre code{{background:none;padding:0;border-radius:0}}
+.trust footer{{margin-top:22px;padding-top:0;border-top:0;font-size:.78rem;color:var(--text-muted);display:block}}
+@media(max-width:640px){{.trust{{padding:24px 16px 56px}}.trust .wrap{{padding:28px 20px}}}}
+</style>
+</head>
+<body>
+{site_header}
+<main class="trust">
+<div class="wrap">
+<h1>Catalogue A2UI</h1>
+<p class="k">A2UI Atomic Catalog, en français</p>
+
+<p>L’<strong>A2UI Atomic Catalog</strong> (a2uicatalog) est un catalogue open source de {n} composants
+A2UI typés, les « atomes », avec lesquels un agent IA construit de vraies interfaces au lieu de
+générer du HTML. Le nom du projet reste en anglais ; le reste du site aussi.</p>
+
+<h2>Qu’est-ce qu’A2UI ?</h2>
+<p>A2UI (<span lang="en">Agent-to-User Interface</span>) est un protocole ouvert de Google. L’agent décrit
+l’interface en JSON ; un moteur de rendu l’affiche avec ses propres composants. L’agent n’envoie
+jamais de code exécutable. Spécification officielle : <a href="https://a2ui.org" hreflang="en">a2ui.org</a>
+(en anglais). Guide pas à pas : <a href="/what-is-a2ui/" hreflang="en">What is A2UI?</a> (en anglais).</p>
+
+<h2>Ce que contient le catalogue</h2>
+<ul>
+<li>{n} atomes typés (cartes, tableaux, graphiques, formulaires…), chacun avec son contrat de champs dans
+<a href="/spec.json"><code>/spec.json</code></a>.</li>
+<li>Un serveur MCP gratuit à <code>https://a2uicatalog.ai/mcp</code>, sans clé d’API ni inscription,
+inscrit au registre officiel MCP sous <code>ai.a2uicatalog/catalog</code>.</li>
+<li>Une API REST décrite en OpenAPI 3.1 : <code>POST /api/render</code> renvoie une page HTML complète,
+et un bac à sable (<code>/api/sandbox</code>) permet de tester sans entamer le quota.</li>
+<li>Des moteurs de rendu pour le web, Google Meet, Google Apps Script, Google Chat, les hôtes MCP Apps et
+Android, ainsi que la génération de présentations Google Slides et PowerPoint.</li>
+</ul>
+
+<h2>Démarrer</h2>
+<pre style="background:#0e1116;color:#c7d1e0;padding:14px 16px;border-radius:8px;overflow-x:auto;"><code>POST https://a2uicatalog.ai/mcp
+Content-Type: application/json
+
+{{"jsonrpc": "2.0", "id": 1, "method": "tools/list"}}</code></pre>
+<p>Pour essayer un document A2UI à la main : le <a href="https://play.a2uicatalog.ai">bac à sable interactif</a>.
+Pour parcourir les composants : <a href="/atoms/">tous les atomes de A à Z</a>.
+Documentation d’intégration : <a href="/docs/" hreflang="en">/docs/</a> (en anglais).</p>
+
+<h2>Licence et statut</h2>
+<p>Gratuit, sous licence MIT ; le code source est sur <a href="{repo}">GitHub</a>. Projet indépendant et non
+officiel, basé en France : il n’est ni affilié à Google, Anthropic ou OpenAI, ni approuvé ou parrainé par eux.
+A2UI est le protocole de Google ; MCP celui d’Anthropic.</p>
+<p><a href="/" hreflang="en" lang="en">A2UI Atomic Catalog — English homepage</a></p>
+</div>
+<footer>Catalogue indépendant et non officiel. Maintenu par <a href="{li}">Curtis Krygier</a>. Licence MIT.</footer>
+</main>
+{site_foot_js}
+</body>
+</html>
+"""
+
+
 # The 404 page. Was hand-maintained (and the odd one out: no header, no tokens); now generated with
 # the same chrome as every other page so a brand change reaches it too. Deliberately no canonical/og:
 # an error page must not be indexed or shared as the site's identity.
@@ -704,6 +796,19 @@ def main():
         f.write(NOT_FOUND_PAGE.format(li=LINKEDIN, site_head_js=_site.SITE_HEAD_JS, site_css=_site.SITE_BASE_CSS,
                                       site_header=_site.site_header(""), site_foot_js=_site.SITE_FOOT_JS))
     print("wrote public/404.html")
+
+    fr_dir = os.path.join(PUBLIC, "fr")
+    os.makedirs(fr_dir, exist_ok=True)
+    fr_jsonld = json.dumps({
+        "@context": "https://schema.org", "@type": "WebPage",
+        "url": f"{BASE}/fr/", "name": "Catalogue A2UI — A2UI Atomic Catalog", "inLanguage": "fr",
+        "about": {"@id": f"{BASE}/#software"}, "publisher": {"@id": f"{BASE}/#org"},
+    }, indent=2, ensure_ascii=False)
+    with open(os.path.join(fr_dir, "index.html"), "w", encoding="utf-8") as f:
+        f.write(FR_PAGE.format(n=n, base=BASE, li=LINKEDIN, repo=REPO, jsonld=fr_jsonld,
+                               site_head_js=_site.SITE_HEAD_JS, site_css=_site.SITE_BASE_CSS,
+                               site_header=_site.site_header(""), site_foot_js=_site.SITE_FOOT_JS))
+    print("wrote public/fr/index.html")
 
     with open(os.path.join(PUBLIC, "agents.md"), "w", encoding="utf-8") as f:
         f.write(AGENTS_MD.format(n=n))

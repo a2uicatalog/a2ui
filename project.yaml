@@ -59,6 +59,7 @@ policy:
     - public/renderer.md
     - public/webhooks.md
     - public/what-is-a2ui.md
+    - public/fr.md
     - public/404.html
     # Agent-readiness artefacts, declared 2026-08-02 against an external scan.
     # pricing.md exists because agents need machine-readable cost to recommend
@@ -91,6 +92,7 @@ policy:
     - public/versioning/**
     - public/pricing/**
     - public/about/**
+    - public/fr/**   # French landing page (gen_trust_pages.py, 2026-11-12)
     - public/what-is-a2ui/**   # pillar guide page, published on Curtis's go-ahead 2026-10-05
     - public/contact/**
     - public/privacy/**
@@ -492,7 +494,7 @@ generators:
   gen_trust_pages:
     script: scripts/gen_trust_pages.py
     source: public/spec.json (itself compiled from atoms/schema.yaml by gen_public_catalog)
-    outputs: [public/developers/, public/docs/, public/auth/, public/webhooks/, public/about/, public/contact/, public/privacy/, public/404.html, public/agents.md, public/index.md, public/surfaces/llms.txt]
+    outputs: [public/developers/, public/docs/, public/auth/, public/webhooks/, public/about/, public/contact/, public/privacy/, public/fr/, public/404.html, public/agents.md, public/index.md, public/surfaces/llms.txt]
     publish: ci (deploy.yml on push -> Cloudflare). Answers three agent-readiness
       audit findings from 2026-07-31 — trust anchor pages 0/2, agent discovery file
       0/2, and the markdown-fallback checks — /agents.md is served as real
