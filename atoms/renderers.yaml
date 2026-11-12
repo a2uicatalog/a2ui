@@ -1,89 +1,97 @@
 # Renderer registry (DRAFT, local only). A separate dimension from `x-surfaces`:
 #   x-surfaces  = WHERE an atom appears (web, mcp-apps, android, pdf, ...)
 #   x-renderers = WHAT draws it (react, lit, angular, copilotkit, a2ui-vue, flutter, compose)
-# Per-atom status values: native | degraded | not_supported | not_measured
-# Read by scripts/gen_renderer_matrix.py (minimal parser: flat `- id:` list items, scalar values only).
-# Sources are named in `data_source`; all paths are read-only inputs on the build machine.
-schema: a2ui-renderers/1
-trademark_note: "React, Angular, Lit, CopilotKit, Vue and their logos are trademarks or registered trademarks of their respective owners. They are used here only to identify the renderers this catalog has been tested with, and do not imply affiliation with or endorsement by those owners. Logo artwork: simple-icons (CC0) for React, Lit, Angular and Vue, and CopilotKit’s public repository for its mark; the marks remain their owners’."
+#
+# Read with yaml.safe_load by scripts/gen_renderer_matrix.py. Contains no machine paths:
+# measured facts (versions, dates, hashes) live in data/renderer-results/, never here.
+# Documentation: docs/renderer-matrix.md
+schema: a2ui-renderers/2
+trademark_note: "React, Angular, Lit, CopilotKit, Vue and their logos are trademarks or registered trademarks of their respective owners. They are used here only to identify the renderers this catalog has been tested with, and do not imply affiliation with or endorsement by those owners. Logo artwork: simple-icons (CC0) for React, Lit, Angular and Vue, and CopilotKit's public repository for its mark; the marks remain their owners'."
 trademark_note_extra: "Flutter and Compose are likewise trademarks of their respective owners; no logo is shown for them."
 independence_note: "Independent and unofficial; not affiliated with Google, CopilotKit or the Vue project."
-logo_dir: /mnt/hdd2/work/launch-piece/13-try-it-draft/logos/
+
+# Status rules, versioned. The generator implements exactly these; changing a rule means
+# bumping `version` and regenerating. Rules are applied per case; an atom with several cases
+# takes the WORST case.
+rules:
+  version: 2
+  web:
+    kind: web
+    order_worst_first: [not_supported, drawn_with_differences, not_verified, drawn]
+    not_supported: "the painted check failed (error or broken flag)"
+    drawn_with_differences: "any of: pixel parity vs React failed outside the allowance list; horizontal overflow at 360 px; contrast worse than React in the same environment; behaviour probe differs from React"
+    not_verified: "no difference found but the atom could not be verified: no visible text, blank on both sides in an environment, or a check recorded as unstable (allowance list)"
+    drawn: "every check passed (or is not applicable: no probe, not a gate lane, React as reference)"
+    not_measured: "no example payload for the atom in the gate data"
+  flutter:
+    kind: flutter
+    order_worst_first: [not_supported, not_measured, degraded, native]
+    native: "lane case painted with the atom's own type present"
+    degraded: "lane case lowered to Basic components (own type absent)"
+    not_supported: "unsupported or unsupported_other lane status"
+    not_measured: "invalid_payload (the example is invalid, so the atom itself is untested), or no lane case"
+
 renderers:
 - id: react
   name: React
+  kind: web
+  measured: true
   package: "@a2ui/react"
-  version: "0.15.0 (with @a2ui/web_core 0.15.0)"
   protocol: "v1.0 through the web_core v1_0 module (the Basic lane of the gate runs v0.9)"
   platform: "web (React, Chromium)"
-  m_level: "M4 complete for the custom 670-atom lane; M5 not claimed"
   logo: react.svg
-  note: "The reference renderer: the other web renderers are compared with it pixel for pixel. Its own pixel column is measured against itself."
-  measured: "2026-11-11"
-  data_source: "/mnt/hdd2/work/m5-react/baselines/DETAIL-react.json + react.baseline.json + unstable/react.json"
+  note: "The reference renderer: the other web renderers are compared with it pixel for pixel. Its own pixel column is measured against its own frozen reference shots, so parity is recorded as reference, not as a pass."
 - id: lit
   name: Lit
+  kind: web
+  measured: true
   package: "@a2ui/lit"
-  version: "0.15.0 (with @a2ui/web_core 0.15.0)"
   protocol: "v0.9"
   platform: "web (Lit web components, Chromium)"
-  m_level: "M4 complete for the custom 670-atom lane; M5 not claimed"
   logo: lit.svg
   note: "No v1.0 export exists for Lit, so v1.0 was not measured. Dark 360 px is not a gate lane for Lit."
-  measured: "2026-11-10"
-  data_source: "/mnt/hdd2/work/m5-harness/baselines/lit.baseline.json + unstable/lit.json + LIT-M5-REPORT.md"
 - id: angular
   name: Angular
+  kind: web
+  measured: true
   package: "@a2ui/angular"
-  version: "0.14.0 (with @a2ui/web_core 0.15.0)"
   protocol: "v0.9"
   platform: "web (Angular, Chromium)"
-  m_level: "M4 complete for the custom 670-atom lane; M5 not claimed"
   logo: angular.svg
-  note: "Measured against the React lane on the same code; two identical runs plus a third run."
-  measured: "2026-11-11"
-  data_source: "/mnt/hdd2/work/m5-angular/baselines/DETAIL-ang.json + ang.baseline.json + unstable/ang.json"
+  note: "Measured against the React lane on the same code."
 - id: copilotkit
   name: CopilotKit
+  kind: web
+  measured: true
   package: "@copilotkit/a2ui-renderer"
-  version: "1.85.0 (with @a2ui/web_core 0.15.0)"
   protocol: "v0.9"
   platform: "web (React, stock CopilotKit renderer, Chromium)"
-  m_level: "M4 complete for the custom 670-atom lane; M5 not claimed"
   logo: copilotkit.svg
   note: "CopilotKit draws our atoms inside ITS wrapper and theme, so the custom-lane numbers measure whether the wrapper changes how our atoms look and behave, not CopilotKit's own components."
-  measured: "2026-11-11"
-  data_source: "/mnt/hdd2/work/m5-ck-gate/baselines/ck.baseline.json + unstable/ck.json + CK-M5-REPORT.md"
 - id: a2ui-vue
   name: a2ui-vue
+  kind: web
+  measured: true
   package: "a2ui-vue"
-  version: "0.9.5 (Vue 3.5.13, @a2ui/web_core 0.9.1)"
   protocol: "v0.9"
   platform: "web (Vue 3, stock a2ui-vue, Chromium)"
-  m_level: "M4 complete for the custom 670-atom lane; M5 not claimed"
   logo: vuedotjs.svg
   note: "a2ui-vue draws our atoms inside ITS wrapper and theme, so the custom-lane numbers measure the wrapper, not a2ui-vue's own components. Vue-only pixel failures were not traced."
-  measured: "2026-11-11"
-  data_source: "/mnt/hdd2/work/m5-vue-gate/baselines/vue.baseline.json + unstable/vue.json + VUE-M5-REPORT.md"
 - id: flutter
   name: Flutter
+  kind: flutter
+  measured: true
   package: "a2ui_flutter"
-  version: "0.3.0 (with a2ui_core 0.7.0)"
   protocol: "v1.0"
   platform: "Flutter widget-test engine (headless); no device"
-  m_level: "below M4: custom lane partly covered, Basic lane not measured by us, no device run"
   logo: ""
   note: "Partial coverage: only a part of the atoms are ported to native Flutter widgets. Text parity with the web painter was checked on the atoms listed in the parity sweep; the Basic lane was not measured by us; no device run."
-  measured: "2026-11-12"
-  data_source: "/mnt/hdd2/work/flutter-m4/cloudci/runs/20261112-203319/results/lane-results.json + audit/parity_sweep.tsv"
 - id: compose
   name: Compose
+  kind: compose
+  measured: false
   package: "n/a"
-  version: "n/a"
   protocol: "n/a"
   platform: "Android (Jetpack Compose)"
-  m_level: "not measured, on hold"
   logo: ""
-  note: "On hold: no measurement exists, so every atom is not_measured."
-  measured: ""
-  data_source: "none"
+  note: "On hold: no measurement exists, so every atom is not_measured and the completeness check skips this renderer."

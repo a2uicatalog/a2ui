@@ -1,0 +1,90 @@
+{
+ "renderers": {
+  "a2ui-vue": {
+   "atoms_total": 573,
+   "atoms_with_cases": 551,
+   "commit": null,
+   "core_sha256": "65ca7c03de42e388fbe5e91ee327804d57bb24a4e1d1687639b77babb4468059",
+   "css_sha256": "150035c39f2c53826ab52c8c3f66b1dee46fac1bcbc4539299c8da39c9c50412",
+   "file": "a2ui-vue.json",
+   "file_sha256": "f5f5267f7e586203c409e16336d448f573cc506e542a1eed04e565c73c6ecea8",
+   "measured_date": "2026-11-11",
+   "measured_on": "preview-unmerged",
+   "renderer_bundle_sha256": "39faabf7843a6ee79fba6e9feaf133fa24b3543090c51303c114ee6b70e9ae0f",
+   "renderer_version": "a2ui-vue 0.9.5 (Vue 3.5.13, web_core 0.9.1)",
+   "run_id": "a2ui-vue-20261111T141801"
+  },
+  "angular": {
+   "atoms_total": 573,
+   "atoms_with_cases": 551,
+   "commit": null,
+   "core_sha256": "65ca7c03de42e388fbe5e91ee327804d57bb24a4e1d1687639b77babb4468059",
+   "css_sha256": "150035c39f2c53826ab52c8c3f66b1dee46fac1bcbc4539299c8da39c9c50412",
+   "file": "angular.json",
+   "file_sha256": "90aea264bd27ff80fac7fb4ae6f3b4d1cf79a84ea22351df8cdb118262ec8edb",
+   "measured_date": "2026-11-11",
+   "measured_on": "preview-unmerged",
+   "renderer_bundle_sha256": "39faabf7843a6ee79fba6e9feaf133fa24b3543090c51303c114ee6b70e9ae0f",
+   "renderer_version": "@a2ui/angular 0.14.0 (web_core 0.15.0)",
+   "run_id": "angular-20261111T104129"
+  },
+  "copilotkit": {
+   "atoms_total": 573,
+   "atoms_with_cases": 551,
+   "commit": null,
+   "core_sha256": "65ca7c03de42e388fbe5e91ee327804d57bb24a4e1d1687639b77babb4468059",
+   "css_sha256": "150035c39f2c53826ab52c8c3f66b1dee46fac1bcbc4539299c8da39c9c50412",
+   "file": "copilotkit.json",
+   "file_sha256": "4bfabff26c57279168df2d0b47eb41855d6c31856df506feaaa34c74add09e65",
+   "measured_date": "2026-11-11",
+   "measured_on": "preview-unmerged",
+   "renderer_bundle_sha256": "39faabf7843a6ee79fba6e9feaf133fa24b3543090c51303c114ee6b70e9ae0f",
+   "renderer_version": "@copilotkit/a2ui-renderer 1.85.0 (web_core 0.15.0)",
+   "run_id": "copilotkit-20261111T104137"
+  },
+  "flutter": {
+   "atoms_total": 573,
+   "atoms_with_cases": 551,
+   "commit": null,
+   "core_sha256": null,
+   "css_sha256": null,
+   "file": "flutter.json",
+   "file_sha256": "37de53f165e6d26cba1747a72173f398732b2a51a77fb5364265bb9f846a1c97",
+   "measured_date": "2026-11-12",
+   "measured_on": "unrecorded",
+   "renderer_bundle_sha256": null,
+   "renderer_version": "a2ui_flutter 0.3.0 (a2ui_core 0.7.0)",
+   "run_id": "flutter-20261112-214805"
+  },
+  "lit": {
+   "atoms_total": 573,
+   "atoms_with_cases": 551,
+   "commit": null,
+   "core_sha256": "65ca7c03de42e388fbe5e91ee327804d57bb24a4e1d1687639b77babb4468059",
+   "css_sha256": "150035c39f2c53826ab52c8c3f66b1dee46fac1bcbc4539299c8da39c9c50412",
+   "file": "lit.json",
+   "file_sha256": "15f569980a4f54f9ffdf56c5a97a5053cb86d15907a0dca58fb5b1cb1e531349",
+   "measured_date": "2026-11-10",
+   "measured_on": "preview-unmerged",
+   "renderer_bundle_sha256": "39faabf7843a6ee79fba6e9feaf133fa24b3543090c51303c114ee6b70e9ae0f",
+   "renderer_version": "@a2ui/lit 0.15.0 (web_core 0.15.0)",
+   "run_id": "lit-20261110T160644"
+  },
+  "react": {
+   "atoms_total": 573,
+   "atoms_with_cases": 551,
+   "commit": null,
+   "core_sha256": "65ca7c03de42e388fbe5e91ee327804d57bb24a4e1d1687639b77babb4468059",
+   "css_sha256": "150035c39f2c53826ab52c8c3f66b1dee46fac1bcbc4539299c8da39c9c50412",
+   "file": "react.json",
+   "file_sha256": "85eafb538e41d8023b3785f33dacd024b4a58c4cf3b7458c96198d5a77e44b58",
+   "measured_date": "2026-11-11",
+   "measured_on": "preview-unmerged",
+   "renderer_bundle_sha256": "39faabf7843a6ee79fba6e9feaf133fa24b3543090c51303c114ee6b70e9ae0f",
+   "renderer_version": "@a2ui/react 0.15.0 (web_core 0.15.0)",
+   "run_id": "react-20261111T103026"
+  }
+ },
+ "schema": "a2ui-renderer-results-manifest/1",
+ "stable_atom_count": 573
+}
