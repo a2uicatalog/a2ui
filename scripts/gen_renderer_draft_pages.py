@@ -1,29 +1,81 @@
 #!/usr/bin/env python3
-"""Build the DRAFT renderer-dimension pages (local only) from renderer-matrix-v1.json.
+"""Renderer-dimension DRAFT pages, built from public/catalogue/renderer-matrix-v1.json (deterministic,
+stdlib only, offline, no wall clock).
 
-Writes ONLY new files under the draft folder; it reads the built live atom pages and
-writes modified copies, it never changes them. Stdlib only, deterministic.
+Two modes:
+  default            writes the committed pages (hub + one page per renderer) to docs/renderer-draft/.
+                     These are a pure function of the matrix, so scripts/check_renderer_matrix.py can
+                     re-generate them and compare byte for byte.
+  --out DIR          write somewhere else (for example the local review folder), together with
+  --atom-pages       modified copies of the built public/atoms/<atom>/index.html pages for a few sample
+                     atoms, with a Renderers section (reads public/atoms, never changes it), and
+  --logos DIR        copies the *.svg renderer logos from DIR into <out>/logos (not in this repo: the
+                     artwork has its own trademark notes), and
+  --file-links       links the matrix JSON and README next to the pages.
+
+Status words: Drawn, Drawn with differences, Not verified (web); Native, Degraded (Flutter);
+Not supported; Not measured. The "what was measured" text is computed from the data.
 """
+import argparse
 import html
 import json
 import os
-import re
 import shutil
 
 WT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DRAFT = "/mnt/hdd2/work/launch-piece/20-renderer-dimension-draft"
-LOGOS = "/mnt/hdd2/work/launch-piece/13-try-it-draft/logos"
 MATRIX = os.path.join(WT, "public/catalogue/renderer-matrix-v1.json")
+DEFAULT_OUT = os.path.join(WT, "docs/renderer-draft")
 SAMPLES = ["stat_card", "key_value", "badge_group", "table", "callout", "bullet_list", "pull_stat", "progress_bar", "sparkline", "shimmer_text"]
 E = html.escape
-LABEL = {"native": "Native", "degraded": "Degraded", "not_supported": "Not supported", "not_measured": "Not measured"}
-GLYPH = {"native": "✓", "degraded": "~", "not_supported": "✕", "not_measured": "?"}
-HELP = {
-    "native": "drawn by the renderer's own implementation of the atom",
-    "degraded": "drawn through Basic components",
-    "not_supported": "draws nothing or errors",
-    "not_measured": "no per-atom data",
+LABEL = {
+    "drawn": "Drawn", "drawn_with_differences": "Drawn with differences", "not_verified": "Not verified",
+    "native": "Native", "degraded": "Degraded", "not_supported": "Not supported", "not_measured": "Not measured",
 }
+GLYPH = {"drawn": "✓", "native": "✓", "drawn_with_differences": "≠", "degraded": "~", "not_verified": "?",
+         "not_supported": "✕", "not_measured": "–"}
+HELP = {
+    "drawn": "drawn by the renderer; every check passed",
+    "drawn_with_differences": "drawn, but at least one check differs from React (pixels, overflow at 360, contrast or behaviour)",
+    "not_verified": "no difference found, but the atom could not be verified (no visible text, blank on both sides, or an unstable check)",
+    "native": "drawn by the renderer's own implementation of the atom",
+    "degraded": "drawn through Basic components, not the atom's own implementation",
+    "not_supported": "draws nothing or errors",
+    "not_measured": "no per-atom data (no example, or the example is invalid)",
+}
+ENV = {"light480": "light 480", "dark480": "dark 480", "light360": "light 360", "dark360": "dark 360"}
+ENV_SHORT = {"light480": "L480", "dark480": "D480", "light360": "L360", "dark360": "D360"}
+REASON = {
+    "no_visible_text": "no visible text in the example",
+    "unstable_text": "text changes between runs (time or animation)",
+    "overflow_360": "overflows at 360 px",
+    "behaviour_differs": "behaviour probe differs from React",
+    "painted_fail_error": "painting raised an error",
+    "painted_fail_broken": "painted but flagged broken",
+    "no_example": "no example payload in the gate data",
+    "invalid_example": "example payload invalid, atom untested",
+    "lane_painted_own_type": "painted with its own type",
+    "lowered_to_basic": "lowered to Basic components",
+    "unknown_component_type": "component type unknown to the renderer",
+    "nested_type_unknown": "a nested atom type is unknown",
+    "renderer_not_measured": "renderer not measured",
+}
+PRE = "Measured on a pre-merge build, re-measurement pending."
+BUILD_NOTE = {
+    "preview-unmerged": PRE,
+    "unrecorded": "Build provenance was not recorded for this run.",
+    "shipped": "",
+}
+
+
+def reason_text(code):
+    if code in REASON:
+        return REASON[code]
+    for pre, tpl in (("pixel_fail_", "pixels differ from React (%s)"), ("blank_both_", "blank on both sides (%s)"),
+                     ("unstable_pixel_", "pixel check unstable (%s)"), ("contrast_worse_", "contrast worse than React (%s)")):
+        if code.startswith(pre):
+            return tpl % ENV.get(code[len(pre):], code[len(pre):])
+    return code
+
 
 CSS_BLOCK = """
 <style>
@@ -39,13 +91,20 @@ CSS_BLOCK = """
 .rd .lg{display:inline-block;width:18px;height:18px;flex:none;background:currentColor;-webkit-mask:var(--m) center/contain no-repeat;mask:var(--m) center/contain no-repeat}
 .rd .lg0{display:inline-block;width:18px;height:18px;flex:none}
 .rd-chip{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;border-radius:999px;padding:2px 10px;border:1px solid var(--c-line);background:var(--c-bg);color:var(--c-ink);white-space:nowrap}
-.rd-chip.native{--c-bg:color-mix(in srgb,var(--positive) 16%,var(--surface));--c-line:color-mix(in srgb,var(--positive) 50%,var(--surface));--c-ink:color-mix(in srgb,var(--positive) 55%,var(--text))}
-.rd-chip.degraded{--c-bg:color-mix(in srgb,var(--warn) 18%,var(--surface));--c-line:color-mix(in srgb,var(--warn) 50%,var(--surface));--c-ink:color-mix(in srgb,var(--warn) 45%,var(--text))}
+.rd-chip.drawn,.rd-chip.native{--c-bg:color-mix(in srgb,var(--positive) 16%,var(--surface));--c-line:color-mix(in srgb,var(--positive) 50%,var(--surface));--c-ink:color-mix(in srgb,var(--positive) 55%,var(--text))}
+.rd-chip.drawn_with_differences,.rd-chip.degraded{--c-bg:color-mix(in srgb,var(--warn) 18%,var(--surface));--c-line:color-mix(in srgb,var(--warn) 50%,var(--surface));--c-ink:color-mix(in srgb,var(--warn) 45%,var(--text))}
+.rd-chip.not_verified{--c-bg:var(--surface-2);--c-line:color-mix(in srgb,var(--warn) 45%,var(--surface));--c-ink:color-mix(in srgb,var(--warn) 40%,var(--text))}
 .rd-chip.not_supported{--c-bg:color-mix(in srgb,var(--negative) 14%,var(--surface));--c-line:color-mix(in srgb,var(--negative) 50%,var(--surface));--c-ink:color-mix(in srgb,var(--negative) 55%,var(--text))}
 .rd-chip.not_measured{--c-bg:var(--surface-2);--c-line:var(--border-strong);--c-ink:var(--text-muted)}
 .rd-ev{color:var(--muted);font-size:12.5px;line-height:1.45}
+.rd-ck{display:flex;flex-wrap:wrap;gap:3px 6px}
+.rd-ck span{font-size:11.5px;padding:0 6px;border-radius:5px;border:1px solid var(--border);white-space:nowrap}
+.rd-ck .bad{border-color:color-mix(in srgb,var(--negative) 55%,var(--surface));color:color-mix(in srgb,var(--negative) 55%,var(--text))}
+.rd-ck .unk{border-color:color-mix(in srgb,var(--warn) 55%,var(--surface));color:color-mix(in srgb,var(--warn) 45%,var(--text))}
+.rd-why{margin:4px 0 0;font-size:12px}
 .rd-date{white-space:nowrap;color:var(--muted);font-size:12px}
-.rd-tm{font-size:11.5px;color:var(--muted);margin:10px 0 0;max-width:80ch;line-height:1.45}
+.rd-pre{font-size:12px;border:1px solid color-mix(in srgb,var(--warn) 50%,var(--surface));background:color-mix(in srgb,var(--warn) 12%,var(--surface));border-radius:8px;padding:6px 10px;margin:10px 0 0;max-width:80ch}
+.rd-tm{font-size:11.5px;color:var(--muted);margin:10px 0 28px;max-width:80ch;line-height:1.45}
 @media(max-width:600px){
  .rd table,.rd tbody,.rd tr,.rd td{display:block;width:100%;box-sizing:border-box}
  .rd thead{display:none}
@@ -67,47 +126,99 @@ def logo(reg, prefix):
     return '<span class="lg0" aria-hidden="true"></span>'
 
 
-def short_date(d):
-    return d or "n/a"
+def mark(v):
+    """-> (symbol, css class)"""
+    return {"pass": ("✓", ""), "reference": ("ref", ""), "fail": ("✕", "bad"), "unstable": ("~ unstable", "unk"),
+            "blank_both": ("blank", "unk"), "no_visible_text": ("no text", "unk"), "n/a": ("–", ""),
+            "inherited": ("same as React", ""), "worse": ("worse", "bad"), "not_compared": ("n/c", ""),
+            "INERT": ("inert", "unk"), "SAME": ("same", ""), "n/a (no probe)": ("no probe", "")}.get(v, (str(v), "bad"))
 
 
-def block(m, atom, prefix):
+def span(label, v):
+    sym, cls = mark(v)
+    return '<span class="%s">%s %s</span>' % (cls, E(label), E(sym))
+
+
+def checks_html(kind, e):
+    ck = e.get("checks")
+    if not ck:
+        return ""
+    if kind == "web":
+        parts = [span("paint", ck["painted"]), span("text", ck["text_visible"])]
+        parts.append("<span>pixel %s</span>" % " ".join(
+            "%s %s" % (ENV_SHORT[k], E(mark(ck["pixel"][k])[0])) for k in ENV if k in ck["pixel"]))
+        parts += [span("overflow 360", ck["overflow_360"]),
+                  "<span>contrast %s</span>" % " ".join("%s %s" % (ENV_SHORT[k], E(mark(v)[0])) for k, v in ck["contrast"].items()),
+                  span("behaviour", ck["behaviour"])]
+        if ck.get("stability") != "stable":
+            parts.append('<span class="unk">on the unstable allowance list</span>')
+        return '<div class="rd-ck">%s</div>' % "".join(parts)
+    parts = ['<span>lane %s</span>' % E(ck["painted"].replace("_", " ")), "<span>own type %s</span>" % ("yes" if ck["own_type_present"] else "no")]
+    p = ck.get("parity_text")
+    if p:
+        parts.append("<span>web words missing %d of %d</span>" % (p["missing_in_flutter"], p["web_words"]))
+    return '<div class="rd-ck">%s</div>' % "".join(parts)
+
+
+def why_html(e):
+    r = [x for x in e.get("reasons", []) if x not in ("lane_painted_own_type",)]
+    if not r or e["status"] in ("drawn", "native"):
+        return ""
+    return '<p class="rd-why">%s</p>' % E("; ".join(reason_text(x) for x in r))
+
+
+def build_note(reg):
+    m = reg.get("measurement")
+    return BUILD_NOTE.get(m["measured_on"], "") if m else ""
+
+
+def tm_text(m):
+    return "%s %s %s" % (m["independence_note"], m["trademark_note"], m["trademark_note_extra"])
+
+
+def atom_block(m, atom, prefix):
     rows = []
+    notes = set()
     for rid, reg in m["renderers"].items():
         v = m["atoms"][atom][rid]
+        if v["status"] in ("not_measured",) and not reg["measured"]:
+            ev = '<span class="rd-ev">%s</span>' % E("renderer not measured")
+        else:
+            ev = checks_html(reg["kind"], v) + why_html(v)
+            if not ev:
+                ev = '<span class="rd-ev">%s</span>' % E("; ".join(reason_text(x) for x in v["reasons"]))
+        if reg["measured"] and build_note(reg):
+            notes.add(build_note(reg))
         rows.append(
             '<tr><td><span class="rd-name">%s<a href="%srenderers/%s.html">%s</a></span></td><td>%s</td><td class="rd-ev">%s</td><td class="rd-date">%s</td></tr>'
-            % (logo(reg, prefix), prefix, rid, E(reg["name"]), chip(v["status"]), E(v["evidence"]), E(short_date(v["measured"])))
+            % (logo(reg, prefix), prefix, rid, E(reg["name"]), chip(v["status"]), ev, E(v["measured"] or "n/a"))
         )
+    note = "".join('<p class="rd-pre">%s</p>' % E(n) for n in sorted(notes))
     return (
         '\n  <div class="section rd" id="renderers">\n    <div class="label">Renderers</div>\n'
-        '    <p class="rd-lead">What draws this atom, separate from the surfaces above. Draft data from the renderer gates, 10 to 12 Nov 2026. '
+        '    <p class="rd-lead">What draws this atom, separate from the surfaces above. Draft data from the renderer gates. '
         '<a href="%sindex.html">About this dimension</a></p>\n'
-        '    <table><thead><tr><th>Renderer</th><th>Status</th><th>Evidence</th><th>Measured</th></tr></thead><tbody>%s</tbody></table>\n'
-        '    <p class="rd-tm">%s %s %s</p>\n  </div>\n'
-        % (prefix, "".join(rows), E(m["independence_note"]), E(m["trademark_note"]), E(m["trademark_note_extra"]))
+        '    <table><thead><tr><th>Renderer</th><th>Status</th><th>Checks</th><th>Measured</th></tr></thead><tbody>%s</tbody></table>\n'
+        '    %s<p class="rd-tm">%s</p>\n  </div>\n' % (prefix, "".join(rows), note, E(tm_text(m)))
     )
 
 
-def atom_pages(m):
-    src_dir = os.path.join(WT, "public/atoms")
-    done = []
-    for atom in SAMPLES:
+def atom_pages(m, src_dir, samples):
+    out = {}
+    for atom in samples:
         p = os.path.join(src_dir, atom, "index.html")
-        if not os.path.exists(p):
+        if not os.path.exists(p) or atom not in m["atoms"]:
             continue
         s = open(p, encoding="utf8").read()
         i = s.index('<div class="label">Surfaces</div>')
-        j = s.index("</div>", i + 40)  # first </div> after the label closes the section
+        j = s.index("</div>", i + 40)
         j = s.index("</div>", j + 1) if s[i:j].count("<div") > 1 else j
         end = j + len("</div>")
-        s = s[:end] + "\n" + block(m, atom, "../") + s[end:]
+        s = s[:end] + "\n" + atom_block(m, atom, "../") + s[end:]
         s = s.replace("</head>", CSS_BLOCK + "</head>", 1)
         s = s.replace("<title>", "<title>[DRAFT renderers] ", 1)
-        with open(os.path.join(DRAFT, "atoms", atom + ".html"), "w", encoding="utf8") as f:
-            f.write(s)
-        done.append(atom)
-    return done
+        out["atoms/" + atom + ".html"] = s
+    return out
 
 
 PAGE_CSS = """
@@ -126,25 +237,31 @@ a{color:var(--acc)}
 table{width:100%;border-collapse:collapse;font-size:14px}
 th,td{text-align:left;vertical-align:top;padding:8px 10px;border-bottom:1px solid var(--line)}
 th{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--mut)}
+td.n{font-variant-numeric:tabular-nums}
 .scroll{overflow-x:auto}
 .lg{display:inline-block;width:20px;height:20px;flex:none;background:currentColor;-webkit-mask:var(--m) center/contain no-repeat;mask:var(--m) center/contain no-repeat;vertical-align:middle}
 .lg0{display:inline-block;width:20px;height:20px;flex:none;vertical-align:middle}
 .nm{display:flex;gap:8px;align-items:center;font-weight:650;white-space:nowrap}
 .rd-chip{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;border-radius:999px;padding:2px 10px;border:1px solid var(--c-line);background:var(--c-bg);color:var(--c-ink);white-space:nowrap}
-.rd-chip.native{--c-bg:color-mix(in srgb,var(--ok) 15%,var(--card));--c-line:color-mix(in srgb,var(--ok) 50%,var(--card));--c-ink:var(--ok)}
-.rd-chip.degraded{--c-bg:color-mix(in srgb,var(--warn) 16%,var(--card));--c-line:color-mix(in srgb,var(--warn) 50%,var(--card));--c-ink:var(--warn)}
+.rd-chip.drawn,.rd-chip.native{--c-bg:color-mix(in srgb,var(--ok) 15%,var(--card));--c-line:color-mix(in srgb,var(--ok) 50%,var(--card));--c-ink:var(--ok)}
+.rd-chip.drawn_with_differences,.rd-chip.degraded{--c-bg:color-mix(in srgb,var(--warn) 16%,var(--card));--c-line:color-mix(in srgb,var(--warn) 50%,var(--card));--c-ink:var(--warn)}
+.rd-chip.not_verified{--c-bg:var(--sunk);--c-line:color-mix(in srgb,var(--warn) 45%,var(--card));--c-ink:var(--warn)}
 .rd-chip.not_supported{--c-bg:color-mix(in srgb,var(--bad) 13%,var(--card));--c-line:color-mix(in srgb,var(--bad) 50%,var(--card));--c-ink:var(--bad)}
 .rd-chip.not_measured{--c-bg:var(--sunk);--c-line:var(--line2);--c-ink:var(--mut)}
 .bar{display:flex;height:14px;border-radius:7px;overflow:hidden;border:1px solid var(--line2);margin:8px 0}
 .bar span{display:block;height:100%}
-.bar .native{background:var(--ok)}.bar .degraded{background:var(--warn)}.bar .not_supported{background:var(--bad)}.bar .not_measured{background:var(--line2)}
+.bar .drawn,.bar .native{background:var(--ok)}.bar .drawn_with_differences,.bar .degraded{background:var(--warn)}.bar .not_verified{background:repeating-linear-gradient(45deg,var(--warn),var(--warn) 3px,var(--sunk) 3px,var(--sunk) 6px)}.bar .not_supported{background:var(--bad)}.bar .not_measured{background:var(--line2)}
 dl.facts{display:grid;grid-template-columns:max-content 1fr;gap:6px 16px;margin:0;font-size:14px}
 dl.facts dt{color:var(--mut)}dl.facts dd{margin:0}
 details{border:1px solid var(--line);border-radius:10px;background:var(--card);margin:8px 0;padding:6px 12px}
 summary{cursor:pointer;font-weight:650;padding:4px 0}
 ul.atoms{columns:3 180px;column-gap:18px;list-style:none;padding:0;margin:8px 0;font-size:13px;font-family:ui-monospace,Menlo,monospace}
 ul.atoms li{break-inside:avoid;padding:1px 0}
+ul.why{list-style:none;padding:0;margin:8px 0;font-size:13px}
+ul.why li{padding:3px 0;border-bottom:1px solid var(--line)}
+ul.why code{font-weight:650}
 .note{font-size:13px;color:var(--mut);max-width:75ch}
+.pre{font-size:13px;border:1px solid var(--warn);border-radius:8px;padding:8px 12px;margin:12px 0;max-width:80ch}
 .tm{font-size:12px;color:var(--mut);margin-top:28px;max-width:80ch}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 @media(max-width:640px){
@@ -155,141 +272,199 @@ ul.atoms li{break-inside:avoid;padding:1px 0}
 """
 
 
-def page(title, body, prefix):
+def page(title, body):
     return (
         '<!DOCTYPE html>\n<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
         "<title>%s</title><style>%s</style></head><body><main>%s</main></body></html>\n" % (E(title), PAGE_CSS, body)
     )
 
 
-def counts_bar(cov):
+def counts_bar(cov, statuses):
     t = cov["total"]
     return '<div class="bar" role="img" aria-label="%s">%s</div>' % (
-        E(", ".join("%s %d" % (LABEL[s], cov[s]) for s in LABEL)),
-        "".join('<span class="%s" style="width:%.3f%%"></span>' % (s, 100.0 * cov[s] / t) for s in LABEL if cov[s]),
+        E(", ".join("%s %d" % (LABEL[s], cov[s]) for s in statuses)),
+        "".join('<span class="%s" style="width:%.3f%%"></span>' % (s, 100.0 * cov[s] / t) for s in statuses if cov[s]),
     )
 
 
 def tm_block(m):
-    return '<p class="tm">%s %s %s</p>' % (E(m["independence_note"]), E(m["trademark_note"]), E(m["trademark_note_extra"]))
+    return '<p class="tm">%s</p>' % E(tm_text(m))
 
 
 def atom_link(a, samples):
-    if a in samples:
-        return '<a href="../atoms/%s.html">%s</a>' % (a, a)
-    return a
+    return '<a href="../atoms/%s.html">%s</a>' % (a, a) if a in samples else a
+
+
+def reason_counts(m, rid):
+    c = {}
+    for atom in m["atoms"]:
+        for r in m["atoms"][atom][rid]["reasons"]:
+            c[r] = c.get(r, 0) + 1
+    return c
+
+
+def measured_text(m, rid):
+    """Honest M-level text computed from the data (never a free-text 'M4 complete')."""
+    reg = m["renderers"][rid]
+    cov = reg["coverage"]
+    T = cov["total"]
+    if not reg["measured"]:
+        return "Not measured; skipped by the completeness check."
+    n_case = T - cov.get("not_measured", 0)
+    if reg["kind"] == "web":
+        probes = sum(1 for a in m["atoms"] if (m["atoms"][a][rid].get("checks") or {}).get("behaviour") not in (None, "n/a (no probe)"))
+        ref = reg["measurement"].get("reference_renderer")
+        txt = "%d of %d atoms have a gate example. Checks recorded per atom: painting, visible text, blank on both sides, pixel parity %s in the lanes the gate has, overflow at 360 px, contrast, and behaviour for the %d atoms that have an interaction probe." % (
+            n_case, T, "with " + ref.capitalize() if ref else "(React is the reference: parity is recorded against its own frozen shots)", probes)
+    else:
+        par = sum(1 for a in m["atoms"] if ((m["atoms"][a][rid].get("checks") or {}).get("parity_text")))
+        txt = "%d of %d atoms have a lane example, drawn in the headless Flutter widget-test engine. Text parity with the web painter was checked on %d atoms; no pixel parity, no Basic-lane measurement by us and no device run." % (n_case, T, par)
+    return txt + " Weekly gate (M5) not claimed."
 
 
 def renderer_page(m, rid, samples):
     reg = m["renderers"][rid]
     cov = reg["coverage"]
     atoms = m["atoms"]
-    byst = {s: [a for a in sorted(atoms) if atoms[a][rid]["status"] == s] for s in LABEL}
-    facts = [
-        ("Package", reg["package"]), ("Version measured", reg["version"]), ("Protocol dialect", reg["protocol"]),
-        ("Platform", reg["platform"]), ("M-level reached", reg["m_level"]), ("Measured", reg["measured"] or "n/a"),
-        ("Data source", reg["data_source"]),
-    ]
+    statuses = reg["statuses"]
+    byst = {s: [a for a in sorted(atoms) if atoms[a][rid]["status"] == s] for s in statuses}
+    ms = reg.get("measurement") or {}
+    facts = [("Package", reg["package"]), ("Version measured", ms.get("renderer_version") or "n/a"), ("Protocol dialect", reg["protocol"]),
+             ("Platform", reg["platform"]), ("Measured", ms.get("measured") or "n/a"),
+             ("Run", ms.get("run_id") or "n/a"), ("What was measured", measured_text(m, rid))]
+    if ms.get("core_sha256"):
+        facts.append(("Core build (sha256, first 12)", ms["core_sha256"][:12]))
     dl = "".join("<dt>%s</dt><dd>%s</dd>" % (E(k), E(v)) for k, v in facts)
-    chips = "".join("<tr><td>%s</td><td>%d</td><td class=\"note\">%s</td></tr>" % (chip(s), cov[s], E(HELP[s])) for s in LABEL)
-    extra = ""
-    if rid == "flutter":
-        nat = byst["native"]
-        chk = [a for a in nat if "text parity with the web painter checked" in atoms[a][rid]["evidence"]]
-        mism = [a for a in chk if "web words missing" in atoms[a][rid]["evidence"]]
-        extra = (
-            '<h2>Honest notes</h2><div class="card"><ul>'
-            "<li>Partial coverage: %d of %d public atoms draw natively; %d draw only through Basic components; %d draw nothing or are rejected; %d have no lane example.</li>"
-            "<li>Text parity with the web painter checked on %d atoms; %d of those miss at least one web word in Flutter. The parity check compares visible words, not layout or pixels.</li>"
-            "<li>The Basic lane was not measured by us; this renderer is below M4. No device run: everything ran in the headless widget-test engine.</li>"
-            "<li>A 40-atom independent audit (12 Nov) found undocumented visible drift in about 16 of 40 ported atoms, so \"native\" here means the port draws the lane example, not that it matches the web look.</li>"
-            "</ul></div>"
-        ) % (cov["native"], cov["total"], cov["degraded"], cov["not_supported"], cov["not_measured"], len(chk), len(mism))
-    elif rid == "compose":
-        extra = '<h2>Honest notes</h2><div class="card">Compose is on hold. No measurement exists, so every atom is not measured. This page is a placeholder for the registry entry.</div>'
-    else:
-        ev = [atoms[a][rid]["evidence"] for a in byst["native"]]
-        n_loose = sum(1 for e in ev if "no visible text found" in e)
-        fails = {}
-        for lab in ("light 480", "dark 480", "light 360", "dark 360"):
-            fails[lab] = sum(1 for e in ev if (lab + " FAIL") in e)
-        n_unst = sum(1 for e in ev if "unstable allowance" in e)
-        px = ""
-        if rid != "react":
-            px = "<li>Pixel parity with React (same code, same fixed rule): atoms that FAIL by environment: " + ", ".join("%s %d" % (k, v) for k, v in fails.items() if k != "dark 360" or rid != "lit") + ". %d atoms are on the unstable (time or animation) allowance list.</li>" % n_unst
-        extra = (
-            '<h2>Honest notes</h2><div class="card"><ul><li>%s</li>'
-            "<li>Status comes from the custom lane (our 670 example payloads): an atom is native when it painted without error and was not flagged broken. All %d measured atoms did; the lane cannot show a lower status for them. Pixel parity, behaviour probes and allowance lists are evidence text only.</li>%s"
-            "<li>%d atoms painted no visible text in the lane example (loose flag off); most draw canvas or graphics, and some are blank in React as well. They stay native under the rule; a reviewer may want to treat them differently.</li>"
-            "<li>M5 (weekly gate, schedule installed, independent recount) is not claimed. 22 public atoms had no example in the lane data and are not measured.</li></ul></div>"
-        ) % (E(reg["note"]), cov["native"], px, n_loose)
+    chips = "".join('<tr><td>%s</td><td class="n">%d</td><td class="note">%s</td></tr>' % (chip(s), cov[s], E(HELP[s])) for s in statuses)
+    pre = build_note(reg)
+    pre_html = '<div class="pre">%s</div>' % E(pre) if pre else ""
+    items = ["<li>%s</li>" % E(reg["note"])]
+    if reg["kind"] == "web":
+        rc = reason_counts(m, rid)
+        pxf = ", ".join("%s %d" % (ENV[e], rc.get("pixel_fail_" + e, 0)) for e in ENV)
+        items += [
+            "<li>Status is derived from per-check results with rules version %d: any difference from React wins over a verification gap; the worst case wins for atoms with several cases.</li>" % m["rules_version"],
+            "<li>Atoms with a pixel difference from React outside the allowance list, by environment: %s. Overflow at 360 px: %d. Contrast worse than React: %d. Behaviour differs: %d.</li>" % (
+                pxf, rc.get("overflow_360", 0), sum(v for k, v in rc.items() if k.startswith("contrast_worse_")), rc.get("behaviour_differs", 0)),
+            "<li>%d atoms are not verified because the example paints no visible text, %d because they are blank on both sides in at least one environment and %d because a check is unstable (time or animation dependent; they sit on the allowance list and record unstable, never pass).</li>" % (
+                rc.get("no_visible_text", 0), len({a for a in atoms if any(r.startswith("blank_both_") for r in atoms[a][rid]["reasons"])}),
+                len({a for a in atoms if any(r.startswith("unstable_") for r in atoms[a][rid]["reasons"])})),
+            "<li>%d atoms have no example in the gate data and are not measured.</li>" % cov.get("not_measured", 0),
+        ]
+    elif reg["kind"] == "flutter":
+        chk = [a for a in atoms if (atoms[a][rid].get("checks") or {}).get("parity_text")]
+        mism = [a for a in chk if atoms[a][rid]["checks"]["parity_text"]["missing_in_flutter"] > 0]
+        inval = sum(1 for a in atoms if "invalid_example" in atoms[a][rid]["reasons"])
+        items += [
+            "<li>Partial coverage: %d of %d atoms draw natively; %d draw only through Basic components; %d draw nothing; %d are not measured (%d with an invalid example, the rest without an example).</li>" % (
+                cov["native"], cov["total"], cov["degraded"], cov["not_supported"], cov["not_measured"], inval),
+            "<li>Text parity with the web painter was checked on %d atoms; %d of those miss at least one web word in Flutter. The check compares visible words, not layout or pixels. For atoms with several cases the worst case counts.</li>" % (len(chk), len(mism)),
+            "<li>No device run: everything ran in the headless widget-test engine. An independent 12 Nov audit of 40 ported atoms found visible drift in about 16, so Native here means the port draws the lane example, not that it matches the web look.</li>",
+        ]
+    extra = '<h2>Honest notes</h2><div class="card"><ul>%s</ul></div>' % "".join(items)
     lists = ""
-    for s in LABEL:
+    for s in statuses:
         if not byst[s]:
             continue
-        items = []
-        for a in byst[s]:
-            suffix = ""
-            if rid == "flutter" and s == "native":
-                mm = re.search(r"(\d+) of (\d+) web words missing", atoms[a][rid]["evidence"])
-                if mm:
-                    suffix = ' <span class="note">(%s words missing)</span>' % mm.group(1)
-            items.append("<li>%s%s</li>" % (atom_link(a, samples), suffix))
+        if s in ("drawn", "native", "not_measured") or len(byst[s]) > 80:
+            li = []
+            for a in byst[s]:
+                suffix = ""
+                p = (atoms[a][rid].get("checks") or {}).get("parity_text") if s == "native" else None
+                if p and p["missing_in_flutter"]:
+                    suffix = ' <span class="note">(%d of %d web words missing)</span>' % (p["missing_in_flutter"], p["web_words"])
+                li.append("<li>%s%s</li>" % (atom_link(a, samples), suffix))
+            body = '<ul class="atoms">%s</ul>' % "".join(li)
+        else:
+            body = '<ul class="why">%s</ul>' % "".join(
+                "<li><code>%s</code> <span class=\"note\">%s</span></li>" % (atom_link(a, samples), E("; ".join(reason_text(r) for r in atoms[a][rid]["reasons"])))
+                for a in byst[s])
         open_attr = " open" if len(byst[s]) <= 12 else ""
-        lists += '<details%s><summary>%s %s: %d atoms</summary><ul class="atoms">%s</ul></details>' % (open_attr, chip(s), "", len(byst[s]), "".join(items))
+        lists += '<details%s><summary>%s: %d atoms</summary>%s</details>' % (open_attr, chip(s), len(byst[s]), body)
     body = (
         '<p class="crumb"><a href="../index.html">Renderer dimension (draft)</a> / %s</p><span class="draft">Draft, local only</span>'
-        '<h1><span class="nm">%s%s</span></h1><p class="lead">%s</p>'
+        '<h1><span class="nm">%s%s</span></h1><p class="lead">%s</p>%s'
         '<div class="card"><dl class="facts">%s</dl></div>'
-        "<h2>Coverage of the %d public atoms</h2>%s%s"
+        "<h2>Coverage of the %d stable atoms</h2>%s"
         '<div class="scroll"><table><thead><tr><th>Status</th><th>Atoms</th><th>Meaning</th></tr></thead><tbody>%s</tbody></table></div>'
         "%s<h2>Atoms by status</h2>%s%s"
-    ) % (E(reg["name"]), logo(reg, "../"), E(reg["name"]), E(reg["note"]), dl, cov["total"], counts_bar(cov), "", chips, extra, lists, tm_block(m))
-    return page("[DRAFT] %s renderer support" % reg["name"], body, "../")
+    ) % (E(reg["name"]), logo(reg, "../"), E(reg["name"]), E(reg["note"]), pre_html, dl, cov["total"], counts_bar(cov, statuses), chips, extra, lists, tm_block(m))
+    return page("[DRAFT] %s renderer support" % reg["name"], body)
 
 
-def hub(m, samples):
+def hub(m, samples, file_links):
     rows = []
+    pre = {}
     for rid, reg in m["renderers"].items():
         cov = reg["coverage"]
+        ms = reg.get("measurement") or {}
+        web = reg["kind"] == "web"
+        if build_note(reg):
+            pre.setdefault(build_note(reg), []).append(reg["name"])
+        sub = E(ms.get("renderer_version") or "not measured")
+        top = cov.get("drawn" if web else "native", 0)
+        mid = cov.get("drawn_with_differences" if web else "degraded", 0)
         rows.append(
-            '<tr><td><span class="nm">%s<a href="renderers/%s.html">%s</a></span></td><td>%s<br><span class="note">%s</span></td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>'
-            % (logo(reg, ""), rid, E(reg["name"]), E(reg["package"]), E(reg["version"]), E(reg["protocol"]), E(reg["m_level"]),
-               "%d" % cov["native"], "%d / %d" % (cov["degraded"], cov["not_supported"]), "%d" % cov["not_measured"])
+            '<tr><td><span class="nm">%s<a href="renderers/%s.html">%s</a></span></td><td>%s<br><span class="note">%s</span></td><td>%s</td>'
+            '<td class="n">%d</td><td class="n">%d</td><td class="n">%s</td><td class="n">%d</td><td class="n">%d</td></tr>'
+            % (logo(reg, ""), rid, E(reg["name"]), E(reg["package"]), sub, E(reg["protocol"]), top, mid,
+               "%d" % cov["not_verified"] if web and reg["measured"] else "–", cov.get("not_supported", 0), cov["not_measured"])
         )
     sm = " ".join('<a href="atoms/%s.html">%s</a>' % (a, a) for a in samples)
+    samples_html = "<h2>Sample atom pages</h2><p>%s</p>" % sm if samples else ""
+    files = '<h2>Files</h2><p class="note"><a href="README.md">README.md</a>, <a href="data/renderer-matrix-v1.json">renderer-matrix-v1.json</a>.</p>' if file_links else ""
     body = (
         '<span class="draft">Draft, local only, not published</span><h1>Which renderer draws which atom</h1>'
-        '<p class="lead">A new, separate dimension of the catalogue. Every atom already says where it appears; this adds what draws it, measured per renderer. %d public atoms, %d renderers (one on hold).</p>'
+        '<p class="lead">A new, separate dimension of the catalogue. Every atom already says where it appears; this adds what draws it, measured per renderer. %d stable atoms, %d renderers (one not measured).</p>%s'
         "<h2>Two dimensions, in plain words</h2>"
         '<div class="two"><div class="card"><strong>Surface: where it appears</strong><p class="note">The place a person sees the atom: web page, MCP app, Android, PDF, Google Meet stage, and so on. This is the existing <code>x-surfaces</code> field. It does not change.</p></div>'
         '<div class="card"><strong>Renderer: what draws it</strong><p class="note">The piece of software that turns the atom into pixels: React, Lit, Angular, CopilotKit, a2ui-vue or Flutter. This is the new <code>x-renderers</code> field. One surface (the web) is drawn by several renderers, and one renderer can serve several surfaces.</p></div></div>'
         "<h2>Registry</h2>"
-        '<div class="scroll"><table><thead><tr><th>Renderer</th><th>Package, version</th><th>Protocol</th><th>M-level</th><th>Native</th><th>Degraded / not supported</th><th>Not measured</th></tr></thead><tbody>%s</tbody></table></div>'
-        '<p class="note">Native: drawn by the renderer\'s own implementation. Degraded: drawn through Basic components. Not supported: draws nothing or errors. Not measured: no per-atom data. CopilotKit and a2ui-vue draw our atoms inside their own wrapper and theme. Flutter coverage is partial and below M4.</p>'
-        "<h2>Sample atom pages</h2><p>%s</p>"
-        '<h2>Files</h2><p class="note"><a href="README.md">README.md</a> (data model, mapping, ambiguities, what a reviewer should rule on), <a href="data/renderer-matrix-v1.json">renderer-matrix-v1.json</a>.</p>%s'
-    ) % (m["atom_count"], len(m["renderers"]), "".join(rows), sm, tm_block(m))
-    return page("[DRAFT] Renderer dimension", body, "")
+        '<div class="scroll"><table><thead><tr><th>Renderer</th><th>Package, version</th><th>Protocol</th><th>Drawn / Native</th><th>With differences / Degraded</th><th>Not verified</th><th>Not supported</th><th>Not measured</th></tr></thead><tbody>%s</tbody></table></div>'
+        '<p class="note">Web renderers: Drawn (every check passed), Drawn with differences (a check differs from React), Not verified (no difference found, but the atom could not be verified). Flutter: Native (own implementation), Degraded (drawn through Basic components). Not supported: draws nothing or errors. Not measured: no per-atom data. CopilotKit and a2ui-vue draw our atoms inside their own wrapper and theme. Each renderer page says what was measured, computed from the data.</p>'
+        "%s%s%s"
+    ) % (m["atom_count"], len(m["renderers"]), "".join('<div class="pre">%s: %s</div>' % (E(", ".join(v)), E(n)) for n, v in sorted(pre.items())), "".join(rows), samples_html, files, tm_block(m))
+    return page("[DRAFT] Renderer dimension", body)
+
+
+def render_pages(m, registry=None, samples=(), file_links=False):
+    """Pure: the committed pages as {path relative to the output dir: text}."""
+    out = {"index.html": hub(m, list(samples), file_links)}
+    for rid in m["renderers"]:
+        out["renderers/%s.html" % rid] = renderer_page(m, rid, list(samples))
+    return out
 
 
 def main():
-    m = json.load(open(MATRIX, encoding="utf8"))
-    os.makedirs(os.path.join(DRAFT, "atoms"), exist_ok=True)
-    os.makedirs(os.path.join(DRAFT, "renderers"), exist_ok=True)
-    os.makedirs(os.path.join(DRAFT, "data"), exist_ok=True)
-    os.makedirs(os.path.join(DRAFT, "logos"), exist_ok=True)
-    for f in sorted(os.listdir(LOGOS)):
-        if f.endswith(".svg"):
-            shutil.copyfile(os.path.join(LOGOS, f), os.path.join(DRAFT, "logos", f))
-    shutil.copyfile(MATRIX, os.path.join(DRAFT, "data/renderer-matrix-v1.json"))
-    done = atom_pages(m)
-    for rid in m["renderers"]:
-        with open(os.path.join(DRAFT, "renderers", rid + ".html"), "w", encoding="utf8") as f:
-            f.write(renderer_page(m, rid, done))
-    with open(os.path.join(DRAFT, "index.html"), "w", encoding="utf8") as f:
-        f.write(hub(m, done))
-    print("atom pages:", done)
+    ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
+    ap.add_argument("--out", default=DEFAULT_OUT)
+    ap.add_argument("--atom-pages", action="store_true", help="also write modified copies of the built public/atoms pages for the samples")
+    ap.add_argument("--logos", default=None, help="directory with the renderer *.svg logos to copy into <out>/logos")
+    ap.add_argument("--file-links", action="store_true", help="link README.md and a copy of the matrix JSON next to the pages")
+    a = ap.parse_args()
+    with open(MATRIX, encoding="utf8") as f:
+        m = json.load(f)
+    src = os.path.join(WT, "public/atoms")
+    pages = {}
+    samples = []
+    if a.atom_pages:
+        pages = atom_pages(m, src, SAMPLES)
+        samples = [k.split("/")[1][:-5] for k in sorted(pages)]
+    pages.update(render_pages(m, None, samples, a.file_links))
+    for rel, text in pages.items():
+        p = os.path.join(a.out, rel)
+        os.makedirs(os.path.dirname(p), exist_ok=True)
+        with open(p, "w", encoding="utf8") as f:
+            f.write(text)
+    if a.logos:
+        os.makedirs(os.path.join(a.out, "logos"), exist_ok=True)
+        for fn in sorted(os.listdir(a.logos)):
+            if fn.endswith(".svg"):
+                shutil.copyfile(os.path.join(a.logos, fn), os.path.join(a.out, "logos", fn))
+    if a.file_links:
+        os.makedirs(os.path.join(a.out, "data"), exist_ok=True)
+        shutil.copyfile(MATRIX, os.path.join(a.out, "data/renderer-matrix-v1.json"))
+    print("pages:", sorted(pages))
 
 
 if __name__ == "__main__":

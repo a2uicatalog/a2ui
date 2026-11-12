@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>[DRAFT] Renderer dimension</title><style>
+:root{color-scheme:light;--bg:#f7f9fc;--card:#fff;--sunk:#f1f4f9;--ink:#1a1b25;--mut:#5b6070;--line:#e2e6ef;--line2:#cfd5e2;--acc:#4f46e5;--ok:#1b7f3b;--bad:#b3261e;--warn:#8a6100;--sh:0 1px 2px rgba(20,27,36,.05),0 6px 20px rgba(20,27,36,.06)}
+@media(prefers-color-scheme:dark){:root{color-scheme:dark;--bg:#0f1117;--card:#171a23;--sunk:#12151c;--ink:#eceef5;--mut:#9aa1b5;--line:#2a2f3d;--line2:#3a4152;--acc:#8d98ff;--ok:#7fd99a;--bad:#ffb4ab;--warn:#f2d27a;--sh:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.25)}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:960px;margin:0 auto;padding:20px 16px 56px}
+h1{font-size:1.7rem;margin:.2em 0 .3em;line-height:1.2}
+h2{font-size:1.1rem;margin:1.8em 0 .5em}
+a{color:var(--acc)}
+.draft{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border:1px solid var(--line2);border-radius:6px;padding:2px 8px;color:var(--mut)}
+.lead{color:var(--mut);max-width:70ch}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:var(--sh);padding:14px 16px}
+.crumb{font-size:13px;margin:0 0 10px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;vertical-align:top;padding:8px 10px;border-bottom:1px solid var(--line)}
+th{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--mut)}
+td.n{font-variant-numeric:tabular-nums}
+.scroll{overflow-x:auto}
+.lg{display:inline-block;width:20px;height:20px;flex:none;background:currentColor;-webkit-mask:var(--m) center/contain no-repeat;mask:var(--m) center/contain no-repeat;vertical-align:middle}
+.lg0{display:inline-block;width:20px;height:20px;flex:none;vertical-align:middle}
+.nm{display:flex;gap:8px;align-items:center;font-weight:650;white-space:nowrap}
+.rd-chip{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;border-radius:999px;padding:2px 10px;border:1px solid var(--c-line);background:var(--c-bg);color:var(--c-ink);white-space:nowrap}
+.rd-chip.drawn,.rd-chip.native{--c-bg:color-mix(in srgb,var(--ok) 15%,var(--card));--c-line:color-mix(in srgb,var(--ok) 50%,var(--card));--c-ink:var(--ok)}
+.rd-chip.drawn_with_differences,.rd-chip.degraded{--c-bg:color-mix(in srgb,var(--warn) 16%,var(--card));--c-line:color-mix(in srgb,var(--warn) 50%,var(--card));--c-ink:var(--warn)}
+.rd-chip.not_verified{--c-bg:var(--sunk);--c-line:color-mix(in srgb,var(--warn) 45%,var(--card));--c-ink:var(--warn)}
+.rd-chip.not_supported{--c-bg:color-mix(in srgb,var(--bad) 13%,var(--card));--c-line:color-mix(in srgb,var(--bad) 50%,var(--card));--c-ink:var(--bad)}
+.rd-chip.not_measured{--c-bg:var(--sunk);--c-line:var(--line2);--c-ink:var(--mut)}
+.bar{display:flex;height:14px;border-radius:7px;overflow:hidden;border:1px solid var(--line2);margin:8px 0}
+.bar span{display:block;height:100%}
+.bar .drawn,.bar .native{background:var(--ok)}.bar .drawn_with_differences,.bar .degraded{background:var(--warn)}.bar .not_verified{background:repeating-linear-gradient(45deg,var(--warn),var(--warn) 3px,var(--sunk) 3px,var(--sunk) 6px)}.bar .not_supported{background:var(--bad)}.bar .not_measured{background:var(--line2)}
+dl.facts{display:grid;grid-template-columns:max-content 1fr;gap:6px 16px;margin:0;font-size:14px}
+dl.facts dt{color:var(--mut)}dl.facts dd{margin:0}
+details{border:1px solid var(--line);border-radius:10px;background:var(--card);margin:8px 0;padding:6px 12px}
+summary{cursor:pointer;font-weight:650;padding:4px 0}
+ul.atoms{columns:3 180px;column-gap:18px;list-style:none;padding:0;margin:8px 0;font-size:13px;font-family:ui-monospace,Menlo,monospace}
+ul.atoms li{break-inside:avoid;padding:1px 0}
+ul.why{list-style:none;padding:0;margin:8px 0;font-size:13px}
+ul.why li{padding:3px 0;border-bottom:1px solid var(--line)}
+ul.why code{font-weight:650}
+.note{font-size:13px;color:var(--mut);max-width:75ch}
+.pre{font-size:13px;border:1px solid var(--warn);border-radius:8px;padding:8px 12px;margin:12px 0;max-width:80ch}
+.tm{font-size:12px;color:var(--mut);margin-top:28px;max-width:80ch}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:640px){
+ .two{grid-template-columns:1fr}
+ dl.facts{grid-template-columns:1fr;gap:0}dl.facts dt{margin-top:8px}
+ ul.atoms{columns:2 140px}
+}
+</style></head><body><main><span class="draft">Draft, local only, not published</span><h1>Which renderer draws which atom</h1><p class="lead">A new, separate dimension of the catalogue. Every atom already says where it appears; this adds what draws it, measured per renderer. 573 stable atoms, 7 renderers (one not measured).</p><div class="pre">Flutter: Build provenance was not recorded for this run.</div><div class="pre">React, Lit, Angular, CopilotKit, a2ui-vue: Measured on a pre-merge build, re-measurement pending.</div><h2>Two dimensions, in plain words</h2><div class="two"><div class="card"><strong>Surface: where it appears</strong><p class="note">The place a person sees the atom: web page, MCP app, Android, PDF, Google Meet stage, and so on. This is the existing <code>x-surfaces</code> field. It does not change.</p></div><div class="card"><strong>Renderer: what draws it</strong><p class="note">The piece of software that turns the atom into pixels: React, Lit, Angular, CopilotKit, a2ui-vue or Flutter. This is the new <code>x-renderers</code> field. One surface (the web) is drawn by several renderers, and one renderer can serve several surfaces.</p></div></div><h2>Registry</h2><div class="scroll"><table><thead><tr><th>Renderer</th><th>Package, version</th><th>Protocol</th><th>Drawn / Native</th><th>With differences / Degraded</th><th>Not verified</th><th>Not supported</th><th>Not measured</th></tr></thead><tbody><tr><td><span class="nm"><span class="lg" style="--m:url(logos/react.svg)" aria-hidden="true"></span><a href="renderers/react.html">React</a></span></td><td>@a2ui/react<br><span class="note">@a2ui/react 0.15.0 (web_core 0.15.0)</span></td><td>v1.0 through the web_core v1_0 module (the Basic lane of the gate runs v0.9)</td><td class="n">502</td><td class="n">0</td><td class="n">49</td><td class="n">0</td><td class="n">22</td></tr><tr><td><span class="nm"><span class="lg" style="--m:url(logos/lit.svg)" aria-hidden="true"></span><a href="renderers/lit.html">Lit</a></span></td><td>@a2ui/lit<br><span class="note">@a2ui/lit 0.15.0 (web_core 0.15.0)</span></td><td>v0.9</td><td class="n">502</td><td class="n">7</td><td class="n">42</td><td class="n">0</td><td class="n">22</td></tr><tr><td><span class="nm"><span class="lg" style="--m:url(logos/angular.svg)" aria-hidden="true"></span><a href="renderers/angular.html">Angular</a></span></td><td>@a2ui/angular<br><span class="note">@a2ui/angular 0.14.0 (web_core 0.15.0)</span></td><td>v0.9</td><td class="n">504</td><td class="n">7</td><td class="n">40</td><td class="n">0</td><td class="n">22</td></tr><tr><td><span class="nm"><span class="lg" style="--m:url(logos/copilotkit.svg)" aria-hidden="true"></span><a href="renderers/copilotkit.html">CopilotKit</a></span></td><td>@copilotkit/a2ui-renderer<br><span class="note">@copilotkit/a2ui-renderer 1.85.0 (web_core 0.15.0)</span></td><td>v0.9</td><td class="n">468</td><td class="n">35</td><td class="n">48</td><td class="n">0</td><td class="n">22</td></tr><tr><td><span class="nm"><span class="lg" style="--m:url(logos/vuedotjs.svg)" aria-hidden="true"></span><a href="renderers/a2ui-vue.html">a2ui-vue</a></span></td><td>a2ui-vue<br><span class="note">a2ui-vue 0.9.5 (Vue 3.5.13, web_core 0.9.1)</span></td><td>v0.9</td><td class="n">464</td><td class="n">38</td><td class="n">49</td><td class="n">0</td><td class="n">22</td></tr><tr><td><span class="nm"><span class="lg0" aria-hidden="true"></span><a href="renderers/flutter.html">Flutter</a></span></td><td>a2ui_flutter<br><span class="note">a2ui_flutter 0.3.0 (a2ui_core 0.7.0)</span></td><td>v1.0</td><td class="n">353</td><td class="n">29</td><td class="n">–</td><td class="n">167</td><td class="n">24</td></tr><tr><td><span class="nm"><span class="lg0" aria-hidden="true"></span><a href="renderers/compose.html">Compose</a></span></td><td>n/a<br><span class="note">not measured</span></td><td>n/a</td><td class="n">0</td><td class="n">0</td><td class="n">–</td><td class="n">0</td><td class="n">573</td></tr></tbody></table></div><p class="note">Web renderers: Drawn (every check passed), Drawn with differences (a check differs from React), Not verified (no difference found, but the atom could not be verified). Flutter: Native (own implementation), Degraded (drawn through Basic components). Not supported: draws nothing or errors. Not measured: no per-atom data. CopilotKit and a2ui-vue draw our atoms inside their own wrapper and theme. Each renderer page says what was measured, computed from the data.</p><p class="tm">Independent and unofficial; not affiliated with Google, CopilotKit or the Vue project. React, Angular, Lit, CopilotKit, Vue and their logos are trademarks or registered trademarks of their respective owners. They are used here only to identify the renderers this catalog has been tested with, and do not imply affiliation with or endorsement by those owners. Logo artwork: simple-icons (CC0) for React, Lit, Angular and Vue, and CopilotKit&#x27;s public repository for its mark; the marks remain their owners&#x27;. Flutter and Compose are likewise trademarks of their respective owners; no logo is shown for them.</p></main></body></html>
