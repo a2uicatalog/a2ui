@@ -1,283 +1,322 @@
 #!/usr/bin/env python3
-"""Renderer matrix generator (DRAFT, stdlib only, deterministic, no network).
+"""Renderer matrix generator (PUBLIC, deterministic, offline; stdlib + yaml.safe_load only).
 
-Reads the renderer registry (atoms/renderers.yaml) and the read-only gate results
-of each renderer, and writes two NEW files:
+Reads ONLY committed files:
+  atoms/renderers.yaml              registry (renderers, rules version, `measured:` flag per renderer)
+  data/renderer-results/*.json      RAW RESULTS per renderer (schema: docs/renderer-matrix.md)
+  data/renderer-results/manifest.json
+  atoms/schema.yaml                 the stable atom list (stage: stable or no stage)
+  public/catalogue/a2ui-atoms-v1.json   (only to build the x-renderers draft copy)
 
+Writes:
   public/catalogue/renderer-matrix-v1.json
-  public/catalogue/a2ui-atoms-v1.renderers-draft.json   (live catalogue + `x-renderers` per atom)
+  public/catalogue/a2ui-atoms-v1.renderers-draft.json   (live catalogue + derived `x-renderers`)
 
-It never writes public/catalogue/a2ui-atoms-v1.json. Only the PUBLIC atoms (the keys of
-components in that file) are emitted; the lane data also holds non-public atoms, which are
-dropped. Output contains no wall-clock time: dates come from the data.
+It never writes the live catalogue or spec.json. The output holds no wall-clock time and no
+path: every date comes from the raw results.
 
-Status vocabulary (per atom and renderer):
-  native         drawn by the renderer's own implementation of the atom
-  degraded       drawn through Basic components
-  not_supported  draws nothing or errors
-  not_measured   no per-atom data
-
-Mapping (see README.md in the draft folder for the ambiguities):
-  web renderers (react, lit, angular, copilotkit, a2ui-vue), `custom` lane detail record:
-     error or broken            -> not_supported
-     otherwise                  -> native
-     pixel parity with React, behaviour probe, loose/strict flags, allowance lists are
-     evidence text only, never status.
-  flutter, lane-results.json case status:
-     painted (own type present) -> native;  basic_lowered -> degraded
-     unsupported / unsupported_other / invalid_payload -> not_supported
-     no lane case -> not_measured
+Status rules (registry `rules.version` 2; v2 design item H4):
+  web:     painted check failed                          -> not_supported
+           pixel fail outside the allowance, overflow at 360, contrast worse than React,
+           behaviour differs from React                  -> drawn_with_differences
+           no visible text, blank on both sides, or any check recorded `unstable`
+                                                         -> not_verified
+           everything passes (or is not applicable)      -> drawn
+           no example in the gate data                   -> not_measured
+  flutter: painted + own type                            -> native
+           basic_lowered                                 -> degraded
+           unsupported / unsupported_other               -> not_supported
+           invalid_payload / no case                     -> not_measured (invalid example / no example)
+  Several cases: the WORST case wins. The per-check results of that case are stored.
+  An allowance-listed check records `unstable`, never `pass`.
 """
-import glob
+import hashlib
 import json
 import os
-import re
 import sys
 
+import yaml
+
 WT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-CAT = os.path.join(WT, "public/catalogue/a2ui-atoms-v1.json")
 REG = os.path.join(WT, "atoms/renderers.yaml")
+SCHEMA = os.path.join(WT, "atoms/schema.yaml")
+RESDIR = os.path.join(WT, "data/renderer-results")
+CAT = os.path.join(WT, "public/catalogue/a2ui-atoms-v1.json")
 OUT_MATRIX = os.path.join(WT, "public/catalogue/renderer-matrix-v1.json")
 OUT_DRAFT = os.path.join(WT, "public/catalogue/a2ui-atoms-v1.renderers-draft.json")
-W = "/mnt/hdd2/work"
-SRC = {
-    "react": (f"{W}/m5-react/baselines/react.baseline.json", f"{W}/m5-react/baselines/DETAIL-react.json", f"{W}/m5-react/unstable/react.json"),
-    "lit": (f"{W}/m5-harness/baselines/lit.baseline.json", None, f"{W}/m5-harness/unstable/lit.json"),
-    "angular": (f"{W}/m5-angular/baselines/ang.baseline.json", f"{W}/m5-angular/baselines/DETAIL-ang.json", f"{W}/m5-angular/unstable/ang.json"),
-    "copilotkit": (f"{W}/m5-ck-gate/baselines/ck.baseline.json", None, f"{W}/m5-ck-gate/unstable/ck.json"),
-    "a2ui-vue": (f"{W}/m5-vue-gate/baselines/vue.baseline.json", None, f"{W}/m5-vue-gate/unstable/vue.json"),
+
+ENVS = ["light480", "dark480", "light360", "dark360"]
+WEB_STATUSES = ["drawn", "drawn_with_differences", "not_verified", "not_supported", "not_measured"]
+FLUTTER_STATUSES = ["native", "degraded", "not_supported", "not_measured"]
+STATUS_LABEL = {
+    "drawn": "Drawn", "drawn_with_differences": "Drawn with differences", "not_verified": "Not verified",
+    "native": "Native", "degraded": "Degraded", "not_supported": "Not supported", "not_measured": "Not measured",
 }
-PIX_LANES = [("pixel", "light 480"), ("pixel_dark", "dark 480"), ("pixel_360", "light 360"), ("pixel_dark360", "dark 360")]
-FLUTTER_RUNS = f"{W}/flutter-m4/cloudci/runs/*/results/lane-results.json"
-PARITY = f"{W}/flutter-m4/audit/parity_sweep.tsv"
-STATUSES = ["native", "degraded", "not_supported", "not_measured"]
-FL_RANK = {"painted": 0, "basic_lowered": 1, "unsupported_other": 2, "unsupported": 3, "invalid_payload": 4}
+STATUS_HELP = {
+    "drawn": "drawn by the renderer; every check passed",
+    "drawn_with_differences": "drawn, but at least one check differs from React (pixels, overflow at 360, contrast or behaviour)",
+    "not_verified": "no difference found, but the atom could not be verified (no visible text, blank on both sides, or an unstable check)",
+    "native": "drawn by the renderer's own implementation of the atom",
+    "degraded": "drawn through Basic components, not the atom's own implementation",
+    "not_supported": "draws nothing or errors",
+    "not_measured": "no per-atom data (no example, or the example is invalid)",
+}
+WEB_WORST = {"drawn": 0, "not_verified": 1, "drawn_with_differences": 2, "not_supported": 3}
+FL_STATUS = {"painted": "native", "basic_lowered": "degraded", "unsupported": "not_supported",
+             "unsupported_other": "not_supported", "invalid_payload": "not_measured"}
+FL_WORST = {"native": 0, "degraded": 1, "not_measured": 2, "not_supported": 3}
 
 
-def load(p):
+def load_json(p):
     with open(p, encoding="utf8") as f:
         return json.load(f)
 
 
-def parse_registry(path):
-    """Tiny parser for the flat registry: top-level `key: scalar`, then `renderers:` list of `- id:` items."""
-    top, items, cur = {}, [], None
-    in_list = False
-
-    def val(s):
-        s = s.strip()
-        if len(s) >= 2 and s[0] == '"' and s[-1] == '"':
-            return json.loads(s)
-        return s
-
-    with open(path, encoding="utf8") as f:
-        for line in f:
-            if not line.strip() or line.lstrip().startswith("#"):
-                continue
-            if line.startswith("renderers:"):
-                in_list = True
-                continue
-            if not in_list:
-                k, v = line.split(":", 1)
-                top[k.strip()] = val(v)
-                continue
-            m = re.match(r"^- (\w+):\s*(.*)$", line)
-            if m:
-                cur = {m.group(1): val(m.group(2))}
-                items.append(cur)
-                continue
-            m = re.match(r"^  (\w+):\s*(.*)$", line)
-            if m and cur is not None:
-                cur[m.group(1)] = val(m.group(2))
-    return top, items
+def load_yaml(p):
+    loader = getattr(yaml, "CSafeLoader", yaml.SafeLoader)  # CSafeLoader = the C build of SafeLoader
+    with open(p, encoding="utf8") as f:
+        return yaml.load(f, Loader=loader)
 
 
-def web_evidence(rid, atom, rec, detail, unstable):
-    flags = "loose %s, strict %s, strict text %s" % tuple("yes" if rec.get(k) else "no" for k in ("loose", "strict", "strict_text"))
-    if not rec.get("loose"):
-        flags += "; no visible text found in the lane example"
-    parts = ["custom lane example painted without error (%s)" % flags]
-    if rid == "react":
-        parts.append("pixel lanes compare React with its own frozen reference, so parity is the reference itself")
+def sha256_file(p):
+    with open(p, "rb") as f:
+        return hashlib.sha256(f.read()).hexdigest()
+
+
+def stable_atoms(schema=None):
+    s = schema if schema is not None else load_yaml(SCHEMA)
+    return sorted(b["type"] for b in s["blocks"] if b.get("stage", "stable") == "stable")
+
+
+# ---------------------------------------------------------------- web
+
+
+def contrast_result(low, low_ref):
+    if low is None:
+        return "n/a"
+    if low == 0:
+        return "pass"
+    if low_ref is None:
+        return "not_compared"
+    return "inherited" if low <= low_ref else "worse"
+
+
+def web_case_status(case):
+    """-> (status, reasons[], derived_checks). Pure function of one raw case."""
+    ck = case["checks"]
+    reasons = []
+    painted = ck["painted"]["result"]
+    if painted != "pass":
+        reasons.append("painted_fail_" + (ck["painted"].get("error_code") or "error"))
+    tv = ck["text_visible"]
+    if tv.get("allowance"):
+        text = "unstable"
     else:
-        px = []
-        for lane, label in PIX_LANES:
-            r = detail.get(lane, {}).get(atom)
-            if r is None:
-                continue
-            if r.get("blank_both"):
-                px.append("%s blank in both" % label)
-            else:
-                px.append("%s %s" % (label, "pass" if r.get("passed") else "FAIL"))
-        if px:
-            parts.append("pixel vs React: " + ", ".join(px))
-        listed = [lab for lane, lab in PIX_LANES if atom in unstable.get(lane, [])]
-        if listed:
-            parts.append("on the unstable allowance list for pixel (%s)" % ", ".join(listed))
-    if atom in unstable.get("atoms", {}).get("custom", []):
-        parts.append("custom text on the unstable allowance list (time or animation dependent)")
-    b = detail.get("behaviour_custom", {}).get(atom)
-    if b:
-        parts.append("behaviour probe %s" % str(b.get("verdict", "")).split(":")[0])
-    return "; ".join(parts)
-
-
-def build_web(rid, atoms):
-    bpath, dpath, upath = SRC[rid]
-    base = load(bpath)
-    detail = load(dpath) if dpath else base["detail"]
-    unstable = load(upath)
-    date = base["date"][:10]
-    custom = detail["custom"]
-    out, notes = {}, []
-    for atom in atoms:
-        rec = custom.get(atom)
-        if rec is None:
-            out[atom] = {"status": "not_measured", "evidence": "no example payload for this atom in the 670-case lane data (22 public atoms were not exercised)", "measured": date}
+        text = "pass" if tv["loose"] else "no_visible_text"
+    pixel, contrast = {}, {}
+    blank = []
+    for env in ENVS:
+        p = ck["pixel"].get(env, {"result": "not_a_lane"})
+        raw = p["result"]
+        if raw == "not_a_lane":
+            pixel[env] = "n/a"
+            contrast[env] = "n/a"
             continue
-        if rec.get("error") or rec.get("broken"):
-            st = "not_supported"
-            ev = "custom lane example flagged %s; " % ("error" if rec.get("error") else "broken") + web_evidence(rid, atom, rec, detail, unstable)
+        if p.get("allowance"):
+            pixel[env] = "unstable"
         else:
-            st = "native"
-            ev = web_evidence(rid, atom, rec, detail, unstable)
-        out[atom] = {"status": st, "evidence": ev, "measured": date}
-    info = {"measured": date, "package": base.get("package"), "protocol_recorded": base.get("protocol"),
-            "code_head": base.get("code", {}).get("head")}
-    return out, info, notes
+            pixel[env] = raw  # pass | fail | blank_both | reference
+        if raw == "blank_both":
+            blank.append(env)
+        contrast[env] = contrast_result(p.get("low"), p.get("low_ref"))
+    ov = ck.get("overflow_360") or {}
+    vals = [v for v in ov.values() if v is not None]
+    overflow = "n/a" if not vals else ("fail" if any(vals) else "pass")
+    beh = ck["behaviour"]
+    derived = {
+        "painted": painted, "text_visible": text, "pixel": pixel, "overflow_360": overflow,
+        "contrast": contrast, "behaviour": beh, "stability": ck["stability"],
+    }
+    diffs = ["pixel_fail_" + e for e in ENVS if pixel[e] == "fail"]
+    if overflow == "fail":
+        diffs.append("overflow_360")
+    diffs += ["contrast_worse_" + e for e in ENVS if contrast[e] == "worse"]
+    if beh not in ("SAME", "INERT", "n/a (no probe)"):
+        diffs.append("behaviour_differs")
+    nverified = []
+    if text == "no_visible_text":
+        nverified.append("no_visible_text")
+    if text == "unstable":
+        nverified.append("unstable_text")
+    nverified += ["blank_both_" + e for e in blank]
+    nverified += ["unstable_pixel_" + e for e in ENVS if pixel[e] == "unstable"]
+    if painted != "pass":
+        status = "not_supported"
+    elif diffs:
+        status = "drawn_with_differences"
+    elif nverified:
+        status = "not_verified"
+    else:
+        status = "drawn"
+    if status != "not_supported":
+        reasons += diffs + nverified
+    return status, sorted(set(reasons)), derived
 
 
-def build_flutter(atoms):
-    runs = sorted(glob.glob(FLUTTER_RUNS))
-    path = runs[-1]
-    run_id = path.split("/runs/")[1].split("/")[0]
-    date = "%s-%s-%s" % (run_id[:4], run_id[4:6], run_id[6:8])
-    res = load(path)["results"]
-    by_atom = {}
-    for case, r in res.items():
-        by_atom.setdefault(r["atom"], []).append((case, r))
-    parity = {}
-    with open(PARITY, encoding="utf8") as f:
-        head = f.readline().rstrip("\n").split("\t")
-        for line in f:
-            row = dict(zip(head, line.rstrip("\n").split("\t")))
-            parity[row["atom"]] = row
-    out = {}
-    for atom in atoms:
-        cases = by_atom.get(atom)
-        if not cases:
-            out[atom] = {"status": "not_measured", "evidence": "no example payload for this atom in the lane data (22 public atoms were not exercised); lane run %s" % run_id, "measured": date}
-            continue
-        case, r = sorted(cases, key=lambda c: (FL_RANK[c[1]["status"]], c[0]))[0]
-        s = r["status"]
-        extra = ""
-        if len(cases) > 1:
-            extra = "; %d lane cases, best one taken (%s: %s; others %s)" % (
-                len(cases), case, s, ", ".join(sorted(c[1]["status"] for c in cases if c[0] != case)))
-        if s == "painted":
-            st = "native"
-            ev = "lane case painted with the atom's own type present, no error (a2ui_flutter 0.3.0, run %s)%s" % (run_id, extra)
-            p = parity.get(atom)
-            if p:
-                miss, web = int(p["missing_in_flutter"]), int(p["web_words"])
-                if miss == 0:
-                    ev += "; text parity with the web painter checked 12 Nov: no web word missing in Flutter (%d web words)" % web
-                else:
-                    ev += "; text parity with the web painter checked 12 Nov: %d of %d web words missing in Flutter (e.g. %s)" % (miss, web, p["missing_sample"][:60])
-            else:
-                ev += "; text parity with the web painter not checked for this atom"
-        elif s == "basic_lowered":
-            st = "degraded"
-            ev = "lane example was lowered to Basic components (own type absent), Basic drew it; not the atom's own implementation (run %s)" % run_id
-        elif s == "unsupported":
-            st = "not_supported"
-            ev = "lane example: UNKNOWN_COMPONENT_TYPE for the atom, nothing drawn, onError only (run %s)" % run_id
-        elif s == "unsupported_other":
-            st = "not_supported"
-            ev = "lane example: a nested atom type is unknown (%s); parent lowered to Basic (run %s)" % (", ".join(r.get("error_codes", [])) or "UNKNOWN_COMPONENT_TYPE", run_id)
-        else:
-            st = "not_supported"
-            ev = "lane example payload rejected (%s); the example lowering produced an invalid component type, so the atom itself is untested; classed not_supported (run %s)" % (", ".join(r.get("error_codes", [])) or s, run_id)
-        out[atom] = {"status": st, "evidence": ev, "measured": date}
-    info = {"measured": date, "lane_run": run_id, "parity_rows": len(parity), "parity_rows_public": sum(1 for a in parity if a in set(atoms))}
-    return out, info
+# ---------------------------------------------------------------- flutter
 
 
-def build_compose(atoms):
-    return {a: {"status": "not_measured", "evidence": "on hold: no measurement exists for Compose", "measured": None} for a in atoms}
+def flutter_case_status(case):
+    ck = case["checks"]
+    pr = ck["painted"]
+    raw = pr["result"]
+    status = FL_STATUS[raw]
+    if raw == "painted" and not pr.get("own_type_present"):
+        status = "degraded"
+    reasons = {"painted": ["lane_painted_own_type"], "basic_lowered": ["lowered_to_basic"],
+               "unsupported": ["unknown_component_type"], "unsupported_other": ["nested_type_unknown"],
+               "invalid_payload": ["invalid_example"]}[raw]
+    derived = {"painted": raw, "own_type_present": bool(pr.get("own_type_present")), "text_chars": pr.get("text_chars"),
+               "error_codes": list(pr.get("error_codes", [])), "parity_text": ck.get("parity_text")}
+    return status, reasons, derived
 
 
-def counts(per_atom):
-    c = {s: 0 for s in STATUSES}
+# ---------------------------------------------------------------- assembly
+
+
+def entry_for(kind, head, atom_rec):
+    """The matrix entry for one (atom, renderer), derived from the raw record."""
+    base = {
+        "run_id": head["run_id"], "measured": head["measured_date"], "renderer_version": head["renderer_version"],
+        "measured_on": head["measured_on"], "core_sha256": head.get("core_sha256"),
+    }
+    cases = atom_rec.get("cases") or {}
+    if not cases:
+        return dict(status="not_measured", reasons=["no_example"], cases=0, worst_case=None, dialect=head["dialect"],
+                    checks=None, **base)
+    fn = web_case_status if kind == "web" else flutter_case_status
+    worst_rank = WEB_WORST if kind == "web" else FL_WORST
+    results = []
+    for cid in sorted(cases):
+        st, reasons, derived = fn(cases[cid])
+        results.append((worst_rank[st], cid, st, reasons, derived, cases[cid].get("dialect") or head["dialect"]))
+    results.sort(key=lambda r: (-r[0], r[1]))
+    _, cid, st, reasons, derived, dialect = results[0]
+    return dict(status=st, reasons=reasons, cases=len(cases), worst_case=cid, dialect=dialect, checks=derived, **base)
+
+
+def counts(statuses, per_atom):
+    c = {s: 0 for s in statuses}
     for v in per_atom.values():
         c[v["status"]] += 1
+    c["total"] = len(per_atom)
     return c
 
 
-def main():
-    cat = load(CAT)
-    comps = cat["components"]
-    atoms = sorted(comps)
-    top, reg = parse_registry(REG)
-    regd = {r["id"]: r for r in reg}
-    per = {}
-    info = {}
-    for rid in ("react", "lit", "angular", "copilotkit", "a2ui-vue"):
-        per[rid], info[rid], _ = build_web(rid, atoms)
-        if info[rid]["measured"] != regd[rid]["measured"]:
-            sys.exit("registry date mismatch for %s: %s vs %s" % (rid, regd[rid]["measured"], info[rid]["measured"]))
-    per["flutter"], info["flutter"] = build_flutter(atoms)
-    if info["flutter"]["measured"] != regd["flutter"]["measured"]:
-        sys.exit("registry date mismatch for flutter")
-    per["compose"] = build_compose(atoms)
-    info["compose"] = {"measured": None}
-    order = [r["id"] for r in reg]
-
-    renderers = {}
-    for rid in order:
-        r = dict(regd[rid])
-        r["coverage"] = counts(per[rid])
-        r["coverage"]["total"] = len(atoms)
-        r["source_info"] = info[rid]
-        renderers[rid] = r
-    matrix = {
-        "$schema": "a2ui-renderer-matrix/1",
+def build(registry, raw, manifest, stable):
+    """registry: parsed renderers.yaml; raw: {rid: results dict}; -> matrix dict (pure)."""
+    order = [r["id"] for r in registry["renderers"]]
+    per, renderers = {}, {}
+    for r in registry["renderers"]:
+        rid = r["id"]
+        kind = r["kind"]
+        statuses = WEB_STATUSES if kind == "web" else FLUTTER_STATUSES
+        reg = {k: v for k, v in r.items() if k != "measured"}
+        reg["measured"] = bool(r["measured"])
+        if not r["measured"]:
+            per[rid] = {a: {"status": "not_measured", "reasons": ["renderer_not_measured"], "cases": 0, "worst_case": None,
+                            "dialect": None, "checks": None, "run_id": None, "measured": None, "renderer_version": None,
+                            "measured_on": None, "core_sha256": None} for a in stable}
+            reg["statuses"] = ["not_measured"]
+            reg["measurement"] = None
+            reg["coverage"] = counts(["not_measured"], per[rid])
+        else:
+            head = raw[rid]
+            per[rid] = {a: entry_for(kind, head, head["atoms"].get(a, {"cases": {}})) for a in stable}
+            reg["statuses"] = statuses
+            m = manifest["renderers"][rid]
+            reg["measurement"] = {
+                "run_id": head["run_id"], "measured": head["measured_date"], "renderer_version": head["renderer_version"],
+                "dialect": head["dialect"], "reference_renderer": head.get("reference_renderer"),
+                "measured_on": head["measured_on"], "commit": head.get("commit"),
+                "core_sha256": head.get("core_sha256"), "css_sha256": head.get("css_sha256"),
+                "renderer_bundle_sha256": head.get("renderer_bundle_sha256"),
+                "results_file_sha256": m["file_sha256"],
+            }
+            reg["coverage"] = counts(statuses, per[rid])
+        renderers[rid] = reg
+    return {
+        "$schema": "a2ui-renderer-matrix/2",
         "status": "DRAFT, local only, not published",
+        "rules_version": registry["rules"]["version"],
+        "rules": registry["rules"],
         "dimension": "renderer (what draws the atom); separate from x-surfaces (where the atom appears)",
-        "status_values": {
-            "native": "drawn by the renderer's own implementation of the atom",
-            "degraded": "drawn through Basic components",
-            "not_supported": "draws nothing or errors",
-            "not_measured": "no per-atom data",
-        },
-        "atom_count": len(atoms),
-        "trademark_note": top["trademark_note"],
-        "trademark_note_extra": top["trademark_note_extra"],
-        "independence_note": top["independence_note"],
+        "status_labels": STATUS_LABEL,
+        "status_help": STATUS_HELP,
+        "atom_count": len(stable),
+        "trademark_note": registry["trademark_note"],
+        "trademark_note_extra": registry["trademark_note_extra"],
+        "independence_note": registry["independence_note"],
         "renderers": renderers,
-        "atoms": {a: {rid: per[rid][a] for rid in order} for a in atoms},
+        "atoms": {a: {rid: per[rid][a] for rid in order} for a in stable},
     }
-    with open(OUT_MATRIX, "w", encoding="utf8") as f:
-        f.write(json.dumps(matrix, indent=1, ensure_ascii=False, sort_keys=False) + "\n")
 
+
+def x_renderers(matrix, atom):
+    out = {}
+    for rid, e in matrix["atoms"][atom].items():
+        out[rid] = {k: e[k] for k in ("status", "reasons", "measured", "measured_on", "renderer_version")}
+    return out
+
+
+def build_draft_catalogue(cat, matrix):
     draft = json.loads(json.dumps(cat))
     newc = {}
-    for a in draft["components"]:
-        comp = draft["components"][a]
-        xr = {rid: per[rid][a] for rid in order}
+    for a, comp in draft["components"].items():
         nc = {}
         for k, v in comp.items():
             nc[k] = v
             if k == "x-surfaces":
-                nc["x-renderers"] = xr
+                nc["x-renderers"] = x_renderers(matrix, a)
         if "x-renderers" not in nc:
-            nc["x-renderers"] = xr
+            nc["x-renderers"] = x_renderers(matrix, a)
         newc[a] = nc
     draft["components"] = newc
-    with open(OUT_DRAFT, "w", encoding="utf8") as f:
-        f.write(json.dumps(draft, indent=1, ensure_ascii=False) + "\n")
-    for rid in order:
-        print(rid, renderers[rid]["coverage"])
+    return draft
+
+
+def dumps(obj):
+    return json.dumps(obj, indent=1, ensure_ascii=False) + "\n"
+
+
+def load_inputs():
+    registry = load_yaml(REG)
+    manifest = load_json(os.path.join(RESDIR, "manifest.json"))
+    raw = {}
+    for r in registry["renderers"]:
+        if r["measured"]:
+            raw[r["id"]] = load_json(os.path.join(RESDIR, manifest["renderers"][r["id"]]["file"]))
+    return registry, raw, manifest
+
+
+def render_files(registry, raw, manifest, stable, cat):
+    """-> {repo-relative path: text} for the two generated catalogue files."""
+    matrix = build(registry, raw, manifest, stable)
+    draft = build_draft_catalogue(cat, matrix)
+    if sorted(draft["components"]) != stable:
+        raise SystemExit("live catalogue and atoms/schema.yaml disagree on the stable atom list")
+    return {"public/catalogue/renderer-matrix-v1.json": dumps(matrix),
+            "public/catalogue/a2ui-atoms-v1.renderers-draft.json": dumps(draft)}, matrix
+
+
+def main():
+    registry, raw, manifest = load_inputs()
+    files, matrix = render_files(registry, raw, manifest, stable_atoms(), load_json(CAT))
+    for rel, text in files.items():
+        with open(os.path.join(WT, rel), "w", encoding="utf8") as f:
+            f.write(text)
+    for rid, r in matrix["renderers"].items():
+        print(rid, {k: v for k, v in r["coverage"].items() if v})
 
 
 if __name__ == "__main__":

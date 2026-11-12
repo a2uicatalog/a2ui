@@ -559,3 +559,16 @@ generators:
     source: apps-script-surface/gas-wired-renderer/*.gs + atoms/atom-packs.yaml
     outputs: [ops/renderer-manifest.json]               # real renderer atom surface -> validated by check_core (local tier)
     publish: none — build artifact consumed by scripts/check_core.py in catalog-rebuild + pre_push_audit
+  gen_renderer_matrix:
+    script: scripts/gen_renderer_matrix.py
+    source: atoms/renderers.yaml + data/renderer-results/*.json (raw results exported from the private
+      measurement harness by scripts/export_renderer_results.py, hand-run, never in CI) + atoms/schema.yaml
+    outputs: [public/catalogue/renderer-matrix-v1.json, public/catalogue/a2ui-atoms-v1.renderers-draft.json]
+    publish: none yet — DRAFT, local only. The draft catalogue is a copy of a2ui-atoms-v1.json with
+      x-renderers; wiring it into gen_public_catalog.py is a separate step (docs/renderer-matrix.md).
+      scripts/check_renderer_matrix.py is the offline check (COMPLETE, FRESH, EVIDENCED, CONSISTENT, PRIVATE-SAFE).
+  gen_renderer_draft_pages:
+    script: scripts/gen_renderer_draft_pages.py
+    source: public/catalogue/renderer-matrix-v1.json
+    outputs: [docs/renderer-draft/]                     # hub + one page per renderer; checked byte-for-byte by check_renderer_matrix.py
+    publish: none — DRAFT pages, not under public/
