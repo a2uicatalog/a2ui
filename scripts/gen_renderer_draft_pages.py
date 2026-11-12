@@ -9,8 +9,8 @@ Two modes:
   --out DIR          write somewhere else (for example the local review folder), together with
   --atom-pages       modified copies of the built public/atoms/<atom>/index.html pages for a few sample
                      atoms, with a Renderers section (reads public/atoms, never changes it), and
-  --logos DIR        copies the *.svg renderer logos from DIR into <out>/logos (not in this repo: the
-                     artwork has its own trademark notes), and
+  --logos DIR        copies the *.svg renderer logos from DIR into <out>/logos (default: atoms/renderer-logos,
+                     committed with their credit and trademark notes in its README), and
   --file-links       links the matrix JSON and README next to the pages.
 
 Status words: Drawn, Drawn with differences, Not verified (web); Native, Degraded (Flutter);
@@ -439,7 +439,7 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--out", default=DEFAULT_OUT)
     ap.add_argument("--atom-pages", action="store_true", help="also write modified copies of the built public/atoms pages for the samples")
-    ap.add_argument("--logos", default=None, help="directory with the renderer *.svg logos to copy into <out>/logos")
+    ap.add_argument("--logos", default=os.path.join(WT, "atoms/renderer-logos"), help="directory with the renderer *.svg logos to copy into <out>/logos")
     ap.add_argument("--file-links", action="store_true", help="link README.md and a copy of the matrix JSON next to the pages")
     a = ap.parse_args()
     with open(MATRIX, encoding="utf8") as f:
