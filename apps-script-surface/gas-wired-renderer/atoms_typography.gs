@@ -122,7 +122,7 @@ _RENDERERS['split_stat'] = function(b) {
 // Great for Meet Stage title slides and reveal moments.
 // Fields:
 //   text     — the text to reveal word by word
-//   colour   — text colour (default rgba(255,255,255,0.92))
+//   colour   — text colour (default follows the theme: var(--a2ui-text,var(--text,#111827)))
 //   gradient — optional CSS gradient applied to the whole line (overrides colour)
 //   size     — font-size (default clamp(2rem,5vw,3.5rem))
 //   weight   — font-weight (default 800)
@@ -130,7 +130,7 @@ _RENDERERS['split_stat'] = function(b) {
 //   align    — text-align (default center)
 _RENDERERS['word_reveal'] = function(b) {
   var text     = b.text     || 'Your message here';
-  var colour   = b.colour   || 'rgba(255,255,255,0.92)';
+  var colour   = b.colour   || 'var(--a2ui-text,var(--text,#111827))';
   var gradient = b.gradient || '';
   var size     = b.size     || 'clamp(2rem,5vw,3.5rem)';
   var weight   = b.weight   || 800;
@@ -261,7 +261,7 @@ _RENDERERS['text_highlight'] = function(b) {
   }
 
   return '<p data-cb="node" data-key="' + _ckey(b.text, 'text_highlight') + '" style="font-size:' + _esc(size) + ';font-weight:' + weight + ';' +
-    'line-height:1.6;color:rgba(255,255,255,0.75);text-align:' + _esc(align) + ';margin:12px 0;">' +
+    'line-height:1.6;color:var(--a2ui-text,var(--text,#111827));text-align:' + _esc(align) + ';margin:12px 0;">' +
     html + '</p>';
 };
 

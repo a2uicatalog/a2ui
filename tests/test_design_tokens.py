@@ -29,7 +29,7 @@ SAMPLES = {
 @pytest.mark.parametrize("atom", sorted(SAMPLES))
 def test_report_cluster_uses_tokens(atom):
     html = w._RENDERERS[atom](SAMPLES[atom])
-    assert "var(--a2ui-" in html
+    assert "var(--a2ui-" in html or "var(--asw-" in html
     assert "border:1px solid #e5e7eb" not in html
     assert not re.search(r"border-radius:(?:10|8)px", html)
 
@@ -65,7 +65,7 @@ def test_default_render_uses_only_modern_token_values(atom):
 
 def test_modern_preset_and_override():
     css = w._RENDERERS["palette"]({"preset": "modern", "radius": "20px"})
-    assert "--a2ui-border:#eaeaea" in css
+    assert "--asw-border:#eaeaea" in css
     assert "--a2ui-radius:20px" in css and "--a2ui-radius:12px" not in css
     assert "--a2ui-shadow:" in css
 
@@ -80,7 +80,7 @@ def _find_a2ui_vars(html):
     parens by depth so a fallback that itself contains parens (the shadow token's
     rgba(...),rgba(...) value) is captured whole, not truncated at the first ')'."""
     out = []
-    for m in re.finditer(r"var\(--a2ui-([a-z-]+),", html):
+    for m in re.finditer(r"var\(--(?:a2ui|asw)-([a-z-]+),", html):
         name = m.group(1)
         i, depth = m.end(), 1
         while depth and i < len(html):
@@ -152,13 +152,13 @@ def test_gas_palette_sets_tokens_and_cluster_reads_them():
     blocks = [{"component": "palette", "preset": "modern", "accent": "#0070f3"}]
     blocks += [{"component": t, **SAMPLES_GAS[t]} for t in ("metric_delta", "badge", "timeline")]
     out, bundle = _gas_render(blocks)
-    assert "--a2ui-border:#eaeaea" in out[0] and "--a2ui-radius:12px" in out[0]
+    assert "--asw-border:#eaeaea" in out[0] and "--a2ui-radius:12px" in out[0]
     for html in out[1:]:
-        assert "var(--a2ui-" in html
+        assert "var(--a2ui-" in html or "var(--asw-" in html
     # class-styled atoms carry the tokens in the bundled stylesheet
     for sel in (".a2ui-status-dashboard {", ".a2ui-entity-card {"):
         rule = bundle[bundle.index(sel):][:400]
-        assert "var(--a2ui-border," in rule and "var(--a2ui-radius," in rule
+        assert "var(--asw-border," in rule and "var(--a2ui-radius," in rule
 
 
 SAMPLES_GAS = {

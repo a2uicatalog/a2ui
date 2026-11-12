@@ -697,10 +697,10 @@ _RENDERERS['people_picker'] = function(b) {
   var bgLite = accent + '18';
   return '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;" data-pp-accent="' + _esc(accent) + '">'
     + '<span style="min-width:148px;padding:4px 10px;border-radius:999px;background:' + bgLite + ';border:1px solid ' + accent + '44;font-size:0.73rem;font-weight:700;color:' + accent + ';letter-spacing:.04em;flex-shrink:0;text-align:center;">' + role + '</span>'
-    + '<div style="flex:1;position:relative;">'
+    + '<div style="flex:1;min-width:0;position:relative;">'
       + '<div data-pp-chip style="display:none;margin-bottom:4px;"></div>'
       + '<div style="display:flex;gap:6px;align-items:center;">'
-        + '<input data-pp-input type="text" placeholder="' + ph + '" autocomplete="off" style="flex:1;border:1px solid #d1d5db;border-radius:8px;padding:7px 12px;font-size:0.84rem;outline:none;font-family:inherit;" onfocus="this.style.borderColor=\'' + accent + '\'" onblur="this.style.borderColor=\'#d1d5db\'">'
+        + '<input data-pp-input type="text" placeholder="' + ph + '" autocomplete="off" style="flex:1;min-width:0;border:1px solid #d1d5db;border-radius:8px;padding:7px 12px;font-size:0.84rem;outline:none;font-family:inherit;" onfocus="this.style.borderColor=\'' + accent + '\'" onblur="this.style.borderColor=\'#d1d5db\'">'
         + '<button data-pp-search type="button" style="display:flex;align-items:center;gap:5px;padding:7px 14px;background:' + accent + ';color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:0.82rem;font-weight:600;white-space:nowrap;">'
           + '<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27A6.5 6.5 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>'
           + 'Search</button>'
@@ -731,7 +731,7 @@ _RENDERERS['chat_card'] = function(b) {
     + '</div>'
     + '</div>';
 
-  return '<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;font-family:\'Google Sans\',sans-serif;max-width:520px;box-shadow:0 2px 8px rgba(0,0,0,0.08);">'
+  return '<div style="border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;font-family:\'Google Sans\',sans-serif;max-width:520px;box-shadow:0 2px 8px rgba(0,0,0,0.08);">'
     + hdr
     + '<div data-cc-body style="background:#fff;padding:0;"></div>'
     + '<div data-cc-foot style="background:#f9fafb;border-top:1px solid #f3f4f6;padding:10px 18px;font-size:0.78rem;color:#6b7280;"></div>'

@@ -359,6 +359,12 @@ generators:
     publish: none directly — the .gs rides renderer-release / renderer-release-nogas;
       the .py rides the web renderer. One YAML stamped into both so the palette
       token logic cannot drift between surfaces (tests/test_design_tokens.py).
+  gen_official_a2ui_tokens:
+    script: scripts/gen_official_a2ui_tokens.py
+    source: the installed @a2ui/web_core default theme (node_modules, not tracked)
+    outputs: [atoms/official_a2ui_tokens.json]
+    publish: none — repo-committed reference list; refresh after upgrading the @a2ui packages
+      (tests/test_official_token_clash.py checks our --a2ui-* names against it).
   gen_training_prompt:
     script: scripts/gen_training_prompt.py
     source: spec/training-md-v0.1.md

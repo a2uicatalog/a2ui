@@ -36,8 +36,12 @@ var _PP_CSS = "\n" +
   ".pp-chat-no{color:var(--text-muted,#5f6368);background:var(--surface,#f1f3f5);}\n" +
   ":root[data-theme=\"dark\"] .pp-chat-yes{color:#7ee2a8;background:#0d2818;}\n" +
   ":root[data-theme=\"dark\"] .pp-chat-partial{color:#e3b341;background:#2b2111;}\n" +
+  ":host([data-theme=\"dark\"]) .pp-chat-yes{color:#7ee2a8;background:#0d2818;}\n" +
+  ":host([data-theme=\"dark\"]) .pp-chat-partial{color:#e3b341;background:#2b2111;}\n" +
   "@media (prefers-color-scheme:dark){:root:not([data-theme=\"light\"]) .pp-chat-yes{color:#7ee2a8;background:#0d2818;}\n" +
   ":root:not([data-theme=\"light\"]) .pp-chat-partial{color:#e3b341;background:#2b2111;}}\n" +
+  "@media (prefers-color-scheme:dark){:host(:not([data-theme=\"light\"])) .pp-chat-yes{color:#7ee2a8;background:#0d2818;}\n" +
+  ":host(:not([data-theme=\"light\"])) .pp-chat-partial{color:#e3b341;background:#2b2111;}}\n" +
   ".pp-caption{color:var(--text-muted,#5f6368);max-width:64ch;margin:6px 0 18px;font-size:.94rem;}\n" +
   ".pp-toggles{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;}\n" +
   ".pp-toggles input{position:absolute;opacity:0;width:1px;height:1px;margin:0;}\n" +
@@ -64,8 +68,12 @@ var _PP_CSS = "\n" +
   ".pp-badge-client-only{color:#1a7f37;background:#dafbe1;}\n" +
   ":root[data-theme=\"dark\"] .pp-badge-round-trip{color:#fdba74;background:#431407;}\n" +
   ":root[data-theme=\"dark\"] .pp-badge-client-only{color:#7ee2a8;background:#0d2818;}\n" +
+  ":host([data-theme=\"dark\"]) .pp-badge-round-trip{color:#fdba74;background:#431407;}\n" +
+  ":host([data-theme=\"dark\"]) .pp-badge-client-only{color:#7ee2a8;background:#0d2818;}\n" +
   "@media (prefers-color-scheme:dark){:root:not([data-theme=\"light\"]) .pp-badge-round-trip{color:#fdba74;background:#431407;}\n" +
   ":root:not([data-theme=\"light\"]) .pp-badge-client-only{color:#7ee2a8;background:#0d2818;}}\n" +
+  "@media (prefers-color-scheme:dark){:host(:not([data-theme=\"light\"])) .pp-badge-round-trip{color:#fdba74;background:#431407;}\n" +
+  ":host(:not([data-theme=\"light\"])) .pp-badge-client-only{color:#7ee2a8;background:#0d2818;}}\n" +
   ".pp-repo{font-family:ui-monospace,monospace;font-size:.72rem;color:var(--text-muted,#5f6368);\n" +
   "  text-decoration:none;border:1px solid var(--border,#e0e0e0);border-radius:999px;padding:2px 10px;\n" +
   "  margin-left:auto;}\n" +

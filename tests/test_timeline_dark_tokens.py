@@ -82,7 +82,7 @@ def test_dark_stage_sets_the_token_family_and_light_stage_sets_none():
     for name, kw in CASES.items():
         style = _stage_style(_py(film(**kw)))
         if name in DARK:
-            for tok in ("--a2ui-text", "--a2ui-muted", "--a2ui-faint", "--a2ui-surface", "--a2ui-surface-muted", "--a2ui-border",
+            for tok in ("--a2ui-text", "--a2ui-muted", "--a2ui-faint", "--a2ui-surface", "--a2ui-surface-muted", "--asw-border",
                         "--a2ui-border-soft", "--a2ui-shadow", "--text", "--muted", "--text-muted", "--surface", "--border"):
                 assert tok + ":" in style, (name, tok)
             assert "--a2ui-text:" + wa._CV_THEMES["dark"]["ink"] in style

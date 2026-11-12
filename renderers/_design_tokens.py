@@ -2,6 +2,7 @@
 import re
 
 TOKEN_ORDER = [["radius", "radius"], ["radius_sm", "radius-sm"], ["border_color", "border"], ["border_soft_color", "border-soft"], ["surface_color", "surface"], ["surface_muted_color", "surface-muted"], ["text_color", "text"], ["muted_color", "muted"], ["faint_color", "faint"], ["shadow", "shadow"]]
+TOKEN_VARS = {"radius": "a2ui-radius", "radius-sm": "a2ui-radius-sm", "border": "asw-border", "border-soft": "a2ui-border-soft", "surface": "a2ui-surface", "surface-muted": "a2ui-surface-muted", "text": "a2ui-text", "muted": "a2ui-muted", "faint": "a2ui-faint", "shadow": "a2ui-shadow"}
 TOKEN_PRESETS = {
     "modern": {
         "radius": "12px",
@@ -21,14 +22,14 @@ _SAFE = re.compile(r"[#A-Za-z0-9_ .,()%/-]{1,120}")
 # {recipe_name: css_string}, double-declaration pattern -- see atoms/design-tokens.yaml's
 # `recipes:` comment. Consumed by the hand-written _card_chrome() in renderers/web_article.py.
 CHROME_STYLES = {
-    "card": "border-radius:12px;border-radius:var(--a2ui-radius,12px);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);background:#ffffff;background:var(--a2ui-surface,#ffffff);box-shadow:0 1px 2px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04);box-shadow:var(--a2ui-shadow,0 1px 2px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04));",
-    "card-muted": "border-radius:12px;border-radius:var(--a2ui-radius,12px);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);",
+    "card": "border-radius:12px;border-radius:var(--a2ui-radius,12px);border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);background:#ffffff;background:var(--a2ui-surface,#ffffff);box-shadow:0 1px 2px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04);box-shadow:var(--a2ui-shadow,0 1px 2px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04));",
+    "card-muted": "border-radius:12px;border-radius:var(--a2ui-radius,12px);border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);",
     "row": "border-bottom:1px solid #f1f1f1;border-bottom:1px solid var(--a2ui-border-soft,#f1f1f1);",
-    "card-plain": "border-radius:12px;border-radius:var(--a2ui-radius,12px);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);",
-    "card-flat": "border-radius:12px;border-radius:var(--a2ui-radius,12px);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);background:#ffffff;background:var(--a2ui-surface,#ffffff);",
-    "card-sm-plain": "border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);",
-    "card-sm-white": "border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);background:#ffffff;background:var(--a2ui-surface,#ffffff);",
-    "card-sm-muted": "border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);"
+    "card-plain": "border-radius:12px;border-radius:var(--a2ui-radius,12px);border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);",
+    "card-flat": "border-radius:12px;border-radius:var(--a2ui-radius,12px);border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);background:#ffffff;background:var(--a2ui-surface,#ffffff);",
+    "card-sm-plain": "border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);",
+    "card-sm-white": "border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);background:#ffffff;background:var(--a2ui-surface,#ffffff);",
+    "card-sm-muted": "border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);"
 }
 
 
@@ -43,5 +44,5 @@ def token_css(b):
         if not (isinstance(v, str) and v):
             v = preset.get(name)
         if isinstance(v, str) and _SAFE.fullmatch(v):
-            out += "--a2ui-" + name + ":" + v + ";"
+            out += "--" + TOKEN_VARS.get(name, "a2ui-" + name) + ":" + v + ";"
     return out
