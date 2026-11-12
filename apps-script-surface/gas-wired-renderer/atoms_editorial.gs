@@ -29,7 +29,7 @@ _RENDERERS['verdict_checklist'] = function(b) {
       '<span style="flex:0 0 22px;height:22px;border-radius:50%;background:' + style.bg + ';color:' + style.fg + ';' +
       'display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.8rem;">' +
       style.mark + '</span>' +
-      '<div style="line-height:1.5;"><span style="color:#202124;">' + label + '</span>' +
+      '<div style="line-height:1.5;"><span style="color:var(--a2ui-ink,#202124);">' + label + '</span>' +
       noteHtml + '</div></li>';
   }
   var titleHtml = title ? '<div style="font-weight:700;margin-bottom:8px;color:#202124;">' + title + '</div>' : '';
@@ -167,7 +167,7 @@ _RENDERERS['trace_step'] = function(b) {
     '<span style="flex:0 0 28px;height:28px;background:#1a73e8;color:white;border-radius:50%;' +
     'display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.85rem;">' +
     stepNumber + '</span>' +
-    '<div style="flex:1;padding-top:3px;"><strong style="color:#202124;">' + title + '</strong>' +
+    '<div style="flex:1;padding-top:3px;"><strong style="color:var(--a2ui-ink,#202124);">' + title + '</strong>' +
     '<div style="color:#3c4043;line-height:1.6;margin-top:4px;">' + body + '</div>' + codeHtml + '</div></div>';
 };
 

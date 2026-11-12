@@ -201,7 +201,7 @@ _RENDERERS['wall_elevation'] = function(b) {
       calc.buildDaysSelected.toFixed(1) + ' day' + (calc.buildDaysSelected === 1 ? '' : 's'));
 
   return '<div data-cb="node" data-key="' + _ckey(b.block_id, 'wall_elevation') + '" style="margin:1rem 0;padding:14px 16px;border:1px solid var(--border,#e2e8f0);border-radius:12px;border-radius:var(--a2ui-radius,12px);background:var(--surface,#fff);">' +
-    _wallSvg(calc) +
+    '<div style="overflow-x:auto;">' + _wallSvg(calc) + '</div>' +   // OV360: 660px svg scrolls inside the card on narrow screens
     '<div style="margin-top:10px;">' + stats + '</div>' +
     advisories +
     '</div>';

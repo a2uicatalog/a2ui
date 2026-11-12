@@ -531,10 +531,16 @@ _RENDERERS['hub'] = function(b) {
     'for(var j=0;j<counts[i];j++){if(!(i===cs&&j===cl[i])){var p=g("P"+i+"_"+j);if(p){p.style.background=ps.bg;p.style.color=ps.c;}}}' +
     '}' +
     '}' +
+    // DK: theme poll also checks the shadow HOST chain (script atoms run in an iframe inside the host's shadow root; plain script atoms inside it)
+    'var aswS=document.currentScript;' +
+    'function aswUp(n){return n.parentElement||(n.getRootNode&&n.getRootNode().host)||null;}' +
+    'function aswChain(){var o=[],st=[aswS,window.frameElement],i,n;for(i=0;i<st.length;i++){n=st[i];while(n){o.push(n);n=aswUp(n);}}return o;}' +
+    'function aswDark(){try{var c=aswChain();for(var i=0;i<c.length;i++){var e=c[i];if((e.classList&&e.classList.contains("asw-dark-theme"))||(e.getAttribute&&e.getAttribute("data-theme")==="dark"))return true;}}catch(e){}return document.body.classList.contains("asw-dark-theme");}' +
+    'function aswWatch(o){var f={attributes:true,attributeFilter:["class","data-theme"]};o.observe(document.body,f);try{var c=aswChain();for(var i=0;i<c.length;i++)if(c[i].nodeType===1&&c[i]!==document.body&&c[i].ownerDocument!==document)o.observe(c[i],f);}catch(e){}}' +
     'var obs=new MutationObserver(function(ms){ms.forEach(function(m){' +
-    'if(m.attributeName==="class"){var d=document.body.classList.contains("asw-dark-theme");if(d!==dark)applyTheme(d);}' +
+    'if(m.attributeName==="class"||m.attributeName==="data-theme"){var d=aswDark();if(d!==dark)applyTheme(d);}' +
     '});});' +
-    'obs.observe(document.body,{attributes:true,attributeFilter:["class"]});' +
+    'aswWatch(obs);' +
     'window["' + uid + '"]={' +
     'subj:function(si){' +
     'if(si===cs)return;' +
@@ -557,7 +563,7 @@ _RENDERERS['hub'] = function(b) {
     'if(ns)ns.style.display="block";' +
     'window.scrollTo(0,0);' +
     '}};' +
-    'applyTheme(document.body.classList.contains("asw-dark-theme"));' +  // sync initial theme on load (auto-dark / saved pref)
+    'applyTheme(aswDark());' +  // sync initial theme on load (auto-dark / saved pref)
     '})();<\/script>'
   );
 };
@@ -709,10 +715,16 @@ _RENDERERS['hub_rail'] = function(b) {
     'for(var j=0;j<counts[i];j++){if(!(i===cs&&j===cl[i])){var p=g("P"+i+"_"+j);if(p){p.style.background=ps.bg;p.style.color=ps.c;}}}' +
     '}' +
     '}' +
+    // DK: theme poll also checks the shadow HOST chain (script atoms run in an iframe inside the host's shadow root; plain script atoms inside it)
+    'var aswS=document.currentScript;' +
+    'function aswUp(n){return n.parentElement||(n.getRootNode&&n.getRootNode().host)||null;}' +
+    'function aswChain(){var o=[],st=[aswS,window.frameElement],i,n;for(i=0;i<st.length;i++){n=st[i];while(n){o.push(n);n=aswUp(n);}}return o;}' +
+    'function aswDark(){try{var c=aswChain();for(var i=0;i<c.length;i++){var e=c[i];if((e.classList&&e.classList.contains("asw-dark-theme"))||(e.getAttribute&&e.getAttribute("data-theme")==="dark"))return true;}}catch(e){}return document.body.classList.contains("asw-dark-theme");}' +
+    'function aswWatch(o){var f={attributes:true,attributeFilter:["class","data-theme"]};o.observe(document.body,f);try{var c=aswChain();for(var i=0;i<c.length;i++)if(c[i].nodeType===1&&c[i]!==document.body&&c[i].ownerDocument!==document)o.observe(c[i],f);}catch(e){}}' +
     'var obs=new MutationObserver(function(ms){ms.forEach(function(m){' +
-    'if(m.attributeName==="class"){var d=document.body.classList.contains("asw-dark-theme");if(d!==dark)applyTheme(d);}' +
+    'if(m.attributeName==="class"||m.attributeName==="data-theme"){var d=aswDark();if(d!==dark)applyTheme(d);}' +
     '});});' +
-    'obs.observe(document.body,{attributes:true,attributeFilter:["class"]});' +
+    'aswWatch(obs);' +
     'window["' + uid + '"]={' +
     'subj:function(si){' +
     'if(si===cs){var dtl0=g("D"+si);if(dtl0)dtl0.open=true;return;}' +
@@ -737,7 +749,7 @@ _RENDERERS['hub_rail'] = function(b) {
     'if(ns)ns.style.display="block";' +
     'window.scrollTo(0,0);' +
     '}};' +
-    'applyTheme(document.body.classList.contains("asw-dark-theme"));' +  // sync initial theme on load (auto-dark / saved pref)
+    'applyTheme(aswDark());' +  // sync initial theme on load (auto-dark / saved pref)
     '})();<\/script>'
   );
 };

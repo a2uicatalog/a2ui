@@ -267,7 +267,7 @@ _RENDERERS['contributor_list'] = function(b) {
     return '<div role="listitem">' + rowHtml + '</div>';
   }).join('');
 
-  return '<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);' +
+  return '<div style="border:1px solid #eaeaea;border:1px solid var(--asw-border,#eaeaea);' +
     'border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:10px;margin:1.5rem 0;">' +
     '<div style="font-weight:700;padding:4px 8px;margin-bottom:6px;">' + _esc(titleText) + '</div>' +
     '<div role="list" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:4px;">' +
@@ -410,7 +410,7 @@ _RENDERERS['review_callout'] = function(b) {
   }
   return '<div data-cb="node" data-key="' + _ckey(b.author_name, 'review_callout') + '" style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:20px;border:1px solid var(--border,#e5e7eb);border-radius:10px;background:var(--bg,#fff);">'
     + (b.product_name ? '<div style="font-size:0.75rem;font-weight:600;color:var(--muted,#6b7280);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">' + _esc(b.product_name) + '</div>' : '')
-    + '<div style="margin-bottom:10px;">' + stars + '</div>'
+    + '<div style="margin-bottom:10px;display:flex;flex-wrap:wrap;">' + stars + '</div>'
     + '<blockquote style="margin:0;font-size:0.9rem;line-height:1.6;color:var(--text,#374151);font-style:italic;">"' + _esc(b.review_text || '') + '"</blockquote>'
     + (b.author_name ? '<div style="margin-top:10px;font-size:0.8rem;font-weight:600;color:var(--muted,#6b7280);">— ' + _esc(b.author_name) + '</div>' : '')
     + '</div>';

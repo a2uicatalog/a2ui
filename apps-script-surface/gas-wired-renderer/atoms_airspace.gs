@@ -761,7 +761,7 @@ _RENDERERS['airspace_command_deck'] = function(b) {
       '}' +
 
       'function frame(){' +
-        'requestAnimationFrame(frame);' +
+        _rafUnlessRM('frame') +
         // Resize canvas if it was initialised while hidden (slide was display:none)
         'var _cw=c.offsetWidth||window.innerWidth||700,_ch=c.offsetHeight||window.innerHeight||520;' +
         'if(_cw!==c.width||_ch!==c.height){c.width=_cw;c.height=_ch;W=_cw;H=_ch;CX=W/2;CY=H*0.48;}' +
@@ -1320,8 +1320,11 @@ _RENDERERS['fids_board'] = function(b) {
         '"GMMN":"CASABLANCA","DTTA":"TUNIS","DAAG":"ALGER",' +
         '"CYUL":"MONTRÉAL","KJFK":"NEW YORK","OMDB":"DUBAI"' +
       '};' +
-      // Fetch real flight data from OpenSky via GAS backend
-      'google.script.run' +
+      // Fetch real flight data from OpenSky via GAS backend. Guarded like the poll vote
+      // (line ~174): outside Apps Script (static page, Worker, iframe host) `google` is
+      // undefined, and the unguarded call threw a ReferenceError that aborted the whole
+      // script, so the ADS-B overlay and board refresh below never ran either.
+      'if(typeof google!=="undefined"&&google.script&&google.script.run){google.script.run' +
         '.withSuccessHandler(function(result){' +
           'if(!result||result.error||!result.flights)return;' +
           'var now=new Date();' +
@@ -1340,7 +1343,7 @@ _RENDERERS['fids_board'] = function(b) {
           'var srcEl=document.getElementById("' + uid + 'src");' +
           'if(srcEl)srcEl.textContent="DONNÉES LIVE OPENSKY · " + result.flights.length + " VOLS";' +
         '})' +
-        '.getFlightsLFBO("' + _esc(mode) + '","' + _esc(airport) + '");' +
+        '.getFlightsLFBO("' + _esc(mode) + '","' + _esc(airport) + '");}' +
       // ADS-B: overlay live status on board rows that match real callsigns
       (dataSource ?
         '(function(){' +

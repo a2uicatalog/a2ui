@@ -2,6 +2,15 @@
 // Zero dependencies. Pure canvas + requestAnimationFrame. GAS CSP-safe.
 // Surfaces: G M W
 
+// requestAnimationFrame call for an atom's own inline <script>, skipped under
+// prefers-reduced-motion: the frame that has just been drawn stays on screen
+// (WCAG 2.2.2 / 2.3.3). Without this a canvas loop ran for ever, 60 fps, for
+// users who asked for no motion, and a page that renders many such atoms in turn
+// kept every earlier canvas's GPU work queued (genui-ledger sweep: floor 10-20x).
+function _rafUnlessRM(fn) {
+  return 'if(!(window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches))requestAnimationFrame(' + fn + ');';
+}
+
 // ── canvas_plexus ─────────────────────────────────────────────────────────────
 // Floating particle network: nodes drift independently, connect with
 // proximity-weighted lines, repel from cursor with inverse-gravity physics.
@@ -104,7 +113,7 @@ _RENDERERS['canvas_plexus'] = function(b) {
           'ctx.arc(nodes[i].x,nodes[i].y,DS,0,Math.PI*2);' +
           'ctx.fill();' +
         '}' +
-        'requestAnimationFrame(frame);' +
+        _rafUnlessRM('frame') +
       '}' +
       'frame();' +
     '})();<\/script>';
@@ -546,7 +555,7 @@ _RENDERERS['isometric_mesh'] = function(b) {
       'c.addEventListener("mousedown",function(){AR=false;});' +
       '(function spin(){' +
         'if(AR){theta+=0.004;draw();}' +
-        'requestAnimationFrame(spin);' +
+        _rafUnlessRM('spin') +
       '})();' +
       'draw();' +
     '})();<\/script>';
@@ -607,7 +616,7 @@ _RENDERERS['geo_contour_waves'] = function(b) {
           '}' +
           'ctx.stroke();' +
         '}' +
-        'requestAnimationFrame(draw);' +
+        _rafUnlessRM('draw') +
       '}' +
       'c.addEventListener("mousedown",function(e){drag=true;lx=e.clientX;ly=e.clientY;c.style.cursor="grabbing";});' +
       'document.addEventListener("mouseup",function(){drag=false;c.style.cursor="grab";});' +
@@ -717,7 +726,7 @@ _RENDERERS['multi_surface'] = function(b) {
           'var ch=document.createElement("div");' +
           'ch.className="msp";' +
           'ch.style.color=c;ch.style.borderColor=c+"55";ch.style.background=c+"15";' +
-          'ch.textContent=n.label+" "+n.temp;' +
+          'ch.textContent=n.label+(n.temp!=null?" "+n.temp:"");' +
           'pool.appendChild(ch);' +
         '});' +
       '})();' +
@@ -1855,7 +1864,7 @@ _RENDERERS['geo_iso_rocket_launch'] = function(b) {
         'drawSolidRocketCylinder(0,2.8,35,2.5,segs,b2x,b2y,0,"booster");' +
         'drawSolidRocketCylinder(0,7,55,7,segs,0,posY,0,"core");' +
         'drawSolidRocketCylinder(55,7,75,0.2,segs,0,posY,0,"payload");' +
-        'requestAnimationFrame(draw);' +
+        _rafUnlessRM('draw') +
       '}' +
       'draw();' +
     '})();<\/script>';
@@ -2402,7 +2411,7 @@ _RENDERERS['geo_iso_heli_hover'] = function(b) {
           'ctx.lineTo(fHub.x+Math.sin(fAng)*fR,fHub.y+Math.cos(fAng)*fR);ctx.stroke();' +
         '}' +
 
-        'requestAnimationFrame(frame);' +
+        _rafUnlessRM('frame') +
       '}' +
       'frame();' +
     '})();<\/script>';
@@ -2730,7 +2739,7 @@ _RENDERERS['geo_iso_fleet'] = function(b){
         '}else if(tab==="ac")drawAC();'+
         'else if(tab==="rk")drawRK();'+
         'else drawHH();'+
-        'requestAnimationFrame(loop);'+
+        _rafUnlessRM('loop')+
       '}'+
       'loop();'+
     '})();<\/script>';
@@ -2941,9 +2950,9 @@ var _A2UI_CANVAS_KIT_JS =
   'function noise(x,y,z){var X=Math.floor(x),Y=Math.floor(y),Z=Math.floor(z);x-=X;y-=Y;z-=Z;var u=fd(x),v=fd(y),w=fd(z);' +
   'return L(L(L(hs(X,Y,Z),hs(X+1,Y,Z),u),L(hs(X,Y+1,Z),hs(X+1,Y+1,Z),u),v),L(L(hs(X,Y,Z+1),hs(X+1,Y,Z+1),u),L(hs(X,Y+1,Z+1),hs(X+1,Y+1,Z+1),u),v),w);}' +
   'function fitText(ctx,lines,maxW,maxH,font,weight){var lo=8,hi=400;while(hi-lo>1){var m=(lo+hi)/2;ctx.font=weight+" "+m+"px "+font;var w=0;for(var i=0;i<lines.length;i++)w=Math.max(w,ctx.measureText(lines[i]).width);if(w<=maxW&&m*1.1*lines.length<=maxH)lo=m;else hi=m;}return lo;}' +
-  'function mount(id,o){var c=document.getElementById(id);if(!c)return;var ctx=c.getContext("2d");if(!ctx)return;' +
-  'var k={c:c,ctx:ctx,W:0,H:0,t:0,mx:null,my:null,noise:noise,dpr:Math.min(window.devicePixelRatio||1,2)},raf=0,vis=true;' +
-  'var RM=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;' +
+  'function mount(id,o){var c=document.getElementById(id);if(!c)return;var RM=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;var ctx=c.getContext("2d",RM?{willReadFrequently:true}:undefined);if(!ctx)return;' +
+  'var k={c:c,ctx:ctx,RM:!!RM,W:0,H:0,t:0,mx:null,my:null,noise:noise,dpr:Math.min(window.devicePixelRatio||1,2)},raf=0,vis=true;' +
+  '' +
   'function resize(){var w=c.clientWidth||600,h=c.clientHeight||360;if(w===k.W&&h===k.H)return;k.W=w;k.H=h;c.width=Math.round(w*k.dpr);c.height=Math.round(h*k.dpr);ctx.setTransform(k.dpr,0,0,k.dpr,0,0);if(o.init)o.init(k);}' +
   'function step(){k.t+=0.0028*(o.speed||1);o.draw(k);}' +
   'function loop(){if(!vis){raf=0;return;}step();raf=requestAnimationFrame(loop);}' +
@@ -2982,7 +2991,7 @@ var _FLOW_FIELD_JS =
 var _PARTICLE_TYPE_JS =
   '(function(){' +
   'var C=%%CFG%%;var pts=[],pal=C.pal;' +
-  'function build(k){var W=k.W,H=k.H,oc=document.createElement("canvas");oc.width=W;oc.height=H;var o=oc.getContext("2d");' +
+  'function build(k){var W=k.W,H=k.H,oc=document.createElement("canvas");oc.width=W;oc.height=H;var o=oc.getContext("2d",{willReadFrequently:true});' +
   'var fs=_a2uiCK.fitText(o,C.lines,W*0.86,H*0.72,C.font,C.weight);o.font=C.weight+" "+fs+"px "+C.font;o.textAlign="center";o.textBaseline="middle";o.fillStyle="#fff";' +
   'var lh=fs*1.1,y0=H/2-lh*(C.lines.length-1)/2;for(var i=0;i<C.lines.length;i++)o.fillText(C.lines[i],W/2,y0+i*lh);' +
   'var d=o.getImageData(0,0,W,H).data,gap=2,tg;' +
@@ -3003,9 +3012,9 @@ var _LIGHT_TYPE_JS =
   'function text(o,W,H){var fs=_a2uiCK.fitText(o,C.lines,W*0.86,H*0.72,C.font,C.weight);o.font=C.weight+" "+fs+"px "+C.font;o.textAlign="center";o.textBaseline="middle";var lh=fs*1.1,y0=H/2-lh*(C.lines.length-1)/2;for(var i=0;i<C.lines.length;i++)o.fillText(C.lines[i],W/2,y0+i*lh);}' +
   'function spawn(p){var tries=0;do{p.x=Math.random()*MW;p.y=Math.random()*MH;tries++;}while(tries<40&&!mask[Math.floor(p.y)*MW+Math.floor(p.x)]);' +
   'p.px=p.x;p.py=p.y;p.life=60+Math.random()*140;p.sv=0.6+Math.random()*0.7;p.ci=Math.floor(Math.min(0.999,p.x/MW)*C.pal.length);return p;}' +
-  'function init(k){var W=k.W,H=k.H;MW=W;MH=H;var oc=document.createElement("canvas");oc.width=W;oc.height=H;var o=oc.getContext("2d");o.fillStyle="#fff";text(o,W,H);' +
+  'function init(k){var W=k.W,H=k.H;MW=W;MH=H;var oc=document.createElement("canvas");oc.width=W;oc.height=H;var o=oc.getContext("2d",{willReadFrequently:true});o.fillStyle="#fff";text(o,W,H);' +
   'var d=o.getImageData(0,0,W,H).data;mask=new Uint8Array(W*H);var on=0;for(var i=0;i<W*H;i++){if(d[i*4+3]>100){mask[i]=1;on++;}}' +
-  'fc=document.createElement("canvas");fc.width=k.c.width;fc.height=k.c.height;fx=fc.getContext("2d");fx.setTransform(k.dpr,0,0,k.dpr,0,0);fx.fillStyle=C.bg;fx.fillRect(0,0,W,H);' +
+  'fc=document.createElement("canvas");fc.width=k.c.width;fc.height=k.c.height;fx=fc.getContext("2d",k.RM?{willReadFrequently:true}:undefined);fx.setTransform(k.dpr,0,0,k.dpr,0,0);fx.fillStyle=C.bg;fx.fillRect(0,0,W,H);' +
   'N=Math.min(C.cap,Math.max(40,Math.round(on/C.per)));pts=[];for(var j=0;j<N;j++)pts.push(spawn({}));}' +
   'function draw(k){var W=k.W,H=k.H,ctx=k.ctx,t=k.t,i,p,a,vx,vy,d,dx,dy,f,ca,sa,nx;' +
   'fx.globalCompositeOperation="source-over";fx.fillStyle="rgba("+C.bgRgb+","+C.trail+")";fx.fillRect(0,0,W,H);' +
@@ -3363,7 +3372,7 @@ _RENDERERS['halftone_wave'] = function(b) {
   var cfg = '{sp:' + sp + ',sc:0.0045,spd:' + spd + ',wave:"' + wave + '",focus:"' + focus + '",ink:"' + ink + '",paper:"' + paper + '",acc:"' + (acc || ink) + '",hasAcc:' + (acc ? 'true' : 'false') + ',inter:' + inter + '}';
   var pal = [_ffRgb(acc || ink)];
   var text = _ffOverlay(align, _ffRgb(paper), pal, b.eyebrow || '', b.title || '', b.body || '', ink);
-  return _ffPanel(height, paper, _ffCanvas('hw-' + uid) + text + _ffScript(_HALFTONE_WAVE_JS, uid, cfg));
+  return '<!--asw-keep-->' + _ffPanel(height, paper, _ffCanvas('hw-' + uid) + text + _ffScript(_HALFTONE_WAVE_JS, uid, cfg)) + '<!--/asw-keep-->';   // fixed light paper canvas: skip the dark remap
 };
 _RENDERERS['message_lanes'] = function(b) {
   var uid = Math.random().toString(36).substr(2, 6);
