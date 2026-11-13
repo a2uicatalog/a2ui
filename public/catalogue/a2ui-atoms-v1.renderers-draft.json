@@ -71,7 +71,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -164,9 +164,10 @@
       "pixel_fail_dark360",
       "pixel_fail_dark480",
       "pixel_fail_light360",
-      "pixel_fail_light480"
+      "pixel_fail_light480",
+      "text_differs"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -266,7 +267,7 @@
       "pixel_fail_light360",
       "pixel_fail_light480"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -366,7 +367,7 @@
       "pixel_fail_light360",
       "pixel_fail_light480"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -466,9 +467,10 @@
       "pixel_fail_dark360",
       "pixel_fail_dark480",
       "pixel_fail_light360",
-      "pixel_fail_light480"
+      "pixel_fail_light480",
+      "text_differs"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -565,7 +567,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -652,7 +654,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -744,9 +746,10 @@
       "pixel_fail_dark360",
       "pixel_fail_dark480",
       "pixel_fail_light360",
-      "pixel_fail_light480"
+      "pixel_fail_light480",
+      "text_differs"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -846,7 +849,7 @@
       "pixel_fail_light360",
       "pixel_fail_light480"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -945,7 +948,7 @@
       "pixel_fail_light360",
       "pixel_fail_light480"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -1059,7 +1062,7 @@
       "pixel_fail_light360",
       "pixel_fail_light480"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -1151,7 +1154,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -1240,7 +1243,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -1331,7 +1334,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -1419,7 +1422,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -1512,7 +1515,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -1607,7 +1610,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -1697,7 +1700,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -1798,7 +1801,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -1898,7 +1901,7 @@
       "pixel_fail_light360",
       "pixel_fail_light480"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -1994,7 +1997,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -2099,7 +2102,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -2211,7 +2214,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -2301,7 +2304,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -2397,7 +2400,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -2489,7 +2492,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -2584,7 +2587,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -2680,7 +2683,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -2772,7 +2775,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -2860,7 +2863,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -2952,7 +2955,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -3046,7 +3049,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -3168,7 +3171,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -3268,7 +3271,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -3372,7 +3375,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -3461,7 +3464,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -3561,7 +3564,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -3693,7 +3696,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -3793,7 +3796,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -3889,7 +3892,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -3985,7 +3988,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -4089,7 +4092,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -4198,7 +4201,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -4286,7 +4289,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -4385,7 +4388,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -4486,7 +4489,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -4570,7 +4573,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -4674,7 +4677,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -4771,7 +4774,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -4855,7 +4858,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -4947,7 +4950,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -5034,7 +5037,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -5133,7 +5136,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -5226,7 +5229,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -5323,7 +5326,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -5422,7 +5425,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -5510,7 +5513,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -5598,7 +5601,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -5698,7 +5701,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -5794,7 +5797,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -5890,7 +5893,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -5992,9 +5995,10 @@
       "pixel_fail_dark360",
       "pixel_fail_dark480",
       "pixel_fail_light360",
-      "pixel_fail_light480"
+      "pixel_fail_light480",
+      "text_differs"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -6095,7 +6099,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -6191,7 +6195,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -6286,7 +6290,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -6382,7 +6386,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -6486,9 +6490,10 @@
       "pixel_fail_dark360",
       "pixel_fail_dark480",
       "pixel_fail_light360",
-      "pixel_fail_light480"
+      "pixel_fail_light480",
+      "text_differs"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -6599,7 +6604,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -6706,7 +6711,7 @@
       "pixel_fail_dark480",
       "pixel_fail_light480"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -6802,7 +6807,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -6904,7 +6909,7 @@
       "pixel_fail_dark480",
       "pixel_fail_light480"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -7004,7 +7009,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -7098,7 +7103,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -7198,7 +7203,7 @@
      "reasons": [
       "no_visible_text"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -7300,7 +7305,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -7388,7 +7393,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -7480,7 +7485,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -7572,7 +7577,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -7668,7 +7673,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -7764,7 +7769,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -7866,7 +7871,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -7957,7 +7962,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -8074,7 +8079,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -8161,7 +8166,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -8258,7 +8263,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -8353,7 +8358,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -8444,7 +8449,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -8537,7 +8542,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -8645,7 +8650,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -8734,7 +8739,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -8829,7 +8834,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -8921,7 +8926,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -9013,7 +9018,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -9105,7 +9110,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -9197,7 +9202,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -9285,7 +9290,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -9381,7 +9386,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -9473,7 +9478,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -9565,7 +9570,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -9657,7 +9662,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -9749,7 +9754,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -9852,7 +9857,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -9947,7 +9952,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -10040,7 +10045,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -10131,7 +10136,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -10220,7 +10225,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -10319,7 +10324,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -10422,7 +10427,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -10525,7 +10530,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -10628,7 +10633,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -10719,7 +10724,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -10814,7 +10819,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -10897,7 +10902,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -10980,7 +10985,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -11075,7 +11080,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -11158,7 +11163,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -11245,7 +11250,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -11332,7 +11337,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -11415,7 +11420,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -11502,7 +11507,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -11589,7 +11594,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -11672,7 +11677,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -11755,7 +11760,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -11838,7 +11843,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -11921,7 +11926,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -12004,7 +12009,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -12088,7 +12093,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -12175,7 +12180,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -12258,7 +12263,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -12349,7 +12354,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -12444,7 +12449,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -12527,7 +12532,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -12610,7 +12615,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -12697,7 +12702,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -12780,7 +12785,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -12863,7 +12868,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -12946,7 +12951,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -13033,7 +13038,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -13116,7 +13121,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -13203,7 +13208,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -13290,7 +13295,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -13377,7 +13382,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -13472,7 +13477,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -13555,7 +13560,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -13642,7 +13647,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -13725,7 +13730,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -13836,7 +13841,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -13941,7 +13946,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -14054,7 +14059,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -14173,7 +14178,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -14283,7 +14288,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -14396,7 +14401,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -14500,7 +14505,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -14602,7 +14607,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -14704,7 +14709,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -14791,7 +14796,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -14878,7 +14883,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -14965,7 +14970,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -15048,7 +15053,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -15131,7 +15136,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -15222,7 +15227,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -15305,7 +15310,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -15392,7 +15397,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -15482,7 +15487,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -15568,7 +15573,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -15654,7 +15659,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -15740,7 +15745,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -15826,7 +15831,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -15930,7 +15935,7 @@
       "blank_both_light480",
       "no_visible_text"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -16020,7 +16025,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -16104,7 +16109,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -16190,7 +16195,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -16274,7 +16279,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -16403,7 +16408,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -16518,7 +16523,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -16615,7 +16620,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -16717,7 +16722,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -16801,7 +16806,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -16889,7 +16894,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -16977,7 +16982,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -17060,7 +17065,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -17152,7 +17157,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -17243,7 +17248,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -17327,7 +17332,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -17414,7 +17419,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -17497,7 +17502,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -17584,7 +17589,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -17671,7 +17676,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -17759,7 +17764,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -17857,7 +17862,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -17973,7 +17978,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -18097,7 +18102,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -18201,7 +18206,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -18293,7 +18298,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -18405,7 +18410,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -18501,7 +18506,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -18601,7 +18606,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -18698,7 +18703,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -18803,7 +18808,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -18906,7 +18911,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -19009,7 +19014,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -19109,7 +19114,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -19201,7 +19206,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -19317,7 +19322,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -19417,7 +19422,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -19520,7 +19525,7 @@
       "pixel_fail_light360",
       "pixel_fail_light480"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -19613,7 +19618,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -19717,7 +19722,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -19813,7 +19818,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -19902,7 +19907,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -20004,7 +20009,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -20113,7 +20118,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -20218,7 +20223,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -20319,7 +20324,7 @@
      "reasons": [
       "no_visible_text"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -20422,7 +20427,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -20515,7 +20520,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -20608,7 +20613,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -20704,7 +20709,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -20796,7 +20801,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -20892,7 +20897,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -20989,7 +20994,7 @@
       "pixel_fail_light360",
       "pixel_fail_light480"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -21099,7 +21104,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -21196,7 +21201,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -21288,7 +21293,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -21383,7 +21388,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -21483,7 +21488,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -21596,7 +21601,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -21712,7 +21717,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -21820,7 +21825,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -21912,7 +21917,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -22028,7 +22033,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -22119,7 +22124,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -22213,7 +22218,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -22316,7 +22321,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -22411,7 +22416,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -22507,7 +22512,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -22611,7 +22616,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -22709,7 +22714,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -22804,7 +22809,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -22904,7 +22909,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -22995,7 +23000,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -23102,7 +23107,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -23197,7 +23202,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -23304,9 +23309,10 @@
       "pixel_fail_dark360",
       "pixel_fail_dark480",
       "pixel_fail_light360",
-      "pixel_fail_light480"
+      "pixel_fail_light480",
+      "text_differs"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -23412,7 +23418,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -23508,7 +23514,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -23601,7 +23607,7 @@
       "pixel_fail_light360",
       "pixel_fail_light480"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -23725,7 +23731,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -23824,7 +23830,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -23926,7 +23932,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -24030,7 +24036,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -24126,7 +24132,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -24233,9 +24239,10 @@
       "pixel_fail_dark360",
       "pixel_fail_dark480",
       "pixel_fail_light360",
-      "pixel_fail_light480"
+      "pixel_fail_light480",
+      "text_differs"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -24360,7 +24367,7 @@
       "pixel_fail_light360",
       "pixel_fail_light480"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -24459,7 +24466,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -24551,7 +24558,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -24647,7 +24654,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -24754,7 +24761,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -24856,7 +24863,7 @@
       "pixel_fail_light360",
       "pixel_fail_light480"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -24976,7 +24983,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -25072,7 +25079,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -25163,7 +25170,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -25254,7 +25261,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -25350,7 +25357,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -25453,7 +25460,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -25540,7 +25547,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -25641,7 +25648,7 @@
      "reasons": [
       "no_visible_text"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -25739,7 +25746,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -25835,7 +25842,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -25932,7 +25939,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -26032,7 +26039,7 @@
      "reasons": [
       "no_visible_text"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -26136,7 +26143,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -26244,7 +26251,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -26351,7 +26358,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -26454,7 +26461,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -26579,7 +26586,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -26691,7 +26698,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -26813,7 +26820,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -26925,7 +26932,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -27054,7 +27061,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -27178,7 +27185,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -27299,7 +27306,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -27424,7 +27431,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -27543,7 +27550,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -27665,7 +27672,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -27789,7 +27796,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -27954,7 +27961,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -28065,7 +28072,7 @@
       "pixel_fail_light360",
       "pixel_fail_light480"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -28159,7 +28166,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -28248,7 +28255,7 @@
       "pixel_fail_light360",
       "pixel_fail_light480"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -28452,7 +28459,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -28574,7 +28581,7 @@
      "reasons": [
       "no_visible_text"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -28698,7 +28705,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -28808,7 +28815,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -28901,7 +28908,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -29012,7 +29019,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -29101,7 +29108,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -29185,7 +29192,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -29297,7 +29304,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -29391,7 +29398,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -29514,7 +29521,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -29604,7 +29611,7 @@
       "pixel_fail_light360",
       "pixel_fail_light480"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -29720,7 +29727,7 @@
       "pixel_fail_light360",
       "pixel_fail_light480"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -29833,7 +29840,7 @@
      "reasons": [
       "no_visible_text"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -29935,7 +29942,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -30030,7 +30037,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -30143,7 +30150,7 @@
       "blank_both_light360",
       "blank_both_light480"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -30274,7 +30281,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -30390,7 +30397,7 @@
      "reasons": [
       "no_visible_text"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -30513,7 +30520,7 @@
      "reasons": [
       "no_visible_text"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -30657,9 +30664,11 @@
     "copilotkit": {
      "status": "not_verified",
      "reasons": [
+      "blank_both_light360",
+      "blank_both_light480",
       "no_visible_text"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -30781,7 +30790,7 @@
      "reasons": [
       "no_example"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -30907,7 +30916,7 @@
      "reasons": [
       "no_example"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -31017,7 +31026,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -31123,7 +31132,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -31219,7 +31228,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -31322,7 +31331,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -31432,7 +31441,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -31539,7 +31548,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -31650,7 +31659,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -31763,13 +31772,9 @@
      "renderer_version": "@a2ui/angular 0.14.0 (web_core 0.15.0)"
     },
     "copilotkit": {
-     "status": "drawn_with_differences",
-     "reasons": [
-      "pixel_fail_dark360",
-      "pixel_fail_light480",
-      "unstable_pixel_light360"
-     ],
-     "measured": "2026-11-12",
+     "status": "drawn",
+     "reasons": [],
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -31875,12 +31880,9 @@
      "renderer_version": "@a2ui/angular 0.14.0 (web_core 0.15.0)"
     },
     "copilotkit": {
-     "status": "drawn_with_differences",
-     "reasons": [
-      "pixel_fail_light480",
-      "unstable_pixel_light360"
-     ],
-     "measured": "2026-11-12",
+     "status": "drawn",
+     "reasons": [],
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -31979,7 +31981,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -32086,7 +32088,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -32190,7 +32192,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -32278,7 +32280,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -32381,7 +32383,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -32489,7 +32491,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -32591,7 +32593,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -32693,14 +32695,9 @@
      "renderer_version": "@a2ui/angular 0.14.0 (web_core 0.15.0)"
     },
     "copilotkit": {
-     "status": "not_verified",
-     "reasons": [
-      "unstable_pixel_dark360",
-      "unstable_pixel_dark480",
-      "unstable_pixel_light360",
-      "unstable_pixel_light480"
-     ],
-     "measured": "2026-11-12",
+     "status": "drawn",
+     "reasons": [],
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -32799,7 +32796,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -32892,7 +32889,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -32995,7 +32992,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -33093,7 +33090,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -33188,7 +33185,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -33275,7 +33272,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -33367,7 +33364,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -33476,7 +33473,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -33587,7 +33584,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -33687,7 +33684,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -33794,7 +33791,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -33887,7 +33884,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -33986,7 +33983,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -34072,7 +34069,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -34162,7 +34159,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -34248,7 +34245,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -34330,7 +34327,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -34412,7 +34409,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -34502,7 +34499,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -34586,15 +34583,9 @@
      "renderer_version": "@a2ui/angular 0.14.0 (web_core 0.15.0)"
     },
     "copilotkit": {
-     "status": "not_verified",
-     "reasons": [
-      "unstable_pixel_dark360",
-      "unstable_pixel_dark480",
-      "unstable_pixel_light360",
-      "unstable_pixel_light480",
-      "unstable_text"
-     ],
-     "measured": "2026-11-12",
+     "status": "drawn",
+     "reasons": [],
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -34696,7 +34687,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -34793,11 +34784,9 @@
      "renderer_version": "@a2ui/angular 0.14.0 (web_core 0.15.0)"
     },
     "copilotkit": {
-     "status": "not_verified",
-     "reasons": [
-      "unstable_text"
-     ],
-     "measured": "2026-11-12",
+     "status": "drawn",
+     "reasons": [],
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -34892,7 +34881,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -34991,7 +34980,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -35093,7 +35082,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -35192,7 +35181,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -35306,7 +35295,7 @@
       "blank_both_light480",
       "no_visible_text"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -35420,7 +35409,7 @@
       "blank_both_light480",
       "no_visible_text"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -35538,7 +35527,7 @@
       "blank_both_light480",
       "no_visible_text"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -35646,7 +35635,7 @@
      "reasons": [
       "no_visible_text"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -35748,7 +35737,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -35852,7 +35841,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -35956,7 +35945,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -36048,7 +36037,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -36152,7 +36141,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -36252,7 +36241,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -36360,7 +36349,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -36468,7 +36457,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -36560,7 +36549,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -36666,11 +36655,9 @@
      "renderer_version": "@a2ui/angular 0.14.0 (web_core 0.15.0)"
     },
     "copilotkit": {
-     "status": "not_verified",
-     "reasons": [
-      "unstable_text"
-     ],
-     "measured": "2026-11-12",
+     "status": "drawn",
+     "reasons": [],
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -36770,7 +36757,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -36874,7 +36861,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -36986,7 +36973,7 @@
      "reasons": [
       "no_visible_text"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -37139,7 +37126,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -37241,7 +37228,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -37353,7 +37340,7 @@
      "reasons": [
       "no_visible_text"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -37443,14 +37430,9 @@
      "renderer_version": "@a2ui/angular 0.14.0 (web_core 0.15.0)"
     },
     "copilotkit": {
-     "status": "drawn_with_differences",
-     "reasons": [
-      "pixel_fail_dark480",
-      "unstable_pixel_dark360",
-      "unstable_pixel_light360",
-      "unstable_text"
-     ],
-     "measured": "2026-11-12",
+     "status": "drawn",
+     "reasons": [],
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -37534,11 +37516,9 @@
      "renderer_version": "@a2ui/angular 0.14.0 (web_core 0.15.0)"
     },
     "copilotkit": {
-     "status": "not_verified",
-     "reasons": [
-      "unstable_text"
-     ],
-     "measured": "2026-11-12",
+     "status": "drawn",
+     "reasons": [],
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -37622,11 +37602,9 @@
      "renderer_version": "@a2ui/angular 0.14.0 (web_core 0.15.0)"
     },
     "copilotkit": {
-     "status": "not_verified",
-     "reasons": [
-      "unstable_text"
-     ],
-     "measured": "2026-11-12",
+     "status": "drawn",
+     "reasons": [],
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -37720,7 +37698,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -37859,7 +37837,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -37962,7 +37940,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -38084,7 +38062,7 @@
       "blank_both_light480",
       "no_visible_text"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -38196,7 +38174,7 @@
       "blank_both_light480",
       "no_visible_text"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -38300,7 +38278,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -38388,7 +38366,7 @@
       "pixel_fail_light360",
       "pixel_fail_light480"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -38481,7 +38459,7 @@
       "pixel_fail_light360",
       "pixel_fail_light480"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -38573,7 +38551,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -38670,7 +38648,7 @@
       "blank_both_light480",
       "no_visible_text"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -38761,7 +38739,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -38849,7 +38827,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -38932,7 +38910,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -39019,7 +38997,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -39117,7 +39095,7 @@
       "pixel_fail_light360",
       "pixel_fail_light480"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -39224,7 +39202,7 @@
       "pixel_fail_light360",
       "pixel_fail_light480"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -39330,7 +39308,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -39425,7 +39403,7 @@
       "pixel_fail_light360",
       "pixel_fail_light480"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -39532,7 +39510,7 @@
      "reasons": [
       "pixel_fail_light480"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -39627,7 +39605,7 @@
      "reasons": [
       "pixel_fail_light360"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -39736,7 +39714,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -39843,7 +39821,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -39958,7 +39936,7 @@
       "pixel_fail_light360",
       "pixel_fail_light480"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -40070,7 +40048,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -40173,7 +40151,7 @@
      "reasons": [
       "no_visible_text"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -40277,7 +40255,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -40368,7 +40346,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -40473,7 +40451,7 @@
       "blank_both_light480",
       "no_visible_text"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -40563,7 +40541,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -40650,7 +40628,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -40734,13 +40712,9 @@
      "renderer_version": "@a2ui/angular 0.14.0 (web_core 0.15.0)"
     },
     "copilotkit": {
-     "status": "drawn_with_differences",
-     "reasons": [
-      "pixel_fail_dark480",
-      "pixel_fail_light480",
-      "unstable_text"
-     ],
-     "measured": "2026-11-12",
+     "status": "drawn",
+     "reasons": [],
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -40835,7 +40809,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -40942,7 +40916,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -41049,7 +41023,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -41134,11 +41108,9 @@
      "renderer_version": "@a2ui/angular 0.14.0 (web_core 0.15.0)"
     },
     "copilotkit": {
-     "status": "not_verified",
-     "reasons": [
-      "unstable_text"
-     ],
-     "measured": "2026-11-12",
+     "status": "drawn",
+     "reasons": [],
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -41237,7 +41209,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -41324,7 +41296,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -41414,7 +41386,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -41500,7 +41472,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -41586,7 +41558,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -41699,7 +41671,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -41809,7 +41781,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -41910,7 +41882,7 @@
       "blank_both_light480",
       "no_visible_text"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -42003,11 +41975,9 @@
      "renderer_version": "@a2ui/angular 0.14.0 (web_core 0.15.0)"
     },
     "copilotkit": {
-     "status": "not_verified",
-     "reasons": [
-      "unstable_text"
-     ],
-     "measured": "2026-11-12",
+     "status": "drawn",
+     "reasons": [],
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -42102,7 +42072,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -42185,7 +42155,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -42284,7 +42254,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -42366,7 +42336,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -42453,7 +42423,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -42540,7 +42510,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -42630,7 +42600,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -42721,7 +42691,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -42808,7 +42778,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -42903,7 +42873,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -43002,7 +42972,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -43101,7 +43071,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -43195,7 +43165,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -43290,7 +43260,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -43385,7 +43355,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -43480,7 +43450,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -43579,7 +43549,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -43665,7 +43635,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -43747,7 +43717,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -43837,7 +43807,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -43932,7 +43902,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -44023,7 +43993,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -44129,7 +44099,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -44231,7 +44201,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -44338,7 +44308,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -44436,7 +44406,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -44530,7 +44500,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -44616,7 +44586,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -44710,7 +44680,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -44800,7 +44770,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -44890,7 +44860,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -44985,7 +44955,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -45071,7 +45041,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -45154,7 +45124,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -45257,7 +45227,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -45356,7 +45326,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -45443,7 +45413,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -45533,7 +45503,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -45624,7 +45594,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -45715,7 +45685,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -45814,7 +45784,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -45916,7 +45886,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -46018,7 +45988,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -46116,7 +46086,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -46218,7 +46188,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -46309,7 +46279,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -46397,14 +46367,9 @@
      "renderer_version": "@a2ui/angular 0.14.0 (web_core 0.15.0)"
     },
     "copilotkit": {
-     "status": "not_verified",
-     "reasons": [
-      "unstable_pixel_dark360",
-      "unstable_pixel_dark480",
-      "unstable_pixel_light360",
-      "unstable_pixel_light480"
-     ],
-     "measured": "2026-11-12",
+     "status": "drawn",
+     "reasons": [],
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -46494,7 +46459,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -46593,7 +46558,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -46692,7 +46657,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -46791,7 +46756,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -46890,7 +46855,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -46988,7 +46953,7 @@
       "blank_both_light480",
       "no_visible_text"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -47085,7 +47050,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -47184,7 +47149,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -47299,7 +47264,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -47397,7 +47362,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -47490,7 +47455,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -47593,15 +47558,9 @@
      "renderer_version": "@a2ui/angular 0.14.0 (web_core 0.15.0)"
     },
     "copilotkit": {
-     "status": "not_verified",
-     "reasons": [
-      "unstable_pixel_dark360",
-      "unstable_pixel_dark480",
-      "unstable_pixel_light360",
-      "unstable_pixel_light480",
-      "unstable_text"
-     ],
-     "measured": "2026-11-12",
+     "status": "drawn",
+     "reasons": [],
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -47694,7 +47653,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -47787,7 +47746,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -47880,7 +47839,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -47974,7 +47933,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -48071,7 +48030,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -48168,7 +48127,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -48258,7 +48217,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -48351,7 +48310,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -48457,7 +48416,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -48553,7 +48512,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -48650,7 +48609,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -48748,7 +48707,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -48849,7 +48808,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -48954,7 +48913,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -49068,7 +49027,7 @@
       "blank_both_light480",
       "no_visible_text"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -49170,7 +49129,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -49267,7 +49226,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -49375,7 +49334,7 @@
       "blank_both_light480",
       "no_visible_text"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -49480,7 +49439,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -49578,7 +49537,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -49682,7 +49641,7 @@
      "reasons": [
       "no_visible_text"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -49793,7 +49752,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -49889,7 +49848,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -49982,7 +49941,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -50087,7 +50046,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -50189,7 +50148,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -50292,7 +50251,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -50391,7 +50350,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -50491,7 +50450,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -50597,7 +50556,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -50705,7 +50664,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -50797,7 +50756,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -50904,7 +50863,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -50998,7 +50957,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -51111,7 +51070,7 @@
       "pixel_fail_light360",
       "pixel_fail_light480"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -51235,7 +51194,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -51350,7 +51309,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -51448,7 +51407,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -51550,7 +51509,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -51649,7 +51608,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -51753,7 +51712,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -51853,7 +51812,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -51955,7 +51914,7 @@
       "pixel_fail_light360",
       "pixel_fail_light480"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -52044,7 +52003,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -52136,7 +52095,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -52231,7 +52190,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -52327,7 +52286,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -52419,7 +52378,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -52519,7 +52478,7 @@
       "blank_both_light480",
       "no_visible_text"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -52630,7 +52589,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -52730,7 +52689,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -52831,7 +52790,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -52927,7 +52886,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -53020,7 +52979,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -53104,7 +53063,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -53195,13 +53154,9 @@
     "copilotkit": {
      "status": "not_verified",
      "reasons": [
-      "no_visible_text",
-      "unstable_pixel_dark360",
-      "unstable_pixel_dark480",
-      "unstable_pixel_light360",
-      "unstable_pixel_light480"
+      "no_visible_text"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -53301,7 +53256,7 @@
       "pixel_fail_light360",
       "pixel_fail_light480"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -53406,7 +53361,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -53512,7 +53467,7 @@
       "blank_both_light480",
       "no_visible_text"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -53622,7 +53577,7 @@
       "blank_both_light480",
       "no_visible_text"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -53732,7 +53687,7 @@
       "blank_both_light480",
       "no_visible_text"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -53858,7 +53813,7 @@
       "blank_both_light480",
       "no_visible_text"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -53968,7 +53923,7 @@
       "blank_both_light480",
       "no_visible_text"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -54102,11 +54057,9 @@
      "renderer_version": "@a2ui/angular 0.14.0 (web_core 0.15.0)"
     },
     "copilotkit": {
-     "status": "not_verified",
-     "reasons": [
-      "unstable_pixel_dark360"
-     ],
-     "measured": "2026-11-12",
+     "status": "drawn",
+     "reasons": [],
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -54217,7 +54170,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -54349,7 +54302,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -54457,7 +54410,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -54561,7 +54514,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -54695,7 +54648,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -54797,14 +54750,9 @@
      "renderer_version": "@a2ui/angular 0.14.0 (web_core 0.15.0)"
     },
     "copilotkit": {
-     "status": "not_verified",
-     "reasons": [
-      "unstable_pixel_dark360",
-      "unstable_pixel_dark480",
-      "unstable_pixel_light360",
-      "unstable_pixel_light480"
-     ],
-     "measured": "2026-11-12",
+     "status": "drawn",
+     "reasons": [],
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -54900,7 +54848,7 @@
     "copilotkit": {
      "status": "drawn",
      "reasons": [],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -55049,7 +54997,7 @@
      "reasons": [
       "no_example"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -55188,7 +55136,7 @@
      "reasons": [
       "no_example"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -55298,7 +55246,7 @@
      "reasons": [
       "no_example"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -55407,7 +55355,7 @@
      "reasons": [
       "no_example"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -55522,7 +55470,7 @@
      "reasons": [
       "no_example"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -55628,7 +55576,7 @@
      "reasons": [
       "no_example"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -55741,7 +55689,7 @@
      "reasons": [
       "no_example"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -55870,7 +55818,7 @@
      "reasons": [
       "no_example"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -55984,7 +55932,7 @@
      "reasons": [
       "no_example"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -56122,7 +56070,7 @@
      "reasons": [
       "no_example"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -56232,7 +56180,7 @@
      "reasons": [
       "no_example"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -56350,7 +56298,7 @@
      "reasons": [
       "no_example"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -56468,7 +56416,7 @@
      "reasons": [
       "no_example"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -56607,7 +56555,7 @@
      "reasons": [
       "no_example"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -56744,7 +56692,7 @@
      "reasons": [
       "no_example"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -56873,7 +56821,7 @@
      "reasons": [
       "no_example"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -57008,7 +56956,7 @@
      "reasons": [
       "no_example"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -57114,7 +57062,7 @@
      "reasons": [
       "no_example"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -57227,7 +57175,7 @@
      "reasons": [
       "no_example"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },
@@ -57370,7 +57318,7 @@
      "reasons": [
       "no_example"
      ],
-     "measured": "2026-11-12",
+     "measured": "2026-11-13",
      "measured_on": "shipped",
      "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
     },

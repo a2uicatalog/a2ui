@@ -49,12 +49,12 @@
    "core_sha256": "0143667f9e044144b428fd7459a7a652acb268d467edc028a81fbf3505a27fa5",
    "css_sha256": "150035c39f2c53826ab52c8c3f66b1dee46fac1bcbc4539299c8da39c9c50412",
    "file": "copilotkit.json",
-   "file_sha256": "01d5e8dda7a25d37d6b018100981f6e4c49472114389a4bdec3ba38367da1903",
-   "measured_date": "2026-11-12",
+   "file_sha256": "82038497edd31f190a28e5563ce9655828583805a02e2b56e4d14375a3090061",
+   "measured_date": "2026-11-13",
    "measured_on": "shipped",
    "renderer_bundle_sha256": "2af466d6ea815d4383bd2e58843e708374ab6af7a93acae4d535e37002a4ca73",
    "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)",
-   "run_id": "copilotkit-1.87.0-20261112"
+   "run_id": "copilotkit-1.87.0-det-ab-20261113"
   },
   "flutter": {
    "atoms_total": 573,
