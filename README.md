@@ -72,7 +72,9 @@ A few atoms, live on the site — click through to a full spec + fields table fo
 
 ## Google Apps Script renderer — try it live
 
-**450+ atoms running natively in Google Apps Script.** No CDN, no dependencies, no server. Paste a JSON block list, get a rendered page.
+**Most of the catalog's atoms run natively in Google Apps Script** (the live count is on [/renderer/](https://a2uicatalog.ai/renderer/)). No CDN, no dependencies, no server. Paste a JSON block list, get a rendered page.
+
+**Protocol support:** A2UI v1.0 `createSurface` messages, with all 18 Basic Catalog components, data-model bindings and button actions. v0.9 and v0.8 input is refused. Details and a minimal v1.0 example: [a2uicatalog.ai/renderer/#protocol](https://a2uicatalog.ai/renderer/#protocol).
 
 ```json
 {
@@ -80,7 +82,7 @@ A few atoms, live on the site — click through to a full spec + fields table fo
   "theme": "light",
   "blocks": [
     { "type": "heading", "level": 1, "text": "My first A2UI page" },
-    { "type": "callout", "icon": "💡", "text": "Built with 450+ atoms in Google Apps Script." },
+    { "type": "callout", "icon": "💡", "text": "Built with A2UI atoms in Google Apps Script." },
     { "type": "chartjs_bar", "title": "Quick chart", "bar_color": "#6366f1",
       "data": [{ "label": "A", "value": 80 }, { "label": "B", "value": 45 }, { "label": "C", "value": 62 }] }
   ]
@@ -91,7 +93,7 @@ A few atoms, live on the site — click through to a full spec + fields table fo
 
 | Feature | Detail |
 |---|---|
-| **450+ atoms, growing** | Apps Script surface — superset of the web article renderer |
+| **Most of the catalog** | Apps Script surface — superset of the web article renderer ([live count](https://a2uicatalog.ai/renderer/)) |
 | **CSS-only interactions** | Tabs, carousel, gallery lightbox, modals, accordions — zero JS required |
 | **Inline SVG charts** | Bar, line, pie, donut, heatmap, punch card, sankey, cohort retention, GitHub activity grid |
 | **8 form input types** | text, email, select, radio, checkbox, switch, slider, date — native HTML controls |
@@ -105,7 +107,7 @@ The renderer is fully open source. Deploy your own instance — you own the URL,
 
 ```bash
 git clone https://github.com/a2uicatalog/a2ui
-cd a2ui/apps-script-surface/gas-schema-renderer
+cd a2ui/apps-script-surface/gas-wired-renderer
 clasp login
 clasp create --type webapp --title "My A2UI Renderer"
 clasp push
@@ -138,7 +140,7 @@ The catalog's "Try it live" button uses a shared demo instance of the same rende
 |---|---|
 | `atoms/` | Atom schema definitions (`schema.yaml`) |
 | `renderers/` | Surface renderers — `web_article.py` is the canonical web renderer |
-| `apps-script-surface/` | **GAS renderer** — `atom.gs` + atom files (450+ atoms, no CDN) |
+| `apps-script-surface/` | **GAS renderer** — `atom.gs` + atom files (no CDN); `gas-wired-renderer/` is the current one, A2UI v1.0 |
 | `components/` | Lit Web Components for the meet-stage surface |
 | `scripts/` | Build pipeline — atom pages, `spec.json`, MCP bundle, README compat matrix, link/brand checks |
 | `vendors/` | Landscape analysis of 9 UI libraries mapped to A2UI atoms |
@@ -156,9 +158,9 @@ Atoms declare which surfaces they support at the schema level. An agent picks an
 ```json
 [{
   "type": "stat_card",
-  "label": "Atoms published",
-  "value": "450+",
-  "delta": "+12 this week"
+  "label": "Daily users",
+  "value": "1,234",
+  "delta": "+12%"
 }]
 ```
 
