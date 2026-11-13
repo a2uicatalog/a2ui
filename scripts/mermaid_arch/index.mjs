@@ -16,6 +16,7 @@ export function checkOptions(opts = {}) {
   const o = opts || {};
   if (o.size != null && !(typeof o.size === 'number' && Number.isFinite(o.size) && o.size >= 8 && o.size <= 40)) e.push(`size ${JSON.stringify(o.size)} must be a number from 8 to 40 (label text size in px)`);
   if (o.fit != null && !['balanced', 'wide'].includes(o.fit)) e.push(`fit ${JSON.stringify(o.fit)} must be balanced or wide`);
+  if (o.aspect != null && !['16:9', '4:3', '1:1', '9:16'].includes(o.aspect)) e.push(`aspect ${JSON.stringify(o.aspect)} must be 16:9, 4:3, 1:1 or 9:16`);
   if (o.routing != null && !['orthogonal', 'curve'].includes(o.routing)) e.push(`routing ${JSON.stringify(o.routing)} must be orthogonal or curve`);
   if (o.pace != null && !(typeof o.pace === 'string' && Object.hasOwn(PACES, o.pace))) e.push(`pace ${JSON.stringify(o.pace)} must be one of ${Object.keys(PACES).join(', ')}`);
   if (o.duration != null && !(typeof o.duration === 'number' && o.duration >= 2 && o.duration <= 120)) e.push(`duration ${JSON.stringify(o.duration)} must be a number of seconds from 2 to 120`);
@@ -69,7 +70,7 @@ export function graphToArch(graph, opts = {}) {
   const { block, layout, warnings: w2 } = c;
   const bad = validateBlock(block);
   if (bad.length) throw new ArchError(['internal: compiled block breaks the atom limits: ' + bad.join('; ')], warnings);
-  const ctx = { steps: c.steps, textSteps: c.textSteps, textMessages: c.textMessages, schedule: c.schedule, durationSeconds: c.durationSeconds, relationColumn: c.relationColumn, relationName: c.relationName };
+  const ctx = { steps: c.steps, textSteps: c.textSteps, textMessages: c.textMessages, schedule: c.schedule, durationSeconds: c.durationSeconds, relationColumn: c.relationColumn, relationName: c.relationName, aspect: opts.aspect };
   const payload = opts.film ? filmPayload(block, ctx) : archPayload(block, ctx);
   return { payload, graph: g, warnings: [...warnings, ...w2], block, layout, steps: c.steps, textSteps: c.textSteps, textMessages: c.textMessages, schedule: c.schedule, durationSeconds: c.durationSeconds, pace: c.pace, minimumSeconds: c.minimumSeconds, numbered: c.numbered, relationColumn: c.relationColumn, relationName: c.relationName };
 }

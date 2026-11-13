@@ -1,0 +1,23 @@
+%% request: simple login flow with error handling
+%% fixed from tool errors
+flowchart TD
+    Start([🔐 User opens login page]) --> Input[/Enter email and password/]
+    Input --> Validate{Fields filled in?}
+    Validate -- No --> ErrEmpty[⚠️ Show 'please fill all fields']
+    ErrEmpty --> Input
+    Validate -- Yes --> Submit[Send POST /auth/login]
+    Submit --> Server{{Auth service}}
+    Server -->|200 OK| Dash([✅ Token issued, redirect to dashboard])
+    Server -->|401 Invalid creds| Attempts{Attempts < 5?}
+    Attempts -- Yes --> ErrBad[❌ Show 'invalid email or password']
+    ErrBad --> Input
+    Attempts -- No --> Lock[🔒 Lock account 15 min, email user]
+    Lock --> End([End])
+    Server -->|500 / timeout| ErrNet[🌐 Show 'try again later']
+    ErrNet -- retry --> Submit
+    ErrNet -- give up --> End
+
+    classDef good fill:#d4f8d4,stroke:#2e7d32,color:#1b5e20
+    classDef bad fill:#fde2e2,stroke:#c62828,color:#b71c1c
+    class Dash good
+    class ErrEmpty,ErrBad,Lock,ErrNet bad

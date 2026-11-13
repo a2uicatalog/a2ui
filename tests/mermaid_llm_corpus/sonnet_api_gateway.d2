@@ -1,0 +1,52 @@
+# request: microservices behind an API gateway
+direction: right
+
+clients: Clients {
+  web: Web App {shape: rectangle}
+  mobile: Mobile App {shape: rectangle}
+  partner: Partner API {shape: cloud}
+}
+
+gateway: API Gateway {
+  style.fill: "#fff3e0"
+  style.stroke: "#ef6c00"
+  style.stroke-width: 2
+  auth: Authentication
+  rate: Rate Limiter
+  route: Router
+  auth -> rate -> route
+}
+
+services: Microservices {
+  style.fill: "#e3f2fd"
+  users: User Service
+  orders: Order Service
+  catalog: Catalog Service
+  payments: Payment Service
+}
+
+data: Data Stores {
+  style.fill: "#f3e5f5"
+  udb: Users DB {shape: cylinder}
+  odb: Orders DB {shape: cylinder}
+  cdb: Catalog DB {shape: cylinder}
+  cache: Redis {shape: cylinder}
+}
+
+bus: Message Bus {shape: queue; style.fill: "#e8f5e9"}
+idp: Identity Provider {shape: hexagon}
+
+clients.web -> gateway.auth: HTTPS
+clients.mobile -> gateway.auth: HTTPS
+clients.partner -> gateway.auth: API key
+gateway.auth -> idp: validate token {style.stroke-dash: 3}
+gateway.route -> services.users: /users
+gateway.route -> services.orders: /orders
+gateway.route -> services.catalog: /catalog
+services.users -> data.udb
+services.orders -> data.odb
+services.catalog -> data.cdb
+services.catalog -> data.cache: cache {style.stroke-dash: 3}
+services.orders -> services.payments: charge
+services.orders -> bus: order.created
+bus -> services.payments

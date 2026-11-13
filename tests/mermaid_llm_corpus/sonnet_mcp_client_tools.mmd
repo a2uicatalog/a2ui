@@ -1,0 +1,42 @@
+%% request: how an MCP client talks to tools and resources
+flowchart LR
+    classDef host fill:#e3f2fd,stroke:#1565c0
+    classDef proto fill:#fff3e0,stroke:#ef6c00
+    classDef srv fill:#e8f5e9,stroke:#2e7d32
+    classDef ext fill:#eceff1,stroke:#455a64
+
+    User([User]) <--> Host
+
+    subgraph Host["Host Application (e.g. Claude Desktop / IDE)"]
+        LLM[LLM]:::host
+        subgraph Clients["MCP Clients (1 per server)"]
+            C1[Client A]:::host
+            C2[Client B]:::host
+        end
+        LLM <-->|tool calls| C1
+        LLM <-->|tool calls| C2
+    end
+
+    C1 <-->|"JSON-RPC 2.0<br/>stdio"| S1
+    C2 <-->|"JSON-RPC 2.0<br/>Streamable HTTP"| S2
+
+    subgraph S1["MCP Server: Filesystem (local)"]
+        T1[Tool: read_file]:::srv
+        T2[Tool: write_file]:::srv
+        R1[Resource: file:///project/*]:::srv
+    end
+
+    subgraph S2["MCP Server: Issue Tracker (remote)"]
+        T3[Tool: create_issue]:::srv
+        R2[Resource: issues://open]:::srv
+        P1[Prompt: triage_template]:::srv
+    end
+
+    S1 --- FS[(Local disk)]:::ext
+    S2 --- API[Issue Tracker REST API]:::ext
+
+    Init["1. initialize<br/>capability negotiation"]:::proto
+    List["2. tools/list, resources/list"]:::proto
+    Call["3. tools/call, resources/read"]:::proto
+    Init -.-> List -.-> Call
+    Clients -.- Init

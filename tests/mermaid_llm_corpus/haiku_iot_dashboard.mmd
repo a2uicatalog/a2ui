@@ -1,0 +1,40 @@
+%% request: IoT sensors to dashboard
+flowchart LR
+    subgraph Field["🌡️ Sensors on site"]
+        T1((Temp sensor))
+        T2((Humidity))
+        M1((Vibration))
+        G1((Gateway LoRaWAN))
+        T1 & T2 -->|BLE| G1
+        M1 -->|Zigbee| G1
+    end
+
+    G1 -->|MQTT over TLS| Broker{{MQTT broker}}
+
+    subgraph Cloud["☁️ Cloud pipeline"]
+        Broker --> Ingest[Ingest service]
+        Ingest --> Valid{Valid payload?}
+        Valid -- no --> Bad[(Dead letter store)]
+        Valid -- yes --> Stream[[Stream processor]]
+        Stream --> Hot[(Time-series DB)]
+        Stream --> Rules{Threshold exceeded?}
+        Rules -- yes --> Alert[🚨 Alert service]
+        Alert --> SMS[SMS / Push]
+        Alert --> Pager[PagerDuty]
+        Stream --> Cold[(Parquet archive)]
+    end
+
+    subgraph Front["📊 Dashboard"]
+        Hot --> API[Query API]
+        API --> UI[Live dashboard]
+        UI --> Chart[/Charts + gauges/]
+        UI -->|websocket| Live([Live updates])
+    end
+
+    Cold -. nightly .-> Report[/Weekly PDF report/]
+
+    Broker -. offline device .-> Watch[Heartbeat monitor]
+    Watch --> Alert
+
+    style Alert fill:#ffe0b2,stroke:#e65100
+    style Bad fill:#eeeeee,stroke:#616161

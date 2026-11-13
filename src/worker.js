@@ -19,6 +19,8 @@
 // from spec.json, so its atom count cannot drift the way a string literal in
 // this file would. Same reason index.md is read rather than re-written.
 
+import { handleLikes } from './likes.js';
+
 const AGENT_VIEW = '/agent-view.json';
 const MARKDOWN_TWIN = '/index.md';
 
@@ -121,6 +123,9 @@ export default {
     const url = new URL(request.url);
 
     if (url.protocol === 'http:') { url.protocol = 'https:'; return permanent(url.href); }
+
+    // The atom like counter (src/likes.js): the only API route this Worker answers.
+    if (url.pathname === '/api/likes' || url.pathname.startsWith('/api/likes/')) return handleLikes(request, env, url);
 
     // Only ever act on the bare homepage. Anything else is passed through
     // untouched except the canonical redirect above.

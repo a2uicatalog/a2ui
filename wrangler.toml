@@ -22,3 +22,9 @@ not_found_handling = "none"
 # trailing-slash redirect and plain http into 301s to the canonical URL (src/worker.js canonicalOrAsset). Cost: one
 # Worker invocation per request (about 7,700 zone requests a day on 2026-10-25, Cloudflare zone analytics; free tier 100,000).
 run_worker_first = true
+
+# Atom likes (I160): one key, {type: count}. Create once with `wrangler kv namespace create LIKES` and paste the id here
+# before the deploy (owner's go); until then /api/likes answers 503 and the pages show no counts.
+# [[kv_namespaces]]
+# binding = "LIKES"
+# id = "<namespace id from wrangler kv namespace create LIKES>"

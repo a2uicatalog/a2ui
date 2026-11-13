@@ -1,0 +1,17 @@
+%% request: IoT sensors to dashboard
+%% fixed from tool errors
+flowchart LR
+    Gateway((Gateway: sensors via BLE/Zigbee)) -->|MQTT over TLS| Broker{{MQTT broker}}
+    Broker --> Ingest[Ingest service]
+    Ingest --> Valid{Valid payload?}
+    Valid -- yes --> Stream[[Stream processor]]
+    Stream --> Hot[(Time-series DB)]
+    Stream --> Rules{Threshold exceeded?}
+    Rules -- yes --> Alert[🚨 Alert service]
+    Alert --> SMS[SMS, push, PagerDuty]
+    Hot --> API[Query API]
+    API --> UI[Live dashboard]
+    Broker -. offline device .-> Watch[Heartbeat monitor]
+    Watch --> Alert
+
+    style Alert fill:#ffe0b2,stroke:#e65100

@@ -1,0 +1,23 @@
+%% request: zero trust access to internal apps
+%% fixed from tool errors
+flowchart TD
+    User([👩‍💻 Employee laptop]) --> Req[Request app.internal.co]
+    Req --> IdP{{🪪 Identity provider SSO}}
+    IdP --> MFA{MFA passed?}
+    MFA -- no --> Deny([🚫 Denied and logged])
+    MFA -- yes --> Device{Device posture OK? disk, OS, EDR}
+    Device -- no --> Deny
+    Device -- yes --> Policy{Role, geo/IP and session risk pass?}
+    Policy -- no --> Deny
+    Policy -- yes --> PEP[Access proxy PEP]
+    Policy -. step-up .-> IdP
+    PEP -->|per-request mTLS| App[(Internal app)]
+    PEP --> Audit[(Audit log)]
+    Audit --> SIEM{{SIEM alerts}}
+    SIEM -->|anomaly| Revoke[Revoke session]
+    Revoke --> IdP
+
+    classDef allow fill:#c8e6c9,stroke:#2e7d32
+    classDef deny fill:#ffcdd2,stroke:#c62828
+    class App allow
+    class Deny deny

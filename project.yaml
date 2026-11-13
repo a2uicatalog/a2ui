@@ -30,6 +30,7 @@ policy:
     # Everything under public/ must match one of these (or published_prompts)
     - public/index.html
     - public/try/**
+    - public/try-mermaid/**   # Mermaid/D2 to film window (scripts/gen_try_mermaid.py); noindex until the owner decides
     - public/bricksdemo/**   # brick_build_3d gallery at a2uicatalog.ai/bricksdemo; per-artifact opt-in from Curtis 2026-09-25, noindex
     - public/parts/**   # baked LDraw part meshes for brick_build_3d (spec/brick-parts-v0.1.md); CC BY 4.0/2.0, attribution in index.json.
                          # Declared here so the ldraw-parts-build process can commit; NOT pushed/served live without Curtis's separate go-ahead.

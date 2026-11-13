@@ -251,7 +251,9 @@ export function filmPayload(block, ctx = {}) {
   const cands = [];
   // the text is one line per row: its size is what the table width allows
   const textSize = (tw, lo, hi) => clamp(Math.floor((tw * 0.94) / ((maxChars + (rel ? relChars + 3 : 0)) * 0.62)), lo, hi);
-  for (const [aspect, sw, sh] of STAGES) {
+  // ctx.aspect ('16:9' | '4:3' | '1:1' | '9:16') pins the stage, e.g. a wide hero on a desktop page; by default the best of the four wins
+  const stages = STAGES.filter(([a]) => !ctx.aspect || a === ctx.aspect);
+  for (const [aspect, sw, sh] of stages) {
     // the table text may shrink to about 1.95% of the stage width (6.7 px in a 343 px column) when that lets a tall diagram be bigger
     const cap = textSize(sw, 12, 24);
     for (const sz of new Set([cap, Math.min(cap, 16), Math.min(cap, Math.max(12, Math.ceil(sw * 0.0195)))])) {
@@ -261,7 +263,7 @@ export function filmPayload(block, ctx = {}) {
       if (scale > 0) cands.push({ kind: 'stack', aspect, sw, sh, sz, rowH, headH, scale });
     }
   }
-  if (n) for (const [aspect, sw, sh] of STAGES.slice(0, 2)) for (const f of [0.34, 0.4, 0.46]) {
+  if (n) for (const [aspect, sw, sh] of stages.filter(([a]) => a === '16:9' || a === '4:3')) for (const f of [0.34, 0.4, 0.46]) {
     const tw = sw * f - gap, sz = textSize(tw, 11, 22);
     const rowH = Math.round(sz * 1.9), headH = Math.round(sz * 2.1);
     if (headH + n * rowH > sh - 2 * gap) continue;

@@ -1,0 +1,42 @@
+# request: A2A agent delegating to two remote agents
+direction: down
+
+user: User {shape: person}
+
+orchestrator: Orchestrator Agent {
+  style.fill: "#e3f2fd"
+  style.stroke: "#1565c0"
+  llm: LLM Planner
+  client: A2A Client
+  tasks: Task Tracker {shape: cylinder}
+  llm -> client: delegate subtask
+  client -> tasks: store state
+}
+
+card1: Agent Card (/.well-known/agent.json) {shape: page}
+card2: Agent Card (/.well-known/agent.json) {shape: page}
+
+research: Research Agent (remote) {
+  style.fill: "#e8f5e9"
+  server: A2A Server
+  skills: Skills: search, summarize
+  server -> skills
+}
+
+booking: Booking Agent (remote) {
+  style.fill: "#fff3e0"
+  server: A2A Server
+  skills: Skills: reserve, pay
+  server -> skills
+}
+
+user -> orchestrator.llm: request
+orchestrator.client -> card1: 1. discover {style.stroke-dash: 3}
+orchestrator.client -> card2: 1. discover {style.stroke-dash: 3}
+card1 -> research.server: {style.stroke-dash: 3}
+card2 -> booking.server: {style.stroke-dash: 3}
+orchestrator.client -> research.server: 2. tasks/send (JSON-RPC)
+orchestrator.client -> booking.server: 2. tasks/send (JSON-RPC)
+research.server -> orchestrator.client: 3. artifacts / SSE updates {style.stroke: "#2e7d32"}
+booking.server -> orchestrator.client: 3. artifacts / SSE updates {style.stroke: "#2e7d32"}
+orchestrator.llm -> user: final answer

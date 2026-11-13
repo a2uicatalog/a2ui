@@ -322,7 +322,7 @@ _EXAMPLE_BLOCKS = {
     ]},
     "timeline":    {"type": "timeline", "events": [
         {"date": "2024", "title": "A2UI v1", "body": "First atoms defined."},
-        {"date": "2025", "title": "467 atoms", "body": "Full schema published."},
+        {"date": "2025", "title": "Full catalogue", "body": "Full schema published."},
         {"date": "2026", "title": "ARD catalog", "body": "Live on a2uicatalog.ai."},
     ]},
     "before_after": {"type": "before_after", "language": "js",
@@ -475,6 +475,12 @@ def _aa_example(v):
     return v
 
 
+# Curated examples for the 136 atoms whose generated example rendered empty, kept a placeholder `1`, or echoed the field name
+# (scripts/curated_examples.py, written and checked by the examples review of 2026-11-01). They win over example_payload().
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from curated_examples import CURATED_EXAMPLE_BLOCKS  # noqa: E402
+_EXAMPLE_BLOCKS.update(CURATED_EXAMPLE_BLOCKS)
+
 _EXAMPLE_BLOCKS = {k: _aa_example(v) for k, v in _EXAMPLE_BLOCKS.items()}
 
 # ── v0.3 design system (approved 2026-07-10) ────────────────────────────────
@@ -518,7 +524,7 @@ label:has(input[type=radio]:focus-visible),label:has(input[type=checkbox]:focus-
 .site-nav{display:flex;gap:4px;margin-right:auto;margin-left:12px}
 .site-nav a{font-size:13px;font-weight:600;text-decoration:none;color:var(--muted);padding:5px 11px;border-radius:7px;transition:color .15s,background .15s}
 .site-nav a:hover{color:var(--text);background:var(--surface-2)}
-.site-nav a[aria-current="page"]{color:var(--accent);background:var(--accent-soft-bg)}
+.site-nav a[aria-current="page"]{color:var(--accent-text);background:var(--accent-soft-bg)}
 .theme-btn{font:inherit;font-size:14px;line-height:1;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 9px;cursor:pointer;color:var(--text)}
 .theme-btn:hover{border-color:var(--border-strong)}
 .gh-pill{font-size:12px;font-weight:650;color:var(--text);text-decoration:none;border:1px solid var(--border);border-radius:8px;padding:6px 12px;background:var(--surface);white-space:nowrap}
@@ -547,20 +553,52 @@ footer a{color:var(--accent-2-text);text-decoration:underline;text-underline-off
 @media(max-width:560px){.announce{font-size:12.5px;align-items:flex-start;
  border-radius:14px;padding:9px 12px}.announce-go{display:none}}
 
-/* Mobile nav: this used to be `.site-nav{display:none}`, which left phone
-   visitors with only the wordmark, theme toggle and GitHub pill — every
-   destination unreachable, with no hamburger substituting for it (confirmed
-   live: 0/4 links visible at 390px). The nav now drops to its own full-width
-   row under the wordmark and scrolls horizontally if the labels overflow,
-   so nothing is lost and no JS menu is needed. */
-@media(max-width:700px){
- .hdr-in{flex-wrap:wrap;padding:9px 16px;row-gap:0}
- .site-nav{order:3;width:100%;margin:7px 0 1px;gap:2px;
-  overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
- .site-nav::-webkit-scrollbar{display:none}
- .site-nav a{white-space:nowrap;font-size:12.5px;padding:5px 9px}
+/* Design pass (1 Nov 2026, direction C). Header: the full nav row from 861 px; below it, with JS, the nav folds behind a Menu button and
+   Search becomes an icon link; without JS the nav stays a wrapping row, so no destination is ever lost. Touch targets are 44 px on phones. */
+.hdr-search,.menu-btn{display:none}
+.hdr-search,.menu-btn,.theme-btn{align-items:center;justify-content:center;color:var(--text)}
+.menu-btn{gap:6px;font:700 14px/1 inherit;border:1px solid var(--border-strong);border-radius:10px;background:var(--surface);cursor:pointer;padding:0 14px}
+.theme-btn svg{display:block}
+@media(max-width:860px){
+ .hdr-in{flex-wrap:wrap;padding:8px 16px;row-gap:0}
  .wordmark{margin-right:auto}
+ .gh-pill{display:none}
+ .hdr-search{display:flex;min-width:44px;min-height:44px;border-radius:10px}
+ .theme-btn{display:flex;min-width:44px;min-height:44px;border-radius:10px}
+ .site-nav{order:3;width:100%;margin:6px 0 2px;gap:2px;flex-wrap:wrap}
+ .site-nav a{white-space:nowrap;font-size:14px;padding:11px 12px;min-height:44px;display:flex;align-items:center}
+ .js .menu-btn{display:flex;min-height:44px}
+ .js .site-nav{display:none;flex-direction:column;align-items:stretch;border-top:1px solid var(--border);padding-top:6px}
+ .js .site-nav.open{display:flex}
 }
+@media(min-width:861px){.theme-btn{display:flex;min-width:36px;min-height:36px;border-radius:8px}}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+/* "Pause all motion" / per-preview Pause (WCAG 2.2.2): stops CSS animation; film clocks are paused by the page script */
+.motion-paused .stage-inner *,.preview-box.paused *{animation-play-state:paused!important}
+.pause-btn{display:inline-flex;align-items:center;gap:6px;min-width:44px;min-height:44px;padding:0 14px;border:1px solid var(--border-strong);border-radius:10px;background:var(--surface);color:var(--text);font:600 14px/1 inherit;cursor:pointer}
+.pause-btn[hidden]{display:none}
+.preview-tools{gap:8px;flex-wrap:wrap}
+.focus-btn{display:inline-flex;align-items:center;gap:6px;min-width:44px;min-height:44px;padding:0 16px;border:1px solid var(--border-strong);border-radius:10px;background:var(--surface);color:var(--text);font:600 14px/1 inherit;cursor:pointer}
+.focus-btn[hidden]{display:none}
+.focus-btn:focus-visible,.focus-close:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.focus-dialog{border:0;padding:0;background:rgba(8,10,16,.9);max-width:100vw;max-height:100vh;width:100vw;height:100vh;color:var(--text);overflow:hidden}
+.focus-dialog::backdrop{background:rgba(8,10,16,.82)}
+.focus-dialog:not([open]){display:none}
+.focus-dialog[open]{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:12px 16px}
+.focus-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;width:var(--focus-w,100%);max-width:100%;color:#f1f5f9}
+.focus-title{font:600 15px/1.3 inherit;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.focus-actions{display:flex;gap:8px;flex:none}
+.focus-close{min-width:44px;min-height:44px;padding:0 16px;border:1px solid var(--border-strong);border-radius:10px;background:var(--surface);color:var(--text);font:600 14px/1 inherit;cursor:pointer}
+.focus-stage{width:var(--focus-w,100%);max-width:100%;max-height:var(--focus-h,none);overflow:auto;border-radius:16px;background:#0b0d12}
+.focus-stage:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.focus-stage .mt-root{margin:0!important;max-width:none!important;width:calc(var(--focus-w,100%) * var(--focus-zoom,1))}
+.focus-zoom{min-width:44px;min-height:44px;padding:0 14px;border:1px solid var(--border-strong);border-radius:10px;background:var(--surface);color:var(--text);font:600 14px/1 inherit;cursor:pointer}
+.focus-zoom[aria-pressed="true"]{background:var(--accent-soft-bg);border-color:var(--accent);color:var(--accent-text)}
+.focus-zoom:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+/* A portrait film (9:16) would be taller than the screen in the preview column: cap it at 78vh and centre it */
+.preview-box .mt-root:has(> .mt-vp[style*="aspect-ratio:720/1280"]){max-width:calc(78vh*0.5625);margin-left:auto!important;margin-right:auto!important}   /* !important: the film root carries an inline margin:1rem 0 */
+.pause-btn[aria-pressed="true"]{background:var(--accent-soft-bg);border-color:var(--accent);color:var(--accent-text)}
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 /* cursor_glow ships dark-tuned (screen blend ≈ invisible over a white ground);
    in the light default, re-blend the orb — it is the only direct body child
@@ -573,15 +611,25 @@ footer a{color:var(--accent-2-text);text-decoration:underline;text-underline-off
 # the MCP Apps view (opaque origin — gap G4); it degrades to session-only.
 SITE_HEAD_JS = """<script>
 (function(){var t='light';try{var s=localStorage.getItem('a2ui-theme');if(s==='dark'||s==='light')t=s}catch(e){}
-document.documentElement.setAttribute('data-theme',t)})();
+document.documentElement.setAttribute('data-theme',t);document.documentElement.classList.add('js')})();
 </script>"""
 
 SITE_FOOT_JS = """<script>
+function themeLabel(){var d=document.documentElement.getAttribute('data-theme')==='dark';
+  document.querySelectorAll('.theme-btn').forEach(function(b){b.setAttribute('aria-label',d?'Switch to light theme':'Switch to dark theme')})}
+themeLabel();
 document.addEventListener('click',function(e){
+  var m=e.target.closest('.menu-btn');
+  if(m){var n=document.getElementById(m.getAttribute('aria-controls')),o=m.getAttribute('aria-expanded')!=='true';
+    m.setAttribute('aria-expanded',String(o));if(n)n.classList.toggle('open',o);return}
   var b=e.target.closest('.theme-btn');if(!b)return;
   var r=document.documentElement,t=r.getAttribute('data-theme')==='dark'?'light':'dark';
-  r.setAttribute('data-theme',t);
+  r.setAttribute('data-theme',t);themeLabel();
   try{localStorage.setItem('a2ui-theme',t)}catch(err){}
+});
+document.addEventListener('keydown',function(e){
+  if(e.key!=='Escape')return;var m=document.querySelector('.menu-btn[aria-expanded="true"]');if(!m)return;
+  m.setAttribute('aria-expanded','false');var n=document.getElementById(m.getAttribute('aria-controls'));if(n)n.classList.remove('open');m.focus()
 });
 // WebMCP (W3C Web Machine Learning CG draft; Chrome origin trial 149-156,
 // shipping targeted for 157): register the catalogue's read-only tools on
@@ -786,23 +834,27 @@ FORM_TOOLS_JS = """<script>
 
 
 def site_header(active=""):
-    """Shared sticky glass header — identical on every surface (the v0.3 nav fix)."""
+    """Shared sticky glass header -- identical on every surface (the v0.3 nav fix). Design pass (1 Nov): under 860 px the nav folds behind a Menu button
+    (aria-expanded/aria-controls); without JS the nav stays a wrapping row. Search is an icon link on phones. 'Atoms' is current only on /atoms/ pages."""
     def cur(k):
         return ' aria-current="page"' if k == active else ""
+    full = os.environ.get("A2UI_CATALOG_FULL") == "1"
     return f"""<header class="site-header"><div class="hdr-in">
-    <a class="wordmark" href="/">{BRAND_LOGO_HTML}</a>
-    <nav class="site-nav">
+    <a class="wordmark" href="/" aria-label="A2UI Catalog home">{BRAND_LOGO_HTML}</a>
+    <nav class="site-nav" id="site-menu" aria-label="Main">
       <a href="/what-is-a2ui/"{cur('guide')}>What is A2UI?</a>
-      <a href="/"{cur('atoms')}>Atoms</a>
-      {'<a href="/templates"' + cur('templates') + '>Templates</a>' if os.environ.get("A2UI_CATALOG_FULL") == "1" else ''}
+      <a href="/atoms/"{cur('atoms')}>Atoms</a>
+      {'<a href="/templates"' + cur('templates') + '>Templates</a>' if full else ''}
       <a href="/surfaces/mcp-apps"{cur('playground')}>MCP Playground</a>
       <a href="/docs"{cur('docs')}>Docs</a>
       <a href="/renderer"{cur('renderer')}>Apps Script Renderer</a>
-      <a href="{'/blog/drafts' if os.environ.get('A2UI_CATALOG_FULL') == '1' else '/blog'}"{cur('blog')}>Blog</a>
-      {'<a href="/authoring"' + cur('authoring') + '>Authoring</a>' if os.environ.get("A2UI_CATALOG_FULL") == "1" else ''}
+      <a href="{'/blog/drafts' if full else '/blog'}"{cur('blog')}>Blog</a>
+      {'<a href="/authoring"' + cur('authoring') + '>Authoring</a>' if full else ''}
     </nav>
-    <button class="theme-btn" type="button" aria-label="Toggle light/dark theme">◐</button>
+    <a class="hdr-search" href="/atoms/#hub-q" aria-label="Search atoms"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg></a>
+    <button class="theme-btn" type="button" aria-label="Switch to dark theme"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 4v16a8 8 0 0 0 0-16z" fill="currentColor"/></svg></button>
     <a class="gh-pill" href="https://github.com/a2uicatalog/a2ui">GitHub ↗</a>
+    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="site-menu"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>Menu</button>
   </div></header>"""
 
 
@@ -827,6 +879,45 @@ nav.atom-pager .pg-all{font-size:14px;color:var(--accent-2-text);text-decoration
 nav.atom-pager kbd{display:inline-block;min-width:1.6em;padding:1px 6px;border:1px solid var(--border-strong);border-bottom-width:2px;border-radius:5px;background:var(--surface-2);color:var(--text);font:600 15px/1.4 ui-monospace,'SF Mono',Monaco,monospace;text-align:center;text-transform:none;letter-spacing:0}
 @media (hover:none){.pg-hint,nav.atom-pager .pg-dir kbd{display:none}}
 @media (max-width:520px){nav.atom-pager{grid-template-columns:1fr 1fr}nav.atom-pager .pg-all{grid-column:1/-1;grid-row:2;justify-self:center}}
+/* I160 atom likes: the heart sits beside the title; hidden until /api/likes answers, so a dead endpoint leaves no dead button */
+.title-row{display:flex;align-items:center;gap:6px 16px;flex-wrap:wrap}
+.title-row h1{margin-bottom:8px}
+.like-btn{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 12px;border:1px solid var(--border-strong);border-radius:999px;background:var(--surface);color:var(--text);font:600 14px/1.2 inherit;cursor:pointer}
+.like-btn[hidden]{display:none}
+.like-btn:hover{border-color:var(--accent)}
+.like-btn .like-heart{display:block;fill:none;stroke:currentColor;stroke-width:2;stroke-linejoin:round;color:var(--text-muted)}
+.like-btn[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft-bg);color:var(--accent-text)}
+.like-btn[aria-pressed="true"] .like-heart{fill:var(--accent);stroke:var(--accent);color:var(--accent)}
+@media(max-width:700px){.like-btn{min-height:44px}}
+.type-code{font:13px ui-monospace,'SF Mono',Monaco,monospace;color:var(--accent-2-text);margin-left:8px}
+.cat-chip{background:var(--accent-soft-bg);color:var(--accent-text)}
+.label-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}
+.label-row .label{margin:0}
+.copy-btn,.export-btn,.export-cancel{min-height:36px;padding:0 14px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text);font:600 13px/1 inherit;cursor:pointer}
+.copy-btn:hover,.export-btn:hover,.export-cancel:hover{border-color:var(--accent)}
+.export-btn:disabled{opacity:.5;cursor:default}
+@media(max-width:700px){.copy-btn,.export-btn,.export-cancel{min-height:44px}}
+.preview-tools{display:flex;justify-content:flex-end;margin-top:8px}
+.export-row{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;margin:-24px 0 36px;font-size:13px;color:var(--text-muted)}
+.export-row[hidden],.export-nod[hidden],.export-prog[hidden]{display:none}
+.export-btns{display:flex;gap:8px;flex-wrap:wrap}
+.export-btns[hidden]{display:none}
+.export-note{margin-left:auto}
+.export-nod{display:flex;align-items:center;gap:6px}
+.export-prog{flex:1 1 100%;display:flex;align-items:center;gap:12px}
+.export-track{flex:1;height:8px;border-radius:99px;background:var(--surface-2);border:1px solid var(--border);overflow:hidden}
+.export-bar{display:block;height:100%;width:0;background:var(--accent)}
+.fields{margin:12px 0 24px;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;background:var(--surface)}
+.field-row{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,2fr) auto;gap:4px 16px;padding:10px 14px;border-bottom:1px solid var(--border);align-items:baseline}
+.field-row:last-child{border-bottom:0}
+.fields dt{font:600 14px ui-monospace,'SF Mono',Monaco,monospace;color:var(--text);overflow-wrap:anywhere}
+.fields dd{margin:0;font-size:14px;color:var(--text-muted);overflow-wrap:anywhere}
+.fields .f-req{font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.fields .f-required{color:var(--accent-text)}
+@media(max-width:600px){.field-row{grid-template-columns:1fr;padding:12px 14px}.fields .f-req{justify-self:start}}
+.like-n:empty{display:none}
+.hub-likes{font-size:13px;font-weight:600;color:var(--muted);margin-left:8px;white-space:nowrap}
+.hub-likes:empty{display:none}
 h1{font-size:2.2rem;font-weight:800;letter-spacing:-1px;margin-bottom:8px}
 .desc{font-size:1.1rem;color:var(--muted);margin-bottom:32px;line-height:1.7}
 .label{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:12px}
@@ -845,10 +936,14 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 .try-btn{display:inline-block;margin-top:32px;margin-left:12px;font-size:13px;font-weight:700;color:var(--accent-contrast);background:var(--accent);border:none;border-radius:8px;padding:9px 18px;text-decoration:none;letter-spacing:.03em;cursor:pointer;transition:filter .15s,box-shadow .15s}
 .try-btn:hover{filter:brightness(1.08);box-shadow:var(--glow)}
 .preview-box{background:#fff;border:1px solid var(--border);border-radius:10px;padding:24px;margin-top:8px;color:#1a1a1a;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;line-height:1.6}
+.preview-box{position:relative;overflow-x:auto}
 .preview-box *{max-width:100%}
+.preview-box [class$="-track"]{max-width:none}
+.preview-box .mt-vp *{max-width:none}   /* a film stage is a fixed 1280-wide (or 720-wide) canvas the player scales down; capping it at the box width drew every static film at about half size */   /* a carousel track is wider than its frame by design */
 .preview-box p,.preview-box li,.preview-box td,.preview-box th,.preview-box td:first-child,.preview-box code{color:inherit;font-family:inherit}
 .preview-box pre{background:#f4f4f4;border:1px solid #e0e0e0}
 .preview-box pre code{color:inherit}
+.preview-box pre[style*="#1e1e2e"] code{color:#e6e6f0}   /* a dark code block keeps its light text */
 .preview-box h2,.preview-box h3{color:#111}
 .preview-box a{color:#0969da}
 .preview-box ul{color:#333}
@@ -874,16 +969,18 @@ def surface_badges(atom):
 
 
 def fields_table(atom):
+    """Fields as a definition list: three columns on a wide screen, stacked on a phone (a table at 390 px scrolled sideways)."""
     fields = atom.get("fields", {})
     if not fields:
         return "<p style='color:var(--muted)'>No configurable fields.</p>"
     rows = ""
     for name, ftype in fields.items():
         optional = "optional" in str(ftype).lower()
-        type_clean = str(ftype).replace(" (optional)", "").replace(" (Optional)", "")
+        type_clean = html.escape(str(ftype).replace(" (optional)", "").replace(" (Optional)", ""))
         req = "optional" if optional else "required"
-        rows += f"<tr><td>{name}</td><td>{type_clean}</td><td>{req}</td></tr>"
-    return f"<table><thead><tr><th>Field</th><th>Type</th><th>Required</th></tr></thead><tbody>{rows}</tbody></table>"
+        rows += (f'<div class="field-row"><dt>{html.escape(str(name))}</dt><dd class="f-type">{type_clean}</dd>'
+                 f'<dd class="f-req f-{req}">{req}</dd></div>')
+    return f'<dl class="fields">{rows}</dl>'
 
 
 def _infer_list(name, atom_type):
@@ -1158,6 +1255,10 @@ def _infer_string(name, atom_type):
 def example_payload(atom):
     atom_type = atom.get("type", "")
     fields    = atom.get("fields") or {}
+    # A hand-written example is what the live preview already uses; the heuristic below reads "int" inside "items (4-12 ...)" and printed
+    # {"type": "treemap", "items": 1}, which the schema rejects (found by the design pass, 1 Nov).
+    if atom_type in _EXAMPLE_BLOCKS:
+        return json.dumps(_EXAMPLE_BLOCKS[atom_type], indent=2, ensure_ascii=False)
     example   = {"type": atom_type}
     for name, ftype in fields.items():
         ft = str(ftype).lower()
@@ -1258,6 +1359,16 @@ def _scope_preview_css(html):
     return re.sub(r"(<style\b[^>]*>)(.*?)(</style>)", clean, html, flags=re.S)
 
 
+def _name_svgs(html, display):
+    """Give a chart drawn as an <svg> a text alternative: role=img and a label, unless the renderer already hid or named it."""
+    def fix(m):
+        head = m.group(0)
+        if re.search(r"aria-hidden=[\"']true[\"']", head) or re.search(r"aria-label(?:ledby)?=", head) or re.search(r"role=[\"']img[\"']", head):
+            return head
+        return head[:-1] + f' role="img" aria-label="{_esc_attr(display)} graphic">'
+    return re.sub(r"<svg\b[^>]*>", fix, html, flags=re.I)
+
+
 def live_preview(atom):
     atom_type = atom.get("type", "")
     if atom_type not in _RENDERER_TYPES or _web_renderer is None:
@@ -1280,16 +1391,34 @@ def live_preview(atom):
     html = re.sub(r"<h1(\s|>)", r"<div\1", html)
     html = re.sub(r"</h1>", "</div>", html)
     display = atom.get("displayName") or atom_type
+    html = _name_svgs(html, str(display))
     # Unlike card_stage(), this box IS mouse-interactive (no pointer-events:
     # none) — genuinely clickable/typeable, so it must stay reachable by
     # assistive tech, not aria-hidden. Any form controls it contains (e.g. a
     # checkbox_group atom's checkboxes) have no real submit behavior behind
     # them though, so per-control labels would be fabricated; giving the
     # whole demo region one accurate group name is the honest fix.
+    moving = bool(re.search(r"@keyframes|animation\s*:|<script|requestAnimationFrame|__a2uiMotion", html))
+    # Always in the page; hidden when the static preview does not move. The payload editor shows it when a custom render is running, because the
+    # visitor's own payload may move (WCAG 2.2.2).
+    pause = (f'<button type="button" class="pause-btn" id="pause-preview" aria-pressed="false" aria-label="Pause {_esc_attr(str(display))}"{"" if moving else " hidden"}>'
+             f'<span aria-hidden="true">\u23f8</span> Pause</button>')
+    # Focus: a film (a clock in the static preview) can be opened large in a modal dialog; film labels are 6-8 px on a 390 px phone.
+    film = 'class="mt-root"' in html
+    focus = (f'<button type="button" class="focus-btn" id="focus-preview" aria-haspopup="dialog" aria-label="Focus {_esc_attr(str(display))}: open the film large">'
+             f'<span aria-hidden="true">\u2922</span> Focus</button>') if film else ""
+    dialog = (f'<dialog id="focus-dialog" class="focus-dialog" aria-label="Focused view of {_esc_attr(str(display))}">'
+              f'<div class="focus-bar"><span class="focus-title">{_esc_attr(str(display))}</span><span class="focus-actions">'
+              f'<button type="button" class="pause-btn" id="focus-pause" aria-pressed="false" aria-label="Pause {_esc_attr(str(display))}"><span aria-hidden="true">\u23f8</span> Pause</button>'
+              f'<button type="button" class="focus-zoom" id="focus-zoom" aria-pressed="false" aria-label="Zoom in to read small labels">Zoom 2\u00d7</button>'
+              f'<button type="button" class="focus-close" id="focus-close" aria-label="Close focused view">Close</button></span></div>'
+              f'<div class="focus-stage" id="focus-stage" tabindex="0" aria-label="Film view; scroll to pan when zoomed"></div></dialog>') if film else ""
     return f"""
 <div class="section">
   <div class="label">Live preview</div>
   <div class="preview-box" role="group" aria-label="Live preview of {_esc_attr(str(display))}">{html}</div>
+  <div class="preview-tools">{focus}{pause}</div>
+  {dialog}
 </div>"""
 
 
@@ -1419,18 +1548,125 @@ def _load_atom_catalogs():
 ATOM_CATALOG = _load_atom_catalogs()
 
 
-def catalog_chip(atom_type):
-    """The atom's catalog as a link to /atoms/ filtered to that catalog."""
+def catalog_chip(atom_type, inline=False):
+    """The atom's catalog as a chip linking to /atoms/ filtered to that catalog, then the type name in mono (design pass: chip + type).
+    inline=True gives a span for the title row; otherwise its own line."""
     slug = ATOM_CATALOG.get(atom_type)
+    code = f'<code class="type-code">{html.escape(atom_type)}</code>'
+    tag = "span" if inline else "p"
     if not slug:
-        return ""
+        return f'<{tag} class="cat-line">{code}</{tag}>'
     label = html.escape(CATALOG_LABELS.get(slug, slug.replace("-", " ").title()))
-    return (f'<p class="cat-line">Category: <a class="cat-chip" href="/atoms/?catalog={slug}" '
-            f'title="All atoms in the a2ui-{slug}-v1 catalog">{label}</a></p>')
+    return (f'<{tag} class="cat-line"><span class="sr-only">Category: </span><a class="cat-chip" href="/atoms/?catalog={slug}" '
+            f'title="All atoms in the a2ui-{slug}-v1 catalog">{label}</a> {code}</{tag}>')
 
 
 # type -> (prev, next) in the /atoms/ hub's A-Z order; filled by main() before the pages render.
 _NEIGHBOURS = {}
+_POSITION = {}      # type -> (catalog slug, 1-based index in that catalog, catalog size)
+_RELATED = {}       # type -> up to 3 types for "More like this"
+_ATOM_LINES = {}    # type -> (display name, one-line description)
+_ATOM_FIELDS = {}   # type -> fields map (fallback similarity for atoms without an embedding)
+
+# Hand-picked "More like this" for launch atoms; everything else is chosen from the embeddings (see _related_atoms).
+CURATED_RELATED = {"motion_arch": ["motion_map3d", "diagram", "motion_bricks"]}
+
+
+def _explore_order(atoms):
+    """Pager order: catalog by catalog (CATALOG_LABELS order, unknown catalogs after, A to Z), atoms A to Z inside each. Neighbours are
+    then related atoms, and the pager can say "12 of 41 in Effects & motion"."""
+    rank = {c: i for i, c in enumerate(CATALOG_LABELS)}
+    types = sorted(a.get("type", "") for a in atoms if a.get("type"))
+    cat = lambda t: ATOM_CATALOG.get(t, "")
+    return sorted(types, key=lambda t: (rank.get(cat(t), len(rank)), cat(t), t))
+
+
+def _related_atoms(order):
+    """Three related atoms per atom: two from its own catalog and one from another, by cosine similarity of the description embeddings
+    (public/catalogue/atoms-embeddings.json); atoms without a vector fall back to shared field names. Ties break A to Z, so the
+    choice is the same on every build. Its own pager neighbours are left out, since the page already links them."""
+    import numpy as np
+    published = set(order)
+    try:
+        emb = json.loads((ROOT / "public" / "catalogue" / "atoms-embeddings.json").read_text())
+        vec = {r["type"]: r["vector"] for r in emb.get("atoms", []) if r.get("type") in published and r.get("vector")}
+    except (OSError, ValueError):
+        vec = {}
+    names = sorted(vec)
+    idx = {t: i for i, t in enumerate(names)}
+    M = np.array([vec[t] for t in names], dtype=float) if names else np.zeros((0, 1))
+    if len(M):
+        M /= np.linalg.norm(M, axis=1, keepdims=True) + 1e-12
+    fields = {t: set((_ATOM_FIELDS.get(t) or {}).keys()) for t in order}
+    out = {}
+    for t in order:
+        prev, nxt = _NEIGHBOURS.get(t, (None, None))
+        skip = {t, prev, nxt}
+        cur = [c for c in CURATED_RELATED.get(t, []) if c in published and c not in skip]
+        if len(cur) >= 3:
+            out[t] = cur[:3]
+            continue
+        if t in idx:
+            sims = M @ M[idx[t]]
+            score = {o: float(sims[idx[o]]) for o in names}
+        else:
+            f = fields[t]
+            score = {o: (len(f & fields[o]) / len(f | fields[o]) if f | fields[o] else 0.0) for o in order}
+        ranked = sorted((o for o in score if o not in skip and o not in cur), key=lambda o: (-score[o], o))
+        mine = ATOM_CATALOG.get(t)
+        same = [o for o in ranked if ATOM_CATALOG.get(o) == mine]
+        other = [o for o in ranked if ATOM_CATALOG.get(o) != mine]
+        pick = cur + [o for o in same if o not in cur][:max(0, 2 - len(cur))]
+        pick += [o for o in other if o not in pick][:1]
+        out[t] = (pick + [o for o in ranked if o not in pick])[:3]
+    return out
+
+
+def _cat_label(slug):
+    return CATALOG_LABELS.get(slug, slug.replace("-", " ").title()) if slug else "Atoms"
+
+
+def _explore_card(t, kicker, cls="", tile=False):
+    """One linked card: a static thumbnail (the homepage's decorative miniature, or a designed name tile when an atom has none), then
+    category and position, the name and the one-line description. One link; its text is the atom name plus the visible lines."""
+    name, line = _ATOM_LINES.get(t, (t.replace("_", " ").title(), ""))
+    stage = None if tile else _STAGES.get(t)
+    thumb = (f'<div class="x-thumb" aria-hidden="true">{stage}</div>' if stage else
+             f'<div class="x-thumb x-tile" aria-hidden="true"><span>{html.escape(name)}</span><code>{html.escape(t)}</code></div>')
+    return (f'<a class="x-card{(" " + cls) if cls else ""}" href="/atoms/{t}/">{thumb}<span class="x-body">'
+            f'<span class="x-kicker">{kicker}</span><span class="x-name">{html.escape(name)}</span>'
+            + (f'<span class="x-desc">{line}</span>' if line else "") + '</span></a>')
+
+
+def _pos_text(t):
+    slug, i, n = _POSITION.get(t, ("", 0, 0))
+    return f"{html.escape(_cat_label(slug))} · {i} of {n}" if n else html.escape(_cat_label(slug))
+
+
+def atom_explore(atom_type):
+    """Below the atom: "More like this" (three related atoms, one from another catalog) and "Up next" (the previous and next atom as
+    large cards; crossing into another catalog says so in words). Static thumbnails only: no extra live frames on the page."""
+    prev, nxt = _NEIGHBOURS.get(atom_type, (None, None))
+    rel = _RELATED.get(atom_type, [])
+    mine = ATOM_CATALOG.get(atom_type)
+    out = []
+    if rel:
+        tiles = atom_type in CURATED_RELATED
+        cards = "".join(_explore_card(t, ("From " + html.escape(_cat_label(ATOM_CATALOG.get(t)))) if ATOM_CATALOG.get(t) != mine else _pos_text(t), tile=tiles) for t in rel)
+        out.append(f'<section class="x-more" aria-labelledby="x-more-h"><h2 id="x-more-h" class="x-h">More like this</h2><div class="x-grid">{cards}</div></section>')
+    if prev or nxt:
+        def side(t, rel_, word):
+            if not t:
+                return "<span></span>"
+            cross = ATOM_CATALOG.get(t) != mine
+            kick = (f'{word} · new category: {html.escape(_cat_label(ATOM_CATALOG.get(t)))}' if cross else f'{word} · {_pos_text(t)}')
+            return _explore_card(t, kick, f"x-{rel_}" + (" x-cross" if cross else "")).replace('<a ', f'<a rel="{rel_}" ', 1)
+        out.append('<nav class="x-up" aria-labelledby="x-up-h"><h2 id="x-up-h" class="x-h">Keep exploring</h2><div class="x-pair">'
+                   + side(prev, "prev", "← Previous") + side(nxt, "next", "Next →") + '</div>'
+                   '<p class="x-hint">Tip: <kbd>←</kbd> and <kbd>→</kbd> on your keyboard move between atoms.</p></nav>')
+    if nxt:
+        out.append(f'<link rel="prefetch" href="/atoms/{nxt}/">')
+    return "\n".join(out)
 
 PAGER_JS = """<script>
 (function(){
@@ -1448,6 +1684,565 @@ PAGER_JS = """<script>
 </script>"""
 
 
+# The like counter (I160). One script for the atom page (a heart button) and the /atoms/ hub (read-only counts). It
+# reads GET /api/likes once; if that fails the button stays hidden and the page is exactly what it was. The pressed
+# state lives in localStorage only (try/catch: it can be blocked), never sent anywhere.
+LIKES_JS = """<script>
+(function(){
+  var KEY = 'a2ui-liked', counts = null;
+  function liked(){ try { return JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) { return {}; } }
+  function remember(t, on){ try { var m = liked(); if (on) m[t] = 1; else delete m[t]; localStorage.setItem(KEY, JSON.stringify(m)); } catch (e) {} }
+  function show(btn, n){ var s = btn.querySelector('.like-n'); if (s) s.textContent = n > 0 ? String(n) : ''; }
+  fetch('/api/likes').then(function(r){ if (!r.ok) throw 0; return r.json(); }).then(function(c){
+    counts = c;
+    var mine = liked();
+    document.querySelectorAll('.hub-likes[data-like]').forEach(function(el){
+      var n = c[el.getAttribute('data-like')] || 0; el.textContent = n > 0 ? '\u2665 ' + n : '';
+    });
+    var btn = document.querySelector('.like-btn[data-like]');
+    if (!btn) return;
+    var t = btn.getAttribute('data-like');
+    btn.setAttribute('aria-pressed', mine[t] ? 'true' : 'false');
+    show(btn, c[t] || 0);
+    btn.hidden = false;
+    btn.addEventListener('click', function(){
+      var on = btn.getAttribute('aria-pressed') !== 'true', d = on ? 1 : -1, before = counts[t] || 0;
+      btn.setAttribute('aria-pressed', String(on)); counts[t] = Math.max(0, before + d); show(btn, counts[t]); remember(t, on);
+      fetch('/api/likes/' + t, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ delta: d }) })
+        .then(function(r){ if (!r.ok) throw 0; return r.json(); })
+        .then(function(j){ counts[t] = j.count; show(btn, j.count); })
+        .catch(function(){ btn.setAttribute('aria-pressed', String(!on)); counts[t] = before; show(btn, before); remember(t, !on); });
+    });
+  }).catch(function(){});
+})();
+</script>"""
+
+
+def like_button(atom_type, display_name):
+    """The heart beside the title. Hidden until the counts load (LIKES_JS); the accessible name is 'Like <Title>' and the count is its description."""
+    name = html.escape(display_name, quote=True)
+    return (f'<button type="button" class="like-btn" data-like="{atom_type}" aria-pressed="false" aria-label="Like {name}" '
+            f'aria-describedby="like-n" hidden><svg class="like-heart" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5S3.5 15.3 3.5 9.2A4.7 4.7 0 0 1 12 6.6a4.7 4.7 0 0 1 8.5 2.6c0 6.1-8.5 11.3-8.5 11.3z"/></svg>'
+            f'<span class="like-n" id="like-n"></span></button>')
+
+
+EXPORT_JS = ROOT / "public" / "vendors" / "client-export" / "atom_export.js"
+
+# Export row (I161 page side). It is emitted only when the exporter (window.AtomExport, ck-70's atom_export.js) is part of this checkout, so a build
+# without it ships no dead buttons. The exporter is fetched when the page is idle or on first interaction with the row, whichever comes first;
+# formats(root) then decides which buttons exist (no WebCodecs: GIF and PNG; no film clock: PNG only; nothing exportable: no row).
+EXPORT_JS_BLOCK = """<script>
+(function(){
+  var row = document.getElementById('export-row'); if (!row) return;
+  var box = document.querySelector('.preview-box'); if (!box) return;
+  var atom = row.getAttribute('data-atom'), btns = row.querySelector('.export-btns'), nodBox = row.querySelector('.export-nod'),
+      nod = row.querySelector('#export-nod'), prog = row.querySelector('.export-prog'), bar = row.querySelector('.export-bar'),
+      lab = row.querySelector('.export-lab'), live = row.querySelector('.export-live'), cancel = row.querySelector('.export-cancel'),
+      loading = null, ctl = null, lastBucket = -1;
+  function load(){
+    if (loading) return loading;
+    loading = new Promise(function(ok, no){
+      var s = document.createElement('script'); s.src = '/vendors/client-export/atom_export.js'; s.onload = ok; s.onerror = no; document.head.appendChild(s);
+    }).then(function(){ return window.AtomExport; });
+    return loading;
+  }
+  function setup(){
+    load().then(function(X){
+      var f = (X && X.formats(box)) || []; if (!f.length) return;
+      btns.textContent = '';
+      f.forEach(function(k){
+        var b = document.createElement('button'); b.type = 'button'; b.className = 'export-btn'; b.textContent = k.toUpperCase();
+        b.setAttribute('data-fmt', k); b.addEventListener('click', function(){ run(X, k, b); }); btns.appendChild(b);
+      });
+      nodBox.hidden = !(f.indexOf('mp4') > -1 || f.indexOf('gif') > -1);
+      row.hidden = false; syncCustom();
+      var tab = document.getElementById('tab-export'); if (tab) tab.hidden = false;
+    }).catch(function(){});
+  }
+  var custom = row.querySelector('.export-custom'), note = row.querySelector('.export-note'), hint = row.querySelector('.export-hint');
+  function syncCustom(){
+    var c = box.classList.contains('is-custom'); btns.hidden = c; custom.hidden = !c; note.hidden = c; hint.hidden = c;
+    if (c) nodBox.hidden = true; else if (btns.children.length) nodBox.hidden = !btns.querySelector('[data-fmt=mp4],[data-fmt=gif]');
+    if (c && ctl) ctl.abort();
+  }
+  new MutationObserver(syncCustom).observe(box, { attributes: true, attributeFilter: ['class'] });
+  function busy(on){ btns.querySelectorAll('button').forEach(function(b){ b.disabled = on; }); prog.hidden = !on; }
+  function run(X, k, b){
+    ctl = new AbortController(); lastBucket = -1; busy(true); bar.style.width = '0%';
+    var opts = { el: box, atom: atom, nod: !!(nod && nod.checked), signal: ctl.signal, onProgress: function(fr, ph){
+      var pc = Math.round(fr * 100); bar.style.width = pc + '%'; prog.setAttribute('aria-valuenow', String(pc));
+      lab.textContent = (ph === 'finishing' ? 'Finishing ' : ph === 'preparing' ? 'Preparing ' : 'Encoding ') + k.toUpperCase() + ' \u00b7 ' + pc + '%';
+      var bk = Math.floor(pc / 10); if (bk !== lastBucket) { lastBucket = bk; live.textContent = lab.textContent; }
+    } };
+    if (k === 'gif') opts.maxSeconds = 6;
+    var p = k === 'png' ? X.png(box, { signal: ctl.signal }).then(function(bl){ return { blob: bl, name: atom + '-a2uicatalog.png' }; }) : X.run(k, opts);
+    p.then(function(r){ X.download(r); live.textContent = 'Export ready: ' + r.name; })
+     .catch(function(e){ live.textContent = (e && e.name === 'AbortError') ? 'Export cancelled.' : String((e && e.message) || 'Export failed.'); })
+     .then(function(){ busy(false); b.focus(); });
+  }
+  cancel.addEventListener('click', function(){ if (ctl) ctl.abort(); });
+  row.addEventListener('pointerenter', load, { once: true }); row.addEventListener('focusin', load, { once: true });
+  (window.requestIdleCallback || function(f){ setTimeout(f, 2500); })(setup, { timeout: 5000 });
+})();
+</script>"""
+
+
+def export_row(atom):
+    """The export row under the live preview; '' when the exporter is not part of this build or the atom has no live preview."""
+    if not EXPORT_JS.exists() or atom.get("type") not in _RENDERER_TYPES:
+        return ""
+    t = atom.get("type", "")
+    return (f'<div class="export-row" id="export-row" data-atom="{t}" hidden>'
+            '<div class="export-btns" role="group" aria-label="Export this preview"></div>'
+            '<label class="export-nod" hidden><input type="checkbox" id="export-nod"> Add a small a2uicatalog.ai mark in the last second</label>'
+            '<span class="export-note">Runs in your browser. Nothing is uploaded.</span>'
+            '<p class="export-hint insp-note">GIF is the first 6 seconds. MP4 is the whole film and can take a few minutes; keep this tab open and visible.</p>'
+            '<p class="export-custom insp-note" hidden>Export works on the example film. To export your own, copy the payload.</p>'
+            '<div class="export-prog" role="progressbar" aria-label="Export progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" hidden>'
+            '<span class="export-lab">Preparing</span><span class="export-track"><span class="export-bar"></span></span>'
+            '<button type="button" class="export-cancel">Cancel</button></div>'
+            '<p class="sr-only export-live" aria-live="polite"></p></div>')
+
+
+PREVIEW_JS = """<script>
+(function(){
+  var b = document.getElementById('pause-preview'); if (b) {
+    var box = document.querySelector('.preview-box');
+    b.addEventListener('click', function(){
+      var on = b.getAttribute('aria-pressed') !== 'true'; b.setAttribute('aria-pressed', String(on));
+      b.lastChild.textContent = on ? ' Paused' : ' Pause'; box.classList.toggle('paused', on);
+      var m = window.__a2uiMotion || {}; Object.keys(m).forEach(function(k){ try { on ? m[k].pause() : m[k].play(); } catch (e) {} });
+    });
+    if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) b.click();
+  }
+  var c = document.getElementById('copy-payload');
+  if (c) c.addEventListener('click', function(){
+    var ed = document.getElementById('payload-editor'), t = (ed && !ed.closest('[hidden]') ? ed.value : document.getElementById('payload-code').textContent), done = function(ok){ c.textContent = ok ? 'Copied' : 'Select and copy'; setTimeout(function(){ c.textContent = 'Copy payload'; }, 1800); };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(function(){ done(true); }, function(){ select(); done(false); });
+    else { select(); done(false); }
+    function select(){ if (ed && !ed.closest('[hidden]')) { ed.focus(); ed.select(); return; } var r = document.createRange(); r.selectNodeContents(document.getElementById('payload-code')); var g = getSelection(); g.removeAllRanges(); g.addRange(r); }
+  });
+})();
+</script>"""
+
+
+FOCUS_JS = """<script>
+(function(){
+  // Focus: the live film opens large in a modal dialog element. The film's own element is moved (not cloned) so its clock, state and Pause stay one thing;
+  // it goes back where it was on close. Esc closes (native); the dialog traps focus and returns it to the Focus button.
+  var open = document.getElementById('focus-preview'), dlg = document.getElementById('focus-dialog');
+  if (!open || !dlg || !dlg.showModal) { if (open) open.hidden = true; return; }
+  var box = document.querySelector('.preview-box'), stage = document.getElementById('focus-stage'), close = document.getElementById('focus-close'),
+      fp = document.getElementById('focus-pause'), pp = document.getElementById('pause-preview'), mark = null, root = null;
+  function ratio(r){ var vp = r.querySelector('.mt-vp'), a = vp && vp.style.aspectRatio, p = a ? String(a).split('/') : [], n = parseFloat(p[0]), d = parseFloat(p[1]); return n > 0 && d > 0 ? n / d : 16 / 9; }
+  var sizing = false;
+  function size(){
+    if (!root || sizing) return; sizing = true; var ar = ratio(root), vw = window.innerWidth - 32, vh = window.innerHeight - 24 - 44 - 10 - 56;   // padding, title bar, gap, the film's own control row
+    var w = Math.max(160, Math.min(vw, vh * ar)); dlg.style.setProperty('--focus-w', Math.floor(w) + 'px'); dlg.style.setProperty('--focus-h', Math.floor(window.innerHeight - 24 - 44 - 10) + 'px');
+    window.dispatchEvent(new Event('resize')); sizing = false;   // the film re-fits itself on resize; the flag stops our own listener answering that event
+  }
+  function syncPause(){ if (!pp) return; var on = pp.getAttribute('aria-pressed') === 'true'; fp.setAttribute('aria-pressed', String(on)); fp.lastChild.textContent = on ? ' Paused' : ' Pause'; }
+  function sync(){ open.hidden = box.classList.contains('is-custom'); }
+  new MutationObserver(sync).observe(box, { attributes: true, attributeFilter: ['class'] }); sync();
+  if (pp) new MutationObserver(syncPause).observe(pp, { attributes: true, attributeFilter: ['aria-pressed'] });
+  open.addEventListener('click', function(){
+    root = box.querySelector('.mt-root'); if (!root) return;
+    mark = document.createComment('focus'); root.parentNode.insertBefore(mark, root); stage.appendChild(root);
+    syncPause(); dlg.showModal(); size(); close.focus();
+  });
+  fp.addEventListener('click', function(){ if (pp) { pp.click(); syncPause(); } });
+  var zoom = document.getElementById('focus-zoom');
+  zoom.addEventListener('click', function(){
+    var on = zoom.getAttribute('aria-pressed') !== 'true'; zoom.setAttribute('aria-pressed', String(on)); zoom.textContent = on ? 'Zoom 1\u00d7' : 'Zoom 2\u00d7';
+    zoom.setAttribute('aria-label', on ? 'Zoom out to fit the screen' : 'Zoom in to read small labels'); dlg.style.setProperty('--focus-zoom', on ? '2' : '1'); stage.scrollTop = 0; stage.scrollLeft = 0; size();
+  });
+  close.addEventListener('click', function(){ dlg.close(); });
+  dlg.addEventListener('click', function(e){ if (e.target === dlg) dlg.close(); });
+  dlg.addEventListener('close', function(){
+    if (root && mark && mark.parentNode) { mark.parentNode.insertBefore(root, mark); mark.parentNode.removeChild(mark); }
+    root = null; mark = null; dlg.style.removeProperty('--focus-w'); dlg.style.removeProperty('--focus-h'); dlg.style.removeProperty('--focus-zoom'); zoom.setAttribute('aria-pressed', 'false'); zoom.textContent = 'Zoom 2\u00d7'; sizing = true; window.dispatchEvent(new Event('resize')); sizing = false; open.focus();
+  });
+  window.addEventListener('resize', function(){ if (dlg.open) size(); });
+})();
+</script>"""
+
+
+ATOM_PAGE_CSS = r"""<style>
+/* Design pass, direction C: the atom page is a two-column workspace. The preview leads on the left; the inspector (Payload / Fields / Export) sits on the right
+   and drops below the preview on a phone. Pager and breadcrumb share one row. */
+.wrap.atom-wide{max-width:1100px}   /* the site header is 1100 wide: keep the page edges aligned with it */
+.atom-top{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px 16px;margin-bottom:20px}
+.atom-top nav.crumb{margin:0}
+.atom-top nav.atom-pager{margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.atom-top nav.atom-pager .pg-btn{flex-direction:row;align-items:center;min-height:40px;padding:0 12px;border-radius:8px}
+.insp-tab{white-space:nowrap}
+.x-up + .section,.x-up ~ .section{margin-top:48px}
+/* Explorer (design pass 5 Nov): top pager says where you are ("Effects & motion / 53 of 128"); below the atom, "More like this" and
+   "Keep exploring" cards with static thumbnails. Order is catalog by catalog, so neighbours are related. */
+.atom-top nav.atom-pager .pg-all{display:flex;flex-direction:column;align-items:center;line-height:1.25;text-decoration:none;padding:4px 10px;border-radius:8px;min-height:40px;justify-content:center}
+.atom-top nav.atom-pager .pg-all:hover,.atom-top nav.atom-pager .pg-all:focus-visible{background:var(--accent-soft-bg)}
+.pg-cat{font-size:13px;font-weight:700;color:var(--accent-2-text)}
+.pg-pos{font-size:12px;color:var(--text-muted);font-variant-numeric:tabular-nums}
+.x-more,.x-up{margin:48px 0 0}
+.x-h{font-size:22px;line-height:1.2;letter-spacing:-.015em;margin:0 0 16px;color:var(--text)}
+.x-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.x-pair{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.x-card{display:flex;flex-direction:column;min-width:0;border:1px solid var(--border-strong);border-radius:14px;background:var(--surface);color:var(--text);text-decoration:none;overflow:hidden;contain:layout paint;transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}
+.x-card:hover,.x-card:focus-visible{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 14px 32px -18px color-mix(in srgb,var(--accent) 60%,transparent)}
+.x-card:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.x-thumb{position:relative;height:150px;overflow:hidden;background:#fff;background-image:radial-gradient(#e9ebf3 1px,transparent 1px);background-size:14px 14px;border-bottom:1px solid var(--border)}
+.x-pair .x-thumb{height:190px}
+.x-thumb .stage-inner{width:200%;transform:scale(.5);transform-origin:top left;padding:16px;pointer-events:none;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;line-height:1.6;color:#1a1a1a}
+.x-tile{display:flex;flex-direction:column;justify-content:flex-end;gap:6px;padding:16px 18px;background:#14162b;background-image:radial-gradient(120% 90% at 85% 10%,#5051cf 0,transparent 60%),radial-gradient(80% 70% at 10% 100%,#1f6f8b 0,transparent 70%);color:#fff}
+.x-tile span{font-size:22px;font-weight:700;letter-spacing:-.015em;line-height:1.15;color:#fff}
+.x-tile code{font-size:12px;color:#d6d8ff;background:none;padding:0}
+.x-body{display:flex;flex-direction:column;gap:4px;padding:12px 16px 16px}
+.x-kicker{font-size:12px;font-weight:700;letter-spacing:.02em;color:var(--accent-2-text)}
+.x-name{font-size:17px;font-weight:700;letter-spacing:-.01em}
+.x-desc{font-size:14px;line-height:1.45;color:var(--text-muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.x-pair .x-card[rel=next]{text-align:right}
+.x-pair .x-card[rel=next] .x-tile{align-items:flex-end}
+.x-cross .x-kicker{color:var(--text)}
+.x-hint{font-size:13px;color:var(--text-muted);text-align:center;margin:12px 0 0}
+.x-hint kbd{display:inline-block;min-width:1.6em;padding:0 5px;border:1px solid var(--border-strong);border-bottom-width:2px;border-radius:5px;background:var(--surface-2);font:600 12px/1.5 ui-monospace,'SF Mono',Monaco,monospace;text-align:center}
+@media (hover:none){.x-hint{display:none}}
+@media (prefers-reduced-motion:reduce){.x-card{transition:none}.x-card:hover,.x-card:focus-visible{transform:none}}
+@media (max-width:820px){.x-grid{grid-template-columns:1fr 1fr}}
+@media (max-width:560px){.x-grid,.x-pair{grid-template-columns:1fr}.x-pair .x-card[rel=next]{text-align:left}.x-pair .x-card[rel=next] .x-tile{align-items:flex-start}.x-thumb,.x-pair .x-thumb{height:130px}}
+.atom-top .pg-dir{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.atom-top .pg-name{font-size:14px;font-weight:600;color:var(--text)}
+.atom-top .pg-prev .pg-name::before{content:"\2190\00a0"}
+.atom-top .pg-next .pg-name::after{content:"\00a0\2192"}
+.atom-top nav.atom-pager .pg-all{font-size:14px}
+.atom-top .pg-hint{grid-column:auto;margin:0;font-size:12px;font-weight:400;color:var(--text-muted);text-align:left}
+.atom-top nav.atom-pager kbd{font-size:12px}
+.title-row{margin-bottom:20px}
+.title-row h1{margin-bottom:0}
+.title-row .cat-line{margin:0;display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap}
+.atom-grid{display:grid;grid-template-columns:minmax(0,1fr) 380px;grid-template-areas:"preview insp" "about insp";gap:20px 24px;align-items:start}
+.a-preview{grid-area:preview;min-width:0}
+.a-insp{grid-area:insp;min-width:0}
+.a-about{grid-area:about;min-width:0}
+.a-preview .section{margin-bottom:0}
+.a-preview .preview-box{min-height:320px;padding:28px;border-radius:14px;border-color:var(--border-strong);box-shadow:var(--shadow)}
+.a-about .section{margin-bottom:28px}
+.a-about .desc{margin-bottom:0;font-size:1.05rem}
+.inspector{border:1px solid var(--border-strong);border-radius:14px;background:var(--surface);overflow:hidden;box-shadow:var(--shadow)}
+.insp-tabs{display:flex;border-bottom:1px solid var(--border)}
+.insp-tabs[hidden],.insp-tab[hidden],.insp-panel[hidden]{display:none}
+.insp-tab{flex:1;min-height:46px;padding:0 8px;border:0;border-bottom:3px solid transparent;border-radius:0;background:var(--surface);color:var(--text-muted);font:600 14px/1.2 inherit;cursor:pointer}
+.insp-tab:hover{color:var(--text)}
+.insp-tab[aria-selected="true"]{color:var(--text);font-weight:700;border-bottom-color:var(--accent)}
+.insp-tab:focus-visible{outline:3px solid var(--accent);outline-offset:-3px}
+.insp-panel{display:flex;flex-direction:column;gap:12px;padding:16px;min-width:0}
+.insp-panel>.label{margin:0}
+.js-tabs .insp-panel>.label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.insp-panel+.insp-panel{border-top:1px solid var(--border)}
+.js-tabs .insp-panel+.insp-panel{border-top:0}
+.insp-panel pre{margin:0;max-height:440px;overflow:auto;padding:14px;font-size:12.5px;line-height:1.6}
+.insp-panel pre code{font-size:12.5px}
+.insp-actions{display:flex;flex-wrap:wrap;gap:8px}
+.copy-btn.primary{border-color:var(--accent);background:var(--accent);color:var(--accent-contrast)}
+.copy-btn.primary:hover{filter:brightness(1.08)}
+.insp-panel .fields{margin:0;border:0;border-radius:0;background:transparent}
+.insp-panel .field-row{grid-template-columns:minmax(0,1fr) auto;padding:10px 0}
+.insp-panel .field-row .f-type{grid-column:1/-1;grid-row:2}
+.insp-panel .export-row{margin:0}
+.insp-panel .export-note{margin-left:0;flex:1 1 100%}
+.insp-note{margin:0;font-size:13px;color:var(--text-muted)}
+.payload-editor{display:flex;flex-direction:column;gap:6px}
+.payload-editor textarea{width:100%;min-height:260px;max-height:70vh;resize:vertical;box-sizing:border-box;padding:14px;border:1px solid var(--border-strong);border-radius:10px;background:var(--surface);color:var(--text);font:12.5px/1.6 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;tab-size:2}
+.payload-editor textarea:focus-visible{outline:3px solid var(--accent);outline-offset:1px}
+.payload-editor textarea[aria-invalid="true"]{border-color:color-mix(in srgb,#d92d20 70%,var(--text))}
+.payload-count{margin:0;font-size:12px;color:var(--text-muted);text-align:right}
+.payload-status{margin:0;min-height:1.4em;font-size:13px;color:var(--text-muted)}
+.payload-status.err{color:color-mix(in srgb,#d92d20 55%,var(--text))}
+.payload-status.ok{color:var(--text)}
+.preview-box.is-custom{padding:0;overflow:hidden;box-sizing:border-box}   /* height is pinned in px by the script to the static preview's own height: no layout shift on Render */
+.preview-box.is-custom iframe{display:block;width:100%;height:100%;min-height:0;border:0;background:#fff;border-radius:inherit}
+/* Films (design pass 5 Nov): a dark stage of the film's own shape, never a dark film in a white frame */
+.a-preview .preview-box:has(.mt-root),.preview-box.is-film{background:#0b0d12;border-color:color-mix(in srgb,#0b0d12 60%,var(--border-strong))}
+.a-preview .preview-box:has(.mt-root){padding:0;display:flex;align-items:center;justify-content:center}
+.a-preview .preview-box:has(.mt-root) .mt-root{margin:0!important;width:100%}
+.preview-box.is-film iframe,.preview-box.is-film .custom-loading,.preview-box.is-film .custom-paused{background:#0b0d12;color:#e6e8f0}
+.custom-badge{top:12px;right:12px}
+.hook{display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px;margin:-4px 0 24px}
+.hook-lead{margin:0;font-size:17px;line-height:1.5;color:var(--text);max-width:62ch}
+.hook-btn{min-height:44px;padding:0 20px;border:0;border-radius:10px;background:var(--accent);color:var(--accent-contrast);font:600 15px/1 inherit;font-family:inherit;cursor:pointer;box-shadow:0 6px 18px -8px color-mix(in srgb,var(--accent) 70%,transparent);transition:transform .15s ease,box-shadow .15s ease}
+.hook-btn:hover{transform:translateY(-1px);box-shadow:0 10px 24px -10px color-mix(in srgb,var(--accent) 80%,transparent)}
+.hook-btn:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+@media (prefers-reduced-motion:reduce){.hook-btn{transition:none}.hook-btn:hover{transform:none}}
+.section pre code{white-space:pre-wrap;overflow-wrap:anywhere}
+.preview-box.is-custom iframe:focus-visible{outline:3px solid var(--accent);outline-offset:-3px}   /* the frame scrolls its own content: it is a keyboard stop */
+.custom-loading,.custom-paused{position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:20px;text-align:center;background:#fff;color:#1a1a1a;font-size:14px}
+.custom-paused{background:repeating-linear-gradient(135deg,#f6f7fa,#f6f7fa 12px,#eef0f6 12px,#eef0f6 24px);color:#333}
+.custom-spin{width:28px;height:28px;border-radius:50%;border:3px solid #d6d9e6;border-top-color:var(--accent);animation:cspin .8s linear infinite}
+@keyframes cspin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.custom-spin{animation:none;border-top-color:#d6d9e6;border-right-color:var(--accent)}}
+.custom-badge{position:absolute;top:8px;right:8px;z-index:1;padding:3px 10px;border-radius:999px;background:var(--accent);color:var(--accent-contrast);font-weight:600;font-size:12px;line-height:1.4}
+@media(max-width:640px){.payload-editor textarea{min-height:220px;font-size:16px}.insp-actions .copy-btn{min-height:44px}}
+.copy-btn:focus-visible,.export-btn:focus-visible,.export-cancel:focus-visible,.pause-btn:focus-visible,.like-btn:focus-visible,.pg-btn:focus-visible,.pg-all:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.schema-hero{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:16px;min-height:320px;padding:28px;border:1px solid var(--border-strong);border-radius:14px;box-shadow:var(--shadow);
+  background-color:var(--surface);background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:22px 22px}
+.schema-hero pre{margin:0;max-width:100%;background:var(--surface-2);border-color:var(--border);padding:16px 20px}
+.schema-hero pre code{font-size:14px}
+.schema-pill{font-size:12px;font-weight:700;letter-spacing:.02em;color:var(--accent-text);background:var(--accent-soft-bg);border:1px solid var(--border);border-radius:999px;padding:4px 12px;max-width:100%}
+.preview-tools{margin-top:10px}
+.preview-tools:has(.pause-btn[hidden]){display:none}   /* a static preview that does not move has no Pause row */
+.pause-btn{min-height:44px;padding:0 16px}
+@media(max-width:1000px){
+  .atom-grid{grid-template-columns:minmax(0,1fr);grid-template-areas:"preview" "insp" "about"}
+}
+@media(max-width:700px){
+  .wrap.atom-wide{padding-left:16px;padding-right:16px}
+  .atom-top{flex-direction:column;align-items:stretch}
+  .atom-top nav.atom-pager{display:grid;grid-template-columns:1fr 1fr}
+  .atom-top nav.atom-pager .pg-btn{min-height:44px}
+  .atom-top nav.atom-pager .pg-next{justify-self:stretch;text-align:right;justify-content:flex-end}
+  .atom-top nav.atom-pager .pg-prev{justify-self:stretch}
+  .atom-top nav.atom-pager .pg-all{grid-column:1/-1;grid-row:2;justify-self:center;min-height:44px;display:inline-flex;align-items:center}
+  .atom-top .pg-hint{display:none}
+  nav.crumb a{display:inline-block;padding:15px 4px;margin:-15px -4px}   /* a 44px tap target around the small breadcrumb links without changing the layout */
+  .a-preview .preview-box,.schema-hero{min-height:200px;padding:16px}
+  .insp-tab{min-height:48px}
+  .insp-panel{padding:14px}
+}
+</style>"""
+
+
+def schema_hero(atom):
+    """The atom page's fallback when an atom has no live preview: the shape of its payload, honestly labelled. Not a blank box."""
+    atom_type = atom.get("type", "")
+    name = html.escape(atom_type.replace("_", " ").title(), quote=True)
+    try:
+        ex = json.loads(example_payload(atom))
+    except Exception:
+        ex = {"type": atom_type}
+    keys = [k for k in ex if k != "type"][:5]
+    rows = [f'  "type": "{html.escape(atom_type)}"'] + [f'  "{html.escape(str(k))}": …' for k in keys]
+    code = "{\n" + ",\n".join(rows) + (",\n  …" if len(ex) - 1 > len(keys) else "") + "\n}"
+    return (f'<div class="section"><div class="label">Preview</div>'
+            f'<div class="schema-hero" role="group" aria-label="{name}: no live preview for this atom, its payload shape is shown instead">'
+            f'<pre tabindex="0"><code>{code}</code></pre>'
+            f'<span class="schema-pill">Schema card · no live preview for this atom</span></div></div>')
+
+
+def atom_inspector(atom, export_html):
+    """The right-hand inspector: Payload, Fields and (when the exporter is part of this build) Export. All panels are in the page, so without JavaScript
+    they simply stack under their headings; the tablist is revealed by INSPECTOR_JS."""
+    mer = mermaid_panel(atom.get("type", ""))
+    tabs = [("payload", "Payload"), ("fields", "Fields")] + ([("mermaid", "Your diagram")] if mer else []) + ([("export", "Export")] if export_html else [])
+    tablist = ('<div class="insp-tabs" role="tablist" aria-label="Inspector" hidden>' + "".join(
+        f'<button type="button" role="tab" class="insp-tab" id="tab-{k}" aria-controls="panel-{k}" aria-selected="{"true" if i == 0 else "false"}" '
+        f'tabindex="{0 if i == 0 else -1}"{" hidden" if k == "export" else ""}>{label}</button>' for i, (k, label) in enumerate(tabs)) + '</div>')
+    payload = (f'<section class="insp-panel" id="panel-payload" role="tabpanel" aria-labelledby="tab-payload"><h2 class="label">Example payload</h2>'
+               f'<pre tabindex="0"><code id="payload-code">{html.escape(example_payload(atom), quote=False)}</code></pre>'
+               '<div class="payload-editor" id="payload-editor-wrap" hidden>'
+               '<label class="label" for="payload-editor">Payload (JSON)</label>'
+               '<textarea id="payload-editor" spellcheck="false" autocapitalize="off" autocomplete="off" rows="14" aria-describedby="payload-status payload-note payload-count"></textarea>'
+               '<p class="payload-count" id="payload-count"></p>'
+               '<p class="payload-status" id="payload-status" role="status" aria-live="polite"></p></div>'
+               '<div class="insp-actions"><button type="button" class="copy-btn primary" id="render-payload" hidden>Render</button>'
+               '<button type="button" class="copy-btn" id="reset-payload" hidden>Reset to example</button>'
+               '<button type="button" class="copy-btn" id="copy-payload">Copy payload</button></div>'
+               '<p class="insp-note" id="payload-note" hidden>Edit the payload and press Render (or Ctrl+Enter). The preview is drawn in your browser, in a separate sandboxed frame from play.a2uicatalog.ai. '
+               'Limit: 60,000 characters.</p></section>')
+    fields = (f'<section class="insp-panel" id="panel-fields" role="tabpanel" aria-labelledby="tab-fields"><h2 class="label">Fields</h2>'
+              f'{fields_table(atom)}</section>')
+    export = (f'<section class="insp-panel" id="panel-export" role="tabpanel" aria-labelledby="tab-export" hidden><h2 class="label">Export</h2>'
+              f'<p class="insp-note">Save the live preview as a file.</p>{export_html}</section>') if export_html else ""
+    return f'<aside class="inspector a-insp" aria-label="Inspector">{tablist}{payload}{fields}{mer}{export}</aside>'
+
+
+INSPECTOR_JS = """<script>
+(function(){
+  // Tabs (WAI-ARIA tabs pattern): arrow keys, Home and End move between the visible tabs; the selected tab is the only one in the tab order.
+  var insp = document.querySelector('.inspector'); if (!insp) return;
+  var list = insp.querySelector('[role=tablist]'); if (!list) return;
+  var tabs = [].slice.call(list.querySelectorAll('[role=tab]'));
+  insp.classList.add('js-tabs'); list.hidden = false;
+  function visible(){ return tabs.filter(function(t){ return !t.hidden; }); }
+  function select(t, focus){
+    tabs.forEach(function(x){
+      var on = x === t, p = document.getElementById(x.getAttribute('aria-controls'));
+      x.setAttribute('aria-selected', String(on)); x.tabIndex = on ? 0 : -1; if (p) p.hidden = !on;
+    });
+    if (focus) t.focus();
+  }
+  tabs.forEach(function(t){
+    t.addEventListener('click', function(){ select(t); });
+    t.addEventListener('keydown', function(e){
+      var v = visible(), i = v.indexOf(t), n;
+      if (e.key === 'ArrowRight') n = v[(i + 1) % v.length]; else if (e.key === 'ArrowLeft') n = v[(i - 1 + v.length) % v.length];
+      else if (e.key === 'Home') n = v[0]; else if (e.key === 'End') n = v[v.length - 1]; else return;
+      e.preventDefault(); select(n, true);
+    });
+  });
+  var want = (location.hash || '').replace('#', ''), first = tabs[0];
+  select(tabs.filter(function(t){ return t.id === 'tab-' + want && !t.hidden; })[0] || first);
+})();
+</script>"""
+
+
+EDITOR_JS = r"""<script>
+(function(){
+  // Try the payload: edit it, press Render, and the preview shows YOUR payload. The page does not call a server: it hosts the site's own MCP Apps renderer
+  // (the same one /surfaces/mcp-apps/play/ uses) in an iframe on a SEPARATE origin, play.a2uicatalog.ai, which has none of this site's cookies or storage,
+  // and hands it the blocks with postMessage. Messages from the frame are accepted only from that frame and that origin, in a fixed shape; nothing the frame
+  // sends is ever put into this page as markup. Without JavaScript the page keeps its static preview and read-only payload.
+  var code = document.getElementById('payload-code'), wrap = document.getElementById('payload-editor-wrap'), ta = document.getElementById('payload-editor');
+  var target = document.querySelector('.preview-box') || document.querySelector('.schema-hero');
+  var bRender = document.getElementById('render-payload'), bReset = document.getElementById('reset-payload'), note = document.getElementById('payload-note');
+  var status = document.getElementById('payload-status'), count = document.getElementById('payload-count');
+  if (!code || !wrap || !ta || !target || !window.postMessage || !bRender || !bReset) return;
+  var MAX = 60000, ORIGIN = 'https://play.a2uicatalog.ai', BUNDLE = ORIGIN + '/renderer-bundle?v=__BUNDLE_HASH__';
+  var orig = code.textContent, pre = code.closest('pre'), kept = null, badge = null, frame = null, ready = false, pending = null, waitTimer = null, veil = null, veilTimer = null, sizeReports = 0, paused = false, note2 = null;
+  ta.value = orig; pre.hidden = true; wrap.hidden = false; bRender.hidden = false; bReset.hidden = false; note.hidden = false;
+  var pause = document.getElementById('pause-preview'), staticMoves = !!(pause && !pause.hidden);
+  function pauseBtn(on){ if (!pause) return; pause.setAttribute('aria-pressed', String(on)); if (pause.lastChild) pause.lastChild.textContent = on ? ' Paused' : ' Pause'; }
+  // The Pause button belongs to PREVIEW_JS (static film clock). While a custom render is showing, the same button drives the frame: watch its state.
+  if (pause && window.MutationObserver) new MutationObserver(function(){
+    if (target.classList.contains('is-custom')) setPaused(pause.getAttribute('aria-pressed') === 'true');
+  }).observe(pause, { attributes: true, attributeFilter: ['aria-pressed'] });
+  function say(msg, cls){ status.textContent = msg; status.className = 'payload-status' + (cls ? ' ' + cls : ''); ta.setAttribute('aria-invalid', cls === 'err' ? 'true' : 'false'); }
+  function tally(){ var n = ta.value.length; count.textContent = n.toLocaleString('en') + ' / ' + MAX.toLocaleString('en') + ' characters'; }
+  function where(e, t){
+    var m = /position (\d+)/.exec(e.message || ''), l = /line (\d+) column (\d+)/.exec(e.message || '');
+    if (l) return 'line ' + l[1] + ', column ' + l[2];
+    if (m) { var p = +m[1], pre2 = t.slice(0, p).split('\n'); return 'line ' + pre2.length + ', column ' + (pre2[pre2.length - 1].length + 1); }
+    return '';
+  }
+  function blocksOf(t){
+    if (t.length > MAX) throw new Error('The payload is ' + t.length.toLocaleString('en') + ' characters; the limit is ' + MAX.toLocaleString('en') + '.');
+    var v; try { v = JSON.parse(t); } catch (e) { var w = where(e, t); throw new Error('Not valid JSON' + (w ? ' at ' + w : '') + '. ' + String(e.message || '').replace(/^JSON\.parse: /, '').replace(/\s*in JSON at position \d+.*$/, '').replace(/\s*at line \d+ column \d+.*$/, '').replace(/\s*\(line \d+ column \d+\)/, '').slice(0, 160)); }
+    var b = Array.isArray(v) ? v : (v && typeof v === 'object' && typeof v.type !== 'string' && Array.isArray(v.blocks) ? v.blocks : [v]);   // a block with a type is ONE block even when it has children in .blocks (motion_timeline): only an untyped {theme, blocks} object is a surface
+    if (!b.length || !b.every(function(x){ return x && typeof x === 'object' && !Array.isArray(x) && typeof x.type === 'string'; }))
+      throw new Error('Each block needs a "type", for example {"type": "treemap", ...}. You can also paste a list of blocks.');
+    return b;
+  }
+  function theme(){ return 'light'; }   // the preview box is a white surface in both page themes (like the static preview): a dark-theme render puts light text on it
+  function post(m){ if (frame && frame.contentWindow) frame.contentWindow.postMessage(m, ORIGIN); }
+  function deliver(){
+    if (!frame || !ready || !pending) return;
+    post({ jsonrpc: '2.0', method: 'ui/notifications/tool-result', params: { content: [{ type: 'text', text: 'Rendered A2UI atoms.' }], structuredContent: { theme: theme(), blocks: pending } } });
+    clearTimeout(waitTimer); bRender.disabled = false;
+    say('Rendered ' + pending.length + (pending.length === 1 ? ' block' : ' blocks') + ' in your browser. Reset to example brings the original preview back.', 'ok');
+  }
+  window.addEventListener('message', function(ev){
+    if (!frame || ev.source !== frame.contentWindow || ev.origin !== ORIGIN) return;
+    var m = ev.data;
+    if (!m || typeof m !== 'object' || m.jsonrpc !== '2.0' || typeof m.method !== 'string') return;
+    var hasId = typeof m.id === 'number' || (typeof m.id === 'string' && m.id.length < 64);
+    if (m.method === 'ui/initialize' && hasId) {
+      post({ jsonrpc: '2.0', id: m.id, result: { protocolVersion: '2026-01-26', hostContext: { theme: theme(), displayMode: 'inline' }, capabilities: { logging: {} } } });
+    } else if (m.method === 'ui/notifications/initialized') {
+      ready = true; deliver();
+    } else if (m.method === 'ui/notifications/size-changed') {
+      // Deliberately ignored for sizing. The renderer reports its document height; if the host sizes the frame to that number plus any slack, the
+      // renderer measures the slack and reports it back, and the frame grows 2 px every ~100 ms without end (measured). The box is a fixed size, the
+      // frame scrolls inside it. The first report after a Render only tells us the frame has painted, so the loading veil can go.
+      sizeReports++; if (sizeReports === 1) unveil();
+    } else if (hasId) {
+      post({ jsonrpc: '2.0', id: m.id, error: { code: -32601, message: 'not available from this page' } });   // tools/call, open-link, anything else: refused
+    }
+  });
+  var vh = function(){ return window.innerHeight || document.documentElement.clientHeight || 800; };
+  var aspect = 0, badgeText = 'Your payload';
+  function pinHeight(){
+    // Same height as the static preview had, never above 80% of the screen (60% on a phone); taller content scrolls inside the frame.
+    // A film (motion_timeline with an aspect) gets a box of its own shape instead, so it is never cropped or letterboxed in white.
+    var phone = window.innerWidth <= 640, cap = Math.max(240, Math.round(vh() * (phone ? 0.6 : 0.8)));
+    target.classList.toggle('is-film', !!aspect);
+    if (aspect) {
+      var w = (target.parentNode && target.parentNode.getBoundingClientRect().width) || target.getBoundingClientRect().width || 600, h = w / aspect;
+      if (h > cap) { h = cap; target.style.width = Math.round(cap * aspect) + 'px'; target.style.marginInline = 'auto'; } else { target.style.width = ''; target.style.marginInline = ''; }
+      target.style.height = Math.round(h) + 'px'; return;
+    }
+    target.style.width = ''; target.style.marginInline = '';
+    target.style.height = Math.min(cap, Math.max(240, Math.round(boxH))) + 'px';
+  }
+  function aspectOf(blocks){
+    var b = blocks && blocks[0], m = b && b.type === 'motion_timeline' && /^(\d+(?:\.\d+)?):(\d+(?:\.\d+)?)$/.exec(String(b.aspect || ''));
+    return m && +m[2] ? (+m[1]) / (+m[2]) : 0;
+  }
+  window.addEventListener('resize', function(){ if (target.classList.contains('is-custom')) pinHeight(); });
+  var boxH = 320;
+  function unveil(){ clearTimeout(veilTimer); if (veil && veil.parentNode) veil.parentNode.removeChild(veil); veil = null; }
+  function addVeil(){
+    unveil(); veil = document.createElement('div'); veil.className = 'custom-loading'; veil.setAttribute('aria-hidden', 'true');
+    var sp = document.createElement('span'); sp.className = 'custom-spin'; var tx = document.createElement('span'); tx.textContent = 'Rendering your payload…'; veil.appendChild(sp); veil.appendChild(tx);
+    target.appendChild(veil); veilTimer = setTimeout(unveil, 2500);
+  }
+  function setPaused(on){
+    // The renderer exposes no pause message and a frame on another origin cannot be reached, so Pause tears the frame down and Play builds it again
+    // (the film restarts from the beginning). A still of the running film cannot be captured across origins.
+    if (!frame || !target.classList.contains('is-custom')) return;
+    if (on === paused) return; paused = on;
+    if (on) {
+      unveil(); ready = false; clearTimeout(waitTimer);
+      if (frame.parentNode) frame.parentNode.removeChild(frame);
+      note2 = document.createElement('div'); note2.className = 'custom-paused'; note2.setAttribute('role', 'group'); note2.setAttribute('aria-label', 'Paused');
+      var st = document.createElement('strong'); st.textContent = 'Paused'; var sx = document.createElement('span'); sx.textContent = 'Your payload is not running. Press the Paused button again to run it from the start.'; note2.appendChild(st); note2.appendChild(sx);
+      target.appendChild(note2); say('Paused. Press the Paused button under the preview to run your payload again from the start.', 'ok');
+    } else {
+      if (note2 && note2.parentNode) note2.parentNode.removeChild(note2); note2 = null;
+      if (pending) start(); 
+    }
+  }
+  function start(){
+    sizeReports = 0; ready = false; addVeil();
+    frame = document.createElement('iframe');
+    frame.title = 'Rendered preview of your payload (scrolls if the content is taller)'; frame.className = 'custom-frame'; frame.tabIndex = 0;
+    frame.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox');
+    frame.setAttribute('referrerpolicy', 'no-referrer'); frame.setAttribute('loading', 'eager');
+    target.insertBefore(frame, veil); frame.src = BUNDLE;
+    clearTimeout(waitTimer);
+    waitTimer = setTimeout(function(){ if (!ready) { unveil(); bRender.disabled = false; say('The renderer did not answer. Check your connection and press Render again.', 'err'); } }, 10000);
+  }
+  function show(blocks){
+    pending = blocks; aspect = aspectOf(blocks);
+    if (badge) badge.textContent = badgeText;
+    if (paused) { paused = false; if (note2 && note2.parentNode) note2.parentNode.removeChild(note2); note2 = null; }
+    pauseBtn(false);   // Render means run it (a reduced-motion setting is honoured by the renderer itself: it stills its films)
+    if (frame && target.contains(frame)) { pinHeight(); sizeReports = 0; addVeil(); deliver(); return; }
+    if (!kept) { boxH = target.getBoundingClientRect().height || 320; kept = document.createDocumentFragment(); while (target.firstChild) kept.appendChild(target.firstChild); }
+    else while (target.firstChild) target.removeChild(target.firstChild);
+    pinHeight();
+    target.classList.add('is-custom'); target.classList.remove('paused'); badge = document.createElement('span'); badge.className = 'custom-badge'; badge.textContent = badgeText;
+    target.appendChild(badge); start();
+    if (pause) { pause.hidden = false; }
+  }
+  function reset(){
+    clearTimeout(waitTimer); unveil(); frame = null; ready = false; pending = null; bRender.disabled = false; paused = false; note2 = null;
+    if (kept) { while (target.firstChild) target.removeChild(target.firstChild); target.appendChild(kept); kept = null; }
+    target.classList.remove('is-custom', 'is-film'); target.style.height = ''; target.style.width = ''; target.style.marginInline = ''; aspect = 0; badgeText = 'Your payload';
+    if (pause) {
+      var rm = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);   // back to the static preview: stay still for a reduced-motion visitor
+      pauseBtn(rm && staticMoves); target.classList.toggle('paused', rm && staticMoves); pause.hidden = !staticMoves;
+      var mm = window.__a2uiMotion || {}; Object.keys(mm).forEach(function(k){ try { (rm && staticMoves) ? mm[k].pause() : mm[k].play(); } catch (e) {} });
+    }
+    ta.value = orig; tally(); say('Back to the example.', 'ok');
+  }
+  function render(){
+    var b; try { b = blocksOf(ta.value); } catch (e) { say(e.message, 'err'); return; }
+    bRender.disabled = true; say('Rendering…'); show(b);
+    if (frame && ready) bRender.disabled = false;
+  }
+  ta.addEventListener('input', function(){ tally(); if (status.className.indexOf('err') > -1) say(''); });
+  ta.addEventListener('keydown', function(e){ if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); render(); } });
+  bRender.addEventListener('click', render); bReset.addEventListener('click', function(){ reset(); ta.focus(); });
+  // The Mermaid / D2 tab hands its converted film to this editor, so the film is drawn in the one preview (same renderer, Pause, Focus, Reset).
+  window.A2UIEditor = { setPayload: function(text, label){ badgeText = label || 'Your payload'; ta.value = text; tally(); render(); } };
+  tally();
+})();
+</script>"""
+
+
+def editor_js():
+    """EDITOR_JS with the renderer bundle's content hash stamped into the iframe URL (same cache-buster the MCP Apps pages use)."""
+    return EDITOR_JS.replace("__BUNDLE_HASH__", _bundle_hash())
+
+
 def atom_pager(atom_type):
     """Previous / all / next buttons under the breadcrumb; the arrow keys follow the same links (PAGER_JS)."""
     prev, nxt = _NEIGHBOURS.get(atom_type, (None, None))
@@ -1458,11 +2253,44 @@ def atom_pager(atom_type):
         key, word = ("ArrowLeft", "<kbd>←</kbd> Previous") if rel == "prev" else ("ArrowRight", "Next <kbd>→</kbd>")
         return (f'<a class="pg-btn pg-{rel}" rel="{rel}" href="/atoms/{t}/" aria-keyshortcuts="{key}">'
                 f'<span class="pg-dir">{word}</span><span class="pg-name">{name}</span></a>')
+    slug, i, n = _POSITION.get(atom_type, ("", 0, 0))
+    where = (f'<a class="pg-all" href="/atoms/?catalog={slug}"><span class="pg-cat">{html.escape(_cat_label(slug))}</span>'
+             f'<span class="pg-pos">{i} of {n}</span></a>') if n else '<a class="pg-all" href="/atoms/">All atoms</a>'
     return ('<nav class="atom-pager" aria-label="Browse atoms">'
             + (link(prev, "prev") if prev else "<span></span>")
-            + '<a class="pg-all" href="/atoms/">All atoms</a>'
+            + where
             + (link(nxt, "next") if nxt else "<span></span>")
-            + '<p class="pg-hint">Press <kbd>←</kbd> or <kbd>→</kbd> on your keyboard to move between atoms.</p></nav>')
+            + '</nav>')
+
+
+def mermaid_panel(atom_type):
+    """The Mermaid / D2 tab of the inspector (public/try-mermaid/, scripts/gen_try_mermaid.py), on the atoms a pasted diagram turns into. It converts in a worker
+    on the page and hands the film to the payload editor, so the film plays in the one preview on the left."""
+    if atom_type != "motion_arch":
+        return ""
+    import hashlib
+    src = Path(__file__).resolve().parent / "try_mermaid"
+    v = hashlib.sha256(b"".join((src / f).read_bytes() for f in ("try-mermaid.js", "try-mermaid.css", "worker_main.js"))).hexdigest()[:10]   # cache-buster: a changed build is never served from a stale copy
+    return ('<section class="insp-panel" id="panel-mermaid" role="tabpanel" aria-labelledby="tab-mermaid" hidden><h2 class="label">Mermaid or D2</h2>'
+            f'<link rel="stylesheet" href="/try-mermaid/try-mermaid.css?v={v}">'
+            f'<div id="try-mermaid" data-mode="inspector" data-worker="/try-mermaid/convert.worker.js" data-bundle="https://play.a2uicatalog.ai/renderer-bundle?v={_bundle_hash()}" data-noupload="1"></div>'
+            f'<script src="/try-mermaid/try-mermaid.js?v={v}" defer></script>'
+            # Mounts the first time the panel is shown, however it is shown (click, arrow keys, the "Try it" button, a #mermaid link).
+            '<script>window.addEventListener("DOMContentLoaded",function(){var t=document.getElementById("tab-mermaid"),m=document.getElementById("try-mermaid"),p=document.getElementById("panel-mermaid");'
+            'function go(){if(!m.classList.contains("tm"))TryMermaid.mount(m,{});}'
+            'if(t&&document.querySelector(".inspector.js-tabs")){new MutationObserver(function(){if(!p.hidden)go();}).observe(p,{attributes:true,attributeFilter:["hidden"]});'
+            'if(location.hash==="#mermaid")t.click();if(!p.hidden)go();}else{go();}'
+            'document.querySelectorAll("[data-open-mermaid]").forEach(function(b){b.addEventListener("click",function(){if(t)t.click();var n=0,f=function(){var a=m.querySelector("textarea");if(a){a.focus();a.select();}else if(n++<40)setTimeout(f,50);};f();if(window.innerWidth<=1000)p.scrollIntoView({block:"start"});});});'
+            '})</script></section>')
+
+
+def atom_hook(atom_type):
+    """The one-line pitch and call to action under the title, on atoms whose inspector has the paste window."""
+    if atom_type != "motion_arch":
+        return ""
+    return ('<div class="hook"><p class="hook-lead">Paste a Mermaid flowchart or a D2 diagram and watch it draw itself as a film. '
+            'It runs in your browser; nothing is uploaded.</p>'
+            '<button type="button" class="hook-btn" data-open-mermaid aria-controls="panel-mermaid">Try it with your diagram <span aria-hidden="true">→</span></button></div>')
 
 
 def render_page(atom):
@@ -1509,6 +2337,7 @@ def render_page(atom):
     try_btn  = (
         f'<a class="try-btn" href="{make_renderer_url(atom)}" target="_blank" rel="noopener">Try it live →</a>'
     ) if _gas_only else ""
+    _export_html = export_row(atom)
 
     return f"""<!DOCTYPE html>
 <html lang="en">
@@ -1517,12 +2346,23 @@ def render_page(atom):
   <link rel="icon" href="/favicon.ico" sizes="32x32">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <link rel="manifest" href="/site.webmanifest">
-  <meta name="theme-color" content="#6366f1">
+  <meta name="theme-color" content="#5051cf">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>{display_name} — A2UI Atomic Catalog</title>
   <meta name="description" content="{meta_description(desc or compact)}">
   <link rel="canonical" href="https://a2uicatalog.ai/atoms/{atom_type}/">
   <link rel="alternate" type="text/markdown" href="/atoms/{atom_type}.md">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="A2UI Catalog">
+  <meta property="og:title" content="{display_name}: A2UI atom">
+  <meta property="og:description" content="{meta_description(desc or compact)}">
+  <meta property="og:url" content="https://a2uicatalog.ai/atoms/{atom_type}/">
+  <meta property="og:image" content="https://a2uicatalog.ai/brand/og-card.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{display_name}: A2UI atom">
+  <meta name="twitter:description" content="{meta_description(desc or compact)}">
   <script type="application/ld+json">
   {{
     "@context": "https://schema.org",
@@ -1537,48 +2377,49 @@ def render_page(atom):
   <script type="application/ld+json">{_atom_ld}</script>
   {SITE_HEAD_JS}
   {PAGE_CSS}
+  {ATOM_PAGE_CSS}
 </head>
 <body>
   {site_header("atoms")}
-  <div class="wrap">
+  <div class="wrap atom-wide">
+  <div class="atom-top">
   <nav class="crumb">
     <a href="/">A2UI Catalog</a> /
     <a href="/atoms/">atoms</a> / {atom_type}
   </nav>
   {atom_pager(atom_type)}
-
-  <h1>{display_name}</h1>
-  {catalog_chip(atom_type)}
-
-  {preview}
-
-  <p class="desc">{desc or compact}</p>
-
-  <div class="section">
-    <div class="label">Surfaces</div>
-    {surface_badges(atom)}
   </div>
 
-  {degraded_notes(atom)}
+  <div class="title-row"><h1>{display_name}</h1>{like_button(atom_type, display_name)}{catalog_chip(atom_type, inline=True)}</div>
+  {atom_hook(atom_type)}
 
-  {templates}
+  <div class="atom-grid">
+    <div class="a-preview">{preview or schema_hero(atom)}</div>
+    {atom_inspector(atom, _export_html)}
+    <div class="a-about">
+      <div class="section">
+        <div class="label">What it is</div>
+        <p class="desc">{desc or compact}</p>
+      </div>
 
-  <div class="section">
-    <div class="label">Fields</div>
-    {fields_table(atom)}
+      <div class="section">
+        <div class="label">Surfaces</div>
+        {surface_badges(atom)}
+      </div>
+
+      {degraded_notes(atom)}
+
+      {templates}
+    </div>
   </div>
 
-  <div class="section">
-    <div class="label">Example payload</div>
-    <pre tabindex="0"><code>{example_payload(atom)}</code></pre>
-  </div>
+  {atom_explore(atom_type)}
 
   <div class="section">
     <div class="label">ARD catalog entry</div>
     <pre tabindex="0"><code>{ard_entry(atom)}</code></pre>
   </div>
 
-  <a class="back" href="/.well-known/ai-catalog.json">← Full ARD catalog</a>
   {try_btn}
 
   <div class="deploy-box">
@@ -1592,16 +2433,18 @@ clasp push &amp;&amp; clasp deploy</code></pre>
 
   <footer>
     <span>A2UI Atomic Catalog · <a href="https://github.com/a2uicatalog/a2ui">github.com/a2uicatalog/a2ui</a> · Maintained by <a href="https://www.linkedin.com/in/curtiskrygier" rel="me author">Curtis Krygier</a></span>
-    <span>Independent, unofficial catalog — not affiliated with, endorsed by, or sponsored by Google, Anthropic or OpenAI. A2UI is Google's protocol; official spec at <a href="https://a2ui.org">a2ui.org</a>. MCP is Anthropic's protocol; Claude, the Claude logo and Anthropic are trademarks of Anthropic PBC. ChatGPT and OpenAI are trademarks of OpenAI, L.L.C. All other marks belong to their respective owners.</span>
+    <span><strong>A2UI is an open protocol (a2ui.org). a2uicatalog.ai is an independent catalogue of components built on it.</strong> Independent, unofficial catalog — not affiliated with, endorsed by, or sponsored by Google, Anthropic or OpenAI. A2UI is Google's protocol; official spec at <a href="https://a2ui.org">a2ui.org</a>. MCP is Anthropic's protocol; Claude, the Claude logo and Anthropic are trademarks of Anthropic PBC. ChatGPT and OpenAI are trademarks of OpenAI, L.L.C. All other marks belong to their respective owners.</span>
     <span>MIT License</span>
-    <!-- Registry backlink. Smithery verifies a listing by finding a link to it
-         on the site or in the README, so this is the reciprocal half of that
-         listing, not decoration — remove it and the verification lapses. -->
-    <span><a href="https://smithery.ai/servers/a2uicatalog/a2uicatalog" rel="noopener">MCP server on Smithery</a></span>
   </footer>
   </div>
   {SITE_FOOT_JS}
   {PAGER_JS}
+  {LIKES_JS}
+  {PREVIEW_JS}
+  {FOCUS_JS if 'id="focus-preview"' in preview else ''}
+  {INSPECTOR_JS}
+  {editor_js()}
+  {EXPORT_JS_BLOCK if _export_html else ''}
 {_cursor_glow_html()}
 </body>
 </html>"""
@@ -1610,8 +2453,8 @@ clasp push &amp;&amp; clasp deploy</code></pre>
 INDEX_CSS = """
 <style>""" + SITE_BASE_CSS + """
 header.hero{margin-bottom:36px;position:relative}
-.halo{position:absolute;inset:-90px -10% auto;height:260px;pointer-events:none;background:radial-gradient(ellipse 55% 100% at 50% 0%,oklch(58% 0.19 277 / .10),transparent 70%)}
-:root[data-theme="dark"] .halo{background:radial-gradient(ellipse 55% 100% at 50% 0%,oklch(72% 0.16 277 / .14),transparent 70%)}
+.halo{position:absolute;inset:-90px 0 auto;height:260px;pointer-events:none;background:radial-gradient(ellipse 55% 100% at 50% 0%,rgba(80,81,207,.10),transparent 70%)}
+:root[data-theme="dark"] .halo{background:radial-gradient(ellipse 55% 100% at 50% 0%,rgba(141,152,255,.14),transparent 70%)}
 h1{position:relative;font-size:2.6rem;font-weight:800;letter-spacing:-1.5px;margin-bottom:2px;text-wrap:balance}
 .tagline{position:relative;font-size:1.15rem;font-weight:700;margin-bottom:6px;letter-spacing:-.01em;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;width:fit-content}
 .sub{position:relative;color:var(--muted);font-size:1rem;margin-bottom:14px}
@@ -1708,7 +2551,8 @@ h1{position:relative;font-size:2.6rem;font-weight:800;letter-spacing:-1.5px;marg
 .stage-inner *{max-width:100%}
 @keyframes stagein{from{opacity:0}to{opacity:1}}
 @media(prefers-reduced-motion:reduce){.stage-inner{animation:none}}
-.stage-empty{display:grid;place-items:center}
+.stage-empty{display:grid;place-items:center;align-content:center;gap:8px;padding:10px;text-align:center;background-color:var(--stage-bg,#fff);background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:18px 18px}
+.schema-pill{font-size:11px;font-weight:700;letter-spacing:.02em;color:var(--accent-text);background:var(--accent-soft-bg);border-radius:999px;padding:3px 10px;max-width:100%}
 .stage-empty code{font-family:ui-monospace,'SF Mono',Monaco,monospace;font-size:12px;color:var(--text-muted);background:var(--surface-2);border:1px solid var(--border);border-radius:6px;padding:4px 10px}
 .card-meta{padding:12px 15px 13px;display:flex;flex-direction:column;flex:1}
 .atom-card h3{font-size:13.5px;font-weight:700;color:var(--text);margin-bottom:3px}
@@ -1724,6 +2568,15 @@ h1{position:relative;font-size:2.6rem;font-weight:800;letter-spacing:-1.5px;marg
 .hidden{display:none}
 </style>
 """
+
+PAUSE_ALL_JS = """<script>
+(function(){
+  var b = document.getElementById('pause-all'); if (!b) return;
+  function set(on){ b.setAttribute('aria-pressed', String(on)); document.documentElement.classList.toggle('motion-paused', on); }
+  b.addEventListener('click', function(){ set(b.getAttribute('aria-pressed') !== 'true'); });
+  if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) set(true);
+})();
+</script>"""
 
 INDEX_JS = """
 <script>
@@ -1798,7 +2651,29 @@ _preview_stats = {"rendered": 0, "no_renderer": 0, "script": 0, "oversize": 0, "
 _STAGES = {}
 
 
+def _card_label(atom, has_preview):
+    """Text alternative for a card thumbnail: what the still shows, from the atom's own one-line description."""
+    atom_type = atom.get("type", "")
+    name = atom.get("displayName") or atom_type.replace("_", " ").title()
+    line = " ".join((atom.get("compact_description") or atom.get("description") or "").split())
+    line = re.split(r"(?<=[.!?])\s+", line)[0][:140] if line else ""
+    if has_preview:
+        return f"Preview of {name}" + (f": {line}" if line else "")
+    return f"{name}: no live thumbnail yet, schema card" + (f". {line}" if line else "")
+
+
+_CARD_CACHE = {}
+
+
 def card_stage(atom):
+    atom_type = atom.get("type", "")
+    if atom_type in _CARD_CACHE:
+        return _CARD_CACHE[atom_type]
+    _CARD_CACHE[atom_type] = out = _card_stage(atom)
+    return out
+
+
+def _card_stage(atom):
     atom_type = atom.get("type", "")
     reason = None
     html = ""
@@ -1826,7 +2701,11 @@ def card_stage(atom):
                 reason = "error"
     if reason:
         _preview_stats[reason] += 1
-        return f'<div class="stage stage-empty"><code>{atom_type}</code></div>'
+        # Schema card (design pass): the designed fallback for an atom with no thumbnail -- the shape of its payload, and a pill saying where
+        # the live preview is. It is a real text alternative, not a blank box.
+        return (f'<div class="stage stage-empty schema-card" role="img" aria-label="{_esc_attr(_card_label(atom, False))}">'
+                f'<code>{{ "type": "{_esc_attr(atom_type)}", \u2026 }}</code>'
+                f'<span class="schema-pill">Schema card \u00b7 open for live preview</span></div>')
     # The whole card is an <a>; nested anchors are illegal HTML and make the
     # parser close the card early (meta spills out unstyled). Previews are
     # pointer-events:none decoration — neutralize links to spans.
@@ -1844,7 +2723,7 @@ def card_stage(atom):
     # controls. Confirmed via audit, 2026-07-31: this is the source of most of
     # a scan's "unlabeled form controls" finding on the homepage.
     _STAGES[atom_type] = f'<div class="stage-inner" aria-hidden="true" inert>{html}</div>'
-    return f'<div class="stage" data-stage="{atom_type}" aria-hidden="true"></div>'
+    return f'<div class="stage" data-stage="{atom_type}" role="img" aria-label="{_esc_attr(_card_label(atom, True))}"></div>'
 
 
 def _agent_sketchpad_sequence_html(strokes, view_box, caption, delay_ms=1500):
@@ -2309,7 +3188,7 @@ def generate_index(atoms):
   <link rel="icon" href="/favicon.ico" sizes="32x32">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <link rel="manifest" href="/site.webmanifest">
-  <meta name="theme-color" content="#6366f1">
+  <meta name="theme-color" content="#5051cf">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>A2UI Atomic Catalog — A2UI Components for AI Agents &amp; MCP</title>
   <meta name="description" content="A2UI Atomic Catalog (a2uicatalog): {atom_count_rounded} typed A2UI components for AI agents. MCP-ready, no model-written HTML; renders on web, Meet, Chat, Android, Slides.">
@@ -2473,7 +3352,7 @@ def generate_index(atoms):
   {LANDING_FILM_CSS}
 </head>
 <body>
-  {site_header("atoms")}
+  {site_header("")}
   {_landing_film}
   <main class="wrap">
   <header class="hero">
@@ -2535,6 +3414,7 @@ def generate_index(atoms):
     <div class="controls">
       <input id="search" type="search" placeholder="Search atoms…" autocomplete="off" aria-label="Search atoms">
       <div class="filters">{filter_pills}</div>
+      <button type="button" class="pause-btn" id="pause-all" aria-pressed="false"><span aria-hidden="true">\u23f8</span> Pause all motion</button>
       <span class="count" id="count">{atom_count_rounded} atoms</span>
     </div>
   </header>
@@ -2545,15 +3425,12 @@ def generate_index(atoms):
 {cards_html}  </div>
   <footer>
     <span>A2UI Atomic Catalog · <a href="/atoms/">All atoms A–Z</a> · <a href="/docs/">API Documentation</a> · <a href="/developers/">Developers</a> · <a href="https://github.com/a2uicatalog/a2ui">GitHub</a> · Maintained by <a href="https://www.linkedin.com/in/curtiskrygier" rel="me author">Curtis Krygier</a></span>
-    <span>Independent, unofficial catalog — not affiliated with, endorsed by, or sponsored by Google, Anthropic or OpenAI. A2UI is Google's protocol; official spec at <a href="https://a2ui.org">a2ui.org</a>. MCP is Anthropic's protocol; Claude, the Claude logo and Anthropic are trademarks of Anthropic PBC. ChatGPT and OpenAI are trademarks of OpenAI, L.L.C. All other marks belong to their respective owners.</span>
+    <span><strong>A2UI is an open protocol (a2ui.org). a2uicatalog.ai is an independent catalogue of components built on it.</strong> Independent, unofficial catalog — not affiliated with, endorsed by, or sponsored by Google, Anthropic or OpenAI. A2UI is Google's protocol; official spec at <a href="https://a2ui.org">a2ui.org</a>. MCP is Anthropic's protocol; Claude, the Claude logo and Anthropic are trademarks of Anthropic PBC. ChatGPT and OpenAI are trademarks of OpenAI, L.L.C. All other marks belong to their respective owners.</span>
     <span><a href="/.well-known/ard.json">ARD discovery catalog (JSON)</a></span>
-    <!-- Registry backlink — the reciprocal half of the Smithery listing,
-         which verifies by finding a link to it on this site. Not decoration:
-         remove it and the verification lapses. -->
-    <span><a href="https://smithery.ai/servers/a2uicatalog/a2uicatalog" rel="noopener">MCP server on Smithery</a></span>
   </footer>
   </main>
   {INDEX_JS}
+  {PAUSE_ALL_JS}
   {LANDING_FILM_JS}
   {SITE_FOOT_JS}
 {_cursor_glow_html()}
@@ -3215,7 +4092,7 @@ MCP_APPS_PLAY_HTML = """<!DOCTYPE html>
   <link rel="icon" href="/favicon.ico" sizes="32x32">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <link rel="manifest" href="/site.webmanifest">
-  <meta name="theme-color" content="#6366f1">
+  <meta name="theme-color" content="#5051cf">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>A2UI Live Renderer — the catalog playground for MCP Apps</title>
   <meta name="description" content="Full-screen A2UI renderer running as a spec-conformant MCP Apps View. Paste a payload, or open a #p= link minted by scripts/make_url.py.">
@@ -3445,7 +4322,7 @@ document.addEventListener('click', function (e) {{
   <link rel="icon" href="/favicon.ico" sizes="32x32">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <link rel="manifest" href="/site.webmanifest">
-  <meta name="theme-color" content="#6366f1">
+  <meta name="theme-color" content="#5051cf">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>{html.escape(seo_title)}</title>
   <meta name="description" content="{html.escape(seo_desc, quote=True)}">
@@ -3461,10 +4338,11 @@ document.addEventListener('click', function (e) {{
   .sa-desc{{font-size:14px;color:var(--muted);margin:4px 0 12px}}
   .preview-box{{background:#fff;border:1px solid var(--border);border-radius:10px;padding:24px;color:#1a1a1a;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;line-height:1.6}}
   .preview-box *{{max-width:100%}}
+  .preview-box [class$="-track"]{{max-width:none}}
   </style>
 </head>
 <body>
-  {site_header("playground" if surface == "mcp-apps" else "atoms")}
+  {site_header("playground" if surface == "mcp-apps" else "")}
   <div class="wrap">
   <nav class="crumb">
     <a href="/">A2UI Catalog</a> / surfaces / {surface}
@@ -3478,7 +4356,7 @@ document.addEventListener('click', function (e) {{
 
   <footer>
     <span>A2UI Atomic Catalog · <a href="https://github.com/a2uicatalog/a2ui">github.com/a2uicatalog/a2ui</a> · Maintained by <a href="https://www.linkedin.com/in/curtiskrygier" rel="me author">Curtis Krygier</a></span>
-    <span>Independent, unofficial catalog — not affiliated with, endorsed by, or sponsored by Google, Anthropic or OpenAI. A2UI is Google's protocol; official spec at <a href="https://a2ui.org">a2ui.org</a>. MCP is Anthropic's protocol; Claude, the Claude logo and Anthropic are trademarks of Anthropic PBC. ChatGPT and OpenAI are trademarks of OpenAI, L.L.C. All other marks belong to their respective owners.</span>
+    <span><strong>A2UI is an open protocol (a2ui.org). a2uicatalog.ai is an independent catalogue of components built on it.</strong> Independent, unofficial catalog — not affiliated with, endorsed by, or sponsored by Google, Anthropic or OpenAI. A2UI is Google's protocol; official spec at <a href="https://a2ui.org">a2ui.org</a>. MCP is Anthropic's protocol; Claude, the Claude logo and Anthropic are trademarks of Anthropic PBC. ChatGPT and OpenAI are trademarks of OpenAI, L.L.C. All other marks belong to their respective owners.</span>
     <span><a href="/.well-known/ai-catalog.json">ARD catalog JSON</a></span>
   </footer>
   </div>
@@ -3678,7 +4556,7 @@ def render_templates_page(atoms):
   <link rel="icon" href="/favicon.ico" sizes="32x32">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <link rel="manifest" href="/site.webmanifest">
-  <meta name="theme-color" content="#6366f1">
+  <meta name="theme-color" content="#5051cf">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>Templates — A2UI Atomic Catalog</title>
   <meta name="description" content="Every ComponentId/ChildList-eligible atom — {len(template_atoms)} templates whose children are independently addressable by ComponentId, per the A2UI v1.0 wire format.">
@@ -3715,12 +4593,8 @@ def render_templates_page(atoms):
 
   <footer>
     <span>A2UI Atomic Catalog · <a href="https://github.com/a2uicatalog/a2ui">github.com/a2uicatalog/a2ui</a> · Maintained by <a href="https://www.linkedin.com/in/curtiskrygier" rel="me author">Curtis Krygier</a></span>
-    <span>Independent, unofficial catalog — not affiliated with, endorsed by, or sponsored by Google, Anthropic or OpenAI. A2UI is Google's protocol; official spec at <a href="https://a2ui.org">a2ui.org</a>. MCP is Anthropic's protocol; Claude, the Claude logo and Anthropic are trademarks of Anthropic PBC. ChatGPT and OpenAI are trademarks of OpenAI, L.L.C. All other marks belong to their respective owners.</span>
+    <span><strong>A2UI is an open protocol (a2ui.org). a2uicatalog.ai is an independent catalogue of components built on it.</strong> Independent, unofficial catalog — not affiliated with, endorsed by, or sponsored by Google, Anthropic or OpenAI. A2UI is Google's protocol; official spec at <a href="https://a2ui.org">a2ui.org</a>. MCP is Anthropic's protocol; Claude, the Claude logo and Anthropic are trademarks of Anthropic PBC. ChatGPT and OpenAI are trademarks of OpenAI, L.L.C. All other marks belong to their respective owners.</span>
     <span>MIT License</span>
-    <!-- Registry backlink. Smithery verifies a listing by finding a link to it
-         on the site or in the README, so this is the reciprocal half of that
-         listing, not decoration — remove it and the verification lapses. -->
-    <span><a href="https://smithery.ai/servers/a2uicatalog/a2uicatalog" rel="noopener">MCP server on Smithery</a></span>
   </footer>
   </div>
   {SITE_FOOT_JS}
@@ -3736,7 +4610,7 @@ def render_try_page(atom_count):
   <link rel="icon" href="/favicon.ico" sizes="32x32">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <link rel="manifest" href="/site.webmanifest">
-  <meta name="theme-color" content="#6366f1">
+  <meta name="theme-color" content="#5051cf">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>Try it — A2UI Atomic Catalog</title>
   <meta name="description" content="Type a plain-English UI request and watch the free-tier Cloudflare Workers AI router pick real atoms from the A2UI catalog.">
@@ -3777,12 +4651,8 @@ def render_try_page(atom_count):
 
   <footer>
     <span>A2UI Atomic Catalog · <a href="https://github.com/a2uicatalog/a2ui">github.com/a2uicatalog/a2ui</a> · Maintained by <a href="https://www.linkedin.com/in/curtiskrygier" rel="me author">Curtis Krygier</a></span>
-    <span>Independent, unofficial catalog — not affiliated with, endorsed by, or sponsored by Google, Anthropic or OpenAI. A2UI is Google's protocol; official spec at <a href="https://a2ui.org">a2ui.org</a>. MCP is Anthropic's protocol; Claude, the Claude logo and Anthropic are trademarks of Anthropic PBC. ChatGPT and OpenAI are trademarks of OpenAI, L.L.C. All other marks belong to their respective owners.</span>
+    <span><strong>A2UI is an open protocol (a2ui.org). a2uicatalog.ai is an independent catalogue of components built on it.</strong> Independent, unofficial catalog — not affiliated with, endorsed by, or sponsored by Google, Anthropic or OpenAI. A2UI is Google's protocol; official spec at <a href="https://a2ui.org">a2ui.org</a>. MCP is Anthropic's protocol; Claude, the Claude logo and Anthropic are trademarks of Anthropic PBC. ChatGPT and OpenAI are trademarks of OpenAI, L.L.C. All other marks belong to their respective owners.</span>
     <span>MIT License</span>
-    <!-- Registry backlink. Smithery verifies a listing by finding a link to it
-         on the site or in the README, so this is the reciprocal half of that
-         listing, not decoration — remove it and the verification lapses. -->
-    <span><a href="https://smithery.ai/servers/a2uicatalog/a2uicatalog" rel="noopener">MCP server on Smithery</a></span>
   </footer>
   </div>
   {SITE_FOOT_JS}
@@ -4007,7 +4877,7 @@ def render_frugal_ai_ops_page():
   <link rel="icon" href="/favicon.ico" sizes="32x32">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <link rel="manifest" href="/site.webmanifest">
-  <meta name="theme-color" content="#6366f1">
+  <meta name="theme-color" content="#5051cf">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>Frugal AI Ops — A2UI Atomic Catalog</title>
   <meta name="description" content="A live demo of frugal AI ops: a small free-tier model extracts, deterministic code structures the result, and a second pass flags anything ungrounded instead of hiding it.">
@@ -4072,12 +4942,8 @@ def render_frugal_ai_ops_page():
 
   <footer>
     <span>A2UI Atomic Catalog · <a href="https://github.com/a2uicatalog/a2ui">github.com/a2uicatalog/a2ui</a> · Maintained by <a href="https://www.linkedin.com/in/curtiskrygier" rel="me author">Curtis Krygier</a></span>
-    <span>Independent, unofficial catalog — not affiliated with, endorsed by, or sponsored by Google, Anthropic or OpenAI. A2UI is Google's protocol; official spec at <a href="https://a2ui.org">a2ui.org</a>. MCP is Anthropic's protocol; Claude, the Claude logo and Anthropic are trademarks of Anthropic PBC. ChatGPT and OpenAI are trademarks of OpenAI, L.L.C. All other marks belong to their respective owners.</span>
+    <span><strong>A2UI is an open protocol (a2ui.org). a2uicatalog.ai is an independent catalogue of components built on it.</strong> Independent, unofficial catalog — not affiliated with, endorsed by, or sponsored by Google, Anthropic or OpenAI. A2UI is Google's protocol; official spec at <a href="https://a2ui.org">a2ui.org</a>. MCP is Anthropic's protocol; Claude, the Claude logo and Anthropic are trademarks of Anthropic PBC. ChatGPT and OpenAI are trademarks of OpenAI, L.L.C. All other marks belong to their respective owners.</span>
     <span>MIT License</span>
-    <!-- Registry backlink. Smithery verifies a listing by finding a link to it
-         on the site or in the README, so this is the reciprocal half of that
-         listing, not decoration — remove it and the verification lapses. -->
-    <span><a href="https://smithery.ai/servers/a2uicatalog/a2uicatalog" rel="noopener">MCP server on Smithery</a></span>
   </footer>
   </div>
   {SITE_FOOT_JS}
@@ -4351,7 +5217,7 @@ def render_atoms_hub(atoms):
     for k, items in groups.items():
         lis = "".join(
             f'<li data-q="{html.escape((t + " " + line).lower(), quote=True)}" data-c="{ATOM_CATALOG.get(t, "")}"><a href="/atoms/{t}/">{html.escape(name)}</a>'
-            f' <code>{t}</code><span>{html.escape(line)}</span></li>'
+            f' <code>{t}</code><em class="hub-likes" data-like="{t}" title="likes"></em><span>{html.escape(line)}</span></li>'
             for t, name, line in items)
         sections += f'\n  <section class="hub-group" id="{k.lower()}"><h2>{k}</h2><ul>{lis}</ul></section>'
     return f"""<!DOCTYPE html>
@@ -4361,7 +5227,7 @@ def render_atoms_hub(atoms):
   <link rel="icon" href="/favicon.ico" sizes="32x32">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <link rel="manifest" href="/site.webmanifest">
-  <meta name="theme-color" content="#6366f1">
+  <meta name="theme-color" content="#5051cf">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>{html.escape(title)}</title>
   <meta name="description" content="{html.escape(desc, quote=True)}">
@@ -4379,6 +5245,7 @@ def render_atoms_hub(atoms):
   .hub-group li{{padding:10px 0;border-bottom:1px solid var(--border)}}
   .hub-group li a{{font-weight:600;color:var(--text);text-decoration:none}}
   .hub-group li a:hover{{color:var(--accent)}}
+    .hub-group li em{{font-style:normal}}
   .hub-group li code{{font-size:12px;color:var(--muted);margin-left:6px}}
   .hub-group li span{{display:block;font-size:14px;color:var(--muted);margin-top:2px}}
   .hub-group[hidden],.hub-group li[hidden]{{display:none}}
@@ -4409,15 +5276,17 @@ def render_atoms_hub(atoms):
 
   <footer>
     <span>A2UI Atomic Catalog · <a href="/docs/">API Documentation</a> · <a href="https://github.com/a2uicatalog/a2ui">github.com/a2uicatalog/a2ui</a> · Maintained by <a href="https://www.linkedin.com/in/curtiskrygier" rel="me author">Curtis Krygier</a></span>
-    <span>Independent, unofficial catalog — not affiliated with, endorsed by, or sponsored by Google, Anthropic or OpenAI. A2UI is Google's protocol; official spec at <a href="https://a2ui.org">a2ui.org</a>. MCP is Anthropic's protocol; Claude, the Claude logo and Anthropic are trademarks of Anthropic PBC. ChatGPT and OpenAI are trademarks of OpenAI, L.L.C. All other marks belong to their respective owners.</span>
+    <span><strong>A2UI is an open protocol (a2ui.org). a2uicatalog.ai is an independent catalogue of components built on it.</strong> Independent, unofficial catalog — not affiliated with, endorsed by, or sponsored by Google, Anthropic or OpenAI. A2UI is Google's protocol; official spec at <a href="https://a2ui.org">a2ui.org</a>. MCP is Anthropic's protocol; Claude, the Claude logo and Anthropic are trademarks of Anthropic PBC. ChatGPT and OpenAI are trademarks of OpenAI, L.L.C. All other marks belong to their respective owners.</span>
     <span><a href="/.well-known/ard.json">ARD discovery catalog (JSON)</a> · <a href="/atoms.md">This list as Markdown</a></span>
   </footer>
   </div>
   {SITE_FOOT_JS}
+  {LIKES_JS}
 <script>
 (function(){{
   var q = document.getElementById('hub-q');
   if (!q) return;
+  if (location.hash === '#hub-q') q.focus();
   var cat = new URLSearchParams(location.search).get('catalog') || '';
   var btns = document.querySelectorAll('.hub-cat');
   function apply(){{
@@ -4483,10 +5352,28 @@ def main():
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
-    order = [t for items in _hub_groups(unique).values() for t, _, _ in items]
+    # The timeline atom's sample event names the catalogue size; take it from this build so it never goes stale (it said 467 when the catalogue was 573).
+    for ev in _EXAMPLE_BLOCKS.get("timeline", {}).get("events", []):
+        if ev.get("body") == "Full schema published.":
+            ev["title"] = f"{len(unique)} atoms"
+
+    order = _explore_order(unique)
     _NEIGHBOURS.clear()
-    _NEIGHBOURS.update({t: (order[i - 1] if i else None, order[i + 1] if i + 1 < len(order) else None)
-                        for i, t in enumerate(order)})
+    _NEIGHBOURS.update({t: (order[i - 1], order[(i + 1) % len(order)]) for i, t in enumerate(order)})   # wraps at both ends
+    _POSITION.clear()
+    for slug in dict.fromkeys(ATOM_CATALOG.get(t, "") for t in order):
+        members = [t for t in order if ATOM_CATALOG.get(t, "") == slug]
+        _POSITION.update({t: (slug, k + 1, len(members)) for k, t in enumerate(members)})
+    _ATOM_FIELDS.clear()
+    _ATOM_FIELDS.update({a["type"]: a.get("fields") or {} for a in unique if a.get("type")})
+    _ATOM_LINES.clear()
+    _ATOM_LINES.update({a["type"]: (a.get("displayName") or a["type"].replace("_", " ").title(),
+                                    (lambda d: d[:1].upper() + d[1:])(meta_description(a.get("compact_description") or a.get("description", ""))))
+                        for a in unique if a.get("type")})
+    for atom in unique:      # the homepage thumbnails, made now so the atom pages can show their neighbours' (card_stage caches them)
+        card_stage(atom)
+    _RELATED.clear()
+    _RELATED.update(_related_atoms(order))
 
     count = 0
     for atom in unique:

@@ -1,0 +1,43 @@
+%% request: home network: router, NAS, mesh nodes, IoT VLAN
+%% fixed from tool errors
+graph TD
+    classDef core fill:#e3f2fd,stroke:#1565c0,stroke-width:2px
+    classDef mesh fill:#e8f5e9,stroke:#2e7d32
+    classDef iot fill:#fff3e0,stroke:#ef6c00
+    classDef trusted fill:#f3e5f5,stroke:#6a1b9a
+
+    ISP((ISP / Fibre ONT)) ==>|1 Gbps WAN| R{{"Router / Firewall<br/>192.168.1.1"}}:::core
+    R ==> SW[Managed Switch<br/>VLAN trunk]:::core
+
+    subgraph V10["VLAN 10 - Trusted"]
+        NAS[(NAS<br/>Synology, RAID 1)]:::trusted
+        PC[Desktop PC, Laptops, Phones]:::trusted
+    end
+
+    subgraph V20["VLAN 20 - IoT"]
+        IOT[Cameras, Smart TV, Plugs, Automation Hub]:::iot
+    end
+
+    subgraph V30["VLAN 30 - Guest"]
+        G[Guest devices]
+    end
+
+    subgraph MeshNet["Wi-Fi Mesh"]
+        M1(Mesh Node 1<br/>wired backhaul):::mesh
+        M2(Mesh Node 2<br/>wireless backhaul):::mesh
+        M3(Mesh Node 3<br/>garage):::mesh
+    end
+
+    SW --> NAS
+    SW --> PC
+    SW --> M1
+    SW --> IOT
+    M1 -.-|wireless backhaul| M2
+    M2 -.- M3
+    M1 -. SSID Home .-> PC
+    M3 -. SSID IoT .-> IOT
+    M2 -. SSID Guest .-> G
+    IOT -->|RTSP from cameras only| NAS
+    PC -->|allowed| IOT
+    IOT -. blocked by firewall .-> PC
+    G -. isolated .-> NAS

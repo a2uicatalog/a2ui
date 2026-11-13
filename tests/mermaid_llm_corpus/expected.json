@@ -1,0 +1,329 @@
+{
+ "haiku_dns_resolution.mmd": {
+  "model": "claude-haiku-5-5",
+  "request": "how DNS resolution works",
+  "pass": "first attempt",
+  "outcome": "rejected",
+  "errors_mention": [
+   "invisible links (~~~) are not supported"
+  ]
+ },
+ "haiku_dns_resolution_fit.mmd": {
+  "model": "claude-haiku-5-5",
+  "request": "how DNS resolution works",
+  "pass": "retry after the converter's errors",
+  "outcome": "rejected",
+  "errors_mention": [
+   "draws at most 12",
+   "draws at most 16"
+  ]
+ },
+ "haiku_ecommerce_checkout.mmd": {
+  "model": "claude-haiku-5-5",
+  "request": "e-commerce checkout architecture",
+  "pass": "first attempt",
+  "outcome": "rejected",
+  "errors_mention": [
+   "draws at most 12",
+   "draws at most 16"
+  ]
+ },
+ "haiku_ecommerce_checkout_fit.mmd": {
+  "model": "claude-haiku-5-5",
+  "request": "e-commerce checkout architecture",
+  "pass": "retry after the converter's errors",
+  "outcome": "rejected",
+  "errors_mention": [
+   "expected an arrow such as",
+   "expected a node id"
+  ]
+ },
+ "haiku_iot_dashboard.mmd": {
+  "model": "claude-haiku-5-5",
+  "request": "IoT sensors to dashboard",
+  "pass": "first attempt",
+  "outcome": "rejected",
+  "errors_mention": [
+   "draws at most 12",
+   "draws at most 16"
+  ]
+ },
+ "haiku_iot_dashboard_fit.mmd": {
+  "model": "claude-haiku-5-5",
+  "request": "IoT sensors to dashboard",
+  "pass": "retry after the converter's errors",
+  "outcome": "ok"
+ },
+ "haiku_llm_agent.d2": {
+  "model": "claude-haiku-5-5",
+  "request": "LLM agent with tools and memory",
+  "pass": "first attempt",
+  "outcome": "rejected",
+  "errors_mention": [
+   "draws at most 12",
+   "draws at most 16"
+  ]
+ },
+ "haiku_llm_agent_fit.d2": {
+  "model": "claude-haiku-5-5",
+  "request": "LLM agent with tools and memory",
+  "pass": "retry after the converter's errors",
+  "outcome": "rejected",
+  "errors_mention": [
+   "is a container, not a shape"
+  ]
+ },
+ "haiku_login_flow.mmd": {
+  "model": "claude-haiku-5-5",
+  "request": "simple login flow with error handling",
+  "pass": "first attempt",
+  "outcome": "rejected",
+  "errors_mention": [
+   "draws at most 12",
+   "draws at most 16"
+  ]
+ },
+ "haiku_login_flow_fit.mmd": {
+  "model": "claude-haiku-5-5",
+  "request": "simple login flow with error handling",
+  "pass": "retry after the converter's errors",
+  "outcome": "ok"
+ },
+ "haiku_message_queue_dlq.d2": {
+  "model": "claude-haiku-5-5",
+  "request": "message queue with retries and dead letter queue",
+  "pass": "first attempt",
+  "outcome": "ok"
+ },
+ "haiku_ml_pipeline.mmd": {
+  "model": "claude-haiku-5-5",
+  "request": "machine learning training and serving pipeline",
+  "pass": "first attempt",
+  "outcome": "rejected",
+  "errors_mention": [
+   "draws at most 12",
+   "draws at most 16"
+  ]
+ },
+ "haiku_ml_pipeline_fit.mmd": {
+  "model": "claude-haiku-5-5",
+  "request": "machine learning training and serving pipeline",
+  "pass": "retry after the converter's errors",
+  "outcome": "ok"
+ },
+ "haiku_slack_docs_bot.mmd": {
+  "model": "claude-haiku-5-5",
+  "request": "a slack bot that answers from our docs",
+  "pass": "first attempt",
+  "outcome": "rejected",
+  "errors_mention": [
+   "draws at most 12",
+   "draws at most 16"
+  ]
+ },
+ "haiku_slack_docs_bot_fit.mmd": {
+  "model": "claude-haiku-5-5",
+  "request": "a slack bot that answers from our docs",
+  "pass": "retry after the converter's errors",
+  "outcome": "ok"
+ },
+ "haiku_three_tier_web.d2": {
+  "model": "claude-haiku-5-5",
+  "request": "three-tier web app",
+  "pass": "first attempt",
+  "outcome": "ok"
+ },
+ "haiku_zero_trust_access.mmd": {
+  "model": "claude-haiku-5-5",
+  "request": "zero trust access to internal apps",
+  "pass": "first attempt",
+  "outcome": "rejected",
+  "errors_mention": [
+   "draws at most 12",
+   "draws at most 16"
+  ]
+ },
+ "haiku_zero_trust_access_fit.mmd": {
+  "model": "claude-haiku-5-5",
+  "request": "zero trust access to internal apps",
+  "pass": "retry after the converter's errors",
+  "outcome": "ok"
+ },
+ "sonnet_a2a_agents.d2": {
+  "model": "claude-sonnet-5-5",
+  "request": "A2A agent delegating to two remote agents",
+  "pass": "first attempt",
+  "outcome": "ok"
+ },
+ "sonnet_api_gateway.d2": {
+  "model": "claude-sonnet-5-5",
+  "request": "microservices behind an API gateway",
+  "pass": "first attempt",
+  "outcome": "rejected",
+  "errors_mention": [
+   "draws at most 12"
+  ]
+ },
+ "sonnet_api_gateway_fit.d2": {
+  "model": "claude-sonnet-5-5",
+  "request": "microservices behind an API gateway",
+  "pass": "retry after the converter's errors",
+  "outcome": "ok"
+ },
+ "sonnet_cicd_cloud_run.mmd": {
+  "model": "claude-sonnet-5-5",
+  "request": "CI/CD from GitHub to Cloud Run with staging approval",
+  "pass": "first attempt",
+  "outcome": "rejected",
+  "errors_mention": [
+   "draws at most 12",
+   "draws at most 16"
+  ]
+ },
+ "sonnet_cicd_cloud_run_fit.mmd": {
+  "model": "claude-sonnet-5-5",
+  "request": "CI/CD from GitHub to Cloud Run with staging approval",
+  "pass": "retry after the converter's errors",
+  "outcome": "ok"
+ },
+ "sonnet_data_lake.d2": {
+  "model": "claude-sonnet-5-5",
+  "request": "data lake ingestion with batch and stream paths",
+  "pass": "first attempt",
+  "outcome": "rejected",
+  "errors_mention": [
+   "draws at most 12"
+  ]
+ },
+ "sonnet_data_lake_fit.d2": {
+  "model": "claude-sonnet-5-5",
+  "request": "data lake ingestion with batch and stream paths",
+  "pass": "retry after the converter's errors",
+  "outcome": "ok"
+ },
+ "sonnet_home_network.mmd": {
+  "model": "claude-sonnet-5-5",
+  "request": "home network: router, NAS, mesh nodes, IoT VLAN",
+  "pass": "first attempt",
+  "outcome": "rejected",
+  "errors_mention": [
+   "expected an arrow such as"
+  ]
+ },
+ "sonnet_home_network_fit.mmd": {
+  "model": "claude-sonnet-5-5",
+  "request": "home network: router, NAS, mesh nodes, IoT VLAN",
+  "pass": "retry after the converter's errors",
+  "outcome": "ok"
+ },
+ "sonnet_k8s_deployment.mmd": {
+  "model": "claude-sonnet-5-5",
+  "request": "kubernetes deployment with ingress, two services, redis and postgres",
+  "pass": "first attempt",
+  "outcome": "rejected",
+  "errors_mention": [
+   "draws at most 12"
+  ]
+ },
+ "sonnet_k8s_deployment_fit.mmd": {
+  "model": "claude-sonnet-5-5",
+  "request": "kubernetes deployment with ingress, two services, redis and postgres",
+  "pass": "retry after the converter's errors",
+  "outcome": "ok"
+ },
+ "sonnet_kafka_orders.mmd": {
+  "model": "claude-sonnet-5-5",
+  "request": "event-driven order pipeline with kafka",
+  "pass": "first attempt",
+  "outcome": "rejected",
+  "errors_mention": [
+   "draws at most 12",
+   "draws at most 16"
+  ]
+ },
+ "sonnet_kafka_orders_fit.mmd": {
+  "model": "claude-sonnet-5-5",
+  "request": "event-driven order pipeline with kafka",
+  "pass": "retry after the converter's errors",
+  "outcome": "ok"
+ },
+ "sonnet_mcp_client_tools.mmd": {
+  "model": "claude-sonnet-5-5",
+  "request": "how an MCP client talks to tools and resources",
+  "pass": "first attempt",
+  "outcome": "rejected",
+  "errors_mention": [
+   "is a subgraph, not a node"
+  ]
+ },
+ "sonnet_mcp_client_tools_fit.mmd": {
+  "model": "claude-sonnet-5-5",
+  "request": "how an MCP client talks to tools and resources",
+  "pass": "retry after the converter's errors",
+  "outcome": "ok"
+ },
+ "sonnet_oauth_pkce.mmd": {
+  "model": "claude-sonnet-5-5",
+  "request": "draw our OAuth2 PKCE login flow for a mobile app",
+  "pass": "first attempt",
+  "outcome": "rejected",
+  "errors_mention": [
+   "draws at most 12",
+   "draws at most 16"
+  ]
+ },
+ "sonnet_oauth_pkce_fit.mmd": {
+  "model": "claude-sonnet-5-5",
+  "request": "draw our OAuth2 PKCE login flow for a mobile app",
+  "pass": "retry after the converter's errors",
+  "outcome": "ok"
+ },
+ "sonnet_rag_chatbot.mmd": {
+  "model": "claude-sonnet-5-5",
+  "request": "RAG chatbot architecture",
+  "pass": "first attempt",
+  "outcome": "rejected",
+  "errors_mention": [
+   "draws at most 12",
+   "draws at most 16"
+  ]
+ },
+ "sonnet_rag_chatbot_fit.mmd": {
+  "model": "claude-sonnet-5-5",
+  "request": "RAG chatbot architecture",
+  "pass": "retry after the converter's errors",
+  "outcome": "ok"
+ },
+ "sonnet_serverless_upload.d2": {
+  "model": "claude-sonnet-5-5",
+  "request": "serverless image upload pipeline",
+  "pass": "first attempt",
+  "outcome": "rejected",
+  "errors_mention": [
+   "draws at most 12",
+   "draws at most 16"
+  ]
+ },
+ "sonnet_serverless_upload_fit.d2": {
+  "model": "claude-sonnet-5-5",
+  "request": "serverless image upload pipeline",
+  "pass": "retry after the converter's errors",
+  "outcome": "ok"
+ },
+ "sonnet_support_triage.mmd": {
+  "model": "claude-sonnet-5-5",
+  "request": "customer support ticket triage flowchart with decisions",
+  "pass": "first attempt",
+  "outcome": "rejected",
+  "errors_mention": [
+   "draws at most 12",
+   "draws at most 16"
+  ]
+ },
+ "sonnet_support_triage_fit.mmd": {
+  "model": "claude-sonnet-5-5",
+  "request": "customer support ticket triage flowchart with decisions",
+  "pass": "retry after the converter's errors",
+  "outcome": "ok"
+ }
+}

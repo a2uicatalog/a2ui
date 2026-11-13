@@ -1,0 +1,44 @@
+%% request: CI/CD from GitHub to Cloud Run with staging approval
+flowchart LR
+    classDef gh fill:#f6f8fa,stroke:#24292e
+    classDef ci fill:#e3f2fd,stroke:#1565c0
+    classDef stg fill:#fff8e1,stroke:#f9a825
+    classDef prod fill:#e8f5e9,stroke:#2e7d32,stroke-width:3px
+    classDef bad fill:#ffebee,stroke:#c62828
+
+    Dev([Developer]) -->|git push / PR| GH[(GitHub Repo)]:::gh
+    GH -->|webhook| GA
+
+    subgraph CI["GitHub Actions: CI"]
+        GA[Trigger workflow]:::ci --> LINT[Lint + unit tests]:::ci
+        LINT --> T{Tests pass?}
+        T -- No --> FAIL[Fail PR check]:::bad
+        T -- Yes --> BUILD[Build Docker image]:::ci
+        BUILD --> SCAN[Vulnerability scan]:::ci
+        SCAN --> PUSH[Push to Artifact Registry]:::ci
+    end
+
+    PUSH --> AUTH[Auth via Workload Identity Federation]
+
+    subgraph Staging["Staging"]
+        DS[Deploy to Cloud Run<br/>service: app-staging]:::stg
+        SMOKE[Smoke / e2e tests]:::stg
+        DS --> SMOKE
+    end
+
+    AUTH --> DS
+    SMOKE --> OK{Passed?}
+    OK -- No --> ROLL[Rollback + notify Slack]:::bad
+    OK -- Yes --> APPR{{Manual approval<br/>GitHub Environment reviewers}}
+
+    subgraph Production["Production"]
+        DP[Deploy new revision<br/>no traffic]:::prod
+        CAN[Canary 10% traffic]:::prod
+        FULL[100% traffic]:::prod
+        DP --> CAN --> FULL
+    end
+
+    APPR -- Approved --> DP
+    APPR -- Rejected --> STOP((Stop)):::bad
+    CAN -. error rate high .-> ROLL
+    FULL ==> DONE([Release complete]):::prod

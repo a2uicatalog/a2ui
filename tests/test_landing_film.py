@@ -68,8 +68,9 @@ def test_film_scripts_are_inert_until_their_variant_is_on_screen_and_posters_exi
             assert (ROOT / "public" / "brand" / f"film-poster-{aspect}-{theme}.webp").stat().st_size > 2000
 
 
-def test_grid_thumbnails_are_lazy_decorative_and_the_card_text_stays_in_the_page():
-    """Speed (2026-10-29): card thumbnails move to /atoms/stages.json; the placeholder is aria-hidden, the card keeps its link, h3 and text."""
+def test_grid_thumbnails_are_lazy_described_and_the_card_text_stays_in_the_page():
+    """Speed (2026-10-29): card thumbnails move to /atoms/stages.json. Design pass (2026-11-01): the slot is role=img with a text alternative (it was aria-hidden); the
+    lazy fill inside stays aria-hidden/inert; an atom with no thumbnail gets the schema card, not a blank box."""
     import importlib.util
     import sys
     sys.path.insert(0, str(ROOT / "renderers"))
@@ -78,9 +79,24 @@ def test_grid_thumbnails_are_lazy_decorative_and_the_card_text_stays_in_the_page
     spec.loader.exec_module(mod)
     mod._STAGES.clear()
     html = mod.card_stage({"type": "quote"})
-    if "data-stage" not in html:   # the atom has no card preview; the type-chip fallback stays inline
-        assert "stage-empty" in html
+    if "data-stage" not in html:   # the atom has no card preview; the schema card stays inline
+        assert "schema-card" in html and 'role="img"' in html and "open for live preview" in html
         return
-    assert 'aria-hidden="true"' in html and 'data-stage="quote"' in html and "stage-inner" not in html
+    assert 'role="img"' in html and 'aria-label="Preview of Quote' in html and 'data-stage="quote"' in html and "stage-inner" not in html and "aria-hidden" not in html
     assert 'aria-hidden="true" inert' in mod._STAGES["quote"] and "<script" not in mod._STAGES["quote"].lower()
     assert "/atoms/stages.json" in mod.INDEX_JS
+
+
+def test_design_pass_header_menu_atoms_current_and_treemap_example():
+    """Design pass (2026-11-01): the nav folds behind a Menu button (aria-expanded/aria-controls), 'Atoms' is current only on /atoms/ pages, and the treemap example payload is the
+    hand-written one (4+ items), not the heuristic's {"items": 1}."""
+    import importlib.util, json, sys
+    sys.path.insert(0, str(ROOT / "renderers"))
+    spec = importlib.util.spec_from_file_location("gap2", ROOT / "scripts" / "generate_atom_pages.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    h = mod.site_header("atoms")
+    assert 'class="menu-btn"' in h and 'aria-expanded="false"' in h and 'aria-controls="site-menu"' in h and 'id="site-menu"' in h
+    assert '<a href="/atoms/" aria-current="page">Atoms</a>' in h and mod.site_header("").count("aria-current") == 0
+    ex = json.loads(mod.example_payload({"type": "treemap", "fields": {"items": "list of items (4-12 objects)"}}))
+    assert ex["type"] == "treemap" and isinstance(ex["items"], list) and 4 <= len(ex["items"]) <= 12

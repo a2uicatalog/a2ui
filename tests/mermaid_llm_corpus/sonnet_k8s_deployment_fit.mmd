@@ -1,0 +1,33 @@
+%% request: kubernetes deployment with ingress, two services, redis and postgres
+%% fixed from tool errors
+graph LR
+    classDef ext fill:#eceff1,stroke:#455a64
+    classDef ing fill:#fff8e1,stroke:#f9a825,stroke-width:2px
+    classDef pod fill:#e8f5e9,stroke:#388e3c
+    classDef data fill:#f3e5f5,stroke:#7b1fa2
+
+    User((Internet User)):::ext
+    DNS[DNS<br/>app.example.com]:::ext
+
+    subgraph Cluster["Kubernetes Cluster"]
+        LB[Cloud LoadBalancer]:::ext
+        subgraph NS["namespace: production"]
+            ING{{"Ingress (nginx)<br/>TLS via cert-manager"}}:::ing
+            WEB["web-svc :80 + Deployment web<br/>replicas: 3"]:::pod
+            API["api-svc :8080 + Deployment api<br/>replicas: 2"]:::pod
+            RD[(Redis<br/>Service + Deployment)]:::data
+            PG[(PostgreSQL<br/>Service + StatefulSet)]:::data
+            PVC[/PersistentVolumeClaim 20Gi/]:::data
+            CM[ConfigMap / Secret]:::ext
+        end
+    end
+
+    User --> DNS --> LB --> ING
+    ING -->|"/"| WEB
+    ING -->|"/api"| API
+    WEB -->|REST| API
+    API -->|cache| RD
+    API -->|SQL| PG
+    PG === PVC
+    CM -.-> WEB
+    CM -.-> API

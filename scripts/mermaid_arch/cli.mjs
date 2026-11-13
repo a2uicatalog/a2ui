@@ -16,6 +16,7 @@ const HELP = `usage: node cli.mjs <file.mmd | file.d2 | file.json | -> [options]
   --duration SECONDS       fix the total film length (warns when shorter than the fast reading time)
   --routing orthogonal|curve  how edges are drawn: routed right-angle lines with placed labels (default) or the atom's single curve
   --fit wide               tune the layout for a wide screen instead of a phone column
+  --aspect 16:9|4:3|1:1|9:16  pin the film stage (default: whichever draws the diagram biggest)
   --size N                 label size in px (8-40); default is chosen from the diagram
   --title TEXT             override the title
   --graph                  the input is a canonical graph in JSON, not Mermaid
@@ -38,6 +39,7 @@ function main(argv) {
     else if (a === '--graph') asGraph = true;
     else if (a === '--d2') opts.syntax = 'd2';
     else if (a === '--fit') opts.fit = argv[++i];
+    else if (a === '--aspect') opts.aspect = argv[++i];
     else if (a === '--routing') opts.routing = argv[++i];
     else if (a === '--size') opts.size = Number(argv[++i]);
     else if (a === '--title') opts.title = argv[++i];
