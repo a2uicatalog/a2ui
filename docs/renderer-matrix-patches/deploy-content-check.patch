@@ -1,10 +1,14 @@
 --- a/.github/workflows/deploy.yml
 +++ b/.github/workflows/deploy.yml
-@@ -90,3 +90,8 @@
-       - name: Atom count
+@@ -93,6 +93,11 @@
+       - name: Atom-count claims must match the published catalogue
          run: python3 scripts/gen_atom_count.py --check
-+
-+      # Offline renderer-dimension content check (no secrets, no harness, seconds, nothing clock-based
-+      # can fail it). NOT APPLIED: prepared patch, apply deliberately. Context lines are approximate.
+ 
++      # Offline renderer-dimension content check (no secrets, no harness, seconds; nothing clock-based
++      # can fail it: age only warns). NOT APPLIED: prepared patch, apply deliberately.
 +      - name: Renderer matrix content check
 +        run: python3 scripts/check_renderer_matrix.py
++
+       - name: Enforce project.yaml (visibility policy + declared debt)
+         run: python3 -m pytest tests/test_project_manifest.py -q
+ 

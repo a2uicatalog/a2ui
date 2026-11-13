@@ -9,7 +9,10 @@ Checks (design CI-DESIGN-v2.md, items H4/H5/H6/M6/M8):
   FRESH         matrix entries and raw-result headers carry the run id, build label and hashes
                 recorded in the committed results manifest; the manifest records the sha256 of each
                 raw results file. A raw file edited without a new manifest, or a matrix built from
-                other data, fails. Clock-based age only WARNS.
+                other data, fails. For the WEB renderers the matrix's recorded renderer_bundle_sha256
+                must equal the sha256 of public/surfaces/mcp-apps/renderer-bundle.html in this
+                checkout: if the shipped bundle changed since the measurement the check fails with
+                a re-measure message. Clock-based age only WARNS.
   EVIDENCED     drawn / drawn_with_differences / native / degraded entries carry per-check evidence
                 codes, a measured date and a renderer_version; a `drawn` entry has no reasons and a
                 `drawn_with_differences` entry has at least one.
@@ -22,6 +25,7 @@ Checks (design CI-DESIGN-v2.md, items H4/H5/H6/M6/M8):
 Run:  python3 scripts/check_renderer_matrix.py [--no-consistent]
 """
 import datetime
+import hashlib
 import importlib.util
 import json
 import os
@@ -33,8 +37,10 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 PAGES_DIR = "docs/renderer-draft"
 MATRIX_REL = "public/catalogue/renderer-matrix-v1.json"
 DRAFT_REL = "public/catalogue/a2ui-atoms-v1.renderers-draft.json"
+BUNDLE_REL = "public/surfaces/mcp-apps/renderer-bundle.html"
 AGE_WARN_DAYS = 30
 DRAWN_STATUSES = ("drawn", "drawn_with_differences", "native", "degraded")
+SHA40_RE = re.compile(r"^[0-9a-f]{40}$")
 DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 HEX_RE = re.compile(r"(?<![0-9A-Za-z])[0-9a-f]{12,64}(?![0-9A-Za-z])")
 PATH_RE = re.compile(r"(?:^|[\s\"'(=:,\[])/(?:mnt|home|Users|root|tmp|var|media)/|[A-Za-z]:\\\\")
@@ -90,7 +96,13 @@ def load_context(root=WT, consistent=True):
                 rel = os.path.relpath(os.path.join(dp, fn), pages_dir)
                 with open(os.path.join(dp, fn), encoding="utf8") as f:
                     pages[rel] = f.read()
+    bundle = None
+    bp = os.path.join(root, BUNDLE_REL)
+    if os.path.exists(bp):
+        with open(bp, "rb") as f:
+            bundle = hashlib.sha256(f.read()).hexdigest()
     ctx = {
+        "repo_bundle_sha256": bundle,
         "stable": stable, "registry": registry, "raw": raw, "manifest": manifest, "raw_bytes": raw_texts,
         "matrix_text": rd(MATRIX_REL), "draft_text": rd(DRAFT_REL), "pages": pages, "cat": cat,
         "today": datetime.date.today(),
@@ -133,7 +145,6 @@ def check_complete(ctx):
 def check_fresh(ctx):
     errs, warns = [], []
     man = ctx["manifest"].get("renderers", {})
-    import hashlib
     for rid in measured_renderers(ctx):
         m = man.get(rid)
         if m is None:
@@ -156,6 +167,21 @@ def check_fresh(ctx):
                 if e.get(ek) != m.get(mk):
                     errs.append(("FRESH", "matrix entry %s x %s: %s differs from the manifest (stale entry)" % (Names(ctx["stable"])(atom), rid, ek)))
                     break
+        if m.get("measured_on") == "shipped":
+            if not SHA40_RE.match(str(m.get("commit") or "")):
+                errs.append(("FRESH", "%s is measured_on=shipped but records no 40-hex public commit" % rid))
+        elif m.get("commit"):
+            errs.append(("FRESH", "%s records a commit although measured_on=%s (only a shipped commit may be named)" % (rid, m.get("measured_on"))))
+        reg = next((r for r in ctx["registry"]["renderers"] if r["id"] == rid), {})
+        if reg.get("kind") == "web":
+            meas = (((ctx["matrix"] or {}).get("renderers", {}).get(rid) or {}).get("measurement") or {}).get("renderer_bundle_sha256")
+            if not meas:
+                errs.append(("FRESH", "web renderer %s records no renderer_bundle_sha256 in the matrix" % rid))
+            elif ctx.get("repo_bundle_sha256") is None:
+                errs.append(("FRESH", "%s is missing in this checkout, so the measured bundle of %s cannot be verified" % (BUNDLE_REL, rid)))
+            elif meas != ctx["repo_bundle_sha256"]:
+                errs.append(("FRESH", "%s was measured on renderer bundle %s but %s in this checkout is %s: the shipped bundle changed since the measurement; re-measure %s and re-export" % (
+                    rid, meas[:12], BUNDLE_REL, ctx["repo_bundle_sha256"][:12], rid)))
         try:
             d = datetime.date.fromisoformat(m["measured_date"])
             age = (ctx["today"] - d).days
@@ -165,13 +191,16 @@ def check_fresh(ctx):
             errs.append(("FRESH", "manifest measured_date of %s is not a date" % rid))
         if m.get("measured_on") == "preview-unmerged":
             warns.append("%s measured on a pre-merge build, superseded until re-measured on a shipped build" % rid)
-        elif m.get("measured_on") != "shipped":
+        elif m.get("measured_on") == "private-build":
+            warns.append("%s measured on a private build: not reproducible from a public commit" % rid)
+        elif m.get("measured_on") not in ("shipped", "release-package"):
             warns.append("%s: build provenance not recorded (measured_on=%s)" % (rid, m.get("measured_on")))
     return errs, warns
 
 
 def check_evidenced(ctx):
     errs, nm = [], Names(ctx["stable"])
+    ctx_kind = {r["id"]: r["kind"] for r in ctx["registry"]["renderers"]}
     for atom, row in (ctx["matrix"] or {}).get("atoms", {}).items():
         for rid, e in row.items():
             st = e.get("status")
@@ -187,6 +216,8 @@ def check_evidenced(ctx):
                     errs.append(("EVIDENCED", "%s is %s but has no run_id" % (where, st)))
             if st == "drawn" and e.get("reasons"):
                 errs.append(("EVIDENCED", "%s is drawn but lists reasons %s" % (where, e["reasons"])))
+            if st == "native" and (ctx_kind.get(rid) == "compose") and not (e.get("checks") or {}).get("own_type_present"):
+                errs.append(("EVIDENCED", "%s is native on Compose but the atom's root type is not a Basic component" % where))
             if st == "drawn_with_differences" and not e.get("reasons"):
                 errs.append(("EVIDENCED", "%s is drawn_with_differences but lists no reason code" % where))
             if st == "drawn":

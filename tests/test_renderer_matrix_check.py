@@ -78,7 +78,8 @@ def make_ctx():
     text = gen.dumps(matrix)
     ctx = {"stable": STABLE, "registry": REGISTRY, "raw": raw, "raw_bytes": raw_bytes, "manifest": manifest,
            "matrix": json.loads(text), "matrix_text": text, "draft_text": None,
-           "pages": {"index.html": '<a href="atoms/alpha.html">alpha</a>'}, "today": datetime.date(2026, 11, 12)}
+           "pages": {"index.html": '<a href="atoms/alpha.html">alpha</a>'}, "today": datetime.date(2026, 11, 12),
+           "repo_bundle_sha256": "c" * 63 + "3"}
     committed = {chk.MATRIX_REL: text, chk.PAGES_DIR + "/index.html": ctx["pages"]["index.html"]}
     ctx["regen"] = lambda: dict(committed)
     return ctx
@@ -312,3 +313,131 @@ def test_exit_code_nonzero_on_failure(capsys, monkeypatch):
     assert "FAIL  PRIVATE-SAFE" in capsys.readouterr().out
     monkeypatch.setattr(chk, "load_context", lambda consistent=True: make_ctx())
     assert chk.main([]) == 0
+
+
+# ------------------------------------------------------------------ FRESH by bundle hash (web)
+
+
+def test_fresh_bundle_hash_matches_passes():
+    assert fails(run(make_ctx())[0], "FRESH") == []
+
+
+def test_fresh_bundle_changed_since_measurement_fails_loudly():
+    ctx = make_ctx()
+    ctx["repo_bundle_sha256"] = "e" * 64
+    msgs = fails(run(ctx)[0], "FRESH")
+    assert any("shipped bundle changed since the measurement" in m and "re-measure lit" in m for m in msgs)
+
+
+def test_fresh_bundle_file_missing_fails():
+    ctx = make_ctx()
+    ctx["repo_bundle_sha256"] = None
+    assert any("cannot be verified" in m for m in fails(run(ctx)[0], "FRESH"))
+
+
+def test_fresh_web_matrix_without_bundle_hash_fails():
+    ctx = make_ctx()
+    ctx["matrix"]["renderers"]["lit"]["measurement"]["renderer_bundle_sha256"] = None
+    assert any("records no renderer_bundle_sha256" in m for m in fails(run(ctx)[0], "FRESH"))
+
+
+def test_fresh_shipped_needs_public_commit_and_others_name_none():
+    ctx = make_ctx()
+    ctx["manifest"]["renderers"]["lit"]["measured_on"] = "shipped"
+    assert any("no 40-hex public commit" in m for m in fails(run(ctx)[0], "FRESH"))
+    ctx = make_ctx()
+    ctx["manifest"]["renderers"]["lit"]["commit"] = "a" * 40
+    assert any("only a shipped commit may be named" in m for m in fails(run(ctx)[0], "FRESH"))
+    ctx = make_ctx()
+    ctx["manifest"]["renderers"]["lit"]["measured_on"] = "shipped"
+    ctx["manifest"]["renderers"]["lit"]["commit"] = "a" * 40
+    assert not any("40-hex" in m or "named" in m for m in fails(run(ctx)[0], "FRESH"))
+
+
+@pytest.mark.parametrize("on,warn", [("private-build", "private build"), ("unrecorded", "not recorded"), ("preview-unmerged", "pre-merge")])
+def test_build_label_warnings(on, warn):
+    ctx = make_ctx()
+    ctx["manifest"]["renderers"]["lit"]["measured_on"] = on
+    ctx["matrix"]["renderers"]["lit"]["measurement"]["measured_on"] = on
+    warns = chk.check_fresh(ctx)[1]
+    assert any(warn in w for w in warns)
+    ctx["manifest"]["renderers"]["lit"]["measured_on"] = "release-package"
+    assert not any("provenance" in w or "private build" in w for w in chk.check_fresh(ctx)[1])
+
+
+# ------------------------------------------------------------------ not_run behaviour, compose rules
+
+
+def test_behaviour_not_run_is_neutral_but_visible():
+    st, reasons, derived = gen.web_case_status(web_case(behaviour="not_run"))
+    assert st == "drawn" and derived["behaviour"] == "not_run" and reasons == []
+
+
+def cp_case(status, own=True):
+    return {"dialect": "v0.9", "checks": {"painted": {"result": status, "own_type_present": own, "text_chars": 3, "error_codes": []},
+                                          "parity_text": None, "basic_lane": {"rendered": True, "text_sha_equal": False}}}
+
+
+@pytest.mark.parametrize("raw,own,status", [("painted", True, "native"), ("unsupported", False, "not_supported")])
+def test_compose_rules(raw, own, status):
+    assert gen.compose_case_status(cp_case(raw, own))[0] == status
+
+
+def test_compose_unknown_status_refused_and_none_means_not_measured():
+    with pytest.raises(ValueError):
+        gen.compose_case_status(cp_case("basic_lowered"))
+    reg = {"id": "compose", "name": "Compose", "kind": "compose", "measured": True, "package": "p", "protocol": "v0.9",
+           "platform": "x", "logo": "", "note": "n"}
+    registry = dict(REGISTRY, renderers=[reg])
+    raw = {"compose": head("compose", {"alpha": {"cases": {"alpha": cp_case("painted")}}, "beta": {"cases": {}, "no_case": "no_example"}},
+                           kind="compose", facts={"basic_lane": {"cases": 2}})}
+    manifest = {"renderers": {"compose": {"file_sha256": "x" * 64}}}
+    m = gen.build(registry, raw, manifest, STABLE)
+    assert m["atoms"]["alpha"]["compose"]["status"] == "native" and m["atoms"]["beta"]["compose"]["status"] == "not_measured"
+    assert m["renderers"]["compose"]["statuses"] == ["native", "not_supported", "not_measured"]
+    assert m["renderers"]["compose"]["measurement"]["facts"] == {"basic_lane": {"cases": 2}}
+
+
+def test_compose_native_without_basic_root_is_rejected():
+    ctx = make_ctx()
+    ctx["registry"] = dict(REGISTRY, renderers=[dict(REGISTRY["renderers"][0], id="cx", kind="compose")])
+    ctx["matrix"]["atoms"]["alpha"]["cx"] = {"status": "native", "reasons": ["basic_component_rendered"], "measured": "2026-11-13",
+                                             "renderer_version": "v", "run_id": "r", "checks": {"own_type_present": False}}
+    assert any("not a Basic component" in m for m in fails(chk.check_evidenced(ctx), "EVIDENCED"))
+
+
+# ------------------------------------------------------------------ private-side exporter (fixtures in a temp dir)
+
+
+exp = _load("export_renderer_results")
+
+
+def test_exporter_behaviour_not_run_and_swap_refusals(tmp_path):
+    rec = {"broken": False, "error": False, "loose": True, "strict": True, "strict_text": True}
+    case = exp.web_case("copilotkit", "alpha", rec, {"behaviour_custom": {"alpha": {"verdict": "SAME"}}}, {}, True, behaviour_run=False)
+    assert case["checks"]["behaviour"] == "not_run"
+    assert exp.web_case("lit", "alpha", rec, {"behaviour_custom": {}}, {}, True)["checks"]["behaviour"] == "n/a (no probe)"
+    # a run measured on another commit, or dirty, or with a changed package version, is refused for --measured-on shipped
+    import json as _j
+    (tmp_path / "react" / "runs" / "F").mkdir(parents=True)
+    code = {"head": "b" * 40, "dirty_tracked": False, "core_sha256": CORE, "css_sha256": "b" * 63 + "2",
+            "extract": {"committed_bundle_sha256": "c" * 63 + "3", "committed_bundle_equals_built": True}}
+    res = {"package": {"@a2ui/react": "0.15.0", "@a2ui/web_core": "0.15.0"}, "complete": True, "date": "2026-11-12T10:00:00", "code": code,
+           "timings_s": {"total": 5}}
+    (tmp_path / "react/runs/F/RESULTS-react.json").write_text(_j.dumps(res))
+    (tmp_path / "react/runs/F/DETAIL-react.json").write_text(_j.dumps({"custom": {}}))
+    (tmp_path / "m5-react" / "unstable").mkdir(parents=True)
+    (tmp_path / "m5-react/unstable/react.json").write_text("{}")
+    with pytest.raises(SystemExit) as e:
+        exp.export_web("react", str(tmp_path), ["alpha"], "shipped", str(tmp_path), "F", "a" * 40)
+    assert "not on the shipped commit" in str(e.value)
+    code["head"] = "a" * 40
+    (tmp_path / "react/runs/F/RESULTS-react.json").write_text(_j.dumps(res))
+    head, atoms = exp.export_web("react", str(tmp_path), ["alpha"], "shipped", str(tmp_path), "F", "a" * 40)
+    assert head["commit"] == "a" * 40 and head["renderer_bundle_sha256"] == "c" * 63 + "3" and atoms["alpha"]["no_case"] == "no_example"
+    head, _ = exp.export_web("react", str(tmp_path), ["alpha"], "preview-unmerged", str(tmp_path), "F", "a" * 40)
+    assert head["commit"] is None
+    res["package"]["@a2ui/react"] = "0.16.0"
+    (tmp_path / "react/runs/F/RESULTS-react.json").write_text(_j.dumps(res))
+    with pytest.raises(SystemExit):
+        exp.export_web("react", str(tmp_path), ["alpha"], "shipped", str(tmp_path), "F", "a" * 40)
