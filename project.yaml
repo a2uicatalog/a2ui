@@ -339,8 +339,9 @@ generators:
     publish: clasp push (atom-change process)
   gen_renderer_page:
     script: scripts/gen_renderer_page.py
-    source: page content is authored in the script itself (no external source); chrome comes
-      from generate_atom_pages.py (SITE_BASE_CSS/site_header/theme JS)
+    source: page content is authored in the script itself; every number on it comes from
+      public/spec.json and the vendored v1.0 Basic Catalog (tests/fixtures/a2ui_v1_0_spec), run on
+      each deploy since 2026-11-13; chrome comes from generate_atom_pages.py (SITE_BASE_CSS/site_header/theme JS)
     outputs: [public/renderer/index.html]
     publish: ci (deploy.yml on push -> Cloudflare). Was hand-maintained with its own copy-pasted
       header + full token CSS ("keep in sync" by hand) until it went stale the first time the

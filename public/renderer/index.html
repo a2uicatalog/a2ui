@@ -7,28 +7,29 @@
   <meta name="description" content="Deploy your own A2UI Google Apps Script renderer in 4 commands. Open source, MIT licensed. You own the URL, you own the deployment.">
   <script>
 (function(){var t='light';try{var s=localStorage.getItem('a2ui-theme');if(s==='dark'||s==='light')t=s}catch(e){}
-document.documentElement.setAttribute('data-theme',t)})();
+document.documentElement.setAttribute('data-theme',t);document.documentElement.classList.add('js')})();
 </script>
-  <style>/*brand-tokens:e22641fc*/
+  <style>/*brand-tokens:c646187a*/
 :root{
   color-scheme:light;
-  --bg:oklch(98% 0.006 255);--surface:oklch(100% 0 0);--surface-2:oklch(96.5% 0.008 255);--border:oklch(90% 0.01 255);
-  --border-strong:oklch(82% 0.02 255);--text:oklch(22% 0.02 255);--text-muted:oklch(46% 0.02 255);--accent:oklch(51% 0.19 277);
-  --accent-contrast:oklch(100% 0 0);--accent-soft-bg:oklch(94% 0.03 277);--accent-2:oklch(62% 0.13 202);--accent-2-text:oklch(49.5% 0.13 202);
-  --positive:oklch(58% 0.15 146);--negative:oklch(55% 0.18 25);--warn:oklch(70% 0.15 87);--code-bg:oklch(96% 0.01 255);
-  --radius:12px;--shadow:0 1px 2px oklch(0% 0 0 / .05),0 8px 24px oklch(0% 0 0 / .05);--glow:0 4px 24px oklch(58% 0.19 277 / .14);--header-glass:oklch(100% 0 0 / .72);
-  --grad:linear-gradient(120deg,oklch(58% 0.19 277),oklch(70% 0.14 202));
-  --card:var(--surface);--muted:var(--text-muted);--cyan:var(--accent-2);--green:var(--positive);
+  --bg:#f6f9fd;--surface:#ffffff;--surface-2:#eef2f8;--border:#dadee5;
+  --border-strong:#c3c9d3;--text:#141b24;--text-2:#2c343f;--text-muted:#515963;
+  --accent:#5051cf;--accent-text:#3a3bb0;--accent-contrast:#ffffff;--accent-soft-bg:#e6eaff;
+  --accent-2:#009ca7;--accent-2-text:#007581;--focus:#5051cf;--positive:#2f913e;
+  --negative:#c53637;--warn:#c69600;--code-bg:#f1f4f9;--radius:12px;
+  --shadow:0 1px 2px rgba(20,27,36,.05),0 10px 30px rgba(20,27,36,.07);--glow:0 4px 24px rgba(80,81,207,.16);--header-glass:rgba(255,255,255,.78);--grad:linear-gradient(120deg,#6267e7,#00b7c3);
+  --card:var(--surface);--muted:var(--text-muted);--cyan:var(--accent-2);--green:var(--positive);--accent-soft:var(--accent-soft-bg);
 }
 :root[data-theme="dark"]{
   color-scheme:dark;
-  --bg:oklch(27% 0.025 255);--surface:oklch(33% 0.025 255);--surface-2:oklch(30% 0.02 255);--border:oklch(42% 0.02 255);
-  --border-strong:oklch(50% 0.02 255);--text:oklch(95% 0.01 255);--text-muted:oklch(72% 0.02 255);--accent:oklch(72% 0.16 277);
-  --accent-contrast:oklch(15% 0.02 255);--accent-soft-bg:oklch(33% 0.06 277);--accent-2:oklch(75% 0.12 202);--accent-2-text:oklch(75% 0.12 202);
-  --positive:oklch(72% 0.15 146);--negative:oklch(68% 0.17 25);--warn:oklch(85% 0.17 87);--code-bg:oklch(23% 0.02 255);
-  --shadow:0 1px 2px oklch(0% 0 0 / .3),0 8px 24px oklch(0% 0 0 / .28);--glow:0 4px 28px oklch(72% 0.16 277 / .22);--header-glass:oklch(33% 0.025 255 / .72);--grad:linear-gradient(120deg,oklch(72% 0.16 277),oklch(80% 0.13 202));
+  --bg:#1e2733;--surface:#2d3642;--surface-2:#1a222d;--border:#4a5361;
+  --border-strong:#6b7684;--text:#eaeff5;--text-2:#d5dbe3;--text-muted:#a9b2be;
+  --accent:#8d98ff;--accent-text:#c7cdff;--accent-contrast:#141b24;--accent-soft-bg:#2f3463;
+  --accent-2:#2ac4ce;--accent-2-text:#2ac4ce;--focus:#8d98ff;--positive:#5cc46c;
+  --negative:#ff7d7e;--warn:#e6b800;--code-bg:#1a222d;--shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.28);
+  --glow:0 4px 28px rgba(141,152,255,.24);--header-glass:rgba(45,54,66,.78);--grad:linear-gradient(120deg,#8d98ff,#2ac4ce);
 }
-:root[data-theme="dark"] .stage,:root[data-theme="dark"] .preview-box{color-scheme:light;--bg:oklch(98% 0.006 255);--surface:oklch(100% 0 0);--surface-2:oklch(96.5% 0.008 255);--border:oklch(90% 0.01 255);--border-strong:oklch(82% 0.02 255);--text:oklch(22% 0.02 255);--text-muted:oklch(46% 0.02 255);--accent:oklch(51% 0.19 277);--accent-contrast:oklch(100% 0 0);--accent-soft-bg:oklch(94% 0.03 277);--accent-2:oklch(62% 0.13 202);--accent-2-text:oklch(49.5% 0.13 202);--positive:oklch(58% 0.15 146);--negative:oklch(55% 0.18 25);--warn:oklch(70% 0.15 87);--code-bg:oklch(96% 0.01 255);--radius:12px;--shadow:0 1px 2px oklch(0% 0 0 / .05),0 8px 24px oklch(0% 0 0 / .05);--glow:0 4px 24px oklch(58% 0.19 277 / .14);--header-glass:oklch(100% 0 0 / .72);--grad:linear-gradient(120deg,oklch(58% 0.19 277),oklch(70% 0.14 202));--card:var(--surface);--muted:var(--text-muted);--cyan:var(--accent-2);--green:var(--positive);}
+:root[data-theme="dark"] .stage,:root[data-theme="dark"] .preview-box{color-scheme:light;--bg:#f6f9fd;--surface:#ffffff;--surface-2:#eef2f8;--border:#dadee5;--border-strong:#c3c9d3;--text:#141b24;--text-2:#2c343f;--text-muted:#515963;--accent:#5051cf;--accent-text:#3a3bb0;--accent-contrast:#ffffff;--accent-soft-bg:#e6eaff;--accent-2:#009ca7;--accent-2-text:#007581;--focus:#5051cf;--positive:#2f913e;--negative:#c53637;--warn:#c69600;--code-bg:#f1f4f9;--radius:12px;--shadow:0 1px 2px rgba(20,27,36,.05),0 10px 30px rgba(20,27,36,.07);--glow:0 4px 24px rgba(80,81,207,.16);--header-glass:rgba(255,255,255,.78);--grad:linear-gradient(120deg,#6267e7,#00b7c3);--card:var(--surface);--muted:var(--text-muted);--cyan:var(--accent-2);--green:var(--positive);--accent-soft:var(--accent-soft-bg);}
 .stage,.preview-box{--mt-ink:#14181f}
 
 *{box-sizing:border-box;margin:0;padding:0}
@@ -48,7 +49,7 @@ label:has(input[type=radio]:focus-visible),label:has(input[type=checkbox]:focus-
 .site-nav{display:flex;gap:4px;margin-right:auto;margin-left:12px}
 .site-nav a{font-size:13px;font-weight:600;text-decoration:none;color:var(--muted);padding:5px 11px;border-radius:7px;transition:color .15s,background .15s}
 .site-nav a:hover{color:var(--text);background:var(--surface-2)}
-.site-nav a[aria-current="page"]{color:var(--accent);background:var(--accent-soft-bg)}
+.site-nav a[aria-current="page"]{color:var(--accent-text);background:var(--accent-soft-bg)}
 .theme-btn{font:inherit;font-size:14px;line-height:1;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 9px;cursor:pointer;color:var(--text)}
 .theme-btn:hover{border-color:var(--border-strong)}
 .gh-pill{font-size:12px;font-weight:650;color:var(--text);text-decoration:none;border:1px solid var(--border);border-radius:8px;padding:6px 12px;background:var(--surface);white-space:nowrap}
@@ -77,20 +78,52 @@ footer a{color:var(--accent-2-text);text-decoration:underline;text-underline-off
 @media(max-width:560px){.announce{font-size:12.5px;align-items:flex-start;
  border-radius:14px;padding:9px 12px}.announce-go{display:none}}
 
-/* Mobile nav: this used to be `.site-nav{display:none}`, which left phone
-   visitors with only the wordmark, theme toggle and GitHub pill — every
-   destination unreachable, with no hamburger substituting for it (confirmed
-   live: 0/4 links visible at 390px). The nav now drops to its own full-width
-   row under the wordmark and scrolls horizontally if the labels overflow,
-   so nothing is lost and no JS menu is needed. */
-@media(max-width:700px){
- .hdr-in{flex-wrap:wrap;padding:9px 16px;row-gap:0}
- .site-nav{order:3;width:100%;margin:7px 0 1px;gap:2px;
-  overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
- .site-nav::-webkit-scrollbar{display:none}
- .site-nav a{white-space:nowrap;font-size:12.5px;padding:5px 9px}
+/* Design pass (1 Nov 2026, direction C). Header: the full nav row from 861 px; below it, with JS, the nav folds behind a Menu button and
+   Search becomes an icon link; without JS the nav stays a wrapping row, so no destination is ever lost. Touch targets are 44 px on phones. */
+.hdr-search,.menu-btn{display:none}
+.hdr-search,.menu-btn,.theme-btn{align-items:center;justify-content:center;color:var(--text)}
+.menu-btn{gap:6px;font:700 14px/1 inherit;border:1px solid var(--border-strong);border-radius:10px;background:var(--surface);cursor:pointer;padding:0 14px}
+.theme-btn svg{display:block}
+@media(max-width:860px){
+ .hdr-in{flex-wrap:wrap;padding:8px 16px;row-gap:0}
  .wordmark{margin-right:auto}
+ .gh-pill{display:none}
+ .hdr-search{display:flex;min-width:44px;min-height:44px;border-radius:10px}
+ .theme-btn{display:flex;min-width:44px;min-height:44px;border-radius:10px}
+ .site-nav{order:3;width:100%;margin:6px 0 2px;gap:2px;flex-wrap:wrap}
+ .site-nav a{white-space:nowrap;font-size:14px;padding:11px 12px;min-height:44px;display:flex;align-items:center}
+ .js .menu-btn{display:flex;min-height:44px}
+ .js .site-nav{display:none;flex-direction:column;align-items:stretch;border-top:1px solid var(--border);padding-top:6px}
+ .js .site-nav.open{display:flex}
 }
+@media(min-width:861px){.theme-btn{display:flex;min-width:36px;min-height:36px;border-radius:8px}}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+/* "Pause all motion" / per-preview Pause (WCAG 2.2.2): stops CSS animation; film clocks are paused by the page script */
+.motion-paused .stage-inner *,.preview-box.paused *{animation-play-state:paused!important}
+.pause-btn{display:inline-flex;align-items:center;gap:6px;min-width:44px;min-height:44px;padding:0 14px;border:1px solid var(--border-strong);border-radius:10px;background:var(--surface);color:var(--text);font:600 14px/1 inherit;cursor:pointer}
+.pause-btn[hidden]{display:none}
+.preview-tools{gap:8px;flex-wrap:wrap}
+.focus-btn{display:inline-flex;align-items:center;gap:6px;min-width:44px;min-height:44px;padding:0 16px;border:1px solid var(--border-strong);border-radius:10px;background:var(--surface);color:var(--text);font:600 14px/1 inherit;cursor:pointer}
+.focus-btn[hidden]{display:none}
+.focus-btn:focus-visible,.focus-close:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.focus-dialog{border:0;padding:0;background:rgba(8,10,16,.9);max-width:100vw;max-height:100vh;width:100vw;height:100vh;color:var(--text);overflow:hidden}
+.focus-dialog::backdrop{background:rgba(8,10,16,.82)}
+.focus-dialog:not([open]){display:none}
+.focus-dialog[open]{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:12px 16px}
+.focus-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;width:var(--focus-w,100%);max-width:100%;color:#f1f5f9}
+.focus-title{font:600 15px/1.3 inherit;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.focus-actions{display:flex;gap:8px;flex:none}
+.focus-close{min-width:44px;min-height:44px;padding:0 16px;border:1px solid var(--border-strong);border-radius:10px;background:var(--surface);color:var(--text);font:600 14px/1 inherit;cursor:pointer}
+.focus-stage{width:var(--focus-w,100%);max-width:100%;max-height:var(--focus-h,none);overflow:auto;border-radius:16px;background:#0b0d12}
+.focus-stage:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.focus-stage .mt-root{margin:0!important;max-width:none!important;width:calc(var(--focus-w,100%) * var(--focus-zoom,1))}
+.focus-zoom{min-width:44px;min-height:44px;padding:0 14px;border:1px solid var(--border-strong);border-radius:10px;background:var(--surface);color:var(--text);font:600 14px/1 inherit;cursor:pointer}
+.focus-zoom[aria-pressed="true"]{background:var(--accent-soft-bg);border-color:var(--accent);color:var(--accent-text)}
+.focus-zoom:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+/* A portrait film (9:16) would be taller than the screen in the preview column: cap it at 78vh and centre it */
+.preview-box .mt-root:has(> .mt-vp[style*="aspect-ratio:720/1280"]){max-width:calc(78vh*0.5625);margin-left:auto!important;margin-right:auto!important}   /* !important: the film root carries an inline margin:1rem 0 */
+.pause-btn[aria-pressed="true"]{background:var(--accent-soft-bg);border-color:var(--accent);color:var(--accent-text)}
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 /* cursor_glow ships dark-tuned (screen blend ≈ invisible over a white ground);
    in the light default, re-blend the orb — it is the only direct body child
@@ -160,10 +193,10 @@ pre{background:var(--code-bg);border:1px solid var(--border);border-radius:8px;p
 </head>
 <body>
 <header class="site-header"><div class="hdr-in">
-    <a class="wordmark" href="/"><svg class="logo-atom" viewBox="0 0 24 24" aria-hidden="true"><ellipse class="o1" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(-32 12 12)"/><ellipse class="o2" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(32 12 12)"/><ellipse class="o3" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(90 12 12)"/><circle class="nuc" cx="12" cy="12" r="2.7"/><circle class="el" cx="3.21" cy="15.98" r="1.25"/></svg><span><span class="grad">A2UI</span> Catalog</span></a>
-    <nav class="site-nav">
+    <a class="wordmark" href="/" aria-label="A2UI Catalog home"><svg class="logo-atom" viewBox="0 0 24 24" aria-hidden="true"><ellipse class="o1" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(-32 12 12)"/><ellipse class="o2" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(32 12 12)"/><ellipse class="o3" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(90 12 12)"/><circle class="nuc" cx="12" cy="12" r="2.7"/><circle class="el" cx="3.21" cy="15.98" r="1.25"/></svg><span><span class="grad">A2UI</span> Catalog</span></a>
+    <nav class="site-nav" id="site-menu" aria-label="Main">
       <a href="/what-is-a2ui/">What is A2UI?</a>
-      <a href="/">Atoms</a>
+      <a href="/atoms/">Atoms</a>
       
       <a href="/surfaces/mcp-apps">MCP Playground</a>
       <a href="/docs">Docs</a>
@@ -171,8 +204,10 @@ pre{background:var(--code-bg);border:1px solid var(--border);border-radius:8px;p
       <a href="/blog">Blog</a>
       
     </nav>
-    <button class="theme-btn" type="button" aria-label="Toggle light/dark theme">◐</button>
+    <a class="hdr-search" href="/atoms/#hub-q" aria-label="Search atoms"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg></a>
+    <button class="theme-btn" type="button" aria-label="Switch to dark theme"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 4v16a8 8 0 0 0 0-16z" fill="currentColor"/></svg></button>
     <a class="gh-pill" href="https://github.com/a2uicatalog/a2ui">GitHub ↗</a>
+    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="site-menu"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>Menu</button>
   </div></header>
   <div class="wrap">
 
@@ -225,7 +260,7 @@ pre{background:var(--code-bg);border:1px solid var(--border);border-radius:8px;p
   </div>
 
   <h2 style="font-size:1.2rem;font-weight:700;margin-bottom:8px;">Deploy your own</h2>
-  <p style="font-size:13px;color:var(--muted);margin:0 0 32px;">Prerequisites: <strong>Node.js 18+</strong> (for <code>npm</code>, used to install clasp in step 2) and a Google account.</p>
+  <p style="font-size:13px;color:var(--muted);margin:0 0 32px;">Prerequisites: <strong>Node.js 20+</strong> (for <code>npm</code>, used to install clasp in step 2) and a Google account.</p>
 
   <div class="steps">
 
@@ -233,7 +268,7 @@ pre{background:var(--code-bg);border:1px solid var(--border);border-radius:8px;p
       <div class="step-num">1</div>
       <div class="step-body">
         <h3>Clone the repo</h3>
-        <p>The renderer lives in <code>apps-script-surface/gas-wired-renderer/</code> — 501 atoms, no CDN, no external dependencies.</p>
+        <p>The renderer lives in <code>apps-script-surface/gas-wired-renderer/</code> — 550 of the catalog's 573 atoms render on Apps Script, no CDN, no external dependencies.</p>
         <pre id="code-clone"><span class="comment"># Clone and navigate to the renderer directory</span>
 git clone https://github.com/a2uicatalog/a2ui
 cd a2ui/apps-script-surface/gas-wired-renderer
@@ -285,7 +320,7 @@ clasp push
     </div>
     <div class="feature">
       <div class="feature-icon">&#9889;</div>
-      <h4>501 atoms, ready to go</h4>
+      <h4>550 atoms, ready to go</h4>
       <p>Stat cards, charts, globes, animations, tables, forms — all render immediately. A handful of data-source atoms want their own API key (see below) and degrade gracefully without one.</p>
     </div>
     <div class="feature">
@@ -299,6 +334,43 @@ clasp push
       <p>Pull the latest from the repo and <code>clasp push</code> again when new atoms are added to the catalog.</p>
     </div>
   </div>
+
+  <h2 id="protocol" style="font-size:1.2rem;font-weight:700;margin-bottom:12px;">Protocol support</h2>
+  <p style="font-size:14px;margin-bottom:12px;">The renderer accepts <strong>A2UI v1.0</strong>: a <code>createSurface</code> message with its
+  <code>components</code> and <code>dataModel</code> inline, one surface per link. It draws all 18 components of the
+  v1.0 Basic Catalog (AudioPlayer, Button, Card, CheckBox, ChoicePicker, Column, DateTimeInput, Divider, Icon, Image, List, Modal, Row, Slider, Tabs, Text, TextField, Video), binds inputs to the data model, and sends a Button's
+  <code>action</code> event to the <code>a2uiAction</code> function in your project's <code>Code.gs</code>.
+  It also accepts the catalog's own <code>blocks</code> format, shown further down.</p>
+  <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Not supported: A2UI v0.9 and v0.8 input, and incremental
+  <code>updateComponents</code>, <code>updateDataModel</code> or <code>deleteSurface</code> messages on a link.</p>
+  <pre id="code-v1"><span class="comment">// A minimal A2UI v1.0 surface: a text, a bound input and a button that sends an event</span>
+function doGet() {
+  const message = {
+    "version": "1.0",
+    "createSurface": {
+      "surfaceId": "hello",
+      "catalogId": "https://a2ui.org/specification/v1_0/catalogs/basic/catalog.json",
+      "dataModel": {"form": {"name": ""}},
+      "components": [
+        {"id": "root", "component": "Column", "children": ["title", "name", "go"]},
+        {"id": "title", "component": "Text", "text": "Hello from Apps Script"},
+        {"id": "name", "component": "TextField", "label": "Your name", "value": {"@path": "/form/name"}},
+        {"id": "go", "component": "Button", "variant": "primary", "child": "go-label", "action": {"event": {"name": "greet", "context": {"who": {"@path": "/form/name"}}}}},
+        {"id": "go-label", "component": "Text", "text": "Say hello"}
+      ]
+    }
+  };
+
+  const p = Utilities.base64EncodeWebSafe(
+    Utilities.newBlob(JSON.stringify(message)).getBytes()
+  );
+  const url = "https://script.google.com/macros/s/YOUR_ID/exec?p=" + p;
+
+  return HtmlService.createHtmlOutput(
+    '&lt;script&gt;window.location="' + url + '"&lt;/script&gt;'
+  );
+}
+<button class="copy-btn" onclick="copy('code-v1',this)">COPY</button></pre>
 
   <h2 style="font-size:1.2rem;font-weight:700;margin-bottom:12px;">Call it from your GAS project</h2>
   <p style="font-size:14px;color:var(--muted);margin-bottom:16px;">Once deployed, use your renderer URL with any payload from the catalog.</p>
@@ -344,11 +416,21 @@ function doGet() {
   </div>
 <script>
 
+function themeLabel(){var d=document.documentElement.getAttribute('data-theme')==='dark';
+  document.querySelectorAll('.theme-btn').forEach(function(b){b.setAttribute('aria-label',d?'Switch to light theme':'Switch to dark theme')})}
+themeLabel();
 document.addEventListener('click',function(e){
+  var m=e.target.closest('.menu-btn');
+  if(m){var n=document.getElementById(m.getAttribute('aria-controls')),o=m.getAttribute('aria-expanded')!=='true';
+    m.setAttribute('aria-expanded',String(o));if(n)n.classList.toggle('open',o);return}
   var b=e.target.closest('.theme-btn');if(!b)return;
   var r=document.documentElement,t=r.getAttribute('data-theme')==='dark'?'light':'dark';
-  r.setAttribute('data-theme',t);
+  r.setAttribute('data-theme',t);themeLabel();
   try{localStorage.setItem('a2ui-theme',t)}catch(err){}
+});
+document.addEventListener('keydown',function(e){
+  if(e.key!=='Escape')return;var m=document.querySelector('.menu-btn[aria-expanded="true"]');if(!m)return;
+  m.setAttribute('aria-expanded','false');var n=document.getElementById(m.getAttribute('aria-controls'));if(n)n.classList.remove('open');m.focus()
 });
 // WebMCP (W3C Web Machine Learning CG draft; Chrome origin trial 149-156,
 // shipping targeted for 157): register the catalogue's read-only tools on
