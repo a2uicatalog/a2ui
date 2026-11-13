@@ -14,7 +14,7 @@ independence_note: "Independent and unofficial; not affiliated with Google, Copi
 # bumping `version` and regenerating. Rules are applied per case; an atom with several cases
 # takes the WORST case.
 rules:
-  version: 4
+  version: 5
   web:
     kind: web
     order_worst_first: [not_supported, drawn_with_differences, not_verified, drawn]
@@ -26,8 +26,8 @@ rules:
   compose:
     kind: compose
     order_worst_first: [not_supported, not_measured, native]
-    native: "the atom's own type is a Basic component and the lane case rendered without error (Compose has no implementation of our atoms)"
-    not_supported: "the lane case was rejected: the atom type is not in the Basic catalog"
+    native: "the lane case rendered without error with the atom's own type present: a registered custom Compose component (our native ports) or a Basic component. Measured on Compose Desktop (Skiko, headless), not an Android device"
+    not_supported: "the lane case was rejected: the atom type is not registered in the catalog"
     not_measured: "no example payload for the atom in the gate data"
   flutter:
     kind: flutter

@@ -60,6 +60,7 @@ REASON = {
     "renderer_not_measured": "renderer not measured",
     "text_differs": "visible text differs from React",
     "basic_component_rendered": "rendered by a Basic component (the atom's root type)",
+    "custom_component_rendered": "rendered by a native custom Compose component registered for this atom",
 }
 HELP_COMPOSE = {
     "native": "the atom's root type is a Basic component and it rendered through the Basic catalog; Compose has no implementation of our atoms",

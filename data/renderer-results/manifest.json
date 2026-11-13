@@ -30,17 +30,17 @@
   },
   "compose": {
    "atoms_total": 573,
-   "atoms_with_cases": 551,
+   "atoms_with_cases": 570,
    "commit": null,
    "core_sha256": null,
    "css_sha256": null,
    "file": "compose.json",
-   "file_sha256": "43c32a9207fd0a5e2150f1cb1c941340e97ef4823460b54d19ce7e23f0e6081d",
+   "file_sha256": "30e78d9cfeea1ac2e98952c3d7d4035a8e2f9c105fabe4dbacf15cd47d6d2468",
    "measured_date": "2026-11-13",
-   "measured_on": "release-package",
+   "measured_on": "private-build",
    "renderer_bundle_sha256": null,
    "renderer_version": "a2ui-kmp 1.0.0-alpha02 (third-party Kotlin Multiplatform rebuild of androidx.a2ui 1.0.0-alpha02; spec v0.9.1 only)",
-   "run_id": "compose-desktop-20261113"
+   "run_id": "compose-desktop-merged-20261113"
   },
   "copilotkit": {
    "atoms_total": 573,
@@ -58,17 +58,17 @@
   },
   "flutter": {
    "atoms_total": 573,
-   "atoms_with_cases": 551,
+   "atoms_with_cases": 570,
    "commit": null,
    "core_sha256": null,
    "css_sha256": null,
    "file": "flutter.json",
-   "file_sha256": "4359ed7caaaf07e070bed63368396f5458ad1b828c96c7701498a3a7c6058bb5",
+   "file_sha256": "e12268b3b2c04e97e1f0f83a8a7c22d5e31a0933f209909c033bd910e23840fa",
    "measured_date": "2026-11-13",
    "measured_on": "private-build",
    "renderer_bundle_sha256": null,
    "renderer_version": "a2ui_flutter 0.3.0 (a2ui_core 0.7.0), private build",
-   "run_id": "flutter-20261113-012244"
+   "run_id": "flutter-20261113-144211"
   },
   "lit": {
    "atoms_total": 573,

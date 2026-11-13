@@ -29,8 +29,8 @@ Status rules (registry `rules.version` 2; v2 design item H4):
            basic_lowered                                 -> degraded
            unsupported / unsupported_other               -> not_supported
            invalid_payload / no case                     -> not_measured (invalid example / no example)
-  compose: painted (the atom's own type is a Basic component)  -> native
-           unsupported (type not in the Basic catalog)           -> not_supported
+  compose: painted (a registered custom component, or a Basic component)  -> native
+           unsupported (type not registered in the catalog)      -> not_supported
            no case                                              -> not_measured
   Several cases: the WORST case wins. The per-check results of that case are stored.
   An allowance-listed check records `unstable`, never `pass`.
@@ -197,12 +197,16 @@ def flutter_case_status(case):
 
 
 def compose_case_status(case):
-    """Compose has no implementation of our atoms: a case only draws when the atom's root is a Basic component."""
+    """Compose: a case is native when it painted. With own_type_present the atom is a registered custom Compose
+    component (our native ports); otherwise it was drawn by a Basic component (the atom's root type)."""
     ck = case["checks"]
     pr = ck["painted"]
     raw = pr["result"]
     if raw == "painted":
-        status, reasons = "native", ["basic_component_rendered"]
+        if pr.get("own_type_present"):
+            status, reasons = "native", ["custom_component_rendered"]
+        else:
+            status, reasons = "native", ["basic_component_rendered"]
     elif raw == "unsupported":
         status, reasons = "not_supported", ["unknown_component_type"]
     else:
