@@ -4,6 +4,11 @@ Generate the machine-readable catalog artifacts served from public/.
 
 Outputs:
   public/spec.json                    — full atom catalog (the URL ai-catalog.json points at)
+  public/spec.json also carries `x-renderers` per atom, and so does every `components.<atom>` of
+  public/catalogue/a2ui-atoms-v1.json and of the published packs (a2ui-bricks-v1): WHAT draws the atom
+  (react, lit, angular, copilotkit, a2ui-vue, flutter, compose), derived from the committed
+  public/catalogue/renderer-matrix-v1.json (scripts/gen_renderer_matrix.py; shape in docs/renderer-matrix.md).
+  Deterministic, no clock; an atom the matrix does not cover (preview/private) simply has no key.
   public/atoms/index.json             — compact index: type + compact_description + surfaces
   public/runbooks/index.json          — runbook library compiled from runbooks/*.yaml
   public/catalogue/gdm-v0.2.json      — stable URI copy of the GDM component catalog
@@ -36,6 +41,30 @@ GDM_SPEC = os.path.join(ROOT, "spec", "gdm-v0.2.json")
 PUBLIC = os.path.join(ROOT, "public")
 
 BASE_URL = "https://a2uicatalog.ai"
+RENDERER_MATRIX = os.path.join(PUBLIC, "catalogue", "renderer-matrix-v1.json")
+_RENDERER_MATRIX = {}   # loaded once: {"matrix": dict|None, "project": fn}
+
+
+def x_renderers_for(atom_type):
+    """The `x-renderers` object of one atom (projection of the committed matrix), or None when the matrix
+    does not cover it. The projection function is gen_renderer_matrix.x_renderers (single definition)."""
+    if not _RENDERER_MATRIX:
+        import importlib.util
+        spec = importlib.util.spec_from_file_location(
+            "gen_renderer_matrix", os.path.join(os.path.dirname(os.path.abspath(__file__)), "gen_renderer_matrix.py"))
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        matrix = None
+        if os.path.isfile(RENDERER_MATRIX):
+            with open(RENDERER_MATRIX, encoding="utf8") as f:
+                matrix = json.load(f)
+        else:
+            print(f"  WARNING: {RENDERER_MATRIX} missing: no x-renderers in the catalogue", file=sys.stderr)
+        _RENDERER_MATRIX.update(matrix=matrix, project=mod.x_renderers)
+    matrix = _RENDERER_MATRIX["matrix"]
+    if not matrix or atom_type not in matrix["atoms"]:
+        return None
+    return _RENDERER_MATRIX["project"](matrix, atom_type)
 
 # A2UI v1.0 catalog-document constants (github.com/google/A2UI,
 # specification/v1_0/catalogs/basic/catalog.json). A catalog document is a
@@ -135,6 +164,9 @@ def gen_spec(blocks):
             "fields": b.get("fields", {}),
             "source": b.get("source", {}),
         }
+        xr = x_renderers_for(b["type"])
+        if xr:
+            entry["x-renderers"] = xr
         if b.get("source_inspiration"):
             entry["source_inspiration"] = b["source_inspiration"]
         if b.get("aliases"):
@@ -242,6 +274,9 @@ def _component_def(atom: dict) -> dict:
     surfaces = atom.get("surfaces", {}).get("works_on")
     if surfaces:
         definition["x-surfaces"] = surfaces
+    xr = x_renderers_for(atom["type"])
+    if xr:
+        definition["x-renderers"] = xr
     if atom.get("aliases"):
         definition["x-aliases"] = atom["aliases"]
     if atom.get("routing_text"):  # semantic-routing metadata for find_atoms (embedded and shown to the agent)
