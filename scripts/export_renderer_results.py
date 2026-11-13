@@ -12,17 +12,27 @@ What it guarantees about its output (the public repo must be able to hold it):
     atoms/schema.yaml) are exported; every other atom in the gate data is dropped;
   * evidence is enumerated codes and numbers; harness free text is never copied
     (Flutter error messages, text samples and web text hashes are discarded);
-  * no file path, host name or unpushed commit SHA is written. Runs measured on a commit that
-    is on no remote are labelled `measured_on: preview-unmerged` and carry no commit SHA;
+  * no file path, host name or unpushed commit SHA is written. `measured_on: shipped` runs carry the
+    public SHA of the shipped commit (passed with --commit); runs measured on a commit that is on no
+    remote (`preview-unmerged`) or on a private build (`private-build`) carry no SHA;
   * the output is deterministic for a given input (no wall clock).
 
 The schema of the files is documented in docs/renderer-matrix.md. To replace the data later
-(for example with the results of a gate run on the shipped commit), write the same schema
-from the new run's output: the generator does not change.
+(for example a DETERMINISTIC-mode full pass of the web gates) a NEW EXPORT is enough: point
+--web-root / --web-run at the new run (same layout: <root>/<renderer dir>/runs/<run>/DETAIL-*.json and
+RESULTS-*.json), keep --measured-on shipped and --commit <public sha>; the generator does not change.
+
+Sources (all read-only):
+  web (react, lit, angular, a2ui-vue, copilotkit 1.85)  <web-root>/<dir>/runs/<web-run>/{RESULTS,DETAIL}-*.json
+  copilotkit 1.87.0 (A2UI 1.0)                          <work>/m5-ck187 raw gate outputs
+  flutter                                               <work>/flutter-m4/cloudci/runs/<flutter-run>/results/lane-results.json
+                                                        + <work>/flutter-m4/audit/parity_sweep.tsv
+  compose                                               <work>/compose-m4/raw/compose.json (+ out/basic_analysis.json counts)
 
 Usage:
-  python3 scripts/export_renderer_results.py [--work /mnt/hdd2/work] [--flutter-run 20261112-214805]
-                                             [--measured-on preview-unmerged] [--only react,lit]
+  python3 scripts/export_renderer_results.py [--work /mnt/hdd2/work] [--web-root /mnt/hdd2/work/m5-f111]
+        [--web-run F] [--measured-on shipped --commit <40-hex>] [--flutter-run 20261113-012244]
+        [--only react,lit]
 """
 import argparse
 import hashlib
@@ -46,21 +56,29 @@ BEHAVIOUR_TOKENS = {"SAME", "INERT", "DIFFERENT", "DIFF", "ran"}
 FLUTTER_STATUS = {"painted", "basic_lowered", "unsupported", "unsupported_other", "invalid_payload"}
 ERR_CODE = re.compile(r"^[A-Z][A-Z_]{2,40}$")
 
-# rid -> (baseline, detail or None (detail inside the baseline), unstable allowance file, version string,
-#         dialect, reference renderer or None)
+# rid -> (renderer dir under the web root, detail file, results file, frozen allowance list (relative to --work),
+#         version string, dialect, reference renderer or None, expected package pairs)
+# The allowance lists are the FROZEN `orig` lists (derived from the A/B runs before any later extension).
 WEB = {
-    "react": ("m5-react/baselines/react.baseline.json", "m5-react/baselines/DETAIL-react.json", "m5-react/unstable/react.json",
-              "@a2ui/react 0.15.0 (web_core 0.15.0)", "v1.0", None),
-    "lit": ("m5-harness/baselines/lit.baseline.json", None, "m5-harness/unstable/lit.json",
-            "@a2ui/lit 0.15.0 (web_core 0.15.0)", "v0.9", "react"),
-    "angular": ("m5-angular/baselines/ang.baseline.json", "m5-angular/baselines/DETAIL-ang.json", "m5-angular/unstable/ang.json",
-                "@a2ui/angular 0.14.0 (web_core 0.15.0)", "v0.9", "react"),
-    "copilotkit": ("m5-ck-gate/baselines/ck.baseline.json", None, "m5-ck-gate/unstable/ck.json",
-                   "@copilotkit/a2ui-renderer 1.85.0 (web_core 0.15.0)", "v0.9", "react"),
-    "a2ui-vue": ("m5-vue-gate/baselines/vue.baseline.json", None, "m5-vue-gate/unstable/vue.json",
-                 "a2ui-vue 0.9.5 (Vue 3.5.13, web_core 0.9.1)", "v0.9", "react"),
+    "react": ("react", "DETAIL-react.json", "RESULTS-react.json", "m5-react/unstable/react.json",
+              "@a2ui/react 0.15.0 (web_core 0.15.0)", "v1.0", None, {"@a2ui/react": "0.15.0", "@a2ui/web_core": "0.15.0"}),
+    "lit": ("lit", "DETAIL-lit.json", "RESULTS-lit.json", "m5-harness/unstable/lit.json",
+            "@a2ui/lit 0.15.0 (web_core 0.15.0)", "v0.9", "react", {"@a2ui/lit": "0.15.0", "@a2ui/web_core": "0.15.0"}),
+    "angular": ("angular", "DETAIL-ang.json", "RESULTS-ang.json", "m5-angular/unstable/ang.json",
+                "@a2ui/angular 0.14.0 (web_core 0.15.0)", "v0.9", "react", {"@a2ui/angular": "0.14.0", "@a2ui/web_core": "0.15.0"}),
+    "a2ui-vue": ("vue", "DETAIL-vue.json", "RESULTS-vue.json", "m5-vue-gate/unstable/vue.json",
+                 "a2ui-vue 0.9.5 (Vue 3.5.13, web_core 0.9.1)", "v0.9", "react",
+                 {"a2ui-vue": "0.9.5", "vue": "3.5.13", "@a2ui/web_core": "0.9.1"}),
 }
-FLUTTER_VERSION = "a2ui_flutter 0.3.0 (a2ui_core 0.7.0)"
+# CopilotKit 1.87.0 on A2UI 1.0: custom + four pixel lanes only (no behaviour lane was run).
+CK187 = {"dir": "m5-ck187", "unstable": "m5-ck-gate/unstable/ck.json", "date": "2026-11-12",
+         "version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)", "run_id": "copilotkit-1.87.0-20261112"}
+CK187_LANES = [("light480", "pixel", "raw_pixel.json", 480), ("dark480", "pixel_dark", "raw_pixel_dark.json", 480),
+               ("light360", "pixel_360", "raw_pixel_360.json", 360), ("dark360", "pixel_dark360", "raw_pixel_dark360.json", 360)]
+STRICT_PAINTED_DIR = "a2ui-react-all/review4"  # harness module that defines loose/strict/broken (read-only import)
+FLUTTER_VERSION = "a2ui_flutter 0.3.0 (a2ui_core 0.7.0), private build"
+COMPOSE_VERSION = "a2ui-kmp 1.0.0-alpha02 (third-party Kotlin Multiplatform rebuild of androidx.a2ui 1.0.0-alpha02; spec v0.9.1 only)"
+SHA40 = re.compile(r"^[0-9a-f]{40}$")
 
 
 def load(p):
@@ -79,7 +97,7 @@ def num(x, nd=6):
     return None if x is None else round(float(x), nd)
 
 
-def web_case(rid, atom, rec, detail, unstable, has_ref):
+def web_case(rid, atom, rec, detail, unstable, has_ref, behaviour_run=True):
     painted = "fail" if (rec.get("error") or rec.get("broken")) else "pass"
     err = "error" if rec.get("error") else ("broken" if rec.get("broken") else None)
     unst_text = atom in unstable.get("atoms", {}).get("custom", [])
@@ -107,7 +125,9 @@ def web_case(rid, atom, rec, detail, unstable, has_ref):
         if env.endswith("360"):
             over[env] = None if r.get("overflow") is None else bool(r["overflow"])
     b = detail.get("behaviour_custom", {}).get(atom)
-    if b is None:
+    if not behaviour_run:
+        beh = "not_run"  # the lane was not run for this measurement (never "pass")
+    elif b is None:
         beh = "n/a (no probe)"
     else:
         beh = str(b.get("verdict", "")).split(":")[0]
@@ -128,24 +148,9 @@ def web_case(rid, atom, rec, detail, unstable, has_ref):
     }
 
 
-def export_web(rid, work, public, measured_on):
-    bpath, dpath, upath, version, dialect, ref = WEB[rid]
-    base = load(os.path.join(work, bpath))
-    detail = load(os.path.join(work, dpath)) if dpath else base["detail"]
-    unstable = load(os.path.join(work, upath))
-    code = base["code"]
-    date = base["date"]
-    run_id = "%s-%s" % (rid, re.sub(r"[-:]", "", date))
-    atoms = {}
-    for atom in public:
-        rec = detail["custom"].get(atom)
-        if rec is None:
-            atoms[atom] = {"cases": {}, "no_case": "no_example"}
-            continue
-        c = web_case(rid, atom, rec, detail, unstable, ref is not None)
-        c["dialect"] = dialect
-        atoms[atom] = {"cases": {atom: c}}
-    head = {
+def web_head(rid, version, dialect, ref, date, run_id, measured_on, commit, code, wall):
+    ext = code.get("extract") or {}
+    return {
         "schema": RESULTS_SCHEMA,
         "renderer": rid,
         "kind": "web",
@@ -155,14 +160,94 @@ def export_web(rid, work, public, measured_on):
         "measured_date": date[:10],
         "run_id": run_id,
         "measured_on": measured_on,
-        "commit": None,  # never an unpushed SHA; fill with a public SHA when measured on a shipped commit
+        "commit": commit if measured_on == "shipped" else None,  # never an unpushed SHA
         "core_sha256": code["core_sha256"],
         "css_sha256": code["css_sha256"],
-        "renderer_bundle_sha256": code.get("bundle_sha256"),
+        # the COMMITTED public/surfaces/mcp-apps/renderer-bundle.html hash (not the harness's test bundle)
+        "renderer_bundle_sha256": ext.get("committed_bundle_sha256"),
         "case_sha256": None,  # pending the public case generator (design item 1)
-        "wall_seconds": (base.get("timings_s") or {}).get("total"),
+        "wall_seconds": wall,
     }
+
+
+def export_web(rid, work, public, measured_on, root, run, commit):
+    d, dname, rname, upath, version, dialect, ref, pkgs = WEB[rid]
+    res = load(os.path.join(root, d, "runs", run, rname))
+    detail = load(os.path.join(root, d, "runs", run, dname))
+    unstable = load(os.path.join(work, upath))
+    for k, v in pkgs.items():  # a changed package version must be a deliberate edit of the table
+        if res["package"].get(k) != v:
+            sys.exit("%s: package %s is %r in the results, the exporter table says %r" % (rid, k, res["package"].get(k), v))
+    if not res.get("complete"):
+        sys.exit("%s: results are not marked complete" % rid)
+    code = res["code"]
+    if measured_on == "shipped":
+        if code.get("head") != commit or code.get("dirty_tracked"):
+            sys.exit("%s: results were measured on %s (dirty=%s), not on the shipped commit %s" % (rid, code.get("head"), code.get("dirty_tracked"), commit))
+        if not (code.get("extract") or {}).get("committed_bundle_equals_built"):
+            sys.exit("%s: committed bundle does not equal the built bundle in the run" % rid)
+    date = res["date"]
+    atoms = {}
+    for atom in public:
+        rec = detail["custom"].get(atom)
+        if rec is None:
+            atoms[atom] = {"cases": {}, "no_case": "no_example"}
+            continue
+        c = web_case(rid, atom, rec, detail, unstable, ref is not None)
+        c["dialect"] = dialect
+        atoms[atom] = {"cases": {atom: c}}
+    head = web_head(rid, version, dialect, ref, date, "%s-%s" % (rid, re.sub(r"[-:]", "", date)), measured_on, commit, code,
+                    (res.get("timings_s") or {}).get("total"))
     return head, atoms
+
+
+def export_ck187(work, public, root, run, measured_on, commit):
+    """CopilotKit 1.87.0 on A2UI 1.0: text lane from the custom run, four pixel lanes from the gate. No
+    behaviour lane was run: behaviour is recorded `not_run`. The shipped-commit hashes (core, css,
+    committed bundle) come from the React F run's recorded extract, which the report states are the same."""
+    base = os.path.join(work, CK187["dir"], "runs")
+    custom = load(os.path.join(base, "ck187_full.json"))
+    custom = custom.get("cases", custom)
+    gate = load(os.path.join(base, "G", "GATE.json"))
+    raw_px = {lane: load(os.path.join(base, "G", f)) for env, lane, f, w in CK187_LANES}
+    unstable = load(os.path.join(work, CK187["unstable"]))
+    S = _strict_painted(work)
+    react_res = load(os.path.join(root, "react/runs", run, "RESULTS-react.json"))
+    code = react_res["code"]
+    if measured_on == "shipped" and code.get("head") != commit:
+        sys.exit("copilotkit 1.87: the shipped-commit hashes come from the React run, which was measured on %s" % code.get("head"))
+    detail = {"behaviour_custom": {}}
+    detail["custom"] = {}
+    for k, v in custom.items():
+        t = " ".join((v.get("text") or "").split())
+        detail["custom"][k] = {"loose": bool(S.loose(v)), "strict": bool(S.strict(k, v)), "strict_text": bool(S.strict_text(k, v)),
+                               "broken": bool(S.broken(v)), "error": bool(v.get("error")) or bool(v.get("crashed")) or bool(v.get("errors"))}
+    for env, lane, f, width in CK187_LANES:
+        det = {}
+        for atom, g in gate[lane]["detail"].items():
+            r = raw_px[lane].get(atom, {})
+            det[atom] = {"blank_both": g["blank_both"], "passed": g["passed"], "frac": g["frac"], "hdiff": g["hdiff"],
+                         "one_blank": bool(r.get("one_blank")), "low": g.get("low"), "low_ref": g.get("low_ref"),
+                         "overflow": bool(g["sw"] > width)}
+        detail[lane] = det
+    atoms = {}
+    for atom in public:
+        rec = detail["custom"].get(atom)
+        if rec is None:
+            atoms[atom] = {"cases": {}, "no_case": "no_example"}
+            continue
+        c = web_case("copilotkit", atom, rec, detail, unstable, True, behaviour_run=False)
+        c["dialect"] = "v1.0"
+        atoms[atom] = {"cases": {atom: c}}
+    head = web_head("copilotkit", CK187["version"], "v1.0", "react", CK187["date"], CK187["run_id"], measured_on, commit, code, None)
+    return head, atoms
+
+
+def _strict_painted(work):
+    sys.dont_write_bytecode = True
+    sys.path.insert(0, os.path.join(work, STRICT_PAINTED_DIR))
+    import strict_painted  # the harness's own definition of loose/strict/broken (read-only)
+    return strict_painted
 
 
 def export_flutter(work, public, run, measured_on):
@@ -222,6 +307,67 @@ def export_flutter(work, public, run, measured_on):
     return head, atoms
 
 
+def export_compose(work, public, measured_on):
+    """Compose (a2ui-kmp on Compose Desktop). The source file is already sanitised by its producer; this
+    keeps only stable atoms, enumerated codes and numbers, and adds the Basic-lane and behaviour counts
+    as header `facts`. Mapping (done by the public generator): painted -> native, unsupported ->
+    not_supported, no case -> not_measured."""
+    d = os.path.join(work, "compose-m4")
+    src = load(os.path.join(d, "raw/compose.json"))
+    ba = load(os.path.join(d, "out/basic_analysis.json"))["summary"]
+    pubset = set(public)
+    atoms = {}
+    for atom in public:
+        rec = src["atoms"].get(atom)
+        if rec is None or not rec.get("cases"):
+            atoms[atom] = {"cases": {}, "no_case": "no_example"}
+            continue
+        out = {}
+        for cid, c in rec["cases"].items():
+            if cid not in pubset:
+                sys.exit("compose raw holds a case of a non-public atom")
+            ck = c["checks"]
+            pr = ck["painted"]
+            if pr["result"] not in ("painted", "unsupported"):
+                sys.exit("unexpected compose painted status %r" % pr["result"])
+            codes = sorted(set(pr.get("error_codes", [])))
+            for x in codes:
+                if not ERR_CODE.match(x):
+                    sys.exit("error code %r is not an enumerated code" % x)
+            pt = ck.get("parity_text") or {}
+            bl = ck.get("basic_lane") or {}
+            px = (ck.get("pixel") or {}).get("light480") or {}
+            out[cid] = {"dialect": "v0.9", "checks": {
+                "painted": {"result": pr["result"], "own_type_present": bool(pr.get("own_type_present")),
+                            "text_chars": pr.get("text_chars"), "error_codes": codes},
+                "parity_text": {k: pt.get(k) for k in ("web_words", "compose_words", "missing_in_compose", "extra_in_compose")} if pt else None,
+                "basic_lane": {"rendered": bool(bl.get("rendered")), "text_sha_equal": bool(bl.get("text_sha_equal"))},
+                "pixel": {"light480": {"result": px.get("result"), "frac": num(px.get("frac")), "hdiff": px.get("hdiff")}} if px else None,
+            }}
+        atoms[atom] = {"cases": out}
+    stable_basic = [c["checks"]["basic_lane"] for r in atoms.values() for c in r["cases"].values()]
+    beh = src["basic_behaviour"]["counts"]
+    facts = {
+        "basic_lane": {
+            "cases": ba["status"].get("rendered", 0) + sum(v for k, v in ba["status"].items() if k != "rendered"),
+            "rendered": ba["status"].get("rendered", 0),
+            "text_identical_to_react": ba["text_sha_equal"], "loose": ba["loose"], "strict": ba["strict"],
+            "strict_text": ba["strict_text"], "broken": ba["broken"],
+            "stable_atoms": len(stable_basic), "stable_rendered": sum(1 for b in stable_basic if b["rendered"]),
+            "stable_text_identical": sum(1 for b in stable_basic if b["text_sha_equal"]),
+        },
+        "basic_behaviour": {"probes": sum(beh.values()), "same": beh.get("SAME", 0), "different": beh.get("DIFFERENT", 0),
+                            "same_reject": beh.get("SAME_REJECT", 0), "error": beh.get("ERROR", 0), "not_runnable": beh.get("NOT_RUNNABLE", 0)},
+    }
+    head = {
+        "schema": RESULTS_SCHEMA, "renderer": "compose", "kind": "compose", "renderer_version": COMPOSE_VERSION,
+        "dialect": "v0.9", "reference_renderer": "react", "measured_date": src["measured_date"], "run_id": src["run_id"],
+        "measured_on": measured_on, "commit": None, "core_sha256": None, "css_sha256": None, "renderer_bundle_sha256": None,
+        "case_sha256": None, "wall_seconds": None, "facts": facts,
+    }
+    return head, atoms
+
+
 def dump(head, atoms):
     """Header fields, then one line per atom: stable, diff-friendly, deterministic."""
     lines = ["{"]
@@ -244,10 +390,14 @@ def sha(b):
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--work", default="/mnt/hdd2/work")
-    ap.add_argument("--flutter-run", default="20261112-214805")
-    ap.add_argument("--measured-on", default="preview-unmerged", choices=["shipped", "preview-unmerged"],
-                    help="web baselines of 2026-11-10/11 were measured on a commit on no remote")
-    ap.add_argument("--flutter-measured-on", default="unrecorded", choices=["shipped", "preview-unmerged", "unrecorded"])
+    ap.add_argument("--web-root", default="/mnt/hdd2/work/m5-f111", help="root of the web gate run directories")
+    ap.add_argument("--web-run", default="F", help="run sub-directory under <web-root>/<renderer>/runs/")
+    ap.add_argument("--flutter-run", default="20261113-012244")
+    ap.add_argument("--measured-on", default="shipped", choices=["shipped", "preview-unmerged"],
+                    help="web runs: shipped needs --commit (the public SHA the run was measured on)")
+    ap.add_argument("--commit", default="f111cde17643744f1e4145297b79c6fa84df38c5", help="public SHA of the shipped commit")
+    ap.add_argument("--flutter-measured-on", default="private-build", choices=["shipped", "preview-unmerged", "private-build", "unrecorded"])
+    ap.add_argument("--compose-measured-on", default="release-package")
     ap.add_argument("--only", default="")
     ap.add_argument("--out", default=OUTDIR)
     a = ap.parse_args()
@@ -256,11 +406,20 @@ def main():
     only = set(filter(None, a.only.split(",")))
     manifest_path = os.path.join(a.out, "manifest.json")
     manifest = load(manifest_path) if os.path.exists(manifest_path) else {"schema": "a2ui-renderer-results-manifest/1", "renderers": {}}
-    jobs = [(rid, None) for rid in WEB] + [("flutter", None)]
-    for rid, _ in jobs:
+    if a.measured_on == "shipped" and not SHA40.match(a.commit):
+        sys.exit("--commit must be a 40-hex public SHA")
+    jobs = list(WEB) + ["copilotkit", "flutter", "compose"]
+    for rid in jobs:
         if only and rid not in only:
             continue
-        head, atoms = export_flutter(a.work, public, a.flutter_run, a.flutter_measured_on) if rid == "flutter" else export_web(rid, a.work, public, a.measured_on)
+        if rid == "flutter":
+            head, atoms = export_flutter(a.work, public, a.flutter_run, a.flutter_measured_on)
+        elif rid == "compose":
+            head, atoms = export_compose(a.work, public, a.compose_measured_on)
+        elif rid == "copilotkit":
+            head, atoms = export_ck187(a.work, public, a.web_root, a.web_run, a.measured_on, a.commit)
+        else:
+            head, atoms = export_web(rid, a.work, public, a.measured_on, a.web_root, a.web_run, a.commit)
         text = dump(head, atoms)
         name = rid + ".json"
         with open(os.path.join(a.out, name), "w", encoding="utf8") as f:

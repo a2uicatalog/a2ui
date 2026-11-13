@@ -27,6 +27,9 @@ Status rules (registry `rules.version` 2; v2 design item H4):
            basic_lowered                                 -> degraded
            unsupported / unsupported_other               -> not_supported
            invalid_payload / no case                     -> not_measured (invalid example / no example)
+  compose: painted (the atom's own type is a Basic component)  -> native
+           unsupported (type not in the Basic catalog)           -> not_supported
+           no case                                              -> not_measured
   Several cases: the WORST case wins. The per-check results of that case are stored.
   An allowance-listed check records `unstable`, never `pass`.
 """
@@ -48,6 +51,11 @@ OUT_DRAFT = os.path.join(WT, "public/catalogue/a2ui-atoms-v1.renderers-draft.jso
 ENVS = ["light480", "dark480", "light360", "dark360"]
 WEB_STATUSES = ["drawn", "drawn_with_differences", "not_verified", "not_supported", "not_measured"]
 FLUTTER_STATUSES = ["native", "degraded", "not_supported", "not_measured"]
+COMPOSE_STATUSES = ["native", "not_supported", "not_measured"]
+KIND_STATUSES = {"web": WEB_STATUSES, "flutter": FLUTTER_STATUSES, "compose": COMPOSE_STATUSES}
+# behaviour tokens that do not make an atom differ from React: `n/a (no probe)` (no probe exists) and
+# `not_run` (the behaviour lane was not run for this measurement; shown as such, never as a pass)
+BEHAVIOUR_NEUTRAL = ("SAME", "INERT", "n/a (no probe)", "not_run")
 STATUS_LABEL = {
     "drawn": "Drawn", "drawn_with_differences": "Drawn with differences", "not_verified": "Not verified",
     "native": "Native", "degraded": "Degraded", "not_supported": "Not supported", "not_measured": "Not measured",
@@ -56,7 +64,7 @@ STATUS_HELP = {
     "drawn": "drawn by the renderer; every check passed",
     "drawn_with_differences": "drawn, but at least one check differs from React (pixels, overflow at 360, contrast or behaviour)",
     "not_verified": "no difference found, but the atom could not be verified (no visible text, blank on both sides, or an unstable check)",
-    "native": "drawn by the renderer's own implementation of the atom",
+    "native": "drawn by the renderer's own implementation of the atom (Compose: by a Basic component, the atom's root type)",
     "degraded": "drawn through Basic components, not the atom's own implementation",
     "not_supported": "draws nothing or errors",
     "not_measured": "no per-atom data (no example, or the example is invalid)",
@@ -141,7 +149,7 @@ def web_case_status(case):
     if overflow == "fail":
         diffs.append("overflow_360")
     diffs += ["contrast_worse_" + e for e in ENVS if contrast[e] == "worse"]
-    if beh not in ("SAME", "INERT", "n/a (no probe)"):
+    if beh not in BEHAVIOUR_NEUTRAL:
         diffs.append("behaviour_differs")
     nverified = []
     if text == "no_visible_text":
@@ -181,6 +189,26 @@ def flutter_case_status(case):
     return status, reasons, derived
 
 
+# ---------------------------------------------------------------- compose
+
+
+def compose_case_status(case):
+    """Compose has no implementation of our atoms: a case only draws when the atom's root is a Basic component."""
+    ck = case["checks"]
+    pr = ck["painted"]
+    raw = pr["result"]
+    if raw == "painted":
+        status, reasons = "native", ["basic_component_rendered"]
+    elif raw == "unsupported":
+        status, reasons = "not_supported", ["unknown_component_type"]
+    else:
+        raise ValueError("unknown compose painted status %r" % raw)
+    derived = {"painted": raw, "own_type_present": bool(pr.get("own_type_present")), "text_chars": pr.get("text_chars"),
+               "error_codes": list(pr.get("error_codes", [])), "parity_text": ck.get("parity_text"),
+               "basic_lane": ck.get("basic_lane")}
+    return status, reasons, derived
+
+
 # ---------------------------------------------------------------- assembly
 
 
@@ -194,7 +222,7 @@ def entry_for(kind, head, atom_rec):
     if not cases:
         return dict(status="not_measured", reasons=["no_example"], cases=0, worst_case=None, dialect=head["dialect"],
                     checks=None, **base)
-    fn = web_case_status if kind == "web" else flutter_case_status
+    fn = {"web": web_case_status, "flutter": flutter_case_status, "compose": compose_case_status}[kind]
     worst_rank = WEB_WORST if kind == "web" else FL_WORST
     results = []
     for cid in sorted(cases):
@@ -220,7 +248,7 @@ def build(registry, raw, manifest, stable):
     for r in registry["renderers"]:
         rid = r["id"]
         kind = r["kind"]
-        statuses = WEB_STATUSES if kind == "web" else FLUTTER_STATUSES
+        statuses = KIND_STATUSES[kind]
         reg = {k: v for k, v in r.items() if k != "measured"}
         reg["measured"] = bool(r["measured"])
         if not r["measured"]:
@@ -243,6 +271,8 @@ def build(registry, raw, manifest, stable):
                 "renderer_bundle_sha256": head.get("renderer_bundle_sha256"),
                 "results_file_sha256": m["file_sha256"],
             }
+            if head.get("facts"):
+                reg["measurement"]["facts"] = head["facts"]
             reg["coverage"] = counts(statuses, per[rid])
         renderers[rid] = reg
     return {

@@ -14,14 +14,20 @@ independence_note: "Independent and unofficial; not affiliated with Google, Copi
 # bumping `version` and regenerating. Rules are applied per case; an atom with several cases
 # takes the WORST case.
 rules:
-  version: 2
+  version: 3
   web:
     kind: web
     order_worst_first: [not_supported, drawn_with_differences, not_verified, drawn]
     not_supported: "the painted check failed (error or broken flag)"
     drawn_with_differences: "any of: pixel parity vs React failed outside the allowance list; horizontal overflow at 360 px; contrast worse than React in the same environment; behaviour probe differs from React"
     not_verified: "no difference found but the atom could not be verified: no visible text, blank on both sides in an environment, or a check recorded as unstable (allowance list)"
-    drawn: "every check passed (or is not applicable: no probe, not a gate lane, React as reference)"
+    drawn: "every check passed (or is not applicable: no probe, behaviour lane not run, not a gate lane, React as reference)"
+    not_measured: "no example payload for the atom in the gate data"
+  compose:
+    kind: compose
+    order_worst_first: [not_supported, not_measured, native]
+    native: "the atom's own type is a Basic component and the lane case rendered without error (Compose has no implementation of our atoms)"
+    not_supported: "the lane case was rejected: the atom type is not in the Basic catalog"
     not_measured: "no example payload for the atom in the gate data"
   flutter:
     kind: flutter
@@ -64,10 +70,16 @@ renderers:
   kind: web
   measured: true
   package: "@copilotkit/a2ui-renderer"
-  protocol: "v0.9"
+  protocol: "v1.0 (A2UI 1.0 catalog path)"
   platform: "web (React, stock CopilotKit renderer, Chromium)"
   logo: copilotkit.svg
-  note: "CopilotKit draws our atoms inside ITS wrapper and theme, so the custom-lane numbers measure whether the wrapper changes how our atoms look and behave, not CopilotKit's own components."
+  note: "CopilotKit draws our atoms inside ITS wrapper and theme, so the custom-lane numbers measure whether the wrapper changes how our atoms look and behave, not CopilotKit's own components. Primary measurement: version 1.87.0 on A2UI 1.0, our custom lane and four pixel lanes; the behaviour lane was not run for 1.87.0, so behaviour is recorded as not run, never as a pass."
+  notes_extra:
+    - "All 670 gate examples render through the A2UI 1.0 path with no validation failure, no unknown component and no crash."
+    - "Across all 670 gate examples about 40 atoms fail the pixel rule against React in all four lanes (this page counts the stable ones separately); ten atoms overflow at width in every lane (divider, youtube, image, tabs, audio_player, video_card, info_card, glass_card, hub, content_tabs)."
+    - "Ten atoms now render markdown headings and bold in the stock Text and differ from React for real: body, heading, subheading, video_card, split_pane, numbered_list, columns, info_card, glass_card, hub."
+    - "Three atoms fail the pixel rule in 1.87.0 only and are unexplained: page_header, code_snippet_pair and image_with_caption look identical in pair views and the cause was not isolated. They are shown as drawn with differences, not hidden."
+  earlier_measurement: "Earlier measurement, CopilotKit 1.85.0 on the v0.9 dialect (same shipped commit): pixel parity with React 593 of 640 non-blank shots (light 480), 627 of 670 (dark 480), 595 of 640 (light 360), 627 of 670 (dark 360); custom text painted 617 of 670. Superseded by 1.87.0; version and dialect changed together, so the two are not a like-for-like comparison."
 - id: a2ui-vue
   name: a2ui-vue
   kind: web
@@ -85,13 +97,16 @@ renderers:
   protocol: "v1.0"
   platform: "Flutter widget-test engine (headless); no device"
   logo: ""
-  note: "Partial coverage: only a part of the atoms are ported to native Flutter widgets. Text parity with the web painter was checked on the atoms listed in the parity sweep; the Basic lane was not measured by us; no device run."
+  note: "Partial coverage: only a part of the atoms are ported to native Flutter widgets. Text parity with the web painter was checked on the atoms listed in the parity sweep; the Basic lane was not measured by us; no device run. Measured on a private, unpublished build, after the lane merges."
 - id: compose
   name: Compose
   kind: compose
-  measured: false
-  package: "n/a"
-  protocol: "n/a"
-  platform: "Android (Jetpack Compose)"
+  measured: true
+  package: "a2ui-kmp"
+  protocol: "v0.9 only (spec v0.9.1; no v1.0 claim)"
+  platform: "Compose Desktop on the JVM (Jetpack Compose family); not Android"
   logo: ""
-  note: "On hold: no measurement exists, so every atom is not_measured and the completeness check skips this renderer."
+  environment: "a2ui-kmp 1.0.0-alpha02 (third-party Kotlin Multiplatform rebuild of Google's androidx.a2ui), Compose Desktop on JVM with Skiko software rendering, measured on the A2UI v0.9.1 dialect; not an Android device; the pixel lane is not meaningful (fonts, Material 3 look)"
+  note: "Compose has no implementation of our atoms: every atom whose root is not a Basic component is not supported. Only atoms whose root type is a Basic component (Text, Column, Button, Tabs and so on) draw, through the Basic catalog."
+  notes_extra:
+    - "Pixel parity with React is not meaningful here (different fonts, Material 3 look), so the pixel lane is recorded for information and never decides a status."

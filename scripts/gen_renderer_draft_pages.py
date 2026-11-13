@@ -58,10 +58,18 @@ REASON = {
     "unknown_component_type": "component type unknown to the renderer",
     "nested_type_unknown": "a nested atom type is unknown",
     "renderer_not_measured": "renderer not measured",
+    "basic_component_rendered": "rendered by a Basic component (the atom's root type)",
+}
+HELP_COMPOSE = {
+    "native": "the atom's root type is a Basic component and it rendered through the Basic catalog; Compose has no implementation of our atoms",
+    "not_supported": "no implementation of this atom: the type is not in the Basic catalog, so the surface shows an error chip",
+    "not_measured": "no per-atom data (no example payload)",
 }
 PRE = "Measured on a pre-merge build, re-measurement pending."
 BUILD_NOTE = {
     "preview-unmerged": PRE,
+    "private-build": "Measured on a private, unpublished build of the renderer; it cannot be reproduced from a public commit.",
+    "release-package": "",
     "unrecorded": "Build provenance was not recorded for this run.",
     "shipped": "",
 }
@@ -131,7 +139,7 @@ def mark(v):
     return {"pass": ("✓", ""), "reference": ("ref", ""), "fail": ("✕", "bad"), "unstable": ("~ unstable", "unk"),
             "blank_both": ("blank", "unk"), "no_visible_text": ("no text", "unk"), "n/a": ("–", ""),
             "inherited": ("same as React", ""), "worse": ("worse", "bad"), "not_compared": ("n/c", ""),
-            "INERT": ("inert", "unk"), "SAME": ("same", ""), "n/a (no probe)": ("no probe", "")}.get(v, (str(v), "bad"))
+            "INERT": ("inert", "unk"), "not_run": ("not run", "unk"), "SAME": ("same", ""), "n/a (no probe)": ("no probe", "")}.get(v, (str(v), "bad"))
 
 
 def span(label, v):
@@ -154,6 +162,12 @@ def checks_html(kind, e):
             parts.append('<span class="unk">on the unstable allowance list</span>')
         return '<div class="rd-ck">%s</div>' % "".join(parts)
     parts = ['<span>lane %s</span>' % E(ck["painted"].replace("_", " ")), "<span>own type %s</span>" % ("yes" if ck["own_type_present"] else "no")]
+    if kind == "compose":
+        bl = ck.get("basic_lane") or {}
+        parts = ['<span>Basic catalog lane %s</span>' % E(ck["painted"].replace("_", " "))]
+        if bl:
+            parts.append("<span>Basic-lane text same as React %s</span>" % ("yes" if bl.get("text_sha_equal") else "no"))
+        return '<div class="rd-ck">%s</div>' % "".join(parts)
     p = ck.get("parity_text")
     if p:
         parts.append("<span>web words missing %d of %d</span>" % (p["missing_in_flutter"], p["web_words"]))
@@ -312,10 +326,14 @@ def measured_text(m, rid):
         return "Not measured; skipped by the completeness check."
     n_case = T - cov.get("not_measured", 0)
     if reg["kind"] == "web":
-        probes = sum(1 for a in m["atoms"] if (m["atoms"][a][rid].get("checks") or {}).get("behaviour") not in (None, "n/a (no probe)"))
+        probes = sum(1 for a in m["atoms"] if (m["atoms"][a][rid].get("checks") or {}).get("behaviour") not in (None, "n/a (no probe)", "not_run"))
+        no_beh = n_case > 0 and all((m["atoms"][a][rid].get("checks") or {}).get("behaviour") == "not_run" for a in m["atoms"] if m["atoms"][a][rid].get("checks"))
         ref = reg["measurement"].get("reference_renderer")
-        txt = "%d of %d atoms have a gate example. Checks recorded per atom: painting, visible text, blank on both sides, pixel parity %s in the lanes the gate has, overflow at 360 px, contrast, and behaviour for the %d atoms that have an interaction probe." % (
-            n_case, T, "with " + ref.capitalize() if ref else "(React is the reference: parity is recorded against its own frozen shots)", probes)
+        txt = "%d of %d atoms have a gate example. Checks recorded per atom: painting, visible text, blank on both sides, pixel parity %s in the lanes the gate has, overflow at 360 px, contrast, and behaviour %s." % (
+            n_case, T, "with " + ref.capitalize() if ref else "(React is the reference: parity is recorded against its own frozen shots)", "(the behaviour lane was not run for this measurement)" if no_beh else "for the %d atoms that have an interaction probe" % probes)
+    elif reg["kind"] == "compose":
+        txt = ("%d of %d atoms have a gate example, tried through the Basic catalog only (Compose has no implementation of our atoms). "
+               "Also measured: the Basic lane (670 Basic cases) and 48 Basic behaviour probes against React; pixel parity is recorded but not meaningful across Compose Desktop and Chromium.") % (n_case, T)
     else:
         par = sum(1 for a in m["atoms"] if ((m["atoms"][a][rid].get("checks") or {}).get("parity_text")))
         txt = "%d of %d atoms have a lane example, drawn in the headless Flutter widget-test engine. Text parity with the web painter was checked on %d atoms; no pixel parity, no Basic-lane measurement by us and no device run." % (n_case, T, par)
@@ -332,10 +350,19 @@ def renderer_page(m, rid, samples):
     facts = [("Package", reg["package"]), ("Version measured", ms.get("renderer_version") or "n/a"), ("Protocol dialect", reg["protocol"]),
              ("Platform", reg["platform"]), ("Measured", ms.get("measured") or "n/a"),
              ("Run", ms.get("run_id") or "n/a"), ("What was measured", measured_text(m, rid))]
+    if reg.get("environment"):
+        facts.insert(4, ("Environment", reg["environment"]))
+    if ms.get("commit"):
+        facts.append(("Measured on commit", ms["commit"][:9]))
     if ms.get("core_sha256"):
         facts.append(("Core build (sha256, first 12)", ms["core_sha256"][:12]))
+    if ms.get("renderer_bundle_sha256"):
+        facts.append(("Shipped renderer bundle (sha256, first 12)", ms["renderer_bundle_sha256"][:12]))
+    if reg.get("earlier_measurement"):
+        facts.append(("Earlier measurement", reg["earlier_measurement"]))
     dl = "".join("<dt>%s</dt><dd>%s</dd>" % (E(k), E(v)) for k, v in facts)
-    chips = "".join('<tr><td>%s</td><td class="n">%d</td><td class="note">%s</td></tr>' % (chip(s), cov[s], E(HELP[s])) for s in statuses)
+    hp = HELP_COMPOSE if reg["kind"] == "compose" else HELP
+    chips = "".join('<tr><td>%s</td><td class="n">%d</td><td class="note">%s</td></tr>' % (chip(s), cov[s], E(hp[s])) for s in statuses)
     pre = build_note(reg)
     pre_html = '<div class="pre">%s</div>' % E(pre) if pre else ""
     items = ["<li>%s</li>" % E(reg["note"])]
@@ -351,6 +378,9 @@ def renderer_page(m, rid, samples):
                 len({a for a in atoms if any(r.startswith("unstable_") for r in atoms[a][rid]["reasons"])})),
             "<li>%d atoms have no example in the gate data and are not measured.</li>" % cov.get("not_measured", 0),
         ]
+        n4 = len([a for a in atoms if all("pixel_fail_" + e in atoms[a][rid]["reasons"] for e in ENV)])
+        if n4:
+            items.append("<li>%d atoms fail the pixel rule in all four environments (light and dark, 480 and 360 px).</li>" % n4)
     elif reg["kind"] == "flutter":
         chk = [a for a in atoms if (atoms[a][rid].get("checks") or {}).get("parity_text")]
         mism = [a for a in chk if atoms[a][rid]["checks"]["parity_text"]["missing_in_flutter"] > 0]
@@ -361,6 +391,22 @@ def renderer_page(m, rid, samples):
             "<li>Text parity with the web painter was checked on %d atoms; %d of those miss at least one web word in Flutter. The check compares visible words, not layout or pixels. For atoms with several cases the worst case counts.</li>" % (len(chk), len(mism)),
             "<li>No device run: everything ran in the headless widget-test engine. An independent 12 Nov audit of 40 ported atoms found visible drift in about 16, so Native here means the port draws the lane example, not that it matches the web look.</li>",
         ]
+    elif reg["kind"] == "compose":
+        f = ms.get("facts") or {}
+        bl, bb = f.get("basic_lane"), f.get("basic_behaviour")
+        items += [
+            "<li>Compose has no custom-atom implementations. %d of the %d stable atoms with an example are not supported; %d draw natively only because their root is a Basic component. Say it plainly: this renderer is not a target for our atoms today.</li>" % (
+                cov["not_supported"], cov["total"] - cov["not_measured"], cov["native"]),
+        ]
+        if bl:
+            items.append("<li>Basic lane (the Basic catalog on its own): %d of %d cases render without error or crash; visible text is identical to React on %d of %d (%d of %d among the stable atoms).</li>" % (
+                bl["rendered"], bl["cases"], bl["text_identical_to_react"], bl["cases"], bl["stable_text_identical"], bl["stable_atoms"]))
+        if bb:
+            items.append("<li>Behaviour, %d Basic probes against React: same %d, different %d, same rejection %d, error %d, not runnable %d. Custom-atom behaviour probes were not run (the atoms are not registered).</li>" % (
+                bb["probes"], bb["same"], bb["different"], bb["same_reject"], bb["error"], bb["not_runnable"]))
+        items.append("<li>Not run: dark mode, 360 px, an Android device or emulator, spec v1.0.</li>")
+    for n in reg.get("notes_extra", []):
+        items.append("<li>%s</li>" % E(n))
     extra = '<h2>Honest notes</h2><div class="card"><ul>%s</ul></div>' % "".join(items)
     lists = ""
     for s in statuses:
@@ -370,7 +416,7 @@ def renderer_page(m, rid, samples):
             li = []
             for a in byst[s]:
                 suffix = ""
-                p = (atoms[a][rid].get("checks") or {}).get("parity_text") if s == "native" else None
+                p = (atoms[a][rid].get("checks") or {}).get("parity_text") if s == "native" and reg["kind"] == "flutter" else None
                 if p and p["missing_in_flutter"]:
                     suffix = ' <span class="note">(%d of %d web words missing)</span>' % (p["missing_in_flutter"], p["web_words"])
                 li.append("<li>%s%s</li>" % (atom_link(a, samples), suffix))
@@ -415,15 +461,15 @@ def hub(m, samples, file_links):
     files = '<h2>Files</h2><p class="note"><a href="README.md">README.md</a>, <a href="data/renderer-matrix-v1.json">renderer-matrix-v1.json</a>.</p>' if file_links else ""
     body = (
         '<span class="draft">Draft, local only, not published</span><h1>Which renderer draws which atom</h1>'
-        '<p class="lead">A new, separate dimension of the catalogue. Every atom already says where it appears; this adds what draws it, measured per renderer. %d stable atoms, %d renderers (one not measured).</p>%s'
+        '<p class="lead">A new, separate dimension of the catalogue. Every atom already says where it appears; this adds what draws it, measured per renderer. %d stable atoms, %d renderers, %d of them measured.</p>%s'
         "<h2>Two dimensions, in plain words</h2>"
         '<div class="two"><div class="card"><strong>Surface: where it appears</strong><p class="note">The place a person sees the atom: web page, MCP app, Android, PDF, Google Meet stage, and so on. This is the existing <code>x-surfaces</code> field. It does not change.</p></div>'
-        '<div class="card"><strong>Renderer: what draws it</strong><p class="note">The piece of software that turns the atom into pixels: React, Lit, Angular, CopilotKit, a2ui-vue or Flutter. This is the new <code>x-renderers</code> field. One surface (the web) is drawn by several renderers, and one renderer can serve several surfaces.</p></div></div>'
+        '<div class="card"><strong>Renderer: what draws it</strong><p class="note">The piece of software that turns the atom into pixels: React, Lit, Angular, CopilotKit, a2ui-vue, Flutter or Compose. This is the new <code>x-renderers</code> field. One surface (the web) is drawn by several renderers, and one renderer can serve several surfaces.</p></div></div>'
         "<h2>Registry</h2>"
         '<div class="scroll"><table><thead><tr><th>Renderer</th><th>Package, version</th><th>Protocol</th><th>Drawn / Native</th><th>With differences / Degraded</th><th>Not verified</th><th>Not supported</th><th>Not measured</th></tr></thead><tbody>%s</tbody></table></div>'
-        '<p class="note">Web renderers: Drawn (every check passed), Drawn with differences (a check differs from React), Not verified (no difference found, but the atom could not be verified). Flutter: Native (own implementation), Degraded (drawn through Basic components). Not supported: draws nothing or errors. Not measured: no per-atom data. CopilotKit and a2ui-vue draw our atoms inside their own wrapper and theme. Each renderer page says what was measured, computed from the data.</p>'
+        '<p class="note">Web renderers: Drawn (every check passed), Drawn with differences (a check differs from React), Not verified (no difference found, but the atom could not be verified). Flutter: Native (own implementation), Degraded (drawn through Basic components). Compose: Native only where the atom&rsquo;s root is a Basic component; it has no implementation of our atoms. Not supported: draws nothing or errors. Not measured: no per-atom data. CopilotKit and a2ui-vue draw our atoms inside their own wrapper and theme. Each renderer page says what was measured, computed from the data.</p>'
         "%s%s%s"
-    ) % (m["atom_count"], len(m["renderers"]), "".join('<div class="pre">%s: %s</div>' % (E(", ".join(v)), E(n)) for n, v in sorted(pre.items())), "".join(rows), samples_html, files, tm_block(m))
+    ) % (m["atom_count"], len(m["renderers"]), sum(1 for r in m["renderers"].values() if r["measured"]), "".join('<div class="pre">%s: %s</div>' % (E(", ".join(v)), E(n)) for n, v in sorted(pre.items())), "".join(rows), samples_html, files, tm_block(m))
     return page("[DRAFT] Renderer dimension", body)
 
 
