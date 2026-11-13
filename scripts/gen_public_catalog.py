@@ -8,6 +8,7 @@ Outputs:
   public/catalogue/a2ui-atoms-v1.json and of the published packs (a2ui-bricks-v1): WHAT draws the atom
   (react, lit, angular, copilotkit, a2ui-vue, flutter, compose), derived from the committed
   public/catalogue/renderer-matrix-v1.json (scripts/gen_renderer_matrix.py; shape in docs/renderer-matrix.md).
+  COMPACT: renderer id -> status string only; evidence and dates stay in the matrix file (pointer in the header).
   Deterministic, no clock; an atom the matrix does not cover (preview/private) simply has no key.
   public/atoms/index.json             — compact index: type + compact_description + surfaces
   public/runbooks/index.json          — runbook library compiled from runbooks/*.yaml
@@ -43,6 +44,19 @@ PUBLIC = os.path.join(ROOT, "public")
 BASE_URL = "https://a2uicatalog.ai"
 RENDERER_MATRIX = os.path.join(PUBLIC, "catalogue", "renderer-matrix-v1.json")
 _RENDERER_MATRIX = {}   # loaded once: {"matrix": dict|None, "project": fn}
+
+
+RENDERER_MATRIX_URL = f"{BASE_URL}/catalogue/renderer-matrix-v1.json"
+
+
+def renderer_header_note():
+    """One sentence for catalogue headers (None when the matrix is absent): where the full data is, rules version."""
+    x_renderers_for("")  # loads the matrix
+    m = _RENDERER_MATRIX["matrix"]
+    if not m:
+        return None
+    return (f"Per-atom `x-renderers` maps renderer id to a status string (what draws the atom); per-check evidence, "
+            f"dates and notes: {RENDERER_MATRIX_URL} (status rules version {m['rules_version']}).")
 
 
 def x_renderers_for(atom_type):
@@ -143,11 +157,17 @@ def load_blocks():
     return stable, {b["type"] for b in blocks}
 
 
+_XR_RE = re.compile(r'"x-renderers": \{([^{}]*)\}')
+
+
 def write_json(rel_path, payload):
     path = os.path.join(PUBLIC, rel_path)
     os.makedirs(os.path.dirname(path), exist_ok=True)
+    text = json.dumps(payload, indent=1, ensure_ascii=False)
+    # x-renderers is a flat id -> status map: keep each on ONE line (about 30 KB less in the 573-atom files)
+    text = _XR_RE.sub(lambda m: '"x-renderers": ' + json.dumps(json.loads("{" + m.group(1) + "}"), ensure_ascii=False), text)
     with open(path, "w") as f:
-        json.dump(payload, f, indent=1, ensure_ascii=False)
+        f.write(text)
         f.write("\n")
     size_kb = os.path.getsize(path) / 1024
     print(f"  ✅ public/{rel_path} ({size_kb:.1f} KB)")
@@ -176,9 +196,11 @@ def gen_spec(blocks):
         if b.get("intent_phrases"):
             entry["intent_phrases"] = b["intent_phrases"]
         atoms.append(entry)
+    rnote = renderer_header_note()
     return {
         "catalogId": "a2ui-atoms-v1",
         "displayName": "A2UI Multi-Surface Renderer",
+        **({"x-renderers-matrix": RENDERER_MATRIX_URL, "x-renderers-rules-version": _RENDERER_MATRIX["matrix"]["rules_version"]} if rnote else {}),
         "type": "application/vnd.a2ui.renderer+json",
         "atomCount": len(atoms),
         "compactIndex": f"{BASE_URL}/atoms/index.json",
@@ -322,7 +344,8 @@ def gen_atoms_catalog(blocks):
                          f"({len(components)} components). Compose layouts with "
                          "Column/Row containers; each component's fields are its "
                          f"properties. {ENVELOPE_NOTE} Canonical URI: {ATOMS_CATALOG_URI} — full prose "
-                         f"spec (descriptions, surfaces, attribution): {BASE_URL}/spec.json"),
+                         f"spec (descriptions, surfaces, attribution): {BASE_URL}/spec.json"
+                         + (" " + renderer_header_note() if renderer_header_note() else "")),
         "components": components,
         "functions": {},
         "$defs": catalog_defs(components),

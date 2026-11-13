@@ -5,7 +5,7 @@
  "catalogId": "https://a2uicatalog.ai/catalogue/a2ui-bricks-v1.json",
  "title": "A2UI a2ui-bricks-v1 catalog",
  "description": "The a2ui-bricks-v1 extension pack as an A2UI-v1.0 catalog document (4 atoms); the base atoms are in https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json.",
- "instructions": "Every key under `components` is a valid `component` value (4 components). Compose layouts with Column/Row containers; each component's fields are its properties. Component envelope keys are `@`-prefixed in A2UI v1.0: `@catalogId` (set it on every component of this catalogue when the surface default is another catalog), `@metadata`, `@accessibility`, `@checks`; only `id` and `component` are unprefixed, and a plain `catalogId`, `metadata`, `accessibility` or `checks` is an ordinary component property. Canonical URI: https://a2uicatalog.ai/catalogue/a2ui-bricks-v1.json — full prose spec (descriptions, surfaces, attribution): https://a2uicatalog.ai/spec.json",
+ "instructions": "Every key under `components` is a valid `component` value (4 components). Compose layouts with Column/Row containers; each component's fields are its properties. Component envelope keys are `@`-prefixed in A2UI v1.0: `@catalogId` (set it on every component of this catalogue when the surface default is another catalog), `@metadata`, `@accessibility`, `@checks`; only `id` and `component` are unprefixed, and a plain `catalogId`, `metadata`, `accessibility` or `checks` is an ordinary component property. Canonical URI: https://a2uicatalog.ai/catalogue/a2ui-bricks-v1.json — full prose spec (descriptions, surfaces, attribution): https://a2uicatalog.ai/spec.json Per-atom `x-renderers` maps renderer id to a status string (what draws the atom); per-check evidence, dates and notes: https://a2uicatalog.ai/catalogue/renderer-matrix-v1.json (status rules version 4).",
  "components": {
   "motion_bricks": {
    "type": "object",
@@ -85,77 +85,7 @@
     "mcp-apps",
     "android"
    ],
-   "x-renderers": {
-    "react": {
-     "status": "not_verified",
-     "reasons": [
-      "no_visible_text"
-     ],
-     "measured": "2026-11-13",
-     "measured_on": "shipped",
-     "renderer_version": "@a2ui/react 0.15.0 (web_core 0.15.0)"
-    },
-    "lit": {
-     "status": "not_verified",
-     "reasons": [
-      "blank_both_light360",
-      "blank_both_light480"
-     ],
-     "measured": "2026-11-13",
-     "measured_on": "shipped",
-     "renderer_version": "@a2ui/lit 0.15.0 (web_core 0.15.0)"
-    },
-    "angular": {
-     "status": "not_verified",
-     "reasons": [
-      "blank_both_light360",
-      "blank_both_light480"
-     ],
-     "measured": "2026-11-13",
-     "measured_on": "shipped",
-     "renderer_version": "@a2ui/angular 0.14.0 (web_core 0.15.0)"
-    },
-    "copilotkit": {
-     "status": "not_verified",
-     "reasons": [
-      "blank_both_light360",
-      "blank_both_light480",
-      "no_visible_text"
-     ],
-     "measured": "2026-11-13",
-     "measured_on": "shipped",
-     "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
-    },
-    "a2ui-vue": {
-     "status": "not_verified",
-     "reasons": [
-      "blank_both_light360",
-      "blank_both_light480",
-      "no_visible_text"
-     ],
-     "measured": "2026-11-13",
-     "measured_on": "shipped",
-     "renderer_version": "a2ui-vue 0.9.5 (Vue 3.5.13, web_core 0.9.1)"
-    },
-    "flutter": {
-     "status": "not_supported",
-     "reasons": [
-      "unknown_component_type"
-     ],
-     "measured": "2026-11-13",
-     "measured_on": "private-build",
-     "renderer_version": "a2ui_flutter 0.3.0 (a2ui_core 0.7.0), private build"
-    },
-    "compose": {
-     "status": "not_supported",
-     "reasons": [
-      "unknown_component_type"
-     ],
-     "measured": "2026-11-13",
-     "measured_on": "release-package",
-     "renderer_version": "a2ui-kmp 1.0.0-alpha02 (third-party Kotlin Multiplatform rebuild of androidx.a2ui 1.0.0-alpha02; spec v0.9.1 only)"
-    }
-   }
+   "x-renderers": {"react": "not_verified", "lit": "not_verified", "angular": "not_verified", "copilotkit": "not_verified", "a2ui-vue": "not_verified", "flutter": "not_supported", "compose": "not_supported"}
   },
   "brick_build_3d": {
    "type": "object",
@@ -246,61 +176,7 @@
     "mcp-apps",
     "android"
    ],
-   "x-renderers": {
-    "react": {
-     "status": "drawn",
-     "reasons": [],
-     "measured": "2026-11-13",
-     "measured_on": "shipped",
-     "renderer_version": "@a2ui/react 0.15.0 (web_core 0.15.0)"
-    },
-    "lit": {
-     "status": "drawn",
-     "reasons": [],
-     "measured": "2026-11-13",
-     "measured_on": "shipped",
-     "renderer_version": "@a2ui/lit 0.15.0 (web_core 0.15.0)"
-    },
-    "angular": {
-     "status": "drawn",
-     "reasons": [],
-     "measured": "2026-11-13",
-     "measured_on": "shipped",
-     "renderer_version": "@a2ui/angular 0.14.0 (web_core 0.15.0)"
-    },
-    "copilotkit": {
-     "status": "drawn",
-     "reasons": [],
-     "measured": "2026-11-13",
-     "measured_on": "shipped",
-     "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
-    },
-    "a2ui-vue": {
-     "status": "drawn",
-     "reasons": [],
-     "measured": "2026-11-13",
-     "measured_on": "shipped",
-     "renderer_version": "a2ui-vue 0.9.5 (Vue 3.5.13, web_core 0.9.1)"
-    },
-    "flutter": {
-     "status": "not_supported",
-     "reasons": [
-      "unknown_component_type"
-     ],
-     "measured": "2026-11-13",
-     "measured_on": "private-build",
-     "renderer_version": "a2ui_flutter 0.3.0 (a2ui_core 0.7.0), private build"
-    },
-    "compose": {
-     "status": "not_supported",
-     "reasons": [
-      "unknown_component_type"
-     ],
-     "measured": "2026-11-13",
-     "measured_on": "release-package",
-     "renderer_version": "a2ui-kmp 1.0.0-alpha02 (third-party Kotlin Multiplatform rebuild of androidx.a2ui 1.0.0-alpha02; spec v0.9.1 only)"
-    }
-   }
+   "x-renderers": {"react": "drawn", "lit": "drawn", "angular": "drawn", "copilotkit": "drawn", "a2ui-vue": "drawn", "flutter": "not_supported", "compose": "not_supported"}
   },
   "block_robot": {
    "type": "object",
@@ -356,71 +232,7 @@
     "mcp-apps",
     "android"
    ],
-   "x-renderers": {
-    "react": {
-     "status": "not_measured",
-     "reasons": [
-      "no_example"
-     ],
-     "measured": "2026-11-13",
-     "measured_on": "shipped",
-     "renderer_version": "@a2ui/react 0.15.0 (web_core 0.15.0)"
-    },
-    "lit": {
-     "status": "not_measured",
-     "reasons": [
-      "no_example"
-     ],
-     "measured": "2026-11-13",
-     "measured_on": "shipped",
-     "renderer_version": "@a2ui/lit 0.15.0 (web_core 0.15.0)"
-    },
-    "angular": {
-     "status": "not_measured",
-     "reasons": [
-      "no_example"
-     ],
-     "measured": "2026-11-13",
-     "measured_on": "shipped",
-     "renderer_version": "@a2ui/angular 0.14.0 (web_core 0.15.0)"
-    },
-    "copilotkit": {
-     "status": "not_measured",
-     "reasons": [
-      "no_example"
-     ],
-     "measured": "2026-11-13",
-     "measured_on": "shipped",
-     "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
-    },
-    "a2ui-vue": {
-     "status": "not_measured",
-     "reasons": [
-      "no_example"
-     ],
-     "measured": "2026-11-13",
-     "measured_on": "shipped",
-     "renderer_version": "a2ui-vue 0.9.5 (Vue 3.5.13, web_core 0.9.1)"
-    },
-    "flutter": {
-     "status": "not_measured",
-     "reasons": [
-      "no_example"
-     ],
-     "measured": "2026-11-13",
-     "measured_on": "private-build",
-     "renderer_version": "a2ui_flutter 0.3.0 (a2ui_core 0.7.0), private build"
-    },
-    "compose": {
-     "status": "not_measured",
-     "reasons": [
-      "no_example"
-     ],
-     "measured": "2026-11-13",
-     "measured_on": "release-package",
-     "renderer_version": "a2ui-kmp 1.0.0-alpha02 (third-party Kotlin Multiplatform rebuild of androidx.a2ui 1.0.0-alpha02; spec v0.9.1 only)"
-    }
-   },
+   "x-renderers": {"react": "not_measured", "lit": "not_measured", "angular": "not_measured", "copilotkit": "not_measured", "a2ui-vue": "not_measured", "flutter": "not_measured", "compose": "not_measured"},
    "x-routing-text": "A small toy-brick robot: legs, blue body, grey arms, white head, eyes and a red top brick. A pre-composed 10-brick toy-brick model for a motion timeline: a block you place and time, not bricks you write.",
    "x-intent-phrases": [
     "I want a little robot made of toy bricks that assembles itself in my video.",
@@ -482,71 +294,7 @@
     "mcp-apps",
     "android"
    ],
-   "x-renderers": {
-    "react": {
-     "status": "not_measured",
-     "reasons": [
-      "no_example"
-     ],
-     "measured": "2026-11-13",
-     "measured_on": "shipped",
-     "renderer_version": "@a2ui/react 0.15.0 (web_core 0.15.0)"
-    },
-    "lit": {
-     "status": "not_measured",
-     "reasons": [
-      "no_example"
-     ],
-     "measured": "2026-11-13",
-     "measured_on": "shipped",
-     "renderer_version": "@a2ui/lit 0.15.0 (web_core 0.15.0)"
-    },
-    "angular": {
-     "status": "not_measured",
-     "reasons": [
-      "no_example"
-     ],
-     "measured": "2026-11-13",
-     "measured_on": "shipped",
-     "renderer_version": "@a2ui/angular 0.14.0 (web_core 0.15.0)"
-    },
-    "copilotkit": {
-     "status": "not_measured",
-     "reasons": [
-      "no_example"
-     ],
-     "measured": "2026-11-13",
-     "measured_on": "shipped",
-     "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)"
-    },
-    "a2ui-vue": {
-     "status": "not_measured",
-     "reasons": [
-      "no_example"
-     ],
-     "measured": "2026-11-13",
-     "measured_on": "shipped",
-     "renderer_version": "a2ui-vue 0.9.5 (Vue 3.5.13, web_core 0.9.1)"
-    },
-    "flutter": {
-     "status": "not_measured",
-     "reasons": [
-      "no_example"
-     ],
-     "measured": "2026-11-13",
-     "measured_on": "private-build",
-     "renderer_version": "a2ui_flutter 0.3.0 (a2ui_core 0.7.0), private build"
-    },
-    "compose": {
-     "status": "not_measured",
-     "reasons": [
-      "no_example"
-     ],
-     "measured": "2026-11-13",
-     "measured_on": "release-package",
-     "renderer_version": "a2ui-kmp 1.0.0-alpha02 (third-party Kotlin Multiplatform rebuild of androidx.a2ui 1.0.0-alpha02; spec v0.9.1 only)"
-    }
-   },
+   "x-renderers": {"react": "not_measured", "lit": "not_measured", "angular": "not_measured", "copilotkit": "not_measured", "a2ui-vue": "not_measured", "flutter": "not_measured", "compose": "not_measured"},
    "x-routing-text": "A small toy-brick rocket: two grey nozzle bricks, red fins, a dark band, a white hull, a window and a red nose. A pre-composed 9-brick toy-brick model for a motion timeline: a block you place and time, not bricks you write.",
    "x-intent-phrases": [
     "I want a toy-brick rocket that builds itself in my launch animation.",

@@ -251,7 +251,7 @@ def check_consistent(ctx):
 
 
 def check_site_wiring(ctx):
-    """The built catalogue documents and site pages carry what the matrix says (fragments from renderer_site.py)."""
+    """The built catalogue documents (compact status map + pointer header) and site pages carry what the matrix says."""
     errs, nm = [], Names(ctx["stable"])
     matrix = ctx["matrix"]
     if matrix is None:
@@ -271,15 +271,22 @@ def check_site_wiring(ctx):
     docs = {SPEC_REL: lambda d: {a["type"]: a.get("x-renderers") for a in d["atoms"]}}
     for rel in CATALOGUES_REL:
         docs[rel] = lambda d: {k: c.get("x-renderers") for k, c in d["components"].items()}
+    url = "https://a2uicatalog.ai/" + MATRIX_REL.split("public/", 1)[1]
     for rel, getter in docs.items():
         text = load(rel)
         if text is None:
             errs.append(("CONSISTENT", "%s is missing (run gen_public_catalog.py)" % rel))
             continue
-        for atom, got in getter(json.loads(text)).items():
+        doc = json.loads(text)
+        if rel == SPEC_REL:
+            if doc.get("x-renderers-matrix") != url or doc.get("x-renderers-rules-version") != matrix["rules_version"]:
+                errs.append(("CONSISTENT", "%s header does not point to the matrix %s with rules version %s" % (rel, url, matrix["rules_version"])))
+        elif url not in doc.get("instructions", ""):
+            errs.append(("CONSISTENT", "%s instructions do not point to %s" % (rel, url)))
+        for atom, got in getter(doc).items():
             want = gen.x_renderers(matrix, atom) if atom in matrix["atoms"] else None
             if got != want:
-                errs.append(("CONSISTENT", "%s: x-renderers of %s %s the matrix" % (rel, nm(atom), "is missing or differs from" if want else "has no entry in")))
+                errs.append(("CONSISTENT", "%s: x-renderers of %s %s the matrix statuses" % (rel, nm(atom), "is missing or differs from" if want else "has no entry in")))
     # site pages
     want_pages = {"public/renderers/index.html": [site.hub_body(matrix)]}
     for rid in matrix["renderers"]:

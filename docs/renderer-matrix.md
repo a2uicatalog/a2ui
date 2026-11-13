@@ -39,13 +39,14 @@ Export: `python3 scripts/export_renderer_results.py --det-dir <dir with det_gate
 
 ## `x-renderers` in the catalogue (for the MCP side)
 
-Next to `x-surfaces`, each component of `/catalogue/a2ui-atoms-v1.json` (and of `a2ui-bricks-v1.json`) and each atom of `/spec.json` carries `x-renderers`: an object keyed by renderer id (`react`, `lit`, `angular`, `copilotkit`, `a2ui-vue`, `flutter`, `compose`), each value `{status, reasons, measured, measured_on, renderer_version}`:
+Compact by design (agents fetch these files). Next to `x-surfaces`, each component of `/catalogue/a2ui-atoms-v1.json` (and `a2ui-bricks-v1.json`) and each atom of `/spec.json` carries `x-renderers`: a map from renderer id (`react`, `lit`, `angular`, `copilotkit`, `a2ui-vue`, `flutter`, `compose`) to ONE status string, the matrix's own vocabulary, nothing omitted: `{"react":"drawn","copilotkit":"drawn_with_differences","flutter":"native","compose":"not_supported",...}`.
 
-- `status`: web renderers `drawn | drawn_with_differences | not_verified | not_supported | not_measured`; Flutter `native | degraded | not_supported | not_measured`; Compose `native | not_supported | not_measured`. Only `drawn` and `native` mean "draws it as the atom intends"; `degraded` is Basic-component lowering and should not count as supported unless an agent asks (`include_degraded`).
-- `reasons`: enumerated codes (`pixel_fail_dark360`, `overflow_360`, `no_visible_text`, ...), no free text. `measured`: ISO date or null (renderer not measured). `measured_on`: `shipped | preview-unmerged | private-build | release-package | unrecorded | null`. `renderer_version`: package and version string or null.
-- Atoms the matrix does not cover (preview, private) carry no key. `atoms/index.json` (the compact index) is unchanged.
+- Web renderers: `drawn | drawn_with_differences | not_verified | not_supported | not_measured`; Flutter `native | degraded | not_supported | not_measured`; Compose `native | not_supported | not_measured`. Only `drawn` and `native` mean "draws it as the atom intends"; `degraded` is Basic-component lowering and should not count as supported unless an agent asks (`include_degraded`).
+- Header pointer: `/spec.json` has top-level `x-renderers-matrix` (the matrix URL) and `x-renderers-rules-version`; catalogue documents (their top-level keys are restricted by the A2UI v1.0 catalog schema) say the same in `instructions`.
+- Reasons, per-check evidence, note codes, measured dates, `measured_on`, versions and provenance are ONLY in `/catalogue/renderer-matrix-v1.json` and on the `/renderers/` and atom pages. An MCP tool that needs them fetches the matrix (`atoms[<atom>][<renderer>]`).
+- Atoms the matrix does not cover (preview, private) carry no key. `atoms/index.json` is unchanged.
 
-MCP `find_atoms` / `get_atom_schema` read the catalogue, so they can filter and report on `x-renderers` once the private worker syncs the new catalogue; that sync is a separate private step (this repo does not touch the worker).
+MCP `find_atoms` / `get_atom_schema` read the catalogue, so they can filter on the status string once the private worker syncs the new catalogue; that sync is a separate private step (this repo does not touch the worker). `scripts/check_renderer_matrix.py` verifies the built `x-renderers` equal the matrix statuses.
 
 ## Still open from the design
 

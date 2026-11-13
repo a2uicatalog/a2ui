@@ -169,8 +169,8 @@ def hub_body(m):
             % (dp.logo(reg, "/renderers/"), _row_link(rid), E(reg["name"]), E(reg["package"]), sub, E(reg["protocol"]), top, mid,
                "%d" % cov["not_verified"] if web and reg["measured"] else "–", cov.get("not_supported", 0), cov["not_measured"])
         )
-    example = {"x-surfaces": ["web", "mcp-apps"], "x-renderers": {"react": {"status": "drawn", "reasons": [], "measured": "<date>",
-                                                                             "measured_on": "shipped", "renderer_version": "<version>"}, "...": "one key per renderer"}}
+    example = {"x-surfaces": ["web", "mcp-apps"], "x-renderers": {"react": "drawn", "lit": "drawn", "copilotkit": "drawn_with_differences",
+                                                                  "flutter": "native", "compose": "not_supported", "...": "one key per renderer"}}
     banners = "".join('<div class="pre">%s: %s</div>' % (E(", ".join(v)), E(n)) for n, v in sorted(pre.items()))
     return (
         '<div class="rdp"><h1>Which renderer draws which atom</h1>'
@@ -182,7 +182,7 @@ def hub_body(m):
         '<div class="scroll"><table><thead><tr><th>Renderer</th><th>Package, version</th><th>Protocol</th><th>Drawn / Native</th><th>With differences / Degraded</th><th>Not verified</th><th>Not supported</th><th>Not measured</th></tr></thead><tbody>%s</tbody></table></div>'
         '<p class="note">Web renderers: Drawn (every check passed), Drawn with differences (a check differs from React), Not verified (no difference found, but the atom could not be verified). Flutter: Native (own implementation), Degraded (drawn through Basic components). Compose: Native only where the atom&rsquo;s root is a Basic component; it has no implementation of our atoms. Not supported: draws nothing or errors. Not measured: no per-atom data. CopilotKit and a2ui-vue draw our atoms inside their own wrapper and theme. Each renderer page says what was measured, computed from the data.</p>'
         "<h2>For agents and tools</h2>"
-        '<p class="note">Each component in <a href="/catalogue/a2ui-atoms-v1.json">/catalogue/a2ui-atoms-v1.json</a> and each atom in <a href="/spec.json">/spec.json</a> carries an <code>x-renderers</code> object next to <code>x-surfaces</code>, one key per renderer. The full per-check data is <a href="/catalogue/renderer-matrix-v1.json">/catalogue/renderer-matrix-v1.json</a>.</p>'
+        '<p class="note">Each component in <a href="/catalogue/a2ui-atoms-v1.json">/catalogue/a2ui-atoms-v1.json</a> and each atom in <a href="/spec.json">/spec.json</a> carries a compact <code>x-renderers</code> map next to <code>x-surfaces</code>: renderer id to status string, one key per renderer. Per-check evidence, dates and notes are only in <a href="/catalogue/renderer-matrix-v1.json">/catalogue/renderer-matrix-v1.json</a>.</p>'
         '<pre tabindex="0"><code>%s</code></pre>'
         '<p class="tm">%s</p></div>'
     ) % (m["atom_count"], len(m["renderers"]), sum(1 for r in m["renderers"].values() if r["measured"]), banners, "".join(rows),

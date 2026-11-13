@@ -298,10 +298,9 @@ def build(registry, raw, manifest, stable):
 
 
 def x_renderers(matrix, atom):
-    out = {}
-    for rid, e in matrix["atoms"][atom].items():
-        out[rid] = {k: e[k] for k in ("status", "reasons", "measured", "measured_on", "renderer_version")}
-    return out
+    """Compact catalogue form: renderer id -> summary status string (nothing else; per-check evidence, notes,
+    provenance and dates stay in the matrix file and on the pages)."""
+    return {rid: e["status"] for rid, e in matrix["atoms"][atom].items()}
 
 
 def dumps(obj):

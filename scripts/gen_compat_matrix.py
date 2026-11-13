@@ -96,7 +96,7 @@ def build_renderer_table(atoms: list, matrix: dict) -> str:
     for a in atoms:
         for rid, e in (a.get("x-renderers") or {}).items():
             c = counts.setdefault(rid, {})
-            c[e["status"]] = c.get(e["status"], 0) + 1
+            c[e] = c.get(e, 0) + 1
     used = [(k, lbl) for k, lbl in STATUS_ORDER if any(k in c for c in counts.values())]
     lines = [f"{len(atoms)} atoms · what draws each atom, per renderer, measured against React · generated from "
              f"`public/spec.json` (`x-renderers`) by `scripts/gen_compat_matrix.py` — do not edit by hand. "
