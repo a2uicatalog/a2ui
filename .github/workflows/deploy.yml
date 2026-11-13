@@ -93,6 +93,12 @@ jobs:
       - name: Atom-count claims must match the published catalogue
         run: python3 scripts/gen_atom_count.py --check
 
+      # Offline renderer-dimension content check (no secrets, no harness, seconds; nothing clock-based
+      # can fail it: age only warns). Runs after the generators, so it also proves the built catalogue
+      # documents and the /renderers/ + atom pages carry what the committed matrix says.
+      - name: Renderer matrix content check
+        run: python3 scripts/check_renderer_matrix.py
+
       - name: Enforce project.yaml (visibility policy + declared debt)
         run: python3 -m pytest tests/test_project_manifest.py -q
 

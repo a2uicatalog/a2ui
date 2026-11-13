@@ -99,6 +99,8 @@ policy:
     - public/.well-known/**
     - public/atoms/**
     - public/atoms.md   # markdown twin of the /atoms/ hub (generate_atom_pages.py render_atoms_hub_md)
+    - public/renderers/**   # renderer dimension: hub, one page per renderer, logos (generate_atom_pages.py write_renderer_pages)
+    - public/renderers.md   # markdown twin of the /renderers/ hub
     - public/surfaces/**
     - public/renderer/**
     - public/spec.json
@@ -263,13 +265,13 @@ known_debt:
 generators:
   generate_atom_pages:
     script: scripts/generate_atom_pages.py
-    source: atoms/schema.yaml
-    outputs: [public/atoms/]          # per-atom index.html pages
+    source: atoms/schema.yaml + public/catalogue/renderer-matrix-v1.json (read only, via scripts/renderer_site.py) + atoms/renderer-logos/
+    outputs: [public/atoms/, public/renderers/, public/renderers.md]   # per-atom index.html pages (+ Renderers block), renderer hub and pages
     publish: ci (deploy.yml on push -> Cloudflare)
   gen_public_catalog:
     script: scripts/gen_public_catalog.py
-    source: atoms/schema.yaml
-    outputs: [public/spec.json, public/atoms/index.json, public/runbooks/index.json, public/catalogue/gdm-v0.2.json, public/catalogue/a2ui-bricks-v1.json]
+    source: atoms/schema.yaml + public/catalogue/renderer-matrix-v1.json (x-renderers per atom; deterministic, no clock)
+    outputs: [public/spec.json, public/atoms/index.json, public/runbooks/index.json, public/catalogue/gdm-v0.2.json, public/catalogue/a2ui-bricks-v1.json, public/catalogue/a2ui-atoms-v1.json]
     publish: ci (deploy.yml on push -> Cloudflare)
   gen_knowledge:
     script: scripts/gen_knowledge.py
@@ -292,8 +294,8 @@ generators:
       steps; run locally and commit the output when skills/ changes.
   gen_compat_matrix:
     script: scripts/gen_compat_matrix.py
-    source: public/spec.json (itself compiled from atoms/schema.yaml by gen_public_catalog)
-    outputs: [README.md]              # only the block between compat-matrix markers
+    source: public/spec.json (itself compiled from atoms/schema.yaml by gen_public_catalog) + public/catalogue/renderer-matrix-v1.json
+    outputs: [README.md]              # only the blocks between compat-matrix and renderer-matrix markers
     publish: repo-committed (GitHub renders it)
   gen_readme_badges:
     script: scripts/gen_readme_badges.py
@@ -564,12 +566,13 @@ generators:
     script: scripts/gen_renderer_matrix.py
     source: atoms/renderers.yaml + data/renderer-results/*.json (raw results exported from the private
       measurement harness by scripts/export_renderer_results.py, hand-run, never in CI) + atoms/schema.yaml
-    outputs: [public/catalogue/renderer-matrix-v1.json, public/catalogue/a2ui-atoms-v1.renderers-draft.json]
-    publish: none yet — DRAFT, local only. The draft catalogue is a copy of a2ui-atoms-v1.json with
-      x-renderers; wiring it into gen_public_catalog.py is a separate step (docs/renderer-matrix.md).
-      scripts/check_renderer_matrix.py is the offline check (COMPLETE, FRESH, EVIDENCED, CONSISTENT, PRIVATE-SAFE).
+    outputs: [public/catalogue/renderer-matrix-v1.json]
+    publish: repo-committed, served by Cloudflare (/catalogue/renderer-matrix-v1.json). Not run in CI; the
+      generated matrix is committed and CHECKED in deploy.yml by scripts/check_renderer_matrix.py (offline
+      content checks, COMPLETE, FRESH, EVIDENCED, CONSISTENT, PRIVATE-SAFE). gen_public_catalog.py derives
+      x-renderers from it and generate_atom_pages.py renders the Renderers blocks and /renderers/ pages.
   gen_renderer_draft_pages:
     script: scripts/gen_renderer_draft_pages.py
     source: public/catalogue/renderer-matrix-v1.json
-    outputs: [docs/renderer-draft/]                     # hub + one page per renderer; checked byte-for-byte by check_renderer_matrix.py
-    publish: none — DRAFT pages, not under public/
+    outputs: [docs/renderer-draft/]                     # the approved design as standalone pages; checked byte-for-byte by check_renderer_matrix.py
+    publish: none — design reference; its row/chip/notes helpers are shared with scripts/renderer_site.py (the real site pages)
