@@ -15,8 +15,8 @@ web, google-meet-stage, google-apps-script-web, mcp-apps, android
 | Angular | Not measured | 2026-11-13 | no example payload in the gate data |
 | CopilotKit | Not measured | 2026-11-13 | no example payload in the gate data |
 | a2ui-vue | Not measured | 2026-11-13 | no example payload in the gate data |
-| Flutter | Not measured | 2026-11-13 | no example payload in the gate data |
-| Compose | Not measured | 2026-11-13 | no example payload in the gate data |
+| Flutter | Native | 2026-11-13 |  |
+| Compose | Native | 2026-11-13 |  |
 
 What draws the atom, measured per renderer: https://a2uicatalog.ai/renderers/
 

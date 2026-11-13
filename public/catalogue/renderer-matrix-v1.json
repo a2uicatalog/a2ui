@@ -396,7 +396,7 @@
    "platform": "Compose Desktop on the JVM (Jetpack Compose family); not Android",
    "logo": "",
    "environment": "a2ui-kmp 1.0.0-alpha02 (third-party Kotlin Multiplatform rebuild of Google's androidx.a2ui), Compose Desktop on JVM with Skiko software rendering, measured on the A2UI v0.9.1 dialect; not an Android device; the pixel lane is not meaningful (fonts, Material 3 look)",
-   "note": "Compose has no implementation of our atoms: every atom whose root is not a Basic component is not supported. Only atoms whose root type is a Basic component (Text, Column, Button, Tabs and so on) draw, through the Basic catalog.",
+   "note": "Compose atoms are our own native Compose components (about 500 registered custom components, built by us on top of a2ui-kmp), plus atoms whose root is a Basic component (Text, Column, Button, Tabs and so on) drawn by the Basic catalog. Native means the lane case rendered without error with the atom's own type present, measured on Compose Desktop; it does not mean visual parity with the web painter. An on-device Android run is only partial (2 of 42 test payloads captured), so no device claim is made.",
    "notes_extra": [
     "Pixel parity with React is not meaningful here (different fonts, Material 3 look), so the pixel lane is recorded for information and never decides a status."
    ],

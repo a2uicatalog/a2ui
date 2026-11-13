@@ -16,7 +16,7 @@ google-apps-script-web, mcp-apps, android
 | CopilotKit | Drawn with differences | 2026-11-13 | pixels differ from React (light 480) |
 | a2ui-vue | Drawn with differences | 2026-11-13 | pixels differ from React (dark 480); pixels differ from React (light 480) |
 | Flutter | Native | 2026-11-13 |  |
-| Compose | Not supported | 2026-11-13 | component type unknown to the renderer |
+| Compose | Native | 2026-11-13 |  |
 
 What draws the atom, measured per renderer: https://a2uicatalog.ai/renderers/
 

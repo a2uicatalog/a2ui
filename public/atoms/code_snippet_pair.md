@@ -16,7 +16,7 @@ web, google-meet-stage, google-apps-script-web, mcp-apps, android
 | CopilotKit | Drawn with differences | 2026-11-13 | pixels differ from React (dark 480); pixels differ from React (light 480); content sits 1 px lower than in React (and than 1.85.0), stable between passes; cause not isolated. A real difference, not hidden |
 | a2ui-vue | Drawn | 2026-11-13 |  |
 | Flutter | Native | 2026-11-13 |  |
-| Compose | Not supported | 2026-11-13 | component type unknown to the renderer |
+| Compose | Native | 2026-11-13 |  |
 
 What draws the atom, measured per renderer: https://a2uicatalog.ai/renderers/
 

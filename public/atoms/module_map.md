@@ -16,7 +16,7 @@ google-apps-script-web, web, google-meet-stage, mcp-apps, android
 | CopilotKit | Drawn | 2026-11-13 |  |
 | a2ui-vue | Drawn | 2026-11-13 |  |
 | Flutter | Not measured | 2026-11-13 | example payload invalid, atom untested |
-| Compose | Not supported | 2026-11-13 | component type unknown to the renderer |
+| Compose | Native | 2026-11-13 |  |
 
 What draws the atom, measured per renderer: https://a2uicatalog.ai/renderers/
 

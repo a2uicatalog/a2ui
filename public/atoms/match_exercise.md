@@ -16,7 +16,7 @@ web, google-apps-script-web, mcp-apps, android
 | CopilotKit | Drawn | 2026-11-13 |  |
 | a2ui-vue | Drawn | 2026-11-13 | seeded-random order differs per renderer: pixel and text parity with React are excluded for this atom, not counted as a failure |
 | Flutter | Native | 2026-11-13 |  |
-| Compose | Not supported | 2026-11-13 | component type unknown to the renderer |
+| Compose | Native | 2026-11-13 |  |
 
 What draws the atom, measured per renderer: https://a2uicatalog.ai/renderers/
 

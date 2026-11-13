@@ -16,7 +16,7 @@ web, google-meet-stage, google-apps-script-side-panel, google-apps-script-web, m
 | CopilotKit | Drawn | 2026-11-13 |  |
 | a2ui-vue | Drawn with differences | 2026-11-13 | pixels differ from React (dark 360); pixels differ from React (dark 480); pixels differ from React (light 360); pixels differ from React (light 480) |
 | Flutter | Native | 2026-11-13 |  |
-| Compose | Not supported | 2026-11-13 | component type unknown to the renderer |
+| Compose | Native | 2026-11-13 |  |
 
 What draws the atom, measured per renderer: https://a2uicatalog.ai/renderers/
 

@@ -63,7 +63,7 @@ REASON = {
     "custom_component_rendered": "rendered by a native custom Compose component registered for this atom",
 }
 HELP_COMPOSE = {
-    "native": "the atom's root type is a Basic component and it rendered through the Basic catalog; Compose has no implementation of our atoms",
+    "native": "the lane case rendered without error with the atom's own type present: one of our registered Compose components or a Basic component (Compose Desktop, not visual parity)",
     "not_supported": "no implementation of this atom: the type is not in the Basic catalog, so the surface shows an error chip",
     "not_measured": "no per-atom data (no example payload)",
 }
@@ -341,7 +341,7 @@ def measured_text(m, rid):
         txt = "%d of %d atoms have a gate example. Checks recorded per atom: painting, visible text, blank on both sides, pixel parity %s in the lanes the gate has, overflow at 360 px, contrast, and behaviour %s." % (
             n_case, T, "with " + ref.capitalize() if ref else "(React is the reference: parity is recorded against its own frozen shots)", "(the behaviour lane was not run for this measurement)" if no_beh else "for the %d atoms that have an interaction probe" % probes)
     elif reg["kind"] == "compose":
-        txt = ("%d of %d atoms have a gate example, tried through the Basic catalog only (Compose has no implementation of our atoms). "
+        txt = ("%d of %d atoms have a gate example, run through the Compose lane with our registered custom components and the Basic catalog. "
                "Also measured: the Basic lane (670 Basic cases) and 48 Basic behaviour probes against React; pixel parity is recorded but not meaningful across Compose Desktop and Chromium.") % (n_case, T)
     else:
         par = sum(1 for a in m["atoms"] if ((m["atoms"][a][rid].get("checks") or {}).get("parity_text")))
@@ -499,7 +499,7 @@ def hub(m, samples, file_links):
         '<div class="card"><strong>Renderer: what draws it</strong><p class="note">The piece of software that turns the atom into pixels: React, Lit, Angular, CopilotKit, a2ui-vue, Flutter or Compose. This is the new <code>x-renderers</code> field. One surface (the web) is drawn by several renderers, and one renderer can serve several surfaces.</p></div></div>'
         "<h2>Registry</h2>"
         '<div class="scroll"><table><thead><tr><th>Renderer</th><th>Package, version</th><th>Protocol</th><th>Drawn / Native</th><th>With differences / Degraded</th><th>Not verified</th><th>Not supported</th><th>Not measured</th></tr></thead><tbody>%s</tbody></table></div>'
-        '<p class="note">Web renderers: Drawn (every check passed), Drawn with differences (a check differs from React), Not verified (no difference found, but the atom could not be verified). Flutter: Native (own implementation), Degraded (drawn through Basic components). Compose: Native only where the atom&rsquo;s root is a Basic component; it has no implementation of our atoms. Not supported: draws nothing or errors. Not measured: no per-atom data. CopilotKit and a2ui-vue draw our atoms inside their own wrapper and theme. Each renderer page says what was measured, computed from the data.</p>'
+        '<p class="note">Web renderers: Drawn (every check passed), Drawn with differences (a check differs from React), Not verified (no difference found, but the atom could not be verified). Flutter: Native (own implementation), Degraded (drawn through Basic components). Compose: Native where the atom renders as one of our own registered Compose components or as a Basic component (measured on Compose Desktop, not visual parity). Not supported: draws nothing or errors. Not measured: no per-atom data. CopilotKit and a2ui-vue draw our atoms inside their own wrapper and theme. Each renderer page says what was measured, computed from the data.</p>'
         "%s%s%s"
     ) % (m["atom_count"], len(m["renderers"]), sum(1 for r in m["renderers"].values() if r["measured"]), "".join('<div class="pre">%s: %s</div>' % (E(", ".join(v)), E(n)) for n, v in sorted(pre.items())), "".join(rows), samples_html, files, tm_block(m))
     return page("[DRAFT] Renderer dimension", body)

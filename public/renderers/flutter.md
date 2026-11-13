@@ -10,10 +10,10 @@ Partial coverage: only a part of the atoms are ported to native Flutter widgets.
 
 ## Coverage of the 573 public atoms
 
-- Native: 450
+- Native: 501
 - Degraded: 30
-- Not supported: 69
-- Not measured: 24
+- Not supported: 37
+- Not measured: 5
 
 ## Degraded (30)
 
@@ -48,31 +48,19 @@ Partial coverage: only a part of the atoms are ported to native Flutter widgets.
 - `video_card`: lowered to Basic components
 - `youtube`: lowered to Basic components
 
-## Not supported (69)
+## Not supported (37)
 
 - `agent_sketchpad`: component type unknown to the renderer
-- `animated_counter`: component type unknown to the renderer
-- `brevet_timeline`: component type unknown to the renderer
 - `brick_build_3d`: component type unknown to the renderer
 - `canvas_plexus`: component type unknown to the renderer
-- `confetti_burst`: component type unknown to the renderer
 - `content_tabs`: a nested atom type is unknown
-- `copy_prompt`: component type unknown to the renderer
-- `count_up_stat`: component type unknown to the renderer
-- `countdown_ring`: component type unknown to the renderer
 - `cursor_glow`: component type unknown to the renderer
 - `cursor_trail`: component type unknown to the renderer
-- `deadline_ticker`: component type unknown to the renderer
-- `domain_picker`: component type unknown to the renderer
 - `embed_codepen`: component type unknown to the renderer
 - `embed_gist`: component type unknown to the renderer
 - `embed_google_slides`: component type unknown to the renderer
 - `embed_stackblitz`: component type unknown to the renderer
-- `expandable_list`: component type unknown to the renderer
-- `feed_status`: component type unknown to the renderer
 - `figma_embed`: component type unknown to the renderer
-- `filterable_list`: component type unknown to the renderer
-- `flashcard_deck`: component type unknown to the renderer
 - `geo_contour_waves`: component type unknown to the renderer
 - `geo_europe_airspace`: component type unknown to the renderer
 - `geo_iso_fleet`: component type unknown to the renderer
@@ -82,11 +70,8 @@ Partial coverage: only a part of the atoms are ported to native Flutter widgets.
 - `geo_mercator_radar`: component type unknown to the renderer
 - `globe_3d`: component type unknown to the renderer
 - `isometric_mesh`: component type unknown to the renderer
-- `knowledge_check`: component type unknown to the renderer
 - `lens_grid`: component type unknown to the renderer
-- `live_clock`: component type unknown to the renderer
 - `live_demo_embed`: component type unknown to the renderer
-- `live_metric`: component type unknown to the renderer
 - `lottie_animation`: component type unknown to the renderer
 - `magnetic_element`: component type unknown to the renderer
 - `maps_embed`: component type unknown to the renderer
@@ -96,33 +81,16 @@ Partial coverage: only a part of the atoms are ported to native Flutter widgets.
 - `motion_shader`: component type unknown to the renderer
 - `particle_burst`: component type unknown to the renderer
 - `preview_frame`: component type unknown to the renderer
-- `progress_reveal`: component type unknown to the renderer
 - `progress_store`: component type unknown to the renderer
-- `reading_progress_bar`: component type unknown to the renderer
-- `reveal_on_scroll`: component type unknown to the renderer
-- `scenario_branch`: component type unknown to the renderer
-- `scramble_reveal`: component type unknown to the renderer
-- `scroll_progress`: component type unknown to the renderer
 - `scroll_trigger`: component type unknown to the renderer
-- `speed_counter`: component type unknown to the renderer
-- `spotlight_card`: component type unknown to the renderer
 - `spotlight_cursor`: component type unknown to the renderer
 - `spring_nodes`: component type unknown to the renderer
-- `stance`: component type unknown to the renderer
-- `study_timer`: component type unknown to the renderer
-- `tab_group`: component type unknown to the renderer
-- `terminal_boot`: component type unknown to the renderer
-- `theme_toggle`: component type unknown to the renderer
-- `tilt_card`: component type unknown to the renderer
-- `treemap`: component type unknown to the renderer
-- `typewriter`: component type unknown to the renderer
-- `user_greeting`: component type unknown to the renderer
 - `video_checkpoint`: component type unknown to the renderer
 - `video_pair`: component type unknown to the renderer
 
-## Not measured (24)
+## Not measured (5)
 
-`arc_diagram`, `block_robot`, `block_rocket`, `box_plot`, `candlestick_chart`, `chord_diagram`, `choropleth_map`, `circle_pack`, `contour_plot`, `geo_map`, `histogram`, `histogram2d`, `module_map`, `motion_map3d`, `motion_transition`, `parallel_coords`, `playbook`, `polar_chart`, `quiver`, `scatter_matrix`, `sunburst`, `ternary_plot`, `voronoi`, `waterfall`
+`choropleth_map`, `geo_map`, `module_map`, `motion_map3d`, `playbook`
 
 Overview: https://a2uicatalog.ai/renderers/
 
