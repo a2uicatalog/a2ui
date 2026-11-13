@@ -1,6 +1,6 @@
 {
  "$schema": "a2ui-renderer-matrix/2",
- "status": "DRAFT, local only, not published",
+ "status": "published; measured data checked in CI by scripts/check_renderer_matrix.py",
  "rules_version": 4,
  "rules": {
   "version": 4,

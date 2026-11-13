@@ -8,6 +8,7 @@ import datetime
 import hashlib
 import importlib.util
 import json
+import os
 from pathlib import Path
 
 import pytest
@@ -517,3 +518,35 @@ def test_note_on_a_pixel_failing_atom_does_not_hide_the_difference():
     e = gen.entry_for("web", head("copilotkit", {}), {"cases": {"alpha": c}})
     assert e["status"] == "drawn_with_differences" and e["notes"] == ["vertical_offset_1px_cause_not_isolated"]
     assert set(exp.CK187_NOTES) == {"page_header", "code_snippet_pair", "image_with_caption"}
+
+
+# ------------------------------------------------------------------ site wiring (catalogue x-renderers, atom block, pages)
+
+
+def _site():
+    return chk._import("renderer_site", os.path.join(chk.HERE, "renderer_site.py"))
+
+
+def test_atom_block_has_every_renderer_and_the_trademark_footer():
+    site = _site()
+    m = json.loads(open(os.path.join(chk.WT, chk.MATRIX_REL), encoding="utf8").read())
+    atom = sorted(m["atoms"])[0]
+    block = site.atom_block(m, atom)
+    for rid, reg in m["renderers"].items():
+        assert 'href="/renderers/%s/"' % rid in block and reg["name"] in block
+    assert "rd-tm" in block and "do not imply affiliation" in block
+    assert site.atom_block(m, "no_such_atom") == "" and site.atom_block(None, atom) == ""
+
+
+def test_site_wiring_flags_catalogue_without_x_renderers(tmp_path):
+    m = json.loads(open(os.path.join(chk.WT, chk.MATRIX_REL), encoding="utf8").read())
+    atom = sorted(m["atoms"])[0]
+    cat = tmp_path / "public" / "catalogue"
+    cat.mkdir(parents=True)
+    for rel in chk.CATALOGUES_REL:
+        (tmp_path / rel).write_text(json.dumps({"components": {atom: {"x-surfaces": ["web"]}}}))
+    (tmp_path / chk.SPEC_REL).write_text(json.dumps({"atoms": [{"type": atom}]}))
+    ctx = {"stable": sorted(m["atoms"]), "matrix": m, "root": str(tmp_path)}
+    errs = chk.check_site_wiring(ctx)
+    assert any("x-renderers of %s" % atom in msg for _, msg in errs)
+    assert any("page public/renderers/index.html is missing" in msg for _, msg in errs)

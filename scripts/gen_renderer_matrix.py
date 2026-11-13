@@ -6,13 +6,12 @@ Reads ONLY committed files:
   data/renderer-results/*.json      RAW RESULTS per renderer (schema: docs/renderer-matrix.md)
   data/renderer-results/manifest.json
   atoms/schema.yaml                 the stable atom list (stage: stable or no stage)
-  public/catalogue/a2ui-atoms-v1.json   (only to build the x-renderers draft copy)
 
 Writes:
   public/catalogue/renderer-matrix-v1.json
-  public/catalogue/a2ui-atoms-v1.renderers-draft.json   (live catalogue + derived `x-renderers`)
 
-It never writes the live catalogue or spec.json. The output holds no wall-clock time and no
+It does not write the live catalogue or spec.json: scripts/gen_public_catalog.py reads the matrix written here
+and derives `x-renderers` (see x_renderers below) in CI. The output holds no wall-clock time and no
 path: every date comes from the raw results.
 
 Status rules (registry `rules.version` 2; v2 design item H4):
@@ -47,9 +46,7 @@ WT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 REG = os.path.join(WT, "atoms/renderers.yaml")
 SCHEMA = os.path.join(WT, "atoms/schema.yaml")
 RESDIR = os.path.join(WT, "data/renderer-results")
-CAT = os.path.join(WT, "public/catalogue/a2ui-atoms-v1.json")
 OUT_MATRIX = os.path.join(WT, "public/catalogue/renderer-matrix-v1.json")
-OUT_DRAFT = os.path.join(WT, "public/catalogue/a2ui-atoms-v1.renderers-draft.json")
 
 ENVS = ["light480", "dark480", "light360", "dark360"]
 WEB_STATUSES = ["drawn", "drawn_with_differences", "not_verified", "not_supported", "not_measured"]
@@ -285,7 +282,7 @@ def build(registry, raw, manifest, stable):
         renderers[rid] = reg
     return {
         "$schema": "a2ui-renderer-matrix/2",
-        "status": "DRAFT, local only, not published",
+        "status": "published; measured data checked in CI by scripts/check_renderer_matrix.py",
         "rules_version": registry["rules"]["version"],
         "rules": registry["rules"],
         "dimension": "renderer (what draws the atom); separate from x-surfaces (where the atom appears)",
@@ -307,22 +304,6 @@ def x_renderers(matrix, atom):
     return out
 
 
-def build_draft_catalogue(cat, matrix):
-    draft = json.loads(json.dumps(cat))
-    newc = {}
-    for a, comp in draft["components"].items():
-        nc = {}
-        for k, v in comp.items():
-            nc[k] = v
-            if k == "x-surfaces":
-                nc["x-renderers"] = x_renderers(matrix, a)
-        if "x-renderers" not in nc:
-            nc["x-renderers"] = x_renderers(matrix, a)
-        newc[a] = nc
-    draft["components"] = newc
-    return draft
-
-
 def dumps(obj):
     return json.dumps(obj, indent=1, ensure_ascii=False) + "\n"
 
@@ -337,19 +318,15 @@ def load_inputs():
     return registry, raw, manifest
 
 
-def render_files(registry, raw, manifest, stable, cat):
-    """-> {repo-relative path: text} for the two generated catalogue files."""
+def render_files(registry, raw, manifest, stable):
+    """-> ({repo-relative path: text}, matrix) for the generated matrix file."""
     matrix = build(registry, raw, manifest, stable)
-    draft = build_draft_catalogue(cat, matrix)
-    if sorted(draft["components"]) != stable:
-        raise SystemExit("live catalogue and atoms/schema.yaml disagree on the stable atom list")
-    return {"public/catalogue/renderer-matrix-v1.json": dumps(matrix),
-            "public/catalogue/a2ui-atoms-v1.renderers-draft.json": dumps(draft)}, matrix
+    return {"public/catalogue/renderer-matrix-v1.json": dumps(matrix)}, matrix
 
 
 def main():
     registry, raw, manifest = load_inputs()
-    files, matrix = render_files(registry, raw, manifest, stable_atoms(), load_json(CAT))
+    files, matrix = render_files(registry, raw, manifest, stable_atoms())
     for rel, text in files.items():
         with open(os.path.join(WT, rel), "w", encoding="utf8") as f:
             f.write(text)

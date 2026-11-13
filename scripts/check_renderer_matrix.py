@@ -16,8 +16,12 @@ Checks (design CI-DESIGN-v2.md, items H4/H5/H6/M6/M8):
   EVIDENCED     drawn / drawn_with_differences / native / degraded entries carry per-check evidence
                 codes, a measured date and a renderer_version; a `drawn` entry has no reasons and a
                 `drawn_with_differences` entry has at least one.
-  CONSISTENT    re-running the generators reproduces the committed matrix, the draft catalogue and the
-                committed pages byte for byte.
+  CONSISTENT    re-running the generator reproduces the committed matrix and the committed draft pages byte
+                for byte; the built catalogue documents (public/spec.json, public/catalogue/a2ui-atoms-v1.json,
+                a2ui-bricks-v1.json) carry exactly the matrix's `x-renderers` for every atom; the built site
+                pages (public/renderers/, every public/atoms/<atom>/index.html and .md twin) contain the
+                fragments renderer_site.py produces from the matrix. In CI these files were just built by the
+                generators, so this proves the wiring; nothing here reads the clock.
   PRIVATE-SAFE  no atom key outside the stable catalogue anywhere in matrix, raw results or pages;
                 no path (/mnt, /home, ...) and no hex SHA outside the allowed set (the hashes recorded
                 in the manifest). Messages print only public atom names, else `<non-public atom #n>`.
@@ -36,7 +40,8 @@ WT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 HERE = os.path.dirname(os.path.abspath(__file__))
 PAGES_DIR = "docs/renderer-draft"
 MATRIX_REL = "public/catalogue/renderer-matrix-v1.json"
-DRAFT_REL = "public/catalogue/a2ui-atoms-v1.renderers-draft.json"
+CATALOGUES_REL = ("public/catalogue/a2ui-atoms-v1.json", "public/catalogue/a2ui-bricks-v1.json")
+SPEC_REL = "public/spec.json"
 BUNDLE_REL = "public/surfaces/mcp-apps/renderer-bundle.html"
 AGE_WARN_DAYS = 30
 DRAWN_STATUSES = ("drawn", "drawn_with_differences", "native", "degraded")
@@ -74,7 +79,6 @@ def load_context(root=WT, consistent=True):
     gen = _import("gen_renderer_matrix", os.path.join(HERE, "gen_renderer_matrix.py"))
     registry, raw, manifest = gen.load_inputs()
     stable = gen.stable_atoms()
-    cat = gen.load_json(gen.CAT)
 
     def rd(rel):
         p = os.path.join(root, rel)
@@ -104,7 +108,7 @@ def load_context(root=WT, consistent=True):
     ctx = {
         "repo_bundle_sha256": bundle,
         "stable": stable, "registry": registry, "raw": raw, "manifest": manifest, "raw_bytes": raw_texts,
-        "matrix_text": rd(MATRIX_REL), "draft_text": rd(DRAFT_REL), "pages": pages, "cat": cat,
+        "matrix_text": rd(MATRIX_REL), "pages": pages, "root": root,
         "today": datetime.date.today(),
     }
     ctx["matrix"] = json.loads(ctx["matrix_text"]) if ctx["matrix_text"] else None
@@ -112,7 +116,7 @@ def load_context(root=WT, consistent=True):
         pg = _import("gen_renderer_draft_pages", os.path.join(HERE, "gen_renderer_draft_pages.py"))
 
         def regen():
-            files, matrix = gen.render_files(registry, raw, manifest, stable, cat)
+            files, matrix = gen.render_files(registry, raw, manifest, stable)
             files.update({PAGES_DIR + "/" + k: v for k, v in pg.render_pages(matrix, registry).items()})
             return files
 
@@ -232,7 +236,7 @@ def check_evidenced(ctx):
 def check_consistent(ctx):
     errs = []
     files = ctx["regen"]()
-    committed = {k: v for k, v in ((MATRIX_REL, ctx["matrix_text"]), (DRAFT_REL, ctx["draft_text"])) if v is not None}
+    committed = {k: v for k, v in ((MATRIX_REL, ctx["matrix_text"]),) if v is not None}
     committed.update({PAGES_DIR + "/" + k: v for k, v in ctx["pages"].items()})
     for rel in sorted(files):
         if committed.get(rel) is None:
@@ -241,6 +245,59 @@ def check_consistent(ctx):
             errs.append(("CONSISTENT", "%s differs from what the generator produces from the committed inputs" % rel))
     for rel in sorted(set(committed) - set(files)):
         errs.append(("CONSISTENT", "%s is committed but no generator produces it" % rel))
+    if ctx.get("root"):
+        errs += check_site_wiring(ctx)
+    return errs
+
+
+def check_site_wiring(ctx):
+    """The built catalogue documents and site pages carry what the matrix says (fragments from renderer_site.py)."""
+    errs, nm = [], Names(ctx["stable"])
+    matrix = ctx["matrix"]
+    if matrix is None:
+        return errs
+    gen = _import("gen_renderer_matrix", os.path.join(HERE, "gen_renderer_matrix.py"))
+    site = _import("renderer_site", os.path.join(HERE, "renderer_site.py"))
+    root = ctx["root"]
+
+    def load(rel):
+        p = os.path.join(root, rel)
+        if not os.path.exists(p):
+            return None
+        with open(p, encoding="utf8") as f:
+            return f.read()
+
+    # catalogue documents: x-renderers == projection of the matrix, for every atom the matrix covers, and only for those
+    docs = {SPEC_REL: lambda d: {a["type"]: a.get("x-renderers") for a in d["atoms"]}}
+    for rel in CATALOGUES_REL:
+        docs[rel] = lambda d: {k: c.get("x-renderers") for k, c in d["components"].items()}
+    for rel, getter in docs.items():
+        text = load(rel)
+        if text is None:
+            errs.append(("CONSISTENT", "%s is missing (run gen_public_catalog.py)" % rel))
+            continue
+        for atom, got in getter(json.loads(text)).items():
+            want = gen.x_renderers(matrix, atom) if atom in matrix["atoms"] else None
+            if got != want:
+                errs.append(("CONSISTENT", "%s: x-renderers of %s %s the matrix" % (rel, nm(atom), "is missing or differs from" if want else "has no entry in")))
+    # site pages
+    want_pages = {"public/renderers/index.html": [site.hub_body(matrix)]}
+    for rid in matrix["renderers"]:
+        want_pages["public/renderers/%s/index.html" % rid] = [site.renderer_body(matrix, rid)]
+    want_pages.update({"public/renderers.md": [site.hub_md(matrix)]})
+    for rid in matrix["renderers"]:
+        want_pages["public/renderers/%s.md" % rid] = [site.renderer_md(matrix, rid)]
+    for atom in matrix["atoms"]:
+        want_pages["public/atoms/%s/index.html" % atom] = [site.atom_block(matrix, atom)]
+        want_pages["public/atoms/%s.md" % atom] = ["\n".join(site.atom_md(matrix, atom))]
+    for rel, frags in sorted(want_pages.items()):
+        text = load(rel)
+        if text is None:
+            errs.append(("CONSISTENT", "page %s is missing (run generate_atom_pages.py)" % (rel if "/atoms/" not in rel else rel.replace(rel.split("/")[2].split(".")[0], nm(rel.split("/")[2].split(".")[0]), 1))))
+            continue
+        for fr in frags:
+            if fr not in text:
+                errs.append(("CONSISTENT", "page %s does not contain the renderer fragment the matrix produces" % rel))
     return errs
 
 
@@ -288,13 +345,38 @@ def check_private_safe(ctx):
             for cid in (rec.get("cases") or {}):
                 if cid.split("#")[0] not in stable:
                     errs.append(("PRIVATE-SAFE", "raw results of %s hold a case of %s" % (rid, nm(cid.split("#")[0]))))
-    draft = json.loads(ctx["draft_text"]) if ctx.get("draft_text") else None
-    if draft:
-        for atom, comp in draft.get("components", {}).items():
-            if "x-renderers" in comp and atom not in stable:
-                errs.append(("PRIVATE-SAFE", "draft catalogue carries x-renderers for %s" % nm(atom)))
-        xr = {a: c["x-renderers"] for a, c in draft.get("components", {}).items() if "x-renderers" in c}
-        _scan_text("draft catalogue x-renderers", json.dumps(xr), allowed, errs)
+    for rel in (CATALOGUES_REL + (SPEC_REL,)) if ctx.get("root") else ():
+        p = os.path.join(ctx["root"], rel)
+        if not os.path.exists(p):
+            continue
+        with open(p, encoding="utf8") as f:
+            doc = json.load(f)
+        items = list((doc.get("components") or {}).items()) if "components" in doc else [(a["type"], a) for a in doc.get("atoms", [])]
+        xr = {}
+        for atom, comp in items:
+            if "x-renderers" in comp:
+                xr[atom] = comp["x-renderers"]
+                if atom not in stable:
+                    errs.append(("PRIVATE-SAFE", "%s carries x-renderers for %s" % (rel, nm(atom))))
+        _scan_text(rel + " x-renderers", json.dumps(xr), allowed, errs)
+    # built site pages: no machine path, no stray hash, no non-public atom link
+    for rel in ("public/renderers/index.html", "public/renderers.md") if ctx.get("root") else ():
+        p = os.path.join(ctx["root"], rel)
+        if os.path.exists(p):
+            with open(p, encoding="utf8") as f:
+                _scan_text(rel, f.read(), allowed, errs)
+    rdir = os.path.join(ctx.get("root") or "/nonexistent", "public/renderers")
+    if os.path.isdir(rdir):
+        for dp_, _, fs in sorted(os.walk(rdir)):
+            for fn in sorted(fs):
+                if fn.endswith((".html", ".md")):
+                    with open(os.path.join(dp_, fn), encoding="utf8") as f:
+                        text = f.read()
+                    rel = os.path.relpath(os.path.join(dp_, fn), ctx["root"])
+                    for a in re.findall(r"/atoms/([A-Za-z0-9_]+)/", text):
+                        if a not in stable:
+                            errs.append(("PRIVATE-SAFE", "page %s links %s" % (rel, nm(a))))
+                    _scan_text(rel, text, allowed, errs)
     _scan_text("matrix", ctx["matrix_text"] or "", allowed, errs)
     for rid, b in ctx["raw_bytes"].items():
         _scan_text("raw results of %s" % rid, b.decode("utf8"), allowed, errs)

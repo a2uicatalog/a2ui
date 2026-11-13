@@ -1,4 +1,4 @@
-# Renderer registry (DRAFT, local only). A separate dimension from `x-surfaces`:
+# Renderer registry. A separate dimension from `x-surfaces`:
 #   x-surfaces  = WHERE an atom appears (web, mcp-apps, android, pdf, ...)
 #   x-renderers = WHAT draws it (react, lit, angular, copilotkit, a2ui-vue, flutter, compose)
 #

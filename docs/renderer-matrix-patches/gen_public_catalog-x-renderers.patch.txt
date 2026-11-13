@@ -1,9 +1,0 @@
-NOT APPLIED. Wiring x-renderers into the live catalogue (separate step, owner go):
-in scripts/gen_public_catalog.py, next to the line that sets definition["x-surfaces"] = surfaces (~line 244):
-
-    from gen_renderer_matrix import load_inputs, build, stable_atoms   # same dir
-    _RM = build(*_load_matrix_inputs())                                 # registry, raw, manifest, stable
-    definition["x-renderers"] = x_renderers(_RM, atom_name)            # status, reasons, measured, measured_on, renderer_version
-
-Then drop public/catalogue/a2ui-atoms-v1.renderers-draft.json and its generator output, run
-gen_public_catalog.py, and keep check_renderer_matrix.py's CONSISTENT check pointed at the live file.

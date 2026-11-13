@@ -348,7 +348,9 @@ def measured_text(m, rid):
     return txt + " Weekly gate (M5) not claimed."
 
 
-def renderer_page(m, rid, samples):
+def renderer_parts(m, rid, link):
+    """Shared by the draft pages and the real site pages (scripts/renderer_site.py): the sections of a
+    renderer page as HTML strings. `link(atom)` renders an atom name (a link or plain text)."""
     reg = m["renderers"][rid]
     cov = reg["coverage"]
     atoms = m["atoms"]
@@ -441,14 +443,21 @@ def renderer_page(m, rid, samples):
                 p = (atoms[a][rid].get("checks") or {}).get("parity_text") if s == "native" and reg["kind"] == "flutter" else None
                 if p and p["missing_in_flutter"]:
                     suffix = ' <span class="note">(%d of %d web words missing)</span>' % (p["missing_in_flutter"], p["web_words"])
-                li.append("<li>%s%s</li>" % (atom_link(a, samples), suffix))
+                li.append("<li>%s%s</li>" % (link(a), suffix))
             body = '<ul class="atoms">%s</ul>' % "".join(li)
         else:
             body = '<ul class="why">%s</ul>' % "".join(
-                "<li><code>%s</code> <span class=\"note\">%s</span></li>" % (atom_link(a, samples), E("; ".join(reason_text(r) for r in atoms[a][rid]["reasons"])))
+                "<li><code>%s</code> <span class=\"note\">%s</span></li>" % (link(a), E("; ".join(reason_text(r) for r in atoms[a][rid]["reasons"])))
                 for a in byst[s])
         open_attr = " open" if len(byst[s]) <= 12 else ""
         lists += '<details%s><summary>%s: %d atoms</summary>%s</details>' % (open_attr, chip(s), len(byst[s]), body)
+    return {"reg": reg, "pre_html": pre_html, "dl": dl, "total": cov["total"], "bar": counts_bar(cov, statuses),
+            "chips": chips, "extra": extra, "lists": lists}
+
+
+def renderer_page(m, rid, samples):
+    p = renderer_parts(m, rid, lambda a: atom_link(a, samples))
+    reg = p["reg"]
     body = (
         '<p class="crumb"><a href="../index.html">Renderer dimension (draft)</a> / %s</p><span class="draft">Draft, local only</span>'
         '<h1><span class="nm">%s%s</span></h1><p class="lead">%s</p>%s'
@@ -456,7 +465,7 @@ def renderer_page(m, rid, samples):
         "<h2>Coverage of the %d stable atoms</h2>%s"
         '<div class="scroll"><table><thead><tr><th>Status</th><th>Atoms</th><th>Meaning</th></tr></thead><tbody>%s</tbody></table></div>'
         "%s<h2>Atoms by status</h2>%s%s"
-    ) % (E(reg["name"]), logo(reg, "../"), E(reg["name"]), E(reg["note"]), pre_html, dl, cov["total"], counts_bar(cov, statuses), chips, extra, lists, tm_block(m))
+    ) % (E(reg["name"]), logo(reg, "../"), E(reg["name"]), E(reg["note"]), p["pre_html"], p["dl"], p["total"], p["bar"], p["chips"], p["extra"], p["lists"], tm_block(m))
     return page("[DRAFT] %s renderer support" % reg["name"], body)
 
 

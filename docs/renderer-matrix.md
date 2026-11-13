@@ -1,12 +1,13 @@
-# Renderer matrix (draft, local only)
+# Renderer matrix
 
 What draws an atom (`x-renderers`), separate from where it appears (`x-surfaces`). Measured by a private harness, only CHECKED here.
 
 ## Pipeline
 
 1. Private side (hand-run, never in CI): `python3 scripts/export_renderer_results.py` reads the gate output on the harness machine and writes `data/renderer-results/<renderer>.json` plus `manifest.json`. Only stable atoms (stage: stable or no stage in `atoms/schema.yaml`) are exported; evidence is enumerated codes and numbers; no paths, hosts or unpushed SHAs.
-2. Public: `python3 scripts/gen_renderer_matrix.py` writes `public/catalogue/renderer-matrix-v1.json` and `a2ui-atoms-v1.renderers-draft.json`; `python3 scripts/gen_renderer_draft_pages.py` writes `docs/renderer-draft/`.
-3. `python3 scripts/check_renderer_matrix.py` (seconds, offline): COMPLETE, FRESH (by hash; for web renderers the matrix's bundle sha256 must equal the sha256 of `public/surfaces/mcp-apps/renderer-bundle.html` in the checkout, else it fails with a re-measure message; age only warns), EVIDENCED, CONSISTENT (regenerate and compare byte for byte), PRIVATE-SAFE. Tests: `tests/test_renderer_matrix_check.py`.
+2. Public, committed: `python3 scripts/gen_renderer_matrix.py` writes `public/catalogue/renderer-matrix-v1.json` (served at `/catalogue/renderer-matrix-v1.json`). It is not run in CI: the committed file is checked.
+   Built in CI by the normal generators (all read the committed matrix, none writes it): `generate_atom_pages.py` adds the Renderers block to every public atom page (`public/atoms/<atom>/index.html` and its `.md` twin) and writes `public/renderers/` (hub, one page per renderer, `.md` twins, logos copied from `atoms/renderer-logos/`); `gen_public_catalog.py` adds `x-renderers` per atom to `public/spec.json`, `public/catalogue/a2ui-atoms-v1.json` and `a2ui-bricks-v1.json`; `gen_compat_matrix.py` (local, README) writes a renderer summary block next to the surface block. The page fragments live in `scripts/renderer_site.py` (shared with the approved design pages `docs/renderer-draft/`, `gen_renderer_draft_pages.py`).
+3. `python3 scripts/check_renderer_matrix.py` (seconds, offline; runs in `deploy.yml` after the generators): COMPLETE, FRESH (by hash; for web renderers the matrix's bundle sha256 must equal the sha256 of `public/surfaces/mcp-apps/renderer-bundle.html` in the checkout, else it fails with a re-measure message; age only warns), EVIDENCED, CONSISTENT (regenerate the matrix and compare byte for byte; the built catalogue documents carry exactly the matrix's `x-renderers`; the built pages contain the fragments `renderer_site.py` produces), PRIVATE-SAFE. Tests: `tests/test_renderer_matrix_check.py`.
 
 Sources of the current data (all read by the private exporter only): web renderers at the shipped commit (React, Lit, Angular, a2ui-vue from the per-renderer run directories; `--web-root`/`--web-run` pick the run), CopilotKit 1.87.0 on A2UI 1.0 (its own raw gate outputs; the 1.85.0 numbers stay as a note in the registry), Flutter (lane results and parity sweep of a private build, `measured_on: private-build`, no SHA), Compose (a2ui-kmp, Compose Desktop on the JVM, v0.9.1 only).
 
@@ -36,6 +37,16 @@ Does not guarantee: it holds only for a FIXED id order and 12-case chunking on t
 
 Export: `python3 scripts/export_renderer_results.py --det-dir <dir with det_gate_raw.json and det_baselines_sha256.json> --ck187-det-dir <dir with det_gate_raw_ck187.json>` (defaults on this machine); an empty value exports the non-deterministic data alone (CopilotKit 1.87.0 then keeps the allowance logic).
 
+## `x-renderers` in the catalogue (for the MCP side)
+
+Next to `x-surfaces`, each component of `/catalogue/a2ui-atoms-v1.json` (and of `a2ui-bricks-v1.json`) and each atom of `/spec.json` carries `x-renderers`: an object keyed by renderer id (`react`, `lit`, `angular`, `copilotkit`, `a2ui-vue`, `flutter`, `compose`), each value `{status, reasons, measured, measured_on, renderer_version}`:
+
+- `status`: web renderers `drawn | drawn_with_differences | not_verified | not_supported | not_measured`; Flutter `native | degraded | not_supported | not_measured`; Compose `native | not_supported | not_measured`. Only `drawn` and `native` mean "draws it as the atom intends"; `degraded` is Basic-component lowering and should not count as supported unless an agent asks (`include_degraded`).
+- `reasons`: enumerated codes (`pixel_fail_dark360`, `overflow_360`, `no_visible_text`, ...), no free text. `measured`: ISO date or null (renderer not measured). `measured_on`: `shipped | preview-unmerged | private-build | release-package | unrecorded | null`. `renderer_version`: package and version string or null.
+- Atoms the matrix does not cover (preview, private) carry no key. `atoms/index.json` (the compact index) is unchanged.
+
+MCP `find_atoms` / `get_atom_schema` read the catalogue, so they can filter and report on `x-renderers` once the private worker syncs the new catalogue; that sync is a separate private step (this repo does not touch the worker).
+
 ## Still open from the design
 
-Public case generator and `cases/manifest.json` (22 stable atoms have no example, so show `not_measured`; `case_sha256` is null); per-request slicers (cases, core, CSS); Flutter `ATOMS` filter and subset aggregator; weekly job and per-cell waivers with CODEOWNERS; CONSISTENT against the core built from the commit (core hash is recorded, not yet rebuilt in CI); behaviour lane for CopilotKit 1.87.0; Compose v1.0 and dark/360; wiring into `gen_public_catalog.py` and `deploy.yml` (patches in `docs/renderer-matrix-patches/`, not applied).
+Public case generator and `cases/manifest.json` (22 stable atoms have no example, so show `not_measured`; `case_sha256` is null); per-request slicers (cases, core, CSS); Flutter `ATOMS` filter and subset aggregator; weekly job and per-cell waivers with CODEOWNERS; CONSISTENT against the core built from the commit (core hash is recorded, not yet rebuilt in CI); behaviour lane for CopilotKit 1.87.0; Compose v1.0 and dark/360.
