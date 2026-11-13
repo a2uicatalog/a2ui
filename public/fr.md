@@ -1,6 +1,6 @@
 ---
 title: Catalogue A2UI — composants A2UI pour agents IA · A2UI Atomic Catalog
-description: Catalogue A2UI open source : 573 composants A2UI typés pour agents IA. Serveur MCP gratuit, sans clé ni inscription. Rendu web, Google Meet, Apps Script, Chat, Android, Slides.
+description: Catalogue A2UI open source : 573 composants A2UI typés pour agents IA. Serveur MCP gratuit, sans clé ni inscription. Rendu web, Google Meet, Apps Script, Chat, Android, Slides.
 canonical: https://a2uicatalog.ai/fr/
 generated_by: gen_page_twins.py
 ---
@@ -17,12 +17,12 @@ A2UI (Agent-to-User Interface) est un protocole ouvert de Google. L’agent déc
 
 ## Ce que contient le catalogue
 
-- 573 atomes typés (cartes, tableaux, graphiques, formulaires…), chacun avec son contrat de champs dans [`/spec.json`](https://a2uicatalog.ai/spec.json).
-- Un serveur MCP gratuit à `https://a2uicatalog.ai/mcp`, sans clé d’API ni inscription, inscrit au registre officiel MCP sous `ai.a2uicatalog/catalog`.
+- 573 atomes typés (cartes, tableaux, graphiques, formulaires…), chacun avec son schéma de champs dans [`/spec.json`](https://a2uicatalog.ai/spec.json).
+- Un serveur MCP gratuit à l’adresse `https://a2uicatalog.ai/mcp`, sans clé d’API ni inscription, inscrit au registre officiel MCP sous `ai.a2uicatalog/catalog`.
 - Une API REST décrite en OpenAPI 3.1 : `POST /api/render` renvoie une page HTML complète, et un bac à sable (`/api/sandbox`) permet de tester sans entamer le quota.
 - Des moteurs de rendu pour le web, Google Meet, Google Apps Script, Google Chat, les hôtes MCP Apps et Android, ainsi que la génération de présentations Google Slides et PowerPoint.
 
-## Démarrer
+## Pour commencer
 
 ```
 POST https://a2uicatalog.ai/mcp
@@ -31,10 +31,10 @@ Content-Type: application/json
 {"jsonrpc": "2.0", "id": 1, "method": "tools/list"}
 ```
 
-Pour essayer un document A2UI à la main : le [bac à sable interactif](https://play.a2uicatalog.ai). Pour parcourir les composants : [tous les atomes de A à Z](https://a2uicatalog.ai/atoms/). Documentation d’intégration : [/docs/](https://a2uicatalog.ai/docs/) (en anglais).
+Pour tester manuellement un document A2UI : le [bac à sable interactif](https://play.a2uicatalog.ai). Pour parcourir les composants : [tous les atomes de A à Z](https://a2uicatalog.ai/atoms/). Documentation d’intégration : [/docs/](https://a2uicatalog.ai/docs/) (en anglais).
 
 ## Licence et statut
 
-Gratuit, sous licence MIT ; le code source est sur [GitHub](https://github.com/a2uicatalog/a2ui). Projet indépendant et non officiel, basé en France : il n’est ni affilié à Google, Anthropic ou OpenAI, ni approuvé ou parrainé par eux. A2UI est le protocole de Google ; MCP celui d’Anthropic.
+Gratuit, sous licence MIT ; le code source est sur [GitHub](https://github.com/a2uicatalog/a2ui). Projet indépendant et non officiel, basé en France : il n’est ni affilié à Google, Anthropic ou OpenAI, ni approuvé ou parrainé par ces derniers. A2UI est le protocole de Google ; MCP celui d’Anthropic.
 
 [A2UI Atomic Catalog — English homepage](https://a2uicatalog.ai/)
