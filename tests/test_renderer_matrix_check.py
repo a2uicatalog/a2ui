@@ -496,3 +496,24 @@ def test_exporter_det_refuses_when_run_a_and_b_fail_lists_differ(tmp_path):
     with pytest.raises(SystemExit) as e:
         exp.export_web_det("lit", str(tmp_path), ["alpha"], "shipped", str(tmp_path), "F", "a" * 40, str(d))
     assert "differs between run A and run B" in str(e.value)
+
+
+def test_ck187_det_case_provenance_not_run_and_no_random_exclusion():
+    rec = {"broken": False, "error": False, "loose": True, "strict": True, "strict_text": True}
+    px = {"blank_both": False, "one_blank": False, "passed": True, "frac": 0.0, "hdiff": 0, "overflow": False, "low": 0, "low_ref": 0, "text_same": True}
+    det = {lane: {"gmail_unread_count": dict(px)} for lane in exp.DET_LANES.values()}
+    c = exp.det_case("copilotkit", "gmail_unread_count", rec, {"behaviour_custom": {}}, det, True, True,
+                     src_label="ck187", behaviour_run=False, exclude_random=False)
+    ck = c["checks"]
+    assert ck["behaviour"] == "not_run" and ck["text_parity"] == "pass" and "notes" not in c
+    assert ck["sources"]["painted"] == "ck187" and ck["sources"]["pixel"] == "det-ab" and ck["stability"] == "stable"
+    assert gen.web_case_status(c)[0] == "drawn"
+
+
+def test_note_on_a_pixel_failing_atom_does_not_hide_the_difference():
+    c = web_case()
+    c["checks"]["pixel"]["light480"]["result"] = "fail"
+    c["notes"] = ["vertical_offset_1px_cause_not_isolated"]
+    e = gen.entry_for("web", head("copilotkit", {}), {"cases": {"alpha": c}})
+    assert e["status"] == "drawn_with_differences" and e["notes"] == ["vertical_offset_1px_cause_not_isolated"]
+    assert set(exp.CK187_NOTES) == {"page_header", "code_snippet_pair", "image_with_caption"}

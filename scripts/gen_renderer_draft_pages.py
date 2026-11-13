@@ -177,7 +177,8 @@ def checks_html(kind, e):
     return '<div class="rd-ck">%s</div>' % "".join(parts)
 
 
-NOTE_TEXT = {"seeded_random_order_differs": "seeded-random order differs per renderer: pixel and text parity with React are excluded for this atom, not counted as a failure"}
+NOTE_TEXT = {"vertical_offset_1px_cause_not_isolated": "content sits 1 px lower than in React (and than 1.85.0), stable between passes; cause not isolated. A real difference, not hidden",
+             "seeded_random_order_differs": "seeded-random order differs per renderer: pixel and text parity with React are excluded for this atom, not counted as a failure"}
 
 
 def why_html(e):
@@ -369,7 +370,8 @@ def renderer_page(m, rid, samples):
     if src:
         facts.append(("Evidence sources", "per-check provenance in the data: " + ", ".join(
             {"det-ab": "det-ab (deterministic two-pass gate: pixel parity vs React, overflow, contrast, text parity, stability)",
-             "f111": "f111 (gate run on the shipped commit: painting, visible text, behaviour)"}.get(x, x) for x in src)))
+             "f111": "f111 (gate run on the shipped commit: painting, visible text, behaviour)",
+             "ck187": "ck187 (one non-deterministic CopilotKit 1.87.0 run: painting and visible text; the behaviour lane was not run)"}.get(x, x) for x in src)))
     if reg.get("earlier_measurement"):
         facts.append(("Earlier measurement", reg["earlier_measurement"]))
     dl = "".join("<dt>%s</dt><dd>%s</dd>" % (E(k), E(v)) for k, v in facts)
@@ -419,9 +421,9 @@ def renderer_page(m, rid, samples):
         items.append("<li>Not run: dark mode, 360 px, an Android device or emulator, spec v1.0.</li>")
     dt = (ms.get("facts") or {}).get("determinism")
     if dt:
-        items.append("<li>Deterministic mode: every shot was taken twice on the shipped build (frozen Date, virtual clock, seeded random, fixed raster settings). %d of %d renderer-and-environment cells are byte-identical; the other %d differ in one atom by at most %d pixels of dither (channel-sum delta at most %d of 765) and pass the pixel rule. So pixel results are plain pass or fail with no allowance list. The custom-text check is also deterministic (two identical passes). This holds only for a fixed id order and %d-case chunking (chunk 1 against chunk 12 differs for %d of %d test atoms), on the slicer image that took the baselines; the old local custom runner is not deterministic. Painting, visible text and behaviour still come from the single run on the shipped commit.</li>" % (
+        items.append("<li>Deterministic mode: every shot was taken twice on the shipped build (frozen Date, virtual clock, seeded random, fixed raster settings). %d of %d renderer-and-environment cells are byte-identical; the other %d differ in one atom by at most %d pixels of dither (channel-sum delta at most %d of 765) and pass the pixel rule. So pixel results are plain pass or fail with no allowance list. The custom-text check is also deterministic (two identical passes). This holds only for a fixed id order and %d-case chunking (chunk 1 against chunk 12 differs for %d of %d test atoms), on the slicer image that took the baselines; the old local custom runner is not deterministic. Painting and visible text (and behaviour where it was run) still come from one earlier, non-deterministic run.</li>" % (
             dt["byte_identical_cells"], dt["cells"], dt["cells"] - dt["byte_identical_cells"], dt["dither_max_pixels"], dt["dither_max_delta_of_765"], dt["chunk_size"], dt["chunk_1_vs_12_differs_atoms"], dt["chunk_test_atoms"]))
-        nr = [a for a in atoms if atoms[a][rid].get("notes")]
+        nr = [a for a in atoms if "seeded_random_order_differs" in atoms[a][rid].get("notes", [])]
         if nr:
             items.append("<li>%s: %s are drawn with a note: their random draws are consumed per renderer, so parity with React is excluded for them. Open item: reseed per case in the slicer.</li>" % (
                 "Seeded-random atoms", ", ".join(sorted(nr))))

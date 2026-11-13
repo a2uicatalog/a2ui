@@ -212,13 +212,13 @@ def export_web(rid, work, public, measured_on, root, run, commit):
     return head, atoms
 
 
-def det_case(rid, atom, rec, detail, det, stable_ab, has_ref):
+def det_case(rid, atom, rec, detail, det, stable_ab, has_ref, src_label="f111", behaviour_run=True, exclude_random=True):
     """One web case in det mode. Provenance per check: painted/text_visible/behaviour (and React's own overflow and
     contrast) come from the F111 run ('f111'); pixel parity vs React, overflow, contrast, text parity and stability
     come from the deterministic A/B pass ('det-ab'). The allowance lists play no part: stability is A==B."""
     painted = "fail" if (rec.get("error") or rec.get("broken")) else "pass"
     err = "error" if rec.get("error") else ("broken" if rec.get("broken") else None)
-    rnd = atom in RANDOM_ATOMS
+    rnd = exclude_random and atom in RANDOM_ATOMS
     pix, over = {}, {}
     for env, lane in DET_LANES.items():
         if has_ref:
@@ -241,7 +241,9 @@ def det_case(rid, atom, rec, detail, det, stable_ab, has_ref):
             if env.endswith("360"):
                 over[env] = None if r.get("overflow") is None else bool(r["overflow"])
     b = detail.get("behaviour_custom", {}).get(atom)
-    if b is None:
+    if not behaviour_run:
+        beh = "not_run"
+    elif b is None:
         beh = "n/a (no probe)"
     else:
         beh = str(b.get("verdict", "")).split(":")[0]
@@ -259,7 +261,7 @@ def det_case(rid, atom, rec, detail, det, stable_ab, has_ref):
                          "strict_text": bool(rec.get("strict_text")), "allowance": False},
         "pixel": pix, "overflow_360": over, "behaviour": beh, "text_parity": tp,
         "stability": "stable",
-        "sources": {"painted": "f111", "text_visible": "f111", "behaviour": "f111", "stability": "det-ab",
+        "sources": {"painted": src_label, "text_visible": src_label, "behaviour": src_label, "stability": "det-ab",
                     "pixel": "det-ab" if has_ref else "f111",
                     "overflow_360": "det-ab" if has_ref else "f111", "contrast": "det-ab" if has_ref else "f111",
                     "text_parity": "det-ab" if has_ref else "n/a"}}}
@@ -298,45 +300,77 @@ def export_web_det(rid, work, public, measured_on, root, run, commit, det_dir):
     return head, atoms
 
 
-def export_ck187(work, public, root, run, measured_on, commit):
-    """CopilotKit 1.87.0 on A2UI 1.0: text lane from the custom run, four pixel lanes from the gate. No
-    behaviour lane was run: behaviour is recorded `not_run`. The shipped-commit hashes (core, css,
-    committed bundle) come from the React F run's recorded extract, which the report states are the same."""
+# CopilotKit 1.87.0 atoms that fail the pixel rule against React in the det gate for a reason that was NOT isolated:
+# content sits 1 px lower than React and than 1.85.0, identical in A and B. Shown as a difference, with this note.
+CK187_NOTES = {"page_header": "vertical_offset_1px_cause_not_isolated", "code_snippet_pair": "vertical_offset_1px_cause_not_isolated",
+               "image_with_caption": "vertical_offset_1px_cause_not_isolated"}
+
+
+def export_ck187(work, public, root, run, measured_on, commit, det_dir=None):
+    """CopilotKit 1.87.0 on A2UI 1.0. Painting and visible text come from the CK 1.87 custom run (provenance 'ck187',
+    a single non-deterministic local run); pixel parity vs React, overflow, contrast, text parity and stability from the
+    deterministic A/B gate ('det-ab'). No behaviour lane was run: behaviour is `not_run`, never a pass. The
+    shipped-commit hashes come from the React F run's recorded extract (the report states they are the same).
+    Without --det-dir the old single-pass gate (pixel lanes of the non-det run, allowance list) is used."""
     base = os.path.join(work, CK187["dir"], "runs")
     custom = load(os.path.join(base, "ck187_full.json"))
     custom = custom.get("cases", custom)
-    gate = load(os.path.join(base, "G", "GATE.json"))
-    raw_px = {lane: load(os.path.join(base, "G", f)) for env, lane, f, w in CK187_LANES}
-    unstable = load(os.path.join(work, CK187["unstable"]))
     S = _strict_painted(work)
     react_res = load(os.path.join(root, "react/runs", run, "RESULTS-react.json"))
     code = react_res["code"]
     if measured_on == "shipped" and code.get("head") != commit:
         sys.exit("copilotkit 1.87: the shipped-commit hashes come from the React run, which was measured on %s" % code.get("head"))
-    detail = {"behaviour_custom": {}}
-    detail["custom"] = {}
+    detail = {"behaviour_custom": {}, "custom": {}}
     for k, v in custom.items():
-        t = " ".join((v.get("text") or "").split())
         detail["custom"][k] = {"loose": bool(S.loose(v)), "strict": bool(S.strict(k, v)), "strict_text": bool(S.strict_text(k, v)),
                                "broken": bool(S.broken(v)), "error": bool(v.get("error")) or bool(v.get("crashed")) or bool(v.get("errors"))}
-    for env, lane, f, width in CK187_LANES:
-        det = {}
-        for atom, g in gate[lane]["detail"].items():
-            r = raw_px[lane].get(atom, {})
-            det[atom] = {"blank_both": g["blank_both"], "passed": g["passed"], "frac": g["frac"], "hdiff": g["hdiff"],
-                         "one_blank": bool(r.get("one_blank")), "low": g.get("low"), "low_ref": g.get("low_ref"),
-                         "overflow": bool(g["sw"] > width)}
-        detail[lane] = det
     atoms = {}
-    for atom in public:
-        rec = detail["custom"].get(atom)
-        if rec is None:
-            atoms[atom] = {"cases": {}, "no_case": "no_example"}
-            continue
-        c = web_case("copilotkit", atom, rec, detail, unstable, True, behaviour_run=False)
-        c["dialect"] = "v1.0"
-        atoms[atom] = {"cases": {atom: c}}
-    head = web_head("copilotkit", CK187["version"], "v1.0", "react", CK187["date"], CK187["run_id"], measured_on, commit, code, None)
+    facts = None
+    if det_dir:
+        raw = load(os.path.join(det_dir, "det_gate_raw_ck187.json"))["renderers"]["copilotkit-1.87.0"]
+        bl = load(os.path.join(det_dir, "det_baselines_sha256_ck187.json"))
+        det = {}
+        for lane, v in raw.items():
+            if not v.get("fail_identical_in_run_B"):
+                sys.exit("copilotkit 1.87 det: %s fail list differs between run A and run B" % lane)
+            det[lane] = v["atoms"]
+        for atom in public:
+            rec = detail["custom"].get(atom)
+            if rec is None:
+                atoms[atom] = {"cases": {}, "no_case": "no_example"}
+                continue
+            c = det_case("copilotkit", atom, rec, detail, det, True, True, src_label="ck187", behaviour_run=False, exclude_random=False)
+            c["dialect"] = "v1.0"
+            if atom in CK187_NOTES:
+                c["notes"] = [CK187_NOTES[atom]]
+            atoms[atom] = {"cases": {atom: c}}
+        exc = len(bl.get("ab_exceptions", {}))
+        facts = {"determinism": dict(DET_FACTS, cells=4, byte_identical_cells=4 - exc, rule_identical_cells=4, dither_exception_cells=exc)}
+        date, run_id = DET_DATE, "copilotkit-1.87.0-det-ab-%s" % DET_DATE.replace("-", "")
+    else:
+        gate = load(os.path.join(base, "G", "GATE.json"))
+        raw_px = {lane: load(os.path.join(base, "G", f)) for env, lane, f, w in CK187_LANES}
+        unstable = load(os.path.join(work, CK187["unstable"]))
+        for env, lane, f, width in CK187_LANES:
+            det_l = {}
+            for atom, g in gate[lane]["detail"].items():
+                r = raw_px[lane].get(atom, {})
+                det_l[atom] = {"blank_both": g["blank_both"], "passed": g["passed"], "frac": g["frac"], "hdiff": g["hdiff"],
+                               "one_blank": bool(r.get("one_blank")), "low": g.get("low"), "low_ref": g.get("low_ref"),
+                               "overflow": bool(g["sw"] > width)}
+            detail[lane] = det_l
+        for atom in public:
+            rec = detail["custom"].get(atom)
+            if rec is None:
+                atoms[atom] = {"cases": {}, "no_case": "no_example"}
+                continue
+            c = web_case("copilotkit", atom, rec, detail, unstable, True, behaviour_run=False)
+            c["dialect"] = "v1.0"
+            atoms[atom] = {"cases": {atom: c}}
+        date, run_id = CK187["date"], CK187["run_id"]
+    head = web_head("copilotkit", CK187["version"], "v1.0", "react", date, run_id, measured_on, commit, code, None)
+    if facts:
+        head["facts"] = facts
     return head, atoms
 
 
@@ -491,6 +525,8 @@ def main():
     ap.add_argument("--web-run", default="F", help="run sub-directory under <web-root>/<renderer>/runs/")
     ap.add_argument("--det-dir", default="/mnt/hdd2/work/m5-det/proposed",
                     help="deterministic A/B gate outputs (det_gate_raw.json, det_baselines_sha256.json); '' = F111 data only")
+    ap.add_argument("--ck187-det-dir", default="/mnt/hdd2/work/m5-ck187/det/proposed",
+                    help="CopilotKit 1.87.0 deterministic A/B gate outputs; '' = the single non-deterministic pass")
     ap.add_argument("--flutter-run", default="20261113-012244")
     ap.add_argument("--measured-on", default="shipped", choices=["shipped", "preview-unmerged"],
                     help="web runs: shipped needs --commit (the public SHA the run was measured on)")
@@ -516,7 +552,7 @@ def main():
         elif rid == "compose":
             head, atoms = export_compose(a.work, public, a.compose_measured_on)
         elif rid == "copilotkit":
-            head, atoms = export_ck187(a.work, public, a.web_root, a.web_run, a.measured_on, a.commit)
+            head, atoms = export_ck187(a.work, public, a.web_root, a.web_run, a.measured_on, a.commit, a.ck187_det_dir)
         elif a.det_dir:
             head, atoms = export_web_det(rid, a.work, public, a.measured_on, a.web_root, a.web_run, a.commit, a.det_dir)
         else:
