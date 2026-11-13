@@ -550,3 +550,12 @@ def test_site_wiring_flags_catalogue_without_x_renderers(tmp_path):
     errs = chk.check_site_wiring(ctx)
     assert any("x-renderers of %s" % atom in msg for _, msg in errs)
     assert any("page public/renderers/index.html is missing" in msg for _, msg in errs)
+
+
+def test_committed_tree_carries_the_renderer_fragments():
+    """The COMMITTED public/ files (atom pages and twins, /renderers/, catalogue maps) must carry exactly what the
+    committed matrix and renderer_site.py produce. Fails when the matrix or the fragment changes without the
+    generated files being refreshed (regenerate: generate_atom_pages.py + gen_public_catalog.py)."""
+    ctx = chk.load_context()
+    errs = chk.check_site_wiring(ctx) + chk.check_private_safe(ctx)
+    assert errs == [], errs[:5]
