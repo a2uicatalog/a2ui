@@ -115,10 +115,11 @@ A2UI defines a small Basic Catalog: text, rows, columns, cards, buttons, images 
 inputs. Real answers need more: stat cards, charts, timelines, comparison tables, status
 boards, animated explainers.
 
-The [A2UI Atomic Catalog](/) is an open-source (MIT) catalog of 573 published components,
+The [A2UI Atomic Catalog](/) is an open-source (MIT) catalog of @@ATOMS@@ published components,
 each with typed fields, a JSON Schema and a live preview. Agents reach it through an MCP
 server at `a2uicatalog.ai/mcp`, or read its machine-readable vocabulary at
-[`/spec.json`](/spec.json).
+[`/spec.json`](/spec.json). How it is built as an A2UI custom catalog, with the real files:
+[A2UI custom catalog: a worked example](/what-is-a2ui/custom-catalog/).
 
 ## Where it runs
 

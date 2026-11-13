@@ -87,6 +87,9 @@ jobs:
       - name: Build the Apps Script renderer page (counts read from spec.json, so they stay current)
         run: python3 scripts/gen_renderer_page.py
 
+      - name: Build the guide pages (What is A2UI? + custom catalog; counts and code read from the published catalogue)
+        run: python3 scripts/gen_pillar_pages.py
+
       - name: Build the Mermaid to film window (converter worker + page)
         run: python3 scripts/gen_try_mermaid.py
 
