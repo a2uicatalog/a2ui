@@ -151,6 +151,22 @@ def atom_link(a):
     return '<a href="/atoms/%s/">%s</a>' % (a, a)
 
 
+VERSIONS_NOTE = ("A note on versions. The v1.0 specification is marked current, but the renderer packages are not at 1.0: "
+                 "React and Lit are at 0.15.0 and Angular at 0.14.0, and our tests ran on those. "
+                 "When the renderers reach 1.0 we will rerun the same tests and publish the results.")
+
+
+def last_check(m):
+    """Humble date line: the newest measured_date in the matrix, e.g. '13 November 2026'."""
+    import datetime
+    ds = [(r.get("measurement") or {}).get("measured") for r in m["renderers"].values()]
+    ds = sorted(d for d in ds if d)
+    if not ds:
+        return None
+    d = datetime.date.fromisoformat(ds[-1])
+    return "%d %s %d" % (d.day, d.strftime("%B"), d.year)
+
+
 def hub_body(m):
     rows = []
     pre = {}
@@ -174,7 +190,8 @@ def hub_body(m):
     banners = "".join('<div class="pre">%s: %s</div>' % (E(", ".join(v)), E(n)) for n, v in sorted(pre.items()))
     return (
         '<div class="rdp"><h1>Which renderer draws which atom</h1>'
-        '<p class="lead">Every atom already says where it appears; this adds what draws it, measured per renderer. %d public atoms, %d renderers, %d of them measured.</p>%s'
+        '<p class="lead">Every atom already says where it appears; this adds what draws it, measured per renderer. At last check (%s) we had %d public atoms and %d renderers, %d of them measured.</p>'
+        '<p class="note">%s</p>%s'
         "<h2>Two dimensions, in plain words</h2>"
         '<div class="two"><div class="card"><strong>Surface: where it appears</strong><p class="note">The place a person sees the atom: web page, MCP app, Android, PDF, Google Meet stage, and so on. This is the <code>x-surfaces</code> field of each atom.</p></div>'
         '<div class="card"><strong>Renderer: what draws it</strong><p class="note">The piece of software that turns the atom into pixels: React, Lit, Angular, CopilotKit, a2ui-vue, Flutter or Compose. This is the <code>x-renderers</code> field. One surface (the web) is drawn by several renderers, and one renderer can serve several surfaces.</p></div></div>'
@@ -185,7 +202,7 @@ def hub_body(m):
         '<p class="note">Each component in <a href="/catalogue/a2ui-atoms-v1.json">/catalogue/a2ui-atoms-v1.json</a> and each atom in <a href="/spec.json">/spec.json</a> carries a compact <code>x-renderers</code> map next to <code>x-surfaces</code>: renderer id to status string, one key per renderer. Per-check evidence, dates and notes are only in <a href="/catalogue/renderer-matrix-v1.json">/catalogue/renderer-matrix-v1.json</a>.</p>'
         '<pre tabindex="0"><code>%s</code></pre>'
         '<p class="tm">%s</p></div>'
-    ) % (m["atom_count"], len(m["renderers"]), sum(1 for r in m["renderers"].values() if r["measured"]), banners, "".join(rows),
+    ) % (E(last_check(m) or "date not recorded"), m["atom_count"], len(m["renderers"]), sum(1 for r in m["renderers"].values() if r["measured"]), E(VERSIONS_NOTE), banners, "".join(rows),
          E(json.dumps(example, indent=2)), E(dp.tm_text(m)))
 
 
@@ -220,8 +237,9 @@ def renderer_desc(m, rid):
 def hub_md(m):
     lines = ["# Which renderer draws which atom", "",
              "Every atom says where it appears (`x-surfaces`); `x-renderers` says what draws it, measured per renderer. "
-             "%d public atoms, %d renderers, %d of them measured." % (
-                 m["atom_count"], len(m["renderers"]), sum(1 for r in m["renderers"].values() if r["measured"])), "",
+             "At last check (%s) we had %d public atoms and %d renderers, %d of them measured." % (
+                 last_check(m) or "date not recorded", m["atom_count"], len(m["renderers"]), sum(1 for r in m["renderers"].values() if r["measured"])), "",
+             VERSIONS_NOTE, "",
              "| Renderer | Package | Version measured | Statuses |", "|---|---|---|---|"]
     for rid, reg in m["renderers"].items():
         cov = reg["coverage"]
