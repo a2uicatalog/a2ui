@@ -6,6 +6,20 @@ Unread message count badges for one or more Gmail labels, shown as a pill row. Z
 
 google-apps-script-web, google-meet-stage, mcp-apps, android
 
+## Renderers
+
+| Renderer | Status | Measured | Notes |
+|---|---|---|---|
+| React | Drawn | 2026-11-13 |  |
+| Lit | Drawn | 2026-11-13 | seeded-random order differs per renderer: pixel and text parity with React are excluded for this atom, not counted as a failure |
+| Angular | Drawn | 2026-11-13 | seeded-random order differs per renderer: pixel and text parity with React are excluded for this atom, not counted as a failure |
+| CopilotKit | Drawn | 2026-11-13 |  |
+| a2ui-vue | Drawn | 2026-11-13 | seeded-random order differs per renderer: pixel and text parity with React are excluded for this atom, not counted as a failure |
+| Flutter | Native | 2026-11-13 |  |
+| Compose | Not supported | 2026-11-13 | component type unknown to the renderer |
+
+What draws the atom, measured per renderer: https://a2uicatalog.ai/renderers/
+
 ## Fields
 
 | Field | Type |

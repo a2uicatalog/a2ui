@@ -6,6 +6,20 @@ Connections between named things as arcs: the nodes sit on one horizontal line a
 
 web, google-apps-script-web, mcp-apps, android
 
+## Renderers
+
+| Renderer | Status | Measured | Notes |
+|---|---|---|---|
+| React | Not measured | 2026-11-13 | no example payload in the gate data |
+| Lit | Not measured | 2026-11-13 | no example payload in the gate data |
+| Angular | Not measured | 2026-11-13 | no example payload in the gate data |
+| CopilotKit | Not measured | 2026-11-13 | no example payload in the gate data |
+| a2ui-vue | Not measured | 2026-11-13 | no example payload in the gate data |
+| Flutter | Not measured | 2026-11-13 | no example payload in the gate data |
+| Compose | Not measured | 2026-11-13 | no example payload in the gate data |
+
+What draws the atom, measured per renderer: https://a2uicatalog.ai/renderers/
+
 ## Fields
 
 | Field | Type |

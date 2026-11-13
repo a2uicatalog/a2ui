@@ -6,6 +6,20 @@ OpenSky Network ADS-B live traffic feed for a geographic bounding box. Fetches s
 
 google-apps-script-web
 
+## Renderers
+
+| Renderer | Status | Measured | Notes |
+|---|---|---|---|
+| React | Not verified | 2026-11-13 | no visible text in the example |
+| Lit | Not verified | 2026-11-13 | blank on both sides (light 360); blank on both sides (light 480); no visible text in the example |
+| Angular | Not verified | 2026-11-13 | blank on both sides (light 360); blank on both sides (light 480); no visible text in the example |
+| CopilotKit | Not verified | 2026-11-13 | blank on both sides (light 360); blank on both sides (light 480); no visible text in the example |
+| a2ui-vue | Not verified | 2026-11-13 | blank on both sides (light 360); blank on both sides (light 480); no visible text in the example |
+| Flutter | Native | 2026-11-13 |  |
+| Compose | Not supported | 2026-11-13 | component type unknown to the renderer |
+
+What draws the atom, measured per renderer: https://a2uicatalog.ai/renderers/
+
 ## Fields
 
 | Field | Type |

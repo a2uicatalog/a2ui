@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" href="/favicon.ico" sizes="32x32">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="theme-color" content="#5051cf">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>a2ui-vue renderer support: which A2UI atoms it draws — A2UI Atomic Catalog</title>
+  <meta name="description" content="a2ui-vue (a2ui-vue) against the 573 public A2UI atoms: 482 drawn, 22 not measured. Measured per check, no hand-written status.">
+  <link rel="canonical" href="https://a2uicatalog.ai/renderers/a2ui-vue/">
+  <link rel="alternate" type="text/markdown" href="https://a2uicatalog.ai/renderers/a2ui-vue.md">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="A2UI Catalog">
+  <meta property="og:title" content="a2ui-vue renderer support: which A2UI atoms it draws — A2UI Atomic Catalog">
+  <meta property="og:description" content="a2ui-vue (a2ui-vue) against the 573 public A2UI atoms: 482 drawn, 22 not measured. Measured per check, no hand-written status.">
+  <meta property="og:url" content="https://a2uicatalog.ai/renderers/a2ui-vue/">
+  <meta property="og:image" content="https://a2uicatalog.ai/brand/og-card.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="a2ui-vue renderer support: which A2UI atoms it draws — A2UI Atomic Catalog">
+  <meta name="twitter:description" content="a2ui-vue (a2ui-vue) against the 573 public A2UI atoms: 482 drawn, 22 not measured. Measured per check, no hand-written status.">
+  <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "@id": "https://a2uicatalog.ai/renderers/a2ui-vue/", "url": "https://a2uicatalog.ai/renderers/a2ui-vue/", "headline": "a2ui-vue renderer support: which A2UI atoms it draws", "description": "a2ui-vue (a2ui-vue) against the 573 public A2UI atoms: 482 drawn, 22 not measured. Measured per check, no hand-written status.", "isPartOf": {"@type": "WebSite", "name": "A2UI Catalog", "url": "https://a2uicatalog.ai/"}, "inLanguage": "en", "license": "https://opensource.org/licenses/MIT"}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "A2UI Catalog", "item": "https://a2uicatalog.ai/"}, {"@type": "ListItem", "position": 2, "name": "Renderers", "item": "https://a2uicatalog.ai/renderers/"}, {"@type": "ListItem", "position": 3, "name": "a2ui-vue", "item": "https://a2uicatalog.ai/renderers/a2ui-vue/"}]}]}</script>
+  <script>
+(function(){var t='light';try{var s=localStorage.getItem('a2ui-theme');if(s==='dark'||s==='light')t=s}catch(e){}
+document.documentElement.setAttribute('data-theme',t);document.documentElement.classList.add('js')})();
+</script>
+  
+<style>/*brand-tokens:c646187a*/
+:root{
+  color-scheme:light;
+  --bg:#f6f9fd;--surface:#ffffff;--surface-2:#eef2f8;--border:#dadee5;
+  --border-strong:#c3c9d3;--text:#141b24;--text-2:#2c343f;--text-muted:#515963;
+  --accent:#5051cf;--accent-text:#3a3bb0;--accent-contrast:#ffffff;--accent-soft-bg:#e6eaff;
+  --accent-2:#009ca7;--accent-2-text:#007581;--focus:#5051cf;--positive:#2f913e;
+  --negative:#c53637;--warn:#c69600;--code-bg:#f1f4f9;--radius:12px;
+  --shadow:0 1px 2px rgba(20,27,36,.05),0 10px 30px rgba(20,27,36,.07);--glow:0 4px 24px rgba(80,81,207,.16);--header-glass:rgba(255,255,255,.78);--grad:linear-gradient(120deg,#6267e7,#00b7c3);
+  --card:var(--surface);--muted:var(--text-muted);--cyan:var(--accent-2);--green:var(--positive);--accent-soft:var(--accent-soft-bg);
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#1e2733;--surface:#2d3642;--surface-2:#1a222d;--border:#4a5361;
+  --border-strong:#6b7684;--text:#eaeff5;--text-2:#d5dbe3;--text-muted:#a9b2be;
+  --accent:#8d98ff;--accent-text:#c7cdff;--accent-contrast:#141b24;--accent-soft-bg:#2f3463;
+  --accent-2:#2ac4ce;--accent-2-text:#2ac4ce;--focus:#8d98ff;--positive:#5cc46c;
+  --negative:#ff7d7e;--warn:#e6b800;--code-bg:#1a222d;--shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.28);
+  --glow:0 4px 28px rgba(141,152,255,.24);--header-glass:rgba(45,54,66,.78);--grad:linear-gradient(120deg,#8d98ff,#2ac4ce);
+}
+:root[data-theme="dark"] .stage,:root[data-theme="dark"] .preview-box{color-scheme:light;--bg:#f6f9fd;--surface:#ffffff;--surface-2:#eef2f8;--border:#dadee5;--border-strong:#c3c9d3;--text:#141b24;--text-2:#2c343f;--text-muted:#515963;--accent:#5051cf;--accent-text:#3a3bb0;--accent-contrast:#ffffff;--accent-soft-bg:#e6eaff;--accent-2:#009ca7;--accent-2-text:#007581;--focus:#5051cf;--positive:#2f913e;--negative:#c53637;--warn:#c69600;--code-bg:#f1f4f9;--radius:12px;--shadow:0 1px 2px rgba(20,27,36,.05),0 10px 30px rgba(20,27,36,.07);--glow:0 4px 24px rgba(80,81,207,.16);--header-glass:rgba(255,255,255,.78);--grad:linear-gradient(120deg,#6267e7,#00b7c3);--card:var(--surface);--muted:var(--text-muted);--cyan:var(--accent-2);--green:var(--positive);--accent-soft:var(--accent-soft-bg);}
+.stage,.preview-box{--mt-ink:#14181f}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:16px;line-height:1.6}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+label:has(input[type=radio]:focus-visible),label:has(input[type=checkbox]:focus-visible),input[type=radio]:focus-visible+label,input[type=checkbox]:focus-visible+label{outline:2px solid var(--accent);outline-offset:2px}
+.site-header{position:sticky;top:0;z-index:100;background:var(--header-glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
+.hdr-in{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:10px;padding:11px 24px}
+.wordmark{display:flex;align-items:center;gap:9px;font-size:15px;font-weight:800;letter-spacing:-.2px;color:var(--text);text-decoration:none;white-space:nowrap}
+.logo-atom{width:22px;height:22px;flex-shrink:0}
+.logo-atom .nuc{fill:var(--accent)}
+.logo-atom .o1{stroke:var(--accent);fill:none;stroke-width:1.5}
+.logo-atom .o2{stroke:oklch(70% 0.14 202);fill:none;stroke-width:1.5}
+.logo-atom .o3{stroke:var(--accent);fill:none;stroke-width:1.1;opacity:.35}
+.logo-atom .el{fill:oklch(70% 0.14 202)}
+.grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.site-nav{display:flex;gap:4px;margin-right:auto;margin-left:12px}
+.site-nav a{font-size:13px;font-weight:600;text-decoration:none;color:var(--muted);padding:5px 11px;border-radius:7px;transition:color .15s,background .15s}
+.site-nav a:hover{color:var(--text);background:var(--surface-2)}
+.site-nav a[aria-current="page"]{color:var(--accent-text);background:var(--accent-soft-bg)}
+.theme-btn{font:inherit;font-size:14px;line-height:1;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 9px;cursor:pointer;color:var(--text)}
+.theme-btn:hover{border-color:var(--border-strong)}
+.gh-pill{font-size:12px;font-weight:650;color:var(--text);text-decoration:none;border:1px solid var(--border);border-radius:8px;padding:6px 12px;background:var(--surface);white-space:nowrap}
+.gh-pill:hover{border-color:var(--border-strong)}
+.wrap{max-width:1100px;margin:0 auto;padding:36px 24px 96px}
+footer{margin-top:64px;padding-top:24px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+footer a{color:var(--accent-2-text);text-decoration:underline;text-underline-offset:2px}
+/* links inside running text must not rely on colour alone (WCAG 1.4.1): underline them */
+.wrap p a:not([class]),.wrap li a:not([class]),.wrap td a:not([class]),.wrap dd a:not([class]),footer p a:not([class]){text-decoration:underline;text-underline-offset:2px}
+/* Announcement pill above the hero headline. Sits in normal flow (not fixed or
+   sticky) so it never covers content, and wraps rather than truncating on
+   narrow screens — the arrow is the only thing dropped on mobile. */
+.announce{display:inline-flex;align-items:center;gap:10px;max-width:100%;
+ margin:0 auto 22px;padding:7px 8px 7px 8px;border:1px solid var(--border);
+ border-radius:999px;background:var(--surface);text-decoration:none;
+ font-size:13px;line-height:1.35;color:var(--text);
+ transition:border-color .15s,background .15s}
+.announce:hover{border-color:var(--accent);background:var(--accent-soft-bg)}
+.announce-tag{flex:none;font-size:10.5px;font-weight:800;letter-spacing:.08em;
+ text-transform:uppercase;color:#fff;background:var(--accent);
+ border-radius:999px;padding:4px 9px}
+.announce-text{text-align:left}
+.announce-text code{font-size:12px;background:var(--surface-2);
+ padding:1px 5px;border-radius:5px}
+.announce-go{flex:none;color:var(--accent);font-weight:700;padding-right:8px}
+@media(max-width:560px){.announce{font-size:12.5px;align-items:flex-start;
+ border-radius:14px;padding:9px 12px}.announce-go{display:none}}
+
+/* Design pass (1 Nov 2026, direction C). Header: the full nav row from 861 px; below it, with JS, the nav folds behind a Menu button and
+   Search becomes an icon link; without JS the nav stays a wrapping row, so no destination is ever lost. Touch targets are 44 px on phones. */
+.hdr-search,.menu-btn{display:none}
+.hdr-search,.menu-btn,.theme-btn{align-items:center;justify-content:center;color:var(--text)}
+.menu-btn{gap:6px;font:700 14px/1 inherit;border:1px solid var(--border-strong);border-radius:10px;background:var(--surface);cursor:pointer;padding:0 14px}
+.theme-btn svg{display:block}
+@media(max-width:860px){
+ .hdr-in{flex-wrap:wrap;padding:8px 16px;row-gap:0}
+ .wordmark{margin-right:auto}
+ .gh-pill{display:none}
+ .hdr-search{display:flex;min-width:44px;min-height:44px;border-radius:10px}
+ .theme-btn{display:flex;min-width:44px;min-height:44px;border-radius:10px}
+ .site-nav{order:3;width:100%;margin:6px 0 2px;gap:2px;flex-wrap:wrap}
+ .site-nav a{white-space:nowrap;font-size:14px;padding:11px 12px;min-height:44px;display:flex;align-items:center}
+ .js .menu-btn{display:flex;min-height:44px}
+ .js .site-nav{display:none;flex-direction:column;align-items:stretch;border-top:1px solid var(--border);padding-top:6px}
+ .js .site-nav.open{display:flex}
+}
+@media(min-width:861px){.theme-btn{display:flex;min-width:36px;min-height:36px;border-radius:8px}}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+/* "Pause all motion" / per-preview Pause (WCAG 2.2.2): stops CSS animation; film clocks are paused by the page script */
+.motion-paused .stage-inner *,.preview-box.paused *{animation-play-state:paused!important}
+.pause-btn{display:inline-flex;align-items:center;gap:6px;min-width:44px;min-height:44px;padding:0 14px;border:1px solid var(--border-strong);border-radius:10px;background:var(--surface);color:var(--text);font:600 14px/1 inherit;cursor:pointer}
+.pause-btn[hidden]{display:none}
+.preview-tools{gap:8px;flex-wrap:wrap}
+.focus-btn{display:inline-flex;align-items:center;gap:6px;min-width:44px;min-height:44px;padding:0 16px;border:1px solid var(--border-strong);border-radius:10px;background:var(--surface);color:var(--text);font:600 14px/1 inherit;cursor:pointer}
+.focus-btn[hidden]{display:none}
+.focus-btn:focus-visible,.focus-close:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.focus-dialog{border:0;padding:0;background:rgba(8,10,16,.9);max-width:100vw;max-height:100vh;width:100vw;height:100vh;color:var(--text);overflow:hidden}
+.focus-dialog::backdrop{background:rgba(8,10,16,.82)}
+.focus-dialog:not([open]){display:none}
+.focus-dialog[open]{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:12px 16px}
+.focus-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;width:var(--focus-w,100%);max-width:100%;color:#f1f5f9}
+.focus-title{font:600 15px/1.3 inherit;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.focus-actions{display:flex;gap:8px;flex:none}
+.focus-close{min-width:44px;min-height:44px;padding:0 16px;border:1px solid var(--border-strong);border-radius:10px;background:var(--surface);color:var(--text);font:600 14px/1 inherit;cursor:pointer}
+.focus-stage{width:var(--focus-w,100%);max-width:100%;max-height:var(--focus-h,none);overflow:auto;border-radius:16px;background:#0b0d12}
+.focus-stage:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.focus-stage .mt-root{margin:0!important;max-width:none!important;width:calc(var(--focus-w,100%) * var(--focus-zoom,1))}
+.focus-zoom{min-width:44px;min-height:44px;padding:0 14px;border:1px solid var(--border-strong);border-radius:10px;background:var(--surface);color:var(--text);font:600 14px/1 inherit;cursor:pointer}
+.focus-zoom[aria-pressed="true"]{background:var(--accent-soft-bg);border-color:var(--accent);color:var(--accent-text)}
+.focus-zoom:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+/* A portrait film (9:16) would be taller than the screen in the preview column: cap it at 78vh and centre it */
+.preview-box .mt-root:has(> .mt-vp[style*="aspect-ratio:720/1280"]){max-width:calc(78vh*0.5625);margin-left:auto!important;margin-right:auto!important}   /* !important: the film root carries an inline margin:1rem 0 */
+.pause-btn[aria-pressed="true"]{background:var(--accent-soft-bg);border-color:var(--accent);color:var(--accent-text)}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+/* cursor_glow ships dark-tuned (screen blend ≈ invisible over a white ground);
+   in the light default, re-blend the orb — it is the only direct body child
+   carrying the atom's z-index:9000. */
+:root:not([data-theme="dark"]) body>div[style*="z-index:9000"]{mix-blend-mode:multiply!important;opacity:.22!important}
+
+.wrap{max-width:860px}
+nav.crumb{font-size:12px;color:var(--muted);margin-bottom:28px;font-family:ui-monospace,'SF Mono',Monaco,monospace}
+nav.crumb a{color:var(--accent-2-text);text-decoration:underline;text-underline-offset:2px}
+nav.crumb a:hover{text-decoration:underline}
+.cat-line{margin:-2px 0 18px;font-size:14px;color:var(--text-muted)}
+.cat-chip{display:inline-block;padding:3px 12px;border-radius:999px;background:var(--accent-soft-bg);color:var(--accent-2-text);font-weight:700;text-decoration:none;border:1px solid var(--border)}
+.cat-chip:hover,.cat-chip:focus-visible{border-color:var(--accent-2-text)}
+nav.atom-pager{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;margin:-12px 0 28px}
+nav.atom-pager .pg-btn{display:flex;flex-direction:column;gap:2px;padding:10px 14px;border:1px solid var(--border-strong);border-radius:10px;background:var(--surface);color:var(--text);text-decoration:none;min-width:0}
+nav.atom-pager .pg-btn:hover,nav.atom-pager .pg-btn:focus-visible{border-color:var(--accent-2-text);background:var(--accent-soft-bg)}
+nav.atom-pager .pg-next{text-align:right;justify-self:end}
+nav.atom-pager .pg-prev{justify-self:start}
+.pg-dir{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted)}
+.pg-name{font-size:16px;font-weight:700;color:var(--accent-2-text);overflow-wrap:anywhere}
+nav.atom-pager .pg-all{font-size:14px;color:var(--accent-2-text);text-decoration:underline;text-underline-offset:2px}
+.pg-hint{grid-column:1/-1;text-align:center;font-size:17px;font-weight:600;color:var(--text);margin:8px 0 0}
+nav.atom-pager kbd{display:inline-block;min-width:1.6em;padding:1px 6px;border:1px solid var(--border-strong);border-bottom-width:2px;border-radius:5px;background:var(--surface-2);color:var(--text);font:600 15px/1.4 ui-monospace,'SF Mono',Monaco,monospace;text-align:center;text-transform:none;letter-spacing:0}
+@media (hover:none){.pg-hint,nav.atom-pager .pg-dir kbd{display:none}}
+@media (max-width:520px){nav.atom-pager{grid-template-columns:1fr 1fr}nav.atom-pager .pg-all{grid-column:1/-1;grid-row:2;justify-self:center}}
+/* I160 atom likes: the heart sits beside the title; hidden until /api/likes answers, so a dead endpoint leaves no dead button */
+.title-row{display:flex;align-items:center;gap:6px 16px;flex-wrap:wrap}
+.title-row h1{margin-bottom:8px}
+.like-btn{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 12px;border:1px solid var(--border-strong);border-radius:999px;background:var(--surface);color:var(--text);font:600 14px/1.2 inherit;cursor:pointer}
+.like-btn[hidden]{display:none}
+.like-btn:hover{border-color:var(--accent)}
+.like-btn .like-heart{display:block;fill:none;stroke:currentColor;stroke-width:2;stroke-linejoin:round;color:var(--text-muted)}
+.like-btn[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft-bg);color:var(--accent-text)}
+.like-btn[aria-pressed="true"] .like-heart{fill:var(--accent);stroke:var(--accent);color:var(--accent)}
+@media(max-width:700px){.like-btn{min-height:44px}}
+.type-code{font:13px ui-monospace,'SF Mono',Monaco,monospace;color:var(--accent-2-text);margin-left:8px}
+.cat-chip{background:var(--accent-soft-bg);color:var(--accent-text)}
+.label-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}
+.label-row .label{margin:0}
+.copy-btn,.export-btn,.export-cancel{min-height:36px;padding:0 14px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text);font:600 13px/1 inherit;cursor:pointer}
+.copy-btn:hover,.export-btn:hover,.export-cancel:hover{border-color:var(--accent)}
+.export-btn:disabled{opacity:.5;cursor:default}
+@media(max-width:700px){.copy-btn,.export-btn,.export-cancel{min-height:44px}}
+.preview-tools{display:flex;justify-content:flex-end;margin-top:8px}
+.export-row{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;margin:-24px 0 36px;font-size:13px;color:var(--text-muted)}
+.export-row[hidden],.export-nod[hidden],.export-prog[hidden]{display:none}
+.export-btns{display:flex;gap:8px;flex-wrap:wrap}
+.export-btns[hidden]{display:none}
+.export-note{margin-left:auto}
+.export-nod{display:flex;align-items:center;gap:6px}
+.export-prog{flex:1 1 100%;display:flex;align-items:center;gap:12px}
+.export-track{flex:1;height:8px;border-radius:99px;background:var(--surface-2);border:1px solid var(--border);overflow:hidden}
+.export-bar{display:block;height:100%;width:0;background:var(--accent)}
+.fields{margin:12px 0 24px;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;background:var(--surface)}
+.field-row{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,2fr) auto;gap:4px 16px;padding:10px 14px;border-bottom:1px solid var(--border);align-items:baseline}
+.field-row:last-child{border-bottom:0}
+.fields dt{font:600 14px ui-monospace,'SF Mono',Monaco,monospace;color:var(--text);overflow-wrap:anywhere}
+.fields dd{margin:0;font-size:14px;color:var(--text-muted);overflow-wrap:anywhere}
+.fields .f-req{font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.fields .f-required{color:var(--accent-text)}
+@media(max-width:600px){.field-row{grid-template-columns:1fr;padding:12px 14px}.fields .f-req{justify-self:start}}
+.like-n:empty{display:none}
+.hub-likes{font-size:13px;font-weight:600;color:var(--muted);margin-left:8px;white-space:nowrap}
+.hub-likes:empty{display:none}
+h1{font-size:2.2rem;font-weight:800;letter-spacing:-1px;margin-bottom:8px}
+.desc{font-size:1.1rem;color:var(--muted);margin-bottom:32px;line-height:1.7}
+.label{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:12px}
+.section{margin-bottom:40px}
+.badge{display:inline-block;font-size:11px;font-weight:600;padding:3px 10px;border-radius:100px;margin:2px}
+.bs{background:var(--accent-soft-bg);color:var(--accent)}
+.bd{background:color-mix(in oklch,var(--warn) 14%,var(--surface));border:1px solid color-mix(in oklch,var(--warn) 40%,var(--surface));color:color-mix(in oklch,var(--warn) 45%,var(--text))}
+pre{background:var(--code-bg);border:1px solid var(--border);border-radius:10px;padding:20px;overflow-x:auto;margin:12px 0 24px}
+pre code{color:var(--text);font-size:13px;font-family:ui-monospace,'SF Mono',Monaco,monospace}
+table{width:100%;border-collapse:collapse;margin:12px 0 24px;font-size:14px}
+th{text-align:left;padding:10px 14px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border)}
+td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--muted);vertical-align:top}
+td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mono',Monaco,monospace}
+.back{display:inline-block;margin-top:32px;font-size:13px;color:var(--muted);border:1px solid var(--border);border-radius:8px;padding:8px 14px;text-decoration:none;background:var(--surface)}
+.back:hover{border-color:var(--accent);color:var(--accent)}
+.try-btn{display:inline-block;margin-top:32px;margin-left:12px;font-size:13px;font-weight:700;color:var(--accent-contrast);background:var(--accent);border:none;border-radius:8px;padding:9px 18px;text-decoration:none;letter-spacing:.03em;cursor:pointer;transition:filter .15s,box-shadow .15s}
+.try-btn:hover{filter:brightness(1.08);box-shadow:var(--glow)}
+.preview-box{background:#fff;border:1px solid var(--border);border-radius:10px;padding:24px;margin-top:8px;color:#1a1a1a;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;line-height:1.6}
+.preview-box{position:relative;overflow-x:auto}
+.preview-box *{max-width:100%}
+.preview-box [class$="-track"]{max-width:none}
+.preview-box .mt-vp *{max-width:none}   /* a film stage is a fixed 1280-wide (or 720-wide) canvas the player scales down; capping it at the box width drew every static film at about half size */   /* a carousel track is wider than its frame by design */
+.preview-box p,.preview-box li,.preview-box td,.preview-box th,.preview-box td:first-child,.preview-box code{color:inherit;font-family:inherit}
+.preview-box pre{background:#f4f4f4;border:1px solid #e0e0e0}
+.preview-box pre code{color:inherit}
+.preview-box pre[style*="#1e1e2e"] code{color:#e6e6f0}   /* a dark code block keeps its light text */
+.preview-box h2,.preview-box h3{color:#111}
+.preview-box a{color:#0969da}
+.preview-box ul{color:#333}
+.deploy-box{margin-top:40px;padding:20px 24px;background:var(--accent-soft-bg);border:1px solid var(--border);border-radius:var(--radius)}
+.deploy-box .label{margin-bottom:10px}
+.deploy-box a{display:inline-block;margin-top:12px;font-size:12px;color:var(--accent);text-decoration:none;font-weight:600}
+</style>
+
+  <style>
+/* renderer dimension: scoped to .rd, uses the page's own tokens */
+.rd{margin:0 0 8px}
+.rd-lead{font-size:13px;color:var(--muted);margin:0 0 10px;max-width:70ch}
+.rd table{width:100%;border-collapse:collapse;font-size:13px}
+.rd th,.rd td{text-align:left;vertical-align:top;padding:8px 10px;border-bottom:1px solid var(--border)}
+.rd th{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.rd-name{display:flex;align-items:center;gap:8px;font-weight:650;white-space:nowrap}
+.rd-name a{color:var(--text);text-decoration:none;font-family:inherit;font-size:13.5px}
+.rd-name a:hover{text-decoration:underline}
+.rd .lg{display:inline-block;width:18px;height:18px;flex:none;background:currentColor;-webkit-mask:var(--m) center/contain no-repeat;mask:var(--m) center/contain no-repeat}
+.rd .lg0{display:inline-block;width:18px;height:18px;flex:none}
+.rd-chip{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;border-radius:999px;padding:2px 10px;border:1px solid var(--c-line);background:var(--c-bg);color:var(--c-ink);white-space:nowrap}
+.rd-chip.drawn,.rd-chip.native{--c-bg:color-mix(in srgb,var(--positive) 16%,var(--surface));--c-line:color-mix(in srgb,var(--positive) 50%,var(--surface));--c-ink:color-mix(in srgb,var(--positive) 55%,var(--text))}
+.rd-chip.drawn_with_differences,.rd-chip.degraded{--c-bg:color-mix(in srgb,var(--warn) 18%,var(--surface));--c-line:color-mix(in srgb,var(--warn) 50%,var(--surface));--c-ink:color-mix(in srgb,var(--warn) 45%,var(--text))}
+.rd-chip.not_verified{--c-bg:var(--surface-2);--c-line:color-mix(in srgb,var(--warn) 45%,var(--surface));--c-ink:color-mix(in srgb,var(--warn) 40%,var(--text))}
+.rd-chip.not_supported{--c-bg:color-mix(in srgb,var(--negative) 14%,var(--surface));--c-line:color-mix(in srgb,var(--negative) 50%,var(--surface));--c-ink:color-mix(in srgb,var(--negative) 55%,var(--text))}
+.rd-chip.not_measured{--c-bg:var(--surface-2);--c-line:var(--border-strong);--c-ink:var(--text-muted)}
+.rd-ev{color:var(--muted);font-size:12.5px;line-height:1.45}
+.rd-ck{display:flex;flex-wrap:wrap;gap:3px 6px}
+.rd-ck span{font-size:11.5px;padding:0 6px;border-radius:5px;border:1px solid var(--border);white-space:nowrap}
+.rd-ck .bad{border-color:color-mix(in srgb,var(--negative) 55%,var(--surface));color:color-mix(in srgb,var(--negative) 55%,var(--text))}
+.rd-ck .unk{border-color:color-mix(in srgb,var(--warn) 55%,var(--surface));color:color-mix(in srgb,var(--warn) 45%,var(--text))}
+.rd-why{margin:4px 0 0;font-size:12px}
+.rd-date{white-space:nowrap;color:var(--muted);font-size:12px}
+.rd-pre{font-size:12px;border:1px solid color-mix(in srgb,var(--warn) 50%,var(--surface));background:color-mix(in srgb,var(--warn) 12%,var(--surface));border-radius:8px;padding:6px 10px;margin:10px 0 0;max-width:80ch}
+.rd-tm{font-size:11.5px;color:var(--muted);margin:10px 0 28px;max-width:80ch;line-height:1.45}
+@media(max-width:600px){
+ .rd table,.rd tbody,.rd tr,.rd td{display:block;width:100%;box-sizing:border-box}
+ .rd thead{display:none}
+ .rd tr{border:1px solid var(--border);border-radius:10px;padding:8px 10px;margin-bottom:8px;background:var(--surface)}
+ .rd td{border:0;padding:3px 0}
+ .rd-name{white-space:normal}
+}
+/* renderer dimension pages: scoped to .rdp */
+.rdp a{color:var(--accent-2-text)}
+.rdp .nm a{color:var(--text)}
+.rdp .lead{color:var(--muted);max-width:70ch;font-size:1.05rem;line-height:1.65;margin:0 0 24px}
+.rdp h2{font-size:1.15rem;margin:2em 0 .6em}
+.rdp table{margin:8px 0 12px}
+.rdp td:first-child{font-family:inherit;font-weight:inherit;color:inherit}
+.rdp td{color:var(--text)}
+.rdp .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:14px 16px}
+.rdp .scroll{overflow-x:auto}
+.rdp .nm{display:flex;gap:8px;align-items:center;font-weight:650;white-space:nowrap}
+.rdp .nm a{color:var(--text);text-decoration:none}
+.rdp .nm a:hover{text-decoration:underline}
+.rdp h1 .nm{font-size:inherit;gap:12px}
+.rdp .lg{display:inline-block;width:20px;height:20px;flex:none;background:currentColor;-webkit-mask:var(--m) center/contain no-repeat;mask:var(--m) center/contain no-repeat;vertical-align:middle}
+.rdp h1 .lg,.rdp h1 .lg0{width:32px;height:32px}
+.rdp .lg0{display:inline-block;width:20px;height:20px;flex:none}
+.rdp td.n{font-variant-numeric:tabular-nums}
+.rdp .bar{display:flex;height:14px;border-radius:7px;overflow:hidden;border:1px solid var(--border-strong);margin:8px 0}
+.rdp .bar span{display:block;height:100%}
+.rdp .bar .drawn,.rdp .bar .native{background:var(--positive)}
+.rdp .bar .drawn_with_differences,.rdp .bar .degraded{background:var(--warn)}
+.rdp .bar .not_verified{background:repeating-linear-gradient(45deg,var(--warn),var(--warn) 3px,var(--surface-2) 3px,var(--surface-2) 6px)}
+.rdp .bar .not_supported{background:var(--negative)}
+.rdp .bar .not_measured{background:var(--border-strong)}
+.rdp dl.facts{display:grid;grid-template-columns:max-content 1fr;gap:6px 16px;margin:0;font-size:14px}
+.rdp dl.facts dt{color:var(--muted)}
+.rdp dl.facts dd{margin:0;overflow-wrap:anywhere}
+.rdp details{border:1px solid var(--border);border-radius:10px;background:var(--surface);margin:8px 0;padding:6px 12px}
+.rdp summary{cursor:pointer;font-weight:650;padding:4px 0}
+.rdp ul.atoms{columns:3 180px;column-gap:18px;list-style:none;padding:0;margin:8px 0;font-size:13px;font-family:ui-monospace,'SF Mono',Monaco,monospace}
+.rdp ul.atoms li{break-inside:avoid;padding:1px 0}
+.rdp ul.atoms a,.rdp ul.why a{color:var(--accent-2-text)}
+.rdp ul.why{list-style:none;padding:0;margin:8px 0;font-size:13px}
+.rdp ul.why li{padding:3px 0;border-bottom:1px solid var(--border)}
+.rdp ul.why code{font-weight:650}
+.rdp .note{font-size:13px;color:var(--muted);max-width:75ch}
+.rdp .pre{font-size:13px;border:1px solid color-mix(in srgb,var(--warn) 50%,var(--surface));background:color-mix(in srgb,var(--warn) 12%,var(--surface));border-radius:8px;padding:8px 12px;margin:12px 0;max-width:80ch}
+.rdp .tm{font-size:12px;color:var(--muted);margin-top:28px;max-width:80ch}
+.rdp .two{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:8px 0 16px}
+.rdp .card ul{margin:0;padding-left:20px}
+.rdp .card li{margin:6px 0;font-size:14px;color:var(--text-2)}
+.rdp pre{margin:8px 0 12px;font-size:12.5px}
+@media(max-width:640px){
+ .rdp .two{grid-template-columns:1fr}
+ .rdp dl.facts{grid-template-columns:1fr;gap:0}
+ .rdp dl.facts dt{margin-top:8px}
+ .rdp ul.atoms{columns:2 140px}
+ .rdp h1 .nm{white-space:normal}
+}
+</style>
+</head>
+<body>
+  <header class="site-header"><div class="hdr-in">
+    <a class="wordmark" href="/" aria-label="A2UI Catalog home"><svg class="logo-atom" viewBox="0 0 24 24" aria-hidden="true"><ellipse class="o1" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(-32 12 12)"/><ellipse class="o2" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(32 12 12)"/><ellipse class="o3" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(90 12 12)"/><circle class="nuc" cx="12" cy="12" r="2.7"/><circle class="el" cx="3.21" cy="15.98" r="1.25"/></svg><span><span class="grad">A2UI</span> Catalog</span></a>
+    <nav class="site-nav" id="site-menu" aria-label="Main">
+      <a href="/what-is-a2ui/">What is A2UI?</a>
+      <a href="/atoms/" aria-current="page">Atoms</a>
+      
+      <a href="/surfaces/mcp-apps">MCP Playground</a>
+      <a href="/docs">Docs</a>
+      <a href="/renderer">Apps Script Renderer</a>
+      <a href="/blog">Blog</a>
+      
+    </nav>
+    <a class="hdr-search" href="/atoms/#hub-q" aria-label="Search atoms"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg></a>
+    <button class="theme-btn" type="button" aria-label="Switch to dark theme"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 4v16a8 8 0 0 0 0-16z" fill="currentColor"/></svg></button>
+    <a class="gh-pill" href="https://github.com/a2uicatalog/a2ui">GitHub ↗</a>
+    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="site-menu"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>Menu</button>
+  </div></header>
+  <div class="wrap">
+  <nav class="crumb">
+    <a href="/">A2UI Catalog</a> / <a href="/renderers/">renderers</a> / a2ui-vue
+  </nav>
+  <div class="rdp"><h1><span class="nm"><span class="lg" style="--m:url(/renderers/logos/vuedotjs.svg)" aria-hidden="true"></span>a2ui-vue</span></h1><p class="lead">a2ui-vue draws our atoms inside ITS wrapper and theme, so the custom-lane numbers measure the wrapper, not a2ui-vue&#x27;s own components. Vue-only pixel failures were not traced.</p><div class="card"><dl class="facts"><dt>Package</dt><dd>a2ui-vue</dd><dt>Version measured</dt><dd>a2ui-vue 0.9.5 (Vue 3.5.13, web_core 0.9.1)</dd><dt>Protocol dialect</dt><dd>v0.9</dd><dt>Platform</dt><dd>web (Vue 3, stock a2ui-vue, Chromium)</dd><dt>Measured</dt><dd>2026-11-13</dd><dt>Run</dt><dd>a2ui-vue-det-ab-20261113</dd><dt>What was measured</dt><dd>551 of 573 atoms have a gate example. Checks recorded per atom: painting, visible text, blank on both sides, pixel parity with React in the lanes the gate has, overflow at 360 px, contrast, and behaviour for the 49 atoms that have an interaction probe. Weekly gate (M5) not claimed.</dd><dt>Measured on commit</dt><dd>f111cde17</dd><dt>Core build (sha256, first 12)</dt><dd>0143667f9e04</dd><dt>Shipped renderer bundle (sha256, first 12)</dt><dd>2af466d6ea81</dd><dt>Evidence sources</dt><dd>per-check provenance in the data: det-ab (deterministic two-pass gate: pixel parity vs React, overflow, contrast, text parity, stability), f111 (gate run on the shipped commit: painting, visible text, behaviour)</dd></dl></div><h2>Coverage of the 573 public atoms</h2><div class="bar" role="img" aria-label="Drawn 482, Drawn with differences 35, Not verified 34, Not supported 0, Not measured 22"><span class="drawn" style="width:84.119%"></span><span class="drawn_with_differences" style="width:6.108%"></span><span class="not_verified" style="width:5.934%"></span><span class="not_measured" style="width:3.839%"></span></div><div class="scroll"><table><thead><tr><th>Status</th><th>Atoms</th><th>Meaning</th></tr></thead><tbody><tr><td><span class="rd-chip drawn" title="drawn by the renderer; every check passed"><span aria-hidden="true">✓</span>Drawn</span></td><td class="n">482</td><td class="note">drawn by the renderer; every check passed</td></tr><tr><td><span class="rd-chip drawn_with_differences" title="drawn, but at least one check differs from React (pixels, overflow at 360, contrast or behaviour)"><span aria-hidden="true">≠</span>Drawn with differences</span></td><td class="n">35</td><td class="note">drawn, but at least one check differs from React (pixels, overflow at 360, contrast or behaviour)</td></tr><tr><td><span class="rd-chip not_verified" title="no difference found, but the atom could not be verified (no visible text, blank on both sides, or an unstable check)"><span aria-hidden="true">?</span>Not verified</span></td><td class="n">34</td><td class="note">no difference found, but the atom could not be verified (no visible text, blank on both sides, or an unstable check)</td></tr><tr><td><span class="rd-chip not_supported" title="draws nothing or errors"><span aria-hidden="true">✕</span>Not supported</span></td><td class="n">0</td><td class="note">draws nothing or errors</td></tr><tr><td><span class="rd-chip not_measured" title="no per-atom data (no example, or the example is invalid)"><span aria-hidden="true">–</span>Not measured</span></td><td class="n">22</td><td class="note">no per-atom data (no example, or the example is invalid)</td></tr></tbody></table></div><h2>Honest notes</h2><div class="card"><ul><li>a2ui-vue draws our atoms inside ITS wrapper and theme, so the custom-lane numbers measure the wrapper, not a2ui-vue&#x27;s own components. Vue-only pixel failures were not traced.</li><li>Status is derived from per-check results with rules version 4: any difference from React wins over a verification gap; the worst case wins for atoms with several cases.</li><li>Atoms with a pixel difference from React, by environment: light 480 32, dark 480 32, light 360 33, dark 360 31. Overflow at 360 px: 0. Contrast worse than React: 0. Behaviour differs: 0.</li><li>34 atoms are not verified because the example paints no visible text, 20 because they are blank on both sides in at least one environment and 0 because a check is unstable (time or animation dependent; non-deterministic measurements only: they sit on the allowance list and record unstable, never pass).</li><li>22 atoms have no example in the gate data and are not measured.</li><li>30 atoms fail the pixel rule in all four environments (light and dark, 480 and 360 px).</li><li>Deterministic mode: every shot was taken twice on the shipped build (frozen Date, virtual clock, seeded random, fixed raster settings). 15 of 20 renderer-and-environment cells are byte-identical; the other 5 differ in one atom by at most 15 pixels of dither (channel-sum delta at most 2 of 765) and pass the pixel rule. So pixel results are plain pass or fail with no allowance list. The custom-text check is also deterministic (two identical passes). This holds only for a fixed id order and 12-case chunking (chunk 1 against chunk 12 differs for 10 of 33 test atoms), on the slicer image that took the baselines; the old local custom runner is not deterministic. Painting and visible text (and behaviour where it was run) still come from one earlier, non-deterministic run.</li><li>Seeded-random atoms: gmail_unread_count, match_exercise are drawn with a note: their random draws are consumed per renderer, so parity with React is excluded for them. Open item: reseed per case in the slicer.</li></ul></div><h2>Atoms by status</h2><details><summary><span class="rd-chip drawn" title="drawn by the renderer; every check passed"><span aria-hidden="true">✓</span>Drawn</span>: 482 atoms</summary><ul class="atoms"><li><a href="/atoms/abbr_tooltip/">abbr_tooltip</a></li><li><a href="/atoms/accordion_item/">accordion_item</a></li><li><a href="/atoms/achievement_badge/">achievement_badge</a></li><li><a href="/atoms/action_items/">action_items</a></li><li><a href="/atoms/action_required_card/">action_required_card</a></li><li><a href="/atoms/actual_vs_estimate/">actual_vs_estimate</a></li><li><a href="/atoms/agenda_block/">agenda_block</a></li><li><a href="/atoms/agent_sketchpad/">agent_sketchpad</a></li><li><a href="/atoms/airspace_command_deck/">airspace_command_deck</a></li><li><a href="/atoms/alert_banner/">alert_banner</a></li><li><a href="/atoms/ambient_gradient/">ambient_gradient</a></li><li><a href="/atoms/anchor_list/">anchor_list</a></li><li><a href="/atoms/animated_beam/">animated_beam</a></li><li><a href="/atoms/animated_border/">animated_border</a></li><li><a href="/atoms/animated_border_card/">animated_border_card</a></li><li><a href="/atoms/animated_counter/">animated_counter</a></li><li><a href="/atoms/annotated_code/">annotated_code</a></li><li><a href="/atoms/annotation_highlight/">annotation_highlight</a></li><li><a href="/atoms/api_param_table/">api_param_table</a></li><li><a href="/atoms/api_reference/">api_reference</a></li><li><a href="/atoms/article_hero/">article_hero</a></li><li><a href="/atoms/article_series_nav/">article_series_nav</a></li><li><a href="/atoms/atom_anatomy/">atom_anatomy</a></li><li><a href="/atoms/audio_link/">audio_link</a></li><li><a href="/atoms/aurora_background/">aurora_background</a></li><li><a href="/atoms/author_bio_card/">author_bio_card</a></li><li><a href="/atoms/avatar_group/">avatar_group</a></li><li><a href="/atoms/back_button/">back_button</a></li><li><a href="/atoms/badge/">badge</a></li><li><a href="/atoms/badge_group/">badge_group</a></li><li><a href="/atoms/badge_showcase/">badge_showcase</a></li><li><a href="/atoms/before_after/">before_after</a></li><li><a href="/atoms/before_after_stack/">before_after_stack</a></li><li><a href="/atoms/benchmark_comparison/">benchmark_comparison</a></li><li><a href="/atoms/bento_grid/">bento_grid</a></li><li><a href="/atoms/big_reveal/">big_reveal</a></li><li><a href="/atoms/blockquote/">blockquote</a></li><li><a href="/atoms/blockquote_with_avatar/">blockquote_with_avatar</a></li><li><a href="/atoms/blur_fade_in/">blur_fade_in</a></li><li><a href="/atoms/breadcrumb/">breadcrumb</a></li><li><a href="/atoms/brevet_timeline/">brevet_timeline</a></li><li><a href="/atoms/brick_build_3d/">brick_build_3d</a></li><li><a href="/atoms/calendar_today/">calendar_today</a></li><li><a href="/atoms/calendar_upcoming/">calendar_upcoming</a></li><li><a href="/atoms/calibration_plot/">calibration_plot</a></li><li><a href="/atoms/call_mood_board/">call_mood_board</a></li><li><a href="/atoms/callout/">callout</a></li><li><a href="/atoms/capability_checklist/">capability_checklist</a></li><li><a href="/atoms/card_stack/">card_stack</a></li><li><a href="/atoms/carousel/">carousel</a></li><li><a href="/atoms/case_study_card/">case_study_card</a></li><li><a href="/atoms/caution_block/">caution_block</a></li><li><a href="/atoms/certification_card/">certification_card</a></li><li><a href="/atoms/changed_mind/">changed_mind</a></li><li><a href="/atoms/changelog_entry/">changelog_entry</a></li><li><a href="/atoms/chartjs_bar/">chartjs_bar</a></li><li><a href="/atoms/chartjs_line/">chartjs_line</a></li><li><a href="/atoms/chartjs_pie/">chartjs_pie</a></li><li><a href="/atoms/chat_sequence/">chat_sequence</a></li><li><a href="/atoms/checklist_interactive/">checklist_interactive</a></li><li><a href="/atoms/chip_group/">chip_group</a></li><li><a href="/atoms/choicebox_group/">choicebox_group</a></li><li><a href="/atoms/cli_command/">cli_command</a></li><li><a href="/atoms/clipart/">clipart</a></li><li><a href="/atoms/closing/">closing</a></li><li><a href="/atoms/code/">code</a></li><li><a href="/atoms/code_block/">code_block</a></li><li><a href="/atoms/code_diff/">code_diff</a></li><li><a href="/atoms/code_snippet_pair/">code_snippet_pair</a></li><li><a href="/atoms/cohort_progress_board/">cohort_progress_board</a></li><li><a href="/atoms/cohort_retention/">cohort_retention</a></li><li><a href="/atoms/collapsible_panel/">collapsible_panel</a></li><li><a href="/atoms/color_swatch_grid/">color_swatch_grid</a></li><li><a href="/atoms/combobox/">combobox</a></li><li><a href="/atoms/command_palette/">command_palette</a></li><li><a href="/atoms/command_step/">command_step</a></li><li><a href="/atoms/comparison_grid/">comparison_grid</a></li><li><a href="/atoms/comparison_morph/">comparison_morph</a></li><li><a href="/atoms/completion_gate/">completion_gate</a></li><li><a href="/atoms/concept_ladder/">concept_ladder</a></li><li><a href="/atoms/concept_rung/">concept_rung</a></li><li><a href="/atoms/confetti_burst/">confetti_burst</a></li><li><a href="/atoms/confetti_trigger/">confetti_trigger</a></li><li><a href="/atoms/confidence_bar/">confidence_bar</a></li><li><a href="/atoms/contrast_audit/">contrast_audit</a></li><li><a href="/atoms/contributor_list/">contributor_list</a></li><li><a href="/atoms/conversation_snippet/">conversation_snippet</a></li><li><a href="/atoms/conversion_funnel/">conversion_funnel</a></li><li><a href="/atoms/copy_code_button/">copy_code_button</a></li><li><a href="/atoms/copy_prompt/">copy_prompt</a></li><li><a href="/atoms/copy_to_clipboard/">copy_to_clipboard</a></li><li><a href="/atoms/count_up_stat/">count_up_stat</a></li><li><a href="/atoms/countdown_ring/">countdown_ring</a></li><li><a href="/atoms/countdown_timer/">countdown_timer</a></li><li><a href="/atoms/counter_group/">counter_group</a></li><li><a href="/atoms/course_progress_card/">course_progress_card</a></li><li><a href="/atoms/css_dropdown_menu/">css_dropdown_menu</a></li><li><a href="/atoms/css_modal/">css_modal</a></li><li><a href="/atoms/css_slide_panel/">css_slide_panel</a></li><li><a href="/atoms/cta_section/">cta_section</a></li><li><a href="/atoms/custom_checkbox_group/">custom_checkbox_group</a></li><li><a href="/atoms/customer_logo_grid/">customer_logo_grid</a></li><li><a href="/atoms/dark_feature_grid/">dark_feature_grid</a></li><li><a href="/atoms/dark_hero/">dark_hero</a></li><li><a href="/atoms/data_grid/">data_grid</a></li><li><a href="/atoms/data_source/">data_source</a></li><li><a href="/atoms/data_table_sortable/">data_table_sortable</a></li><li><a href="/atoms/deadline_ticker/">deadline_ticker</a></li><li><a href="/atoms/decision_tree/">decision_tree</a></li><li><a href="/atoms/deprecation_notice/">deprecation_notice</a></li><li><a href="/atoms/depth_stack/">depth_stack</a></li><li><a href="/atoms/diagram/">diagram</a></li><li><a href="/atoms/difficulty_badge/">difficulty_badge</a></li><li><a href="/atoms/display_quote/">display_quote</a></li><li><a href="/atoms/doc_ai_summary/">doc_ai_summary</a></li><li><a href="/atoms/document_link/">document_link</a></li><li><a href="/atoms/domain_picker/">domain_picker</a></li><li><a href="/atoms/donut_stat/">donut_stat</a></li><li><a href="/atoms/dot_grid_background/">dot_grid_background</a></li><li><a href="/atoms/drive_file_card/">drive_file_card</a></li><li><a href="/atoms/drive_file_list/">drive_file_list</a></li><li><a href="/atoms/drive_folder_contents/">drive_folder_contents</a></li><li><a href="/atoms/drive_image/">drive_image</a></li><li><a href="/atoms/drive_recent_files/">drive_recent_files</a></li><li><a href="/atoms/drive_storage_usage/">drive_storage_usage</a></li><li><a href="/atoms/drop_cap/">drop_cap</a></li><li><a href="/atoms/effect_overlay/">effect_overlay</a></li><li><a href="/atoms/embed_codepen/">embed_codepen</a></li><li><a href="/atoms/embed_gist/">embed_gist</a></li><li><a href="/atoms/embed_google_slides/">embed_google_slides</a></li><li><a href="/atoms/embed_stackblitz/">embed_stackblitz</a></li><li><a href="/atoms/embed_tweet/">embed_tweet</a></li><li><a href="/atoms/empty_state/">empty_state</a></li><li><a href="/atoms/encrypted_reveal/">encrypted_reveal</a></li><li><a href="/atoms/entity_list/">entity_list</a></li><li><a href="/atoms/env_var_list/">env_var_list</a></li><li><a href="/atoms/expandable_list/">expandable_list</a></li><li><a href="/atoms/expandable_text/">expandable_text</a></li><li><a href="/atoms/experimental_banner/">experimental_banner</a></li><li><a href="/atoms/expert_endorsement/">expert_endorsement</a></li><li><a href="/atoms/faq_accordion/">faq_accordion</a></li><li><a href="/atoms/feature_grid/">feature_grid</a></li><li><a href="/atoms/feature_matrix/">feature_matrix</a></li><li><a href="/atoms/feed_status/">feed_status</a></li><li><a href="/atoms/feedback_prompt/">feedback_prompt</a></li><li><a href="/atoms/figma_embed/">figma_embed</a></li><li><a href="/atoms/file_tree/">file_tree</a></li><li><a href="/atoms/fill_in_blank/">fill_in_blank</a></li><li><a href="/atoms/filterable_list/">filterable_list</a></li><li><a href="/atoms/firestore_read/">firestore_read</a></li><li><a href="/atoms/flashcard_deck/">flashcard_deck</a></li><li><a href="/atoms/flip_card/">flip_card</a></li><li><a href="/atoms/floating_badge/">floating_badge</a></li><li><a href="/atoms/floating_particles/">floating_particles</a></li><li><a href="/atoms/flow_connector/">flow_connector</a></li><li><a href="/atoms/flow_field/">flow_field</a></li><li><a href="/atoms/focus_lens/">focus_lens</a></li><li><a href="/atoms/follow_button/">follow_button</a></li><li><a href="/atoms/follow_cta/">follow_cta</a></li><li><a href="/atoms/follow_up_chips/">follow_up_chips</a></li><li><a href="/atoms/footnote/">footnote</a></li><li><a href="/atoms/footnote_group/">footnote_group</a></li><li><a href="/atoms/form/">form</a></li><li><a href="/atoms/form_checkbox_group/">form_checkbox_group</a></li><li><a href="/atoms/form_date_picker/">form_date_picker</a></li><li><a href="/atoms/form_input/">form_input</a></li><li><a href="/atoms/form_radio_group/">form_radio_group</a></li><li><a href="/atoms/form_select/">form_select</a></li><li><a href="/atoms/form_slider/">form_slider</a></li><li><a href="/atoms/form_switch_group/">form_switch_group</a></li><li><a href="/atoms/form_textarea/">form_textarea</a></li><li><a href="/atoms/framed_screenshot/">framed_screenshot</a></li><li><a href="/atoms/further_reading/">further_reading</a></li><li><a href="/atoms/gauge_sla/">gauge_sla</a></li><li><a href="/atoms/geo_contour_waves/">geo_contour_waves</a></li><li><a href="/atoms/geo_europe_airspace/">geo_europe_airspace</a></li><li><a href="/atoms/geo_iso_fleet/">geo_iso_fleet</a></li><li><a href="/atoms/geo_iso_heli_hover/">geo_iso_heli_hover</a></li><li><a href="/atoms/geo_iso_rocket_launch/">geo_iso_rocket_launch</a></li><li><a href="/atoms/geo_iso_takeoff/">geo_iso_takeoff</a></li><li><a href="/atoms/geo_mercator_radar/">geo_mercator_radar</a></li><li><a href="/atoms/github_activity_grid/">github_activity_grid</a></li><li><a href="/atoms/github_repo_card/">github_repo_card</a></li><li><a href="/atoms/glitch_text/">glitch_text</a></li><li><a href="/atoms/globe_3d/">globe_3d</a></li><li><a href="/atoms/glossary_inline/">glossary_inline</a></li><li><a href="/atoms/glossary_term/">glossary_term</a></li><li><a href="/atoms/glow_button/">glow_button</a></li><li><a href="/atoms/glowing_stat/">glowing_stat</a></li><li><a href="/atoms/gmail_inbox/">gmail_inbox</a></li><li><a href="/atoms/gmail_summary/">gmail_summary</a></li><li><a href="/atoms/gmail_unread_count/">gmail_unread_count</a></li><li><a href="/atoms/gradient_border_card/">gradient_border_card</a></li><li><a href="/atoms/gradient_heading/">gradient_heading</a></li><li><a href="/atoms/gradient_hero/">gradient_hero</a></li><li><a href="/atoms/gradient_mesh_live/">gradient_mesh_live</a></li><li><a href="/atoms/gradient_text/">gradient_text</a></li><li><a href="/atoms/halftone_wave/">halftone_wave</a></li><li><a href="/atoms/heatmap/">heatmap</a></li><li><a href="/atoms/heatmap_calendar/">heatmap_calendar</a></li><li><a href="/atoms/highlight_box/">highlight_box</a></li><li><a href="/atoms/highlight_sweep/">highlight_sweep</a></li><li><a href="/atoms/highlighted_text/">highlighted_text</a></li><li><a href="/atoms/hint_reveal/">hint_reveal</a></li><li><a href="/atoms/hover_card/">hover_card</a></li><li><a href="/atoms/http_request_block/">http_request_block</a></li><li><a href="/atoms/icon_checklist/">icon_checklist</a></li><li><a href="/atoms/icon_feature_grid/">icon_feature_grid</a></li><li><a href="/atoms/icon_list/">icon_list</a></li><li><a href="/atoms/icon_stat_row/">icon_stat_row</a></li><li><a href="/atoms/image_hotspots/">image_hotspots</a></li><li><a href="/atoms/image_pair/">image_pair</a></li><li><a href="/atoms/image_with_caption/">image_with_caption</a></li><li><a href="/atoms/inline_alert/">inline_alert</a></li><li><a href="/atoms/inline_code/">inline_code</a></li><li><a href="/atoms/inline_feedback_message/">inline_feedback_message</a></li><li><a href="/atoms/intro/">intro</a></li><li><a href="/atoms/inventory_table/">inventory_table</a></li><li><a href="/atoms/jira_ticket/">jira_ticket</a></li><li><a href="/atoms/json_tree_viewer/">json_tree_viewer</a></li><li><a href="/atoms/jump_nav/">jump_nav</a></li><li><a href="/atoms/key_takeaways/">key_takeaways</a></li><li><a href="/atoms/key_value/">key_value</a></li><li><a href="/atoms/keyboard_shortcut/">keyboard_shortcut</a></li><li><a href="/atoms/kinetic_headline/">kinetic_headline</a></li><li><a href="/atoms/knowledge_check/">knowledge_check</a></li><li><a href="/atoms/layer_stack/">layer_stack</a></li><li><a href="/atoms/leaderboard_card/">leaderboard_card</a></li><li><a href="/atoms/learning_objectives/">learning_objectives</a></li><li><a href="/atoms/learning_path_selector/">learning_path_selector</a></li><li><a href="/atoms/lens_grid/">lens_grid</a></li><li><a href="/atoms/lesson_nav/">lesson_nav</a></li><li><a href="/atoms/light_type/">light_type</a></li><li><a href="/atoms/linkedin_post_image/">linkedin_post_image</a></li><li><a href="/atoms/liquid_button/">liquid_button</a></li><li><a href="/atoms/live_aggregator/">live_aggregator</a></li><li><a href="/atoms/live_clock/">live_clock</a></li><li><a href="/atoms/live_demo_embed/">live_demo_embed</a></li><li><a href="/atoms/live_edit/">live_edit</a></li><li><a href="/atoms/live_metric/">live_metric</a></li><li><a href="/atoms/live_vote/">live_vote</a></li><li><a href="/atoms/living_type/">living_type</a></li><li><a href="/atoms/llm_comparison_table/">llm_comparison_table</a></li><li><a href="/atoms/loading_dots/">loading_dots</a></li><li><a href="/atoms/log_output/">log_output</a></li><li><a href="/atoms/lozenge/">lozenge</a></li><li><a href="/atoms/magnetic_button/">magnetic_button</a></li><li><a href="/atoms/magnetic_element/">magnetic_element</a></li><li><a href="/atoms/marquee/">marquee</a></li><li><a href="/atoms/marquee_strip/">marquee_strip</a></li><li><a href="/atoms/masonry_elevation/">masonry_elevation</a></li><li><a href="/atoms/match_exercise/">match_exercise</a></li><li><a href="/atoms/math_block/">math_block</a></li><li><a href="/atoms/media_mention_card/">media_mention_card</a></li><li><a href="/atoms/mesh_gradient/">mesh_gradient</a></li><li><a href="/atoms/message_lanes/">message_lanes</a></li><li><a href="/atoms/meteor_shower/">meteor_shower</a></li><li><a href="/atoms/metric_comparison_card/">metric_comparison_card</a></li><li><a href="/atoms/metric_delta/">metric_delta</a></li><li><a href="/atoms/metric_row/">metric_row</a></li><li><a href="/atoms/mini_sparkline_set/">mini_sparkline_set</a></li><li><a href="/atoms/model_card/">model_card</a></li><li><a href="/atoms/module_map/">module_map</a></li><li><a href="/atoms/motion_arch/">motion_arch</a></li><li><a href="/atoms/motion_browser/">motion_browser</a></li><li><a href="/atoms/motion_checklist/">motion_checklist</a></li><li><a href="/atoms/motion_code/">motion_code</a></li><li><a href="/atoms/motion_counter/">motion_counter</a></li><li><a href="/atoms/motion_hud/">motion_hud</a></li><li><a href="/atoms/motion_leader/">motion_leader</a></li><li><a href="/atoms/motion_lower_third/">motion_lower_third</a></li><li><a href="/atoms/motion_mark/">motion_mark</a></li><li><a href="/atoms/motion_orbit/">motion_orbit</a></li><li><a href="/atoms/motion_pill/">motion_pill</a></li><li><a href="/atoms/motion_sketch/">motion_sketch</a></li><li><a href="/atoms/motion_text/">motion_text</a></li><li><a href="/atoms/motion_timeline/">motion_timeline</a></li><li><a href="/atoms/motion_tokens/">motion_tokens</a></li><li><a href="/atoms/multi_doc_ai_brief/">multi_doc_ai_brief</a></li><li><a href="/atoms/multi_select_input/">multi_select_input</a></li><li><a href="/atoms/multi_surface/">multi_surface</a></li><li><a href="/atoms/nav_bar/">nav_bar</a></li><li><a href="/atoms/nav_link/">nav_link</a></li><li><a href="/atoms/navigation_menu/">navigation_menu</a></li><li><a href="/atoms/neon_glow/">neon_glow</a></li><li><a href="/atoms/neon_text/">neon_text</a></li><li><a href="/atoms/newsletter_cta/">newsletter_cta</a></li><li><a href="/atoms/next_step_strip/">next_step_strip</a></li><li><a href="/atoms/noise_card/">noise_card</a></li><li><a href="/atoms/notification_badge/">notification_badge</a></li><li><a href="/atoms/notification_stack/">notification_stack</a></li><li><a href="/atoms/number_flip/">number_flip</a></li><li><a href="/atoms/number_odometer/">number_odometer</a></li><li><a href="/atoms/onboarding_stepper/">onboarding_stepper</a></li><li><a href="/atoms/orbit_diagram/">orbit_diagram</a></li><li><a href="/atoms/orbit_mark/">orbit_mark</a></li><li><a href="/atoms/orbit_rings/">orbit_rings</a></li><li><a href="/atoms/order_status_card/">order_status_card</a></li><li><a href="/atoms/otp_input/">otp_input</a></li><li><a href="/atoms/page_header/">page_header</a></li><li><a href="/atoms/pagination/">pagination</a></li><li><a href="/atoms/parallax_card/">parallax_card</a></li><li><a href="/atoms/parallax_section/">parallax_section</a></li><li><a href="/atoms/particle_type/">particle_type</a></li><li><a href="/atoms/pattern_background/">pattern_background</a></li><li><a href="/atoms/pdf_preview/">pdf_preview</a></li><li><a href="/atoms/person_card/">person_card</a></li><li><a href="/atoms/photo_grid/">photo_grid</a></li><li><a href="/atoms/photo_stepper/">photo_stepper</a></li><li><a href="/atoms/pipeline/">pipeline</a></li><li><a href="/atoms/playbook/">playbook</a></li><li><a href="/atoms/poll_block/">poll_block</a></li><li><a href="/atoms/post_metadata_bar/">post_metadata_bar</a></li><li><a href="/atoms/prerequisite_checklist/">prerequisite_checklist</a></li><li><a href="/atoms/preview_frame/">preview_frame</a></li><li><a href="/atoms/pricing_tier_card/">pricing_tier_card</a></li><li><a href="/atoms/pricing_tier_group/">pricing_tier_group</a></li><li><a href="/atoms/print_button/">print_button</a></li><li><a href="/atoms/product_spec_table/">product_spec_table</a></li><li><a href="/atoms/product_thumbnail/">product_thumbnail</a></li><li><a href="/atoms/progress_bar/">progress_bar</a></li><li><a href="/atoms/progress_checkpoint/">progress_checkpoint</a></li><li><a href="/atoms/progress_circle/">progress_circle</a></li><li><a href="/atoms/progress_reveal/">progress_reveal</a></li><li><a href="/atoms/progress_ring/">progress_ring</a></li><li><a href="/atoms/prompt_template/">prompt_template</a></li><li><a href="/atoms/prompt_to_schema/">prompt_to_schema</a></li><li><a href="/atoms/pros_cons_list/">pros_cons_list</a></li><li><a href="/atoms/pull_stat/">pull_stat</a></li><li><a href="/atoms/pulse_dot/">pulse_dot</a></li><li><a href="/atoms/punch_card/">punch_card</a></li><li><a href="/atoms/quiet_link/">quiet_link</a></li><li><a href="/atoms/quiz_question/">quiz_question</a></li><li><a href="/atoms/quiz_result_summary/">quiz_result_summary</a></li><li><a href="/atoms/quiz_set/">quiz_set</a></li><li><a href="/atoms/raise_hand/">raise_hand</a></li><li><a href="/atoms/rating_comparison/">rating_comparison</a></li><li><a href="/atoms/rating_stars/">rating_stars</a></li><li><a href="/atoms/rating_summary_bar/">rating_summary_bar</a></li><li><a href="/atoms/reaction_group/">reaction_group</a></li><li><a href="/atoms/reaction_shower/">reaction_shower</a></li><li><a href="/atoms/readability_card/">readability_card</a></li><li><a href="/atoms/reading_progress_bar/">reading_progress_bar</a></li><li><a href="/atoms/receipt/">receipt</a></li><li><a href="/atoms/reflection_prompt/">reflection_prompt</a></li><li><a href="/atoms/related_posts_grid/">related_posts_grid</a></li><li><a href="/atoms/release_notes/">release_notes</a></li><li><a href="/atoms/renderer_stats/">renderer_stats</a></li><li><a href="/atoms/repo_links/">repo_links</a></li><li><a href="/atoms/resources_list/">resources_list</a></li><li><a href="/atoms/reveal/">reveal</a></li><li><a href="/atoms/reveal_line/">reveal_line</a></li><li><a href="/atoms/reveal_on_scroll/">reveal_on_scroll</a></li><li><a href="/atoms/review_callout/">review_callout</a></li><li><a href="/atoms/ripple_button/">ripple_button</a></li><li><a href="/atoms/risk_flag/">risk_flag</a></li><li><a href="/atoms/roadmap_card/">roadmap_card</a></li><li><a href="/atoms/rubric_card/">rubric_card</a></li><li><a href="/atoms/sankey_flow/">sankey_flow</a></li><li><a href="/atoms/scatter_trend/">scatter_trend</a></li><li><a href="/atoms/scenario_branch/">scenario_branch</a></li><li><a href="/atoms/scene_stage/">scene_stage</a></li><li><a href="/atoms/schema_qr/">schema_qr</a></li><li><a href="/atoms/schema_reveal/">schema_reveal</a></li><li><a href="/atoms/score_summary/">score_summary</a></li><li><a href="/atoms/scramble_reveal/">scramble_reveal</a></li><li><a href="/atoms/script_run_button/">script_run_button</a></li><li><a href="/atoms/scroll_to_top/">scroll_to_top</a></li><li><a href="/atoms/scroll_trigger/">scroll_trigger</a></li><li><a href="/atoms/search_result_card/">search_result_card</a></li><li><a href="/atoms/section_break/">section_break</a></li><li><a href="/atoms/section_label/">section_label</a></li><li><a href="/atoms/segmented_control/">segmented_control</a></li><li><a href="/atoms/sentiment_summary/">sentiment_summary</a></li><li><a href="/atoms/sequence_diagram/">sequence_diagram</a></li><li><a href="/atoms/series_overview_card/">series_overview_card</a></li><li><a href="/atoms/share_quote/">share_quote</a></li><li><a href="/atoms/sheet_form/">sheet_form</a></li><li><a href="/atoms/sheet_form_submit/">sheet_form_submit</a></li><li><a href="/atoms/sheet_preview/">sheet_preview</a></li><li><a href="/atoms/sheet_stats/">sheet_stats</a></li><li><a href="/atoms/shimmer_button/">shimmer_button</a></li><li><a href="/atoms/shimmer_text/">shimmer_text</a></li><li><a href="/atoms/side_by_side_spec/">side_by_side_spec</a></li><li><a href="/atoms/sidebar_note/">sidebar_note</a></li><li><a href="/atoms/signal_tunnel/">signal_tunnel</a></li><li><a href="/atoms/skill_bars/">skill_bars</a></li><li><a href="/atoms/skill_radar/">skill_radar</a></li><li><a href="/atoms/social_feed_embed/">social_feed_embed</a></li><li><a href="/atoms/social_proof_banner/">social_proof_banner</a></li><li><a href="/atoms/social_share_bar/">social_share_bar</a></li><li><a href="/atoms/sonar_pulse/">sonar_pulse</a></li><li><a href="/atoms/sortable_list/">sortable_list</a></li><li><a href="/atoms/source_citation/">source_citation</a></li><li><a href="/atoms/spaced_repetition_card/">spaced_repetition_card</a></li><li><a href="/atoms/sparkline/">sparkline</a></li><li><a href="/atoms/speed_counter/">speed_counter</a></li><li><a href="/atoms/spinner/">spinner</a></li><li><a href="/atoms/split_reveal/">split_reveal</a></li><li><a href="/atoms/split_stat/">split_stat</a></li><li><a href="/atoms/spotlight_card/">spotlight_card</a></li><li><a href="/atoms/spring_nodes/">spring_nodes</a></li><li><a href="/atoms/sprint_board/">sprint_board</a></li><li><a href="/atoms/stack_layer/">stack_layer</a></li><li><a href="/atoms/stacked_area/">stacked_area</a></li><li><a href="/atoms/stagger_list/">stagger_list</a></li><li><a href="/atoms/stance/">stance</a></li><li><a href="/atoms/star_rating_display/">star_rating_display</a></li><li><a href="/atoms/star_rating_input/">star_rating_input</a></li><li><a href="/atoms/stat_card/">stat_card</a></li><li><a href="/atoms/status_dashboard/">status_dashboard</a></li><li><a href="/atoms/status_pill/">status_pill</a></li><li><a href="/atoms/status_timeline/">status_timeline</a></li><li><a href="/atoms/step_progress/">step_progress</a></li><li><a href="/atoms/step_reveal_sequence/">step_reveal_sequence</a></li><li><a href="/atoms/stepper/">stepper</a></li><li><a href="/atoms/steps/">steps</a></li><li><a href="/atoms/stripe_background/">stripe_background</a></li><li><a href="/atoms/study_timer/">study_timer</a></li><li><a href="/atoms/summary_box/">summary_box</a></li><li><a href="/atoms/surface_map/">surface_map</a></li><li><a href="/atoms/surface_unlocked/">surface_unlocked</a></li><li><a href="/atoms/svg_path_draw/">svg_path_draw</a></li><li><a href="/atoms/tab_bar/">tab_bar</a></li><li><a href="/atoms/tab_group/">tab_group</a></li><li><a href="/atoms/tabbed_code/">tabbed_code</a></li><li><a href="/atoms/table/">table</a></li><li><a href="/atoms/table_of_contents/">table_of_contents</a></li><li><a href="/atoms/tag_block/">tag_block</a></li><li><a href="/atoms/tag_chip/">tag_chip</a></li><li><a href="/atoms/tag_cloud/">tag_cloud</a></li><li><a href="/atoms/take_away_card/">take_away_card</a></li><li><a href="/atoms/task_list/">task_list</a></li><li><a href="/atoms/tasks_today/">tasks_today</a></li><li><a href="/atoms/terminal_block/">terminal_block</a></li><li><a href="/atoms/terminal_boot/">terminal_boot</a></li><li><a href="/atoms/testimonial_card/">testimonial_card</a></li><li><a href="/atoms/text_callout/">text_callout</a></li><li><a href="/atoms/text_highlight/">text_highlight</a></li><li><a href="/atoms/text_reveal_mask/">text_reveal_mask</a></li><li><a href="/atoms/theme_toggle/">theme_toggle</a></li><li><a href="/atoms/tilt_card/">tilt_card</a></li><li><a href="/atoms/time_estimate/">time_estimate</a></li><li><a href="/atoms/timeline/">timeline</a></li><li><a href="/atoms/toast_notification/">toast_notification</a></li><li><a href="/atoms/toggle_switch/">toggle_switch</a></li><li><a href="/atoms/token_budget_meter/">token_budget_meter</a></li><li><a href="/atoms/tool_call_card/">tool_call_card</a></li><li><a href="/atoms/tool_tile/">tool_tile</a></li><li><a href="/atoms/tooltip/">tooltip</a></li><li><a href="/atoms/tooltip_glossary/">tooltip_glossary</a></li><li><a href="/atoms/tree_view/">tree_view</a></li><li><a href="/atoms/treemap/">treemap</a></li><li><a href="/atoms/trend_indicator/">trend_indicator</a></li><li><a href="/atoms/two_tone_card/">two_tone_card</a></li><li><a href="/atoms/type_scale/">type_scale</a></li><li><a href="/atoms/typewriter/">typewriter</a></li><li><a href="/atoms/typewriter_text/">typewriter_text</a></li><li><a href="/atoms/typing_indicator/">typing_indicator</a></li><li><a href="/atoms/uptime_timeline/">uptime_timeline</a></li><li><a href="/atoms/url_anatomy/">url_anatomy</a></li><li><a href="/atoms/user_greeting/">user_greeting</a></li><li><a href="/atoms/user_profile_card/">user_profile_card</a></li><li><a href="/atoms/variant_selector/">variant_selector</a></li><li><a href="/atoms/version_badge/">version_badge</a></li><li><a href="/atoms/versus_block/">versus_block</a></li><li><a href="/atoms/video_checkpoint/">video_checkpoint</a></li><li><a href="/atoms/video_pair/">video_pair</a></li><li><a href="/atoms/video_thumbnail/">video_thumbnail</a></li><li><a href="/atoms/vote_button_group/">vote_button_group</a></li><li><a href="/atoms/wave_divider/">wave_divider</a></li><li><a href="/atoms/wave_terrain/">wave_terrain</a></li><li><a href="/atoms/weighted_words/">weighted_words</a></li><li><a href="/atoms/word_cloud/">word_cloud</a></li><li><a href="/atoms/word_flip/">word_flip</a></li><li><a href="/atoms/word_reveal/">word_reveal</a></li><li><a href="/atoms/word_scramble/">word_scramble</a></li><li><a href="/atoms/workspace_logo/">workspace_logo</a></li><li><a href="/atoms/workspace_logo_grid/">workspace_logo_grid</a></li><li><a href="/atoms/workspace_logo_strip/">workspace_logo_strip</a></li><li><a href="/atoms/xp_bar/">xp_bar</a></li><li><a href="/atoms/zoomable_image/">zoomable_image</a></li></ul></details><details><summary><span class="rd-chip drawn_with_differences" title="drawn, but at least one check differs from React (pixels, overflow at 360, contrast or behaviour)"><span aria-hidden="true">≠</span>Drawn with differences</span>: 35 atoms</summary><ul class="why"><li><code><a href="/atoms/ai_build_trace/">ai_build_trace</a></code> <span class="note">pixels differ from React (dark 480); pixels differ from React (light 480)</span></li><li><code><a href="/atoms/audio_player/">audio_player</a></code> <span class="note">pixels differ from React (dark 360); pixels differ from React (dark 480); pixels differ from React (light 360); pixels differ from React (light 480); visible text differs from React</span></li><li><code><a href="/atoms/body/">body</a></code> <span class="note">pixels differ from React (dark 360); pixels differ from React (dark 480); pixels differ from React (light 360); pixels differ from React (light 480)</span></li><li><code><a href="/atoms/bullet_list/">bullet_list</a></code> <span class="note">pixels differ from React (dark 360); pixels differ from React (dark 480); pixels differ from React (light 360); pixels differ from React (light 480)</span></li><li><code><a href="/atoms/color_section/">color_section</a></code> <span class="note">pixels differ from React (dark 360); pixels differ from React (dark 480); pixels differ from React (light 360); pixels differ from React (light 480)</span></li><li><code><a href="/atoms/columns/">columns</a></code> <span class="note">pixels differ from React (dark 360); pixels differ from React (dark 480); pixels differ from React (light 360); pixels differ from React (light 480)</span></li><li><code><a href="/atoms/content_tabs/">content_tabs</a></code> <span class="note">pixels differ from React (dark 360); pixels differ from React (dark 480); pixels differ from React (light 360); pixels differ from React (light 480)</span></li><li><code><a href="/atoms/cta_button/">cta_button</a></code> <span class="note">pixels differ from React (dark 360); pixels differ from React (dark 480); pixels differ from React (light 360); pixels differ from React (light 480)</span></li><li><code><a href="/atoms/divider/">divider</a></code> <span class="note">no visible text in the example; pixels differ from React (dark 360); pixels differ from React (dark 480)</span></li><li><code><a href="/atoms/gallery/">gallery</a></code> <span class="note">pixels differ from React (light 360)</span></li><li><code><a href="/atoms/gemini_prompt/">gemini_prompt</a></code> <span class="note">pixels differ from React (light 360)</span></li><li><code><a href="/atoms/glass_card/">glass_card</a></code> <span class="note">pixels differ from React (dark 360); pixels differ from React (dark 480); pixels differ from React (light 360); pixels differ from React (light 480)</span></li><li><code><a href="/atoms/google_icon/">google_icon</a></code> <span class="note">pixels differ from React (dark 360); pixels differ from React (dark 480); pixels differ from React (light 360); pixels differ from React (light 480)</span></li><li><code><a href="/atoms/heading/">heading</a></code> <span class="note">pixels differ from React (dark 360); pixels differ from React (dark 480); pixels differ from React (light 360); pixels differ from React (light 480)</span></li><li><code><a href="/atoms/hub/">hub</a></code> <span class="note">pixels differ from React (dark 360); pixels differ from React (dark 480); pixels differ from React (light 360); pixels differ from React (light 480)</span></li><li><code><a href="/atoms/icon_badge/">icon_badge</a></code> <span class="note">pixels differ from React (dark 360); pixels differ from React (dark 480); pixels differ from React (light 360); pixels differ from React (light 480)</span></li><li><code><a href="/atoms/icon_row/">icon_row</a></code> <span class="note">pixels differ from React (dark 360); pixels differ from React (dark 480); pixels differ from React (light 360); pixels differ from React (light 480)</span></li><li><code><a href="/atoms/image/">image</a></code> <span class="note">pixels differ from React (light 360); pixels differ from React (light 480)</span></li><li><code><a href="/atoms/info_card/">info_card</a></code> <span class="note">pixels differ from React (dark 360); pixels differ from React (dark 480); pixels differ from React (light 360); pixels differ from React (light 480)</span></li><li><code><a href="/atoms/link_button/">link_button</a></code> <span class="note">pixels differ from React (dark 360); pixels differ from React (dark 480); pixels differ from React (light 360); pixels differ from React (light 480)</span></li><li><code><a href="/atoms/markdown_block/">markdown_block</a></code> <span class="note">pixels differ from React (dark 360); pixels differ from React (dark 480); pixels differ from React (light 360); pixels differ from React (light 480)</span></li><li><code><a href="/atoms/modal/">modal</a></code> <span class="note">pixels differ from React (dark 360); pixels differ from React (dark 480); pixels differ from React (light 360); pixels differ from React (light 480)</span></li><li><code><a href="/atoms/motion_envelope/">motion_envelope</a></code> <span class="note">pixels differ from React (dark 360); pixels differ from React (dark 480); pixels differ from React (light 360); pixels differ from React (light 480)</span></li><li><code><a href="/atoms/motion_group/">motion_group</a></code> <span class="note">pixels differ from React (dark 360); pixels differ from React (dark 480); pixels differ from React (light 360); pixels differ from React (light 480)</span></li><li><code><a href="/atoms/motion_layer/">motion_layer</a></code> <span class="note">pixels differ from React (dark 360); pixels differ from React (dark 480); pixels differ from React (light 360); pixels differ from React (light 480)</span></li><li><code><a href="/atoms/motion_mask/">motion_mask</a></code> <span class="note">pixels differ from React (dark 360); pixels differ from React (dark 480); pixels differ from React (light 360); pixels differ from React (light 480)</span></li><li><code><a href="/atoms/numbered_list/">numbered_list</a></code> <span class="note">pixels differ from React (dark 360); pixels differ from React (dark 480); pixels differ from React (light 360); pixels differ from React (light 480)</span></li><li><code><a href="/atoms/paragraph/">paragraph</a></code> <span class="note">pixels differ from React (dark 360); pixels differ from React (dark 480); pixels differ from React (light 360); pixels differ from React (light 480)</span></li><li><code><a href="/atoms/quote/">quote</a></code> <span class="note">pixels differ from React (dark 360); pixels differ from React (dark 480); pixels differ from React (light 360); pixels differ from React (light 480)</span></li><li><code><a href="/atoms/split_pane/">split_pane</a></code> <span class="note">pixels differ from React (dark 360); pixels differ from React (dark 480); pixels differ from React (light 360); pixels differ from React (light 480)</span></li><li><code><a href="/atoms/subheading/">subheading</a></code> <span class="note">pixels differ from React (dark 360); pixels differ from React (dark 480); pixels differ from React (light 360); pixels differ from React (light 480)</span></li><li><code><a href="/atoms/tabs/">tabs</a></code> <span class="note">pixels differ from React (dark 360); pixels differ from React (dark 480); pixels differ from React (light 360); pixels differ from React (light 480)</span></li><li><code><a href="/atoms/text_block/">text_block</a></code> <span class="note">pixels differ from React (dark 360); pixels differ from React (dark 480); pixels differ from React (light 360); pixels differ from React (light 480)</span></li><li><code><a href="/atoms/video_card/">video_card</a></code> <span class="note">pixels differ from React (dark 360); pixels differ from React (dark 480); pixels differ from React (light 360); pixels differ from React (light 480); visible text differs from React</span></li><li><code><a href="/atoms/youtube/">youtube</a></code> <span class="note">pixels differ from React (dark 360); pixels differ from React (dark 480); pixels differ from React (light 360); pixels differ from React (light 480)</span></li></ul></details><details><summary><span class="rd-chip not_verified" title="no difference found, but the atom could not be verified (no visible text, blank on both sides, or an unstable check)"><span aria-hidden="true">?</span>Not verified</span>: 34 atoms</summary><ul class="why"><li><code><a href="/atoms/adsb_feed/">adsb_feed</a></code> <span class="note">blank on both sides (light 360); blank on both sides (light 480); no visible text in the example</span></li><li><code><a href="/atoms/canvas_plexus/">canvas_plexus</a></code> <span class="note">no visible text in the example</span></li><li><code><a href="/atoms/cursor_glow/">cursor_glow</a></code> <span class="note">blank on both sides (light 360); blank on both sides (light 480); no visible text in the example</span></li><li><code><a href="/atoms/cursor_trail/">cursor_trail</a></code> <span class="note">blank on both sides (light 360); blank on both sides (light 480); no visible text in the example</span></li><li><code><a href="/atoms/dark_divider/">dark_divider</a></code> <span class="note">blank on both sides (light 360); blank on both sides (light 480); no visible text in the example</span></li><li><code><a href="/atoms/floating_orbs/">floating_orbs</a></code> <span class="note">no visible text in the example</span></li><li><code><a href="/atoms/gdm_rocket_panel/">gdm_rocket_panel</a></code> <span class="note">no visible text in the example</span></li><li><code><a href="/atoms/incident_log/">incident_log</a></code> <span class="note">blank on both sides (light 360); blank on both sides (light 480); no visible text in the example</span></li><li><code><a href="/atoms/isometric_mesh/">isometric_mesh</a></code> <span class="note">no visible text in the example</span></li><li><code><a href="/atoms/loading_skeleton/">loading_skeleton</a></code> <span class="note">no visible text in the example</span></li><li><code><a href="/atoms/lottie_animation/">lottie_animation</a></code> <span class="note">blank on both sides (light 360); blank on both sides (light 480); no visible text in the example</span></li><li><code><a href="/atoms/maps_embed/">maps_embed</a></code> <span class="note">blank on both sides (light 360); blank on both sides (light 480); no visible text in the example</span></li><li><code><a href="/atoms/me/">me</a></code> <span class="note">blank on both sides (light 360); blank on both sides (light 480); no visible text in the example</span></li><li><code><a href="/atoms/media_stream_card/">media_stream_card</a></code> <span class="note">no visible text in the example</span></li><li><code><a href="/atoms/metar_feed/">metar_feed</a></code> <span class="note">blank on both sides (light 360); blank on both sides (light 480); no visible text in the example</span></li><li><code><a href="/atoms/motion_bricks/">motion_bricks</a></code> <span class="note">blank on both sides (light 360); blank on both sides (light 480); no visible text in the example</span></li><li><code><a href="/atoms/motion_finish/">motion_finish</a></code> <span class="note">blank on both sides (light 360); blank on both sides (light 480)</span></li><li><code><a href="/atoms/motion_rays/">motion_rays</a></code> <span class="note">no visible text in the example</span></li><li><code><a href="/atoms/motion_shader/">motion_shader</a></code> <span class="note">no visible text in the example</span></li><li><code><a href="/atoms/motion_shape/">motion_shape</a></code> <span class="note">no visible text in the example</span></li><li><code><a href="/atoms/motion_video/">motion_video</a></code> <span class="note">no visible text in the example</span></li><li><code><a href="/atoms/palette/">palette</a></code> <span class="note">blank on both sides (light 360); blank on both sides (light 480); no visible text in the example</span></li><li><code><a href="/atoms/particle_burst/">particle_burst</a></code> <span class="note">blank on both sides (light 360); blank on both sides (light 480); no visible text in the example</span></li><li><code><a href="/atoms/progress_store/">progress_store</a></code> <span class="note">blank on both sides (light 360); blank on both sides (light 480); no visible text in the example</span></li><li><code><a href="/atoms/scroll_progress/">scroll_progress</a></code> <span class="note">blank on both sides (light 360); blank on both sides (light 480); no visible text in the example</span></li><li><code><a href="/atoms/service_status_board/">service_status_board</a></code> <span class="note">blank on both sides (light 360); blank on both sides (light 480); no visible text in the example</span></li><li><code><a href="/atoms/shortcut_legend/">shortcut_legend</a></code> <span class="note">no visible text in the example</span></li><li><code><a href="/atoms/skeleton/">skeleton</a></code> <span class="note">no visible text in the example</span></li><li><code><a href="/atoms/skeleton_stage_card/">skeleton_stage_card</a></code> <span class="note">no visible text in the example</span></li><li><code><a href="/atoms/spacer/">spacer</a></code> <span class="note">blank on both sides (light 360); blank on both sides (light 480); no visible text in the example</span></li><li><code><a href="/atoms/spotlight_cursor/">spotlight_cursor</a></code> <span class="note">no visible text in the example</span></li><li><code><a href="/atoms/stat_pulse/">stat_pulse</a></code> <span class="note">blank on both sides (light 360); blank on both sides (light 480); no visible text in the example</span></li><li><code><a href="/atoms/weather_now/">weather_now</a></code> <span class="note">blank on both sides (light 360); blank on both sides (light 480); no visible text in the example</span></li><li><code><a href="/atoms/weather_outlook/">weather_outlook</a></code> <span class="note">blank on both sides (light 360); blank on both sides (light 480); no visible text in the example</span></li></ul></details><details><summary><span class="rd-chip not_measured" title="no per-atom data (no example, or the example is invalid)"><span aria-hidden="true">–</span>Not measured</span>: 22 atoms</summary><ul class="atoms"><li><a href="/atoms/arc_diagram/">arc_diagram</a></li><li><a href="/atoms/block_robot/">block_robot</a></li><li><a href="/atoms/block_rocket/">block_rocket</a></li><li><a href="/atoms/box_plot/">box_plot</a></li><li><a href="/atoms/candlestick_chart/">candlestick_chart</a></li><li><a href="/atoms/chord_diagram/">chord_diagram</a></li><li><a href="/atoms/choropleth_map/">choropleth_map</a></li><li><a href="/atoms/circle_pack/">circle_pack</a></li><li><a href="/atoms/contour_plot/">contour_plot</a></li><li><a href="/atoms/geo_map/">geo_map</a></li><li><a href="/atoms/histogram/">histogram</a></li><li><a href="/atoms/histogram2d/">histogram2d</a></li><li><a href="/atoms/motion_map3d/">motion_map3d</a></li><li><a href="/atoms/motion_transition/">motion_transition</a></li><li><a href="/atoms/parallel_coords/">parallel_coords</a></li><li><a href="/atoms/polar_chart/">polar_chart</a></li><li><a href="/atoms/quiver/">quiver</a></li><li><a href="/atoms/scatter_matrix/">scatter_matrix</a></li><li><a href="/atoms/sunburst/">sunburst</a></li><li><a href="/atoms/ternary_plot/">ternary_plot</a></li><li><a href="/atoms/voronoi/">voronoi</a></li><li><a href="/atoms/waterfall/">waterfall</a></li></ul></details><p class="tm">Independent and unofficial; not affiliated with Google, CopilotKit or the Vue project. React, Angular, Lit, CopilotKit, Vue and their logos are trademarks or registered trademarks of their respective owners. They are used here only to identify the renderers this catalog has been tested with, and do not imply affiliation with or endorsement by those owners. Logo artwork: simple-icons (CC0) for React, Lit, Angular and Vue, and CopilotKit&#x27;s public repository for its mark; the marks remain their owners&#x27;. Flutter and Compose are likewise trademarks of their respective owners; no logo is shown for them.</p></div>
+  <footer>
+    <span>A2UI Atomic Catalog · <a href="/atoms/">All atoms A–Z</a> · <a href="/renderers/">Renderers</a> · <a href="/docs/">API Documentation</a> · <a href="https://github.com/a2uicatalog/a2ui">github.com/a2uicatalog/a2ui</a> · Maintained by <a href="https://www.linkedin.com/in/curtiskrygier" rel="me author">Curtis Krygier</a></span>
+    <span><strong>A2UI is an open protocol (a2ui.org). a2uicatalog.ai is an independent catalogue of components built on it.</strong> Independent, unofficial catalog — not affiliated with, endorsed by, or sponsored by Google, Anthropic or OpenAI. A2UI is Google's protocol; official spec at <a href="https://a2ui.org">a2ui.org</a>. MCP is Anthropic's protocol; Claude, the Claude logo and Anthropic are trademarks of Anthropic PBC. ChatGPT and OpenAI are trademarks of OpenAI, L.L.C. All other marks belong to their respective owners.</span>
+    <span>Renderer logos: simple-icons (CC0) for React, Lit, Angular and Vue, CopilotKit's public repository for its mark; the marks remain their owners'. <a href="/catalogue/renderer-matrix-v1.json">Renderer matrix (JSON)</a> · <a href="/.well-known/ard.json">ARD discovery catalog (JSON)</a></span>
+  </footer>
+  </div>
+  <script>
+function themeLabel(){var d=document.documentElement.getAttribute('data-theme')==='dark';
+  document.querySelectorAll('.theme-btn').forEach(function(b){b.setAttribute('aria-label',d?'Switch to light theme':'Switch to dark theme')})}
+themeLabel();
+document.addEventListener('click',function(e){
+  var m=e.target.closest('.menu-btn');
+  if(m){var n=document.getElementById(m.getAttribute('aria-controls')),o=m.getAttribute('aria-expanded')!=='true';
+    m.setAttribute('aria-expanded',String(o));if(n)n.classList.toggle('open',o);return}
+  var b=e.target.closest('.theme-btn');if(!b)return;
+  var r=document.documentElement,t=r.getAttribute('data-theme')==='dark'?'light':'dark';
+  r.setAttribute('data-theme',t);themeLabel();
+  try{localStorage.setItem('a2ui-theme',t)}catch(err){}
+});
+document.addEventListener('keydown',function(e){
+  if(e.key!=='Escape')return;var m=document.querySelector('.menu-btn[aria-expanded="true"]');if(!m)return;
+  m.setAttribute('aria-expanded','false');var n=document.getElementById(m.getAttribute('aria-controls'));if(n)n.classList.remove('open');m.focus()
+});
+// WebMCP (W3C Web Machine Learning CG draft; Chrome origin trial 149-156,
+// shipping targeted for 157): register the catalogue's read-only tools on
+// document.modelContext, falling back to the deprecated navigator.modelContext
+// alias only when it is missing. The definitions are written out literally,
+// not built from the DOM, so tools that read them from the page source can
+// grade them. Fully inert on browsers without the API. Both tools only read
+// the public catalogue spec (same-origin /spec.json), fetched once on first call.
+(function(){
+  var mc = (typeof document!=='undefined' && document.modelContext) ||
+           (typeof navigator!=='undefined' && navigator.modelContext);
+  if(!mc || typeof mc.registerTool!=='function') return;
+  var SITE = 'https://a2uicatalog.ai';
+  var specP = null;
+  function spec(){
+    if(!specP) specP = fetch('/spec.json').then(function(r){
+      if(!r.ok) throw new Error('spec.json returned HTTP '+r.status);
+      return r.json();
+    }).catch(function(e){ specP = null; throw e; });
+    return specP;
+  }
+  function list(v){ return Array.isArray(v) ? v : []; }
+  function worksOn(a){ return list(a.surfaces && a.surfaces.works_on); }
+  function findAtom(s, t){
+    for(var i=0;i<s.atoms.length;i++){
+      var a = s.atoms[i];
+      if(a.type===t || list(a.aliases).indexOf(t)>=0) return a;
+    }
+    return null;
+  }
+  try{
+    mc.registerTool({
+      name: 'search_atoms',
+      description: 'Search the A2UI Atomic Catalog for UI atoms that fit a plain-language need, such as "image gallery" or "status timeline". Returns the best matches first, each with its type name, a one-line summary, the surfaces it works on and its page URL.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          query: {type: 'string', minLength: 1, maxLength: 200, description: 'What the UI should show or do, in plain words.'},
+          surface: {type: 'string', description: 'Only return atoms that work on this surface, such as web, email, google-chat, slides or android.'},
+          limit: {type: 'integer', minimum: 1, maximum: 25, description: 'Maximum number of matches to return (default 10).'}
+        },
+        required: ['query'],
+        additionalProperties: false
+      },
+      annotations: {readOnlyHint: true},
+      execute: function(input){
+        input = input || {};
+        var words = String(input.query||'').toLowerCase().split(/[^a-z0-9]+/).filter(function(w){ return w.length>1; });
+        var limit = Math.max(1, Math.min(25, parseInt(input.limit,10) || 10));
+        return spec().then(function(s){
+          var hits = [];
+          s.atoms.forEach(function(a){
+            if(input.surface && worksOn(a).indexOf(input.surface)<0) return;
+            var name = a.type.replace(/_/g,' ');
+            var text = [a.compact_description, a.description, a.routing_text,
+                        list(a.intent_phrases).join(' '), list(a.aliases).join(' ')].join(' ').toLowerCase();
+            var score = 0;
+            words.forEach(function(w){ if(name.indexOf(w)>=0) score += 3; else if(text.indexOf(w)>=0) score += 1; });
+            if(score) hits.push({score: score, atom: a});
+          });
+          hits.sort(function(x,y){ return y.score-x.score || (x.atom.type<y.atom.type ? -1 : 1); });
+          return {
+            query: input.query,
+            matches: hits.length,
+            atoms: hits.slice(0, limit).map(function(h){
+              var a = h.atom;
+              return {type: a.type, summary: a.compact_description || a.description,
+                      surfaces: worksOn(a), url: SITE+'/atoms/'+a.type+'/'};
+            })
+          };
+        });
+      }
+    });
+  }catch(err){/* draft API shape may still be moving -- never break the page over it */}
+  try{
+    mc.registerTool({
+      name: 'get_atom',
+      description: 'Get one A2UI Atomic Catalog atom by its type name, as returned by search_atoms. Returns its description, the payload fields it takes, where it works or degrades, its source credit and its page URL.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          type: {type: 'string', pattern: '^[a-z0-9_]+$', maxLength: 80, description: 'Atom type name, such as gallery or status_timeline.'}
+        },
+        required: ['type'],
+        additionalProperties: false
+      },
+      annotations: {readOnlyHint: true},
+      execute: function(input){
+        var t = String((input||{}).type || '');
+        return spec().then(function(s){
+          var a = findAtom(s, t);
+          if(!a) return {error: 'No atom named "'+t+'". Call search_atoms to find one.'};
+          return {type: a.type, description: a.description, fields: a.fields,
+                  surfaces: a.surfaces, source: a.source, url: SITE+'/atoms/'+a.type+'/'};
+        });
+      }
+    });
+  }catch(err){/* draft API shape may still be moving -- never break the page over it */}
+  // The two write tools call the site's own MCP server (same-origin /mcp),
+  // so they can only do what an agent connected to that server can already
+  // do. consequentialHint asks the agent to confirm with the person first.
+  function callMcp(name, args){
+    return fetch('/mcp', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json', 'Accept': 'application/json, text/event-stream'},
+      body: JSON.stringify({jsonrpc: '2.0', id: 1, method: 'tools/call', params: {name: name, arguments: args}})
+    }).then(function(r){ return r.text(); }).then(function(t){
+      t = t.trim();
+      if(t.charAt(0) !== '{'){
+        var data = t.split('\n').filter(function(l){ return l.indexOf('data:')===0; }).pop() || '';
+        t = data.slice(5);
+      }
+      var msg = JSON.parse(t);
+      if(msg.error) throw new Error(msg.error.message || 'MCP error');
+      var res = msg.result || {};
+      if(res.structuredContent) return res.structuredContent;
+      var text = (res.content || []).map(function(c){ return c.text || ''; }).join('');
+      try{ return JSON.parse(text); }catch(e){ return {result: text}; }
+    });
+  }
+  try{
+    mc.registerTool({
+      name: 'create_share_link',
+      description: 'Create a short shareable link that renders an A2UI payload in the a2uicatalog.ai playground. Stores the payload on a2uicatalog.ai for one week; anyone with the link can view it. Returns the link, the expiry date and a delete token.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          payload: {
+            type: 'object',
+            description: 'The A2UI payload to publish: blocks built from catalogue atoms (see search_atoms and get_atom).',
+            properties: {
+              title: {type: 'string', maxLength: 200, description: 'Page title shown above the blocks.'},
+              theme: {type: 'string', enum: ['light', 'dark', 'terminal'], description: 'Colour theme for the rendered page.'},
+              blocks: {type: 'array', minItems: 1, items: {type: 'object'}, description: 'Atoms in order, each an object with a type and that atom\'s fields.'}
+            },
+            required: ['blocks']
+          }
+        },
+        required: ['payload'],
+        additionalProperties: false
+      },
+      annotations: {readOnlyHint: false, consequentialHint: true},
+      execute: function(input){
+        return callMcp('publish_url', {payload: (input||{}).payload, acknowledge_storage: true, target: 'play'});
+      }
+    });
+  }catch(err){/* draft API shape may still be moving -- never break the page over it */}
+  try{
+    mc.registerTool({
+      name: 'delete_share_link',
+      description: 'Delete a share link made by create_share_link before it expires, using the delete token that create_share_link returned. The link stops working straight away.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          id: {type: 'string', maxLength: 200, description: 'The short link, or the id at its end.'},
+          delete_token: {type: 'string', maxLength: 64, description: 'The delete token create_share_link returned.'}
+        },
+        required: ['id', 'delete_token'],
+        additionalProperties: false
+      },
+      annotations: {readOnlyHint: false, destructiveHint: true, consequentialHint: true},
+      execute: function(input){
+        input = input || {};
+        return callMcp('unpublish_url', {id: input.id, delete_token: input.delete_token});
+      }
+    });
+  }catch(err){/* draft API shape may still be moving -- never break the page over it */}
+})();
+</script>
+</body>
+</html>

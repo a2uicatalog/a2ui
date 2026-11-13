@@ -6,6 +6,20 @@ A dark overlay with a soft-edged circular cutout that follows the cursor — tor
 
 google-apps-script-web, web, google-meet-stage, mcp-apps, android
 
+## Renderers
+
+| Renderer | Status | Measured | Notes |
+|---|---|---|---|
+| React | Not verified | 2026-11-13 | no visible text in the example |
+| Lit | Not verified | 2026-11-13 | no visible text in the example |
+| Angular | Not verified | 2026-11-13 | no visible text in the example |
+| CopilotKit | Not verified | 2026-11-13 | no visible text in the example |
+| a2ui-vue | Not verified | 2026-11-13 | no visible text in the example |
+| Flutter | Not supported | 2026-11-13 | component type unknown to the renderer |
+| Compose | Not supported | 2026-11-13 | component type unknown to the renderer |
+
+What draws the atom, measured per renderer: https://a2uicatalog.ai/renderers/
+
 ## Fields
 
 | Field | Type |

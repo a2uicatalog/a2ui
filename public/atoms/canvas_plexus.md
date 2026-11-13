@@ -6,6 +6,20 @@ Full-viewport animated particle network — dots connected by proximity lines th
 
 google-apps-script-web, web, google-meet-stage, mcp-apps, android
 
+## Renderers
+
+| Renderer | Status | Measured | Notes |
+|---|---|---|---|
+| React | Not verified | 2026-11-13 | no visible text in the example |
+| Lit | Drawn | 2026-11-13 |  |
+| Angular | Drawn | 2026-11-13 |  |
+| CopilotKit | Not verified | 2026-11-13 | no visible text in the example |
+| a2ui-vue | Not verified | 2026-11-13 | no visible text in the example |
+| Flutter | Not supported | 2026-11-13 | component type unknown to the renderer |
+| Compose | Not supported | 2026-11-13 | component type unknown to the renderer |
+
+What draws the atom, measured per renderer: https://a2uicatalog.ai/renderers/
+
 ## Fields
 
 | Field | Type |

@@ -6,6 +6,20 @@ A claim whose typography IS its calibration. The agent states a claim and a conf
 
 web, google-meet-stage, google-apps-script-web, mcp-apps, pdf, android, slides, pptx
 
+## Renderers
+
+| Renderer | Status | Measured | Notes |
+|---|---|---|---|
+| React | Drawn | 2026-11-13 |  |
+| Lit | Drawn | 2026-11-13 |  |
+| Angular | Drawn | 2026-11-13 |  |
+| CopilotKit | Drawn | 2026-11-13 |  |
+| a2ui-vue | Drawn | 2026-11-13 |  |
+| Flutter | Not supported | 2026-11-13 | component type unknown to the renderer |
+| Compose | Not supported | 2026-11-13 | component type unknown to the renderer |
+
+What draws the atom, measured per renderer: https://a2uicatalog.ai/renderers/
+
 ## Fields
 
 | Field | Type |

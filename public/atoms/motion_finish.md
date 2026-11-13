@@ -6,6 +6,20 @@ A finishing layer for the whole frame, like a colourist: film grain (fixed seede
 
 web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
+## Renderers
+
+| Renderer | Status | Measured | Notes |
+|---|---|---|---|
+| React | Drawn | 2026-11-13 |  |
+| Lit | Not verified | 2026-11-13 | blank on both sides (light 360); blank on both sides (light 480) |
+| Angular | Not verified | 2026-11-13 | blank on both sides (light 360); blank on both sides (light 480) |
+| CopilotKit | Not verified | 2026-11-13 | blank on both sides (light 360); blank on both sides (light 480) |
+| a2ui-vue | Not verified | 2026-11-13 | blank on both sides (light 360); blank on both sides (light 480) |
+| Flutter | Native | 2026-11-13 |  |
+| Compose | Not supported | 2026-11-13 | component type unknown to the renderer |
+
+What draws the atom, measured per renderer: https://a2uicatalog.ai/renderers/
+
 ## Fields
 
 | Field | Type |

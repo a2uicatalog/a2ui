@@ -6,6 +6,20 @@ A WebGL shader background: a domain-warped liquid gradient (kind liquid), soft a
 
 web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
+## Renderers
+
+| Renderer | Status | Measured | Notes |
+|---|---|---|---|
+| React | Not verified | 2026-11-13 | no visible text in the example |
+| Lit | Drawn | 2026-11-13 |  |
+| Angular | Drawn | 2026-11-13 |  |
+| CopilotKit | Not verified | 2026-11-13 | no visible text in the example |
+| a2ui-vue | Not verified | 2026-11-13 | no visible text in the example |
+| Flutter | Not supported | 2026-11-13 | component type unknown to the renderer |
+| Compose | Not supported | 2026-11-13 | component type unknown to the renderer |
+
+What draws the atom, measured per renderer: https://a2uicatalog.ai/renderers/
+
 ## Fields
 
 | Field | Type |

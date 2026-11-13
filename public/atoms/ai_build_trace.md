@@ -6,6 +6,20 @@ Token usage and model trace card — shows Gemini call stats inline on a page
 
 google-apps-script-web, mcp-apps, android
 
+## Renderers
+
+| Renderer | Status | Measured | Notes |
+|---|---|---|---|
+| React | Drawn | 2026-11-13 |  |
+| Lit | Drawn | 2026-11-13 |  |
+| Angular | Drawn | 2026-11-13 |  |
+| CopilotKit | Drawn with differences | 2026-11-13 | pixels differ from React (light 480) |
+| a2ui-vue | Drawn with differences | 2026-11-13 | pixels differ from React (dark 480); pixels differ from React (light 480) |
+| Flutter | Native | 2026-11-13 |  |
+| Compose | Not supported | 2026-11-13 | component type unknown to the renderer |
+
+What draws the atom, measured per renderer: https://a2uicatalog.ai/renderers/
+
 ## Fields
 
 | Field | Type |

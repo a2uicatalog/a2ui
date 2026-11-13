@@ -582,6 +582,14 @@
   <url><loc>https://a2uicatalog.ai/pricing/</loc><lastmod>2026-10-18T13:00:00+02:00</lastmod></url>
   <url><loc>https://a2uicatalog.ai/privacy/</loc><lastmod>2026-10-18T13:00:00+02:00</lastmod></url>
   <url><loc>https://a2uicatalog.ai/renderer/</loc><lastmod>2026-10-18T13:00:00+02:00</lastmod></url>
+  <url><loc>https://a2uicatalog.ai/renderers/</loc></url>
+  <url><loc>https://a2uicatalog.ai/renderers/a2ui-vue/</loc></url>
+  <url><loc>https://a2uicatalog.ai/renderers/angular/</loc></url>
+  <url><loc>https://a2uicatalog.ai/renderers/compose/</loc></url>
+  <url><loc>https://a2uicatalog.ai/renderers/copilotkit/</loc></url>
+  <url><loc>https://a2uicatalog.ai/renderers/flutter/</loc></url>
+  <url><loc>https://a2uicatalog.ai/renderers/lit/</loc></url>
+  <url><loc>https://a2uicatalog.ai/renderers/react/</loc></url>
   <url><loc>https://a2uicatalog.ai/sdks/</loc><lastmod>2026-10-18T13:00:00+02:00</lastmod></url>
   <url><loc>https://a2uicatalog.ai/surfaces/amiga/</loc><lastmod>2026-10-18T08:00:00+02:00</lastmod></url>
   <url><loc>https://a2uicatalog.ai/surfaces/android/</loc><lastmod>2026-10-27T07:18:49+01:00</lastmod></url>

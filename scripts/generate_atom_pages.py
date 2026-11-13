@@ -36,6 +36,7 @@ ROOT       = Path(__file__).parent.parent
 SCHEMA     = ROOT / "atoms" / "schema.yaml"
 OUTPUT_DIR = ROOT / "public" / "atoms"
 DOMAIN     = "a2uicatalog.ai"
+BASE_URL_SITE = "https://a2uicatalog.ai"
 PDFJS_PATH = ROOT / "apps-script-surface" / "gas-wired-renderer" / "vendor" / "pdfjs" / "pdf.min.mjs"
 GAS_RENDERER = "https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec"
 
@@ -60,6 +61,14 @@ except Exception as e:
     # fails for some reason.
     print(f"ERROR: failed to import web_article renderer: {e}", file=sys.stderr)
     raise
+
+# Renderer dimension (x-renderers): the site fragments live in scripts/renderer_site.py; the data is the committed
+# public/catalogue/renderer-matrix-v1.json (gen_renderer_matrix.py). Absent matrix = no Renderers blocks, no pages.
+import importlib.util as _ilu
+_rs_spec = _ilu.spec_from_file_location("renderer_site", Path(__file__).parent / "renderer_site.py")
+renderer_site = _ilu.module_from_spec(_rs_spec)
+_rs_spec.loader.exec_module(renderer_site)
+RENDERER_MATRIX = renderer_site.load_matrix()
 
 # Representative example blocks for atoms supported by the web-article renderer.
 # These are richer than example_payload() can generate automatically.
@@ -1500,6 +1509,7 @@ def render_page_md(atom):
     lines = [f"# {display_name}", "", desc, ""]
     if surfaces:
         lines += ["## Surfaces", "", ", ".join(surfaces), ""]
+    lines += renderer_site.atom_md(RENDERER_MATRIX, atom_type)
     lines += ["## Fields", ""]
     if fields:
         lines += ["| Field | Type |", "|---|---|"]
@@ -2338,6 +2348,8 @@ def render_page(atom):
         f'<a class="try-btn" href="{make_renderer_url(atom)}" target="_blank" rel="noopener">Try it live →</a>'
     ) if _gas_only else ""
     _export_html = export_row(atom)
+    _rd_block = renderer_site.atom_block(RENDERER_MATRIX, atom_type)
+    _rd_css = f"<style>\n{renderer_site.ATOM_CSS}\n</style>" if _rd_block else ""
 
     return f"""<!DOCTYPE html>
 <html lang="en">
@@ -2378,6 +2390,7 @@ def render_page(atom):
   {SITE_HEAD_JS}
   {PAGE_CSS}
   {ATOM_PAGE_CSS}
+  {_rd_css}
 </head>
 <body>
   {site_header("atoms")}
@@ -2406,7 +2419,7 @@ def render_page(atom):
         <div class="label">Surfaces</div>
         {surface_badges(atom)}
       </div>
-
+{_rd_block}
       {degraded_notes(atom)}
 
       {templates}
@@ -3424,7 +3437,7 @@ def generate_index(atoms):
   <div class="grid" id="grid">
 {cards_html}  </div>
   <footer>
-    <span>A2UI Atomic Catalog · <a href="/atoms/">All atoms A–Z</a> · <a href="/docs/">API Documentation</a> · <a href="/developers/">Developers</a> · <a href="https://github.com/a2uicatalog/a2ui">GitHub</a> · Maintained by <a href="https://www.linkedin.com/in/curtiskrygier" rel="me author">Curtis Krygier</a></span>
+    <span>A2UI Atomic Catalog · <a href="/atoms/">All atoms A–Z</a> · <a href="/renderers/">Renderers</a> · <a href="/docs/">API Documentation</a> · <a href="/developers/">Developers</a> · <a href="https://github.com/a2uicatalog/a2ui">GitHub</a> · Maintained by <a href="https://www.linkedin.com/in/curtiskrygier" rel="me author">Curtis Krygier</a></span>
     <span><strong>A2UI is an open protocol (a2ui.org). a2uicatalog.ai is an independent catalogue of components built on it.</strong> Independent, unofficial catalog — not affiliated with, endorsed by, or sponsored by Google, Anthropic or OpenAI. A2UI is Google's protocol; official spec at <a href="https://a2ui.org">a2ui.org</a>. MCP is Anthropic's protocol; Claude, the Claude logo and Anthropic are trademarks of Anthropic PBC. ChatGPT and OpenAI are trademarks of OpenAI, L.L.C. All other marks belong to their respective owners.</span>
     <span><a href="/.well-known/ard.json">ARD discovery catalog (JSON)</a></span>
   </footer>
@@ -5213,6 +5226,11 @@ def render_atoms_hub(atoms):
     surface_links = " · ".join(
         f'<a href="/surfaces/{s}/">{html.escape(SURFACE_NAMES.get(s, s))}</a> ({c})'
         for s, c in sorted(surfaces.items(), key=lambda kv: -kv[1]))
+    renderer_links = ""
+    if RENDERER_MATRIX:
+        renderer_links = ('<p class="hub-surfaces">By renderer (what draws an atom): ' + " · ".join(
+            f'<a href="/renderers/{rid}/">{html.escape(r["name"])}</a>' for rid, r in RENDERER_MATRIX["renderers"].items())
+            + ' · <a href="/renderers/">about this</a></p>')
     sections = ""
     for k, items in groups.items():
         lis = "".join(
@@ -5268,6 +5286,7 @@ def render_atoms_hub(atoms):
   the client renders it, so no model-written HTML reaches the page. Every entry links to its fields, an example payload
   and a live preview. Agents can search the same catalog through the <a href="/mcp-docs/">MCP server</a> (<code>find_atoms</code>).</p>
   <p class="hub-surfaces">By surface: {surface_links}</p>
+  {renderer_links}
   <div class="hub-cats" role="group" aria-label="Filter by category (A2UI catalog)">{cat_buttons}</div>
   <div class="hub-filter"><label class="sr-only" for="hub-q">Filter atoms</label>
     <input id="hub-q" type="search" placeholder="Filter {n} atoms…" autocomplete="off"></div>
@@ -5277,7 +5296,7 @@ def render_atoms_hub(atoms):
   <footer>
     <span>A2UI Atomic Catalog · <a href="/docs/">API Documentation</a> · <a href="https://github.com/a2uicatalog/a2ui">github.com/a2uicatalog/a2ui</a> · Maintained by <a href="https://www.linkedin.com/in/curtiskrygier" rel="me author">Curtis Krygier</a></span>
     <span><strong>A2UI is an open protocol (a2ui.org). a2uicatalog.ai is an independent catalogue of components built on it.</strong> Independent, unofficial catalog — not affiliated with, endorsed by, or sponsored by Google, Anthropic or OpenAI. A2UI is Google's protocol; official spec at <a href="https://a2ui.org">a2ui.org</a>. MCP is Anthropic's protocol; Claude, the Claude logo and Anthropic are trademarks of Anthropic PBC. ChatGPT and OpenAI are trademarks of OpenAI, L.L.C. All other marks belong to their respective owners.</span>
-    <span><a href="/.well-known/ard.json">ARD discovery catalog (JSON)</a> · <a href="/atoms.md">This list as Markdown</a></span>
+    <span><a href="/renderers/">Renderers</a> · <a href="/.well-known/ard.json">ARD discovery catalog (JSON)</a> · <a href="/atoms.md">This list as Markdown</a></span>
   </footer>
   </div>
   {SITE_FOOT_JS}
@@ -5327,6 +5346,106 @@ def render_atoms_hub_md(atoms):
     lines += ["Full field contract: https://a2uicatalog.ai/spec.json"]
     return "\n".join(lines) + "\n"
 
+
+_SITE_FOOTER_RENDERERS = """  <footer>
+    <span>A2UI Atomic Catalog · <a href="/atoms/">All atoms A–Z</a> · <a href="/renderers/">Renderers</a> · <a href="/docs/">API Documentation</a> · <a href="https://github.com/a2uicatalog/a2ui">github.com/a2uicatalog/a2ui</a> · Maintained by <a href="https://www.linkedin.com/in/curtiskrygier" rel="me author">Curtis Krygier</a></span>
+    <span><strong>A2UI is an open protocol (a2ui.org). a2uicatalog.ai is an independent catalogue of components built on it.</strong> Independent, unofficial catalog — not affiliated with, endorsed by, or sponsored by Google, Anthropic or OpenAI. A2UI is Google's protocol; official spec at <a href="https://a2ui.org">a2ui.org</a>. MCP is Anthropic's protocol; Claude, the Claude logo and Anthropic are trademarks of Anthropic PBC. ChatGPT and OpenAI are trademarks of OpenAI, L.L.C. All other marks belong to their respective owners.</span>
+    <span>Renderer logos: simple-icons (CC0) for React, Lit, Angular and Vue, CopilotKit's public repository for its mark; the marks remain their owners'. <a href="/catalogue/renderer-matrix-v1.json">Renderer matrix (JSON)</a> · <a href="/.well-known/ard.json">ARD discovery catalog (JSON)</a></span>
+  </footer>"""
+
+
+def render_renderer_page(m, rid=None):
+    """/renderers/ (rid None) or /renderers/<rid>/ : the renderer dimension pages (bodies from renderer_site)."""
+    if rid is None:
+        path, md = "/renderers/", "/renderers.md"
+        title = "Which renderer draws which A2UI atom — A2UI Atomic Catalog"
+        desc = (f"Seven renderers (React, Lit, Angular, CopilotKit, a2ui-vue, Flutter, Compose) against {m['atom_count']} A2UI atoms: "
+                "what draws each atom, measured per check, with the honest gaps.")
+        h1 = "Renderers"
+        body = renderer_site.hub_body(m)
+        crumb = '<a href="/">A2UI Catalog</a> / renderers'
+        graph = [{"@type": "CollectionPage", "@id": BASE_URL_SITE + path, "url": BASE_URL_SITE + path, "name": title, "description": desc,
+                  "isPartOf": {"@type": "WebSite", "name": "A2UI Catalog", "url": BASE_URL_SITE + "/"},
+                  "mainEntity": {"@type": "ItemList", "numberOfItems": len(m["renderers"]), "itemListElement": [
+                      {"@type": "ListItem", "position": i + 1, "name": r["name"], "url": f"{BASE_URL_SITE}/renderers/{k}/"}
+                      for i, (k, r) in enumerate(m["renderers"].items())]}},
+                 {"@type": "BreadcrumbList", "itemListElement": [
+                     {"@type": "ListItem", "position": 1, "name": "A2UI Catalog", "item": BASE_URL_SITE + "/"},
+                     {"@type": "ListItem", "position": 2, "name": "Renderers", "item": BASE_URL_SITE + path}]}]
+    else:
+        reg = m["renderers"][rid]
+        path, md = f"/renderers/{rid}/", f"/renderers/{rid}.md"
+        title = renderer_site.renderer_title(m, rid) + " — A2UI Atomic Catalog"
+        desc = renderer_site.renderer_desc(m, rid)
+        body = renderer_site.renderer_body(m, rid)
+        crumb = f'<a href="/">A2UI Catalog</a> / <a href="/renderers/">renderers</a> / {html.escape(reg["name"])}'
+        graph = [{"@type": "TechArticle", "@id": BASE_URL_SITE + path, "url": BASE_URL_SITE + path,
+                  "headline": f"{reg['name']} renderer support: which A2UI atoms it draws", "description": desc,
+                  "isPartOf": {"@type": "WebSite", "name": "A2UI Catalog", "url": BASE_URL_SITE + "/"}, "inLanguage": "en",
+                  "license": "https://opensource.org/licenses/MIT"},
+                 {"@type": "BreadcrumbList", "itemListElement": [
+                     {"@type": "ListItem", "position": 1, "name": "A2UI Catalog", "item": BASE_URL_SITE + "/"},
+                     {"@type": "ListItem", "position": 2, "name": "Renderers", "item": BASE_URL_SITE + "/renderers/"},
+                     {"@type": "ListItem", "position": 3, "name": reg["name"], "item": BASE_URL_SITE + path}]}]
+    ld = json.dumps({"@context": "https://schema.org", "@graph": graph}, ensure_ascii=False).replace("</", "<\\/")
+    return f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" href="/favicon.ico" sizes="32x32">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="theme-color" content="#5051cf">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>{html.escape(title)}</title>
+  <meta name="description" content="{html.escape(desc, quote=True)}">
+  <link rel="canonical" href="{BASE_URL_SITE}{path}">
+  <link rel="alternate" type="text/markdown" href="{BASE_URL_SITE}{md}">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="A2UI Catalog">
+  <meta property="og:title" content="{html.escape(title, quote=True)}">
+  <meta property="og:description" content="{html.escape(desc, quote=True)}">
+  <meta property="og:url" content="{BASE_URL_SITE}{path}">
+  <meta property="og:image" content="https://a2uicatalog.ai/brand/og-card.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{html.escape(title, quote=True)}">
+  <meta name="twitter:description" content="{html.escape(desc, quote=True)}">
+  <script type="application/ld+json">{ld}</script>
+  {SITE_HEAD_JS}
+  {PAGE_CSS}
+  {renderer_site.head_css()}
+</head>
+<body>
+  {site_header("atoms")}
+  <div class="wrap">
+  <nav class="crumb">
+    {crumb}
+  </nav>
+  {body}
+{_SITE_FOOTER_RENDERERS}
+  </div>
+  {SITE_FOOT_JS}
+</body>
+</html>"""
+
+
+def write_renderer_pages(m):
+    """public/renderers/: hub, one page per renderer, Markdown twins and the logos. No-op without the matrix."""
+    if not m:
+        return 0
+    rdir = ROOT / "public" / "renderers"
+    (rdir / "logos").mkdir(parents=True, exist_ok=True)
+    (rdir / "index.html").write_text(render_renderer_page(m))
+    (ROOT / "public" / "renderers.md").write_text(renderer_site.hub_md(m))
+    for rid in m["renderers"]:
+        (rdir / rid).mkdir(parents=True, exist_ok=True)
+        (rdir / rid / "index.html").write_text(render_renderer_page(m, rid))
+        (rdir / f"{rid}.md").write_text(renderer_site.renderer_md(m, rid))
+    for logo in sorted(renderer_site.LOGO_SRC_DIR.glob("*.svg")):
+        (rdir / "logos" / logo.name).write_text(logo.read_text())
+    return len(m["renderers"]) + 1
 
 
 def main():
@@ -5396,6 +5515,7 @@ def main():
     (OUTPUT_DIR / "index.html").write_text(render_atoms_hub(unique))
     (ROOT / "public" / "atoms.md").write_text(render_atoms_hub_md(unique))
     print(f"✓ atoms hub → {OUTPUT_DIR}/index.html and public/atoms.md")
+    print(f"✓ {write_renderer_pages(RENDERER_MATRIX)} renderer pages → {ROOT / 'public' / 'renderers'}")
 
     try_dir = ROOT / "public" / "try"
     try_dir.mkdir(parents=True, exist_ok=True)

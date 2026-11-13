@@ -164,7 +164,41 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 .deploy-box .label{margin-bottom:10px}
 .deploy-box a{display:inline-block;margin-top:12px;font-size:12px;color:var(--accent);text-decoration:none;font-weight:600}
 </style>
-
+  <style>
+/* renderer dimension: scoped to .rd, uses the page's own tokens */
+.rd{margin:0 0 8px}
+.rd-lead{font-size:13px;color:var(--muted);margin:0 0 10px;max-width:70ch}
+.rd table{width:100%;border-collapse:collapse;font-size:13px}
+.rd th,.rd td{text-align:left;vertical-align:top;padding:8px 10px;border-bottom:1px solid var(--border)}
+.rd th{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.rd-name{display:flex;align-items:center;gap:8px;font-weight:650;white-space:nowrap}
+.rd-name a{color:var(--text);text-decoration:none;font-family:inherit;font-size:13.5px}
+.rd-name a:hover{text-decoration:underline}
+.rd .lg{display:inline-block;width:18px;height:18px;flex:none;background:currentColor;-webkit-mask:var(--m) center/contain no-repeat;mask:var(--m) center/contain no-repeat}
+.rd .lg0{display:inline-block;width:18px;height:18px;flex:none}
+.rd-chip{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;border-radius:999px;padding:2px 10px;border:1px solid var(--c-line);background:var(--c-bg);color:var(--c-ink);white-space:nowrap}
+.rd-chip.drawn,.rd-chip.native{--c-bg:color-mix(in srgb,var(--positive) 16%,var(--surface));--c-line:color-mix(in srgb,var(--positive) 50%,var(--surface));--c-ink:color-mix(in srgb,var(--positive) 55%,var(--text))}
+.rd-chip.drawn_with_differences,.rd-chip.degraded{--c-bg:color-mix(in srgb,var(--warn) 18%,var(--surface));--c-line:color-mix(in srgb,var(--warn) 50%,var(--surface));--c-ink:color-mix(in srgb,var(--warn) 45%,var(--text))}
+.rd-chip.not_verified{--c-bg:var(--surface-2);--c-line:color-mix(in srgb,var(--warn) 45%,var(--surface));--c-ink:color-mix(in srgb,var(--warn) 40%,var(--text))}
+.rd-chip.not_supported{--c-bg:color-mix(in srgb,var(--negative) 14%,var(--surface));--c-line:color-mix(in srgb,var(--negative) 50%,var(--surface));--c-ink:color-mix(in srgb,var(--negative) 55%,var(--text))}
+.rd-chip.not_measured{--c-bg:var(--surface-2);--c-line:var(--border-strong);--c-ink:var(--text-muted)}
+.rd-ev{color:var(--muted);font-size:12.5px;line-height:1.45}
+.rd-ck{display:flex;flex-wrap:wrap;gap:3px 6px}
+.rd-ck span{font-size:11.5px;padding:0 6px;border-radius:5px;border:1px solid var(--border);white-space:nowrap}
+.rd-ck .bad{border-color:color-mix(in srgb,var(--negative) 55%,var(--surface));color:color-mix(in srgb,var(--negative) 55%,var(--text))}
+.rd-ck .unk{border-color:color-mix(in srgb,var(--warn) 55%,var(--surface));color:color-mix(in srgb,var(--warn) 45%,var(--text))}
+.rd-why{margin:4px 0 0;font-size:12px}
+.rd-date{white-space:nowrap;color:var(--muted);font-size:12px}
+.rd-pre{font-size:12px;border:1px solid color-mix(in srgb,var(--warn) 50%,var(--surface));background:color-mix(in srgb,var(--warn) 12%,var(--surface));border-radius:8px;padding:6px 10px;margin:10px 0 0;max-width:80ch}
+.rd-tm{font-size:11.5px;color:var(--muted);margin:10px 0 28px;max-width:80ch;line-height:1.45}
+@media(max-width:600px){
+ .rd table,.rd tbody,.rd tr,.rd td{display:block;width:100%;box-sizing:border-box}
+ .rd thead{display:none}
+ .rd tr{border:1px solid var(--border);border-radius:10px;padding:8px 10px;margin-bottom:8px;background:var(--surface)}
+ .rd td{border:0;padding:3px 0}
+ .rd-name{white-space:normal}
+}
+</style>
 </head>
 <body>
   <header class="site-header"><div class="hdr-in">
@@ -204,6 +238,13 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
     <div class="label">Surfaces</div>
     <span class="badge bs">web</span><span class="badge bs">google-meet-stage</span><span class="badge bs">google-apps-script-web</span><span class="badge bs">mcp-apps</span><span class="badge bs">pdf</span><span class="badge bs">android</span>
   </div>
+      </div>
+
+      <div class="section rd" id="renderers">
+        <div class="label">Renderers</div>
+        <p class="rd-lead">What draws this atom, separate from the surfaces above: measured per renderer, each check against React. <a href="/renderers/">About this dimension</a></p>
+        <table><thead><tr><th>Renderer</th><th>Status</th><th>Checks</th><th>Measured</th></tr></thead><tbody><tr><td><span class="rd-name"><span class="lg" style="--m:url(/renderers/logos/react.svg)" aria-hidden="true"></span><a href="/renderers/react/">React</a></span></td><td><span class="rd-chip drawn" title="drawn by the renderer; every check passed"><span aria-hidden="true">✓</span>Drawn</span></td><td class="rd-ev"><div class="rd-ck"><span class="">paint ✓</span><span class="">text ✓</span><span>pixel L480 ref D480 ref L360 ref D360 ref</span><span class="">overflow 360 ✓</span><span>contrast L480 – D480 ✓ L360 ✓ D360 ✓</span><span class="">behaviour no probe</span></div></td><td class="rd-date">2026-11-13</td></tr><tr><td><span class="rd-name"><span class="lg" style="--m:url(/renderers/logos/lit.svg)" aria-hidden="true"></span><a href="/renderers/lit/">Lit</a></span></td><td><span class="rd-chip drawn" title="drawn by the renderer; every check passed"><span aria-hidden="true">✓</span>Drawn</span></td><td class="rd-ev"><div class="rd-ck"><span class="">paint ✓</span><span class="">text ✓</span><span class="">text vs React ✓</span><span>pixel L480 ✓ D480 ✓ L360 ✓ D360 ✓</span><span class="">overflow 360 ✓</span><span>contrast L480 ✓ D480 ✓ L360 ✓ D360 ✓</span><span class="">behaviour no probe</span></div></td><td class="rd-date">2026-11-13</td></tr><tr><td><span class="rd-name"><span class="lg" style="--m:url(/renderers/logos/angular.svg)" aria-hidden="true"></span><a href="/renderers/angular/">Angular</a></span></td><td><span class="rd-chip drawn" title="drawn by the renderer; every check passed"><span aria-hidden="true">✓</span>Drawn</span></td><td class="rd-ev"><div class="rd-ck"><span class="">paint ✓</span><span class="">text ✓</span><span class="">text vs React ✓</span><span>pixel L480 ✓ D480 ✓ L360 ✓ D360 ✓</span><span class="">overflow 360 ✓</span><span>contrast L480 ✓ D480 ✓ L360 ✓ D360 ✓</span><span class="">behaviour no probe</span></div></td><td class="rd-date">2026-11-13</td></tr><tr><td><span class="rd-name"><span class="lg" style="--m:url(/renderers/logos/copilotkit.svg)" aria-hidden="true"></span><a href="/renderers/copilotkit/">CopilotKit</a></span></td><td><span class="rd-chip drawn" title="drawn by the renderer; every check passed"><span aria-hidden="true">✓</span>Drawn</span></td><td class="rd-ev"><div class="rd-ck"><span class="">paint ✓</span><span class="">text ✓</span><span class="">text vs React ✓</span><span>pixel L480 ✓ D480 ✓ L360 ✓ D360 ✓</span><span class="">overflow 360 ✓</span><span>contrast L480 ✓ D480 ✓ L360 ✓ D360 ✓</span><span class="unk">behaviour not run</span></div></td><td class="rd-date">2026-11-13</td></tr><tr><td><span class="rd-name"><span class="lg" style="--m:url(/renderers/logos/vuedotjs.svg)" aria-hidden="true"></span><a href="/renderers/a2ui-vue/">a2ui-vue</a></span></td><td><span class="rd-chip drawn" title="drawn by the renderer; every check passed"><span aria-hidden="true">✓</span>Drawn</span></td><td class="rd-ev"><div class="rd-ck"><span class="">paint ✓</span><span class="">text ✓</span><span class="">text vs React ✓</span><span>pixel L480 ✓ D480 ✓ L360 ✓ D360 ✓</span><span class="">overflow 360 ✓</span><span>contrast L480 ✓ D480 ✓ L360 ✓ D360 ✓</span><span class="">behaviour no probe</span></div></td><td class="rd-date">2026-11-13</td></tr><tr><td><span class="rd-name"><span class="lg0" aria-hidden="true"></span><a href="/renderers/flutter/">Flutter</a></span></td><td><span class="rd-chip native" title="drawn by the renderer&#x27;s own implementation of the atom"><span aria-hidden="true">✓</span>Native</span></td><td class="rd-ev"><div class="rd-ck"><span>lane painted</span><span>own type yes</span><span>web words missing 0 of 23</span></div></td><td class="rd-date">2026-11-13</td></tr><tr><td><span class="rd-name"><span class="lg0" aria-hidden="true"></span><a href="/renderers/compose/">Compose</a></span></td><td><span class="rd-chip not_supported" title="draws nothing or errors"><span aria-hidden="true">✕</span>Not supported</span></td><td class="rd-ev"><div class="rd-ck"><span>Basic catalog lane unsupported</span><span>Basic-lane text same as React yes</span></div><p class="rd-why">component type unknown to the renderer</p></td><td class="rd-date">2026-11-13</td></tr></tbody></table>
+        <p class="rd-pre">Flutter: Measured on a private, unpublished build of the renderer; it cannot be reproduced from a public commit.</p><p class="rd-tm">Independent and unofficial; not affiliated with Google, CopilotKit or the Vue project. React, Angular, Lit, CopilotKit, Vue and their logos are trademarks or registered trademarks of their respective owners. They are used here only to identify the renderers this catalog has been tested with, and do not imply affiliation with or endorsement by those owners. Logo artwork: simple-icons (CC0) for React, Lit, Angular and Vue, and CopilotKit&#x27;s public repository for its mark; the marks remain their owners&#x27;. Flutter and Compose are likewise trademarks of their respective owners; no logo is shown for them.</p>
 
   
 <div class="section">

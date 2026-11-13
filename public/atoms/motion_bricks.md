@@ -6,6 +6,20 @@ A toy-brick sculpture on the film clock: procedural boxes with real brick propor
 
 web, google-meet-stage, google-apps-script-web, mcp-apps, android
 
+## Renderers
+
+| Renderer | Status | Measured | Notes |
+|---|---|---|---|
+| React | Not verified | 2026-11-13 | no visible text in the example |
+| Lit | Not verified | 2026-11-13 | blank on both sides (light 360); blank on both sides (light 480) |
+| Angular | Not verified | 2026-11-13 | blank on both sides (light 360); blank on both sides (light 480) |
+| CopilotKit | Not verified | 2026-11-13 | blank on both sides (light 360); blank on both sides (light 480); no visible text in the example |
+| a2ui-vue | Not verified | 2026-11-13 | blank on both sides (light 360); blank on both sides (light 480); no visible text in the example |
+| Flutter | Not supported | 2026-11-13 | component type unknown to the renderer |
+| Compose | Not supported | 2026-11-13 | component type unknown to the renderer |
+
+What draws the atom, measured per renderer: https://a2uicatalog.ai/renderers/
+
 ## Fields
 
 | Field | Type |

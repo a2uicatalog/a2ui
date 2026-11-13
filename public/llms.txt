@@ -32,6 +32,7 @@
 - [MCP Apps playground](https://a2uicatalog.ai/surfaces/mcp-apps): Renders atoms live inside MCP Apps-capable hosts (e.g. claude.ai); paste a payload or open a `#p=` link.
 - [Claude Code surface](https://a2uicatalog.ai/surfaces/claude-code): The `a2ui-claude-code` plugin (a Claude Code mod, source `claude-code-surface/` in the GitHub repository) draws atoms natively in Claude Code panes: `/a2ui <payload.json>`, a2uicatalog MCP payloads, animated script progress bars and a long-job dashboard.
 - [Android surface](https://a2uicatalog.ai/surfaces/android/): Atoms on Android through Google's `androidx.a2ui` Jetpack Compose renderer. The `atomic-catalog` library (`ai.a2uicatalog:atomic-catalog`, source `android/` in the GitHub repository) registers every atom: Basic Catalog components draw natively in Compose, the rest through the catalog's own renderer in a WebView. Agents that read the app's `a2uiClientCapabilities` send a Basic-Catalog-only version to apps without the library, so a stock app never receives a type it can't draw.
+- [Renderer support](https://a2uicatalog.ai/renderers/): Which renderer draws which atom (React, Lit, Angular, CopilotKit, a2ui-vue, Flutter, Compose), measured per check; per atom in `x-renderers` of /spec.json and the catalogue document, full data at /catalogue/renderer-matrix-v1.json.
 - [Self-host the renderer](https://a2uicatalog.ai/renderer): Deploy your own Apps Script renderer in 4 commands — own the URL, no shared-demo rate limit.
 
 ## When to use this
