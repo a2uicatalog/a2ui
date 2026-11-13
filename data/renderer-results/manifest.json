@@ -7,12 +7,12 @@
    "core_sha256": "0143667f9e044144b428fd7459a7a652acb268d467edc028a81fbf3505a27fa5",
    "css_sha256": "150035c39f2c53826ab52c8c3f66b1dee46fac1bcbc4539299c8da39c9c50412",
    "file": "a2ui-vue.json",
-   "file_sha256": "f0b2d0f792327b5a288ebaeba2f31f2da1928bb890d2862db68d1a3de1329bb4",
-   "measured_date": "2026-11-12",
+   "file_sha256": "85383b44cb081cca021ad32b4f9c8f7ea2a3128be433b65e051ac57b78524568",
+   "measured_date": "2026-11-13",
    "measured_on": "shipped",
    "renderer_bundle_sha256": "2af466d6ea815d4383bd2e58843e708374ab6af7a93acae4d535e37002a4ca73",
    "renderer_version": "a2ui-vue 0.9.5 (Vue 3.5.13, web_core 0.9.1)",
-   "run_id": "a2ui-vue-20261112T221250"
+   "run_id": "a2ui-vue-det-ab-20261113"
   },
   "angular": {
    "atoms_total": 573,
@@ -21,12 +21,12 @@
    "core_sha256": "0143667f9e044144b428fd7459a7a652acb268d467edc028a81fbf3505a27fa5",
    "css_sha256": "150035c39f2c53826ab52c8c3f66b1dee46fac1bcbc4539299c8da39c9c50412",
    "file": "angular.json",
-   "file_sha256": "14c38cbe377a8517b5cc0f2b5a52f8cd9889fc5e371af3ef1ca6cccabecba5a2",
-   "measured_date": "2026-11-12",
+   "file_sha256": "2e77afdafda3cdba4937676b522107dab09080da6c16e8f0e55f7abffb588067",
+   "measured_date": "2026-11-13",
    "measured_on": "shipped",
    "renderer_bundle_sha256": "2af466d6ea815d4383bd2e58843e708374ab6af7a93acae4d535e37002a4ca73",
    "renderer_version": "@a2ui/angular 0.14.0 (web_core 0.15.0)",
-   "run_id": "angular-20261112T221250"
+   "run_id": "angular-det-ab-20261113"
   },
   "compose": {
    "atoms_total": 573,
@@ -77,12 +77,12 @@
    "core_sha256": "0143667f9e044144b428fd7459a7a652acb268d467edc028a81fbf3505a27fa5",
    "css_sha256": "150035c39f2c53826ab52c8c3f66b1dee46fac1bcbc4539299c8da39c9c50412",
    "file": "lit.json",
-   "file_sha256": "0df0f58621bba593f6df16be230c133875d04e6e70304af42aaf596c4a3cc4a2",
-   "measured_date": "2026-11-12",
+   "file_sha256": "2624b52fe9c1dbae911dde13adf079e3767b2444ba69d2ef9ccb9b4eecf0f33f",
+   "measured_date": "2026-11-13",
    "measured_on": "shipped",
    "renderer_bundle_sha256": "2af466d6ea815d4383bd2e58843e708374ab6af7a93acae4d535e37002a4ca73",
    "renderer_version": "@a2ui/lit 0.15.0 (web_core 0.15.0)",
-   "run_id": "lit-20261112T224355"
+   "run_id": "lit-det-ab-20261113"
   },
   "react": {
    "atoms_total": 573,
@@ -91,12 +91,12 @@
    "core_sha256": "0143667f9e044144b428fd7459a7a652acb268d467edc028a81fbf3505a27fa5",
    "css_sha256": "150035c39f2c53826ab52c8c3f66b1dee46fac1bcbc4539299c8da39c9c50412",
    "file": "react.json",
-   "file_sha256": "e73b518daffab3aec951428d75e231e8f14b18ab118bf380034038817d24ea94",
-   "measured_date": "2026-11-12",
+   "file_sha256": "98c863092401793a9066e6db996eff55eca1812f0eff0408371e4a959fe042f3",
+   "measured_date": "2026-11-13",
    "measured_on": "shipped",
    "renderer_bundle_sha256": "2af466d6ea815d4383bd2e58843e708374ab6af7a93acae4d535e37002a4ca73",
    "renderer_version": "@a2ui/react 0.15.0 (web_core 0.15.0)",
-   "run_id": "react-20261112T214730"
+   "run_id": "react-det-ab-20261113"
   }
  },
  "schema": "a2ui-renderer-results-manifest/1",
