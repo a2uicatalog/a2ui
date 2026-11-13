@@ -816,3 +816,6 @@ ISC License (us-atlas):
 > INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN
 > AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 > PERFORMANCE OF THIS SOFTWARE.
+## Google Apps Script logo (`public/gallery/renderer-logos/googleappsscript.svg`)
+
+The SVG file comes from the [Simple Icons](https://github.com/simple-icons/simple-icons) project, which releases its icon files under CC0 1.0 Universal. CC0 covers the file only. Google Apps Script and its logo are trademarks of Google LLC. The logo is shown only to identify the platform our Apps Script renderer runs on, and does not imply affiliation with or endorsement by Google. The same notice appears on the article that uses it.
