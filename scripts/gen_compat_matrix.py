@@ -10,6 +10,10 @@ label/URL mismatches, only 5 of the 8 surfaces. This script replaces the
 block between the compat-matrix markers wholesale; never edit that block by
 hand.
 
+A second block (renderer-matrix markers) summarises the renderer dimension (`x-renderers`, what draws an
+atom, measured per renderer): one row per renderer with status counts, read from the same spec.json, names and
+versions from public/catalogue/renderer-matrix-v1.json. The surface block above is unchanged.
+
 Run:
   python3 scripts/gen_public_catalog.py   # if schema.yaml changed first
   python3 scripts/gen_compat_matrix.py
@@ -25,6 +29,12 @@ README = ROOT / "README.md"
 
 START = "<!-- compat-matrix:start -->"
 END = "<!-- compat-matrix:end -->"
+R_START = "<!-- renderer-matrix:start -->"
+R_END = "<!-- renderer-matrix:end -->"
+MATRIX = ROOT / "public" / "catalogue" / "renderer-matrix-v1.json"
+STATUS_ORDER = [("drawn", "Drawn"), ("native", "Native"), ("drawn_with_differences", "With differences"),
+                ("degraded", "Degraded"), ("not_verified", "Not verified"), ("not_supported", "Not supported"),
+                ("not_measured", "Not measured")]
 
 # column order + short headers (full surface ids as declared in schema.yaml)
 SURFACES = [
@@ -80,6 +90,28 @@ def build_table(atoms: list) -> str:
     return "\n".join(lines)
 
 
+def build_renderer_table(atoms: list, matrix: dict) -> str:
+    """One row per renderer: status counts over the atoms' `x-renderers` (spec.json), plus name/version/date."""
+    counts = {}
+    for a in atoms:
+        for rid, e in (a.get("x-renderers") or {}).items():
+            c = counts.setdefault(rid, {})
+            c[e["status"]] = c.get(e["status"], 0) + 1
+    used = [(k, lbl) for k, lbl in STATUS_ORDER if any(k in c for c in counts.values())]
+    lines = [f"{len(atoms)} atoms · what draws each atom, per renderer, measured against React · generated from "
+             f"`public/spec.json` (`x-renderers`) by `scripts/gen_compat_matrix.py` — do not edit by hand. "
+             f"Per atom and per check: [a2uicatalog.ai/renderers/](https://a2uicatalog.ai/renderers/).", ""]
+    lines.append("| Renderer | Version measured | Measured | " + " | ".join(l for _, l in used) + " |")
+    lines.append("|---" * (len(used) + 3) + "|")
+    for rid, reg in matrix["renderers"].items():
+        ms = reg.get("measurement") or {}
+        c = counts.get(rid, {})
+        lines.append(f"| [{reg['name']}](https://a2uicatalog.ai/renderers/{rid}/) | {ms.get('renderer_version') or 'not measured'} | "
+                     f"{ms.get('measured') or '—'} | " + " | ".join(str(c.get(k, 0)) for k, _ in used) + " |")
+    lines += ["", "Independent and unofficial. " + matrix["trademark_note"]]
+    return "\n".join(lines)
+
+
 def main() -> None:
     atoms = json.loads(SPEC.read_text())["atoms"]
     readme = README.read_text()
@@ -92,6 +124,11 @@ def main() -> None:
         START + "\n" + table + "\n" + END,
         readme, flags=re.S,
     )
+    if R_START in new and R_END in new and MATRIX.exists():
+        new = re.sub(re.escape(R_START) + r".*?" + re.escape(R_END),
+                     lambda _m: R_START + "\n" + build_renderer_table(atoms, json.loads(MATRIX.read_text())) + "\n" + R_END,
+                     new, flags=re.S)
+        print("✓ renderer matrix block regenerated → README.md")
     README.write_text(new)
     print(f"✓ compat matrix regenerated — {len(atoms)} atoms × {len(SURFACES)} surfaces → README.md")
 

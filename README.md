@@ -755,6 +755,24 @@ Every atom declares, at the schema level, which of the **8 surfaces** it works o
 ✅ full support  ⚠️ renders with caveats (degradation note in spec.json)  — not declared for this surface — treat as unsupported
 <!-- compat-matrix:end -->
 
+### Renderer support
+
+<!-- renderer-matrix:start -->
+573 atoms · what draws each atom, per renderer, measured against React · generated from `public/spec.json` (`x-renderers`) by `scripts/gen_compat_matrix.py` — do not edit by hand. Per atom and per check: [a2uicatalog.ai/renderers/](https://a2uicatalog.ai/renderers/).
+
+| Renderer | Version measured | Measured | Drawn | Native | With differences | Degraded | Not verified | Not supported | Not measured |
+|---|---|---|---|---|---|---|---|---|---|
+| [React](https://a2uicatalog.ai/renderers/react/) | @a2ui/react 0.15.0 (web_core 0.15.0) | 2026-11-13 | 517 | 0 | 0 | 0 | 34 | 0 | 22 |
+| [Lit](https://a2uicatalog.ai/renderers/lit/) | @a2ui/lit 0.15.0 (web_core 0.15.0) | 2026-11-13 | 518 | 0 | 2 | 0 | 31 | 0 | 22 |
+| [Angular](https://a2uicatalog.ai/renderers/angular/) | @a2ui/angular 0.14.0 (web_core 0.15.0) | 2026-11-13 | 517 | 0 | 3 | 0 | 31 | 0 | 22 |
+| [CopilotKit](https://a2uicatalog.ai/renderers/copilotkit/) | @copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0) | 2026-11-13 | 482 | 0 | 35 | 0 | 34 | 0 | 22 |
+| [a2ui-vue](https://a2uicatalog.ai/renderers/a2ui-vue/) | a2ui-vue 0.9.5 (Vue 3.5.13, web_core 0.9.1) | 2026-11-13 | 482 | 0 | 35 | 0 | 34 | 0 | 22 |
+| [Flutter](https://a2uicatalog.ai/renderers/flutter/) | a2ui_flutter 0.3.0 (a2ui_core 0.7.0), private build | 2026-11-13 | 0 | 450 | 0 | 30 | 0 | 69 | 24 |
+| [Compose](https://a2uicatalog.ai/renderers/compose/) | a2ui-kmp 1.0.0-alpha02 (third-party Kotlin Multiplatform rebuild of androidx.a2ui 1.0.0-alpha02; spec v0.9.1 only) | 2026-11-13 | 0 | 28 | 0 | 0 | 0 | 523 | 22 |
+
+Independent and unofficial. React, Angular, Lit, CopilotKit, Vue and their logos are trademarks or registered trademarks of their respective owners. They are used here only to identify the renderers this catalog has been tested with, and do not imply affiliation with or endorsement by those owners. Logo artwork: simple-icons (CC0) for React, Lit, Angular and Vue, and CopilotKit's public repository for its mark; the marks remain their owners'.
+<!-- renderer-matrix:end -->
+
 </details>
 
 ---
