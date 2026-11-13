@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Noughts and crosses, plain HTML</title>
+<style>
+:root{--navy:#1f2150;--navy2:#2a2d6e;--indigo:#5051cf;--teal:#00b7c3;--cyan:#5eead4;--win:#ffd166;--bg:#f6f7ff;--ink:#141b24}
+@media(prefers-color-scheme:dark){:root{--bg:#1e2733;--ink:#eaeff5}}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(1200px 600px at 50% -10%,#e9ebff,#f6f7ff 55%,#fff);color:var(--ink);font:16px/1.4 Inter,"Segoe UI",system-ui,sans-serif;padding:16px}
+@media(prefers-color-scheme:dark){body{background:radial-gradient(1200px 600px at 50% -10%,#2b2f6b,#1e2733 60%)}}
+main{max-width:720px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:22px}
+svg{fill:currentColor;width:1em;height:1em;flex:none}
+header{width:100%;display:flex;align-items:center;gap:18px;padding:18px 26px;border-radius:20px;color:#fff;background:linear-gradient(120deg,#5051cf,#6267e7 45%,#00b7c3);box-shadow:0 10px 28px rgba(80,81,207,.3)}
+header svg{font-size:42px}h1{margin:0;font-size:1.9rem;line-height:1.1;font-weight:800}header p{margin:6px 0 0;font-size:.95rem}
+#status{display:flex;align-items:center;gap:12px;min-width:300px;padding:14px 24px;border-radius:18px;color:#fff;font-size:1.35rem;background:linear-gradient(180deg,var(--navy2),var(--navy));box-shadow:0 8px 22px rgba(31,33,80,.35)}
+#status svg{font-size:40px;color:var(--cyan)}
+#board{display:grid;grid-template-columns:repeat(3,96px);gap:22px}
+.sq{width:96px;height:96px;padding:0;border-radius:22px;cursor:pointer;display:grid;place-items:center;color:#fff;background:linear-gradient(180deg,var(--navy2),var(--navy));border:2px solid rgba(160,168,255,.45);box-shadow:0 6px 0 rgba(20,22,60,.55),0 10px 18px rgba(20,22,60,.25);transition:transform .12s,box-shadow .12s}
+.sq:hover{transform:translateY(-2px)}.sq:active{transform:translateY(3px);box-shadow:0 3px 0 rgba(20,22,60,.55)}
+.sq:focus-visible,#new:focus-visible{outline:4px solid var(--teal);outline-offset:3px}
+.sq svg{font-size:64px}.sq[data-m=O]{color:var(--cyan)}.sq.win{border-color:var(--win);color:var(--win);box-shadow:0 0 0 3px rgba(255,209,102,.45),0 6px 0 rgba(20,22,60,.55)}.sq.last{border-color:var(--cyan)}
+#new{display:flex;align-items:center;gap:10px;height:54px;padding:0 30px;border:0;border-radius:999px;color:#fff;font:700 1rem inherit;cursor:pointer;background:linear-gradient(90deg,var(--indigo),#6267e7);box-shadow:0 6px 16px rgba(80,81,207,.4)}#new svg{font-size:22px}
+@media(max-width:440px){#board{grid-template-columns:repeat(3,78px);gap:14px}.sq{width:78px;height:78px}}
+@media(prefers-reduced-motion:reduce){.sq{transition:none}}
+</style></head><body><main>
+<header><svg viewBox="0 0 24 24" aria-hidden="true"><path id="p-brand"/></svg><div><h1>Noughts and Crosses</h1><p>You are X, the agent is O. You move first.</p></div></header>
+<div id="status" aria-live="polite"><svg viewBox="0 0 24 24" aria-hidden="true"><path id="p-st"/></svg><span id="msg"></span></div>
+<div id="board"></div>
+<button id="new" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path id="p-new"/></svg>New game</button>
+</main><script>
+const P={O:"M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Zm0 3a6 6 0 1 1 0 12 6 6 0 0 1 0-12Z",Olast:"M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Zm0 3a6 6 0 1 1 0 12 6 6 0 0 1 0-12ZM8 21.6h8v1.8H8Z",Owin:"M4 1h16a3 3 0 0 1 3 3v16a3 3 0 0 1-3 3H4a3 3 0 0 1-3-3V4a3 3 0 0 1 3-3ZM12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Zm0 3a6 6 0 1 1 0 12 6 6 0 0 1 0-12Z",X:"M4.2 6.2 6.2 4.2 12 10 17.8 4.2 19.8 6.2 14 12 19.8 17.8 17.8 19.8 12 14 6.2 19.8 4.2 17.8 10 12Z",Xwin:"M4 1h16a3 3 0 0 1 3 3v16a3 3 0 0 1-3 3H4a3 3 0 0 1-3-3V4a3 3 0 0 1 3-3ZM10 12 4.2 17.8 6.2 19.8 12 14 17.8 19.8 19.8 17.8 14 12 19.8 6.2 17.8 4.2 12 10 6.2 4.2 4.2 6.2Z",brand:"M8.1 2.5h1.8v19h-1.8ZM14.1 2.5h1.8v19h-1.8ZM2.5 8.1h19v1.8h-19ZM2.5 14.1h19v1.8h-19ZM3.3 3.9 3.9 3.3 5 4.4 6.1 3.3 6.7 3.9 5.6 5 6.7 6.1 6.1 6.7 5 5.6 3.9 6.7 3.3 6.1 4.4 5ZM19 17a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm0 .9a1.1 1.1 0 1 1 0 2.2 1.1 1.1 0 0 1 0-2.2Z",equals:"M5 7.5h14a1.5 1.5 0 0 1 0 3H5a1.5 1.5 0 0 1 0-3Zm0 6h14a1.5 1.5 0 0 1 0 3H5a1.5 1.5 0 0 1 0-3Z",refresh:"M8 5.07A8 8 0 1 0 16 5.07L17.3 2.82 11.52 5.12 13.6 9.23 14.9 6.98A5.8 5.8 0 1 1 9.1 6.98Z",star:"M12 2.6 14.53 9.12 21.51 9.51 16.09 13.93 17.88 20.69 12 16.9 6.12 20.69 7.91 13.93 2.49 9.51 9.47 9.12Z"};
+const L=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+const win=b=>{for(const l of L)if(b[l[0]]!==' '&&b[l[0]]===b[l[1]]&&b[l[0]]===b[l[2]])return l;return null};
+const free=b=>b.flatMap((v,i)=>v===' '?[i]:[]);
+const put=(b,i,m)=>b.map((v,j)=>j===i?m:v);
+function sc(b,me,t){const w=win(b);if(w)return b[w[0]]===me?1:-1;const f=free(b);if(!f.length)return 0;const o=t==='X'?'O':'X',v=f.map(i=>sc(put(b,i,t),me,o));return t===me?Math.max(...v):Math.min(...v)}
+const pick=b=>{const f=free(b),s=f.map(i=>sc(put(b,i,'O'),'O','X')),m=Math.max(...s);return f[s.indexOf(m)]};
+let S;const $=id=>document.getElementById(id);
+const fresh=()=>S={b:Array(9).fill(' '),over:false,msg:'Your move. You are X.',last:-1};
+function play(i){
+  if(S.over){S.msg='The game is over. Press New game.';return draw()}
+  if(S.b[i]!==' '){S.msg='That square is taken. Pick an empty one.';return draw()}
+  S.b[i]='X';S.last=-1;
+  if(win(S.b)){S.over=true;S.msg='You win.';return draw()}
+  if(!free(S.b).length){S.over=true;S.msg='A draw.';return draw()}
+  const a=pick(S.b);S.b[a]='O';S.last=a;
+  if(win(S.b)){S.over=true;S.msg='The agent wins.';S.last=-1}
+  else if(!free(S.b).length){S.over=true;S.msg='A draw.';S.last=-1}
+  else S.msg=`The agent played square ${a+1}. Your move.`;
+  draw();
+}
+function draw(){
+  const w=win(S.b),r=w?S.b[w[0]]:null;
+  $('msg').textContent=S.msg;$('p-st').setAttribute('d',!S.over?P.X:r==='X'?P.star:r==='O'?P.O:P.equals);
+  const g=$('board');if(!g.children.length)for(let i=0;i<9;i++){const e=document.createElement('button');e.type='button';e.className='sq';e.onclick=()=>play(i);e.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path/></svg>';g.append(e)}
+  S.b.forEach((v,i)=>{const e=g.children[i],iw=w&&w.includes(i),il=i===S.last&&!S.over;
+    e.className='sq'+(iw?' win':il?' last':'');e.dataset.m=v;
+    e.querySelector('path').setAttribute('d',v===' '?'':P[iw?v+'win':il?'Olast':v]);
+    e.setAttribute('aria-label',`Square ${i+1}, `+(v===' '?'empty':v)+(iw?', winning line':il?", the agent's last move":''))});
+}
+$('p-brand').setAttribute('d',P.brand);$('p-new').setAttribute('d',P.refresh);
+$('new').onclick=()=>{fresh();draw()};fresh();draw();
+</script></body></html>
