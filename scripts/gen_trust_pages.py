@@ -648,7 +648,7 @@ FR_PAGE = """<!DOCTYPE html>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Catalogue A2UI — composants A2UI pour agents IA · A2UI Atomic Catalog</title>
-<meta name="description" content="Catalogue A2UI open source : {n} composants A2UI typés pour agents IA. Serveur MCP gratuit, sans clé ni inscription. Rendu web, Google Meet, Apps Script, Chat, Android, Slides.">
+<meta name="description" content="Catalogue A2UI open source : {n} composants A2UI typés pour agents IA. Serveur MCP gratuit, sans clé ni inscription. Rendu web, Google Meet, Apps Script, Chat, Android, Slides.">
 <link rel="canonical" href="{base}/fr/">
 <link rel="alternate" hreflang="en" href="{base}/">
 <link rel="alternate" hreflang="fr" href="{base}/fr/">
@@ -686,40 +686,40 @@ FR_PAGE = """<!DOCTYPE html>
 <p class="k">A2UI Atomic Catalog, en français</p>
 
 <p>L’<strong>A2UI Atomic Catalog</strong> (a2uicatalog) est un catalogue open source de {n} composants
-A2UI typés, les « atomes », avec lesquels un agent IA construit de vraies interfaces au lieu de
-générer du HTML. Le nom du projet reste en anglais ; le reste du site aussi.</p>
+A2UI typés, les « atomes », avec lesquels un agent IA construit de vraies interfaces au lieu de
+générer du HTML. Le nom du projet reste en anglais ; le reste du site aussi.</p>
 
-<h2>Qu’est-ce qu’A2UI ?</h2>
+<h2>Qu’est-ce qu’A2UI ?</h2>
 <p>A2UI (<span lang="en">Agent-to-User Interface</span>) est un protocole ouvert de Google. L’agent décrit
-l’interface en JSON ; un moteur de rendu l’affiche avec ses propres composants. L’agent n’envoie
-jamais de code exécutable. Spécification officielle : <a href="https://a2ui.org" hreflang="en">a2ui.org</a>
-(en anglais). Guide pas à pas : <a href="/what-is-a2ui/" hreflang="en">What is A2UI?</a> (en anglais).</p>
+l’interface en JSON ; un moteur de rendu l’affiche avec ses propres composants. L’agent n’envoie
+jamais de code exécutable. Spécification officielle : <a href="https://a2ui.org" hreflang="en">a2ui.org</a>
+(en anglais). Guide pas à pas : <a href="/what-is-a2ui/" hreflang="en">What is A2UI?</a> (en anglais).</p>
 
 <h2>Ce que contient le catalogue</h2>
 <ul>
-<li>{n} atomes typés (cartes, tableaux, graphiques, formulaires…), chacun avec son contrat de champs dans
+<li>{n} atomes typés (cartes, tableaux, graphiques, formulaires…), chacun avec son schéma de champs dans
 <a href="/spec.json"><code>/spec.json</code></a>.</li>
-<li>Un serveur MCP gratuit à <code>https://a2uicatalog.ai/mcp</code>, sans clé d’API ni inscription,
+<li>Un serveur MCP gratuit à l’adresse <code>https://a2uicatalog.ai/mcp</code>, sans clé d’API ni inscription,
 inscrit au registre officiel MCP sous <code>ai.a2uicatalog/catalog</code>.</li>
-<li>Une API REST décrite en OpenAPI 3.1 : <code>POST /api/render</code> renvoie une page HTML complète,
+<li>Une API REST décrite en OpenAPI 3.1 : <code>POST /api/render</code> renvoie une page HTML complète,
 et un bac à sable (<code>/api/sandbox</code>) permet de tester sans entamer le quota.</li>
 <li>Des moteurs de rendu pour le web, Google Meet, Google Apps Script, Google Chat, les hôtes MCP Apps et
 Android, ainsi que la génération de présentations Google Slides et PowerPoint.</li>
 </ul>
 
-<h2>Démarrer</h2>
+<h2>Pour commencer</h2>
 <pre style="background:#0e1116;color:#c7d1e0;padding:14px 16px;border-radius:8px;overflow-x:auto;"><code>POST https://a2uicatalog.ai/mcp
 Content-Type: application/json
 
 {{"jsonrpc": "2.0", "id": 1, "method": "tools/list"}}</code></pre>
-<p>Pour essayer un document A2UI à la main : le <a href="https://play.a2uicatalog.ai">bac à sable interactif</a>.
-Pour parcourir les composants : <a href="/atoms/">tous les atomes de A à Z</a>.
-Documentation d’intégration : <a href="/docs/" hreflang="en">/docs/</a> (en anglais).</p>
+<p>Pour tester manuellement un document A2UI : le <a href="https://play.a2uicatalog.ai">bac à sable interactif</a>.
+Pour parcourir les composants : <a href="/atoms/">tous les atomes de A à Z</a>.
+Documentation d’intégration : <a href="/docs/" hreflang="en">/docs/</a> (en anglais).</p>
 
 <h2>Licence et statut</h2>
-<p>Gratuit, sous licence MIT ; le code source est sur <a href="{repo}">GitHub</a>. Projet indépendant et non
-officiel, basé en France : il n’est ni affilié à Google, Anthropic ou OpenAI, ni approuvé ou parrainé par eux.
-A2UI est le protocole de Google ; MCP celui d’Anthropic.</p>
+<p>Gratuit, sous licence MIT ; le code source est sur <a href="{repo}">GitHub</a>. Projet indépendant et non
+officiel, basé en France : il n’est ni affilié à Google, Anthropic ou OpenAI, ni approuvé ou parrainé par ces derniers.
+A2UI est le protocole de Google ; MCP celui d’Anthropic.</p>
 <p><a href="/" hreflang="en" lang="en">A2UI Atomic Catalog — English homepage</a></p>
 </div>
 <footer>Catalogue indépendant et non officiel. Maintenu par <a href="{li}">Curtis Krygier</a>. Licence MIT.</footer>

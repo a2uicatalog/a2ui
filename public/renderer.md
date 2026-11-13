@@ -55,13 +55,13 @@ https://a2uicatalog.ai/s/learn-a2ui
 
 ## Deploy your own
 
-Prerequisites: **Node.js 18+** (for `npm`, used to install clasp in step 2) and a Google account.
+Prerequisites: **Node.js 20+** (for `npm`, used to install clasp in step 2) and a Google account.
 
 1
 
 ### Clone the repo
 
-The renderer lives in `apps-script-surface/gas-wired-renderer/` — 501 atoms, no CDN, no external dependencies.
+The renderer lives in `apps-script-surface/gas-wired-renderer/` — 550 of the catalog's 573 atoms render on Apps Script, no CDN, no external dependencies.
 
 ```
 # Clone and navigate to the renderer directory
@@ -116,7 +116,7 @@ Runs in your Google account. No dependency on the catalog's demo URL. Survives a
 
 ⚡
 
-#### 501 atoms, ready to go
+#### 550 atoms, ready to go
 
 Stat cards, charts, globes, animations, tables, forms — all render immediately. A handful of data-source atoms want their own API key (see below) and degrade gracefully without one.
 
@@ -131,6 +131,43 @@ Fork the renderer, add your own atoms, change the CSS, restrict to specific surf
 #### Stay up to date
 
 Pull the latest from the repo and `clasp push` again when new atoms are added to the catalog.
+
+## Protocol support
+
+The renderer accepts **A2UI v1.0**: a `createSurface` message with its `components` and `dataModel` inline, one surface per link. It draws all 18 components of the v1.0 Basic Catalog (AudioPlayer, Button, Card, CheckBox, ChoicePicker, Column, DateTimeInput, Divider, Icon, Image, List, Modal, Row, Slider, Tabs, Text, TextField, Video), binds inputs to the data model, and sends a Button's `action` event to the `a2uiAction` function in your project's `Code.gs`. It also accepts the catalog's own `blocks` format, shown further down.
+
+Not supported: A2UI v0.9 and v0.8 input, and incremental `updateComponents`, `updateDataModel` or `deleteSurface` messages on a link.
+
+```
+// A minimal A2UI v1.0 surface: a text, a bound input and a button that sends an event
+function doGet() {
+  const message = {
+    "version": "1.0",
+    "createSurface": {
+      "surfaceId": "hello",
+      "catalogId": "https://a2ui.org/specification/v1_0/catalogs/basic/catalog.json",
+      "dataModel": {"form": {"name": ""}},
+      "components": [
+        {"id": "root", "component": "Column", "children": ["title", "name", "go"]},
+        {"id": "title", "component": "Text", "text": "Hello from Apps Script"},
+        {"id": "name", "component": "TextField", "label": "Your name", "value": {"@path": "/form/name"}},
+        {"id": "go", "component": "Button", "variant": "primary", "child": "go-label", "action": {"event": {"name": "greet", "context": {"who": {"@path": "/form/name"}}}}},
+        {"id": "go-label", "component": "Text", "text": "Say hello"}
+      ]
+    }
+  };
+
+  const p = Utilities.base64EncodeWebSafe(
+    Utilities.newBlob(JSON.stringify(message)).getBytes()
+  );
+  const url = "https://script.google.com/macros/s/YOUR_ID/exec?p=" + p;
+
+  return HtmlService.createHtmlOutput(
+    '<script>window.location="' + url + '"</script>'
+  );
+}
+
+```
 
 ## Call it from your GAS project
 

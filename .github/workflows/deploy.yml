@@ -84,6 +84,9 @@ jobs:
       - name: Build trust pages + agents.md
         run: python3 scripts/gen_trust_pages.py
 
+      - name: Build the Apps Script renderer page (counts read from spec.json, so they stay current)
+        run: python3 scripts/gen_renderer_page.py
+
       - name: Build the Mermaid to film window (converter worker + page)
         run: python3 scripts/gen_try_mermaid.py
 

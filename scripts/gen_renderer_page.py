@@ -10,11 +10,18 @@ content (steps, demo tabs, feature grid) stays here.
 
 Run:  python3 scripts/gen_renderer_page.py     # after generate_atom_pages.py (imports its chrome)
 """
+import html
+import json
 import os
 import sys
 
 ROOT = os.path.join(os.path.dirname(__file__), "..")
 OUT = os.path.join(ROOT, "public", "renderer", "index.html")
+SPEC = os.path.join(ROOT, "public", "spec.json")
+# The upstream v1.0 Basic Catalog, vendored for tests/test_basic_catalog_coverage.py; the page's
+# protocol section reads its version and component list from here, never from a literal.
+BASIC_CATALOG = os.path.join(ROOT, "tests", "fixtures", "a2ui_v1_0_spec", "catalogs", "basic", "catalog.json")
+GAS_SURFACE = "google-apps-script-web"
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import generate_atom_pages as _site  # noqa: E402  the site's shared chrome — one definition
@@ -130,7 +137,7 @@ BODY = """
   </div>
 
   <h2 style="font-size:1.2rem;font-weight:700;margin-bottom:8px;">Deploy your own</h2>
-  <p style="font-size:13px;color:var(--muted);margin:0 0 32px;">Prerequisites: <strong>Node.js 18+</strong> (for <code>npm</code>, used to install clasp in step 2) and a Google account.</p>
+  <p style="font-size:13px;color:var(--muted);margin:0 0 32px;">Prerequisites: <strong>Node.js 20+</strong> (for <code>npm</code>, used to install clasp in step 2) and a Google account.</p>
 
   <div class="steps">
 
@@ -138,7 +145,7 @@ BODY = """
       <div class="step-num">1</div>
       <div class="step-body">
         <h3>Clone the repo</h3>
-        <p>The renderer lives in <code>apps-script-surface/gas-wired-renderer/</code> — 501 atoms, no CDN, no external dependencies.</p>
+        <p>The renderer lives in <code>apps-script-surface/gas-wired-renderer/</code> — @@GAS_ATOMS@@ of the catalog's @@TOTAL_ATOMS@@ atoms render on Apps Script, no CDN, no external dependencies.</p>
         <pre id="code-clone"><span class="comment"># Clone and navigate to the renderer directory</span>
 git clone https://github.com/a2uicatalog/a2ui
 cd a2ui/apps-script-surface/gas-wired-renderer
@@ -190,7 +197,7 @@ clasp push
     </div>
     <div class="feature">
       <div class="feature-icon">&#9889;</div>
-      <h4>501 atoms, ready to go</h4>
+      <h4>@@GAS_ATOMS@@ atoms, ready to go</h4>
       <p>Stat cards, charts, globes, animations, tables, forms — all render immediately. A handful of data-source atoms want their own API key (see below) and degrade gracefully without one.</p>
     </div>
     <div class="feature">
@@ -204,6 +211,29 @@ clasp push
       <p>Pull the latest from the repo and <code>clasp push</code> again when new atoms are added to the catalog.</p>
     </div>
   </div>
+
+  <h2 id="protocol" style="font-size:1.2rem;font-weight:700;margin-bottom:12px;">Protocol support</h2>
+  <p style="font-size:14px;margin-bottom:12px;">The renderer accepts <strong>A2UI v@@PROTOCOL@@</strong>: a <code>createSurface</code> message with its
+  <code>components</code> and <code>dataModel</code> inline, one surface per link. It draws all @@BASIC_N@@ components of the
+  v@@PROTOCOL@@ Basic Catalog (@@BASIC_LIST@@), binds inputs to the data model, and sends a Button's
+  <code>action</code> event to the <code>a2uiAction</code> function in your project's <code>Code.gs</code>.
+  It also accepts the catalog's own <code>blocks</code> format, shown further down.</p>
+  <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Not supported: A2UI v0.9 and v0.8 input, and incremental
+  <code>updateComponents</code>, <code>updateDataModel</code> or <code>deleteSurface</code> messages on a link.</p>
+  <pre id="code-v1"><span class="comment">// A minimal A2UI v@@PROTOCOL@@ surface: a text, a bound input and a button that sends an event</span>
+function doGet() {
+  const message = @@V1_EXAMPLE@@;
+
+  const p = Utilities.base64EncodeWebSafe(
+    Utilities.newBlob(JSON.stringify(message)).getBytes()
+  );
+  const url = "https://script.google.com/macros/s/YOUR_ID/exec?p=" + p;
+
+  return HtmlService.createHtmlOutput(
+    '&lt;script&gt;window.location="' + url + '"&lt;/script&gt;'
+  );
+}
+<button class="copy-btn" onclick="copy('code-v1',this)">COPY</button></pre>
 
   <h2 style="font-size:1.2rem;font-weight:700;margin-bottom:12px;">Call it from your GAS project</h2>
   <p style="font-size:14px;color:var(--muted);margin-bottom:16px;">Once deployed, use your renderer URL with any payload from the catalog.</p>
@@ -271,6 +301,63 @@ FOOT_SCRIPT = """
 """
 
 
+# The v1.0 example on the page. tests/test_renderer_page.py validates it against the vendored v1.0
+# schema and renders it through the real renderer code, so the page cannot show a payload that fails.
+V1_EXAMPLE = {
+    "version": "1.0",
+    "createSurface": {
+        "surfaceId": "hello",
+        "catalogId": "https://a2ui.org/specification/v1_0/catalogs/basic/catalog.json",
+        "dataModel": {"form": {"name": ""}},
+        "components": [
+            {"id": "root", "component": "Column", "children": ["title", "name", "go"]},
+            {"id": "title", "component": "Text", "text": "Hello from Apps Script"},
+            {"id": "name", "component": "TextField", "label": "Your name", "value": {"@path": "/form/name"}},
+            {"id": "go", "component": "Button", "variant": "primary", "child": "go-label",
+             "action": {"event": {"name": "greet", "context": {"who": {"@path": "/form/name"}}}}},
+            {"id": "go-label", "component": "Text", "text": "Say hello"},
+        ],
+    },
+}
+
+
+def counts():
+    """Every number on the page, read from data (owner 2026-11-13: "make the numbers mechanical")."""
+    with open(SPEC, encoding="utf-8") as f:
+        atoms = json.load(f)["atoms"]
+    with open(BASIC_CATALOG, encoding="utf-8") as f:
+        basic = json.load(f)
+    return {
+        "TOTAL_ATOMS": str(len(atoms)),
+        "GAS_ATOMS": str(sum(1 for a in atoms if GAS_SURFACE in (a.get("surfaces") or {}).get("works_on", []))),
+        "PROTOCOL": basic["protocolVersion"],
+        "BASIC_N": str(len(basic["components"])),
+        "BASIC_LIST": ", ".join(sorted(basic["components"])),
+    }
+
+
+def _example_js():
+    """V1_EXAMPLE as compact, readable JSON: one component per line."""
+    cs = V1_EXAMPLE["createSurface"]
+    head = {k: v for k, v in cs.items() if k != "components"}
+    lines = ["{", f'    "version": {json.dumps(V1_EXAMPLE["version"])},', '    "createSurface": {']
+    lines += [f"      {json.dumps(k)}: {json.dumps(v)}," for k, v in head.items()]
+    lines.append('      "components": [')
+    comps = [f"        {json.dumps(c)}" for c in cs["components"]]
+    lines.append(",\n".join(comps))
+    lines += ["      ]", "    }", "  }"]
+    return "\n".join(lines)
+
+
+def _body():
+    out = BODY
+    for k, v in counts().items():
+        out = out.replace(f"@@{k}@@", html.escape(v))
+    out = out.replace("@@V1_EXAMPLE@@", html.escape(_example_js(), quote=False))
+    assert "@@" not in out, "unfilled token in the renderer page"
+    return out
+
+
 def render():
     return f"""<!DOCTYPE html>
 <html lang="en">
@@ -286,7 +373,7 @@ def render():
 <body>
 {_site.site_header("renderer")}
   <div class="wrap">
-{BODY}
+{_body()}
   </div>
 <script>
 {_site.SITE_FOOT_JS.replace("<script>", "").replace("</script>", "")}
