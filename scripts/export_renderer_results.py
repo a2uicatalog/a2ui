@@ -78,6 +78,17 @@ CK187_LANES = [("light480", "pixel", "raw_pixel.json", 480), ("dark480", "pixel_
 STRICT_PAINTED_DIR = "a2ui-react-all/review4"  # harness module that defines loose/strict/broken (read-only import)
 FLUTTER_VERSION = "a2ui_flutter 0.3.0 (a2ui_core 0.7.0), private build"
 COMPOSE_VERSION = "a2ui-kmp 1.0.0-alpha02 (third-party Kotlin Multiplatform rebuild of androidx.a2ui 1.0.0-alpha02; spec v0.9.1 only)"
+# Deterministic (det) mode inputs. det key per renderer id; React is the reference and has no parity entry.
+DET_KEY = {"lit": "lit", "angular": "ang", "a2ui-vue": "vue"}
+DET_LANES = {"light480": "pixel", "dark480": "pixel_dark", "light360": "pixel_360", "dark360": "pixel_dark360"}
+DET_DATE = "2026-11-13"
+# the two atoms whose Math.random draws are consumed per renderer by the page-global seeded sequence: pixel and text
+# parity vs React are excluded (recorded with a note code, never as a failure). Open item: reseed per case in the slicer.
+RANDOM_ATOMS = {"gmail_unread_count", "match_exercise"}
+NOTE_RANDOM = "seeded_random_order_differs"
+DET_FACTS = {"mode": "det-ab", "runs": 2, "chunk_size": 12, "fixed_id_order_required": True, "byte_identical_cells": 15, "cells": 20,
+             "rule_identical_cells": 20, "dither_max_pixels": 15, "dither_max_delta_of_765": 2,
+             "chunk_1_vs_12_differs_atoms": 10, "chunk_test_atoms": 33}
 SHA40 = re.compile(r"^[0-9a-f]{40}$")
 
 
@@ -198,6 +209,92 @@ def export_web(rid, work, public, measured_on, root, run, commit):
         atoms[atom] = {"cases": {atom: c}}
     head = web_head(rid, version, dialect, ref, date, "%s-%s" % (rid, re.sub(r"[-:]", "", date)), measured_on, commit, code,
                     (res.get("timings_s") or {}).get("total"))
+    return head, atoms
+
+
+def det_case(rid, atom, rec, detail, det, stable_ab, has_ref):
+    """One web case in det mode. Provenance per check: painted/text_visible/behaviour (and React's own overflow and
+    contrast) come from the F111 run ('f111'); pixel parity vs React, overflow, contrast, text parity and stability
+    come from the deterministic A/B pass ('det-ab'). The allowance lists play no part: stability is A==B."""
+    painted = "fail" if (rec.get("error") or rec.get("broken")) else "pass"
+    err = "error" if rec.get("error") else ("broken" if rec.get("broken") else None)
+    rnd = atom in RANDOM_ATOMS
+    pix, over = {}, {}
+    for env, lane in DET_LANES.items():
+        if has_ref:
+            r = det.get(lane, {}).get(atom)
+            if r is None:
+                pix[env] = {"result": "not_a_lane"}
+                continue
+            res = "excluded_random" if rnd else ("blank_both" if r["blank_both"] else ("pass" if r["passed"] else "fail"))
+            pix[env] = {"result": res, "allowance": False, "frac": num(r["frac"]), "hdiff": r["hdiff"],
+                        "one_blank": bool(r["one_blank"]), "low": r["low"], "low_ref": r["low_ref"]}
+            if env.endswith("360"):
+                over[env] = bool(r["overflow"])
+        else:
+            r = detail.get(lane, {}).get(atom)
+            if r is None:
+                pix[env] = {"result": "not_a_lane"}
+                continue
+            pix[env] = {"result": "reference", "allowance": False, "frac": None, "hdiff": None, "one_blank": False,
+                        "low": r.get("low"), "low_ref": None}
+            if env.endswith("360"):
+                over[env] = None if r.get("overflow") is None else bool(r["overflow"])
+    b = detail.get("behaviour_custom", {}).get(atom)
+    if b is None:
+        beh = "n/a (no probe)"
+    else:
+        beh = str(b.get("verdict", "")).split(":")[0]
+        if beh not in BEHAVIOUR_TOKENS:
+            sys.exit("unknown behaviour verdict token %r for %s/%s" % (beh, rid, atom))
+    if not has_ref:
+        tp = "n/a"
+    elif rnd:
+        tp = "excluded_random"
+    else:
+        tp = "pass" if det["pixel"][atom]["text_same"] else "fail"
+    case = {"dialect": None, "checks": {
+        "painted": {"result": painted, "error_code": err},
+        "text_visible": {"loose": bool(rec.get("loose")), "strict": bool(rec.get("strict")),
+                         "strict_text": bool(rec.get("strict_text")), "allowance": False},
+        "pixel": pix, "overflow_360": over, "behaviour": beh, "text_parity": tp,
+        "stability": "stable",
+        "sources": {"painted": "f111", "text_visible": "f111", "behaviour": "f111", "stability": "det-ab",
+                    "pixel": "det-ab" if has_ref else "f111",
+                    "overflow_360": "det-ab" if has_ref else "f111", "contrast": "det-ab" if has_ref else "f111",
+                    "text_parity": "det-ab" if has_ref else "n/a"}}}
+    if rnd and has_ref:
+        case["notes"] = [NOTE_RANDOM]
+    return case
+
+
+def export_web_det(rid, work, public, measured_on, root, run, commit, det_dir):
+    """Web raw results from the F111 run (painted, text, behaviour) plus the deterministic A/B gate (everything else)."""
+    head, f111_atoms = export_web(rid, work, public, measured_on, root, run, commit)
+    d, dname = WEB[rid][0], WEB[rid][1]
+    detail = load(os.path.join(root, d, "runs", run, dname))
+    raw = load(os.path.join(det_dir, "det_gate_raw.json"))["renderers"]
+    base = load(os.path.join(det_dir, "det_baselines_sha256.json"))
+    has_ref = rid != "react"
+    det = {}
+    if has_ref:
+        for lane, v in raw[DET_KEY[rid]].items():
+            if not v.get("fail_identical_in_run_B"):
+                sys.exit("%s/%s: det fail list differs between run A and run B" % (rid, lane))
+            det[lane] = v["atoms"]
+    atoms = {}
+    for atom in public:
+        rec = detail["custom"].get(atom)
+        if rec is None:
+            atoms[atom] = {"cases": {}, "no_case": "no_example"}
+            continue
+        c = det_case(rid, atom, rec, detail, det, True, has_ref)
+        c["dialect"] = head["dialect"]
+        atoms[atom] = {"cases": {atom: c}}
+    exc = [k for k in base.get("ab_exceptions", {}) if k.split("/")[0] == (DET_KEY.get(rid) or "react")]
+    head["measured_date"] = DET_DATE
+    head["run_id"] = "%s-det-ab-%s" % (rid, DET_DATE.replace("-", ""))
+    head["facts"] = {"determinism": dict(DET_FACTS, dither_exception_cells=len(exc))}
     return head, atoms
 
 
@@ -392,6 +489,8 @@ def main():
     ap.add_argument("--work", default="/mnt/hdd2/work")
     ap.add_argument("--web-root", default="/mnt/hdd2/work/m5-f111", help="root of the web gate run directories")
     ap.add_argument("--web-run", default="F", help="run sub-directory under <web-root>/<renderer>/runs/")
+    ap.add_argument("--det-dir", default="/mnt/hdd2/work/m5-det/proposed",
+                    help="deterministic A/B gate outputs (det_gate_raw.json, det_baselines_sha256.json); '' = F111 data only")
     ap.add_argument("--flutter-run", default="20261113-012244")
     ap.add_argument("--measured-on", default="shipped", choices=["shipped", "preview-unmerged"],
                     help="web runs: shipped needs --commit (the public SHA the run was measured on)")
@@ -418,6 +517,8 @@ def main():
             head, atoms = export_compose(a.work, public, a.compose_measured_on)
         elif rid == "copilotkit":
             head, atoms = export_ck187(a.work, public, a.web_root, a.web_run, a.measured_on, a.commit)
+        elif a.det_dir:
+            head, atoms = export_web_det(rid, a.work, public, a.measured_on, a.web_root, a.web_run, a.commit, a.det_dir)
         else:
             head, atoms = export_web(rid, a.work, public, a.measured_on, a.web_root, a.web_run, a.commit)
         text = dump(head, atoms)

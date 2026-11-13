@@ -441,3 +441,58 @@ def test_exporter_behaviour_not_run_and_swap_refusals(tmp_path):
     (tmp_path / "react/runs/F/RESULTS-react.json").write_text(_j.dumps(res))
     with pytest.raises(SystemExit):
         exp.export_web("react", str(tmp_path), ["alpha"], "shipped", str(tmp_path), "F", "a" * 40)
+
+
+# ------------------------------------------------------------------ rules v4: deterministic mode
+
+
+def test_text_parity_fail_is_a_difference_and_excluded_random_is_not():
+    st, reasons, d = gen.web_case_status(web_case(text_parity="fail"))
+    assert st == "drawn_with_differences" and "text_differs" in reasons
+    c = web_case(text_parity="excluded_random")
+    c["notes"] = ["seeded_random_order_differs"]
+    c["checks"]["pixel"]["light480"]["result"] = "excluded_random"
+    st, reasons, d = gen.web_case_status(c)
+    assert st == "drawn" and reasons == [] and d["notes"] == ["seeded_random_order_differs"]
+
+
+def test_det_stable_entry_has_no_unverified_reason_and_entry_carries_notes():
+    c = web_case(text_parity="pass", sources={"pixel": "det-ab"})
+    e = gen.entry_for("web", head("lit", {}), {"cases": {"alpha": dict(c, notes=["seeded_random_order_differs"])}})
+    assert e["status"] == "drawn" and e["notes"] == ["seeded_random_order_differs"] and e["checks"]["sources"] == {"pixel": "det-ab"}
+
+
+def test_exporter_det_case_provenance_and_exclusions():
+    rec = {"broken": False, "error": False, "loose": True, "strict": True, "strict_text": True}
+    px = {"blank_both": False, "one_blank": False, "passed": False, "frac": 0.3, "hdiff": 2, "overflow": True, "low": 1, "low_ref": 0, "text_same": False}
+    det = {lane: {"alpha": dict(px)} for lane in exp.DET_LANES.values()}
+    c = exp.det_case("lit", "alpha", rec, {"behaviour_custom": {}}, det, True, True)
+    ck = c["checks"]
+    assert ck["pixel"]["light480"]["result"] == "fail" and ck["overflow_360"]["light360"] is True
+    assert ck["text_parity"] == "fail" and ck["stability"] == "stable" and ck["sources"]["pixel"] == "det-ab" and ck["sources"]["painted"] == "f111"
+    assert "notes" not in c
+    det = {lane: {"gmail_unread_count": dict(px)} for lane in exp.DET_LANES.values()}
+    c = exp.det_case("lit", "gmail_unread_count", rec, {"behaviour_custom": {}}, det, True, True)
+    assert c["notes"] == [exp.NOTE_RANDOM] and c["checks"]["pixel"]["dark480"]["result"] == "excluded_random" and c["checks"]["text_parity"] == "excluded_random"
+    r = exp.det_case("react", "alpha", rec, {"behaviour_custom": {}, "pixel": {"alpha": {"low": 0, "overflow": False}}}, {}, True, False)
+    assert r["checks"]["pixel"]["light480"]["result"] == "reference" and r["checks"]["text_parity"] == "n/a"
+    assert gen.web_case_status(r)[0] == "drawn"
+
+
+def test_exporter_det_refuses_when_run_a_and_b_fail_lists_differ(tmp_path):
+    import json as _j
+    d = tmp_path / "det"
+    d.mkdir()
+    (d / "det_gate_raw.json").write_text(_j.dumps({"renderers": {"lit": {"pixel": {"fail_identical_in_run_B": False, "atoms": {}}}}}))
+    (d / "det_baselines_sha256.json").write_text(_j.dumps({"ab_exceptions": {}}))
+    (tmp_path / "lit" / "runs" / "F").mkdir(parents=True)
+    (tmp_path / "m5-harness" / "unstable").mkdir(parents=True)
+    (tmp_path / "m5-harness/unstable/lit.json").write_text("{}")
+    res = {"package": {"@a2ui/lit": "0.15.0", "@a2ui/web_core": "0.15.0"}, "complete": True, "date": "2026-11-12T10:00:00",
+           "code": {"head": "a" * 40, "dirty_tracked": False, "core_sha256": CORE, "css_sha256": "b" * 64,
+                    "extract": {"committed_bundle_sha256": "c" * 64, "committed_bundle_equals_built": True}}}
+    (tmp_path / "lit/runs/F/RESULTS-lit.json").write_text(_j.dumps(res))
+    (tmp_path / "lit/runs/F/DETAIL-lit.json").write_text(_j.dumps({"custom": {}}))
+    with pytest.raises(SystemExit) as e:
+        exp.export_web_det("lit", str(tmp_path), ["alpha"], "shipped", str(tmp_path), "F", "a" * 40, str(d))
+    assert "differs between run A and run B" in str(e.value)

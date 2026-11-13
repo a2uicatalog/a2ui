@@ -20,11 +20,21 @@ Web `checks`: `painted {result pass|fail, error_code}`; `text_visible {loose, st
 Flutter `checks`: `painted {result painted|basic_lowered|unsupported|unsupported_other|invalid_payload, own_type_present, text_chars, error_codes}`; `parity_text {web_words, flutter_words, missing_in_flutter, extra_in_flutter}`.
 `manifest.json` records per renderer the sha256 of its raw file, run id, build label and hashes; editing a raw file without re-exporting fails FRESH.
 
-## Status rules (registry `rules.version` 3)
+## Status rules (registry `rules.version` 4)
 
-Web, per case, worst case wins: painted failed -> `not_supported`; pixel fail outside the allowance, overflow at 360, contrast worse than React, behaviour differs -> `drawn_with_differences`; no visible text, blank on both sides, or any `unstable` check -> `not_verified`; else `drawn`; no example -> `not_measured`. Allowance-listed checks record `unstable`, never `pass`. React is the reference (pixel recorded as `reference`). INERT behaviour and absent probes do not block `drawn`.
+Web, per case, worst case wins (rules v4: in deterministic mode there is no allowance list; pixel and text parity are plain pass/fail and stability is proven, so nothing is `unstable`; `unstable` and its `not_verified` survive only for non-deterministic measurements, today CopilotKit 1.87.0): painted failed -> `not_supported`; pixel fail (outside the allowance if one applies), text differs from React, overflow at 360, contrast worse than React, behaviour differs -> `drawn_with_differences`; no visible text, blank on both sides, or any `unstable` check -> `not_verified`; else `drawn`; no example -> `not_measured`. Allowance-listed checks record `unstable`, never `pass`. React is the reference (pixel recorded as `reference`). INERT behaviour and absent probes do not block `drawn`.
 Flutter: painted with own type -> `native`; basic_lowered -> `degraded`; unsupported* -> `not_supported`; invalid_payload -> `not_measured (invalid example)`. Worst order: not_supported, not_measured, degraded, native.
 Compose: the atom's own type is a Basic component and it rendered -> `native`; rejected as unknown -> `not_supported`; no example -> `not_measured`. Compose has no implementation of our atoms; its page also shows the Basic-lane facts and the Basic behaviour summary from the header `facts`. A renderer with `measured: false` in the registry is skipped by COMPLETE.
+
+## Determinism (det mode, the web gate mode)
+
+At a glance: the slicer image runs Chromium with a virtual clock (rAF, timers, `performance.now` stepped in fixed frames), `Date` frozen at a fixed instant, `Math.random` seeded, SVG time fixed, an IntersectionObserver stub, fixed raster flags (no GPU raster, one raster thread, no LCD text) and a stable-shot capture (two consecutive identical screenshots). Every atom is shot twice (A, B) per renderer and environment. Stability is A == B under the pixel rule, which replaces the old allowance lists: pixel parity vs React is plain pass/fail, and the page-report text hash is compared A with B and with React.
+
+Guarantees (measured on the shipped build, 670 atoms x 4 environments x 5 renderers): 15 of 20 cells byte-identical; the other 5 (dark 480) differ in one atom by 1 to 15 pixels of dither (channel-sum delta at most 2 of 765) and pass the rule; text hash A == B everywhere.
+
+Does not guarantee: it holds only for a FIXED id order and 12-case chunking on the same cases file (the seeded random sequence is page-global; chunk 1 against chunk 12 differs for 10 of 33 test atoms), on the slicer image that took the baselines (any change to the shoot script, Chromium flags or case order means re-baselining) and on the cloud environment (local docker differs on two atoms). The old local custom runner is NOT deterministic, so painting, visible text and behaviour still come from the single run on the shipped commit (provenance code `f111`; pixel, overflow, contrast, text parity and stability carry `det-ab`). Two atoms, `gmail_unread_count` and `match_exercise`, consume the seeded random draws differently per renderer: their pixel and text parity vs React are excluded and they carry the note code `seeded_random_order_differs`, never a failure. Open item: reseed per case in the slicer. CopilotKit 1.87.0 was not shot in det mode (the det run used 1.85.0, which proves that gate deterministic); its entries keep the allowance logic.
+
+Export: `python3 scripts/export_renderer_results.py --det-dir <dir with det_gate_raw.json and det_baselines_sha256.json>` (default on this machine); `--det-dir ''` exports the F111 data alone.
 
 ## Still open from the design
 

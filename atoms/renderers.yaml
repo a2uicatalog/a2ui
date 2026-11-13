@@ -14,13 +14,13 @@ independence_note: "Independent and unofficial; not affiliated with Google, Copi
 # bumping `version` and regenerating. Rules are applied per case; an atom with several cases
 # takes the WORST case.
 rules:
-  version: 3
+  version: 4
   web:
     kind: web
     order_worst_first: [not_supported, drawn_with_differences, not_verified, drawn]
     not_supported: "the painted check failed (error or broken flag)"
-    drawn_with_differences: "any of: pixel parity vs React failed outside the allowance list; horizontal overflow at 360 px; contrast worse than React in the same environment; behaviour probe differs from React"
-    not_verified: "no difference found but the atom could not be verified: no visible text, blank on both sides in an environment, or a check recorded as unstable (allowance list)"
+    drawn_with_differences: "any of: pixel parity vs React failed (plain pass/fail in deterministic mode, no allowance list); text differs from React; horizontal overflow at 360 px; contrast worse than React in the same environment; behaviour probe differs from React"
+    not_verified: "no difference found but the atom could not be verified: no visible text, blank on both sides in an environment, or (non-deterministic measurements only) a check recorded as unstable (allowance list). In deterministic mode stability is proven by two identical passes, so nothing is unstable"
     drawn: "every check passed (or is not applicable: no probe, behaviour lane not run, not a gate lane, React as reference)"
     not_measured: "no example payload for the atom in the gate data"
   compose:
@@ -78,8 +78,9 @@ renderers:
     - "All 670 gate examples render through the A2UI 1.0 path with no validation failure, no unknown component and no crash."
     - "Across all 670 gate examples about 40 atoms fail the pixel rule against React in all four lanes (this page counts the stable ones separately); ten atoms overflow at width in every lane (divider, youtube, image, tabs, audio_player, video_card, info_card, glass_card, hub, content_tabs)."
     - "Ten atoms now render markdown headings and bold in the stock Text and differ from React for real: body, heading, subheading, video_card, split_pane, numbered_list, columns, info_card, glass_card, hub."
+    - "Unlike the other web renderers, the 1.87.0 pixel and text results come from a single non-deterministic pass, so animation and time atoms that drift sit on the frozen allowance list and show as not verified."
     - "Three atoms fail the pixel rule in 1.87.0 only and are unexplained: page_header, code_snippet_pair and image_with_caption look identical in pair views and the cause was not isolated. They are shown as drawn with differences, not hidden."
-  earlier_measurement: "Earlier measurement, CopilotKit 1.85.0 on the v0.9 dialect (same shipped commit): pixel parity with React 593 of 640 non-blank shots (light 480), 627 of 670 (dark 480), 595 of 640 (light 360), 627 of 670 (dark 360); custom text painted 617 of 670. Superseded by 1.87.0; version and dialect changed together, so the two are not a like-for-like comparison."
+  earlier_measurement: "Earlier measurement, CopilotKit 1.85.0 on the v0.9 dialect (same shipped commit): pixel parity with React 593 of 640 non-blank shots (light 480), 627 of 670 (dark 480), 595 of 640 (light 360), 627 of 670 (dark 360); custom text painted 617 of 670. Superseded by 1.87.0; version and dialect changed together, so the two are not a like-for-like comparison. The 1.85.0 pixel gate was later re-run twice in deterministic mode on the same shipped build: 15 of 20 renderer-and-environment cells byte-identical, the rest dither only, A against B passes the pixel rule everywhere, and the fail lists against React (38 to 39 atoms) were identical in both runs and all already failing before. That is the evidence that the 1.85.0 pixel gate is deterministic; the 1.87.0 shots were not taken in deterministic mode."
 - id: a2ui-vue
   name: a2ui-vue
   kind: web

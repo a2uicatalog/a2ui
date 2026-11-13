@@ -17,6 +17,9 @@ path: every date comes from the raw results.
 
 Status rules (registry `rules.version` 2; v2 design item H4):
   web:     painted check failed                          -> not_supported
+           (rules v4: in deterministic mode stability is A==B, proven, so there is no allowance-driven
+           not_verified; pixel and text parity vs React are plain pass/fail; the two seeded-random atoms
+           are excluded from parity and carry a note code, never a failure)
            pixel fail outside the allowance, overflow at 360, contrast worse than React,
            behaviour differs from React                  -> drawn_with_differences
            no visible text, blank on both sides, or any check recorded `unstable`
@@ -141,9 +144,11 @@ def web_case_status(case):
     vals = [v for v in ov.values() if v is not None]
     overflow = "n/a" if not vals else ("fail" if any(vals) else "pass")
     beh = ck["behaviour"]
+    tparity = ck.get("text_parity", "n/a")
     derived = {
         "painted": painted, "text_visible": text, "pixel": pixel, "overflow_360": overflow,
         "contrast": contrast, "behaviour": beh, "stability": ck["stability"],
+        "text_parity": tparity, "notes": list(case.get("notes", [])), "sources": ck.get("sources"),
     }
     diffs = ["pixel_fail_" + e for e in ENVS if pixel[e] == "fail"]
     if overflow == "fail":
@@ -151,6 +156,8 @@ def web_case_status(case):
     diffs += ["contrast_worse_" + e for e in ENVS if contrast[e] == "worse"]
     if beh not in BEHAVIOUR_NEUTRAL:
         diffs.append("behaviour_differs")
+    if tparity == "fail":
+        diffs.append("text_differs")
     nverified = []
     if text == "no_visible_text":
         nverified.append("no_visible_text")
@@ -221,7 +228,7 @@ def entry_for(kind, head, atom_rec):
     cases = atom_rec.get("cases") or {}
     if not cases:
         return dict(status="not_measured", reasons=["no_example"], cases=0, worst_case=None, dialect=head["dialect"],
-                    checks=None, **base)
+                    checks=None, notes=[], **base)
     fn = {"web": web_case_status, "flutter": flutter_case_status, "compose": compose_case_status}[kind]
     worst_rank = WEB_WORST if kind == "web" else FL_WORST
     results = []
@@ -230,7 +237,8 @@ def entry_for(kind, head, atom_rec):
         results.append((worst_rank[st], cid, st, reasons, derived, cases[cid].get("dialect") or head["dialect"]))
     results.sort(key=lambda r: (-r[0], r[1]))
     _, cid, st, reasons, derived, dialect = results[0]
-    return dict(status=st, reasons=reasons, cases=len(cases), worst_case=cid, dialect=dialect, checks=derived, **base)
+    notes = list(derived.get("notes") or []) if isinstance(derived, dict) else []
+    return dict(status=st, reasons=reasons, cases=len(cases), worst_case=cid, dialect=dialect, checks=derived, notes=notes, **base)
 
 
 def counts(statuses, per_atom):
@@ -253,7 +261,7 @@ def build(registry, raw, manifest, stable):
         reg["measured"] = bool(r["measured"])
         if not r["measured"]:
             per[rid] = {a: {"status": "not_measured", "reasons": ["renderer_not_measured"], "cases": 0, "worst_case": None,
-                            "dialect": None, "checks": None, "run_id": None, "measured": None, "renderer_version": None,
+                            "dialect": None, "checks": None, "notes": [], "run_id": None, "measured": None, "renderer_version": None,
                             "measured_on": None, "core_sha256": None} for a in stable}
             reg["statuses"] = ["not_measured"]
             reg["measurement"] = None

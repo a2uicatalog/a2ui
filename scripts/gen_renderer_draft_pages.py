@@ -58,6 +58,7 @@ REASON = {
     "unknown_component_type": "component type unknown to the renderer",
     "nested_type_unknown": "a nested atom type is unknown",
     "renderer_not_measured": "renderer not measured",
+    "text_differs": "visible text differs from React",
     "basic_component_rendered": "rendered by a Basic component (the atom's root type)",
 }
 HELP_COMPOSE = {
@@ -139,7 +140,7 @@ def mark(v):
     return {"pass": ("✓", ""), "reference": ("ref", ""), "fail": ("✕", "bad"), "unstable": ("~ unstable", "unk"),
             "blank_both": ("blank", "unk"), "no_visible_text": ("no text", "unk"), "n/a": ("–", ""),
             "inherited": ("same as React", ""), "worse": ("worse", "bad"), "not_compared": ("n/c", ""),
-            "INERT": ("inert", "unk"), "not_run": ("not run", "unk"), "SAME": ("same", ""), "n/a (no probe)": ("no probe", "")}.get(v, (str(v), "bad"))
+            "INERT": ("inert", "unk"), "not_run": ("not run", "unk"), "excluded_random": ("excluded (seeded random)", "unk"), "SAME": ("same", ""), "n/a (no probe)": ("no probe", "")}.get(v, (str(v), "bad"))
 
 
 def span(label, v):
@@ -158,6 +159,8 @@ def checks_html(kind, e):
         parts += [span("overflow 360", ck["overflow_360"]),
                   "<span>contrast %s</span>" % " ".join("%s %s" % (ENV_SHORT[k], E(mark(v)[0])) for k, v in ck["contrast"].items()),
                   span("behaviour", ck["behaviour"])]
+        if ck.get("text_parity", "n/a") != "n/a":
+            parts.insert(2, span("text vs React", ck["text_parity"]))
         if ck.get("stability") != "stable":
             parts.append('<span class="unk">on the unstable allowance list</span>')
         return '<div class="rd-ck">%s</div>' % "".join(parts)
@@ -174,11 +177,15 @@ def checks_html(kind, e):
     return '<div class="rd-ck">%s</div>' % "".join(parts)
 
 
+NOTE_TEXT = {"seeded_random_order_differs": "seeded-random order differs per renderer: pixel and text parity with React are excluded for this atom, not counted as a failure"}
+
+
 def why_html(e):
     r = [x for x in e.get("reasons", []) if x not in ("lane_painted_own_type",)]
+    notes = "".join('<p class="rd-why">%s</p>' % E(NOTE_TEXT.get(n, n)) for n in e.get("notes", []))
     if not r or e["status"] in ("drawn", "native"):
-        return ""
-    return '<p class="rd-why">%s</p>' % E("; ".join(reason_text(x) for x in r))
+        return notes
+    return '<p class="rd-why">%s</p>' % E("; ".join(reason_text(x) for x in r)) + notes
 
 
 def build_note(reg):
@@ -358,6 +365,11 @@ def renderer_page(m, rid, samples):
         facts.append(("Core build (sha256, first 12)", ms["core_sha256"][:12]))
     if ms.get("renderer_bundle_sha256"):
         facts.append(("Shipped renderer bundle (sha256, first 12)", ms["renderer_bundle_sha256"][:12]))
+    src = sorted({v for a in atoms for v in ((atoms[a][rid].get("checks") or {}).get("sources") or {}).values() if v not in ("n/a",)}) if reg["kind"] == "web" else []
+    if src:
+        facts.append(("Evidence sources", "per-check provenance in the data: " + ", ".join(
+            {"det-ab": "det-ab (deterministic two-pass gate: pixel parity vs React, overflow, contrast, text parity, stability)",
+             "f111": "f111 (gate run on the shipped commit: painting, visible text, behaviour)"}.get(x, x) for x in src)))
     if reg.get("earlier_measurement"):
         facts.append(("Earlier measurement", reg["earlier_measurement"]))
     dl = "".join("<dt>%s</dt><dd>%s</dd>" % (E(k), E(v)) for k, v in facts)
@@ -371,9 +383,9 @@ def renderer_page(m, rid, samples):
         pxf = ", ".join("%s %d" % (ENV[e], rc.get("pixel_fail_" + e, 0)) for e in ENV)
         items += [
             "<li>Status is derived from per-check results with rules version %d: any difference from React wins over a verification gap; the worst case wins for atoms with several cases.</li>" % m["rules_version"],
-            "<li>Atoms with a pixel difference from React outside the allowance list, by environment: %s. Overflow at 360 px: %d. Contrast worse than React: %d. Behaviour differs: %d.</li>" % (
+            "<li>Atoms with a pixel difference from React, by environment: %s. Overflow at 360 px: %d. Contrast worse than React: %d. Behaviour differs: %d.</li>" % (
                 pxf, rc.get("overflow_360", 0), sum(v for k, v in rc.items() if k.startswith("contrast_worse_")), rc.get("behaviour_differs", 0)),
-            "<li>%d atoms are not verified because the example paints no visible text, %d because they are blank on both sides in at least one environment and %d because a check is unstable (time or animation dependent; they sit on the allowance list and record unstable, never pass).</li>" % (
+            "<li>%d atoms are not verified because the example paints no visible text, %d because they are blank on both sides in at least one environment and %d because a check is unstable (time or animation dependent; non-deterministic measurements only: they sit on the allowance list and record unstable, never pass).</li>" % (
                 rc.get("no_visible_text", 0), len({a for a in atoms if any(r.startswith("blank_both_") for r in atoms[a][rid]["reasons"])}),
                 len({a for a in atoms if any(r.startswith("unstable_") for r in atoms[a][rid]["reasons"])})),
             "<li>%d atoms have no example in the gate data and are not measured.</li>" % cov.get("not_measured", 0),
@@ -405,6 +417,14 @@ def renderer_page(m, rid, samples):
             items.append("<li>Behaviour, %d Basic probes against React: same %d, different %d, same rejection %d, error %d, not runnable %d. Custom-atom behaviour probes were not run (the atoms are not registered).</li>" % (
                 bb["probes"], bb["same"], bb["different"], bb["same_reject"], bb["error"], bb["not_runnable"]))
         items.append("<li>Not run: dark mode, 360 px, an Android device or emulator, spec v1.0.</li>")
+    dt = (ms.get("facts") or {}).get("determinism")
+    if dt:
+        items.append("<li>Deterministic mode: every shot was taken twice on the shipped build (frozen Date, virtual clock, seeded random, fixed raster settings). %d of %d renderer-and-environment cells are byte-identical; the other %d differ in one atom by at most %d pixels of dither (channel-sum delta at most %d of 765) and pass the pixel rule. So pixel results are plain pass or fail with no allowance list. The custom-text check is also deterministic (two identical passes). This holds only for a fixed id order and %d-case chunking (chunk 1 against chunk 12 differs for %d of %d test atoms), on the slicer image that took the baselines; the old local custom runner is not deterministic. Painting, visible text and behaviour still come from the single run on the shipped commit.</li>" % (
+            dt["byte_identical_cells"], dt["cells"], dt["cells"] - dt["byte_identical_cells"], dt["dither_max_pixels"], dt["dither_max_delta_of_765"], dt["chunk_size"], dt["chunk_1_vs_12_differs_atoms"], dt["chunk_test_atoms"]))
+        nr = [a for a in atoms if atoms[a][rid].get("notes")]
+        if nr:
+            items.append("<li>%s: %s are drawn with a note: their random draws are consumed per renderer, so parity with React is excluded for them. Open item: reseed per case in the slicer.</li>" % (
+                "Seeded-random atoms", ", ".join(sorted(nr))))
     for n in reg.get("notes_extra", []):
         items.append("<li>%s</li>" % E(n))
     extra = '<h2>Honest notes</h2><div class="card"><ul>%s</ul></div>' % "".join(items)
