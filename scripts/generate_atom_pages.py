@@ -851,13 +851,11 @@ def site_header(active=""):
     return f"""<header class="site-header"><div class="hdr-in">
     <a class="wordmark" href="/" aria-label="A2UI Catalog home">{BRAND_LOGO_HTML}</a>
     <nav class="site-nav" id="site-menu" aria-label="Main">
-      <a href="/what-is-a2ui/"{cur('guide')}>What is A2UI?</a>
-      <a href="/atoms/"{cur('atoms')}>Atoms</a>
-      {'<a href="/templates"' + cur('templates') + '>Templates</a>' if full else ''}
-      <a href="/surfaces/mcp-apps"{cur('playground')}>MCP Playground</a>
-      <a href="/docs"{cur('docs')}>Docs</a>
-      <a href="/renderer"{cur('renderer')}>Apps Script Renderer</a>
       <a href="{'/blog/drafts' if full else '/blog'}"{cur('blog')}>Blog</a>
+      <a href="/what-is-a2ui/"{cur('guide')}>What is A2UI?</a>
+      <a href="/atoms/"{cur('atoms')}>A2UICatalog Explorer</a>
+      {'<a href="/templates"' + cur('templates') + '>Templates</a>' if full else ''}
+      <a href="/docs"{cur('docs')}>Docs</a>
       {'<a href="/authoring"' + cur('authoring') + '>Authoring</a>' if full else ''}
     </nav>
     <a class="hdr-search" href="/atoms/#hub-q" aria-label="Search atoms"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg></a>
