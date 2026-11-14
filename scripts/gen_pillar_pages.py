@@ -275,9 +275,9 @@ def build(slug):
         ptitle = _fill(yaml.safe_load(FRONT_MATTER_RE.match(open(os.path.join(CONTENT, f"{parent}.md"), encoding="utf-8").read()).group(1))["title"], parent)
         crumbs.append({"@type": "ListItem", "position": 2, "name": ptitle.partition("?")[0] + "?" if "?" in ptitle else ptitle,
                        "item": f"{BASE}/{parent}/"})
-    kicker = '<span class="pillar-kicker">Guide</span>'
-    if parent:
-        kicker = (f'<a class="pillar-kicker" href="/{parent}/">{html.escape(crumbs[-1]["name"])}</a>')
+    # The hub carries a plain "Guide" label. Sub-pages used to show a "<- What is A2UI?" pill here; the "In this guide" bar above now links
+    # back to the hub on every page, so the pill is dropped (owner, 14 Nov 2026). The BreadcrumbList structured data below is unchanged.
+    kicker = '<span class="pillar-kicker">Guide</span>' if not parent else ""
     crumbs.append({"@type": "ListItem", "position": len(crumbs) + 1, "name": head + "?" if tail else title, "item": url})
     graph = [
         {"@type": "Article", "@id": url + "#article", "headline": title, "description": summary, "url": url,
