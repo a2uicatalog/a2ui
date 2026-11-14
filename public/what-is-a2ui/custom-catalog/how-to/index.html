@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>How to Make an A2UI Custom Catalog</title>
+<meta name="description" content="Make an A2UI v1.0 custom catalog step by step: define a component, check it, use it beside Basic, and handle hosts that lack it. Real weather card.">
+<link rel="canonical" href="https://a2uicatalog.ai/what-is-a2ui/custom-catalog/how-to/">
+<meta property="og:type" content="article">
+<meta property="og:title" content="How to Make an A2UI Custom Catalog">
+<meta property="og:description" content="Make an A2UI v1.0 custom catalog step by step: define a component, check it, use it beside Basic, and handle hosts that lack it. Real weather card.">
+<meta property="og:url" content="https://a2uicatalog.ai/what-is-a2ui/custom-catalog/how-to/">
+<meta property="og:image" content="https://a2uicatalog.ai/brand/og-card.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@graph": [
+  {
+   "@type": "Article",
+   "@id": "https://a2uicatalog.ai/what-is-a2ui/custom-catalog/how-to/#article",
+   "headline": "How to Make an A2UI Custom Catalog",
+   "description": "Make an A2UI v1.0 custom catalog step by step: define a component, check it, use it beside Basic, and handle hosts that lack it. Real weather card.",
+   "url": "https://a2uicatalog.ai/what-is-a2ui/custom-catalog/how-to/",
+   "mainEntityOfPage": "https://a2uicatalog.ai/what-is-a2ui/custom-catalog/how-to/",
+   "datePublished": "2026-11-14",
+   "dateModified": "2026-11-14",
+   "inLanguage": "en",
+   "author": {
+    "@type": "Person",
+    "name": "Curtis Krygier",
+    "url": "https://www.linkedin.com/in/curtiskrygier"
+   },
+   "publisher": {
+    "@id": "https://a2uicatalog.ai/#org"
+   },
+   "image": "https://a2uicatalog.ai/brand/og-card.png"
+  },
+  {
+   "@type": "BreadcrumbList",
+   "itemListElement": [
+    {
+     "@type": "ListItem",
+     "position": 1,
+     "name": "A2UI Atomic Catalog",
+     "item": "https://a2uicatalog.ai/"
+    },
+    {
+     "@type": "ListItem",
+     "position": 2,
+     "name": "A2UI Custom Catalog: a Worked Example with 573 Components",
+     "item": "https://a2uicatalog.ai/what-is-a2ui/custom-catalog/"
+    },
+    {
+     "@type": "ListItem",
+     "position": 3,
+     "name": "How to Make an A2UI Custom Catalog",
+     "item": "https://a2uicatalog.ai/what-is-a2ui/custom-catalog/how-to/"
+    }
+   ]
+  },
+  {
+   "@type": "FAQPage",
+   "mainEntity": [
+    {
+     "@type": "Question",
+     "name": "What is an A2UI custom catalog?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "A catalog is a JSON Schema document that lists the components and functions an agent may use and a renderer knows how to draw. A custom catalog is one you make yourself, to add components the Basic Catalog does not have."
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "Do I need a custom catalog?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "Not always. The Basic Catalog covers text, layout and a few inputs, and a picture drawn on the server can go a long way. Make a custom catalog when you need a real component, for example one with keyboard behaviour or hover, or messages that stay small."
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "Can one surface use the Basic Catalog and my own?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "In v1.0, yes. The surface's default catalog is set in createSurface, and a component from another supported catalog carries an @catalogId. In v0.9.1 a surface is locked to a single catalog."
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "What happens if a host does not support my catalog?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "The protocol says the agent sends no UI if none of its catalogs match. Falling back to a Basic design is something you build: read the host's supported catalogs and choose."
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "How do I check my catalog is valid?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "Validate it against the v1.0 catalog meta-schema, then load it with an SDK, which also checks identifiers and references on load. Test a surface that uses it against a renderer that has it registered."
+     }
+    }
+   ]
+  }
+ ]
+}
+</script>
+<script>
+(function(){var t='light';try{var s=localStorage.getItem('a2ui-theme');if(s==='dark'||s==='light')t=s}catch(e){}
+document.documentElement.setAttribute('data-theme',t);document.documentElement.classList.add('js')})();
+</script>
+<style>/*brand-tokens:c646187a*/
+:root{
+  color-scheme:light;
+  --bg:#f6f9fd;--surface:#ffffff;--surface-2:#eef2f8;--border:#dadee5;
+  --border-strong:#c3c9d3;--text:#141b24;--text-2:#2c343f;--text-muted:#515963;
+  --accent:#5051cf;--accent-text:#3a3bb0;--accent-contrast:#ffffff;--accent-soft-bg:#e6eaff;
+  --accent-2:#009ca7;--accent-2-text:#007581;--focus:#5051cf;--positive:#2f913e;
+  --negative:#c53637;--warn:#c69600;--code-bg:#f1f4f9;--radius:12px;
+  --shadow:0 1px 2px rgba(20,27,36,.05),0 10px 30px rgba(20,27,36,.07);--glow:0 4px 24px rgba(80,81,207,.16);--header-glass:rgba(255,255,255,.78);--grad:linear-gradient(120deg,#6267e7,#00b7c3);
+  --card:var(--surface);--muted:var(--text-muted);--cyan:var(--accent-2);--green:var(--positive);--accent-soft:var(--accent-soft-bg);
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#1e2733;--surface:#2d3642;--surface-2:#1a222d;--border:#4a5361;
+  --border-strong:#6b7684;--text:#eaeff5;--text-2:#d5dbe3;--text-muted:#a9b2be;
+  --accent:#8d98ff;--accent-text:#c7cdff;--accent-contrast:#141b24;--accent-soft-bg:#2f3463;
+  --accent-2:#2ac4ce;--accent-2-text:#2ac4ce;--focus:#8d98ff;--positive:#5cc46c;
+  --negative:#ff7d7e;--warn:#e6b800;--code-bg:#1a222d;--shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.28);
+  --glow:0 4px 28px rgba(141,152,255,.24);--header-glass:rgba(45,54,66,.78);--grad:linear-gradient(120deg,#8d98ff,#2ac4ce);
+}
+:root[data-theme="dark"] .stage,:root[data-theme="dark"] .preview-box{color-scheme:light;--bg:#f6f9fd;--surface:#ffffff;--surface-2:#eef2f8;--border:#dadee5;--border-strong:#c3c9d3;--text:#141b24;--text-2:#2c343f;--text-muted:#515963;--accent:#5051cf;--accent-text:#3a3bb0;--accent-contrast:#ffffff;--accent-soft-bg:#e6eaff;--accent-2:#009ca7;--accent-2-text:#007581;--focus:#5051cf;--positive:#2f913e;--negative:#c53637;--warn:#c69600;--code-bg:#f1f4f9;--radius:12px;--shadow:0 1px 2px rgba(20,27,36,.05),0 10px 30px rgba(20,27,36,.07);--glow:0 4px 24px rgba(80,81,207,.16);--header-glass:rgba(255,255,255,.78);--grad:linear-gradient(120deg,#6267e7,#00b7c3);--card:var(--surface);--muted:var(--text-muted);--cyan:var(--accent-2);--green:var(--positive);--accent-soft:var(--accent-soft-bg);}
+.stage,.preview-box{--mt-ink:#14181f}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:16px;line-height:1.6}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+label:has(input[type=radio]:focus-visible),label:has(input[type=checkbox]:focus-visible),input[type=radio]:focus-visible+label,input[type=checkbox]:focus-visible+label{outline:2px solid var(--accent);outline-offset:2px}
+.site-header{position:sticky;top:0;z-index:100;background:var(--header-glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
+.hdr-in{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:10px;padding:11px 24px}
+.wordmark{display:flex;align-items:center;gap:9px;font-size:15px;font-weight:800;letter-spacing:-.2px;color:var(--text);text-decoration:none;white-space:nowrap}
+.logo-atom{width:22px;height:22px;flex-shrink:0}
+.logo-atom .nuc{fill:var(--accent)}
+.logo-atom .o1{stroke:var(--accent);fill:none;stroke-width:1.5}
+.logo-atom .o2{stroke:oklch(70% 0.14 202);fill:none;stroke-width:1.5}
+.logo-atom .o3{stroke:var(--accent);fill:none;stroke-width:1.1;opacity:.35}
+.logo-atom .el{fill:oklch(70% 0.14 202)}
+.grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.site-nav{display:flex;gap:4px;margin-right:auto;margin-left:12px}
+.site-nav a{font-size:13px;font-weight:600;text-decoration:none;color:var(--muted);padding:5px 11px;border-radius:7px;transition:color .15s,background .15s}
+.site-nav a:hover{color:var(--text);background:var(--surface-2)}
+.site-nav a[aria-current="page"]{color:var(--accent-text);background:var(--accent-soft-bg)}
+.theme-btn{font:inherit;font-size:14px;line-height:1;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 9px;cursor:pointer;color:var(--text)}
+.theme-btn:hover{border-color:var(--border-strong)}
+.gh-pill{font-size:12px;font-weight:650;color:var(--text);text-decoration:none;border:1px solid var(--border);border-radius:8px;padding:6px 12px;background:var(--surface);white-space:nowrap}
+.gh-pill:hover{border-color:var(--border-strong)}
+.wrap{max-width:1100px;margin:0 auto;padding:36px 24px 96px}
+footer{margin-top:64px;padding-top:24px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+footer a{color:var(--accent-2-text);text-decoration:underline;text-underline-offset:2px}
+/* links inside running text must not rely on colour alone (WCAG 1.4.1): underline them */
+.wrap p a:not([class]),.wrap li a:not([class]),.wrap td a:not([class]),.wrap dd a:not([class]),footer p a:not([class]){text-decoration:underline;text-underline-offset:2px}
+/* Announcement pill above the hero headline. Sits in normal flow (not fixed or
+   sticky) so it never covers content, and wraps rather than truncating on
+   narrow screens — the arrow is the only thing dropped on mobile. */
+.announce{display:inline-flex;align-items:center;gap:10px;max-width:100%;
+ margin:0 auto 22px;padding:7px 8px 7px 8px;border:1px solid var(--border);
+ border-radius:999px;background:var(--surface);text-decoration:none;
+ font-size:13px;line-height:1.35;color:var(--text);
+ transition:border-color .15s,background .15s}
+.announce:hover{border-color:var(--accent);background:var(--accent-soft-bg)}
+.announce-tag{flex:none;font-size:10.5px;font-weight:800;letter-spacing:.08em;
+ text-transform:uppercase;color:#fff;background:var(--accent);
+ border-radius:999px;padding:4px 9px}
+.announce-text{text-align:left}
+.announce-text code{font-size:12px;background:var(--surface-2);
+ padding:1px 5px;border-radius:5px}
+.announce-go{flex:none;color:var(--accent);font-weight:700;padding-right:8px}
+@media(max-width:560px){.announce{font-size:12.5px;align-items:flex-start;
+ border-radius:14px;padding:9px 12px}.announce-go{display:none}}
+
+/* Design pass (1 Nov 2026, direction C). Header: the full nav row from 861 px; below it, with JS, the nav folds behind a Menu button and
+   Search becomes an icon link; without JS the nav stays a wrapping row, so no destination is ever lost. Touch targets are 44 px on phones. */
+.hdr-search,.menu-btn{display:none}
+.hdr-search,.menu-btn,.theme-btn{align-items:center;justify-content:center;color:var(--text)}
+.menu-btn{gap:6px;font:700 14px/1 inherit;border:1px solid var(--border-strong);border-radius:10px;background:var(--surface);cursor:pointer;padding:0 14px}
+.theme-btn svg{display:block}
+@media(max-width:860px){
+ .hdr-in{flex-wrap:wrap;padding:8px 16px;row-gap:0}
+ .wordmark{margin-right:auto}
+ .gh-pill{display:none}
+ .hdr-search{display:flex;min-width:44px;min-height:44px;border-radius:10px}
+ .theme-btn{display:flex;min-width:44px;min-height:44px;border-radius:10px}
+ .site-nav{order:3;width:100%;margin:6px 0 2px;gap:2px;flex-wrap:wrap}
+ .site-nav a{white-space:nowrap;font-size:14px;padding:11px 12px;min-height:44px;display:flex;align-items:center}
+ .js .menu-btn{display:flex;min-height:44px}
+ .js .site-nav{display:none;flex-direction:column;align-items:stretch;border-top:1px solid var(--border);padding-top:6px}
+ .js .site-nav.open{display:flex}
+}
+@media(min-width:861px){.theme-btn{display:flex;min-width:36px;min-height:36px;border-radius:8px}}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+/* "Pause all motion" / per-preview Pause (WCAG 2.2.2): stops CSS animation; film clocks are paused by the page script */
+.motion-paused .stage-inner *,.preview-box.paused *{animation-play-state:paused!important}
+.pause-btn{display:inline-flex;align-items:center;gap:6px;min-width:44px;min-height:44px;padding:0 14px;border:1px solid var(--border-strong);border-radius:10px;background:var(--surface);color:var(--text);font:600 14px/1 inherit;cursor:pointer}
+.pause-btn[hidden]{display:none}
+.preview-tools{gap:8px;flex-wrap:wrap}
+.focus-btn{display:inline-flex;align-items:center;gap:6px;min-width:44px;min-height:44px;padding:0 16px;border:1px solid var(--border-strong);border-radius:10px;background:var(--surface);color:var(--text);font:600 14px/1 inherit;cursor:pointer}
+.focus-btn[hidden]{display:none}
+.focus-btn:focus-visible,.focus-close:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.focus-dialog{border:0;padding:0;background:rgba(8,10,16,.9);max-width:100vw;max-height:100vh;width:100vw;height:100vh;color:var(--text);overflow:hidden}
+.focus-dialog::backdrop{background:rgba(8,10,16,.82)}
+.focus-dialog:not([open]){display:none}
+.focus-dialog[open]{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:12px 16px}
+.focus-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;width:var(--focus-w,100%);max-width:100%;color:#f1f5f9}
+.focus-title{font:600 15px/1.3 inherit;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.focus-actions{display:flex;gap:8px;flex:none}
+.focus-close{min-width:44px;min-height:44px;padding:0 16px;border:1px solid var(--border-strong);border-radius:10px;background:var(--surface);color:var(--text);font:600 14px/1 inherit;cursor:pointer}
+.focus-stage{width:var(--focus-w,100%);max-width:100%;max-height:var(--focus-h,none);overflow:auto;border-radius:16px;background:#0b0d12}
+.focus-stage:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.focus-stage .mt-root{margin:0!important;max-width:none!important;width:calc(var(--focus-w,100%) * var(--focus-zoom,1))}
+.focus-zoom{min-width:44px;min-height:44px;padding:0 14px;border:1px solid var(--border-strong);border-radius:10px;background:var(--surface);color:var(--text);font:600 14px/1 inherit;cursor:pointer}
+.focus-zoom[aria-pressed="true"]{background:var(--accent-soft-bg);border-color:var(--accent);color:var(--accent-text)}
+.focus-zoom:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+/* A portrait film (9:16) would be taller than the screen in the preview column: cap it at 78vh and centre it */
+.preview-box .mt-root:has(> .mt-vp[style*="aspect-ratio:720/1280"]){max-width:calc(78vh*0.5625);margin-left:auto!important;margin-right:auto!important}   /* !important: the film root carries an inline margin:1rem 0 */
+.pause-btn[aria-pressed="true"]{background:var(--accent-soft-bg);border-color:var(--accent);color:var(--accent-text)}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+/* cursor_glow ships dark-tuned (screen blend ≈ invisible over a white ground);
+   in the light default, re-blend the orb — it is the only direct body child
+   carrying the atom's z-index:9000. */
+:root:not([data-theme="dark"]) body>div[style*="z-index:9000"]{mix-blend-mode:multiply!important;opacity:.22!important}
+
+.pillar{max-width:820px;margin:0 auto;padding:44px 24px 80px}
+.pillar-hero{position:relative;padding:8px 0 28px;margin-bottom:8px;border-bottom:1px solid var(--border)}
+.pillar-kicker{display:inline-block;font-size:.74rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+ color:var(--accent);background:var(--accent-soft-bg);border:1px solid var(--border);border-radius:999px;padding:4px 12px;margin-bottom:18px}
+a.pillar-kicker{text-decoration:none}a.pillar-kicker::before{content:"← "}
+.pillar-hero h1{margin:0;font-size:clamp(2.2rem,5.4vw,3.4rem);line-height:1.05;font-weight:850;letter-spacing:-.03em;color:var(--text)}
+.pillar-hero h1 .grad{background:linear-gradient(90deg,var(--accent),var(--accent-2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.pillar-hero .sub{margin:10px 0 0;font-size:clamp(1.15rem,2.4vw,1.4rem);font-weight:650;color:var(--text-muted)}
+.pillar-hero .lede{margin:18px 0 0;font-size:1.08rem;line-height:1.6;color:var(--text);max-width:68ch}
+.pillar-meta{margin-top:16px;font-size:.84rem;color:var(--text-muted)}
+.pillar-body{font-size:1.04rem;line-height:1.72;color:var(--text)}
+.pillar-body h2{font-size:1.45rem;letter-spacing:-.01em;margin:2.4rem 0 .6rem;scroll-margin-top:84px}
+.pillar-body p,.pillar-body li{color:var(--text)}
+.pillar-body p{margin:0 0 1.1rem}
+.pillar-body ul,.pillar-body ol{margin:0 0 1.2rem;padding-left:1.4rem}
+.pillar-body li{margin:.3rem 0}
+.pillar-body strong{color:var(--text)}
+.pillar-body a{color:var(--accent);text-underline-offset:2px}
+.pillar-body code{background:var(--code-bg);padding:2px 6px;border-radius:5px;font-size:.9em;font-family:ui-monospace,'SF Mono',Monaco,monospace}
+.pillar-body pre{background:var(--code-bg);padding:12px 14px;border-radius:8px;overflow-x:auto;font-size:.86rem;line-height:1.5;margin:0 0 1.1rem}
+.pillar-body pre code{background:none;padding:0;font-size:inherit}
+.pillar-body table{width:100%;border-collapse:collapse;margin:1.2rem 0;font-size:.95rem}
+.pillar-body th,.pillar-body td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:top}
+.pillar-body th{font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted)}
+.pillar-film{margin:2rem -48px;padding:0}
+.pillar-film figcaption{margin:10px 48px 0;font-size:.86rem;color:var(--text-muted);text-align:center}
+.pillar-foot{margin-top:44px;padding-top:18px;border-top:1px solid var(--border);font-size:.8rem;color:var(--text-muted)}
+.pillar-foot a{color:var(--accent)}
+@media(max-width:900px){.pillar-film{margin:2rem 0}.pillar-film figcaption{margin:10px 0 0}}
+@media(max-width:640px){.pillar{padding:28px 16px 64px}}
+</style>
+</head>
+<body>
+<header class="site-header"><div class="hdr-in">
+    <a class="wordmark" href="/" aria-label="A2UI Catalog home"><svg class="logo-atom" viewBox="0 0 24 24" aria-hidden="true"><ellipse class="o1" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(-32 12 12)"/><ellipse class="o2" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(32 12 12)"/><ellipse class="o3" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(90 12 12)"/><circle class="nuc" cx="12" cy="12" r="2.7"/><circle class="el" cx="3.21" cy="15.98" r="1.25"/></svg><span><span class="grad">A2UI</span> Catalog</span></a>
+    <nav class="site-nav" id="site-menu" aria-label="Main">
+      <a href="/what-is-a2ui/" aria-current="page">What is A2UI?</a>
+      <a href="/atoms/">Atoms</a>
+      
+      <a href="/surfaces/mcp-apps">MCP Playground</a>
+      <a href="/docs">Docs</a>
+      <a href="/renderer">Apps Script Renderer</a>
+      <a href="/blog">Blog</a>
+      
+    </nav>
+    <a class="hdr-search" href="/atoms/#hub-q" aria-label="Search atoms"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg></a>
+    <button class="theme-btn" type="button" aria-label="Switch to dark theme"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 4v16a8 8 0 0 0 0-16z" fill="currentColor"/></svg></button>
+    <a class="gh-pill" href="https://github.com/a2uicatalog/a2ui">GitHub ↗</a>
+    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="site-menu"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>Menu</button>
+  </div></header>
+<main class="pillar">
+<header class="pillar-hero">
+<a class="pillar-kicker" href="/what-is-a2ui/custom-catalog/">A2UI Custom Catalog: a Worked Example with 573 Components</a>
+<h1>How to Make an A2UI Custom Catalog</h1>
+<p class="sub"></p>
+<p class="lede">A custom catalog is how you add your own components to A2UI: a stat card, a chart, a weather card, whatever your product needs. This guide builds one from a real component in the A2UI Atomic Catalog (573 components), checks it, uses it next to the Basic Catalog on one surface, and covers what to do when a host does not support it. The rules come from the A2UI v1.0 pages as published on 14 November 2026.</p>
+<p class="pillar-meta">9 min read &middot; Updated 14 November 2026</p>
+</header>
+<article class="pillar-body">
+<h2 id="what-a-custom-catalog-is-for">What a custom catalog is for</h2>
+<p>The Basic Catalog has 18 components and 14 functions: text, layout, a few inputs. It has no chart, no timeline and no weather card. When the screen you need is not in it, you can draw a picture on the server (our <a href="/what-is-a2ui/basic-catalog/">Basic Catalog page</a> shows how far that goes), or you can make a catalog that adds the component itself.</p>
+<p>A catalog is a contract between an agent and a renderer. It lists the components and functions the agent may use and the renderer knows how to draw. The agent can only send what the catalog allows, and a renderer can reject anything it does not know.</p>
+<h2 id="the-shape-of-a-catalog">The shape of a catalog</h2>
+<p>A catalog is one JSON Schema document. This is a complete small one, holding a single component: the real <code>weather_now</code> definition from our catalog, with our own extension keys removed.</p>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://json-schema.org/draft/2020-12/schema&quot;,
+  &quot;$id&quot;: &quot;https://example.com/catalogs/weather/v1/catalog.json&quot;,
+  &quot;protocolVersion&quot;: &quot;1.0&quot;,
+  &quot;catalogId&quot;: &quot;https://example.com/catalogs/weather/v1/catalog.json&quot;,
+  &quot;title&quot;: &quot;Weather catalog&quot;,
+  &quot;description&quot;: &quot;One component: a current-conditions weather card.&quot;,
+  &quot;components&quot;: {
+    &quot;weather_now&quot;: {
+      &quot;type&quot;: &quot;object&quot;,
+      &quot;description&quot;: &quot;Current-conditions weather card — a hero temperature reading beside a drawn CSS weather glyph (sun/cloud/storm, not an emoji or external icon font), condition text, hi/lo, and 4 supporting stat tiles (precip, wind, UV, humidity).&quot;,
+      &quot;properties&quot;: {
+        &quot;component&quot;: {
+          &quot;const&quot;: &quot;weather_now&quot;
+        },
+        &quot;city_line&quot;: {
+          &quot;$ref&quot;: &quot;common_types.json#/$defs/DynamicString&quot;,
+          &quot;description&quot;: &quot;string (e.g., 'TOULOUSE — LA VILLE ROSE'). Eyebrow line naming the location.&quot;
+        },
+        &quot;stamp&quot;: {
+          &quot;$ref&quot;: &quot;common_types.json#/$defs/DynamicString&quot;,
+          &quot;description&quot;: &quot;string (optional, e.g., 'Sat 19 Jul · 17:45')&quot;
+        },
+        &quot;temp&quot;: {
+          &quot;$ref&quot;: &quot;common_types.json#/$defs/DynamicNumber&quot;,
+          &quot;description&quot;: &quot;integer. The hero reading.&quot;
+        },
+        &quot;condition&quot;: {
+          &quot;$ref&quot;: &quot;common_types.json#/$defs/DynamicString&quot;,
+          &quot;description&quot;: &quot;string. Display text in any language, e.g. 'Ensoleillé'.&quot;
+        },
+        &quot;code&quot;: {
+          &quot;$ref&quot;: &quot;common_types.json#/$defs/DynamicString&quot;,
+          &quot;description&quot;: &quot;string, one of sun|partly|cloud|rain|storm. Selects the drawn glyph.&quot;
+        },
+        &quot;hi&quot;: {
+          &quot;$ref&quot;: &quot;common_types.json#/$defs/DynamicNumber&quot;,
+          &quot;description&quot;: &quot;integer&quot;
+        },
+        &quot;lo&quot;: {
+          &quot;$ref&quot;: &quot;common_types.json#/$defs/DynamicNumber&quot;,
+          &quot;description&quot;: &quot;integer&quot;
+        },
+        &quot;stats&quot;: {
+          &quot;$ref&quot;: &quot;common_types.json#/$defs/DynamicValue&quot;,
+          &quot;description&quot;: &quot;list of exactly 4 dicts: [{value: string, label: string}, ...]&quot;
+        }
+      },
+      &quot;required&quot;: [
+        &quot;component&quot;
+      ]
+    }
+  }
+}
+</code></pre>
+<p>Five things to notice:</p>
+<ul>
+<li><strong><code>catalogId</code></strong> names the catalog. It is the one thing the meta-schema requires, and the same value is shared by the agent and the renderer. The agent capabilities schema describes these IDs as not resolvable URIs, so nothing has to be served at that address. The official guide's examples use the same value for <code>$id</code> and <code>catalogId</code>, and its advice is to version the path (<code>v1/</code>, <code>v2/</code>) when you make a breaking change.</li>
+<li><strong><code>protocolVersion</code></strong> says which A2UI version the catalog targets. Set it. The Python SDK treats a catalog with no protocol version as 0.9.</li>
+<li><strong><code>components</code></strong> holds every component, directly at the top level.</li>
+<li><strong><code>functions</code></strong> (not used here) holds functions in the same way.</li>
+<li><strong><code>$defs</code></strong> holds shared definitions, such as design tokens, that components can reference.</li>
+</ul>
+<h2 id="define-a-component">Define a component</h2>
+<p>Each component is a JSON Schema object. In the example above, <code>weather_now</code> is declared under <code>components</code> with a <code>component</code> property whose <code>const</code> is its name, plus typed properties. Its values use the shared types from A2UI's <code>common_types.json</code> (<code>DynamicString</code>, <code>DynamicNumber</code>, <code>DynamicValue</code>), which is what lets a value be a literal or a binding to the data model.</p>
+<p>The rules that matter most when you write one, from the v1.0 pages:</p>
+<ul>
+<li><strong>Names.</strong> Component names, function names and property names must follow the Unicode identifier rules (UAX #31): no leading digit, no whitespace, no symbols other than the underscore.</li>
+<li><strong>No <code>Surface</code>.</strong> A catalog must not define a standard component named <code>Surface</code>.</li>
+<li><strong>Top level only.</strong> Components and functions go directly under <code>components</code> and <code>functions</code>. A component schema must not be defined inside <code>$defs</code>, even in an <code>allOf</code> wrapper.</li>
+<li><strong>Flat.</strong> A component is a single <code>type: "object"</code> with its properties directly on it. No <code>oneOf</code>, <code>anyOf</code> or non-trait <code>allOf</code> at the component root.</li>
+<li><strong>Do not wrap the envelope.</strong> The shared properties every component carries (<code>id</code>, <code>@catalogId</code>, <code>@accessibility</code>, <code>@metadata</code>) are added by the protocol envelope. Do not add them yourself with <code>ComponentCommon</code>.</li>
+<li><strong>References.</strong> A property can point at a catalog-scoped definition with <code>#/$defs/&lt;Name&gt;</code>. A reference to the standard types must use the relative form, <code>common_types.json#/$defs/...</code>. A reference to anything else outside the catalog is an error: an implementation must report a catalog error and must not fetch it over the network.</li>
+<li><strong>Accessibility.</strong> If a component or the agent supplies an explicit accessibility label or description, it must override what the renderer would infer from how the component looks.</li>
+</ul>
+<h2 id="define-functions-and-checks">Define functions and checks</h2>
+<p>A catalog can also declare functions: pieces of logic the renderer runs on the client, such as formatting a currency or checking an email address. They sit under <code>functions</code>, and the same naming rules apply. A function that opens something on the user's device, as <code>openUrl</code> does in the Basic Catalog, should be marked <code>requiresUserActivation: true</code>. A renderer must then run it only from a real user gesture, such as inside an action handler, and never from a passive binding or a validation check. In v1.0 a function can also live on the agent, for server-side work such as checking stock.</p>
+<h2 id="check-it-before-you-ship">Check it before you ship</h2>
+<p>Validate the catalog document against the A2UI v1.0 catalog meta-schema, then load it with an SDK. Two checks catch most mistakes:</p>
+<ul>
+<li><strong>The meta-schema</strong> catches a malformed document, a misplaced component or a missing <code>catalogId</code>.</li>
+<li><strong>The SDK on load</strong> catches more. In the Python SDK, loading a catalog raises an error if the catalog id is missing, if the document is malformed, or if a v1.0 document points a <code>$ref</code> at any document other than itself or <code>common_types.json</code>. For v1.0 catalogs it also checks component names against the identifier rule. The TypeScript SDK checks identifiers the same way on load, and the Dart SDK never fetches a v1.0 <code>$ref</code> to another document.</li>
+</ul>
+<p>Validation is strict by default. In the Python SDK a component the catalog does not define is reported with the code <code>unrecognized_component</code>, and a relaxed mode (<code>allow_unknown_elements</code>) exists for renderers that want to tolerate unknown ones.</p>
+<p>The Ontology check we ran on 14 November found that the example catalogs in the official v1.0 guide, and the Basic Catalog itself, validate against the live meta-schema. We used an approximation for the Unicode identifier patterns in those runs. The v0.9.1 examples we did not validate.</p>
+<h2 id="use-it-on-the-agent">Use it on the agent</h2>
+<p>When a session starts, the renderer sends the catalogs it supports (<code>supportedCatalogIds</code>). The agent picks one for each surface in <code>createSurface</code>, with <code>catalogId</code>. If none of the agent's catalogs match, the protocol says the agent sends no UI.</p>
+<p>In v1.0 a surface can mix catalogs. <code>createSurface</code> sets the surface's default catalog, and any component from another supported catalog carries an <code>@catalogId</code>. A component with no <code>@catalogId</code> is taken to be in the default one. This is a surface our own emitter produced: Basic is the default, and our weather card comes from our catalog.</p>
+<pre><code class="language-json">{
+  &quot;version&quot;: &quot;1.0&quot;,
+  &quot;createSurface&quot;: {
+    &quot;surfaceId&quot;: &quot;weather&quot;,
+    &quot;catalogId&quot;: &quot;https://a2ui.org/specification/v1_0/catalogs/basic/catalog.json&quot;,
+    &quot;components&quot;: [
+      {
+        &quot;id&quot;: &quot;weather_now_0&quot;,
+        &quot;component&quot;: &quot;weather_now&quot;,
+        &quot;city_line&quot;: &quot;TOULOUSE, FRANCE&quot;,
+        &quot;stamp&quot;: &quot;Sat 14 Nov&quot;,
+        &quot;temp&quot;: 8,
+        &quot;condition&quot;: &quot;Cloudy&quot;,
+        &quot;code&quot;: &quot;cloud&quot;,
+        &quot;hi&quot;: 13,
+        &quot;lo&quot;: 8,
+        &quot;stats&quot;: [
+          {
+            &quot;value&quot;: &quot;65%&quot;,
+            &quot;label&quot;: &quot;Precip&quot;
+          },
+          {
+            &quot;value&quot;: &quot;3 km/h&quot;,
+            &quot;label&quot;: &quot;Wind&quot;
+          },
+          {
+            &quot;value&quot;: &quot;6&quot;,
+            &quot;label&quot;: &quot;UV&quot;
+          },
+          {
+            &quot;value&quot;: &quot;91%&quot;,
+            &quot;label&quot;: &quot;Humidity&quot;
+          }
+        ],
+        &quot;@catalogId&quot;: &quot;https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json&quot;
+      },
+      {
+        &quot;id&quot;: &quot;root&quot;,
+        &quot;component&quot;: &quot;Column&quot;,
+        &quot;children&quot;: [
+          &quot;weather_now_0&quot;
+        ]
+      }
+    ]
+  }
+}
+</code></pre>
+<p>In v0.9.1 this is not possible: each surface is locked to one <code>catalogId</code> for its lifetime.</p>
+<p>The SDK uses the catalog twice. It builds the model's system prompt from the catalog, and it validates what the model sends back. If the renderer names catalog IDs the agent does not hold, the agent ignores them.</p>
+<p><strong>When the host does not support your catalog.</strong> The protocol gives you no fallback: the agent sends nothing. Falling back to Basic is a choice you build. Ours is to read what the host supports and send a Basic-only design when it lacks our catalog. We tried translating a custom game to Basic by hand in a test on 5 November 2026 (an earlier renderer, one game): the board was dropped and no move could be played. Choosing the Basic design up front, from the host's list, is what worked.</p>
+<h2 id="use-it-on-the-renderer">Use it on the renderer</h2>
+<p>On the renderer side you implement the component in your UI framework, wrap it in a catalog with the same <code>catalogId</code>, and register it alongside the Basic Catalog when you set up the message processor. Both sides must hold the same <code>catalogId</code>, or the agent will never pick it. We have not checked each framework's registration API for this guide, so follow your framework's A2UI renderer documentation for the exact calls.</p>
+<h2 id="publish-and-version">Publish and version</h2>
+<p>Keep the catalog document somewhere people can read it. Ours is published at <a href="/catalogue/a2ui-atoms-v1.json"><code>/catalogue/a2ui-atoms-v1.json</code></a>. Version the path in the <code>catalogId</code> when you make a breaking change, and keep old versions working for hosts that have not moved.</p>
+<h2 id="faq">FAQ</h2>
+<h3 id="what-is-an-a2ui-custom-catalog">What is an A2UI custom catalog?</h3>
+<p>A catalog is a JSON Schema document that lists the components and functions an agent may use and a renderer knows how to draw. A custom catalog is one you make yourself, to add components the Basic Catalog does not have.</p>
+<h3 id="do-i-need-a-custom-catalog">Do I need a custom catalog?</h3>
+<p>Not always. The Basic Catalog covers text, layout and a few inputs, and a picture drawn on the server can go a long way. Make a custom catalog when you need a real component, for example one with keyboard behaviour or hover, or messages that stay small.</p>
+<h3 id="can-one-surface-use-the-basic-catalog-and-my-own">Can one surface use the Basic Catalog and my own?</h3>
+<p>In v1.0, yes. The surface's default catalog is set in <code>createSurface</code>, and a component from another supported catalog carries an <code>@catalogId</code>. In v0.9.1 a surface is locked to a single catalog.</p>
+<h3 id="what-happens-if-a-host-does-not-support-my-catalog">What happens if a host does not support my catalog?</h3>
+<p>The protocol says the agent sends no UI if none of its catalogs match. Falling back to a Basic design is something you build: read the host's supported catalogs and choose.</p>
+<h3 id="how-do-i-check-my-catalog-is-valid">How do I check my catalog is valid?</h3>
+<p>Validate it against the v1.0 catalog meta-schema, then load it with an SDK, which also checks identifiers and references on load. Test a surface that uses it against a renderer that has it registered.</p>
+<h2 id="what-this-guide-covers">What this guide covers</h2>
+<p>The rules come from the A2UI v1.0 pages as published on 14 November 2026, and the SDK facts from the Python SDK read at one upstream commit, with the TypeScript and Dart load rules. None of the SDK behaviour was run for this guide. We have not checked how each framework registers a component, or the Swift and Kotlin SDKs.</p>
+<h2 id="get-started">Get started</h2>
+<ul>
+<li>The catalog document: <a href="/catalogue/a2ui-atoms-v1.json"><code>/catalogue/a2ui-atoms-v1.json</code></a> (<code>catalogId</code> <code>https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json</code>).</li>
+<li>A worked example with the real files: <a href="/what-is-a2ui/custom-catalog/">A2UI custom catalog: a worked example</a>.</li>
+<li>What the Basic Catalog already gives you: <a href="/what-is-a2ui/basic-catalog/">A2UI Basic Catalog</a>.</li>
+<li>The official guide to defining a catalog, for the version of this topic that A2UI's own authors keep current: <a href="https://a2ui.org/guides/defining-a-catalog/">Defining a catalog on a2ui.org</a>.</li>
+<li>New to the protocol? Start with <a href="/what-is-a2ui/">What is A2UI?</a>.</li>
+</ul>
+</article>
+<p class="pillar-foot">Independent, unofficial catalog: not affiliated with, endorsed by, or sponsored by Google or Anthropic.
+A2UI is Google's protocol; MCP is Anthropic's. Maintained by <a href="https://www.linkedin.com/in/curtiskrygier">Curtis Krygier</a>. MIT License.</p>
+</main>
+<script>
+function themeLabel(){var d=document.documentElement.getAttribute('data-theme')==='dark';
+  document.querySelectorAll('.theme-btn').forEach(function(b){b.setAttribute('aria-label',d?'Switch to light theme':'Switch to dark theme')})}
+themeLabel();
+document.addEventListener('click',function(e){
+  var m=e.target.closest('.menu-btn');
+  if(m){var n=document.getElementById(m.getAttribute('aria-controls')),o=m.getAttribute('aria-expanded')!=='true';
+    m.setAttribute('aria-expanded',String(o));if(n)n.classList.toggle('open',o);return}
+  var b=e.target.closest('.theme-btn');if(!b)return;
+  var r=document.documentElement,t=r.getAttribute('data-theme')==='dark'?'light':'dark';
+  r.setAttribute('data-theme',t);themeLabel();
+  try{localStorage.setItem('a2ui-theme',t)}catch(err){}
+});
+document.addEventListener('keydown',function(e){
+  if(e.key!=='Escape')return;var m=document.querySelector('.menu-btn[aria-expanded="true"]');if(!m)return;
+  m.setAttribute('aria-expanded','false');var n=document.getElementById(m.getAttribute('aria-controls'));if(n)n.classList.remove('open');m.focus()
+});
+// WebMCP (W3C Web Machine Learning CG draft; Chrome origin trial 149-156,
+// shipping targeted for 157): register the catalogue's read-only tools on
+// document.modelContext, falling back to the deprecated navigator.modelContext
+// alias only when it is missing. The definitions are written out literally,
+// not built from the DOM, so tools that read them from the page source can
+// grade them. Fully inert on browsers without the API. Both tools only read
+// the public catalogue spec (same-origin /spec.json), fetched once on first call.
+(function(){
+  var mc = (typeof document!=='undefined' && document.modelContext) ||
+           (typeof navigator!=='undefined' && navigator.modelContext);
+  if(!mc || typeof mc.registerTool!=='function') return;
+  var SITE = 'https://a2uicatalog.ai';
+  var specP = null;
+  function spec(){
+    if(!specP) specP = fetch('/spec.json').then(function(r){
+      if(!r.ok) throw new Error('spec.json returned HTTP '+r.status);
+      return r.json();
+    }).catch(function(e){ specP = null; throw e; });
+    return specP;
+  }
+  function list(v){ return Array.isArray(v) ? v : []; }
+  function worksOn(a){ return list(a.surfaces && a.surfaces.works_on); }
+  function findAtom(s, t){
+    for(var i=0;i<s.atoms.length;i++){
+      var a = s.atoms[i];
+      if(a.type===t || list(a.aliases).indexOf(t)>=0) return a;
+    }
+    return null;
+  }
+  try{
+    mc.registerTool({
+      name: 'search_atoms',
+      description: 'Search the A2UI Atomic Catalog for UI atoms that fit a plain-language need, such as "image gallery" or "status timeline". Returns the best matches first, each with its type name, a one-line summary, the surfaces it works on and its page URL.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          query: {type: 'string', minLength: 1, maxLength: 200, description: 'What the UI should show or do, in plain words.'},
+          surface: {type: 'string', description: 'Only return atoms that work on this surface, such as web, email, google-chat, slides or android.'},
+          limit: {type: 'integer', minimum: 1, maximum: 25, description: 'Maximum number of matches to return (default 10).'}
+        },
+        required: ['query'],
+        additionalProperties: false
+      },
+      annotations: {readOnlyHint: true},
+      execute: function(input){
+        input = input || {};
+        var words = String(input.query||'').toLowerCase().split(/[^a-z0-9]+/).filter(function(w){ return w.length>1; });
+        var limit = Math.max(1, Math.min(25, parseInt(input.limit,10) || 10));
+        return spec().then(function(s){
+          var hits = [];
+          s.atoms.forEach(function(a){
+            if(input.surface && worksOn(a).indexOf(input.surface)<0) return;
+            var name = a.type.replace(/_/g,' ');
+            var text = [a.compact_description, a.description, a.routing_text,
+                        list(a.intent_phrases).join(' '), list(a.aliases).join(' ')].join(' ').toLowerCase();
+            var score = 0;
+            words.forEach(function(w){ if(name.indexOf(w)>=0) score += 3; else if(text.indexOf(w)>=0) score += 1; });
+            if(score) hits.push({score: score, atom: a});
+          });
+          hits.sort(function(x,y){ return y.score-x.score || (x.atom.type<y.atom.type ? -1 : 1); });
+          return {
+            query: input.query,
+            matches: hits.length,
+            atoms: hits.slice(0, limit).map(function(h){
+              var a = h.atom;
+              return {type: a.type, summary: a.compact_description || a.description,
+                      surfaces: worksOn(a), url: SITE+'/atoms/'+a.type+'/'};
+            })
+          };
+        });
+      }
+    });
+  }catch(err){/* draft API shape may still be moving -- never break the page over it */}
+  try{
+    mc.registerTool({
+      name: 'get_atom',
+      description: 'Get one A2UI Atomic Catalog atom by its type name, as returned by search_atoms. Returns its description, the payload fields it takes, where it works or degrades, its source credit and its page URL.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          type: {type: 'string', pattern: '^[a-z0-9_]+$', maxLength: 80, description: 'Atom type name, such as gallery or status_timeline.'}
+        },
+        required: ['type'],
+        additionalProperties: false
+      },
+      annotations: {readOnlyHint: true},
+      execute: function(input){
+        var t = String((input||{}).type || '');
+        return spec().then(function(s){
+          var a = findAtom(s, t);
+          if(!a) return {error: 'No atom named "'+t+'". Call search_atoms to find one.'};
+          return {type: a.type, description: a.description, fields: a.fields,
+                  surfaces: a.surfaces, source: a.source, url: SITE+'/atoms/'+a.type+'/'};
+        });
+      }
+    });
+  }catch(err){/* draft API shape may still be moving -- never break the page over it */}
+  // The two write tools call the site's own MCP server (same-origin /mcp),
+  // so they can only do what an agent connected to that server can already
+  // do. consequentialHint asks the agent to confirm with the person first.
+  function callMcp(name, args){
+    return fetch('/mcp', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json', 'Accept': 'application/json, text/event-stream'},
+      body: JSON.stringify({jsonrpc: '2.0', id: 1, method: 'tools/call', params: {name: name, arguments: args}})
+    }).then(function(r){ return r.text(); }).then(function(t){
+      t = t.trim();
+      if(t.charAt(0) !== '{'){
+        var data = t.split('\n').filter(function(l){ return l.indexOf('data:')===0; }).pop() || '';
+        t = data.slice(5);
+      }
+      var msg = JSON.parse(t);
+      if(msg.error) throw new Error(msg.error.message || 'MCP error');
+      var res = msg.result || {};
+      if(res.structuredContent) return res.structuredContent;
+      var text = (res.content || []).map(function(c){ return c.text || ''; }).join('');
+      try{ return JSON.parse(text); }catch(e){ return {result: text}; }
+    });
+  }
+  try{
+    mc.registerTool({
+      name: 'create_share_link',
+      description: 'Create a short shareable link that renders an A2UI payload in the a2uicatalog.ai playground. Stores the payload on a2uicatalog.ai for one week; anyone with the link can view it. Returns the link, the expiry date and a delete token.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          payload: {
+            type: 'object',
+            description: 'The A2UI payload to publish: blocks built from catalogue atoms (see search_atoms and get_atom).',
+            properties: {
+              title: {type: 'string', maxLength: 200, description: 'Page title shown above the blocks.'},
+              theme: {type: 'string', enum: ['light', 'dark', 'terminal'], description: 'Colour theme for the rendered page.'},
+              blocks: {type: 'array', minItems: 1, items: {type: 'object'}, description: 'Atoms in order, each an object with a type and that atom\'s fields.'}
+            },
+            required: ['blocks']
+          }
+        },
+        required: ['payload'],
+        additionalProperties: false
+      },
+      annotations: {readOnlyHint: false, consequentialHint: true},
+      execute: function(input){
+        return callMcp('publish_url', {payload: (input||{}).payload, acknowledge_storage: true, target: 'play'});
+      }
+    });
+  }catch(err){/* draft API shape may still be moving -- never break the page over it */}
+  try{
+    mc.registerTool({
+      name: 'delete_share_link',
+      description: 'Delete a share link made by create_share_link before it expires, using the delete token that create_share_link returned. The link stops working straight away.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          id: {type: 'string', maxLength: 200, description: 'The short link, or the id at its end.'},
+          delete_token: {type: 'string', maxLength: 64, description: 'The delete token create_share_link returned.'}
+        },
+        required: ['id', 'delete_token'],
+        additionalProperties: false
+      },
+      annotations: {readOnlyHint: false, destructiveHint: true, consequentialHint: true},
+      execute: function(input){
+        input = input || {};
+        return callMcp('unpublish_url', {id: input.id, delete_token: input.delete_token});
+      }
+    });
+  }catch(err){/* draft API shape may still be moving -- never break the page over it */}
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,3 @@
+# a2ui_v1_0_live
+
+`catalog_definition_v1_0.json`: the A2UI v1.0 catalog meta-schema as saved from the live a2ui.org pages on 14 Nov 2026 (copied from the Ontology layer's saved sources, sha256 recorded there). Source project: a2ui-project/a2ui (Apache-2.0). Used by tests/test_pillar_pages.py to validate the catalog examples on the how-to guide. It differs from the release-candidate copy in ../a2ui_v1_0_spec/json/catalog_definition.json (the live one allows leaf `$defs`, uses relative external `$ref`s, and bans structural combinators at the component root); the guide follows the live one. Its relative `$ref` to common_types.json is resolved with the common_types.json in ../a2ui_v1_0_spec/json (no live copy of that file is saved).

@@ -42,7 +42,7 @@ PUBLIC = os.path.join(ROOT, "public")
 BASE = "https://a2uicatalog.ai"
 LINKEDIN = "https://www.linkedin.com/in/curtiskrygier"
 FRONT_MATTER_RE = re.compile(r"^---\n(.*?)\n---\n(.*)$", re.S)
-PILLARS = ["what-is-a2ui", "what-is-a2ui/custom-catalog"]
+PILLARS = ["what-is-a2ui", "what-is-a2ui/custom-catalog", "what-is-a2ui/custom-catalog/how-to", "what-is-a2ui/basic-catalog"]
 CATALOG = os.path.join(PUBLIC, "catalogue", "a2ui-atoms-v1.json")
 BASIC_CATALOG = os.path.join(ROOT, "tests", "fixtures", "a2ui_v1_0_spec", "catalogs", "basic", "catalog.json")
 TOKEN_RE = re.compile(r"@@([A-Z0-9_]+)@@")
@@ -55,6 +55,12 @@ WEB_RENDERERS = [("react", "React"), ("angular", "Angular"), ("lit", "Lit"),
 MIXED_EXAMPLE = {"title": "Weekly sales", "blocks": [
     {"type": "heading", "level": 1, "text": "Weekly sales"},
     {"type": "stat_card", "value": "1,234", "label": "Orders this week", "delta": "+12%", "is_up": True}]}
+
+# The how-to guide's worked example: our real weather_now component on a surface whose layout is Basic.
+WEATHER_EXAMPLE = {"title": "Today", "blocks": [
+    {"type": "weather_now", "city_line": "TOULOUSE, FRANCE", "stamp": "Sat 14 Nov", "temp": 8, "condition": "Cloudy", "code": "cloud",
+     "hi": 13, "lo": 8, "stats": [{"value": "65%", "label": "Precip"}, {"value": "3 km/h", "label": "Wind"},
+                                  {"value": "6", "label": "UV"}, {"value": "91%", "label": "Humidity"}]}]}
 
 PAGE = """<!DOCTYPE html>
 <html lang="en">
@@ -152,6 +158,21 @@ def mixed_example():
     return emit_surface(MIXED_EXAMPLE, surface_id="sales")
 
 
+def weather_catalog(cat):
+    """A small catalog document holding the real weather_now definition (our x- extension keys dropped), shown in the how-to guide."""
+    comp = {k: v for k, v in cat["components"]["weather_now"].items() if not k.startswith("x-")}
+    return {"$schema": "https://json-schema.org/draft/2020-12/schema", "$id": "https://example.com/catalogs/weather/v1/catalog.json",
+            "protocolVersion": "1.0", "catalogId": "https://example.com/catalogs/weather/v1/catalog.json", "title": "Weather catalog",
+            "description": "One component: a current-conditions weather card.", "components": {"weather_now": comp}}
+
+
+def weather_surface():
+    from renderers.a2ui_v1 import emit_surface
+    out = emit_surface(WEATHER_EXAMPLE, surface_id="weather")
+    out["createSurface"].pop("metadata", None)   # our own surface metadata is not part of the lesson
+    return out
+
+
 def facts():
     """Every @@TOKEN@@ a pillar page may use, read from the published catalogue and the vendored spec."""
     cat = json.load(open(CATALOG, encoding="utf-8"))
@@ -161,11 +182,13 @@ def facts():
     head["description"] = cat["description"].split(". ")[0] + "."
     head["components"] = {"intro": "{ ... }", "body": "{ ... }", "…": f"{len(comps)} components in all"}
     head["functions"] = cat.get("functions", {})
-    f = {"ATOMS": str(len(comps)), "BASIC_N": str(len(basic["components"])),
+    f = {"ATOMS": str(len(comps)), "BASIC_N": str(len(basic["components"])), "BASIC_FN": str(len(basic["functions"])),
+         "BASIC_COMPONENT_NAMES": ", ".join(basic["components"]), "BASIC_FUNCTION_NAMES": ", ".join(basic["functions"]),
          "CATALOG_ID": cat["catalogId"], "BASIC_ID": basic["catalogId"], "PROTOCOL": cat["protocolVersion"],
          "JSON_CATALOG_HEAD": _json(head), "JSON_STAT_CARD": _json({"stat_card": {k: v for k, v in comps["stat_card"].items()
                                                  if k not in ("x-routing-text", "x-intent-phrases")}}),
-         "JSON_MIXED_EXAMPLE": _json(mixed_example())}
+         "JSON_MIXED_EXAMPLE": _json(mixed_example()),
+         "JSON_WEATHER_CATALOG": _json(weather_catalog(cat)), "JSON_WEATHER_SURFACE": _json(weather_surface())}
     rows = []
     for key, name in WEB_RENDERERS:
         n = sum(1 for c in comps.values() if c.get("x-renderers", {}).get(key) == "drawn")
@@ -225,7 +248,7 @@ def build(slug):
     parent = slug.rpartition("/")[0]
     crumbs = [{"@type": "ListItem", "position": 1, "name": "A2UI Atomic Catalog", "item": f"{BASE}/"}]
     if parent:
-        ptitle = yaml.safe_load(FRONT_MATTER_RE.match(open(os.path.join(CONTENT, f"{parent}.md"), encoding="utf-8").read()).group(1))["title"]
+        ptitle = _fill(yaml.safe_load(FRONT_MATTER_RE.match(open(os.path.join(CONTENT, f"{parent}.md"), encoding="utf-8").read()).group(1))["title"], parent)
         crumbs.append({"@type": "ListItem", "position": 2, "name": ptitle.partition("?")[0] + "?" if "?" in ptitle else ptitle,
                        "item": f"{BASE}/{parent}/"})
     kicker = '<span class="pillar-kicker">Guide</span>'

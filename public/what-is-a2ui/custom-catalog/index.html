@@ -258,12 +258,10 @@ as the surface default with <code>catalogId</code> in <code>createSurface</code>
 <p>Since v1.0, a surface can also mix catalogs. Any component can name its own catalog with
 <code>@catalogId</code>, so a surface can take its layout from the Basic Catalog and drop in components
 from yours. That is how this catalog is meant to be used.</p>
-<p>For a step-by-step build of your own, see the official guide,
-<a href="https://a2ui.org/guides/defining-a-catalog/">Defining a catalog</a>, and the Angular Architects
-tutorial <a href="https://www.angulararchitects.io/en/blog/custom-catalogs-in-a2ui-your-own-components-for-ai-generated-uis/">Custom Catalogs in A2UI</a>.</p>
+<p>For a step-by-step build of your own, see <a href="/what-is-a2ui/custom-catalog/how-to/">How to make an A2UI custom catalog</a>.
+For what the Basic Catalog already gives you, see <a href="/what-is-a2ui/basic-catalog/">A2UI Basic Catalog</a>.</p>
 <h2 id="the-catalog-document">The catalog document</h2>
-<p>A v1.0 catalog is one JSON Schema document. Its <code>catalogId</code> is, by convention, the URL it is
-served from. This is the top of the one this site publishes at
+<p>A v1.0 catalog is one JSON Schema document. Its <code>catalogId</code> is an identifier shared by the agent and the renderer; this one is also the address the file is served from. This is the top of the one this site publishes at
 <a href="/catalogue/a2ui-atoms-v1.json"><code>/catalogue/a2ui-atoms-v1.json</code></a>, with the component list cut
 short:</p>
 <pre><code class="language-json">{

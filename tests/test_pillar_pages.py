@@ -106,3 +106,69 @@ def test_guide_pages_are_built_on_deploy():
     wf = (ROOT / ".github/workflows/deploy.yml").read_text()
     assert "python3 scripts/gen_pillar_pages.py" in wf
     assert wf.index("scripts/gen_public_catalog.py") < wf.index("scripts/gen_pillar_pages.py")
+
+
+# ---- the how-to guide and the Basic Catalog page (14 Nov 2026) ----
+LIVE_META = ROOT / "tests/fixtures/a2ui_v1_0_live/catalog_definition_v1_0.json"
+ALLOWED_OUT_HOSTS = {"a2ui.org"}   # house rule (owner, 14 Nov): we help readers directly; a2ui.org only for one specific topic
+
+
+def _live_catalog_validator():
+    return conformance._RegexAwareValidator(json.loads(LIVE_META.read_text()), registry=conformance._REGISTRY)
+
+
+SITE_CHROME_LINKS = {"https://www.linkedin.com/in/curtiskrygier", "https://github.com/a2uicatalog/a2ui"}   # the page template's own author and repo links
+
+
+def _body_links(page):
+    main = re.search(r"<main.*?</main>", page, re.S)
+    links = re.findall(r'href="(https?://[^"]+)"', main.group(0) if main else page)
+    return [u for u in links if u not in SITE_CHROME_LINKS]
+
+
+def test_weather_catalog_example_validates_against_the_live_meta_schema():
+    f = pillar.facts()
+    doc = json.loads(f["JSON_WEATHER_CATALOG"])
+    errs = sorted(e.message[:160] for e in _live_catalog_validator().iter_errors(doc))
+    assert not errs, errs
+    assert doc["$id"] == doc["catalogId"]                       # the guide says the examples use one value for both
+    comp = doc["components"]["weather_now"]
+    assert comp["type"] == "object" and comp["properties"]["component"] == {"const": "weather_now"}   # flat, names itself
+    assert not {"oneOf", "anyOf", "allOf"} & set(comp)          # no structural combinators at the component root
+    assert not any(k.startswith("x-") for k in comp)            # our extension keys are not part of the lesson
+
+
+def test_weather_surface_example_mixes_basic_and_ours_and_conforms():
+    f = pillar.facts()
+    msg = json.loads(f["JSON_WEATHER_SURFACE"])
+    conformance.assert_conforms(msg, conformance.AGENT_TO_RENDERER)
+    cs = msg["createSurface"]
+    assert cs["catalogId"] == f["BASIC_ID"]                     # Basic is the surface default
+    mine = [c for c in cs["components"] if c.get("component") == "weather_now"]
+    assert len(mine) == 1 and mine[0]["@catalogId"] == f["CATALOG_ID"]
+    assert "metadata" not in cs                                  # our own surface metadata is left out of the lesson
+
+
+def test_how_to_and_basic_pages_build_clean(tmp_path, monkeypatch):
+    monkeypatch.setattr(pillar, "PUBLIC", str(tmp_path))
+    for slug in ("what-is-a2ui/custom-catalog/how-to", "what-is-a2ui/basic-catalog"):
+        pillar.build(slug)
+        page = (tmp_path / slug / "index.html").read_text()
+        assert "@@" not in page, slug                            # incl. the breadcrumb data (a parent title with a token used to leak)
+        assert '"@type": "FAQPage"' in page, slug
+        hosts = {re.sub(r"^https?://([^/]+).*", r"\1", u) for u in _body_links(page)}
+        assert hosts <= ALLOWED_OUT_HOSTS, (slug, hosts)         # no third-party links in the guide text
+        desc = re.search(r'name="description" content="([^"]*)', page).group(1)
+        assert len(desc) <= 170, (slug, len(desc))
+    f = pillar.facts()
+    basic = (tmp_path / "what-is-a2ui/basic-catalog/index.html").read_text()
+    assert f["BASIC_COMPONENT_NAMES"] in basic and f["BASIC_FUNCTION_NAMES"] in basic
+    assert f"{f['BASIC_N']} Components and {f['BASIC_FN']} Functions" in basic
+    howto = (tmp_path / "what-is-a2ui/custom-catalog/how-to/index.html").read_text()
+    assert '"item": "https://a2uicatalog.ai/what-is-a2ui/custom-catalog/"' in howto   # the parent is in the breadcrumb
+
+
+def test_function_and_component_counts_match_the_vendored_basic_catalog():
+    f = pillar.facts()
+    basic = json.loads(pillar.BASIC_CATALOG and open(pillar.BASIC_CATALOG, encoding="utf-8").read())
+    assert int(f["BASIC_N"]) == len(basic["components"]) and int(f["BASIC_FN"]) == len(basic["functions"])

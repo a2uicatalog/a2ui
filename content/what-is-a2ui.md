@@ -119,7 +119,9 @@ The [A2UI Atomic Catalog](/) is an open-source (MIT) catalog of @@ATOMS@@ publis
 each with typed fields, a JSON Schema and a live preview. Agents reach it through an MCP
 server at `a2uicatalog.ai/mcp`, or read its machine-readable vocabulary at
 [`/spec.json`](/spec.json). How it is built as an A2UI custom catalog, with the real files:
-[A2UI custom catalog: a worked example](/what-is-a2ui/custom-catalog/).
+[A2UI custom catalog: a worked example](/what-is-a2ui/custom-catalog/). To make your own, see
+[How to make an A2UI custom catalog](/what-is-a2ui/custom-catalog/how-to/), and for what A2UI ships with, the
+[A2UI Basic Catalog](/what-is-a2ui/basic-catalog/).
 
 ## Where it runs
 
