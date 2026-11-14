@@ -4,11 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>A2UI Basic Catalog: 18 Components and 14 Functions</title>
-<meta name="description" content="What the A2UI Basic Catalog contains and what you can do with it: show, arrange, input, bind data, format. With what we have and have not tested.">
+<meta name="description" content="What the A2UI Basic Catalog contains and what you can do with it: show content, arrange it, take input, bind data and format values.">
 <link rel="canonical" href="https://a2uicatalog.ai/what-is-a2ui/basic-catalog/">
 <meta property="og:type" content="article">
 <meta property="og:title" content="A2UI Basic Catalog: 18 Components and 14 Functions">
-<meta property="og:description" content="What the A2UI Basic Catalog contains and what you can do with it: show, arrange, input, bind data, format. With what we have and have not tested.">
+<meta property="og:description" content="What the A2UI Basic Catalog contains and what you can do with it: show content, arrange it, take input, bind data and format values.">
 <meta property="og:url" content="https://a2uicatalog.ai/what-is-a2ui/basic-catalog/">
 <meta property="og:image" content="https://a2uicatalog.ai/brand/og-card.png">
 <meta name="twitter:card" content="summary_large_image">
@@ -20,7 +20,7 @@
    "@type": "Article",
    "@id": "https://a2uicatalog.ai/what-is-a2ui/basic-catalog/#article",
    "headline": "A2UI Basic Catalog: 18 Components and 14 Functions",
-   "description": "What the A2UI Basic Catalog contains and what you can do with it: show, arrange, input, bind data, format. With what we have and have not tested.",
+   "description": "What the A2UI Basic Catalog contains and what you can do with it: show content, arrange it, take input, bind data and format values.",
    "url": "https://a2uicatalog.ai/what-is-a2ui/basic-catalog/",
    "mainEntityOfPage": "https://a2uicatalog.ai/what-is-a2ui/basic-catalog/",
    "datePublished": "2026-11-14",
@@ -287,7 +287,7 @@ a.pillar-kicker{text-decoration:none}a.pillar-kicker::before{content:"← "}
 <a class="pillar-kicker" href="/what-is-a2ui/">What is A2UI?</a>
 <h1>A2UI Basic Catalog: 18 Components and 14 Functions</h1>
 <p class="sub"></p>
-<p class="lede">The Basic Catalog is the set of components and functions A2UI ships with: 18 components and 14 functions in the v1.0 catalog. A renderer that supports it can draw any surface built from it, with no custom code in the host. This page lists what is in it, grouped by what you can do, and says plainly how much of it we have tested.</p>
+<p class="lede">The Basic Catalog is the set of components and functions A2UI ships with: 18 components and 14 functions in the v1.0 catalog. A renderer that supports it can draw any surface built from it, with no custom code in the host. This page lists what is in it, grouped by what you can do.</p>
 <p class="pillar-meta">4 min read &middot; Updated 14 November 2026</p>
 </header>
 <article class="pillar-body">
@@ -302,11 +302,8 @@ a.pillar-kicker{text-decoration:none}a.pillar-kicker::before{content:"← "}
 <li><strong>React to the user:</strong> a Button fires an action to the agent.</li>
 <li><strong>Compute and format:</strong> the functions: <code>and</code>, <code>or</code>, <code>not</code>; <code>formatCurrency</code>, <code>formatDate</code>, <code>formatNumber</code>, <code>formatString</code>, <code>pluralize</code>; <code>email</code>, <code>length</code>, <code>numeric</code>, <code>regex</code>, <code>required</code>; and <code>openUrl</code>.</li>
 </ul>
-<h2 id="what-we-have-tested">What we have tested</h2>
-<p>We tested all 18 components one at a time on Gemini Enterprise in our July 2026 field report (<a href="/blog/002-gemini-enterprise-field-report-a2a-a2ui-part1/">Vol. 02</a>), then composed them in one interactive flow: buttons that sent real actions, text fields that bound both ways, tabs and modals. That test used the v0.8 standard catalog, where ChoicePicker was called MultipleChoice. We have not tested any of the 14 functions. Separately, in a run that reduced our own atoms to Basic components only, the official React, Lit and Angular renderers painted 656, 658 and 657 of 670 cases (our 8 November 2026 tests, v0.9 messages; the Angular figure is quoted and was not recounted). That run counts whether something paints, not how each component behaves. The functions, and how each component behaves on other hosts, are what the specification allows, not something we have measured.</p>
-<p>One more result: a picture drawn on the server and shown in a Basic Image drew and animated on the official React renderer and in one Gemini Enterprise trial app (v0.9 dialect, one run per test; the React result is quoted from an earlier run whose raw file we could not locate). The full measurements, with the message sizes for the same game built four ways, are in our article <a href="/blog/022-a2ui-how-basic-is-the-basic-catalog/">A2UI: How basic is the basic catalog?</a>.</p>
 <h2 id="how-far-can-basic-go">How far can Basic go?</h2>
-<p>It goes further than the name suggests, and it has clear limits. A drawn Image can show a chart, a board or a simple animation, but it is a picture: no hover, no zoom and no partial updates. For those you need a custom catalog. <a href="/what-is-a2ui/custom-catalog/how-to/">How to make an A2UI custom catalog</a> walks through making one, and <a href="/what-is-a2ui/custom-catalog/">the worked example</a> shows ours.</p>
+<p>It goes further than the name suggests, and it has clear limits. Our article <a href="/blog/022-a2ui-how-basic-is-the-basic-catalog/">A2UI: How basic is the basic catalog?</a> measures how far, with the message sizes for the same game built four ways. A drawn Image can show a chart, a board or a simple animation, but it is a picture: no hover, no zoom and no partial updates. For those you need a custom catalog. <a href="/what-is-a2ui/custom-catalog/how-to/">How to make an A2UI custom catalog</a> walks through making one, and <a href="/what-is-a2ui/custom-catalog/">the worked example</a> shows ours.</p>
 <h2 id="faq">FAQ</h2>
 <h3 id="what-is-the-a2ui-basic-catalog">What is the A2UI Basic Catalog?</h3>
 <p>It is the standard catalog of components and functions that A2UI defines, so any renderer that supports it can draw any surface built from it with no custom code. It has 18 components and 14 functions in v1.0.</p>

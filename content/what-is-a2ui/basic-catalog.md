@@ -1,13 +1,13 @@
 ---
 title: "A2UI Basic Catalog: @@BASIC_N@@ Components and @@BASIC_FN@@ Functions"
 date: 2026-11-14
-summary: "What the A2UI Basic Catalog contains and what you can do with it: show, arrange, input, bind data, format. With what we have and have not tested."
+summary: "What the A2UI Basic Catalog contains and what you can do with it: show content, arrange it, take input, bind data and format values."
 read_minutes: 4
 ---
 
 # A2UI Basic Catalog: what it contains and what you can do with it
 
-The Basic Catalog is the set of components and functions A2UI ships with: @@BASIC_N@@ components and @@BASIC_FN@@ functions in the v1.0 catalog. A renderer that supports it can draw any surface built from it, with no custom code in the host. This page lists what is in it, grouped by what you can do, and says plainly how much of it we have tested.
+The Basic Catalog is the set of components and functions A2UI ships with: @@BASIC_N@@ components and @@BASIC_FN@@ functions in the v1.0 catalog. A renderer that supports it can draw any surface built from it, with no custom code in the host. This page lists what is in it, grouped by what you can do.
 
 ## What is in the Basic Catalog
 
@@ -22,15 +22,9 @@ The components are @@BASIC_COMPONENT_NAMES@@. The functions are @@BASIC_FUNCTION
 - **React to the user:** a Button fires an action to the agent.
 - **Compute and format:** the functions: `and`, `or`, `not`; `formatCurrency`, `formatDate`, `formatNumber`, `formatString`, `pluralize`; `email`, `length`, `numeric`, `regex`, `required`; and `openUrl`.
 
-## What we have tested
-
-We tested all @@BASIC_N@@ components one at a time on Gemini Enterprise in our July 2026 field report ([Vol. 02](/blog/002-gemini-enterprise-field-report-a2a-a2ui-part1/)), then composed them in one interactive flow: buttons that sent real actions, text fields that bound both ways, tabs and modals. That test used the v0.8 standard catalog, where ChoicePicker was called MultipleChoice. We have not tested any of the @@BASIC_FN@@ functions. Separately, in a run that reduced our own atoms to Basic components only, the official React, Lit and Angular renderers painted 656, 658 and 657 of 670 cases (our 8 November 2026 tests, v0.9 messages; the Angular figure is quoted and was not recounted). That run counts whether something paints, not how each component behaves. The functions, and how each component behaves on other hosts, are what the specification allows, not something we have measured.
-
-One more result: a picture drawn on the server and shown in a Basic Image drew and animated on the official React renderer and in one Gemini Enterprise trial app (v0.9 dialect, one run per test; the React result is quoted from an earlier run whose raw file we could not locate). The full measurements, with the message sizes for the same game built four ways, are in our article [A2UI: How basic is the basic catalog?](/blog/022-a2ui-how-basic-is-the-basic-catalog/).
-
 ## How far can Basic go?
 
-It goes further than the name suggests, and it has clear limits. A drawn Image can show a chart, a board or a simple animation, but it is a picture: no hover, no zoom and no partial updates. For those you need a custom catalog. [How to make an A2UI custom catalog](/what-is-a2ui/custom-catalog/how-to/) walks through making one, and [the worked example](/what-is-a2ui/custom-catalog/) shows ours.
+It goes further than the name suggests, and it has clear limits. Our article [A2UI: How basic is the basic catalog?](/blog/022-a2ui-how-basic-is-the-basic-catalog/) measures how far, with the message sizes for the same game built four ways. A drawn Image can show a chart, a board or a simple animation, but it is a picture: no hover, no zoom and no partial updates. For those you need a custom catalog. [How to make an A2UI custom catalog](/what-is-a2ui/custom-catalog/how-to/) walks through making one, and [the worked example](/what-is-a2ui/custom-catalog/) shows ours.
 
 ## FAQ
 
