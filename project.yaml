@@ -37,6 +37,7 @@ policy:
     - public/frugal-ai-ops/**
     - public/go/**   # short-link redirect stubs (fragment-hardcoded static pages), per-artifact opt-in
     - public/robots.txt
+    - public/BingSiteAuth.xml   # Bing Webmaster Tools site verification (owner, 2026-11-14); a public token by design
     - public/llms.txt
     - public/sitemap.xml
     - public/sitemap-pages.xml
