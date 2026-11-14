@@ -61,3 +61,7 @@
 /mermaid /atoms/motion_arch/?utm_source=video&utm_campaign=mermaid-motion 302
 /d1 /blog/019-d3-chart-atoms-morph/?utm_source=video&utm_campaign=atom-drop&utm_content=d1 302
 /d2 /atoms/motion_bricks/?utm_source=video&utm_campaign=atom-drop&utm_content=d2 302
+
+# The Basic Catalog demo page was first published as /anatomy/; its demos now live under /demos/ (14 Nov 2026).
+/what-is-a2ui/basic-catalog/anatomy /what-is-a2ui/basic-catalog/demos/ 301
+/what-is-a2ui/basic-catalog/anatomy/ /what-is-a2ui/basic-catalog/demos/ 301
