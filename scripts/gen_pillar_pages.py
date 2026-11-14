@@ -43,6 +43,16 @@ BASE = "https://a2uicatalog.ai"
 LINKEDIN = "https://www.linkedin.com/in/curtiskrygier"
 FRONT_MATTER_RE = re.compile(r"^---\n(.*?)\n---\n(.*)$", re.S)
 PILLARS = ["what-is-a2ui", "what-is-a2ui/custom-catalog", "what-is-a2ui/custom-catalog/how-to", "what-is-a2ui/basic-catalog"]
+# Section navigation shown on every page of the guide (labels are short and proposed, not yet approved by the owner).
+GUIDE_NAV = [("what-is-a2ui", "What is A2UI?"), ("what-is-a2ui/basic-catalog", "Basic Catalog"),
+             ("what-is-a2ui/custom-catalog/how-to", "Custom catalog: how to"), ("what-is-a2ui/custom-catalog", "Custom catalog: worked example")]
+
+def guide_nav(current):
+    items = []
+    for sl, label in GUIDE_NAV:
+        cur = ' aria-current="page"' if sl == current else ""
+        items.append(f'<li><a href="/{sl}/"{cur}>{html.escape(label)}</a></li>')
+    return '<nav class="guide-nav" aria-label="In this guide"><span class="guide-nav-h">In this guide</span><ul>' + "".join(items) + "</ul></nav>"
 CATALOG = os.path.join(PUBLIC, "catalogue", "a2ui-atoms-v1.json")
 BASIC_CATALOG = os.path.join(ROOT, "tests", "fixtures", "a2ui_v1_0_spec", "catalogs", "basic", "catalog.json")
 TOKEN_RE = re.compile(r"@@([A-Z0-9_]+)@@")
@@ -106,6 +116,13 @@ a.pillar-kicker{{text-decoration:none}}a.pillar-kicker::before{{content:"← "}}
 .pillar-body th{{font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted)}}
 .pillar-film{{margin:2rem -48px;padding:0}}
 .pillar-film figcaption{{margin:10px 48px 0;font-size:.86rem;color:var(--text-muted);text-align:center}}
+.guide-nav{{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;margin:0 0 22px;padding:10px 14px;border:1px solid var(--border);border-radius:10px;background:var(--surface-2,var(--code-bg))}}
+.guide-nav-h{{font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted)}}
+.guide-nav ul{{display:flex;flex-wrap:wrap;gap:4px 6px;list-style:none;margin:0;padding:0}}
+.guide-nav a{{display:inline-block;min-height:24px;padding:4px 11px;border-radius:7px;font-size:.88rem;font-weight:600;text-decoration:none;color:var(--text-muted)}}
+.guide-nav a:hover{{color:var(--text);background:var(--surface)}}
+.guide-nav a[aria-current="page"]{{color:var(--accent);background:var(--surface);box-shadow:inset 0 0 0 1px var(--accent)}}
+.guide-nav a:focus-visible{{outline:2px solid var(--accent);outline-offset:2px}}
 .pillar-foot{{margin-top:44px;padding-top:18px;border-top:1px solid var(--border);font-size:.8rem;color:var(--text-muted)}}
 .pillar-foot a{{color:var(--accent)}}
 @media(max-width:900px){{.pillar-film{{margin:2rem 0}}.pillar-film figcaption{{margin:10px 0 0}}}}
@@ -116,6 +133,7 @@ a.pillar-kicker{{text-decoration:none}}a.pillar-kicker::before{{content:"← "}}
 {site_header}
 <main class="pillar">
 <header class="pillar-hero">
+{guide_nav}
 {kicker}
 <h1>{h1}</h1>
 <p class="sub">{h1_sub}</p>
@@ -282,7 +300,7 @@ def build(slug):
         date_human = date
     out = PAGE.format(title=html.escape(title), desc=html.escape(summary, quote=True), url=url, base=BASE, li=LINKEDIN,
                       jsonld=jsonld, h1=h1, h1_sub=h1_sub, lede=lede_html, read_minutes=fm.get("read_minutes", 5),
-                      date_human=date_human, body=body_html, kicker=kicker,
+                      date_human=date_human, body=body_html, kicker=kicker, guide_nav=guide_nav(slug),
                       site_head_js=_site.SITE_HEAD_JS, site_css=_site.SITE_BASE_CSS,
                       site_header=_site.site_header("guide"), site_foot_js=_site.SITE_FOOT_JS)
     d = os.path.join(PUBLIC, slug)
