@@ -22,6 +22,10 @@ The components are @@BASIC_COMPONENT_NAMES@@. The functions are @@BASIC_FUNCTION
 - **React to the user:** a Button fires an action to the agent.
 - **Compute and format:** the functions: `and`, `or`, `not`; `formatCurrency`, `formatDate`, `formatNumber`, `formatString`, `pluralize`; `email`, `length`, `numeric`, `regex`, `required`; and `openUrl`.
 
+## Try it live
+
+The [Demo Gallery](/what-is-a2ui/basic-catalog/explore/) runs every component and function from a real A2UI message in your browser. Click a button, type in a field, and see what the agent would receive.
+
 ## How far can Basic go?
 
 It goes further than the name suggests, and it has clear limits. Our article [A2UI: How basic is the basic catalog?](/blog/022-a2ui-how-basic-is-the-basic-catalog/) measures how far, with the message sizes for the same game built four ways. A drawn Image can show a chart, a board or a simple animation, but it is a picture: no hover, no zoom and no partial updates. For those you need a custom catalog. [How to make an A2UI custom catalog](/what-is-a2ui/custom-catalog/how-to/) walks through making one, and [the worked example](/what-is-a2ui/custom-catalog/) shows ours.

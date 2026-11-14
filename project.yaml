@@ -94,6 +94,7 @@ policy:
     - public/pricing/**
     - public/about/**
     - public/fr/**   # French landing page (gen_trust_pages.py, 2026-11-12)
+    - public/bc-assets/**   # Basic Catalog demo gallery assets, published on Curtis's go-ahead 2026-11-14
     - public/what-is-a2ui/**   # pillar guide page, published on Curtis's go-ahead 2026-10-05
     - public/contact/**
     - public/privacy/**

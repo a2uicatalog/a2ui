@@ -313,6 +313,7 @@ def site_header():
     <nav class="site-nav">
       <a href="/blog/drafts">Blog</a>
       <a href="/">A2UICatalog Explorer</a>
+      <a href="/what-is-a2ui/basic-catalog/explore/">Demo Gallery</a>
       <a href="/templates">Templates</a>
       <a href="/authoring" aria-current="page">Authoring</a>
       <a href="/workspace/">Workspace</a>

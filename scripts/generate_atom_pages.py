@@ -854,6 +854,7 @@ def site_header(active=""):
       <a href="{'/blog/drafts' if full else '/blog'}"{cur('blog')}>Blog</a>
       <a href="/what-is-a2ui/"{cur('guide')}>What is A2UI?</a>
       <a href="/atoms/"{cur('atoms')}>A2UICatalog Explorer</a>
+      <a href="/what-is-a2ui/basic-catalog/explore/"{cur('demo')}>Demo Gallery</a>
       {'<a href="/templates"' + cur('templates') + '>Templates</a>' if full else ''}
       <a href="/docs"{cur('docs')}>Docs</a>
       {'<a href="/authoring"' + cur('authoring') + '>Authoring</a>' if full else ''}

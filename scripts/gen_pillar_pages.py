@@ -45,6 +45,7 @@ FRONT_MATTER_RE = re.compile(r"^---\n(.*?)\n---\n(.*)$", re.S)
 PILLARS = ["what-is-a2ui", "what-is-a2ui/custom-catalog", "what-is-a2ui/custom-catalog/how-to", "what-is-a2ui/basic-catalog"]
 # Section navigation shown on every page of the guide (labels are short and proposed, not yet approved by the owner).
 GUIDE_NAV = [("what-is-a2ui", "What is A2UI?"), ("what-is-a2ui/basic-catalog", "Basic Catalog"),
+             ("what-is-a2ui/example", "Basic Catalog: trip planner example"),
              ("what-is-a2ui/custom-catalog/how-to", "Custom catalog: how to"), ("what-is-a2ui/custom-catalog", "Custom catalog: worked example")]
 
 def guide_nav(current):
