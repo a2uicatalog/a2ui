@@ -1,0 +1,373 @@
+<!doctype html><html lang="en" data-theme="light"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Text · A2UI Basic Catalog</title><meta name="description" content="Text in the A2UI v1.0 Basic Catalog: Displays text. A live demo drawn by the official React renderer, its properties and what we tested."><link rel="canonical" href="https://a2uicatalog.ai/what-is-a2ui/basic-catalog/text/"><meta property="og:type" content="website"><meta property="og:title" content="Text · A2UI Basic Catalog"><meta property="og:description" content="Text in the A2UI v1.0 Basic Catalog: Displays text. A live demo drawn by the official React renderer, its properties and what we tested."><meta property="og:url" content="https://a2uicatalog.ai/what-is-a2ui/basic-catalog/text/"><meta property="og:image" content="https://a2uicatalog.ai/brand/og-card.png"><meta name="twitter:card" content="summary_large_image"><script>(function(){var d=document.documentElement;d.classList.add("js");if(/[?&]embed=1/.test(location.search))d.classList.add("embed");try{var s=localStorage.getItem("a2ui-theme");d.setAttribute("data-theme",s==="dark"?"dark":"light")}catch(x){d.setAttribute("data-theme","light")}})()</script><script>
+(function(){var t='light';try{var s=localStorage.getItem('a2ui-theme');if(s==='dark'||s==='light')t=s}catch(e){}
+document.documentElement.setAttribute('data-theme',t);document.documentElement.classList.add('js')})();
+</script><style>/*brand-tokens:c646187a*/
+:root{
+  color-scheme:light;
+  --bg:#f6f9fd;--surface:#ffffff;--surface-2:#eef2f8;--border:#dadee5;
+  --border-strong:#c3c9d3;--text:#141b24;--text-2:#2c343f;--text-muted:#515963;
+  --accent:#5051cf;--accent-text:#3a3bb0;--accent-contrast:#ffffff;--accent-soft-bg:#e6eaff;
+  --accent-2:#009ca7;--accent-2-text:#007581;--focus:#5051cf;--positive:#2f913e;
+  --negative:#c53637;--warn:#c69600;--code-bg:#f1f4f9;--radius:12px;
+  --shadow:0 1px 2px rgba(20,27,36,.05),0 10px 30px rgba(20,27,36,.07);--glow:0 4px 24px rgba(80,81,207,.16);--header-glass:rgba(255,255,255,.78);--grad:linear-gradient(120deg,#6267e7,#00b7c3);
+  --card:var(--surface);--muted:var(--text-muted);--cyan:var(--accent-2);--green:var(--positive);--accent-soft:var(--accent-soft-bg);
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#1e2733;--surface:#2d3642;--surface-2:#1a222d;--border:#4a5361;
+  --border-strong:#6b7684;--text:#eaeff5;--text-2:#d5dbe3;--text-muted:#a9b2be;
+  --accent:#8d98ff;--accent-text:#c7cdff;--accent-contrast:#141b24;--accent-soft-bg:#2f3463;
+  --accent-2:#2ac4ce;--accent-2-text:#2ac4ce;--focus:#8d98ff;--positive:#5cc46c;
+  --negative:#ff7d7e;--warn:#e6b800;--code-bg:#1a222d;--shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.28);
+  --glow:0 4px 28px rgba(141,152,255,.24);--header-glass:rgba(45,54,66,.78);--grad:linear-gradient(120deg,#8d98ff,#2ac4ce);
+}
+:root[data-theme="dark"] .stage,:root[data-theme="dark"] .preview-box{color-scheme:light;--bg:#f6f9fd;--surface:#ffffff;--surface-2:#eef2f8;--border:#dadee5;--border-strong:#c3c9d3;--text:#141b24;--text-2:#2c343f;--text-muted:#515963;--accent:#5051cf;--accent-text:#3a3bb0;--accent-contrast:#ffffff;--accent-soft-bg:#e6eaff;--accent-2:#009ca7;--accent-2-text:#007581;--focus:#5051cf;--positive:#2f913e;--negative:#c53637;--warn:#c69600;--code-bg:#f1f4f9;--radius:12px;--shadow:0 1px 2px rgba(20,27,36,.05),0 10px 30px rgba(20,27,36,.07);--glow:0 4px 24px rgba(80,81,207,.16);--header-glass:rgba(255,255,255,.78);--grad:linear-gradient(120deg,#6267e7,#00b7c3);--card:var(--surface);--muted:var(--text-muted);--cyan:var(--accent-2);--green:var(--positive);--accent-soft:var(--accent-soft-bg);}
+.stage,.preview-box{--mt-ink:#14181f}
+
+.site-header,.site-header *,.gnav-wrap,.gnav-wrap *,.demo-foot,.demo-foot *{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:16px;line-height:1.6}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+label:has(input[type=radio]:focus-visible),label:has(input[type=checkbox]:focus-visible),input[type=radio]:focus-visible+label,input[type=checkbox]:focus-visible+label{outline:2px solid var(--accent);outline-offset:2px}
+.site-header{position:sticky;top:0;z-index:100;background:var(--header-glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
+.hdr-in{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:10px;padding:11px 24px}
+.wordmark{display:flex;align-items:center;gap:9px;font-size:15px;font-weight:800;letter-spacing:-.2px;color:var(--text);text-decoration:none;white-space:nowrap}
+.logo-atom{width:22px;height:22px;flex-shrink:0}
+.logo-atom .nuc{fill:var(--accent)}
+.logo-atom .o1{stroke:var(--accent);fill:none;stroke-width:1.5}
+.logo-atom .o2{stroke:oklch(70% 0.14 202);fill:none;stroke-width:1.5}
+.logo-atom .o3{stroke:var(--accent);fill:none;stroke-width:1.1;opacity:.35}
+.logo-atom .el{fill:oklch(70% 0.14 202)}
+.grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.site-nav{display:flex;gap:4px;margin-right:auto;margin-left:12px}
+.site-nav a{font-size:13px;font-weight:600;text-decoration:none;color:var(--muted);padding:5px 11px;border-radius:7px;transition:color .15s,background .15s}
+.site-nav a:hover{color:var(--text);background:var(--surface-2)}
+.site-nav a[aria-current="page"]{color:var(--accent-text);background:var(--accent-soft-bg)}
+.theme-btn{font:inherit;font-size:14px;line-height:1;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 9px;cursor:pointer;color:var(--text)}
+.theme-btn:hover{border-color:var(--border-strong)}
+.gh-pill{font-size:12px;font-weight:650;color:var(--text);text-decoration:none;border:1px solid var(--border);border-radius:8px;padding:6px 12px;background:var(--surface);white-space:nowrap}
+.gh-pill:hover{border-color:var(--border-strong)}
+.wrap{max-width:1100px;margin:0 auto;padding:36px 24px 96px}
+footer{margin-top:64px;padding-top:24px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+footer a{color:var(--accent-2-text);text-decoration:underline;text-underline-offset:2px}
+/* links inside running text must not rely on colour alone (WCAG 1.4.1): underline them */
+.wrap p a:not([class]),.wrap li a:not([class]),.wrap td a:not([class]),.wrap dd a:not([class]),footer p a:not([class]){text-decoration:underline;text-underline-offset:2px}
+/* Announcement pill above the hero headline. Sits in normal flow (not fixed or
+   sticky) so it never covers content, and wraps rather than truncating on
+   narrow screens — the arrow is the only thing dropped on mobile. */
+.announce{display:inline-flex;align-items:center;gap:10px;max-width:100%;
+ margin:0 auto 22px;padding:7px 8px 7px 8px;border:1px solid var(--border);
+ border-radius:999px;background:var(--surface);text-decoration:none;
+ font-size:13px;line-height:1.35;color:var(--text);
+ transition:border-color .15s,background .15s}
+.announce:hover{border-color:var(--accent);background:var(--accent-soft-bg)}
+.announce-tag{flex:none;font-size:10.5px;font-weight:800;letter-spacing:.08em;
+ text-transform:uppercase;color:#fff;background:var(--accent);
+ border-radius:999px;padding:4px 9px}
+.announce-text{text-align:left}
+.announce-text code{font-size:12px;background:var(--surface-2);
+ padding:1px 5px;border-radius:5px}
+.announce-go{flex:none;color:var(--accent);font-weight:700;padding-right:8px}
+@media(max-width:560px){.announce{font-size:12.5px;align-items:flex-start;
+ border-radius:14px;padding:9px 12px}.announce-go{display:none}}
+
+/* Design pass (1 Nov 2026, direction C). Header: the full nav row from 861 px; below it, with JS, the nav folds behind a Menu button and
+   Search becomes an icon link; without JS the nav stays a wrapping row, so no destination is ever lost. Touch targets are 44 px on phones. */
+.hdr-search,.menu-btn{display:none}
+.hdr-search,.menu-btn,.theme-btn{align-items:center;justify-content:center;color:var(--text)}
+.menu-btn{gap:6px;font:700 14px/1 inherit;border:1px solid var(--border-strong);border-radius:10px;background:var(--surface);cursor:pointer;padding:0 14px}
+.theme-btn svg{display:block}
+@media(max-width:860px){
+ .hdr-in{flex-wrap:wrap;padding:8px 16px;row-gap:0}
+ .wordmark{margin-right:auto}
+ .gh-pill{display:none}
+ .hdr-search{display:flex;min-width:44px;min-height:44px;border-radius:10px}
+ .theme-btn{display:flex;min-width:44px;min-height:44px;border-radius:10px}
+ .site-nav{order:3;width:100%;margin:6px 0 2px;gap:2px;flex-wrap:wrap}
+ .site-nav a{white-space:nowrap;font-size:14px;padding:11px 12px;min-height:44px;display:flex;align-items:center}
+ .js .menu-btn{display:flex;min-height:44px}
+ .js .site-nav{display:none;flex-direction:column;align-items:stretch;border-top:1px solid var(--border);padding-top:6px}
+ .js .site-nav.open{display:flex}
+}
+@media(min-width:861px){.theme-btn{display:flex;min-width:36px;min-height:36px;border-radius:8px}}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+/* "Pause all motion" / per-preview Pause (WCAG 2.2.2): stops CSS animation; film clocks are paused by the page script */
+.motion-paused .stage-inner *,.preview-box.paused *{animation-play-state:paused!important}
+.pause-btn{display:inline-flex;align-items:center;gap:6px;min-width:44px;min-height:44px;padding:0 14px;border:1px solid var(--border-strong);border-radius:10px;background:var(--surface);color:var(--text);font:600 14px/1 inherit;cursor:pointer}
+.pause-btn[hidden]{display:none}
+.preview-tools{gap:8px;flex-wrap:wrap}
+.focus-btn{display:inline-flex;align-items:center;gap:6px;min-width:44px;min-height:44px;padding:0 16px;border:1px solid var(--border-strong);border-radius:10px;background:var(--surface);color:var(--text);font:600 14px/1 inherit;cursor:pointer}
+.focus-btn[hidden]{display:none}
+.focus-btn:focus-visible,.focus-close:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.focus-dialog{border:0;padding:0;background:rgba(8,10,16,.9);max-width:100vw;max-height:100vh;width:100vw;height:100vh;color:var(--text);overflow:hidden}
+.focus-dialog::backdrop{background:rgba(8,10,16,.82)}
+.focus-dialog:not([open]){display:none}
+.focus-dialog[open]{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:12px 16px}
+.focus-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;width:var(--focus-w,100%);max-width:100%;color:#f1f5f9}
+.focus-title{font:600 15px/1.3 inherit;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.focus-actions{display:flex;gap:8px;flex:none}
+.focus-close{min-width:44px;min-height:44px;padding:0 16px;border:1px solid var(--border-strong);border-radius:10px;background:var(--surface);color:var(--text);font:600 14px/1 inherit;cursor:pointer}
+.focus-stage{width:var(--focus-w,100%);max-width:100%;max-height:var(--focus-h,none);overflow:auto;border-radius:16px;background:#0b0d12}
+.focus-stage:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.focus-stage .mt-root{margin:0!important;max-width:none!important;width:calc(var(--focus-w,100%) * var(--focus-zoom,1))}
+.focus-zoom{min-width:44px;min-height:44px;padding:0 14px;border:1px solid var(--border-strong);border-radius:10px;background:var(--surface);color:var(--text);font:600 14px/1 inherit;cursor:pointer}
+.focus-zoom[aria-pressed="true"]{background:var(--accent-soft-bg);border-color:var(--accent);color:var(--accent-text)}
+.focus-zoom:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+/* A portrait film (9:16) would be taller than the screen in the preview column: cap it at 78vh and centre it */
+.preview-box .mt-root:has(> .mt-vp[style*="aspect-ratio:720/1280"]){max-width:calc(78vh*0.5625);margin-left:auto!important;margin-right:auto!important}   /* !important: the film root carries an inline margin:1rem 0 */
+.pause-btn[aria-pressed="true"]{background:var(--accent-soft-bg);border-color:var(--accent);color:var(--accent-text)}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+/* cursor_glow ships dark-tuned (screen blend ≈ invisible over a white ground);
+   in the light default, re-blend the orb — it is the only direct body child
+   carrying the atom's z-index:9000. */
+:root:not([data-theme="dark"]) body>div[style*="z-index:9000"]{mix-blend-mode:multiply!important;opacity:.22!important}
+.guide-nav{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;margin:0 0 22px;padding:10px 14px;border:1px solid var(--border);border-radius:10px;background:var(--surface-2,var(--code-bg))}.guide-nav-h{font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted)}.guide-nav ul{display:flex;flex-wrap:wrap;gap:4px 6px;list-style:none;margin:0;padding:0}.guide-nav a{display:inline-block;min-height:24px;padding:4px 11px;border-radius:7px;font-size:.88rem;font-weight:600;text-decoration:none;color:var(--text-muted)}.guide-nav a:hover{color:var(--text);background:var(--surface)}.guide-nav a[aria-current="page"]{color:var(--accent);background:var(--surface);box-shadow:inset 0 0 0 1px var(--accent)}.guide-nav a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}.guide-nav a[aria-current="true"]{color:var(--accent);background:var(--surface);box-shadow:inset 0 0 0 1px var(--accent)}</style><link rel="stylesheet" href="/bc-assets/page.css"><script defer src=/bc-assets/basic-catalog-explainer.js></script></head><body><a class="skip-link" href="#main-content">Skip to content</a><header class="site-header"><div class="hdr-in">
+    <a class="wordmark" href="/" aria-label="A2UI Catalog home"><svg class="logo-atom" viewBox="0 0 24 24" aria-hidden="true"><ellipse class="o1" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(-32 12 12)"/><ellipse class="o2" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(32 12 12)"/><ellipse class="o3" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(90 12 12)"/><circle class="nuc" cx="12" cy="12" r="2.7"/><circle class="el" cx="3.21" cy="15.98" r="1.25"/></svg><span><span class="grad">A2UI</span> Catalog</span></a>
+    <nav class="site-nav" id="site-menu" aria-label="Main">
+      <a href="/blog">Blog</a>
+      <a href="/what-is-a2ui/" aria-current="page">What is A2UI?</a>
+      <a href="/atoms/">A2UICatalog Explorer</a>
+      <a href="/what-is-a2ui/basic-catalog/explore/">Demo Gallery</a>
+      
+      <a href="/docs">Docs</a>
+      
+    </nav>
+    <a class="hdr-search" href="/atoms/#hub-q" aria-label="Search atoms"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg></a>
+    <button class="theme-btn" type="button" aria-label="Switch to dark theme"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 4v16a8 8 0 0 0 0-16z" fill="currentColor"/></svg></button>
+    <a class="gh-pill" href="https://github.com/a2uicatalog/a2ui">GitHub ↗</a>
+    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="site-menu"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>Menu</button>
+  </div></header><div class="gnav-wrap"><nav class="guide-nav" aria-label="In this guide"><span class="guide-nav-h">In this guide</span><ul><li><a href="/what-is-a2ui/">What is A2UI?</a></li><li><a href="/what-is-a2ui/basic-catalog/" aria-current="true">Basic Catalog</a></li><li><a href="/what-is-a2ui/example/">Basic Catalog: trip planner example</a></li><li><a href="/what-is-a2ui/custom-catalog/how-to/">Custom catalog: how to</a></li><li><a href="/what-is-a2ui/custom-catalog/">Custom catalog: worked example</a></li></ul></nav></div><main id="main-content" class="atom-page-shell"><div class="atom-topbar"><nav class="atom-breadcrumb" aria-label="Breadcrumb"><ol role="list"><li><a href="/">A2UI Catalog</a></li><li><a href="/what-is-a2ui/">What is A2UI</a></li><li><a href="/what-is-a2ui/basic-catalog/">Basic Catalog</a></li><li><span aria-current="page">Text</span></li></ol></nav><nav class="atom-pager" aria-label="Component pagination"><span class="atom-pager-pos">Show · 1 of 5</span><a href="/what-is-a2ui/basic-catalog/image/">Image →</a></nav></div>
+<header class="atom-page-header"><div class="atom-title-row"><h1>Text</h1><span class="group-pill">Show</span><code class="atom-mono-id">Text</code></div><p class="about-line">Text is part of the Basic Catalog in Google&#39;s A2UI v1.0 protocol. This page shows how it behaves so you can build with it. Unofficial, and not affiliated with Google.</p></header>
+<article id="card-text" class="catalog-card atom-detail-grid" data-demo-state="idle" data-autoload="true" data-kind="component" data-name="Text" data-bundle-url="/bc-assets/a2ui-react-explainer.55c7cd5077.js" data-timeout-ms="8000" data-evidence-date="2026-11-14">
+<section class="comp-preview-section" aria-labelledby="sec-preview-text"><div class="section-head-row"><h2 id="sec-preview-text" class="section-eyebrow">Live preview</h2><span class="verdict-pill" data-slot="provenance-pill" data-verdict="PASS">What you try is exactly what we tested</span></div>
+<div class="variant-controls-bar"><fieldset class="variant-list"><legend>variant (allowed values only)</legend><label class="variant-chip"><input type="radio" name="variant-text-variant" value="caption" data-prop="variant" data-tested="true" data-target-id="p"> caption</label><label class="variant-chip"><input type="radio" name="variant-text-variant" value="body" data-prop="variant" data-tested="true" data-target-id="p"> body</label></fieldset></div>
+<div class="window-frame"><div class="window-titlebar"><span class="window-dots" aria-hidden="true"><span class="window-dot"></span><span class="window-dot"></span><span class="window-dot"></span></span>
+<span class="window-title"><span class="frame-label frame-label-recorded" data-slot="frame-label-recorded" data-default-label="Recorded snapshot · React 0.15.0 with web_core 0.15.0 · 2026-11-14">Recorded snapshot · React 0.15.0 with web_core 0.15.0 · 2026-11-14</span><span class="frame-label frame-label-live" data-slot="frame-label-live"><span class="frame-live-dot" aria-hidden="true"></span><span>Live · rendered in your browser by @a2ui/react 0.15.0</span></span></span></div>
+<div class="window-stage demo-stage"><div class="static-preview"><div data-slot="snapshot-holder"><img class="snap-img snap-light" src="/bc-assets/snapshots/Text-text_min-light.png" width="440" height="24" alt="Recorded render of Text (minimal)" loading="lazy"><img class="snap-img snap-dark" src="/bc-assets/snapshots/Text-text_min-dark.png" width="440" height="24" alt="" loading="lazy"></div></div>
+<section class="live-demo-region" aria-labelledby="demo-heading-text" hidden><div class="stage-live-header"><span class="demo-badge">Demo</span><h3 id="demo-heading-text" tabindex="-1">Live demo: Text</h3><span class="verdict-pill sr-only" data-slot="live-provenance-pill" data-verdict="PASS">What you try is exactly what we tested</span></div>
+<div class="a2ui-mount-scope" data-mount="text"></div></section></div></div>
+<p class="demo-status" role="status" aria-live="polite" hidden></p>
+<div class="demo-launcher"><button type="button" class="btn-secondary" data-action="load-demo">Reload live demo <span class="bundle-meta">(0.9 MB)</span></button></div></section>
+<aside class="comp-inspector-panel" aria-label="Text payload and state inspector"><div class="inspector-tabs"><div role="tablist" aria-label="Text inspector">
+<button role="tab" type="button" id="tab-msg-text" aria-selected="true" aria-controls="panel-msg-text" tabindex="0">Message</button>
+<button role="tab" type="button" id="tab-data-text" aria-selected="false" aria-controls="panel-data-text" tabindex="-1">Data model</button>
+<button role="tab" type="button" id="tab-log-text" aria-selected="false" aria-controls="panel-log-text" tabindex="-1">Action log</button></div>
+<div role="tabpanel" id="panel-msg-text" aria-labelledby="tab-msg-text"><pre class="code-panel" tabindex="0" role="region" aria-label="Message JSON"><code class="canonical-messages-json" data-slot="messages-view">[
+  {
+    &quot;version&quot;: &quot;1.0&quot;,
+    &quot;createSurface&quot;: {
+      &quot;surfaceId&quot;: &quot;demo&quot;,
+      &quot;catalogId&quot;: &quot;https://a2ui.org/specification/v1_0/catalogs/basic/catalog.json&quot;,
+      &quot;components&quot;: [
+        {
+          &quot;id&quot;: &quot;root&quot;,
+          &quot;component&quot;: &quot;Column&quot;,
+          &quot;children&quot;: [
+            &quot;p&quot;
+          ]
+        },
+        {
+          &quot;id&quot;: &quot;p&quot;,
+          &quot;component&quot;: &quot;Text&quot;,
+          &quot;text&quot;: &quot;MARK plain&quot;
+        }
+      ]
+    }
+  }
+]</code></pre></div>
+<div role="tabpanel" id="panel-data-text" aria-labelledby="tab-data-text" hidden><pre class="code-panel" tabindex="0" role="region" aria-label="Data model" data-slot="data-view">{}</pre><div class="sr-only" aria-live="polite" data-slot="data-announcer"></div></div>
+<div role="tabpanel" id="panel-log-text" aria-labelledby="tab-log-text" hidden><ol reversed class="action-log-list" data-slot="action-log"></ol><div class="sr-only" aria-live="polite" data-slot="log-announcer"></div></div></div>
+<div class="inspector-actions"><button type="button" class="btn-secondary" data-action="reset-surface">Reset</button><button type="button" class="btn-secondary" data-action="copy-message">Copy message</button><span class="copy-feedback" data-slot="copy-status" role="status" aria-live="polite"></span></div></aside>
+<div class="comp-body-sections">
+<section class="atom-doc-section" aria-labelledby="sec-what-text"><h2 id="sec-what-text" class="section-eyebrow">What it is</h2><div class="card-spec"><p>Displays text. Supports simple Markdown.</p></div></section>
+<section class="atom-doc-section" aria-labelledby="sec-trip-text"><h2 id="sec-trip-text" class="section-eyebrow">In the trip planner</h2><p>The trip planner, a worked example built only from Basic Catalog parts, uses <strong>17</strong> Text parts: the title, the dates line, the place description, the section headings, each day&#x27;s date, temperatures and rain chance, and the local time. <a href="/what-is-a2ui/basic-catalog/explore/#anatomy">See it running, with every part numbered</a>.</p><p class="ana-note">Counted from one real request (Oslo, 3 days (Basic components only, text version), 32 parts, 2026-11-14).</p></section>
+<section class="atom-doc-section" aria-labelledby="sec-props-text"><h2 id="sec-props-text" class="section-eyebrow">Properties</h2><div class="table-scroll" role="region" aria-label="Text properties table" tabindex="0"><table class="atom-table"><caption>Schema properties for <code>Text</code></caption><thead><tr><th scope="col">Property</th><th scope="col">Type</th><th scope="col">Required</th><th scope="col">Allowed values</th><th scope="col">New in 1.0</th></tr></thead><tbody><tr><th scope="row"><code>text</code></th><td>DynamicString</td><td>yes</td><td>&ndash;</td><td></td></tr><tr><th scope="row"><code>variant</code></th><td>string</td><td>no</td><td><code>caption</code>, <code>body</code></td><td></td></tr></tbody></table></div></section>
+<section class="atom-doc-section" aria-labelledby="sec-evidence-text"><h2 id="sec-evidence-text" class="section-eyebrow">Evidence</h2><div class="evidence-panel"><p class="evidence-badge" data-slot="evidence-badge" data-recorded-verdict="PASS" data-recorded-text="React 0.15.0 with web_core 0.15.0, v1.0 module · headless Chromium, Linux · 2026-11-14 · 1 run"><span class="verdict-pill" data-slot="evidence-verdict" data-verdict="PASS">PASS</span> <span data-slot="evidence-text">React 0.15.0 with web_core 0.15.0, v1.0 module · headless Chromium, Linux · 2026-11-14 · 1 run</span></p>
+<div class="evidence-nonclaims"><p class="details-subhead">What is not claimed</p><ul class="limits"><li>Other renderers (Lit, Angular, community) were not rerun; the 8 November 2026 matrix stands.</li><li>Gemini Enterprise was not tested in this run (14 November 2026).</li><li>Remote media was not loaded, so media records element creation and attributes, not playback.</li><li>Layout and visual quality are not judged.</li></ul><p class="placeholder-media-note">Media and links in the examples use <code>example.invalid</code> placeholders. Navigation is intercepted and media is not played.</p></div></div></section>
+<section class="atom-doc-section" aria-labelledby="sec-findings-text"><h2 id="sec-findings-text" class="section-eyebrow">Findings</h2><div class="findings-block"><p class="details-subhead">Findings</p><ul><li>In 1.0 the Text variants are caption and body only. 0.9 also had h1 to h5.</li></ul></div></section>
+<section class="atom-doc-section" aria-labelledby="sec-cases-text"><h2 id="sec-cases-text" class="section-eyebrow">Recorded cases</h2><div class="table-scroll" role="region" aria-label="Text recorded cases table" tabindex="0"><table class="atom-table"><caption>Recorded cases for <code>Text</code></caption><thead><tr><th scope="col">Case</th><th scope="col">Expected</th><th scope="col">Observed</th><th scope="col">Verdict</th></tr></thead><tbody><tr><td colspan="4">No separate cases were recorded for this component; the verdict comes from the example renders.</td></tr></tbody></table></div></section>
+</div><script type="application/json" class="card-meta-json">{"variants": [{"prop": "variant", "value": "caption", "tested": true, "reason": "", "snapshot": {"light": "/bc-assets/snapshots/Text-text_caption-light.png", "dark": "/bc-assets/snapshots/Text-text_caption-dark.png", "height": 15}}, {"prop": "variant", "value": "body", "tested": true, "reason": "", "snapshot": {"light": "/bc-assets/snapshots/Text-text_body-light.png", "dark": "/bc-assets/snapshots/Text-text_body-dark.png", "height": 24}}]}</script></article></main><footer class="demo-foot"><p>Independent and unofficial, not affiliated with Google.</p></footer><script>
+function themeLabel(){var d=document.documentElement.getAttribute('data-theme')==='dark';
+  document.querySelectorAll('.theme-btn').forEach(function(b){b.setAttribute('aria-label',d?'Switch to light theme':'Switch to dark theme')})}
+themeLabel();
+document.addEventListener('click',function(e){
+  var m=e.target.closest('.menu-btn');
+  if(m){var n=document.getElementById(m.getAttribute('aria-controls')),o=m.getAttribute('aria-expanded')!=='true';
+    m.setAttribute('aria-expanded',String(o));if(n)n.classList.toggle('open',o);return}
+  var b=e.target.closest('.theme-btn');if(!b)return;
+  var r=document.documentElement,t=r.getAttribute('data-theme')==='dark'?'light':'dark';
+  r.setAttribute('data-theme',t);themeLabel();
+  try{localStorage.setItem('a2ui-theme',t)}catch(err){}
+});
+document.addEventListener('keydown',function(e){
+  if(e.key!=='Escape')return;var m=document.querySelector('.menu-btn[aria-expanded="true"]');if(!m)return;
+  m.setAttribute('aria-expanded','false');var n=document.getElementById(m.getAttribute('aria-controls'));if(n)n.classList.remove('open');m.focus()
+});
+// WebMCP (W3C Web Machine Learning CG draft; Chrome origin trial 149-156,
+// shipping targeted for 157): register the catalogue's read-only tools on
+// document.modelContext, falling back to the deprecated navigator.modelContext
+// alias only when it is missing. The definitions are written out literally,
+// not built from the DOM, so tools that read them from the page source can
+// grade them. Fully inert on browsers without the API. Both tools only read
+// the public catalogue spec (same-origin /spec.json), fetched once on first call.
+(function(){
+  var mc = (typeof document!=='undefined' && document.modelContext) ||
+           (typeof navigator!=='undefined' && navigator.modelContext);
+  if(!mc || typeof mc.registerTool!=='function') return;
+  var SITE = 'https://a2uicatalog.ai';
+  var specP = null;
+  function spec(){
+    if(!specP) specP = fetch('/spec.json').then(function(r){
+      if(!r.ok) throw new Error('spec.json returned HTTP '+r.status);
+      return r.json();
+    }).catch(function(e){ specP = null; throw e; });
+    return specP;
+  }
+  function list(v){ return Array.isArray(v) ? v : []; }
+  function worksOn(a){ return list(a.surfaces && a.surfaces.works_on); }
+  function findAtom(s, t){
+    for(var i=0;i<s.atoms.length;i++){
+      var a = s.atoms[i];
+      if(a.type===t || list(a.aliases).indexOf(t)>=0) return a;
+    }
+    return null;
+  }
+  try{
+    mc.registerTool({
+      name: 'search_atoms',
+      description: 'Search the A2UI Atomic Catalog for UI atoms that fit a plain-language need, such as "image gallery" or "status timeline". Returns the best matches first, each with its type name, a one-line summary, the surfaces it works on and its page URL.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          query: {type: 'string', minLength: 1, maxLength: 200, description: 'What the UI should show or do, in plain words.'},
+          surface: {type: 'string', description: 'Only return atoms that work on this surface, such as web, email, google-chat, slides or android.'},
+          limit: {type: 'integer', minimum: 1, maximum: 25, description: 'Maximum number of matches to return (default 10).'}
+        },
+        required: ['query'],
+        additionalProperties: false
+      },
+      annotations: {readOnlyHint: true},
+      execute: function(input){
+        input = input || {};
+        var words = String(input.query||'').toLowerCase().split(/[^a-z0-9]+/).filter(function(w){ return w.length>1; });
+        var limit = Math.max(1, Math.min(25, parseInt(input.limit,10) || 10));
+        return spec().then(function(s){
+          var hits = [];
+          s.atoms.forEach(function(a){
+            if(input.surface && worksOn(a).indexOf(input.surface)<0) return;
+            var name = a.type.replace(/_/g,' ');
+            var text = [a.compact_description, a.description, a.routing_text,
+                        list(a.intent_phrases).join(' '), list(a.aliases).join(' ')].join(' ').toLowerCase();
+            var score = 0;
+            words.forEach(function(w){ if(name.indexOf(w)>=0) score += 3; else if(text.indexOf(w)>=0) score += 1; });
+            if(score) hits.push({score: score, atom: a});
+          });
+          hits.sort(function(x,y){ return y.score-x.score || (x.atom.type<y.atom.type ? -1 : 1); });
+          return {
+            query: input.query,
+            matches: hits.length,
+            atoms: hits.slice(0, limit).map(function(h){
+              var a = h.atom;
+              return {type: a.type, summary: a.compact_description || a.description,
+                      surfaces: worksOn(a), url: SITE+'/atoms/'+a.type+'/'};
+            })
+          };
+        });
+      }
+    });
+  }catch(err){/* draft API shape may still be moving -- never break the page over it */}
+  try{
+    mc.registerTool({
+      name: 'get_atom',
+      description: 'Get one A2UI Atomic Catalog atom by its type name, as returned by search_atoms. Returns its description, the payload fields it takes, where it works or degrades, its source credit and its page URL.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          type: {type: 'string', pattern: '^[a-z0-9_]+$', maxLength: 80, description: 'Atom type name, such as gallery or status_timeline.'}
+        },
+        required: ['type'],
+        additionalProperties: false
+      },
+      annotations: {readOnlyHint: true},
+      execute: function(input){
+        var t = String((input||{}).type || '');
+        return spec().then(function(s){
+          var a = findAtom(s, t);
+          if(!a) return {error: 'No atom named "'+t+'". Call search_atoms to find one.'};
+          return {type: a.type, description: a.description, fields: a.fields,
+                  surfaces: a.surfaces, source: a.source, url: SITE+'/atoms/'+a.type+'/'};
+        });
+      }
+    });
+  }catch(err){/* draft API shape may still be moving -- never break the page over it */}
+  // The two write tools call the site's own MCP server (same-origin /mcp),
+  // so they can only do what an agent connected to that server can already
+  // do. consequentialHint asks the agent to confirm with the person first.
+  function callMcp(name, args){
+    return fetch('/mcp', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json', 'Accept': 'application/json, text/event-stream'},
+      body: JSON.stringify({jsonrpc: '2.0', id: 1, method: 'tools/call', params: {name: name, arguments: args}})
+    }).then(function(r){ return r.text(); }).then(function(t){
+      t = t.trim();
+      if(t.charAt(0) !== '{'){
+        var data = t.split('\n').filter(function(l){ return l.indexOf('data:')===0; }).pop() || '';
+        t = data.slice(5);
+      }
+      var msg = JSON.parse(t);
+      if(msg.error) throw new Error(msg.error.message || 'MCP error');
+      var res = msg.result || {};
+      if(res.structuredContent) return res.structuredContent;
+      var text = (res.content || []).map(function(c){ return c.text || ''; }).join('');
+      try{ return JSON.parse(text); }catch(e){ return {result: text}; }
+    });
+  }
+  try{
+    mc.registerTool({
+      name: 'create_share_link',
+      description: 'Create a short shareable link that renders an A2UI payload in the a2uicatalog.ai playground. Stores the payload on a2uicatalog.ai for one week; anyone with the link can view it. Returns the link, the expiry date and a delete token.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          payload: {
+            type: 'object',
+            description: 'The A2UI payload to publish: blocks built from catalogue atoms (see search_atoms and get_atom).',
+            properties: {
+              title: {type: 'string', maxLength: 200, description: 'Page title shown above the blocks.'},
+              theme: {type: 'string', enum: ['light', 'dark', 'terminal'], description: 'Colour theme for the rendered page.'},
+              blocks: {type: 'array', minItems: 1, items: {type: 'object'}, description: 'Atoms in order, each an object with a type and that atom\'s fields.'}
+            },
+            required: ['blocks']
+          }
+        },
+        required: ['payload'],
+        additionalProperties: false
+      },
+      annotations: {readOnlyHint: false, consequentialHint: true},
+      execute: function(input){
+        return callMcp('publish_url', {payload: (input||{}).payload, acknowledge_storage: true, target: 'play'});
+      }
+    });
+  }catch(err){/* draft API shape may still be moving -- never break the page over it */}
+  try{
+    mc.registerTool({
+      name: 'delete_share_link',
+      description: 'Delete a share link made by create_share_link before it expires, using the delete token that create_share_link returned. The link stops working straight away.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          id: {type: 'string', maxLength: 200, description: 'The short link, or the id at its end.'},
+          delete_token: {type: 'string', maxLength: 64, description: 'The delete token create_share_link returned.'}
+        },
+        required: ['id', 'delete_token'],
+        additionalProperties: false
+      },
+      annotations: {readOnlyHint: false, destructiveHint: true, consequentialHint: true},
+      execute: function(input){
+        input = input || {};
+        return callMcp('unpublish_url', {id: input.id, delete_token: input.delete_token});
+      }
+    });
+  }catch(err){/* draft API shape may still be moving -- never break the page over it */}
+})();
+</script><script>(function(){function m(){var x=document.getElementById('main-content');if(x)document.documentElement.style.setProperty('--chrome-h',Math.round(x.getBoundingClientRect().top+window.scrollY)+'px')}m();addEventListener('resize',m);addEventListener('load',m)})()</script></body></html>

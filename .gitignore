@@ -67,7 +67,7 @@ mcp/.env
 client_secret*.json
 
 # ── local-only backend + tooling (not part of the published catalogue) ───────
-functions/
+/functions/
 apps-script-surface/gas-mcp-demo-renderer/
 spec/mcp-endpoint.md
 spec/emit-deployment.md
