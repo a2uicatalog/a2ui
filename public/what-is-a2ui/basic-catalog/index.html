@@ -91,7 +91,7 @@
      "name": "Can you draw charts with only the Basic Catalog?",
      "acceptedAnswer": {
       "@type": "Answer",
-      "text": "Not with a component: there is no chart in it. In our tests, a picture drawn on the server and shown in a Basic Image worked as a static picture or a simple animation on the official React renderer and in one Gemini Enterprise trial. We have not tested it on native renderers such as Flutter or Jetpack Compose."
+      "text": "Not with a component: there is no chart in it. In our tests, a picture drawn on the server and shown in a Basic Image worked as a static picture or a simple animation on the official React renderer and in one Gemini Enterprise trial app (v0.9 dialect, one run). We have not tested it on native renderers such as Flutter or Jetpack Compose."
      }
     },
     {
@@ -297,14 +297,14 @@ a.pillar-kicker{text-decoration:none}a.pillar-kicker::before{content:"← "}
 <ul>
 <li><strong>Show content:</strong> Text, Image, Icon, Video and AudioPlayer.</li>
 <li><strong>Arrange content:</strong> Row, Column, List, Card, Tabs, Modal and Divider. Row, Column and List can repeat their children from a data list.</li>
-<li><strong>Take and check input:</strong> Button, TextField, CheckBox, ChoicePicker, Slider and DateTimeInput. All six accept validation checks.</li>
-<li><strong>Bind to live data:</strong> any property can take a data binding or a function call.</li>
+<li><strong>Take and check input:</strong> Button, TextField, CheckBox, ChoicePicker, Slider and DateTimeInput, all of which accept validation checks.</li>
+<li><strong>Bind to live data:</strong> any property typed as a dynamic value can take a data binding or a function call.</li>
 <li><strong>React to the user:</strong> a Button fires an action to the agent.</li>
 <li><strong>Compute and format:</strong> the functions: <code>and</code>, <code>or</code>, <code>not</code>; <code>formatCurrency</code>, <code>formatDate</code>, <code>formatNumber</code>, <code>formatString</code>, <code>pluralize</code>; <code>email</code>, <code>length</code>, <code>numeric</code>, <code>regex</code>, <code>required</code>; and <code>openUrl</code>.</li>
 </ul>
 <h2 id="what-we-have-tested">What we have tested</h2>
-<p>Of the 18 components we have tested five: Text, Image, Button, Card and Column. We have not tested any of the functions. The rest is what the specification allows, not something we have measured.</p>
-<p>What we did test: a picture drawn on the server and shown in a Basic Image drew and animated on the official React renderer and in one Gemini Enterprise trial, with no custom catalog. The full measurements, with the message sizes for the same game built four ways, are in our article <a href="/blog/022-a2ui-how-basic-is-the-basic-catalog/">A2UI: How basic is the basic catalog?</a>.</p>
+<p>We have measured five of the 18 components one by one: Text, Image, Button, Card and Column. We have not tested any of the functions. Separately, in a run that reduced our own atoms to Basic components only, the official React, Lit and Angular renderers painted 656, 658 and 657 of 670 cases (our 8 November 2026 tests, v0.9 messages; the Angular figure is quoted and was not recounted). That run touches more of the catalog, but it counts whether something paints, not how each component behaves. The rest of what this page lists is what the specification allows, not something we have measured.</p>
+<p>One more result: a picture drawn on the server and shown in a Basic Image drew and animated on the official React renderer and in one Gemini Enterprise trial app (v0.9 dialect, one run per test; the React result is quoted from an earlier run whose raw file we could not locate). The full measurements, with the message sizes for the same game built four ways, are in our article <a href="/blog/022-a2ui-how-basic-is-the-basic-catalog/">A2UI: How basic is the basic catalog?</a>.</p>
 <h2 id="how-far-can-basic-go">How far can Basic go?</h2>
 <p>It goes further than the name suggests, and it has clear limits. A drawn Image can show a chart, a board or a simple animation, but it is a picture: no hover, no zoom and no partial updates. For those you need a custom catalog. <a href="/what-is-a2ui/custom-catalog/how-to/">How to make an A2UI custom catalog</a> walks through making one, and <a href="/what-is-a2ui/custom-catalog/">the worked example</a> shows ours.</p>
 <h2 id="faq">FAQ</h2>
@@ -315,7 +315,7 @@ a.pillar-kicker{text-decoration:none}a.pillar-kicker::before{content:"← "}
 <h3 id="what-functions-does-the-basic-catalog-have">What functions does the Basic Catalog have?</h3>
 <p>required, regex, length, numeric, email, formatString, formatNumber, formatCurrency, formatDate, pluralize, openUrl, and, or, not. They format values for display, check input and combine conditions, and <code>openUrl</code> opens a link.</p>
 <h3 id="can-you-draw-charts-with-only-the-basic-catalog">Can you draw charts with only the Basic Catalog?</h3>
-<p>Not with a component: there is no chart in it. In our tests, a picture drawn on the server and shown in a Basic Image worked as a static picture or a simple animation on the official React renderer and in one Gemini Enterprise trial. We have not tested it on native renderers such as Flutter or Jetpack Compose.</p>
+<p>Not with a component: there is no chart in it. In our tests, a picture drawn on the server and shown in a Basic Image worked as a static picture or a simple animation on the official React renderer and in one Gemini Enterprise trial app (v0.9 dialect, one run). We have not tested it on native renderers such as Flutter or Jetpack Compose.</p>
 <h3 id="do-i-need-a-custom-catalog">Do I need a custom catalog?</h3>
 <p>Only when a picture is not enough, for example when you need hover, zoom, partial updates or a component with real keyboard behaviour. See <a href="/what-is-a2ui/custom-catalog/how-to/">how to make a custom catalog</a>.</p>
 <h2 id="get-started">Get started</h2>

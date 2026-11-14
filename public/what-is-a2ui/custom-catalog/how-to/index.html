@@ -4,11 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>How to Make an A2UI Custom Catalog</title>
-<meta name="description" content="Make an A2UI v1.0 custom catalog step by step: define a component, check it, use it beside Basic, and handle hosts that lack it. Real weather card.">
+<meta name="description" content="Make an A2UI v1.0 custom catalog step by step: define a component, check it, use it beside Basic, and plan for hosts that lack it.">
 <link rel="canonical" href="https://a2uicatalog.ai/what-is-a2ui/custom-catalog/how-to/">
 <meta property="og:type" content="article">
 <meta property="og:title" content="How to Make an A2UI Custom Catalog">
-<meta property="og:description" content="Make an A2UI v1.0 custom catalog step by step: define a component, check it, use it beside Basic, and handle hosts that lack it. Real weather card.">
+<meta property="og:description" content="Make an A2UI v1.0 custom catalog step by step: define a component, check it, use it beside Basic, and plan for hosts that lack it.">
 <meta property="og:url" content="https://a2uicatalog.ai/what-is-a2ui/custom-catalog/how-to/">
 <meta property="og:image" content="https://a2uicatalog.ai/brand/og-card.png">
 <meta name="twitter:card" content="summary_large_image">
@@ -20,7 +20,7 @@
    "@type": "Article",
    "@id": "https://a2uicatalog.ai/what-is-a2ui/custom-catalog/how-to/#article",
    "headline": "How to Make an A2UI Custom Catalog",
-   "description": "Make an A2UI v1.0 custom catalog step by step: define a component, check it, use it beside Basic, and handle hosts that lack it. Real weather card.",
+   "description": "Make an A2UI v1.0 custom catalog step by step: define a component, check it, use it beside Basic, and plan for hosts that lack it.",
    "url": "https://a2uicatalog.ai/what-is-a2ui/custom-catalog/how-to/",
    "mainEntityOfPage": "https://a2uicatalog.ai/what-is-a2ui/custom-catalog/how-to/",
    "datePublished": "2026-11-14",
@@ -293,7 +293,7 @@ a.pillar-kicker{text-decoration:none}a.pillar-kicker::before{content:"← "}
 <article class="pillar-body">
 <h2 id="what-a-custom-catalog-is-for">What a custom catalog is for</h2>
 <p>The Basic Catalog has 18 components and 14 functions: text, layout, a few inputs. It has no chart, no timeline and no weather card. When the screen you need is not in it, you can draw a picture on the server (our <a href="/what-is-a2ui/basic-catalog/">Basic Catalog page</a> shows how far that goes), or you can make a catalog that adds the component itself.</p>
-<p>A catalog is a contract between an agent and a renderer. It lists the components and functions the agent may use and the renderer knows how to draw. The agent can only send what the catalog allows, and a renderer can reject anything it does not know.</p>
+<p>A catalog is the agreement between an agent and a renderer about what can appear on screen. It names every component and function the agent may use, each one something the renderer can draw. The agent sends only what the catalog lists, and a renderer can refuse anything outside it.</p>
 <h2 id="the-shape-of-a-catalog">The shape of a catalog</h2>
 <p>A catalog is one JSON Schema document. This is a complete small one, holding a single component: the real <code>weather_now</code> definition from our catalog, with our own extension keys removed.</p>
 <pre><code class="language-json">{
@@ -348,6 +348,21 @@ a.pillar-kicker{text-decoration:none}a.pillar-kicker::before{content:"← "}
         &quot;component&quot;
       ]
     }
+  },
+  &quot;$defs&quot;: {
+    &quot;anyComponent&quot;: {
+      &quot;oneOf&quot;: [
+        {
+          &quot;$ref&quot;: &quot;#/components/weather_now&quot;
+        }
+      ],
+      &quot;discriminator&quot;: {
+        &quot;propertyName&quot;: &quot;component&quot;
+      }
+    },
+    &quot;anyFunction&quot;: {
+      &quot;not&quot;: {}
+    }
   }
 }
 </code></pre>
@@ -357,22 +372,22 @@ a.pillar-kicker{text-decoration:none}a.pillar-kicker::before{content:"← "}
 <li><strong><code>protocolVersion</code></strong> says which A2UI version the catalog targets. Set it. The Python SDK treats a catalog with no protocol version as 0.9.</li>
 <li><strong><code>components</code></strong> holds every component, directly at the top level.</li>
 <li><strong><code>functions</code></strong> (not used here) holds functions in the same way.</li>
-<li><strong><code>$defs</code></strong> holds shared definitions, such as design tokens, that components can reference.</li>
+<li><strong><code>$defs</code></strong> must declare <code>anyComponent</code>, the union of all your components, and <code>anyFunction</code>. When you define no custom functions, <code>anyFunction</code> is <code>{"not": {}}</code>, as in the example. Shared definitions that components reuse, such as design tokens, go here too.</li>
 </ul>
 <h2 id="define-a-component">Define a component</h2>
 <p>Each component is a JSON Schema object. In the example above, <code>weather_now</code> is declared under <code>components</code> with a <code>component</code> property whose <code>const</code> is its name, plus typed properties. Its values use the shared types from A2UI's <code>common_types.json</code> (<code>DynamicString</code>, <code>DynamicNumber</code>, <code>DynamicValue</code>), which is what lets a value be a literal or a binding to the data model.</p>
 <p>The rules that matter most when you write one, from the v1.0 pages:</p>
 <ul>
-<li><strong>Names.</strong> Component names, function names and property names must follow the Unicode identifier rules (UAX #31): no leading digit, no whitespace, no symbols other than the underscore.</li>
-<li><strong>No <code>Surface</code>.</strong> A catalog must not define a standard component named <code>Surface</code>.</li>
-<li><strong>Top level only.</strong> Components and functions go directly under <code>components</code> and <code>functions</code>. A component schema must not be defined inside <code>$defs</code>, even in an <code>allOf</code> wrapper.</li>
-<li><strong>Flat.</strong> A component is a single <code>type: "object"</code> with its properties directly on it. No <code>oneOf</code>, <code>anyOf</code> or non-trait <code>allOf</code> at the component root.</li>
-<li><strong>Do not wrap the envelope.</strong> The shared properties every component carries (<code>id</code>, <code>@catalogId</code>, <code>@accessibility</code>, <code>@metadata</code>) are added by the protocol envelope. Do not add them yourself with <code>ComponentCommon</code>.</li>
-<li><strong>References.</strong> A property can point at a catalog-scoped definition with <code>#/$defs/&lt;Name&gt;</code>. A reference to the standard types must use the relative form, <code>common_types.json#/$defs/...</code>. A reference to anything else outside the catalog is an error: an implementation must report a catalog error and must not fetch it over the network.</li>
-<li><strong>Accessibility.</strong> If a component or the agent supplies an explicit accessibility label or description, it must override what the renderer would infer from how the component looks.</li>
+<li><strong>Names.</strong> Component, function and property names must be valid Unicode identifiers (UAX #31): they cannot start with a digit, and they can contain no spaces or symbols apart from the underscore.</li>
+<li><strong>No <code>Surface</code>.</strong> The name <code>Surface</code> is reserved: do not give a component that name.</li>
+<li><strong>Top level only.</strong> Declare components directly under <code>components</code> and functions directly under <code>functions</code>. Never put a component schema inside <code>$defs</code>, even wrapped in <code>allOf</code>.</li>
+<li><strong>Flat.</strong> Keep each component a single <code>type: "object"</code> with its properties directly on it. Do not use <code>oneOf</code>, <code>anyOf</code> or a general <code>allOf</code> at the component's root.</li>
+<li><strong>Leave the envelope alone.</strong> The properties every component carries (<code>id</code>, <code>@catalogId</code>, <code>@accessibility</code>, <code>@metadata</code>) are added by the protocol envelope, so leave them out of your schema and do not pull them in with <code>ComponentCommon</code>.</li>
+<li><strong>References.</strong> Point at a definition in your own <code>$defs</code> with <code>#/$defs/&lt;Name&gt;</code>. For the standard types, use the relative form, <code>common_types.json#/$defs/...</code>. A reference to anything else outside the catalog is a catalog error, and the loader must report it instead of fetching the target.</li>
+<li><strong>Accessibility.</strong> If a component or the agent gives an explicit label or description, it wins over whatever the renderer would work out from appearance.</li>
 </ul>
 <h2 id="define-functions-and-checks">Define functions and checks</h2>
-<p>A catalog can also declare functions: pieces of logic the renderer runs on the client, such as formatting a currency or checking an email address. They sit under <code>functions</code>, and the same naming rules apply. A function that opens something on the user's device, as <code>openUrl</code> does in the Basic Catalog, should be marked <code>requiresUserActivation: true</code>. A renderer must then run it only from a real user gesture, such as inside an action handler, and never from a passive binding or a validation check. In v1.0 a function can also live on the agent, for server-side work such as checking stock.</p>
+<p>A catalog can also declare functions: pieces of logic the renderer runs on the client, such as formatting a currency or checking an email address. They sit under <code>functions</code>, and the same naming rules apply. A function that should run only from a real user gesture, as <code>openUrl</code> does in the Basic Catalog, declares <code>requiresUserActivation: true</code>. Renderers must then run it only from such a gesture, for example inside an action handler, and never from a passive binding or a validation check. In v1.0 a function can also live on the agent, for server-side work such as checking stock.</p>
 <h2 id="check-it-before-you-ship">Check it before you ship</h2>
 <p>Validate the catalog document against the A2UI v1.0 catalog meta-schema, then load it with an SDK. Two checks catch most mistakes:</p>
 <ul>
@@ -382,8 +397,8 @@ a.pillar-kicker{text-decoration:none}a.pillar-kicker::before{content:"← "}
 <p>Validation is strict by default. In the Python SDK a component the catalog does not define is reported with the code <code>unrecognized_component</code>, and a relaxed mode (<code>allow_unknown_elements</code>) exists for renderers that want to tolerate unknown ones.</p>
 <p>The Ontology check we ran on 14 November found that the example catalogs in the official v1.0 guide, and the Basic Catalog itself, validate against the live meta-schema. We used an approximation for the Unicode identifier patterns in those runs. The v0.9.1 examples we did not validate.</p>
 <h2 id="use-it-on-the-agent">Use it on the agent</h2>
-<p>When a session starts, the renderer sends the catalogs it supports (<code>supportedCatalogIds</code>). The agent picks one for each surface in <code>createSurface</code>, with <code>catalogId</code>. If none of the agent's catalogs match, the protocol says the agent sends no UI.</p>
-<p>In v1.0 a surface can mix catalogs. <code>createSurface</code> sets the surface's default catalog, and any component from another supported catalog carries an <code>@catalogId</code>. A component with no <code>@catalogId</code> is taken to be in the default one. This is a surface our own emitter produced: Basic is the default, and our weather card comes from our catalog.</p>
+<p>When a session starts, the renderer sends the catalogs it supports (<code>supportedCatalogIds</code>). The agent picks one for each surface in <code>createSurface</code>, with <code>catalogId</code>. If none of the agent's catalogs is on that list, there is nothing to draw and, according to the concepts page, the agent sends no UI.</p>
+<p>In v1.0 a surface can mix catalogs. <code>createSurface</code> sets the surface's default catalog, and any component from another supported catalog carries an <code>@catalogId</code>. A component with no <code>@catalogId</code> is taken to be in the default one. This is a surface our own emitter produced, with its catalog id pointed at the small catalog above: Basic is the default, and the weather card comes from the weather catalog.</p>
 <pre><code class="language-json">{
   &quot;version&quot;: &quot;1.0&quot;,
   &quot;createSurface&quot;: {
@@ -418,7 +433,7 @@ a.pillar-kicker{text-decoration:none}a.pillar-kicker::before{content:"← "}
             &quot;label&quot;: &quot;Humidity&quot;
           }
         ],
-        &quot;@catalogId&quot;: &quot;https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json&quot;
+        &quot;@catalogId&quot;: &quot;https://example.com/catalogs/weather/v1/catalog.json&quot;
       },
       {
         &quot;id&quot;: &quot;root&quot;,
@@ -433,11 +448,11 @@ a.pillar-kicker{text-decoration:none}a.pillar-kicker::before{content:"← "}
 </code></pre>
 <p>In v0.9.1 this is not possible: each surface is locked to one <code>catalogId</code> for its lifetime.</p>
 <p>The SDK uses the catalog twice. It builds the model's system prompt from the catalog, and it validates what the model sends back. If the renderer names catalog IDs the agent does not hold, the agent ignores them.</p>
-<p><strong>When the host does not support your catalog.</strong> The protocol gives you no fallback: the agent sends nothing. Falling back to Basic is a choice you build. Ours is to read what the host supports and send a Basic-only design when it lacks our catalog. We tried translating a custom game to Basic by hand in a test on 5 November 2026 (an earlier renderer, one game): the board was dropped and no move could be played. Choosing the Basic design up front, from the host's list, is what worked.</p>
+<p><strong>When the host does not support your catalog.</strong> The protocol gives you no fallback: the agent sends nothing. Falling back to Basic is a choice you build. Ours is to read what the host supports and send a Basic-only design when it lacks our catalog. Our emitter can translate a custom surface down to Basic automatically. In a test on 5 November 2026 (the official React renderer 0.15.0, one game), that translation dropped the board and no move could be played. What worked was reading the host's supported catalogs first and sending the Basic design from the start.</p>
 <h2 id="use-it-on-the-renderer">Use it on the renderer</h2>
-<p>On the renderer side you implement the component in your UI framework, wrap it in a catalog with the same <code>catalogId</code>, and register it alongside the Basic Catalog when you set up the message processor. Both sides must hold the same <code>catalogId</code>, or the agent will never pick it. We have not checked each framework's registration API for this guide, so follow your framework's A2UI renderer documentation for the exact calls.</p>
+<p>On the renderer side, build the component in your UI framework, give it a catalog with the same <code>catalogId</code>, and register that catalog next to the Basic Catalog when you create the message processor. Both sides must hold the same <code>catalogId</code>, or the agent will never pick it. We have not checked each framework's registration API for this guide, so follow your framework's A2UI renderer documentation for the exact calls.</p>
 <h2 id="publish-and-version">Publish and version</h2>
-<p>Keep the catalog document somewhere people can read it. Ours is published at <a href="/catalogue/a2ui-atoms-v1.json"><code>/catalogue/a2ui-atoms-v1.json</code></a>. Version the path in the <code>catalogId</code> when you make a breaking change, and keep old versions working for hosts that have not moved.</p>
+<p>Keep the catalog document somewhere people can read it. Ours is published as <a href="/catalogue/a2ui-atoms-v1.json">our catalog document</a>. Version the path in the <code>catalogId</code> when you make a breaking change, and keep old versions working for hosts that have not moved.</p>
 <h2 id="faq">FAQ</h2>
 <h3 id="what-is-an-a2ui-custom-catalog">What is an A2UI custom catalog?</h3>
 <p>A catalog is a JSON Schema document that lists the components and functions an agent may use and a renderer knows how to draw. A custom catalog is one you make yourself, to add components the Basic Catalog does not have.</p>
@@ -453,7 +468,7 @@ a.pillar-kicker{text-decoration:none}a.pillar-kicker::before{content:"← "}
 <p>The rules come from the A2UI v1.0 pages as published on 14 November 2026, and the SDK facts from the Python SDK read at one upstream commit, with the TypeScript and Dart load rules. None of the SDK behaviour was run for this guide. We have not checked how each framework registers a component, or the Swift and Kotlin SDKs.</p>
 <h2 id="get-started">Get started</h2>
 <ul>
-<li>The catalog document: <a href="/catalogue/a2ui-atoms-v1.json"><code>/catalogue/a2ui-atoms-v1.json</code></a> (<code>catalogId</code> <code>https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json</code>).</li>
+<li><a href="/catalogue/a2ui-atoms-v1.json">Our catalog document</a> (<code>catalogId</code> <code>https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json</code>).</li>
 <li>A worked example with the real files: <a href="/what-is-a2ui/custom-catalog/">A2UI custom catalog: a worked example</a>.</li>
 <li>What the Basic Catalog already gives you: <a href="/what-is-a2ui/basic-catalog/">A2UI Basic Catalog</a>.</li>
 <li>The official guide to defining a catalog, for the version of this topic that A2UI's own authors keep current: <a href="https://a2ui.org/guides/defining-a-catalog/">Defining a catalog on a2ui.org</a>.</li>

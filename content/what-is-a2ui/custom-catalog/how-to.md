@@ -1,7 +1,7 @@
 ---
 title: "How to Make an A2UI Custom Catalog"
 date: 2026-11-14
-summary: "Make an A2UI v1.0 custom catalog step by step: define a component, check it, use it beside Basic, and handle hosts that lack it. Real weather card."
+summary: "Make an A2UI v1.0 custom catalog step by step: define a component, check it, use it beside Basic, and plan for hosts that lack it."
 read_minutes: 9
 ---
 
@@ -13,7 +13,7 @@ A custom catalog is how you add your own components to A2UI: a stat card, a char
 
 The Basic Catalog has @@BASIC_N@@ components and @@BASIC_FN@@ functions: text, layout, a few inputs. It has no chart, no timeline and no weather card. When the screen you need is not in it, you can draw a picture on the server (our [Basic Catalog page](/what-is-a2ui/basic-catalog/) shows how far that goes), or you can make a catalog that adds the component itself.
 
-A catalog is a contract between an agent and a renderer. It lists the components and functions the agent may use and the renderer knows how to draw. The agent can only send what the catalog allows, and a renderer can reject anything it does not know.
+A catalog is the agreement between an agent and a renderer about what can appear on screen. It names every component and function the agent may use, each one something the renderer can draw. The agent sends only what the catalog lists, and a renderer can refuse anything outside it.
 
 ## The shape of a catalog
 
@@ -29,7 +29,7 @@ Five things to notice:
 - **`protocolVersion`** says which A2UI version the catalog targets. Set it. The Python SDK treats a catalog with no protocol version as 0.9.
 - **`components`** holds every component, directly at the top level.
 - **`functions`** (not used here) holds functions in the same way.
-- **`$defs`** holds shared definitions, such as design tokens, that components can reference.
+- **`$defs`** must declare `anyComponent`, the union of all your components, and `anyFunction`. When you define no custom functions, `anyFunction` is `{"not": {}}`, as in the example. Shared definitions that components reuse, such as design tokens, go here too.
 
 ## Define a component
 
@@ -37,17 +37,17 @@ Each component is a JSON Schema object. In the example above, `weather_now` is d
 
 The rules that matter most when you write one, from the v1.0 pages:
 
-- **Names.** Component names, function names and property names must follow the Unicode identifier rules (UAX #31): no leading digit, no whitespace, no symbols other than the underscore.
-- **No `Surface`.** A catalog must not define a standard component named `Surface`.
-- **Top level only.** Components and functions go directly under `components` and `functions`. A component schema must not be defined inside `$defs`, even in an `allOf` wrapper.
-- **Flat.** A component is a single `type: "object"` with its properties directly on it. No `oneOf`, `anyOf` or non-trait `allOf` at the component root.
-- **Do not wrap the envelope.** The shared properties every component carries (`id`, `@catalogId`, `@accessibility`, `@metadata`) are added by the protocol envelope. Do not add them yourself with `ComponentCommon`.
-- **References.** A property can point at a catalog-scoped definition with `#/$defs/<Name>`. A reference to the standard types must use the relative form, `common_types.json#/$defs/...`. A reference to anything else outside the catalog is an error: an implementation must report a catalog error and must not fetch it over the network.
-- **Accessibility.** If a component or the agent supplies an explicit accessibility label or description, it must override what the renderer would infer from how the component looks.
+- **Names.** Component, function and property names must be valid Unicode identifiers (UAX #31): they cannot start with a digit, and they can contain no spaces or symbols apart from the underscore.
+- **No `Surface`.** The name `Surface` is reserved: do not give a component that name.
+- **Top level only.** Declare components directly under `components` and functions directly under `functions`. Never put a component schema inside `$defs`, even wrapped in `allOf`.
+- **Flat.** Keep each component a single `type: "object"` with its properties directly on it. Do not use `oneOf`, `anyOf` or a general `allOf` at the component's root.
+- **Leave the envelope alone.** The properties every component carries (`id`, `@catalogId`, `@accessibility`, `@metadata`) are added by the protocol envelope, so leave them out of your schema and do not pull them in with `ComponentCommon`.
+- **References.** Point at a definition in your own `$defs` with `#/$defs/<Name>`. For the standard types, use the relative form, `common_types.json#/$defs/...`. A reference to anything else outside the catalog is a catalog error, and the loader must report it instead of fetching the target.
+- **Accessibility.** If a component or the agent gives an explicit label or description, it wins over whatever the renderer would work out from appearance.
 
 ## Define functions and checks
 
-A catalog can also declare functions: pieces of logic the renderer runs on the client, such as formatting a currency or checking an email address. They sit under `functions`, and the same naming rules apply. A function that opens something on the user's device, as `openUrl` does in the Basic Catalog, should be marked `requiresUserActivation: true`. A renderer must then run it only from a real user gesture, such as inside an action handler, and never from a passive binding or a validation check. In v1.0 a function can also live on the agent, for server-side work such as checking stock.
+A catalog can also declare functions: pieces of logic the renderer runs on the client, such as formatting a currency or checking an email address. They sit under `functions`, and the same naming rules apply. A function that should run only from a real user gesture, as `openUrl` does in the Basic Catalog, declares `requiresUserActivation: true`. Renderers must then run it only from such a gesture, for example inside an action handler, and never from a passive binding or a validation check. In v1.0 a function can also live on the agent, for server-side work such as checking stock.
 
 ## Check it before you ship
 
@@ -62,9 +62,9 @@ The Ontology check we ran on 14 November found that the example catalogs in the 
 
 ## Use it on the agent
 
-When a session starts, the renderer sends the catalogs it supports (`supportedCatalogIds`). The agent picks one for each surface in `createSurface`, with `catalogId`. If none of the agent's catalogs match, the protocol says the agent sends no UI.
+When a session starts, the renderer sends the catalogs it supports (`supportedCatalogIds`). The agent picks one for each surface in `createSurface`, with `catalogId`. If none of the agent's catalogs is on that list, there is nothing to draw and, according to the concepts page, the agent sends no UI.
 
-In v1.0 a surface can mix catalogs. `createSurface` sets the surface's default catalog, and any component from another supported catalog carries an `@catalogId`. A component with no `@catalogId` is taken to be in the default one. This is a surface our own emitter produced: Basic is the default, and our weather card comes from our catalog.
+In v1.0 a surface can mix catalogs. `createSurface` sets the surface's default catalog, and any component from another supported catalog carries an `@catalogId`. A component with no `@catalogId` is taken to be in the default one. This is a surface our own emitter produced, with its catalog id pointed at the small catalog above: Basic is the default, and the weather card comes from the weather catalog.
 
 ```json
 @@JSON_WEATHER_SURFACE@@
@@ -74,15 +74,15 @@ In v0.9.1 this is not possible: each surface is locked to one `catalogId` for it
 
 The SDK uses the catalog twice. It builds the model's system prompt from the catalog, and it validates what the model sends back. If the renderer names catalog IDs the agent does not hold, the agent ignores them.
 
-**When the host does not support your catalog.** The protocol gives you no fallback: the agent sends nothing. Falling back to Basic is a choice you build. Ours is to read what the host supports and send a Basic-only design when it lacks our catalog. We tried translating a custom game to Basic by hand in a test on 5 November 2026 (an earlier renderer, one game): the board was dropped and no move could be played. Choosing the Basic design up front, from the host's list, is what worked.
+**When the host does not support your catalog.** The protocol gives you no fallback: the agent sends nothing. Falling back to Basic is a choice you build. Ours is to read what the host supports and send a Basic-only design when it lacks our catalog. Our emitter can translate a custom surface down to Basic automatically. In a test on 5 November 2026 (the official React renderer 0.15.0, one game), that translation dropped the board and no move could be played. What worked was reading the host's supported catalogs first and sending the Basic design from the start.
 
 ## Use it on the renderer
 
-On the renderer side you implement the component in your UI framework, wrap it in a catalog with the same `catalogId`, and register it alongside the Basic Catalog when you set up the message processor. Both sides must hold the same `catalogId`, or the agent will never pick it. We have not checked each framework's registration API for this guide, so follow your framework's A2UI renderer documentation for the exact calls.
+On the renderer side, build the component in your UI framework, give it a catalog with the same `catalogId`, and register that catalog next to the Basic Catalog when you create the message processor. Both sides must hold the same `catalogId`, or the agent will never pick it. We have not checked each framework's registration API for this guide, so follow your framework's A2UI renderer documentation for the exact calls.
 
 ## Publish and version
 
-Keep the catalog document somewhere people can read it. Ours is published at [`/catalogue/a2ui-atoms-v1.json`](/catalogue/a2ui-atoms-v1.json). Version the path in the `catalogId` when you make a breaking change, and keep old versions working for hosts that have not moved.
+Keep the catalog document somewhere people can read it. Ours is published as [our catalog document](/catalogue/a2ui-atoms-v1.json). Version the path in the `catalogId` when you make a breaking change, and keep old versions working for hosts that have not moved.
 
 ## FAQ
 
@@ -112,7 +112,7 @@ The rules come from the A2UI v1.0 pages as published on 14 November 2026, and th
 
 ## Get started
 
-- The catalog document: [`/catalogue/a2ui-atoms-v1.json`](/catalogue/a2ui-atoms-v1.json) (`catalogId` `@@CATALOG_ID@@`).
+- [Our catalog document](/catalogue/a2ui-atoms-v1.json) (`catalogId` `@@CATALOG_ID@@`).
 - A worked example with the real files: [A2UI custom catalog: a worked example](/what-is-a2ui/custom-catalog/).
 - What the Basic Catalog already gives you: [A2UI Basic Catalog](/what-is-a2ui/basic-catalog/).
 - The official guide to defining a catalog, for the version of this topic that A2UI's own authors keep current: [Defining a catalog on a2ui.org](https://a2ui.org/guides/defining-a-catalog/).

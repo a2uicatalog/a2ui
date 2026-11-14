@@ -136,6 +136,25 @@ def test_weather_catalog_example_validates_against_the_live_meta_schema():
     assert comp["type"] == "object" and comp["properties"]["component"] == {"const": "weather_now"}   # flat, names itself
     assert not {"oneOf", "anyOf", "allOf"} & set(comp)          # no structural combinators at the component root
     assert not any(k.startswith("x-") for k in comp)            # our extension keys are not part of the lesson
+    assert set(doc["$defs"]) >= {"anyComponent", "anyFunction"}  # required once $defs is present; a "complete" sample must have them
+    assert doc["$defs"]["anyComponent"]["oneOf"] == [{"$ref": "#/components/weather_now"}]
+    assert doc["$defs"]["anyFunction"] == {"not": {}}            # no custom functions
+
+
+def test_weather_surface_component_validates_against_the_small_catalog():
+    """The surface sample and the catalog sample are one lesson: the component on the surface must satisfy the catalog shown."""
+    from referencing import Resource
+    f = pillar.facts()
+    doc = json.loads(f["JSON_WEATHER_CATALOG"])
+    msg = json.loads(f["JSON_WEATHER_SURFACE"])
+    comp = next(c for c in msg["createSurface"]["components"] if c.get("component") == "weather_now")
+    instance = {k: v for k, v in comp.items() if k not in ("id", "@catalogId")}   # the envelope adds these
+    common = json.loads((SPEC_JSON / "common_types.json").read_text())
+    base = doc["$id"].rsplit("/", 1)[0] + "/"                       # a relative common_types.json $ref resolves next to the catalog
+    reg = conformance._REGISTRY.with_resource(doc["$id"], Resource.from_contents(doc)).with_resource(base + "common_types.json", Resource.from_contents(common))
+    v = conformance._RegexAwareValidator({"$ref": doc["$id"] + "#/$defs/anyComponent"}, registry=reg)
+    errs = sorted(e.message[:160] for e in v.iter_errors(instance))
+    assert not errs, errs
 
 
 def test_weather_surface_example_mixes_basic_and_ours_and_conforms():
@@ -145,7 +164,8 @@ def test_weather_surface_example_mixes_basic_and_ours_and_conforms():
     cs = msg["createSurface"]
     assert cs["catalogId"] == f["BASIC_ID"]                     # Basic is the surface default
     mine = [c for c in cs["components"] if c.get("component") == "weather_now"]
-    assert len(mine) == 1 and mine[0]["@catalogId"] == f["CATALOG_ID"]
+    assert len(mine) == 1 and mine[0]["@catalogId"] == f["WEATHER_CATALOG_ID"]   # the surface uses the small catalog shown above
+    assert json.loads(f["JSON_WEATHER_CATALOG"])["catalogId"] == f["WEATHER_CATALOG_ID"]
     assert "metadata" not in cs                                  # our own surface metadata is left out of the lesson
 
 

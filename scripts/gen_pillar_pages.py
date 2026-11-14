@@ -57,6 +57,7 @@ MIXED_EXAMPLE = {"title": "Weekly sales", "blocks": [
     {"type": "stat_card", "value": "1,234", "label": "Orders this week", "delta": "+12%", "is_up": True}]}
 
 # The how-to guide's worked example: our real weather_now component on a surface whose layout is Basic.
+WEATHER_CATALOG_ID = "https://example.com/catalogs/weather/v1/catalog.json"
 WEATHER_EXAMPLE = {"title": "Today", "blocks": [
     {"type": "weather_now", "city_line": "TOULOUSE, FRANCE", "stamp": "Sat 14 Nov", "temp": 8, "condition": "Cloudy", "code": "cloud",
      "hi": 13, "lo": 8, "stats": [{"value": "65%", "label": "Precip"}, {"value": "3 km/h", "label": "Wind"},
@@ -161,15 +162,20 @@ def mixed_example():
 def weather_catalog(cat):
     """A small catalog document holding the real weather_now definition (our x- extension keys dropped), shown in the how-to guide."""
     comp = {k: v for k, v in cat["components"]["weather_now"].items() if not k.startswith("x-")}
-    return {"$schema": "https://json-schema.org/draft/2020-12/schema", "$id": "https://example.com/catalogs/weather/v1/catalog.json",
-            "protocolVersion": "1.0", "catalogId": "https://example.com/catalogs/weather/v1/catalog.json", "title": "Weather catalog",
-            "description": "One component: a current-conditions weather card.", "components": {"weather_now": comp}}
+    return {"$schema": "https://json-schema.org/draft/2020-12/schema", "$id": WEATHER_CATALOG_ID,
+            "protocolVersion": "1.0", "catalogId": WEATHER_CATALOG_ID, "title": "Weather catalog",
+            "description": "One component: a current-conditions weather card.", "components": {"weather_now": comp},
+            "$defs": {"anyComponent": {"oneOf": [{"$ref": "#/components/weather_now"}], "discriminator": {"propertyName": "component"}},
+                      "anyFunction": {"not": {}}}}
 
 
 def weather_surface():
     from renderers.a2ui_v1 import emit_surface
     out = emit_surface(WEATHER_EXAMPLE, surface_id="weather")
     out["createSurface"].pop("metadata", None)   # our own surface metadata is not part of the lesson
+    for c in out["createSurface"]["components"]:
+        if c.get("component") == "weather_now":
+            c["@catalogId"] = WEATHER_CATALOG_ID    # the surface uses the small catalog shown above, so both sides name one id
     return out
 
 
@@ -184,7 +190,7 @@ def facts():
     head["functions"] = cat.get("functions", {})
     f = {"ATOMS": str(len(comps)), "BASIC_N": str(len(basic["components"])), "BASIC_FN": str(len(basic["functions"])),
          "BASIC_COMPONENT_NAMES": ", ".join(basic["components"]), "BASIC_FUNCTION_NAMES": ", ".join(basic["functions"]),
-         "CATALOG_ID": cat["catalogId"], "BASIC_ID": basic["catalogId"], "PROTOCOL": cat["protocolVersion"],
+         "CATALOG_ID": cat["catalogId"], "WEATHER_CATALOG_ID": WEATHER_CATALOG_ID, "BASIC_ID": basic["catalogId"], "PROTOCOL": cat["protocolVersion"],
          "JSON_CATALOG_HEAD": _json(head), "JSON_STAT_CARD": _json({"stat_card": {k: v for k, v in comps["stat_card"].items()
                                                  if k not in ("x-routing-text", "x-intent-phrases")}}),
          "JSON_MIXED_EXAMPLE": _json(mixed_example()),

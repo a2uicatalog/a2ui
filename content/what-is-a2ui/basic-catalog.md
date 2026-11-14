@@ -17,16 +17,16 @@ The components are @@BASIC_COMPONENT_NAMES@@. The functions are @@BASIC_FUNCTION
 
 - **Show content:** Text, Image, Icon, Video and AudioPlayer.
 - **Arrange content:** Row, Column, List, Card, Tabs, Modal and Divider. Row, Column and List can repeat their children from a data list.
-- **Take and check input:** Button, TextField, CheckBox, ChoicePicker, Slider and DateTimeInput. All six accept validation checks.
-- **Bind to live data:** any property can take a data binding or a function call.
+- **Take and check input:** Button, TextField, CheckBox, ChoicePicker, Slider and DateTimeInput, all of which accept validation checks.
+- **Bind to live data:** any property typed as a dynamic value can take a data binding or a function call.
 - **React to the user:** a Button fires an action to the agent.
 - **Compute and format:** the functions: `and`, `or`, `not`; `formatCurrency`, `formatDate`, `formatNumber`, `formatString`, `pluralize`; `email`, `length`, `numeric`, `regex`, `required`; and `openUrl`.
 
 ## What we have tested
 
-Of the @@BASIC_N@@ components we have tested five: Text, Image, Button, Card and Column. We have not tested any of the functions. The rest is what the specification allows, not something we have measured.
+We have measured five of the @@BASIC_N@@ components one by one: Text, Image, Button, Card and Column. We have not tested any of the functions. Separately, in a run that reduced our own atoms to Basic components only, the official React, Lit and Angular renderers painted 656, 658 and 657 of 670 cases (our 8 November 2026 tests, v0.9 messages; the Angular figure is quoted and was not recounted). That run touches more of the catalog, but it counts whether something paints, not how each component behaves. The rest of what this page lists is what the specification allows, not something we have measured.
 
-What we did test: a picture drawn on the server and shown in a Basic Image drew and animated on the official React renderer and in one Gemini Enterprise trial, with no custom catalog. The full measurements, with the message sizes for the same game built four ways, are in our article [A2UI: How basic is the basic catalog?](/blog/022-a2ui-how-basic-is-the-basic-catalog/).
+One more result: a picture drawn on the server and shown in a Basic Image drew and animated on the official React renderer and in one Gemini Enterprise trial app (v0.9 dialect, one run per test; the React result is quoted from an earlier run whose raw file we could not locate). The full measurements, with the message sizes for the same game built four ways, are in our article [A2UI: How basic is the basic catalog?](/blog/022-a2ui-how-basic-is-the-basic-catalog/).
 
 ## How far can Basic go?
 
@@ -48,7 +48,7 @@ It is the standard catalog of components and functions that A2UI defines, so any
 
 ### Can you draw charts with only the Basic Catalog?
 
-Not with a component: there is no chart in it. In our tests, a picture drawn on the server and shown in a Basic Image worked as a static picture or a simple animation on the official React renderer and in one Gemini Enterprise trial. We have not tested it on native renderers such as Flutter or Jetpack Compose.
+Not with a component: there is no chart in it. In our tests, a picture drawn on the server and shown in a Basic Image worked as a static picture or a simple animation on the official React renderer and in one Gemini Enterprise trial app (v0.9 dialect, one run). We have not tested it on native renderers such as Flutter or Jetpack Compose.
 
 ### Do I need a custom catalog?
 
