@@ -720,20 +720,70 @@ lists four reasons to use them:</p>
 <li>"Look up data from server-side databases and APIs, accepting an identifier from the model and populating the components on the server."</li>
 <li>"Ship new domain components with a server deployment alone, using catalog components the client already renders."</li>
 </ul>
-<p>One measured example from this catalog's own tests (not yet published): asked to draw the latest run of five
-workflows of a public repository, the model wrote this (the first two stages are shown, the
+<p>One measured example from this catalog's own tests (the data and method follow it): asked to draw the latest run of five
+workflows of a public repository, the model wrote this in Express (the first two stages are shown, the
 rest is elided):</p>
 <pre><code>root = IsoPipeline(&quot;Latest run of five a2uicatalog/a2ui workflows&quot;,
   [{name: &quot;c567e65&quot;, kind: &quot;commit&quot;, state: &quot;latest&quot;},
    {name: &quot;build-apps&quot;, kind: &quot;build&quot;, state: &quot;passed&quot;}, ...three more stages...], &quot;teal&quot;)
 </code></pre>
-<p>The model's whole reply, the call inside its <code>&lt;a2ui&gt;</code> tags, was 365 bytes (173 output tokens),
+<p>The model's whole reply, the one Express call inside its <code>&lt;a2ui&gt;</code> tags, was 365 bytes (173 output tokens),
 identical in all ten runs on Claude Sonnet 5.5. The server expanded it into 37,728 bytes of
 A2UI: five stock Basic Catalog components (a Card, a Column, a title Text, an Image and a
 caption Text), with the picture carried in the Image. The saving is in output, not input: the
 system prompt that carries the macro was about 5,100 input tokens, against about 1,300 for a
 prompt that had the model draw the picture itself. This was one scene, one prompt and one
 machine.</p>
+<h4 id="how-we-measured-the-macro-example">How we measured the macro example</h4>
+<p>We asked Claude Sonnet 5.5 to draw the latest run of five GitHub workflows of the public repository a2uicatalog/a2ui as an isometric factory scene, four ways, 10 runs each, on 9 November 2026. The <a href="/what-is-a2ui/macro-example/results.json">raw per-run results</a> are public, as JSON. Every figure below is a median of those runs. The same file holds the runs of a second model, Claude Haiku 5.5.</p>
+<table>
+<thead>
+<tr>
+<th>How the model was asked</th>
+<th>Input tokens</th>
+<th>Output tokens</th>
+<th>Bytes the model wrote</th>
+<th>Bytes of A2UI sent</th>
+<th>Runs with correct content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Macro (one Express call)</td>
+<td>5,149</td>
+<td>173</td>
+<td>365</td>
+<td>37,728</td>
+<td>10 of 10</td>
+</tr>
+<tr>
+<td>Strict control</td>
+<td>1,289</td>
+<td>2,590</td>
+<td>5,207</td>
+<td>5,427</td>
+<td>9 of 10</td>
+</tr>
+<tr>
+<td>Lean control</td>
+<td>1,233</td>
+<td>1,471</td>
+<td>3,027</td>
+<td>3,247</td>
+<td>9 of 10</td>
+</tr>
+<tr>
+<td>Text-only list</td>
+<td>644</td>
+<td>287</td>
+<td>677</td>
+<td>897</td>
+<td>10 of 10</td>
+</tr>
+</tbody>
+</table>
+<p>The strict control has the model write the whole components JSON, SVG included. The lean control is the same, asked for a simpler scene. The text-only list has no picture. The macro lane has the most input tokens because its prompt is the SDK's Express prompt with the macro inside it, and it has the fewest output tokens.</p>
+<p>Read the table with three limits in mind. The pictures are not equal: the macro draws a 27.8 KB shaded, animated scene that follows light and dark mode, and the controls are static and simpler, about 4.4 KB and 2.3 KB of SVG. The macro lane's correct-content result is partly by construction, because code draws the ids, the lamp colours, the state words and the crate. And it is one scene, one prompt and one machine, with 10 runs per lane.</p>
 <p>Limits: per the guide, "Macros are currently available in the Python agent SDK
 (<code>a2ui-agent-sdk</code>), with support for other languages coming next." By default, a macro that
 raises an argument or runtime exception during expansion is logged and left unexpanded so its

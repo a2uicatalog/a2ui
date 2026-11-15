@@ -190,8 +190,8 @@ lists four reasons to use them:
 - "Look up data from server-side databases and APIs, accepting an identifier from the model and populating the components on the server."
 - "Ship new domain components with a server deployment alone, using catalog components the client already renders."
 
-One measured example from this catalog's own tests (not yet published): asked to draw the latest run of five
-workflows of a public repository, the model wrote this (the first two stages are shown, the
+One measured example from this catalog's own tests (the data and method follow it): asked to draw the latest run of five
+workflows of a public repository, the model wrote this in Express (the first two stages are shown, the
 rest is elided):
 
 ```
@@ -200,13 +200,28 @@ root = IsoPipeline("Latest run of five a2uicatalog/a2ui workflows",
    {name: "build-apps", kind: "build", state: "passed"}, ...three more stages...], "teal")
 ```
 
-The model's whole reply, the call inside its `<a2ui>` tags, was 365 bytes (173 output tokens),
+The model's whole reply, the one Express call inside its `<a2ui>` tags, was 365 bytes (173 output tokens),
 identical in all ten runs on Claude Sonnet 5.5. The server expanded it into 37,728 bytes of
 A2UI: five stock Basic Catalog components (a Card, a Column, a title Text, an Image and a
 caption Text), with the picture carried in the Image. The saving is in output, not input: the
 system prompt that carries the macro was about 5,100 input tokens, against about 1,300 for a
 prompt that had the model draw the picture itself. This was one scene, one prompt and one
 machine.
+
+#### How we measured the macro example
+
+We asked Claude Sonnet 5.5 to draw the latest run of five GitHub workflows of the public repository a2uicatalog/a2ui as an isometric factory scene, four ways, 10 runs each, on 9 November 2026. The [raw per-run results](/what-is-a2ui/macro-example/results.json) are public, as JSON. Every figure below is a median of those runs. The same file holds the runs of a second model, Claude Haiku 5.5.
+
+| How the model was asked | Input tokens | Output tokens | Bytes the model wrote | Bytes of A2UI sent | Runs with correct content |
+|---|---|---|---|---|---|
+| Macro (one Express call) | 5,149 | 173 | 365 | 37,728 | 10 of 10 |
+| Strict control | 1,289 | 2,590 | 5,207 | 5,427 | 9 of 10 |
+| Lean control | 1,233 | 1,471 | 3,027 | 3,247 | 9 of 10 |
+| Text-only list | 644 | 287 | 677 | 897 | 10 of 10 |
+
+The strict control has the model write the whole components JSON, SVG included. The lean control is the same, asked for a simpler scene. The text-only list has no picture. The macro lane has the most input tokens because its prompt is the SDK's Express prompt with the macro inside it, and it has the fewest output tokens.
+
+Read the table with three limits in mind. The pictures are not equal: the macro draws a 27.8 KB shaded, animated scene that follows light and dark mode, and the controls are static and simpler, about 4.4 KB and 2.3 KB of SVG. The macro lane's correct-content result is partly by construction, because code draws the ids, the lamp colours, the state words and the crate. And it is one scene, one prompt and one machine, with 10 runs per lane.
 
 Limits: per the guide, "Macros are currently available in the Python agent SDK
 (`a2ui-agent-sdk`), with support for other languages coming next." By default, a macro that
