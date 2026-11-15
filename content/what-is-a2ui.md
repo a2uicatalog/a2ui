@@ -1,8 +1,8 @@
 ---
 title: "What is A2UI? The Agent-to-UI Protocol"
 date: 2026-11-11
-summary: "A2UI is a declarative protocol that lets AI agents generate native UI from JSON. Learn how it works, where to use it, and how it differs from generated HTML."
-read_minutes: 8
+summary: "A2UI is an open protocol that lets AI agents show native UI from JSON. How it works, renderers, catalogs, macros, Express, and how it differs from HTML."
+read_minutes: 12
 ---
 
 
@@ -60,6 +60,22 @@ Google maintains official renderers for React, Lit, Angular, Flutter (the GenUI 
 Jetpack Compose, with SwiftUI planned; a2ui.org also
 [lists community renderers](https://a2ui.org/reference/renderers/).
 
+## What is an A2UI renderer?
+
+A renderer is the part of an app that turns A2UI messages into interface. It holds the catalogs it supports, reads each message the agent sends and draws the components with the app's own code, escaping text and checking links on the way. When the user presses a button or submits a form, the renderer sends that action back to the agent.
+
+The agent never sends code, so the renderer decides what can appear on screen, and each app draws a component in its own style. A renderer also says which protocol version and which catalogs it supports, so an agent can send what it understands.
+
+The official and community renderers are listed above. To see one at work, the [Basic Catalog Demos](/what-is-a2ui/basic-catalog/demos/) run the official React renderer in your browser.
+
+## What is a catalog? The Basic Catalog and custom catalogs
+
+A catalog is the list of components an agent may use, with the fields each one takes. It is the contract between the agent and the renderer: the agent can ask only for what the catalog names.
+
+A2UI ships a **Basic Catalog** of @@BASIC_N@@ components and @@BASIC_FN@@ functions in version 1.0, covering text, layout, images, buttons and inputs. A renderer that supports it can draw any surface built from it, with no custom code. [See what it can do](/what-is-a2ui/basic-catalog/).
+
+A **custom catalog** adds components of your own, such as a chart, a timeline or a comparison table. The app registers it with its renderer first, so an agent can use a custom component only where the host has done that. The [A2UI Atomic Catalog](/) below is a custom catalog. To build your own, read [How to make an A2UI custom catalog](/what-is-a2ui/custom-catalog/how-to/).
+
 ## Macros: the model writes one call, the server writes the tree
 
 A macro is a function on the application server. The model writes one short call, and the
@@ -99,6 +115,14 @@ components; the server can instead be set to raise so an agent can retry. Struct
 such as recursion, catalog errors and protocol-version mismatches, always raise. In the Image
 approach, each patch reloads the whole image, and reduced-motion preferences are not honoured
 inside an Image's SVG (tested in Chromium).
+
+Our own macro packs, with live examples, are in the Demo Gallery: [Macro Packs](/what-is-a2ui/macro-packs/).
+
+## What is A2UI Express?
+
+Express is a compact format for a model to write a screen: instead of the full A2UI JSON, the model writes a short line, and the SDK expands it into A2UI messages. Google published it on 27 October 2026. The same SDK has two other formats: Direct JSON, the existing one, and Elemental, which looks like HTML.
+
+We tested Express on this catalog as it stood in late October 2026, with six briefs and seven models. Express used fewer output tokens on every model we tried. Google's claim of 80 times was not confirmed in our tests. It is a small sample, and the [full results](/blog/020-a2ui-express-testing-results/) show the models, the counts and the limits.
 
 ## How far can the Basic Catalog go?
 
@@ -169,6 +193,7 @@ and the A2UI letter rides inside it.
    host renders it.
 3. **Render it yourself** on the web, in Apps Script, or on Android with
    `implementation("ai.a2uicatalog:atomic-catalog:0.1.0")`.
+4. **Run the Basic Catalog demos** in your browser: the [Demo Gallery](/what-is-a2ui/basic-catalog/demos/) shows each component and a trip planner built only from them.
 
 ## FAQ
 
@@ -196,6 +221,15 @@ Yes. The protocol is Apache 2.0, and the A2UI Atomic Catalog is MIT-licensed.
 A2UI describes the user interface. AG-UI, the Agent–User Interaction protocol, carries the
 interaction between an agent and an app: messages, tool calls, state and user actions. A2UI
 often travels over AG-UI; as a2ui.org puts it, "use AG-UI as the pipe, A2UI as the content."
+
+### What is an A2UI renderer?
+The part of an app that turns A2UI messages into interface. It draws the components with the app's own code, escapes text, checks links and sends the user's actions back to the agent. Google's official renderers cover React, Lit, Angular, Flutter and Jetpack Compose.
+
+### What is the difference between the Basic Catalog and a custom catalog?
+The Basic Catalog is the set of components and functions A2UI ships with, and a renderer that supports it needs no custom code. A custom catalog adds components of your own, such as charts, and the app registers it with its renderer before an agent can use them.
+
+### What is A2UI Express?
+A compact format Google proposed on 27 October 2026 for a model to write a screen, instead of the full A2UI JSON. In our small test on this catalog it used fewer output tokens on every model we tried, and Google's 80 times claim was not confirmed.
 
 ### Where does macro expansion happen?
 On the application server, before the messages reach the renderer. The renderer receives
