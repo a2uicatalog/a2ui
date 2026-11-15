@@ -78,6 +78,8 @@ A **custom catalog** adds components of your own, such as a chart, a timeline or
 
 ## Macros: the model writes one call, the server writes the tree
 
+We <span role="img" aria-label="love">❤️</span> macros at a2uicatalog.ai
+
 A macro is a function on the application server. The model writes one short call, and the
 server expands it into ordinary A2UI components before anything reaches the renderer, so the
 renderer never sees a macro. The upstream
