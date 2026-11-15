@@ -192,6 +192,10 @@ def render_twin(path):
     if not os.path.isfile(src):
         return None
     raw = open(src, encoding="utf-8").read()
+    # A page kept out of search (noindex, for example the Mermaid window, "noindex until the owner decides" in project.yaml) gets no
+    # Markdown copy either: the twin would publish the page's content, and public/<path>.md would need its own declaration.
+    if re.search(r'<meta[^>]+name=["\']robots["\'][^>]*noindex', raw, re.I):
+        return None
     p, body = _body_markdown(raw)
     title = html.unescape(p.title).strip() or path
     desc = html.unescape(p.description).strip()
