@@ -118,7 +118,7 @@ such as recursion, catalog errors and protocol-version mismatches, always raise.
 approach, each patch reloads the whole image, and reduced-motion preferences are not honoured
 inside an Image's SVG (tested in Chromium).
 
-Our own macro packs, with live examples, are in the Demo Gallery: [Macro Packs](/what-is-a2ui/macro-packs/).
+The A2UI project's own guide to macros is [Using Macros on a2ui.org](https://a2ui.org/guides/macros/). When we package our own macros to share them, we call the bundle a macro pack. The Demo Gallery has live examples: [Macro Packs](/what-is-a2ui/macro-packs/).
 
 ## What is A2UI Express?
 
