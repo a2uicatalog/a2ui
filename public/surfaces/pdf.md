@@ -1,13 +1,13 @@
 ---
-title: A2UI on PDF: 106 components — A2UI Atomic Catalog
-description: The 106 A2UI Atomic Catalog components that render on PDF, each with a live preview, so an AI agent can show real UI there instead of generating HTML.
+title: A2UI on PDF: 106 of 573 components — A2UI Atomic Catalog
+description: 106 of the 573 A2UI Atomic Catalog components render on PDF, each with a live preview, so an AI agent can show real UI there instead of generating HTML.
 canonical: https://a2uicatalog.ai/surfaces/pdf/
 generated_by: gen_page_twins.py
 ---
 
 # PDF
 
-106 atoms available on this surface
+106 of 573 atoms available on this surface
 
 [Intro](https://a2uicatalog.ai/atoms/intro/)
 

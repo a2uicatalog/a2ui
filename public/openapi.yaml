@@ -245,7 +245,7 @@ paths:
       summary: A2UI payload to HTML
       description: 'POST a payload, get a complete self-contained HTML page back.
         The protocol-free path: no MCP, no connector, no deployment — compose against
-        spec.json and render here. Serves the 474 published atoms; preview-stage atoms
+        spec.json and render here. Serves the 573 published atoms; preview-stage atoms
         are reported in X-A2UI-Unpublished and rendered as a comment rather than markup.
         Atoms that perform a render-time server fetch (data_source, firestore_read,
         doc_ai_summary, multi_doc_ai_brief, gemini_handoff) are refused with 400 —

@@ -77,7 +77,7 @@
         {
           "label": "createSurface",
           "language": "json",
-          "code": "{\n  \"version\": \"v1.0\",\n  \"createSurface\": {\n    \"surfaceId\": \"user_profile_card\",\n    \"catalogId\": \"https://a2ui.org/specification/v1_0/catalogs/basic/catalog.json\",\n    \"surfaceProperties\": {\n      \"agentDisplayName\": \"Weather Bot\"\n    },\n    \"sendDataModel\": true,\n    \"components\": [\n      {\n        \"id\": \"root\",\n        \"component\": \"Column\",\n        \"children\": [\"user_name\"]\n      },\n      {\n        \"id\": \"user_name\",\n        \"component\": \"Text\",\n        \"text\": {\"path\": \"/name\"}\n      }\n    ],\n    \"dataModel\": {\n      \"name\": \"John Doe\"\n    }\n  }\n}"
+          "code": "{\n  \"version\": \"1.0\",\n  \"createSurface\": {\n    \"surfaceId\": \"user_profile_card\",\n    \"catalogId\": \"https://a2ui.org/specification/v1_0/catalogs/basic/catalog.json\",\n    \"surfaceProperties\": {\n      \"agentDisplayName\": \"Weather Bot\"\n    },\n    \"sendDataModel\": true,\n    \"components\": [\n      {\n        \"id\": \"root\",\n        \"component\": \"Column\",\n        \"children\": [\"user_name\"]\n      },\n      {\n        \"id\": \"user_name\",\n        \"component\": \"Text\",\n        \"text\": {\"path\": \"/name\"}\n      }\n    ],\n    \"dataModel\": {\n      \"name\": \"John Doe\"\n    }\n  }\n}"
         }
       ]
     },

@@ -103,7 +103,7 @@
        "size": 15,
        "accent": "#8d98ff",
        "lines": [
-        "{ \"version\": \"v1.0\",",
+        "{ \"version\": \"1.0\",",
         "  \"createSurface\": { \"surfaceId\": \"jobs\",",
         "    \"catalogId\": \"…/a2ui-atoms-v1.json\",",
         "    \"components\": [",
@@ -1060,7 +1060,7 @@
         {
          "type": "motion_pill",
          "id": "p6a",
-         "text": "*500+* components",
+         "text": "*573* components",
          "icon": "◆",
          "size": 26,
          "accent": "#8d98ff",

@@ -1,13 +1,13 @@
 ---
-title: A2UI on Apps Script Side Panel: 39 components — A2UI Atomic Catalog
-description: The 39 A2UI Atomic Catalog components that render on Apps Script Side Panel, each with a live preview, so an AI agent can show real UI there instead of generating HTML.
+title: A2UI on Apps Script Side Panel: 39 of 573 components — A2UI Atomic Catalog
+description: 39 of the 573 A2UI Atomic Catalog components render on Apps Script Side Panel, each with a live preview, so an AI agent can show real UI there instead of generating HTML.
 canonical: https://a2uicatalog.ai/surfaces/google-apps-script-side-panel/
 generated_by: gen_page_twins.py
 ---
 
 # Apps Script Side Panel
 
-39 atoms available on this surface
+39 of 573 atoms available on this surface
 
 [Stepper](https://a2uicatalog.ai/atoms/stepper/)
 

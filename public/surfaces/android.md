@@ -13,7 +13,7 @@ generated_by: gen_page_twins.py
 
 Build it from source for now; a published package is coming. [Source and README](https://github.com/a2uicatalog/a2ui/tree/main/android) · tested on a Pixel 7 Pro with `androidx.a2ui` 1.0.0-alpha01.
 
-563 catalog atoms also render on this surface
+563 of 573 catalog atoms also render on this surface
 
 [Intro](https://a2uicatalog.ai/atoms/intro/)
 
@@ -130,7 +130,6 @@ inline SVG trend line chart general trends.
 [Heatmap](https://a2uicatalog.ai/atoms/heatmap/)
 
 grid heatmap coloured by intensity value are represented as colors in a matrix.
-
 [Punch Card](https://a2uicatalog.ai/atoms/punch_card/)
 
 7x24 grid of glowing activity bubbles representing hourly commits

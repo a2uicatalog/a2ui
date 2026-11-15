@@ -36,13 +36,23 @@ CLAIMS = [
     ("docs/quickstart-claude.md", r"\((\d+) atoms across"),
     ("mcp/package.json", r"(\d+)-atom vocabulary"),   # the npm listing; Ora quoted the stale 474 on 2026-11-01
     ("sdk/python/pyproject.toml", r"(\d+)-atom vocabulary"),   # the PyPI listing
+    # The landing page and llms.txt were the places that said "550+" / "474" while 573 were published (outside review,
+    # 2026-11-15). Both are generated (generate_atom_pages.py, gen_openapi.py); holding them here means a generator that
+    # regresses to a rounded or typed figure fails --check. tests/test_site_count_consistency.py sweeps every other page.
+    ("public/index.html", r"<b>(\d+\+?)</b>atoms"),
+    ("public/index.html", r"(\d+\+?) typed atoms for web"),
+    ("public/index.html", r"Search and preview (\d+\+?) atoms"),
+    ("public/index.html", r"of (\d+\+?) atoms rendering live"),
+    ("public/index.html", r'id="count">(\d+\+?) atoms'),
+    ("public/llms.txt", r"vocabulary \((\d+) atoms\)"),
+    ("public/what-is-a2ui.md", r"catalog of (\d+) published components"),
 ]
 
 # Whole places where count claims keep appearing (owner 2026-11-01: "correct the harness to mechanically update
 # that", after skills/a2ui-catalog/SKILL.md still said 480 with 573 published). Every "<N> atoms" / "<N> typed
 # (UI) atoms" in these files is held to the published count, so a new skill or doc page is covered the day it is
 # added, without anyone remembering to extend CLAIMS.
-SWEEP_GLOBS = ["skills/*/SKILL.md", "docs/quickstart*.md", "payloads/learn-a2ui*.json", "payloads/learn-a2ui-modules/*.json"]
+SWEEP_GLOBS = ["skills/*/SKILL.md", "prompts/a2ui-builder-gem*.md", "docs/quickstart*.md", "payloads/learn-a2ui*.json", "payloads/learn-a2ui-modules/*.json"]
 SWEEP_PATTERN = r"\b(\d{3}) (?:typed )?(?:UI )?atoms\b"
 
 
@@ -78,7 +88,7 @@ def stale(n):
         if not found:
             sys.exit(f"gen_atom_count: {path} no longer contains a claim matching {pattern!r}; "
                      "update CLAIMS if the wording changed")
-        if any(int(x) != n for x in found):
+        if any(x != str(n) for x in found):
             out.append((path, pattern, found))
     return out
 

@@ -1,6 +1,6 @@
 ---
-title: A2UI on MCP Apps: 563 components — A2UI Atomic Catalog
-description: The 563 A2UI Atomic Catalog components that render on MCP Apps, each with a live preview, so an AI agent can show real UI there instead of generating HTML.
+title: A2UI on MCP Apps: 563 of 573 components — A2UI Atomic Catalog
+description: 563 of the 573 A2UI Atomic Catalog components render on MCP Apps, each with a live preview, so an AI agent can show real UI there instead of generating HTML.
 canonical: https://a2uicatalog.ai/surfaces/mcp-apps/
 generated_by: gen_page_twins.py
 ---
@@ -21,7 +21,7 @@ Playground — edit the payload, re-render the view · [Open full-screen →](./
 
  Handshake: the iframe (the **View**) posts `ui/initialize` to this page (the **Host**) on load. This page replies with a `McpUiInitializeResult`, the View acknowledges with `ui/notifications/initialized`, and this page then delivers the payload via `ui/notifications/tool-result` — the exact message sequence defined in the MCP Apps spec ([apps.mdx](https://github.com/modelcontextprotocol/ext-apps/blob/main/specification/2026-01-26/apps.mdx)). No `allow-same-origin` on the iframe — the View genuinely cannot reach this page's DOM.
 
-563 catalog atoms also render on this surface
+563 of 573 catalog atoms also render on this surface
 
 [Intro](https://a2uicatalog.ai/atoms/intro/)
 

@@ -29,12 +29,12 @@
         {
           "label": "Update a field",
           "language": "json",
-          "code": "{\n  \"version\": \"v1.0\",\n  \"updateDataModel\": {\n    \"surfaceId\": \"surface_123\",\n    \"path\": \"/user/firstName\",\n    \"value\": \"Alice\"\n  }\n}"
+          "code": "{\n  \"version\": \"1.0\",\n  \"updateDataModel\": {\n    \"surfaceId\": \"surface_123\",\n    \"path\": \"/user/firstName\",\n    \"value\": \"Alice\"\n  }\n}"
         },
         {
           "label": "Delete a field",
           "language": "json",
-          "code": "{\n  \"version\": \"v1.0\",\n  \"updateDataModel\": {\n    \"surfaceId\": \"surface_123\",\n    \"path\": \"/user/tempData\",\n    \"value\": null\n  }\n}"
+          "code": "{\n  \"version\": \"1.0\",\n  \"updateDataModel\": {\n    \"surfaceId\": \"surface_123\",\n    \"path\": \"/user/tempData\",\n    \"value\": null\n  }\n}"
         }
       ]
     },

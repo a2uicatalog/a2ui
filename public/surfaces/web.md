@@ -1,13 +1,13 @@
 ---
-title: A2UI on Web: 507 components — A2UI Atomic Catalog
-description: The 507 A2UI Atomic Catalog components that render on Web, each with a live preview, so an AI agent can show real UI there instead of generating HTML.
+title: A2UI on Web: 507 of 573 components — A2UI Atomic Catalog
+description: 507 of the 573 A2UI Atomic Catalog components render on Web, each with a live preview, so an AI agent can show real UI there instead of generating HTML.
 canonical: https://a2uicatalog.ai/surfaces/web/
 generated_by: gen_page_twins.py
 ---
 
 # Web
 
-507 atoms available on this surface
+507 of 573 atoms available on this surface
 
 [Intro](https://a2uicatalog.ai/atoms/intro/)
 
@@ -124,7 +124,6 @@ inline SVG trend line chart general trends.
 [Heatmap](https://a2uicatalog.ai/atoms/heatmap/)
 
 grid heatmap coloured by intensity value are represented as colors in a matrix.
-
 [Punch Card](https://a2uicatalog.ai/atoms/punch_card/)
 
 7x24 grid of glowing activity bubbles representing hourly commits

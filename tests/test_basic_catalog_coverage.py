@@ -358,7 +358,7 @@ console.log(JSON.stringify(out));""")
 
 
 def _m(kind, body):
-    return {"version": "v1.0", kind: body}
+    return {"version": "1.0", kind: body}
 
 
 CREATE = _m("createSurface", {"surfaceId": "s1", "catalogId": "x", "dataModel": {"who": "Ada"},

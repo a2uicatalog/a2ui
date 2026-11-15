@@ -1,13 +1,13 @@
 ---
-title: A2UI on google-chat-chromium-render: 5 components — A2UI Atomic Catalog
-description: The 5 A2UI Atomic Catalog components that render on google-chat-chromium-render, each with a live preview, so an AI agent can show real UI there instead of generating HTML.
+title: A2UI on google-chat-chromium-render: 5 of 573 components — A2UI Atomic Catalog
+description: 5 of the 573 A2UI Atomic Catalog components render on google-chat-chromium-render, each with a live preview, so an AI agent can show real UI there instead of generating HTML.
 canonical: https://a2uicatalog.ai/surfaces/google-chat-chromium-render/
 generated_by: gen_page_twins.py
 ---
 
 # google-chat-chromium-render
 
-5 atoms available on this surface
+5 of 573 atoms available on this surface
 
 [Service Status Board](https://a2uicatalog.ai/atoms/service_status_board/)
 

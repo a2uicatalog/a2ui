@@ -3057,9 +3057,23 @@ if(k==="more"){var m=document.querySelector("main");if(m)m.scrollIntoView({behav
 var f=cur();if(!f)return;if(k==="skip"){f.pause();f.seek(f.dur);}else{f.seek(0);f.play();}});})();</script>'''
 
 
-def render_landing_film():
+def _film_exact_total(node, total):
+    """The landing film is built in the private repo with a typed "500+" in its stat card and the code lines above it.
+    Replace that figure with the exact published total at render time, so the page never shows an approximation
+    (build_landing.mjs reads the catalogue itself once that fix is in; until then this keeps the page right)."""
+    if isinstance(node, dict):
+        return {k: _film_exact_total(v, total) for k, v in node.items()}
+    if isinstance(node, list):
+        return [_film_exact_total(v, total) for v in node]
+    if isinstance(node, str):
+        return node.replace("500+", str(total)) if node in ("500+", '  "value": "500+"') else node
+    return node
+
+
+def render_landing_film(total):
     def film(aspect, theme):
         d = json.loads((ROOT / "landing" / f"film-{aspect}-{theme}.json").read_text())
+        d = _film_exact_total(d, total)
         html = _web_renderer._RENDERERS["motion_timeline"](dict(d["blocks"][0])).replace("<script>", '<script type="text/plain" data-film-js>')
         return f'<div class="mf mf-{aspect} mf-{theme}">' + html + "</div>"
     return ('<section class="film-hero" aria-label="A2UI Catalog introduction">'
@@ -3069,17 +3083,12 @@ def render_landing_film():
 
 
 def generate_index(atoms):
-    # A visitor lands on the hero stat ("501 atoms"), scrolls two screens, and
-    # hits the MCP Apps banner's real, different, ALSO-exact number (atoms
-    # whose works_on actually includes mcp-apps, currently fewer than the
-    # full catalog) -- two precise-looking numbers that don't match read as a
-    # bug, even though both are true. Round the CATALOG-SIZE claims (marketing
-    # prose, not the JSON-LD numberOfItems, which stays exact for machine
-    # consumption) down to a "500+" style figure computed from the live count
-    # -- not a hand-typed literal, so it can't go stale the way gen_readme_
-    # badges.py's fix was written to prevent ("450+" sitting stale past 473).
-    atom_count_rounded = f"{(len(atoms) // 50) * 50}+"
-    _landing_film = render_landing_film()
+    # Every catalog-size claim on the landing page is the exact published count (owner 2026-11-15: no "550+",
+    # no "500+", one number everywhere). It is computed from the live catalogue, never typed, and
+    # tests/test_site_count_consistency.py fails the build if any public page says a different total.
+    # A per-surface figure (the MCP Apps banner) is always printed as "X of N" with this N.
+    atom_count_rounded = str(len(atoms))
+    _landing_film = render_landing_film(len(atoms))
     all_surfaces = []
     for atom in atoms:
         for s in (atom.get("surfaces") or {}).get("works_on") or []:
@@ -4242,11 +4251,13 @@ def _cursor_glow_html():
     return _CURSOR_GLOW_CACHE
 
 
-def generate_surface_page(surface, atoms):
+def generate_surface_page(surface, atoms, total=None):
+    # total = the published catalogue size; a per-surface count is always shown as "X of N" (N from the catalogue, never typed)
+    total = total or len(atoms)
     display = SURFACE_NAMES.get(surface, surface)
     seo_title, seo_desc = SURFACE_SEO.get(surface, (
-        f"A2UI on {display}: {len(atoms)} components — A2UI Atomic Catalog",
-        f"The {len(atoms)} A2UI Atomic Catalog components that render on {display}, each with a live "
+        f"A2UI on {display}: {len(atoms)} of {total} components — A2UI Atomic Catalog",
+        f"{len(atoms)} of the {total} A2UI Atomic Catalog components render on {display}, each with a live "
         f"preview, so an AI agent can show real UI there instead of generating HTML."))
     seo_title, seo_desc = seo_title.format(n=len(atoms)), seo_desc.format(n=len(atoms))
     seo_jsonld = json.dumps({"@context": "https://schema.org", "@graph": [
@@ -4273,8 +4284,8 @@ def generate_surface_page(surface, atoms):
     if surface == "mcp-apps" and _web_renderer is not None:
         hero = _web_renderer.render([{"type": "iso_fireworks_panel"}]) + hero
     atoms_lead = (
-        f"{len(atoms)} catalog atoms also render on this surface"
-        if hero else f"{len(atoms)} atoms available on this surface"
+        f"{len(atoms)} of {total} catalog atoms also render on this surface"
+        if hero else f"{len(atoms)} of {total} atoms available on this surface"
     )
 
     is_playground = surface == "mcp-apps"
@@ -5573,7 +5584,7 @@ def main():
     for surface, surface_atoms in surface_map.items():
         sdir = surfaces_dir / surface
         sdir.mkdir(parents=True, exist_ok=True)
-        (sdir / "index.html").write_text(generate_surface_page(surface, surface_atoms))
+        (sdir / "index.html").write_text(generate_surface_page(surface, surface_atoms, total=len(unique)))
 
     # Prune surfaces this build does NOT publish. Writing only what qualifies
     # is not enough: a surface whose atoms are all stage:preview or

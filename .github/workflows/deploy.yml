@@ -48,9 +48,6 @@ jobs:
       - name: Build atom pages
         run: python3 scripts/generate_atom_pages.py
 
-      - name: Build Markdown twins for the other site pages (/<path>.md)
-        run: python3 scripts/gen_page_twins.py
-
       - name: Build machine-readable catalog (spec.json, compact index, runbooks)
         run: python3 scripts/gen_public_catalog.py
 
@@ -96,8 +93,16 @@ jobs:
       - name: Build sitemap.xml from real build output
         run: python3 scripts/gen_sitemap.py
 
+      # Moved here from the top of the build (2026-11-15): a twin is made from the built HTML, and the guide pages
+      # (gen_pillar_pages.py) are built above, so the committed what-is-a2ui.md twin was one build behind ("545 published components").
+      - name: Build Markdown twins for the other site pages (/<path>.md)
+        run: python3 scripts/gen_page_twins.py
+
       - name: Atom-count claims must match the published catalogue
         run: python3 scripts/gen_atom_count.py --check
+
+      - name: Every public page states the published count and the v1.0 wire version (built outputs, about 15 s)
+        run: python3 -m pytest tests/test_site_count_consistency.py -q
 
       # Offline renderer-dimension content check (no secrets, no harness, seconds; nothing clock-based
       # can fail it: age only warns). Runs after the generators, so it also proves the built catalogue

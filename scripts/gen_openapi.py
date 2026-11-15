@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """gen_openapi.py — compile public/openapi.json and public/llms.txt.
 
-Both documents state the size of the catalogue ("474 typed UI atoms"), and
+Both documents state the size of the catalogue ("N typed UI atoms"), and
 both were originally hand-written with that number baked in — so every atom
 added silently made the two most agent-facing documents on the site wrong.
 They are compiled here from public/spec.json (the PUBLISHED artifact, so the
@@ -113,7 +113,7 @@ def build_openapi(n_atoms, n_surfaces):
             {"name": "compose", "description": "Natural language to atom blocks"},
             {"name": "data", "description": "Declared, rate-limited data sources for live atoms"},
         ],
-        "paths": _with_version_param(_paths()),
+        "paths": _with_version_param(_paths(n_atoms)),
         "components": _components(),
     }
 
@@ -130,7 +130,7 @@ def _with_version_param(paths):
     return paths
 
 
-def _paths():
+def _paths(n_atoms):
     return {
         "/mcp": {
             "get": {
@@ -219,7 +219,7 @@ def _paths():
             "summary": "A2UI payload to HTML",
             "description": ("POST a payload, get a complete self-contained HTML page back. "
                             "The protocol-free path: no MCP, no connector, no deployment — "
-                            "compose against spec.json and render here. Serves the 474 "
+                            f"compose against spec.json and render here. Serves the {n_atoms} "
                             "published atoms; preview-stage atoms are reported in "
                             "X-A2UI-Unpublished and rendered as a comment rather than markup. "
                             "Atoms that perform a render-time server fetch (data_source, "
@@ -722,7 +722,7 @@ Build logs and architecture write-ups from operating this catalog in production 
 - [Building in the Age of Frontier Models: Why Frugality is My Go-To Architecture]({base}/blog/001-frugality-architecture/): Artifact distillation — spend the model once, keep the output forever. Five problems nobody asked me to solve.
 - [Rich UI in Gemini Enterprise: A Field Report on A2A Agents and A2UI Primitives]({base}/blog/002-gemini-enterprise-field-report-a2a-a2ui-part1/): Every component in the A2UI v0.8 Basic Catalog tested against a real Gemini Enterprise agent, plus two working demo agents built entirely from them.
 - [Rich UI in Gemini Enterprise, Part 2 — The Print-Rendering Workaround for Custom Catalogs]({base}/blog/003-gemini-enterprise-field-report-a2a-a2ui-part2/): Gemini Enterprise only renders 18 standard-catalog primitives; the fix renders custom charts/gauges server-side to an image through the one primitive that always works.
-- [The A2UI Catalog Now Renders Inside Claude.ai]({base}/blog/004-mcp-apps-inside-claude-ai/): One connector URL, 474 typed atoms rendering inline in the conversation — no HTML written.
+- [The A2UI Catalog Now Renders Inside Claude.ai]({base}/blog/004-mcp-apps-inside-claude-ai/): One connector URL, typed atoms rendering inline in the conversation — no HTML written.
 - [Rich UI in Google Chat: a real, self-hostable bot built on the print-channel trick]({base}/blog/005-google-chat-print-channel-bundle/): The self-hostable Cloud Run bundle, a wire-level trace of one request, and the Chat-setup gotchas Google's docs don't lead with.
 - [The A2UI Catalog Now Renders Inside ChatGPT]({base}/blog/006-mcp-apps-inside-chatgpt/): Same connector URL, same payloads, a second host — and three latent defects that existing connections had been quietly hiding.
 - [MCP Apps Isn't A2UI's Competitor — It's How It Travels]({base}/blog/007-mcp-apps-portability/): Where transport, envelope and document model actually sit — how the same payload reaches Claude, ChatGPT and this site without three separate builds.

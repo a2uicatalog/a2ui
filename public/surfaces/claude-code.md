@@ -1,6 +1,6 @@
 ---
-title: A2UI on Claude Code: 11 components — A2UI Atomic Catalog
-description: The 11 A2UI Atomic Catalog components that render on Claude Code, each with a live preview, so an AI agent can show real UI there instead of generating HTML.
+title: A2UI on Claude Code: 11 of 573 components — A2UI Atomic Catalog
+description: 11 of the 573 A2UI Atomic Catalog components render on Claude Code, each with a live preview, so an AI agent can show real UI there instead of generating HTML.
 canonical: https://a2uicatalog.ai/surfaces/claude-code/
 generated_by: gen_page_twins.py
 ---
@@ -11,7 +11,7 @@ generated_by: gen_page_twins.py
 
 Install from the repository: `claude --plugin-dir a2ui/claude-code-surface` · [source and README](https://github.com/a2uicatalog/a2ui/tree/main/claude-code-surface)
 
-11 catalog atoms also render on this surface
+11 of 573 catalog atoms also render on this surface
 
 [Body](https://a2uicatalog.ai/atoms/body/)
 

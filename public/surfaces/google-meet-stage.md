@@ -1,13 +1,13 @@
 ---
-title: A2UI on Google Meet Stage: 310 components — A2UI Atomic Catalog
-description: The 310 A2UI Atomic Catalog components that render on Google Meet Stage, each with a live preview, so an AI agent can show real UI there instead of generating HTML.
+title: A2UI on Google Meet Stage: 310 of 573 components — A2UI Atomic Catalog
+description: 310 of the 573 A2UI Atomic Catalog components render on Google Meet Stage, each with a live preview, so an AI agent can show real UI there instead of generating HTML.
 canonical: https://a2uicatalog.ai/surfaces/google-meet-stage/
 generated_by: gen_page_twins.py
 ---
 
 # Google Meet Stage
 
-310 atoms available on this surface
+310 of 573 atoms available on this surface
 
 [Intro](https://a2uicatalog.ai/atoms/intro/)
 

@@ -61,7 +61,7 @@
         {
           "label": "Rejected call",
           "language": "json",
-          "code": "{\n  \"version\": \"v1.0\",\n  \"error\": {\n    \"code\": \"INVALID_FUNCTION_CALL\",\n    \"message\": \"Function 'validateLocalInput' is clientOnly and cannot be invoked remotely.\",\n    \"functionCallId\": \"get_device_resolution_123\"\n  }\n}"
+          "code": "{\n  \"version\": \"1.0\",\n  \"error\": {\n    \"code\": \"INVALID_FUNCTION_CALL\",\n    \"message\": \"Function 'validateLocalInput' is clientOnly and cannot be invoked remotely.\",\n    \"functionCallId\": \"get_device_resolution_123\"\n  }\n}"
         }
       ]
     },

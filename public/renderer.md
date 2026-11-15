@@ -116,7 +116,7 @@ Runs in your Google account. No dependency on the catalog's demo URL. Survives a
 
 ⚡
 
-#### 550 atoms, ready to go
+#### 550 of 573 atoms, ready to go
 
 Stat cards, charts, globes, animations, tables, forms — all render immediately. A handful of data-source atoms want their own API key (see below) and degrade gracefully without one.
 

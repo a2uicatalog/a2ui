@@ -28,7 +28,7 @@ def test_page_numbers_come_from_data():
     html = page.render()
     assert "@@" not in html
     assert f"{c['GAS_ATOMS']} of the catalog's {c['TOTAL_ATOMS']} atoms render on Apps Script" in html
-    assert f"<h4>{c['GAS_ATOMS']} atoms, ready to go</h4>" in html
+    assert f"<h4>{c['GAS_ATOMS']} of {c['TOTAL_ATOMS']} atoms, ready to go</h4>" in html
     assert f"A2UI v{c['PROTOCOL']}</strong>" in html and f"all {c['BASIC_N']} components" in html
     claimed = {m.split()[0] for m in COUNT_CLAIM.findall(html)}
     assert claimed <= {c["GAS_ATOMS"], c["TOTAL_ATOMS"]}, claimed

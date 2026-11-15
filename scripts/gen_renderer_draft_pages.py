@@ -345,7 +345,7 @@ def measured_text(m, rid):
                "Also measured: the Basic lane (670 Basic cases) and 48 Basic behaviour probes against React; pixel parity is recorded but not meaningful across Compose Desktop and Chromium.") % (n_case, T)
     else:
         par = sum(1 for a in m["atoms"] if ((m["atoms"][a][rid].get("checks") or {}).get("parity_text")))
-        txt = "%d of %d atoms have a lane example, drawn in the headless Flutter widget-test engine. Text parity with the web painter was checked on %d atoms; no pixel parity, no Basic-lane measurement by us and no device run." % (n_case, T, par)
+        txt = "%d of %d atoms have a lane example, drawn in the headless Flutter widget-test engine. Text parity with the web painter was checked on %d of %d atoms; no pixel parity, no Basic-lane measurement by us and no device run." % (n_case, T, par, T)
     return txt + " Weekly gate (M5) not claimed."
 
 
@@ -390,14 +390,14 @@ def renderer_parts(m, rid, link):
             "<li>Status is derived from per-check results with rules version %d: any difference from React wins over a verification gap; the worst case wins for atoms with several cases.</li>" % m["rules_version"],
             "<li>Atoms with a pixel difference from React, by environment: %s. Overflow at 360 px: %d. Contrast worse than React: %d. Behaviour differs: %d.</li>" % (
                 pxf, rc.get("overflow_360", 0), sum(v for k, v in rc.items() if k.startswith("contrast_worse_")), rc.get("behaviour_differs", 0)),
-            "<li>%d atoms are not verified because the example paints no visible text, %d because they are blank on both sides in at least one environment and %d because a check is unstable (time or animation dependent; non-deterministic measurements only: they sit on the allowance list and record unstable, never pass).</li>" % (
-                rc.get("no_visible_text", 0), len({a for a in atoms if any(r.startswith("blank_both_") for r in atoms[a][rid]["reasons"])}),
+            "<li>%d of %d atoms are not verified because the example paints no visible text, %d because they are blank on both sides in at least one environment and %d because a check is unstable (time or animation dependent; non-deterministic measurements only: they sit on the allowance list and record unstable, never pass).</li>" % (
+                rc.get("no_visible_text", 0), cov["total"], len({a for a in atoms if any(r.startswith("blank_both_") for r in atoms[a][rid]["reasons"])}),
                 len({a for a in atoms if any(r.startswith("unstable_") for r in atoms[a][rid]["reasons"])})),
-            "<li>%d atoms have no example in the gate data and are not measured.</li>" % cov.get("not_measured", 0),
+            "<li>%d of %d atoms have no example in the gate data and are not measured.</li>" % (cov.get("not_measured", 0), cov["total"]),
         ]
         n4 = len([a for a in atoms if all("pixel_fail_" + e in atoms[a][rid]["reasons"] for e in ENV)])
         if n4:
-            items.append("<li>%d atoms fail the pixel rule in all four environments (light and dark, 480 and 360 px).</li>" % n4)
+            items.append("<li>%d of %d atoms fail the pixel rule in all four environments (light and dark, 480 and 360 px).</li>" % (n4, cov["total"]))
     elif reg["kind"] == "flutter":
         chk = [a for a in atoms if (atoms[a][rid].get("checks") or {}).get("parity_text")]
         mism = [a for a in chk if atoms[a][rid]["checks"]["parity_text"]["missing_in_flutter"] > 0]
@@ -405,7 +405,7 @@ def renderer_parts(m, rid, link):
         items += [
             "<li>Partial coverage: %d of %d atoms draw natively; %d draw only through Basic components; %d draw nothing; %d are not measured (%d with an invalid example, the rest without an example).</li>" % (
                 cov["native"], cov["total"], cov["degraded"], cov["not_supported"], cov["not_measured"], inval),
-            "<li>Text parity with the web painter was checked on %d atoms; %d of those miss at least one web word in Flutter. The check compares visible words, not layout or pixels. For atoms with several cases the worst case counts.</li>" % (len(chk), len(mism)),
+            "<li>Text parity with the web painter was checked on %d of %d atoms; %d of those miss at least one web word in Flutter. The check compares visible words, not layout or pixels. For atoms with several cases the worst case counts.</li>" % (len(chk), cov["total"], len(mism)),
             "<li>No device run: everything ran in the headless widget-test engine. An independent 12 Nov audit of 40 ported atoms found visible drift in about 16, so Native here means the port draws the lane example, not that it matches the web look.</li>",
         ]
     elif reg["kind"] == "compose":
@@ -451,7 +451,7 @@ def renderer_parts(m, rid, link):
                 "<li><code>%s</code> <span class=\"note\">%s</span></li>" % (link(a), E("; ".join(reason_text(r) for r in atoms[a][rid]["reasons"])))
                 for a in byst[s])
         open_attr = " open" if len(byst[s]) <= 12 else ""
-        lists += '<details%s><summary>%s: %d atoms</summary>%s</details>' % (open_attr, chip(s), len(byst[s]), body)
+        lists += '<details%s><summary>%s: %d of %d atoms</summary>%s</details>' % (open_attr, chip(s), len(byst[s]), cov["total"], body)
     return {"reg": reg, "pre_html": pre_html, "dl": dl, "total": cov["total"], "bar": counts_bar(cov, statuses),
             "chips": chips, "extra": extra, "lists": lists}
 

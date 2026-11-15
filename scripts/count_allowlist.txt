@@ -1,0 +1,2 @@
+# path glob | exact matched text | reason (dated measurements and figures that are not the catalogue total)
+surfaces/mcp-apps/renderer-bundle.html | 290+ atoms | Sample feature-card text inside the compiled renderer bundle (a demo default). Editing the bundle changes its hash and invalidates the renderer matrix measurement (check_renderer_matrix FRESH), so it waits for the next bundle rebuild and re-measure; source is apps-script-surface/*/atoms_dark.gs line 261.

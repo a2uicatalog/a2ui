@@ -197,7 +197,7 @@ clasp push
     </div>
     <div class="feature">
       <div class="feature-icon">&#9889;</div>
-      <h4>@@GAS_ATOMS@@ atoms, ready to go</h4>
+      <h4>@@GAS_ATOMS@@ of @@TOTAL_ATOMS@@ atoms, ready to go</h4>
       <p>Stat cards, charts, globes, animations, tables, forms — all render immediately. A handful of data-source atoms want their own API key (see below) and degrade gracefully without one.</p>
     </div>
     <div class="feature">

@@ -1,13 +1,13 @@
 ---
-title: A2UI on Google Chat: 26 components — A2UI Atomic Catalog
-description: The 26 A2UI Atomic Catalog components that render on Google Chat, each with a live preview, so an AI agent can show real UI there instead of generating HTML.
+title: A2UI on Google Chat: 26 of 573 components — A2UI Atomic Catalog
+description: 26 of the 573 A2UI Atomic Catalog components render on Google Chat, each with a live preview, so an AI agent can show real UI there instead of generating HTML.
 canonical: https://a2uicatalog.ai/surfaces/google-chat/
 generated_by: gen_page_twins.py
 ---
 
 # Google Chat
 
-26 atoms available on this surface
+26 of 573 atoms available on this surface
 
 [Intro](https://a2uicatalog.ai/atoms/intro/)
 
