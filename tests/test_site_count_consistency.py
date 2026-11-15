@@ -30,22 +30,12 @@ EXTS = {".html", ".md", ".txt", ".json"}
 
 # The claim is  \b\d{3}\+?\s+(typed |published |UI |atomic )?(atoms|components)\b  (and the hyphenated "573-atom vocabulary").
 # Running that regex over the 600 MB of public/parts shards takes over a minute, so the scan finds each "atoms"/"components"
-# word first (fast, literal) and tests only the 30 characters in front of it. Same matches, a few seconds in all.
+# word first (fast, literal) and tests only the 64 characters in front of it. Same matches, a few seconds in all.
 WORD_RE = re.compile(r"(atoms|components|atom|component)\b")
-BEFORE_RE = re.compile(r"\b(\d{3})(\+?)(\s+(?:typed\s+|published\s+|UI\s+|atomic\s+)?|-)$")
-
-
-def _claims(text):
-    """Yield (number, plus, matched_text) for every total-looking claim in text."""
-    for w in WORD_RE.finditer(text):
-        i = w.start()
-        m = BEFORE_RE.search(text, max(0, i - 30), i)
-        if not m:
-            continue
-        hyphen = m.group(3) == "-"
-        if (w.group(1) in ("atoms", "components")) == hyphen:   # "N-atom" needs the singular word, "N atoms" the plural
-            continue
-        yield m.group(1), m.group(2), text[m.start():w.end()]
+# up to three words may sit between the number and the noun ("573 typed A2UI components", "550+ published A2UI atoms")
+NUM_RE = re.compile(r"\b(\d{3})(\+?)")
+GAP_RE = re.compile(r"(?:\s+[A-Za-z0-9.-]+){0,3}\s+$")
+WINDOW = 64
 VERSION_RES = [
     re.compile(r"""["']version["']\s*:\s*["']v1\.0["']"""),                  # plain JSON / Python
     re.compile(r"""\\+["']version\\+["']\s*:\s*\\+["']v1\.0"""),              # JSON inside a JSON string
@@ -53,6 +43,23 @@ VERSION_RES = [
     re.compile(r"""&#0?34;version&#0?34;\s*:\s*&#0?34;v1\.0"""),
     re.compile(r"""\bversion["']?\s*[:=]\s*["']v1\.0["']"""),
 ]
+
+
+def _claims(text):
+    """Yield (number, plus, matched_text) for every total-looking claim in text."""
+    for w in WORD_RE.finditer(text):
+        i = w.start()
+        lo = max(0, i - WINDOW)
+        window = text[lo:i]
+        singular = w.group(1) in ("atom", "component")
+        best = None
+        for m in NUM_RE.finditer(window):
+            rest = window[m.end():]
+            # "573-atom vocabulary" needs the singular word; "573 atoms" and "573 typed A2UI components" the plural
+            if (singular and rest == "-") or (not singular and GAP_RE.match(rest)):
+                best = m          # keep the number nearest the noun: in "550 of 573 atoms" the claim is 573, 550 is the part
+        if best:
+            yield best.group(1), best.group(2), text[lo + best.start():w.end()]
 
 
 def published_count():
@@ -174,3 +181,59 @@ def test_every_allowlist_entry_has_a_reason_and_still_matches_something():
         assert len(why) > 15, f"allowlist entry {g} | {m} needs a real reason"
         assert any(fnmatch.fnmatch(r, g) and any(h == m for _, _, h in found) for r, found in _scan_public()["claims"].items()), \
             f"stale allowlist entry (no longer in any page): {g} | {m}"
+
+
+def test_mutated_copies_of_real_pages_are_flagged(tmp_path, monkeypatch):
+    """The guard must fail when a real built page is edited to a wrong total. Works on COPIES in a temp tree; the real tree is never touched.
+    (An earlier pattern allowed one modifier word, so '573 typed A2UI components' -> '550+ typed A2UI components' went unnoticed.)"""
+    import shutil
+    import sys
+    mod = sys.modules[__name__]
+    n = published_count()
+    real = PUBLIC
+    cases = [  # (real page, text in it, wrong text)
+        ("index.html", f"{n} typed A2UI components", "550+ typed A2UI components"),
+        ("index.html", f"{n} typed UI atoms", "550+ typed UI atoms"),
+        ("atoms.md", f"{n} A2UI components", f"{n - 28} A2UI components"),
+        ("what-is-a2ui.md", f"{n} published components", "500+ components"),
+        ("llms.txt", f"({n} atoms)", "(545 atoms)"),
+        ("about.md", f"**{n} atoms**", "**474 atoms**"),
+    ]
+    for k, (page, good, bad) in enumerate(cases):
+        src = real / page
+        assert good in src.read_text(encoding="utf-8"), f"{page} no longer contains {good!r}; update this test"
+        root = tmp_path / f"c{k}"
+        root.mkdir()
+        copy = root / page
+        shutil.copy(src, copy)
+        copy.write_text(copy.read_text(encoding="utf-8").replace(good, bad, 1), encoding="utf-8")
+        monkeypatch.setattr(mod, "PUBLIC", root)
+        mod._SCAN.clear()
+        try:
+            flagged = find_bad_counts(n, allow=[])
+        finally:
+            mod._SCAN.clear()
+        assert any(bad.split(" ", 1)[0].strip("(*") in f for f in flagged), f"{page}: {good!r} -> {bad!r} was not flagged ({flagged[:3]})"
+    # and a wrong sample version in a copy
+    root = tmp_path / "v"
+    root.mkdir()
+    (root / "w.html").write_text(real.joinpath("what-is-a2ui/example/index.html").read_text(encoding="utf-8").replace('&quot;version&quot;: &quot;1.0&quot;', '&quot;version&quot;: &quot;v1.0&quot;'), encoding="utf-8")
+    monkeypatch.setattr(mod, "PUBLIC", root)
+    mod._SCAN.clear()
+    try:
+        assert find_bad_versions() == ["w.html"]
+    finally:
+        mod._SCAN.clear()
+
+
+def test_vendored_catalog_meta_schemas_are_identical():
+    # tests/fixtures/a2ui_v1_0_live/README.md says the two copies are byte-identical (audit W6 found the old note claiming otherwise)
+    a = (ROOT / "tests/fixtures/a2ui_v1_0_live/catalog_definition_v1_0.json").read_bytes()
+    b = (ROOT / "tests/fixtures/a2ui_v1_0_spec/json/catalog_definition.json").read_bytes()
+    assert a == b
+
+
+def test_mcp_readme_state_catalog_size_matches_the_catalogue():
+    state = json.loads((PUBLIC / "catalogue/a2ui-state-v1.json").read_text(encoding="utf-8"))
+    n = len(state.get("components", {})) + len(state.get("functions", {}))
+    assert f"({n} primitives)" in (ROOT / "mcp/README.md").read_text(encoding="utf-8")

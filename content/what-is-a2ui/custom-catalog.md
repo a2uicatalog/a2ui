@@ -1,6 +1,6 @@
 ---
 title: "A2UI Custom Catalog: a Worked Example with @@ATOMS@@ Components"
-date: 2026-11-13
+date: 2026-11-14
 summary: "A real A2UI v1.0 custom catalog, end to end: the catalog document, one component definition, and a surface that mixes it with the Basic Catalog. @@ATOMS@@ components, open source."
 read_minutes: 6
 ---

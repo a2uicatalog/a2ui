@@ -1,6 +1,6 @@
 ---
 title: "What is A2UI? The Agent-to-UI Protocol"
-date: 2026-11-11
+date: 2026-11-15
 summary: "A2UI is an open protocol that lets AI agents show native UI from JSON. How it works, renderers, catalogs, macros, Express, and how it differs from HTML."
 read_minutes: 12
 ---

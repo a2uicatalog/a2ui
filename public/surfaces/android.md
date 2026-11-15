@@ -1,6 +1,6 @@
 ---
 title: A2UI on Android: Jetpack Compose components for androidx.a2ui — A2UI Atomic Catalog
-description: Show agent UIs in Android apps: the atomic-catalog library adds 563 A2UI components to Google's androidx.a2ui Jetpack Compose renderer, on top of the 18 Basic Catalog components Google draws in Material 3.
+description: Show agent UIs in Android apps: the atomic-catalog library adds 563 of the 573 A2UI components to Google's androidx.a2ui Jetpack Compose renderer, on top of the 18 Basic Catalog components Google draws in Material 3.
 canonical: https://a2uicatalog.ai/surfaces/android/
 generated_by: gen_page_twins.py
 ---

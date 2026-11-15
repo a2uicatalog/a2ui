@@ -28,5 +28,6 @@ def test_check_mode_reports_a_wrong_number_without_writing(tmp_path, monkeypatch
     card.write_text('{"description": "1 typed UI atoms"}')
     monkeypatch.setattr(gac, "ROOT", tmp_path)
     monkeypatch.setattr(gac, "CLAIMS", [("card.json", r"(\d+) typed UI atoms")])
+    monkeypatch.setattr(gac, "SURFACE_CLAIMS", [])
     assert gac.stale(548) == [("card.json", r"(\d+) typed UI atoms", ["1"])]
     assert card.read_text() == '{"description": "1 typed UI atoms"}'

@@ -1,2 +1,7 @@
 # path glob | exact matched text | reason (dated measurements and figures that are not the catalogue total)
 surfaces/mcp-apps/renderer-bundle.html | 290+ atoms | Sample feature-card text inside the compiled renderer bundle (a demo default). Editing the bundle changes its hash and invalidates the renderer matrix measurement (check_renderer_matrix FRESH), so it waits for the next bundle rebuild and re-measure; source is apps-script-surface/*/atoms_dark.gs line 261.
+renderers/compose.md | 500 registered custom components | Audit W3: contradicts the same page ("Compose has no custom-atom implementations"); the sentence comes from renderer-matrix-v1.json renderers.compose.note, which is catalogue data. Reported to the owner, not fixed here.
+renderers/compose/index.html | 500 registered custom components | Audit W3, same as renderers/compose.md.
+catalogue/renderer-matrix-v1.json | 500 registered custom components | Audit W3: the source of the sentence on the Compose page; catalogue data, owner decision.
+renderers/compose/index.html | 570 stable atoms | Measured subset, not the total: 573 atoms minus the 3 that have no gate example (Compose: 570 + 3 not measured = 573). Reworded when A3 of the audit is settled.
+renderers/compose/index.html | 570 among the stable atoms | Measured subset, same as above.

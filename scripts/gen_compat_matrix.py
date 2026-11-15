@@ -43,6 +43,7 @@ SURFACES = [
     ("google-apps-script-side-panel", "gas-panel"),
     ("google-meet-stage", "meet"),
     ("google-chat", "chat"),
+    ("google-chat-chromium-render", "chat-chromium"),
     ("mcp-apps", "mcp-apps"),
     ("claude-code", "claude-code"),
     ("android", "android"),

@@ -48,6 +48,14 @@ CLAIMS = [
     ("public/what-is-a2ui.md", r"catalog of (\d+) published components"),
 ]
 
+# The number of surfaces, held to the same rule: distinct surface ids in public/spec.json (works_on). The README said "8"
+# while spec.json and the home page say 13 (outside audit W4).
+SURFACE_CLAIMS = [
+    ("README.md", r"## \d+ atoms across (\d+) surfaces"),
+    ("README.md", r"which of the \*\*(\d+) surfaces\*\*"),
+    ("README.md", r"all atoms × (\d+) surfaces"),
+]
+
 # Whole places where count claims keep appearing (owner 2026-11-01: "correct the harness to mechanically update
 # that", after skills/a2ui-catalog/SKILL.md still said 480 with 573 published). Every "<N> atoms" / "<N> typed
 # (UI) atoms" in these files is held to the published count, so a new skill or doc page is covered the day it is
@@ -79,9 +87,24 @@ def published_count():
     return n
 
 
+def surface_count():
+    spec = json.loads(SPEC.read_text(encoding="utf-8"))
+    ids = {s for a in spec.get("atoms", []) for s in ((a.get("surfaces") or {}).get("works_on") or [])}
+    if len(ids) < 5:
+        sys.exit(f"gen_atom_count: implausible surface count ({len(ids)})")
+    return len(ids)
+
+
 def stale(n):
-    """Returns [(path, pattern, found_numbers)] for every claim that does not equal n."""
+    """Returns [(path, pattern, found_numbers)] for every claim that does not equal n (surface claims: the surface count)."""
     out = []
+    m = surface_count()
+    for path, pattern in SURFACE_CLAIMS:
+        found = re.findall(pattern, (ROOT / path).read_text(encoding="utf-8"))
+        if not found:
+            sys.exit(f"gen_atom_count: {path} no longer contains a claim matching {pattern!r}")
+        if any(x != str(m) for x in found):
+            out.append((path, pattern, found))
     for path, pattern in _claims():
         text = (ROOT / path).read_text(encoding="utf-8")
         found = re.findall(pattern, text)
@@ -106,10 +129,12 @@ def main():
         print(f"✓ atom-count claims match the published catalogue ({n})")
         return 0
     changed = set()
-    for path, pattern in _claims():
+    sc = surface_count()
+    for path, pattern in [(a, b) for a, b in SURFACE_CLAIMS] + _claims():
+        val = sc if (path, pattern) in SURFACE_CLAIMS else n
         p = ROOT / path
         text = p.read_text(encoding="utf-8")
-        new = re.sub(pattern, lambda m: m.group(0).replace(m.group(1), str(n), 1), text)
+        new = re.sub(pattern, lambda m, val=val: m.group(0).replace(m.group(1), str(val), 1), text)
         if new != text:
             p.write_text(new, encoding="utf-8")
             changed.add(path)

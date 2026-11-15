@@ -88,6 +88,6 @@ and PDF — portability is the expansion, not a rewrite.
 
 ## Status
 
-v0.1.0 — first public release. GAS-first, local stdio, fully self-contained
+A GAS-first, local stdio server, fully self-contained
 (bundles its own catalog snapshot, no network for the read-only tools).
-Catalogs: `a2ui-atoms-v1` (573 atoms) + `a2ui-state-v1` (25 primitives).
+Catalogs: `a2ui-atoms-v1` (573 atoms) + `a2ui-state-v1` (26 primitives).

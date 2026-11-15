@@ -3484,7 +3484,7 @@ SURFACE_NAMES = {
 SURFACE_SEO = {
     "android": (
         "A2UI on Android: Jetpack Compose components for androidx.a2ui — A2UI Atomic Catalog",
-        "Show agent UIs in Android apps: the atomic-catalog library adds {n} A2UI components to "
+        "Show agent UIs in Android apps: the atomic-catalog library adds {n} of the {total} A2UI components to "
         "Google's androidx.a2ui Jetpack Compose renderer, on top of the 18 Basic Catalog "
         "components Google draws in Material 3."),
 }
@@ -4259,7 +4259,7 @@ def generate_surface_page(surface, atoms, total=None):
         f"A2UI on {display}: {len(atoms)} of {total} components — A2UI Atomic Catalog",
         f"{len(atoms)} of the {total} A2UI Atomic Catalog components render on {display}, each with a live "
         f"preview, so an AI agent can show real UI there instead of generating HTML."))
-    seo_title, seo_desc = seo_title.format(n=len(atoms)), seo_desc.format(n=len(atoms))
+    seo_title, seo_desc = seo_title.format(n=len(atoms), total=total), seo_desc.format(n=len(atoms), total=total)
     seo_jsonld = json.dumps({"@context": "https://schema.org", "@graph": [
         {"@type": "CollectionPage", "@id": f"https://a2uicatalog.ai/surfaces/{surface}/",
          "url": f"https://a2uicatalog.ai/surfaces/{surface}/", "name": seo_title, "description": seo_desc,
