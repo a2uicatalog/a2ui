@@ -2042,7 +2042,7 @@ def _render_icon_list(b: dict) -> str:
     rows = ""
     for item in b.get("items", []):
         color = item.get("color", accent)
-        icon  = item.get("icon", "•")
+        icon  = item.get("icon") or "•"
         rows += (
             f'<div data-cb="item" data-key="{_cv_esc(str(item.get("label") or item.get("text") or ""))}" style="display:flex;gap:14px;align-items:flex-start;margin-bottom:14px;">'
             f'<div style="flex:0 0 {icon_px};height:{icon_px};border-radius:50%;background:{_cv_esc(color)}18;display:flex;align-items:center;justify-content:center;font-size:{icon_em};">{_cv_esc(icon)}</div>'
@@ -15944,6 +15944,8 @@ _RENDERERS['status_indicator'] = _render_status_indicator
 
 def _render_status_pill(b: dict) -> str:
     text = b.get('text') or b.get('label', '')
+    if isinstance(text, (list, tuple)):
+        text = ', '.join(str(x) for x in text)  # a list is not a pill label; join it instead of printing its Python repr
     status = b.get('status', 'default')
     col_map = {
         'active':   ('#10b981', '#d1fae5'),
@@ -17212,7 +17214,12 @@ _RENDERERS['social_proof_banner'] = _render_social_proof_banner
 
 # ── NEW WEB RENDERERS — Batch 6 (animated_counter → tabs + 7 no-GAS, ~60 atoms)
 
+_render_animated_counter_counters = _render_animated_counter  # the first definition above: CSS @property counters, reads the schema's `counters` list
+
+
 def _render_animated_counter(b: dict) -> str:
+    if isinstance(b.get('counters'), list) and b['counters']:
+        return _render_animated_counter_counters(b)  # the schema shape (counters: [{value, label, ...}]); the code below only reads a single top-level target/value
     uid = _wa_uid(b)
     target = b.get('target') or b.get('value', 0)
     prefix = b.get('prefix', '')
@@ -31393,6 +31400,8 @@ def _gd_clean(v, k):
         o = {}
         for key, val in v.items():
             lk = _gd_lower(key) if isinstance(key, str) else key
+            if val is None:
+                continue  # a null field is a missing field: dict.get(k, default) returns None, not the default, for a key that is present, which crashed int(b.get(k, 0)) and string methods
             if isinstance(val, str):
                 if _gd_ok(lk, val):
                     o[key] = val
