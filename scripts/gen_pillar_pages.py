@@ -45,12 +45,12 @@ FRONT_MATTER_RE = re.compile(r"^---\n(.*?)\n---\n(.*)$", re.S)
 PILLARS = ["what-is-a2ui", "what-is-a2ui/custom-catalog", "what-is-a2ui/custom-catalog/how-to", "what-is-a2ui/basic-catalog"]
 # Section navigation shown on every page of the guide (labels are short and proposed, not yet approved by the owner).
 GUIDE_NAV = [("what-is-a2ui", "What is A2UI?"), ("what-is-a2ui/basic-catalog", "Basic Catalog"),
-             ("what-is-a2ui/example", "Basic Catalog: trip planner example"),
-             ("what-is-a2ui/custom-catalog/how-to", "Custom catalog: how to"), ("what-is-a2ui/custom-catalog", "Custom catalog: worked example")]
+             ("what-is-a2ui/example", "Trip planner"),
+             ("what-is-a2ui/custom-catalog/how-to", "Custom: how to"), ("what-is-a2ui/custom-catalog", "Custom: example")]
 
 # Heading ids on the hub page (content/what-is-a2ui.md) and the short label shown for each; a test checks every id exists on the built page.
 HUB_TOPICS = [("why-not-just-generate-html", "Why not HTML?"), ("how-it-works", "How it works"), ("what-is-an-a2ui-renderer", "Renderers"),
-              ("what-is-a-catalog-the-basic-catalog-and-custom-catalogs", "Catalogs"), ("macros-the-model-writes-one-call-the-server-writes-the-tree", "Macros"),
+              ("what-is-a-catalog-the-basic-catalog-and-custom-catalogs", "Catalogs"), ("the-sdks", "SDKs"), ("macros-the-model-writes-one-call-the-server-writes-the-tree", "Macros"),
               ("what-is-a2ui-express", "Express"), ("faq", "FAQ")]
 
 def guide_nav(current):
@@ -61,8 +61,8 @@ def guide_nav(current):
     topics = ""
     if current == "what-is-a2ui":   # the hub only: the topics on this page (anchors), as a second row; the other guide pages stay a plain list of pages
         t = "".join(f'<li><a href="#{a}">{html.escape(l)}</a></li>' for a, l in HUB_TOPICS)
-        topics = f'<div class="guide-topics"><span class="guide-nav-h">On this page</span><ul>{t}</ul></div>'
-    return '<nav class="guide-nav" aria-label="In this guide"><span class="guide-nav-h">In this guide</span><ul>' + "".join(items) + "</ul>" + topics + "</nav>"
+        topics = f'<nav class="guide-topics" aria-label="On this page"><span class="guide-nav-h">On this page</span><ul>{t}</ul></nav>'
+    return '<nav class="guide-nav" aria-label="In this guide"><span class="guide-nav-h">In this guide</span><ul>' + "".join(items) + "</ul></nav>" + topics
 CATALOG = os.path.join(PUBLIC, "catalogue", "a2ui-atoms-v1.json")
 BASIC_CATALOG = os.path.join(ROOT, "tests", "fixtures", "a2ui_v1_0_spec", "catalogs", "basic", "catalog.json")
 TOKEN_RE = re.compile(r"@@([A-Z0-9_]+)@@")
@@ -82,6 +82,29 @@ WEATHER_EXAMPLE = {"title": "Today", "blocks": [
     {"type": "weather_now", "city_line": "TOULOUSE, FRANCE", "stamp": "Sat 14 Nov", "temp": 8, "condition": "Cloudy", "code": "cloud",
      "hi": 13, "lo": 8, "stats": [{"value": "65%", "label": "Precip"}, {"value": "3 km/h", "label": "Wind"},
                                   {"value": "6", "label": "UV"}, {"value": "91%", "label": "Humidity"}]}]}
+
+# One source for the guide bar's CSS and script. gen6.py (the component, example and function pages) imports these, so the two generators cannot drift.
+GUIDE_CSS = (
+    ".guide-nav{position:sticky;top:var(--site-header-h,60px);z-index:50;display:flex;flex-wrap:nowrap;align-items:center;gap:6px 14px;margin:0 0 22px;padding:10px 14px;border:1px solid var(--border);border-radius:10px;background:var(--surface-2,var(--code-bg))}"
+    ".guide-nav-h{flex:none;font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted)}"
+    ".guide-nav ul{position:relative;display:flex;flex-wrap:nowrap;gap:4px 6px;list-style:none;margin:0;padding:3px;overflow-x:auto;white-space:nowrap;-webkit-overflow-scrolling:touch;scrollbar-width:none}"
+    ".guide-nav ul::-webkit-scrollbar{display:none}"
+    ".guide-nav a{display:inline-block;min-height:24px;padding:4px 11px;border-radius:7px;font-size:.88rem;font-weight:600;text-decoration:none;color:var(--text-muted)}"
+    ".guide-nav a:hover{color:var(--text);background:var(--surface)}"
+    '.guide-nav a[aria-current="page"]{color:var(--accent);background:var(--surface);box-shadow:inset 0 0 0 1px var(--accent)}'
+    '.guide-nav a[aria-current="true"]{color:var(--accent);background:var(--surface);box-shadow:inset 0 0 0 1px var(--accent)}'
+    ".guide-nav a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}"
+    ".guide-topics{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;margin:0 0 22px;padding:8px 14px;border:1px solid var(--border);border-radius:10px;background:var(--surface-2,var(--code-bg))}"
+    ".guide-topics ul{display:flex;flex-wrap:wrap;gap:4px 6px;list-style:none;margin:0;padding:0}"
+    ".guide-topics a{border:1px solid var(--border);font-weight:500}"
+    "html{scroll-padding-top:calc(var(--site-header-h,60px) + var(--guide-nav-h,56px) + 12px)}"
+    "@media(max-width:640px){.guide-nav{gap:6px;margin-bottom:12px;padding:6px 10px}.guide-nav-h{display:none}.guide-topics{padding:6px 10px}}"
+    "@media(max-height:500px){.guide-nav,.gnav-lock{position:static}html{scroll-padding-top:calc(var(--site-header-h,60px) + 12px)}}"
+)
+GUIDE_JS = ("<script>(function(){var d=document,r=d.documentElement,h=d.querySelector('.site-header'),g=d.querySelector('.guide-nav');"
+            "function s(){if(h)r.style.setProperty('--site-header-h',h.offsetHeight+'px');if(g)r.style.setProperty('--guide-nav-h',(g.closest('.gnav-lock')||g).offsetHeight+'px')}"
+            "s();addEventListener('resize',s);addEventListener('load',s);if(window.ResizeObserver){var o=new ResizeObserver(s);if(h)o.observe(h);if(g)o.observe(g.closest('.gnav-lock')||g)}"
+            "var c=d.querySelector('.guide-nav a[aria-current]'),u=c&&c.closest('ul');if(u)u.scrollLeft=Math.max(0,c.offsetLeft-u.clientWidth/3)})();</script>")
 
 PAGE = """<!DOCTYPE html>
 <html lang="en">
@@ -111,7 +134,7 @@ a.pillar-kicker{{text-decoration:none}}a.pillar-kicker::before{{content:"← "}}
 .pillar-hero .lede{{margin:18px 0 0;font-size:1.08rem;line-height:1.6;color:var(--text);max-width:68ch}}
 .pillar-meta{{margin-top:16px;font-size:.84rem;color:var(--text-muted)}}
 .pillar-body{{font-size:1.04rem;line-height:1.72;color:var(--text)}}
-.pillar-body h2{{font-size:1.45rem;letter-spacing:-.01em;margin:2.4rem 0 .6rem;scroll-margin-top:84px}}
+.pillar-body h2{{font-size:1.45rem;letter-spacing:-.01em;margin:2.4rem 0 .6rem}}
 .pillar-body p,.pillar-body li{{color:var(--text)}}
 .pillar-body p{{margin:0 0 1.1rem}}
 .pillar-body ul,.pillar-body ol{{margin:0 0 1.2rem;padding-left:1.4rem}}
@@ -126,26 +149,19 @@ a.pillar-kicker{{text-decoration:none}}a.pillar-kicker::before{{content:"← "}}
 .pillar-body th{{font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted)}}
 .pillar-film{{margin:2rem -48px;padding:0}}
 .pillar-film figcaption{{margin:10px 48px 0;font-size:.86rem;color:var(--text-muted);text-align:center}}
-.guide-nav{{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;margin:0 0 22px;padding:10px 14px;border:1px solid var(--border);border-radius:10px;background:var(--surface-2,var(--code-bg))}}
-.guide-nav-h{{font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted)}}
-.guide-nav ul{{display:flex;flex-wrap:wrap;gap:4px 6px;list-style:none;margin:0;padding:0}}
-.guide-nav a{{display:inline-block;min-height:24px;padding:4px 11px;border-radius:7px;font-size:.88rem;font-weight:600;text-decoration:none;color:var(--text-muted)}}
-.guide-nav a:hover{{color:var(--text);background:var(--surface)}}
-.guide-nav a[aria-current="page"]{{color:var(--accent);background:var(--surface);box-shadow:inset 0 0 0 1px var(--accent)}}
-.guide-nav a:focus-visible{{outline:2px solid var(--accent);outline-offset:2px}}
-.guide-topics{{flex:1 1 100%;display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;padding-top:8px;border-top:1px solid var(--border)}}
-.guide-topics a{{border:1px solid var(--border);font-weight:500}}
 .pillar-foot{{margin-top:44px;padding-top:18px;border-top:1px solid var(--border);font-size:.8rem;color:var(--text-muted)}}
 .pillar-foot a{{color:var(--accent)}}
 @media(max-width:900px){{.pillar-film{{margin:2rem 0}}.pillar-film figcaption{{margin:10px 0 0}}}}
 @media(max-width:640px){{.pillar{{padding:28px 16px 64px}}}}
+{guide_css}
 </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to content</a>
 {site_header}
-<main class="pillar">
-<header class="pillar-hero">
+<main class="pillar" id="main-content">
 {guide_nav}
+<header class="pillar-hero">
 {kicker}
 <h1>{h1}</h1>
 <p class="sub">{h1_sub}</p>
@@ -159,6 +175,7 @@ a.pillar-kicker{{text-decoration:none}}a.pillar-kicker::before{{content:"← "}}
 A2UI is Google's protocol; MCP is Anthropic's. Maintained by <a href="{li}">Curtis Krygier</a>. MIT License.</p>
 </main>
 {site_foot_js}
+{guide_js}
 </body>
 </html>
 """
@@ -310,7 +327,7 @@ def build(slug):
         date_human = datetime.date.fromisoformat(date).strftime("%-d %B %Y")
     except ValueError:
         date_human = date
-    out = PAGE.format(title=html.escape(title), desc=html.escape(summary, quote=True), url=url, base=BASE, li=LINKEDIN,
+    out = PAGE.format(guide_css=GUIDE_CSS, guide_js=GUIDE_JS, title=html.escape(title), desc=html.escape(summary, quote=True), url=url, base=BASE, li=LINKEDIN,
                       jsonld=jsonld, h1=h1, h1_sub=h1_sub, lede=lede_html, read_minutes=fm.get("read_minutes", 5),
                       date_human=date_human, body=body_html, kicker=kicker, guide_nav=guide_nav(slug),
                       site_head_js=_site.SITE_HEAD_JS, site_css=_site.SITE_BASE_CSS,

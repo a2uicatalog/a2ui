@@ -2,7 +2,7 @@
 title: "What is A2UI? The Agent-to-UI Protocol"
 date: 2026-11-15
 summary: "A2UI is an open protocol that lets AI agents show native UI from JSON. How it works, renderers, catalogs, macros, Express, and how it differs from HTML."
-read_minutes: 12
+read_minutes: 13
 ---
 
 
@@ -75,6 +75,52 @@ A catalog is the list of components an agent may use, with the fields each one t
 A2UI ships a **Basic Catalog** of @@BASIC_N@@ components and @@BASIC_FN@@ functions in version 1.0, covering text, layout, images, buttons and inputs. A renderer that supports it can draw any surface built from it, with no custom code. [See what it can do](/what-is-a2ui/basic-catalog/).
 
 A **custom catalog** adds components of your own, such as a chart, a timeline or a comparison table. The app registers it with its renderer first, so an agent can use a custom component only where the host has done that. The [A2UI Atomic Catalog](/) below is a custom catalog. To build your own, read [How to make an A2UI custom catalog](/what-is-a2ui/custom-catalog/how-to/).
+
+## The SDKs
+
+A2UI has three layers of code. The core SDK parses and applies A2UI messages. The agent SDK sits on the server: it builds the model's system prompt from a catalog, reads what the model writes, checks it against the catalog and turns it into A2UI messages. The renderer SDK sits in the client and paints those messages with that platform's toolkit. The agent package does not paint anything, and a renderer does not talk to the model.
+
+Package version numbers are not protocol versions. `a2ui-agent-sdk` 0.11.0 does not speak protocol 0.11, and `@a2ui/react` 0.15.0 does not speak protocol 0.15. A common start is two installs, `pip install a2ui-agent-sdk` for the agent and a web renderer such as `npm install @a2ui/react`. It is not the only pairing: a TypeScript or Dart app can use the agent and the renderer in one language.
+
+A renderer does not necessarily paint everything you send. On 15 November 2026 we ran each of three web renderers once. We took the published atoms that have a Basic example, 551 in all, and reduced each to Basic components. 538 painted on all three. By renderer, 539 painted on `@a2ui/react` 0.15.0, 541 on `@a2ui/lit` 0.15.0 and 540 on `@a2ui/angular` 0.14.0. The other 22 published atoms have no Basic example and were left out. "Painted" here means the example did not crash and drew some text, image, input or element. It is not a check that the result is correct, and it says nothing about what an arbitrary message will do, so test your own messages on each renderer you target.
+
+### What the model writes
+`a2ui-agent-sdk` 0.11.0 ships four formats. Direct JSON is the full A2UI messages. Express is a compact format that the SDK compiles into messages, and it is the processor's default, so the upstream documentation starts from Express. The package description says Direct JSON and Express both stream. The other two are marked experimental in the code: the Atom format, which uses parenthesised expressions, and Elemental, which looks like HTML. We have used the package, and we have not run the Atom or Elemental formats. The known-gaps file of the TypeScript `@a2ui/agent` package says "Express does not stream", and we have not run that. The Atom format is an experimental notation. It is not a component in our catalogue.
+
+### After the model writes
+A macro expands one short call into a full tree of components on the server, so the renderer never sees the macro. Macros are in the Python SDK only. The A2UI project's macros guide says macros are in the Python agent SDK, with other languages coming next.
+
+### Published packages, as of 15 November 2026
+| | Python | TypeScript | Dart |
+|---|---|---|---|
+| Agent package | a2ui-agent-sdk 0.11.0 (core: a2ui-core 0.6.0) | @a2ui/agent 0.1.0 (core: @a2ui/web_core 0.15.0) | a2ui_agent 0.3.0 (core: a2ui_core 0.7.0) |
+| Direct JSON | yes | yes | yes |
+| Express | yes | yes | yes |
+| Atom format, Elemental | experimental | no | no |
+| Macros | yes | no | no |
+| Catalog load, system prompt, output validation | yes | yes | yes |
+| A2A, ADK | no in this package; separate packages a2ui-a2a 0.3.0 and a2ui-adk 0.3.0 (`pip install "a2ui-adk[a2a]"` adds the A2A converters; plain `a2ui-adk` is the tools) | no | no |
+| Protocol versions named by the upstream docs | v0.8, v0.9.1, v1.0 | v0.9.1, v1.0 | v0.9.1, v1.0 |
+| Renderers | none | @a2ui/react 0.15.0, @a2ui/lit 0.15.0, @a2ui/angular 0.14.0 | a2ui_flutter 0.3.0 (Flutter) |
+
+The SDK page says every v0.9.1 package accepts v0.9 wire envelopes and catalog IDs. The Python extension package versions come from PyPI's index and the files `a2ui_a2a-0.3.0-py3-none-any.whl` and `a2ui_adk-0.3.0-py3-none-any.whl`, both listed by PyPI's index as uploaded on 10 November 2026. The a2ui-a2a project page we saw still showed 0.1.0 only, so if your install resolves 0.1.0, pin `a2ui-a2a==0.3.0`. The TypeScript and Dart "no" cells come from file lists and searches of the packages, not a full read. TypeScript's known-gaps file says the Elemental and Atom formats "remain unimplemented". "Experimental" is upstream's own word in the code.
+
+The upstream docs list React, Lit and Angular as v0.8, v0.9.1 and v1.0. None of the published packages exports `./v1_0`. React and Angular export `./v0_8` and `./v0_9`, and Lit also exports `./0.8` and `./ui`. React 0.13.0 moved the package root to a version-agnostic runtime. The "(v1_0)" lines are under "## 0.14.0" in the React 0.15.0 and Lit 0.15.0 changelogs, and under "## 0.13.0" in the Angular 0.14.0 changelog. Check which import your version expects.
+
+### Not on a package registry
+- Swift: SwiftUI renderer and a core, installed with Swift Package Manager from the A2UI repository (we saw the tag `v0.10.0+swift`, and have not tested whether Swift Package Manager resolves it). It has no agent SDK. The repo has a client-side `PayloadValidator` for messages it receives. We found no model-output check, and we did not run it.
+- Android: two separate things. The renderer is Google's AndroidX Compose library. Its package number is 1.0.0-alpha02, which is a Maven version, not a protocol version. Upstream's SDK page lists the Compose renderer as protocol v0.9.1. We have not looked inside it. The agent side is `kotlin/agent_sdk_legacy` in the A2UI repository: Kotlin, still being edited, unpublished. Its tree has `A2aHandler.kt` and `SendA2uiToClientToolset.kt`, which we did not run. Its docs name v0.8 and v0.9, and we did not verify v1.0.
+- Go, Rust, C# and Java: no official SDK on upstream's SDK page. That page points to community Go libraries, which we have not checked.
+
+### Our reading
+Python is the furthest ahead on the agent side. TypeScript and Dart have Direct JSON and Express. Swift and Kotlin are mostly renderer or legacy. We have not measured whether server-side macros make output more predictable.
+
+### SDKs can lag the spec
+In v1.0 a component from a different catalog than the surface's default carries the key `@catalogId`. The `createSurface` message still uses `catalogId`. The component-level key used to be spelled `catalogId`. Upstream changed it on 11 November 2026 (pull request #4044), after Python SDK 0.11.0 was released on 10 November 2026.
+
+On 15 November 2026 we validated one surface with the Python SDK's validator, once with each spelling on a component from a second catalog. With `a2ui-agent-sdk` 0.11.0 and `a2ui-core` 0.6.0, `catalogId` passed and `@catalogId` failed with "Unrecognized component type 'Badge'" and "Unrecognized reserved protocol directive '@catalogId'". The message processor in `a2ui-core` 0.6.0 raised no error, but it put the component in the Basic catalog and kept `@catalogId` as an ordinary property. On a checkout of upstream's main branch (commit 6ac77a0610, 11 November 2026) both spellings passed. None of the published packages we checked contains the change.
+
+The `a2ui_flutter` 0.3.0 README still tells the agent to name a custom component's catalog in `catalogId`, and we have not checked which spelling that package accepts. The macros guide on a2ui.org also still prints `catalogId` in its examples. Pin the SDK version you test with, and check its date. The [custom catalog how-to](/what-is-a2ui/custom-catalog/how-to/) shows the case in detail.
 
 ## Macros: the model writes one call, the server writes the tree
 
@@ -232,6 +278,12 @@ The Basic Catalog is the set of components and functions A2UI ships with, and a 
 
 ### What is A2UI Express?
 A compact format Google proposed on 27 October 2026 for a model to write a screen, instead of the full A2UI JSON. In our small test on this catalog it used fewer output tokens on every model we tried, and Google's 80 times claim was not confirmed.
+
+### What does an A2UI SDK do?
+It sits between a model and a renderer. On the agent side it builds the system prompt from a catalog, reads what the model writes, checks it against the catalog and turns it into A2UI messages. On the renderer side it processes those messages. The Python SDK also expands macros.
+
+### Does the Python SDK accept @catalogId?
+Not in the latest published release. The v1.0 spec writes a component's own catalog as `@catalogId`, but `a2ui-agent-sdk` 0.11.0 (10 November 2026) accepts only `catalogId`. Upstream's main branch reads both spellings since 11 November 2026, and no release has it yet.
 
 ### Where does macro expansion happen?
 On the application server, before the messages reach the renderer. The renderer receives

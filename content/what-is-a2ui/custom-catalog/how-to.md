@@ -26,7 +26,7 @@ A catalog is one JSON Schema document. This is a complete small one, holding a s
 Five things to notice:
 
 - **`catalogId`** names the catalog. It is the one thing the meta-schema requires, and the same value is shared by the agent and the renderer. The agent capabilities schema describes these IDs as not resolvable URIs, so nothing has to be served at that address. The official guide's examples use the same value for `$id` and `catalogId`, and its advice is to version the path (`v1/`, `v2/`) when you make a breaking change.
-- **`protocolVersion`** says which A2UI version the catalog targets. Set it. The Python SDK treats a catalog with no protocol version as 0.9.
+- **`protocolVersion`** says which A2UI version the catalog targets. Set it. `Catalog.from_json` in the Python SDK treats a catalog with no protocol version as 0.9. The catalog provider classes (`InMemoryCatalogProvider`) raise an error instead, so set it.
 - **`components`** holds every component, directly at the top level.
 - **`functions`** (not used here) holds functions in the same way.
 - **`$defs`** must declare `anyComponent`, the union of all your components, and `anyFunction`. When you define no custom functions, `anyFunction` is `{"not": {}}`, as in the example. Shared definitions that components reuse, such as design tokens, go here too.
@@ -54,9 +54,9 @@ A catalog can also declare functions: pieces of logic the renderer runs on the c
 Validate the catalog document against the A2UI v1.0 catalog meta-schema, then load it with an SDK. Two checks catch most mistakes:
 
 - **The meta-schema** catches a malformed document, a misplaced component or a missing `catalogId`.
-- **The SDK on load** catches more. In the Python SDK, loading a catalog raises an error if the catalog id is missing, if the document is malformed, or if a v1.0 document points a `$ref` at any document other than itself or `common_types.json`. For v1.0 catalogs it also checks component names against the identifier rule. The TypeScript SDK checks identifiers the same way on load, and the Dart SDK never fetches a v1.0 `$ref` to another document.
+- **The SDK on load** catches more. In the Python SDK, loading a catalog raises an error if the catalog id is missing, if `components` is not an object or a component is not a JSON object, or if a v1.0 document points a `$ref` at any document other than itself or `common_types.json`. Loading does not check that a component's schema is valid JSON Schema; that error appears the first time a message is validated. For v1.0 catalogs it also checks component names against the identifier rule, which is Python's `str.isidentifier()`: a space, a hyphen or a leading digit fails, and Unicode letters pass. The TypeScript SDK checks identifiers the same way on load, and the Dart SDK never fetches a v1.0 `$ref` to another document.
 
-Validation is strict by default. In the Python SDK a component the catalog does not define is reported with the code `unrecognized_component`, and a relaxed mode (`allow_unknown_elements`) exists for renderers that want to tolerate unknown ones.
+Validation through `validate_payload` is strict by default. In the Python SDK a component the catalog does not define is reported with the code `unrecognized_component`, and a relaxed mode (`allow_unknown_elements`, a field of `ValidationConfig`, also set by `RELAXED_VALIDATION`) exists for renderers that want to tolerate unknown ones. A bare `MessageProcessor` does no component validation unless you give it a `ValidationConfig`.
 
 The Ontology check we ran on 14 November found that the example catalogs in the official v1.0 guide, and the Basic Catalog itself, validate against the live meta-schema. We used an approximation for the Unicode identifier patterns in those runs. The v0.9.1 examples we did not validate.
 
@@ -65,6 +65,8 @@ The Ontology check we ran on 14 November found that the example catalogs in the 
 When a session starts, the renderer sends the catalogs it supports (`supportedCatalogIds`). The agent picks one for each surface in `createSurface`, with `catalogId`. If none of the agent's catalogs is on that list, there is nothing to draw and, according to the concepts page, the agent sends no UI.
 
 In v1.0 a surface can mix catalogs. `createSurface` sets the surface's default catalog, and any component from another supported catalog carries an `@catalogId`. A component with no `@catalogId` is taken to be in the default one. This is a surface our own emitter produced, with its catalog id pointed at the small catalog above: Basic is the default, and the weather card comes from the weather catalog.
+
+**One spelling to watch.** The v1.0 spec writes this key as `@catalogId`, and the surface below uses that form. Python SDK 0.11.0 (the release on PyPI on 15 November 2026) does not accept it: validating this surface with 0.11.0 fails with "Unrecognized component type" and "Unrecognized reserved protocol directive '@catalogId'", and the same surface with the key spelled `catalogId` passes. SDK 0.10.0 predates the change too. Upstream changed the spelling on 11 November 2026 (pull request #4044), after 0.11.0 was released on 10 November, so the spec and upstream's main branch say `@catalogId` while every installable release we looked at says `catalogId`. Main reads both spellings, and we confirmed that by running an upstream checkout from 11 November, but no release contains it yet. If you validate with 0.11.0, use `catalogId` for now. Do not build on the bare spelling for long: an open upstream issue (#4082) plans to remove it once producers emit the `@` names, and another (#4223) asks which npm versions support the new keys. We have not tested how any renderer treats either spelling.
 
 ```json
 @@JSON_WEATHER_SURFACE@@
@@ -108,7 +110,7 @@ Validate it against the v1.0 catalog meta-schema, then load it with an SDK, whic
 
 ## What this guide covers
 
-The rules come from the A2UI v1.0 pages as published on 14 November 2026, and the SDK facts from the Python SDK read at one upstream commit, with the TypeScript and Dart load rules. None of the SDK behaviour was run for this guide. We have not checked how each framework registers a component, or the Swift and Kotlin SDKs.
+The rules come from the A2UI v1.0 pages as published on 14 November 2026, and the SDK facts from the Python SDK read at one upstream commit, with the TypeScript and Dart load rules. On 15 November 2026 we ran the Python SDK statements against `a2ui-agent-sdk` 0.11.0 with `a2ui-core` 0.6.0, the releases on PyPI that day. Of eight checks, the wording held for four as written, needed tightening for three (now corrected above), and failed for one, the `@catalogId` spelling. We did not run the TypeScript or Dart SDKs, any newer release, prompts built from two catalogs at once, or any renderer. We have not checked how each framework registers a component, or the Swift and Kotlin SDKs.
 
 ## Get started
 

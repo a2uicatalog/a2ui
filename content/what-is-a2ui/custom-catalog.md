@@ -22,7 +22,7 @@ as the surface default with `catalogId` in `createSurface`.
 
 Since v1.0, a surface can also mix catalogs. Any component can name its own catalog with
 `@catalogId`, so a surface can take its layout from the Basic Catalog and drop in components
-from yours. That is how this catalog is meant to be used.
+from yours. That is how this catalog is meant to be used. One caution about the spelling: Python SDK 0.11.0 accepts `catalogId` and rejects `@catalogId`; see the note in the [how-to guide](/what-is-a2ui/custom-catalog/how-to/).
 
 For a step-by-step build of your own, see [How to make an A2UI custom catalog](/what-is-a2ui/custom-catalog/how-to/).
 For what the Basic Catalog already gives you, see [A2UI Basic Catalog](/what-is-a2ui/basic-catalog/).
@@ -59,7 +59,7 @@ The surface below sets the Basic Catalog as its default and gives the one compon
 catalog its own `@catalogId`. The `Column` and `Text` come from the Basic Catalog; `stat_card`
 comes from this one. It is the output of the same emitter that serves this site's surfaces, and
 the repository's tests check it against the official v1.0 schema and against the `stat_card`
-definition above, then render it.
+definition above, then render it. The v1.0 spec spells the key `@catalogId`, as here. Python SDK 0.11.0 (15 November 2026) rejects that spelling and accepts `catalogId`; upstream's main branch accepts both and no release has it yet.
 
 ```json
 @@JSON_MIXED_EXAMPLE@@

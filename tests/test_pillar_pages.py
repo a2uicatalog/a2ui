@@ -201,6 +201,20 @@ def test_hub_topic_row_points_at_real_headings_and_only_the_hub_has_it():
     ids = set(re.findall(r'<h2 id="([^"]*)"', hub))
     for anchor, label in pillar.HUB_TOPICS:
         assert anchor in ids, f"topic {label!r}: no heading id {anchor!r} on the hub page"
-    assert hub.count('<div class="guide-topics">') == 1
+    assert hub.count('<nav class="guide-topics" aria-label="On this page">') == 1
     for rel in ("basic-catalog", "custom-catalog", "custom-catalog/how-to"):
-        assert '<div class="guide-topics">' not in (ROOT / f"public/what-is-a2ui/{rel}/index.html").read_text(encoding="utf-8"), rel
+        assert '<nav class="guide-topics"' not in (ROOT / f"public/what-is-a2ui/{rel}/index.html").read_text(encoding="utf-8"), rel
+
+
+def test_guide_bar_has_one_source():
+    """Every page that shows the guide bar carries the same GUIDE_CSS (built by gen_pillar_pages and reused by gen6.py), and the component pages' lock rule is in page.css."""
+    sys.path.insert(0, str(ROOT / "scripts"))
+    import gen_pillar_pages as gp
+    base = ROOT / "public" / "what-is-a2ui"
+    pages = [p for p in base.rglob("index.html") if 'class="guide-nav"' in p.read_text()]
+    assert len(pages) >= 25, len(pages)
+    missing = [str(p.relative_to(ROOT)) for p in pages if gp.GUIDE_CSS not in p.read_text()]
+    assert not missing, "guide bar CSS differs from GUIDE_CSS on: " + ", ".join(missing[:5])
+    unlocked = [str(p.relative_to(ROOT)) for p in pages if 'class="gnav-wrap gnav-lock"' in p.read_text() and "bc-assets/page.css" not in p.read_text()]
+    assert not unlocked, unlocked[:3]
+    assert ".gnav-lock{position:sticky" in (ROOT / "public/bc-assets/page.css").read_text()
