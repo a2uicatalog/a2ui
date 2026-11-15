@@ -1,6 +1,6 @@
 ---
 title: "How to Make an A2UI Custom Catalog"
-date: 2026-11-14
+date: 2026-11-15
 summary: "Make an A2UI v1.0 custom catalog step by step: define a component, check it, use it beside Basic, and plan for hosts that lack it."
 read_minutes: 9
 ---
