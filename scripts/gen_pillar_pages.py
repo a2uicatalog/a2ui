@@ -23,6 +23,7 @@ public/what-is-a2ui/custom-catalog/index.html, with the parent page in the bread
 Run in deploy.yml after gen_public_catalog.py (it reads public/catalogue/a2ui-atoms-v1.json).
 """
 import html
+import glob
 import json
 import os
 import re
@@ -89,11 +90,11 @@ GUIDE_CSS = (
     ".guide-nav-h{flex:none;font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted)}"
     ".guide-nav ul{position:relative;display:flex;flex-wrap:nowrap;gap:4px 6px;list-style:none;margin:0;padding:3px;overflow-x:auto;white-space:nowrap;-webkit-overflow-scrolling:touch;scrollbar-width:none}"
     ".guide-nav ul::-webkit-scrollbar{display:none}"
-    ".guide-nav a{display:inline-block;min-height:24px;padding:4px 11px;border-radius:7px;font-size:.88rem;font-weight:600;text-decoration:none;color:var(--text-muted)}"
-    ".guide-nav a:hover{color:var(--text);background:var(--surface)}"
+    ".guide-nav a,.guide-topics a{display:inline-block;min-height:24px;padding:4px 11px;border-radius:7px;font-size:.88rem;font-weight:600;text-decoration:none;color:var(--text-muted)}"
+    ".guide-nav a:hover,.guide-topics a:hover{color:var(--text);background:var(--surface)}"
     '.guide-nav a[aria-current="page"]{color:var(--accent);background:var(--surface);box-shadow:inset 0 0 0 1px var(--accent)}'
     '.guide-nav a[aria-current="true"]{color:var(--accent);background:var(--surface);box-shadow:inset 0 0 0 1px var(--accent)}'
-    ".guide-nav a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}"
+    ".guide-nav a:focus-visible,.guide-topics a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}"
     ".guide-topics{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;margin:0 0 22px;padding:8px 14px;border:1px solid var(--border);border-radius:10px;background:var(--surface-2,var(--code-bg))}"
     ".guide-topics ul{display:flex;flex-wrap:wrap;gap:4px 6px;list-style:none;margin:0;padding:0}"
     ".guide-topics a{border:1px solid var(--border);font-weight:500}"
@@ -249,6 +250,8 @@ def facts():
             raise SystemExit(f"{CATALOG}: no component has x-renderers.{key} == 'drawn'")
         f[f"DRAWN_{key.upper().replace('-', '_')}"] = str(n)
         rows.append(f"| {name} | {n} of {len(comps)} |")
+    for _p in sorted(glob.glob(os.path.join(ROOT, "content", "sdk-diagram", "*.svg"))):   # the SDK diagram's inline SVGs, drawn elsewhere and published as drawings only
+        f["SVG_SDK_" + os.path.basename(_p)[:-4].upper().replace("-", "_")] = open(_p, encoding="utf-8").read()
     f["WEB_RENDERER_TABLE"] = "| Renderer | Components it draws |\n|---|---|\n" + "\n".join(rows)
     return f
 
