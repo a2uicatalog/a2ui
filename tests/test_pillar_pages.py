@@ -192,3 +192,15 @@ def test_function_and_component_counts_match_the_vendored_basic_catalog():
     f = pillar.facts()
     basic = json.loads(pillar.BASIC_CATALOG and open(pillar.BASIC_CATALOG, encoding="utf-8").read())
     assert int(f["BASIC_N"]) == len(basic["components"]) and int(f["BASIC_FN"]) == len(basic["functions"])
+
+
+def test_hub_topic_row_points_at_real_headings_and_only_the_hub_has_it():
+    """The 'On this page' row on the guide hub links to heading ids that exist on the built page; the other guide pages keep a plain list of pages."""
+    import re
+    hub = (ROOT / "public/what-is-a2ui/index.html").read_text(encoding="utf-8")
+    ids = set(re.findall(r'<h2 id="([^"]*)"', hub))
+    for anchor, label in pillar.HUB_TOPICS:
+        assert anchor in ids, f"topic {label!r}: no heading id {anchor!r} on the hub page"
+    assert hub.count('<div class="guide-topics">') == 1
+    for rel in ("basic-catalog", "custom-catalog", "custom-catalog/how-to"):
+        assert '<div class="guide-topics">' not in (ROOT / f"public/what-is-a2ui/{rel}/index.html").read_text(encoding="utf-8"), rel

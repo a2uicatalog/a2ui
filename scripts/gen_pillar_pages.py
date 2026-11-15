@@ -48,12 +48,21 @@ GUIDE_NAV = [("what-is-a2ui", "What is A2UI?"), ("what-is-a2ui/basic-catalog", "
              ("what-is-a2ui/example", "Basic Catalog: trip planner example"),
              ("what-is-a2ui/custom-catalog/how-to", "Custom catalog: how to"), ("what-is-a2ui/custom-catalog", "Custom catalog: worked example")]
 
+# Heading ids on the hub page (content/what-is-a2ui.md) and the short label shown for each; a test checks every id exists on the built page.
+HUB_TOPICS = [("why-not-just-generate-html", "Why not HTML?"), ("how-it-works", "How it works"), ("what-is-an-a2ui-renderer", "Renderers"),
+              ("what-is-a-catalog-the-basic-catalog-and-custom-catalogs", "Catalogs"), ("macros-the-model-writes-one-call-the-server-writes-the-tree", "Macros"),
+              ("what-is-a2ui-express", "Express"), ("faq", "FAQ")]
+
 def guide_nav(current):
     items = []
     for sl, label in GUIDE_NAV:
         cur = ' aria-current="page"' if sl == current else ""
         items.append(f'<li><a href="/{sl}/"{cur}>{html.escape(label)}</a></li>')
-    return '<nav class="guide-nav" aria-label="In this guide"><span class="guide-nav-h">In this guide</span><ul>' + "".join(items) + "</ul></nav>"
+    topics = ""
+    if current == "what-is-a2ui":   # the hub only: the topics on this page (anchors), as a second row; the other guide pages stay a plain list of pages
+        t = "".join(f'<li><a href="#{a}">{html.escape(l)}</a></li>' for a, l in HUB_TOPICS)
+        topics = f'<div class="guide-topics"><span class="guide-nav-h">On this page</span><ul>{t}</ul></div>'
+    return '<nav class="guide-nav" aria-label="In this guide"><span class="guide-nav-h">In this guide</span><ul>' + "".join(items) + "</ul>" + topics + "</nav>"
 CATALOG = os.path.join(PUBLIC, "catalogue", "a2ui-atoms-v1.json")
 BASIC_CATALOG = os.path.join(ROOT, "tests", "fixtures", "a2ui_v1_0_spec", "catalogs", "basic", "catalog.json")
 TOKEN_RE = re.compile(r"@@([A-Z0-9_]+)@@")
@@ -124,6 +133,8 @@ a.pillar-kicker{{text-decoration:none}}a.pillar-kicker::before{{content:"← "}}
 .guide-nav a:hover{{color:var(--text);background:var(--surface)}}
 .guide-nav a[aria-current="page"]{{color:var(--accent);background:var(--surface);box-shadow:inset 0 0 0 1px var(--accent)}}
 .guide-nav a:focus-visible{{outline:2px solid var(--accent);outline-offset:2px}}
+.guide-topics{{flex:1 1 100%;display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;padding-top:8px;border-top:1px solid var(--border)}}
+.guide-topics a{{border:1px solid var(--border);font-weight:500}}
 .pillar-foot{{margin-top:44px;padding-top:18px;border-top:1px solid var(--border);font-size:.8rem;color:var(--text-muted)}}
 .pillar-foot a{{color:var(--accent)}}
 @media(max-width:900px){{.pillar-film{{margin:2rem 0}}.pillar-film figcaption{{margin:10px 0 0}}}}

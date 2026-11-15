@@ -315,6 +315,8 @@ a.pillar-kicker{text-decoration:none}a.pillar-kicker::before{content:"← "}
 .guide-nav a:hover{color:var(--text);background:var(--surface)}
 .guide-nav a[aria-current="page"]{color:var(--accent);background:var(--surface);box-shadow:inset 0 0 0 1px var(--accent)}
 .guide-nav a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.guide-topics{flex:1 1 100%;display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;padding-top:8px;border-top:1px solid var(--border)}
+.guide-topics a{border:1px solid var(--border);font-weight:500}
 .pillar-foot{margin-top:44px;padding-top:18px;border-top:1px solid var(--border);font-size:.8rem;color:var(--text-muted)}
 .pillar-foot a{color:var(--accent)}
 @media(max-width:900px){.pillar-film{margin:2rem 0}.pillar-film figcaption{margin:10px 0 0}}
@@ -340,7 +342,7 @@ a.pillar-kicker{text-decoration:none}a.pillar-kicker::before{content:"← "}
   </div></header>
 <main class="pillar">
 <header class="pillar-hero">
-<nav class="guide-nav" aria-label="In this guide"><span class="guide-nav-h">In this guide</span><ul><li><a href="/what-is-a2ui/" aria-current="page">What is A2UI?</a></li><li><a href="/what-is-a2ui/basic-catalog/">Basic Catalog</a></li><li><a href="/what-is-a2ui/example/">Basic Catalog: trip planner example</a></li><li><a href="/what-is-a2ui/custom-catalog/how-to/">Custom catalog: how to</a></li><li><a href="/what-is-a2ui/custom-catalog/">Custom catalog: worked example</a></li></ul></nav>
+<nav class="guide-nav" aria-label="In this guide"><span class="guide-nav-h">In this guide</span><ul><li><a href="/what-is-a2ui/" aria-current="page">What is A2UI?</a></li><li><a href="/what-is-a2ui/basic-catalog/">Basic Catalog</a></li><li><a href="/what-is-a2ui/example/">Basic Catalog: trip planner example</a></li><li><a href="/what-is-a2ui/custom-catalog/how-to/">Custom catalog: how to</a></li><li><a href="/what-is-a2ui/custom-catalog/">Custom catalog: worked example</a></li></ul><div class="guide-topics"><span class="guide-nav-h">On this page</span><ul><li><a href="#why-not-just-generate-html">Why not HTML?</a></li><li><a href="#how-it-works">How it works</a></li><li><a href="#what-is-an-a2ui-renderer">Renderers</a></li><li><a href="#what-is-a-catalog-the-basic-catalog-and-custom-catalogs">Catalogs</a></li><li><a href="#macros-the-model-writes-one-call-the-server-writes-the-tree">Macros</a></li><li><a href="#what-is-a2ui-express">Express</a></li><li><a href="#faq">FAQ</a></li></ul></div></nav>
 <span class="pillar-kicker">Guide</span>
 <h1>What is <span class="grad">A2UI</span>?</h1>
 <p class="sub">The Agent-to-UI Protocol</p>
