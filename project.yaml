@@ -21,6 +21,9 @@ policy:
     - a2uithoughts.md
     - apps-script-surface/gas-trade-bot/**
     - ops/**
+    # The Demo Gallery manifest and generator live in a2ui-private; this path is an UNTRACKED symlink to ../a2ui-private/demogallery (ops/bootstrap/install.sh)
+    - demogallery
+    - demogallery/**
     - "**/Code.private.gs"
     - "**/Code.private.js"
     - "**/.clasp.json"
