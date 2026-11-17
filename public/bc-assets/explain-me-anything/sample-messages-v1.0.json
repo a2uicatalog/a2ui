@@ -1,0 +1,121 @@
+[
+ {
+  "version": "1.0",
+  "createSurface": {
+   "surfaceId": "explain-3cdb6150",
+   "catalogId": "https://a2ui.org/specification/v1_0/catalogs/basic/catalog.json",
+   "components": [
+    {
+     "id": "root",
+     "component": "Card",
+     "child": "col"
+    },
+    {
+     "id": "col",
+     "component": "Column",
+     "children": [
+      "pill",
+      "title",
+      "intro",
+      "img",
+      "steps_hd",
+      "step_0",
+      "step_1",
+      "step_2",
+      "step_3",
+      "step_4",
+      "step_5",
+      "step_6",
+      "step_7",
+      "ledger_hd",
+      "ledger",
+      "note"
+     ]
+    },
+    {
+     "id": "pill",
+     "component": "Text",
+     "text": "STORED · SCRIPTED EXAMPLE, NO MODEL RAN"
+    },
+    {
+     "id": "title",
+     "component": "Text",
+     "text": "Rich UI in Gemini Enterprise via A2A and A2UI x Guardrailed SVG: Explain me anything",
+     "variant": "caption"
+    },
+    {
+     "id": "intro",
+     "component": "Text",
+     "text": "You open the app, it sends you to your identity provider, and a one-time code is swapped for a token."
+    },
+    {
+     "id": "img",
+     "component": "Image",
+     "url": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDA0IiBoZWlnaHQ9IjM0MSIgdmlld0JveD0iMCAwIDEwMDQgMzQxIiByb2xlPSJpbWciIGFyaWEtbGFiZWw9IkFyY2hpdGVjdHVyZSBkaWFncmFtIj48cmVjdCB4PSIwIiB5PSIwIiB3aWR0aD0iMTAwNCIgaGVpZ2h0PSIzNDEiIHJ4PSIxOCIgZmlsbD0iIzFlMjczMyIvPjxnPjxnIGlkPSJuMCI+PHJlY3QgeD0iMjciIHk9IjE5NC45IiB3aWR0aD0iMTA5IiBoZWlnaHQ9IjYzIiByeD0iMTQiIGZpbGw9IiMyZDM2NDIiIHN0cm9rZT0iI2VhZWZmNSIgc3Ryb2tlLXdpZHRoPSIxLjYiLz48Y2lyY2xlIGN4PSI1MSIgY3k9IjIyNi41IiByPSIxMyIgZmlsbD0iIzU3NWY2OSIvPjxwYXRoIGQ9Ik00Ny44IDIyMy43IFE0Ny44IDIyMCA1MSAyMjAgUTU0LjMgMjIwIDU0LjMgMjIzLjcgUTU0LjMgMjI3LjUgNTEgMjI3LjUgUTQ3LjggMjI3LjUgNDcuOCAyMjMuNyBaIE00NC41IDIzMy41IFE1MSAyMjYuNSA1Ny41IDIzMy41IiBmaWxsPSJub25lIiBzdHJva2U9IiNlYWVmZjUiIHN0cm9rZS13aWR0aD0iMS43Ii8+PHRleHQgeD0iNzMiIHk9IjIzMy44IiBmb250LXNpemU9IjIxIiBmb250LXdlaWdodD0iNzAwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgdGV4dC1hbmNob3I9InN0YXJ0IiBmaWxsPSIjZWFlZmY1Ij5Zb3U8L3RleHQ+PC9nPjxnIGlkPSJuMSI+PHJlY3QgeD0iMzAxIiB5PSIxMTYuNiIgd2lkdGg9IjE1MiIgaGVpZ2h0PSI2MyIgcng9IjE0IiBmaWxsPSIjMmQzNjQyIiBzdHJva2U9IiM4ZDk4ZmYiIHN0cm9rZS13aWR0aD0iMS42Ii8+PGNpcmNsZSBjeD0iMzI1IiBjeT0iMTQ4LjEiIHI9IjEzIiBmaWxsPSIjNDI0YzZjIi8+PHBhdGggZD0iTTMxOSAxNDIuNyBMMzMxIDE0Mi43IEwzMzEgMTUzLjUgTDMxOSAxNTMuNSBaIE0zMTkgMTQ2LjIgTDMzMSAxNDYuMiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjOGQ5OGZmIiBzdHJva2Utd2lkdGg9IjEuNyIvPjx0ZXh0IHg9IjM0NyIgeT0iMTU1LjUiIGZvbnQtc2l6ZT0iMjEiIGZvbnQtd2VpZ2h0PSI3MDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZpbGw9IiNlYWVmZjUiPldlYiBhcHA8L3RleHQ+PC9nPjxhbmltYXRlIGF0dHJpYnV0ZU5hbWU9Im9wYWNpdHkiIGZyb209IjAiIHRvPSIxIiBiZWdpbj0iMHMiIGR1cj0iMC40NXMiIHJlcGVhdENvdW50PSIxIiBmaWxsPSJmcmVlemUiLz48L2c+PGc+PGcgaWQ9Im4yIj48cmVjdCB4PSI3MDgiIHk9IjI0NSIgd2lkdGg9IjI2OSIgaGVpZ2h0PSI2MyIgcng9IjE0IiBmaWxsPSIjMmQzNjQyIiBzdHJva2U9IiMyYWM0Y2UiIHN0cm9rZS13aWR0aD0iMS42Ii8+PGNpcmNsZSBjeD0iNzMyIiBjeT0iMjc2LjUiIHI9IjEzIiBmaWxsPSIjMmM1NTYxIi8+PHBhdGggZD0iTTcyNiAyNzEuMyBMNzM3LjkgMjcxLjMgTDczNy45IDI3NS43IEw3MjYgMjc1LjcgWiBNNzI2IDI3Ny44IEw3MzcuOSAyNzcuOCBMNzM3LjkgMjgyLjIgTDcyNiAyODIuMiBaIiBmaWxsPSJub25lIiBzdHJva2U9IiMyYWM0Y2UiIHN0cm9rZS13aWR0aD0iMS43Ii8+PHRleHQgeD0iNzU0IiB5PSIyODMuOSIgZm9udC1zaXplPSIyMSIgZm9udC13ZWlnaHQ9IjcwMCIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIHRleHQtYW5jaG9yPSJzdGFydCIgZmlsbD0iI2VhZWZmNSI+SWRlbnRpdHkgcHJvdmlkZXI8L3RleHQ+PC9nPjxnIGlkPSJuMyI+PHJlY3QgeD0iNzI1LjQiIHk9IjI3IiB3aWR0aD0iMjM0IiBoZWlnaHQ9IjYzIiByeD0iMTQiIGZpbGw9IiMyZDM2NDIiIHN0cm9rZT0iIzJhYzRjZSIgc3Ryb2tlLXdpZHRoPSIxLjYiLz48Y2lyY2xlIGN4PSI3NDkuNCIgY3k9IjU4LjUiIHI9IjEzIiBmaWxsPSIjMmM1NTYxIi8+PHBhdGggZD0iTTc0My41IDUzLjMgTDc1NS40IDUzLjMgTDc1NS40IDU3LjYgTDc0My41IDU3LjYgWiBNNzQzLjUgNTkuOCBMNzU1LjQgNTkuOCBMNzU1LjQgNjQuMSBMNzQzLjUgNjQuMSBaIiBmaWxsPSJub25lIiBzdHJva2U9IiMyYWM0Y2UiIHN0cm9rZS13aWR0aD0iMS43Ii8+PHRleHQgeD0iNzcxLjQiIHk9IjY1LjkiIGZvbnQtc2l6ZT0iMjEiIGZvbnQtd2VpZ2h0PSI3MDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZpbGw9IiNlYWVmZjUiPlRva2VuIGVuZHBvaW50PC90ZXh0PjwvZz48ZyBpZD0ibjQiPjxyZWN0IHg9IjczNy40IiB5PSIxMzYiIHdpZHRoPSIyMTAiIGhlaWdodD0iNjMiIHJ4PSIxNCIgZmlsbD0iIzJkMzY0MiIgc3Ryb2tlPSIjMmFjNGNlIiBzdHJva2Utd2lkdGg9IjEuNiIvPjxjaXJjbGUgY3g9Ijc2MS40IiBjeT0iMTY3LjUiIHI9IjEzIiBmaWxsPSIjMmM1NTYxIi8+PHBhdGggZD0iTTc1NS41IDE2Mi4zIEw3NjcuNCAxNjIuMyBMNzY3LjQgMTY2LjYgTDc1NS41IDE2Ni42IFogTTc1NS41IDE2OC44IEw3NjcuNCAxNjguOCBMNzY3LjQgMTczLjEgTDc1NS41IDE3My4xIFoiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzJhYzRjZSIgc3Ryb2tlLXdpZHRoPSIxLjciLz48dGV4dCB4PSI3ODMuNCIgeT0iMTc0LjgiIGZvbnQtc2l6ZT0iMjEiIGZvbnQtd2VpZ2h0PSI3MDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZpbGw9IiNlYWVmZjUiPlJlc291cmNlIEFQSTwvdGV4dD48L2c+PGcgaWQ9ImUwIj48cGF0aCBkPSJNMTE3IDE5NC45IEwxMTcgMTc3IFExMTcgMTY1IDEyOSAxNjUgTDMwMSAxNjUiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzJhYzRjZSIgc3Ryb2tlLXdpZHRoPSIyLjIiLz48cGF0aCBkPSJNMjkwLjUgMTcwLjUgTDMwMSAxNjUgTDI5MC41IDE1OS41IiBmaWxsPSJub25lIiBzdHJva2U9IiMyYWM0Y2UiIHN0cm9rZS13aWR0aD0iMi4yIi8+PHJlY3QgeD0iMTU3LjkiIHk9IjEzNi41IiB3aWR0aD0iMTAyLjMiIGhlaWdodD0iMjUiIHJ4PSI1IiBmaWxsPSIjMWUyNzMzIiBmaWxsLW9wYWNpdHk9IjAuOTIiLz48dGV4dCB4PSIyMDkiIHk9IjE1NSIgZm9udC1zaXplPSIxNyIgZm9udC13ZWlnaHQ9IjYwMCIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiNlYWVmZjUiPm9wZW5zIGFwcDwvdGV4dD48L2c+PGFuaW1hdGUgYXR0cmlidXRlTmFtZT0ib3BhY2l0eSIgZnJvbT0iMCIgdG89IjAiIGJlZ2luPSIwcyIgZHVyPSIwLjU5cyIgcmVwZWF0Q291bnQ9IjEiIGZpbGw9ImZyZWV6ZSIvPjxhbmltYXRlIGF0dHJpYnV0ZU5hbWU9Im9wYWNpdHkiIGZyb209IjAiIHRvPSIxIiBiZWdpbj0iMC41OXMiIGR1cj0iMC40NXMiIHJlcGVhdENvdW50PSIxIiBmaWxsPSJmcmVlemUiLz48L2c+PGc+PGcgaWQ9ImUxIj48cGF0aCBkPSJNNDI5IDE3OS42IEw0MjkgMjQ5IFE0MjkgMjYxIDQ0MSAyNjEgTDcwOCAyNjEiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzJhYzRjZSIgc3Ryb2tlLXdpZHRoPSIyLjIiLz48cGF0aCBkPSJNNjk3LjUgMjY2LjUgTDcwOCAyNjEgTDY5Ny41IDI1NS41IiBmaWxsPSJub25lIiBzdHJva2U9IiMyYWM0Y2UiIHN0cm9rZS13aWR0aD0iMi4yIi8+PHJlY3QgeD0iNTI5LjMiIHk9IjIzMi41IiB3aWR0aD0iNzguMyIgaGVpZ2h0PSIyNSIgcng9IjUiIGZpbGw9IiMxZTI3MzMiIGZpbGwtb3BhY2l0eT0iMC45MiIvPjx0ZXh0IHg9IjU2OC41IiB5PSIyNTEiIGZvbnQtc2l6ZT0iMTciIGZvbnQtd2VpZ2h0PSI2MDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjZWFlZmY1Ij5yZWRpcmVjdDwvdGV4dD48L2c+PGcgaWQ9ImUyIj48cGF0aCBkPSJNNzA4IDI4NSBMMTI5IDI4NSBRMTE3IDI4NSAxMTcgMjczIEwxMTcgMjU4IiBmaWxsPSJub25lIiBzdHJva2U9IiMyYWM0Y2UiIHN0cm9rZS13aWR0aD0iMi4yIi8+PHBhdGggZD0iTTEyMi41IDI2OC41IEwxMTcgMjU4IEwxMTEuNSAyNjguNSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMmFjNGNlIiBzdHJva2Utd2lkdGg9IjIuMiIvPjxyZWN0IHg9IjM2Mi41IiB5PSIyODguNSIgd2lkdGg9IjEwMC4xIiBoZWlnaHQ9IjI1IiByeD0iNSIgZmlsbD0iIzFlMjczMyIgZmlsbC1vcGFjaXR5PSIwLjkyIi8+PHRleHQgeD0iNDEyLjUiIHk9IjMwNyIgZm9udC1zaXplPSIxNyIgZm9udC13ZWlnaHQ9IjYwMCIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiNlYWVmZjUiPmxvZ2luIGZvcm08L3RleHQ+PC9nPjxhbmltYXRlIGF0dHJpYnV0ZU5hbWU9Im9wYWNpdHkiIGZyb209IjAiIHRvPSIwIiBiZWdpbj0iMHMiIGR1cj0iMS4wNHMiIHJlcGVhdENvdW50PSIxIiBmaWxsPSJmcmVlemUiLz48YW5pbWF0ZSBhdHRyaWJ1dGVOYW1lPSJvcGFjaXR5IiBmcm9tPSIwIiB0bz0iMSIgYmVnaW49IjEuMDRzIiBkdXI9IjAuNDVzIiByZXBlYXRDb3VudD0iMSIgZmlsbD0iZnJlZXplIi8+PC9nPjxnPjxnIGlkPSJlMyI+PHBhdGggZD0iTTEzNiAyMjUgTDcxOSAyMjUgUTcyOSAyMjUgNzI5IDIzNSBMNzI5IDI0NSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMmFjNGNlIiBzdHJva2Utd2lkdGg9IjIuMiIvPjxwYXRoIGQ9Ik03MjMuNSAyMzQuNSBMNzI5IDI0NSBMNzM0LjUgMjM0LjUiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzJhYzRjZSIgc3Ryb2tlLXdpZHRoPSIyLjIiLz48cmVjdCB4PSI0NTAuOCIgeT0iMTk2LjUiIHdpZHRoPSIxMDcuNSIgaGVpZ2h0PSIyNSIgcng9IjUiIGZpbGw9IiMxZTI3MzMiIGZpbGwtb3BhY2l0eT0iMC45MiIvPjx0ZXh0IHg9IjUwNC41IiB5PSIyMTQuOSIgZm9udC1zaXplPSIxNyIgZm9udC13ZWlnaHQ9IjYwMCIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiNlYWVmZjUiPmNyZWRlbnRpYWxzPC90ZXh0PjwvZz48ZyBpZD0iZTQiPjxwYXRoIGQ9Ik03MDggMjczIEw0MjkgMjczIFE0MTcgMjczIDQxNyAyNjEgTDQxNyAxNzkuNiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMmFjNGNlIiBzdHJva2Utd2lkdGg9IjIuMiIvPjxwYXRoIGQ9Ik00MjIuNSAxOTAuMSBMNDE3IDE3OS42IEw0MTEuNSAxOTAuMSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMmFjNGNlIiBzdHJva2Utd2lkdGg9IjIuMiIvPjxyZWN0IHg9IjI3Mi4zIiB5PSIyMzEuOCIgd2lkdGg9IjEzNC40IiBoZWlnaHQ9IjI1IiByeD0iNSIgZmlsbD0iIzFlMjczMyIgZmlsbC1vcGFjaXR5PSIwLjkyIi8+PHRleHQgeD0iMzM5LjUiIHk9IjI1MC4zIiBmb250LXNpemU9IjE3IiBmb250LXdlaWdodD0iNjAwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2VhZWZmNSI+b25lLXRpbWUgY29kZTwvdGV4dD48L2c+PGcgaWQ9ImU1Ij48cGF0aCBkPSJNNDI5IDExNi42IEw0MjkgODEgUTQyOSA2OSA0NDEgNjkgTDcyNS41IDY5IiBmaWxsPSJub25lIiBzdHJva2U9IiMyYWM0Y2UiIHN0cm9rZS13aWR0aD0iMi4yIi8+PHBhdGggZD0iTTcxNSA3NC41IEw3MjUuNSA2OSBMNzE1IDYzLjUiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzJhYzRjZSIgc3Ryb2tlLXdpZHRoPSIyLjIiLz48cmVjdCB4PSI1NTAuMiIgeT0iNzIuNSIgd2lkdGg9IjU0LjIiIGhlaWdodD0iMjUiIHJ4PSI1IiBmaWxsPSIjMWUyNzMzIiBmaWxsLW9wYWNpdHk9IjAuOTIiLz48dGV4dCB4PSI1NzcuMyIgeT0iOTEiIGZvbnQtc2l6ZT0iMTciIGZvbnQtd2VpZ2h0PSI2MDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjZWFlZmY1Ij5jb2RlPC90ZXh0PjwvZz48YW5pbWF0ZSBhdHRyaWJ1dGVOYW1lPSJvcGFjaXR5IiBmcm9tPSIwIiB0bz0iMCIgYmVnaW49IjBzIiBkdXI9IjIuMzJzIiByZXBlYXRDb3VudD0iMSIgZmlsbD0iZnJlZXplIi8+PGFuaW1hdGUgYXR0cmlidXRlTmFtZT0ib3BhY2l0eSIgZnJvbT0iMCIgdG89IjEiIGJlZ2luPSIyLjMycyIgZHVyPSIwLjQ1cyIgcmVwZWF0Q291bnQ9IjEiIGZpbGw9ImZyZWV6ZSIvPjwvZz48Zz48ZyBpZD0iZTYiPjxwYXRoIGQ9Ik03MjUuNSA1NyBMNDI5IDU3IFE0MTcgNTcgNDE3IDY5IEw0MTcgMTE2LjYiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzJhYzRjZSIgc3Ryb2tlLXdpZHRoPSIyLjIiLz48cGF0aCBkPSJNNDExLjUgMTA2LjEgTDQxNyAxMTYuNiBMNDIyLjUgMTA2LjEiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzJhYzRjZSIgc3Ryb2tlLXdpZHRoPSIyLjIiLz48cmVjdCB4PSI1NDEuMiIgeT0iMjguNSIgd2lkdGg9IjYwLjEiIGhlaWdodD0iMjUiIHJ4PSI1IiBmaWxsPSIjMWUyNzMzIiBmaWxsLW9wYWNpdHk9IjAuOTIiLz48dGV4dCB4PSI1NzEuMyIgeT0iNDYuOSIgZm9udC1zaXplPSIxNyIgZm9udC13ZWlnaHQ9IjYwMCIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiNlYWVmZjUiPnRva2VuPC90ZXh0PjwvZz48ZyBpZD0iZTciPjxwYXRoIGQ9Ik00NTMgMTUzIEw3MzcuNSAxNTMiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzJhYzRjZSIgc3Ryb2tlLXdpZHRoPSIyLjIiLz48cGF0aCBkPSJNNzI3IDE1OC41IEw3MzcuNSAxNTMgTDcyNyAxNDcuNSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMmFjNGNlIiBzdHJva2Utd2lkdGg9IjIuMiIvPjxyZWN0IHg9IjU2NS4yIiB5PSIxMjQuNSIgd2lkdGg9IjYwLjEiIGhlaWdodD0iMjUiIHJ4PSI1IiBmaWxsPSIjMWUyNzMzIiBmaWxsLW9wYWNpdHk9IjAuOTIiLz48dGV4dCB4PSI1OTUuMyIgeT0iMTQzIiBmb250LXNpemU9IjE3IiBmb250LXdlaWdodD0iNjAwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2VhZWZmNSI+dG9rZW48L3RleHQ+PC9nPjxhbmltYXRlIGF0dHJpYnV0ZU5hbWU9Im9wYWNpdHkiIGZyb209IjAiIHRvPSIwIiBiZWdpbj0iMHMiIGR1cj0iMy43cyIgcmVwZWF0Q291bnQ9IjEiIGZpbGw9ImZyZWV6ZSIvPjxhbmltYXRlIGF0dHJpYnV0ZU5hbWU9Im9wYWNpdHkiIGZyb209IjAiIHRvPSIxIiBiZWdpbj0iMy43cyIgZHVyPSIwLjQ1cyIgcmVwZWF0Q291bnQ9IjEiIGZpbGw9ImZyZWV6ZSIvPjwvZz48L3N2Zz4=",
+     "description": "Arch motion: Architecture diagram. 5 nodes, 8 connections and 0 message payloads (8 steps)."
+    },
+    {
+     "id": "steps_hd",
+     "component": "Text",
+     "text": "STEPS (TEXT VERSION OF THE PICTURE)"
+    },
+    {
+     "id": "step_0",
+     "component": "Text",
+     "text": "1. You connects to Web app for opens app."
+    },
+    {
+     "id": "step_1",
+     "component": "Text",
+     "text": "2. Web app connects to Identity provider for redirect."
+    },
+    {
+     "id": "step_2",
+     "component": "Text",
+     "text": "3. Identity provider connects to You for login form."
+    },
+    {
+     "id": "step_3",
+     "component": "Text",
+     "text": "4. You connects to Identity provider for credentials."
+    },
+    {
+     "id": "step_4",
+     "component": "Text",
+     "text": "5. Identity provider connects to Web app for one-time code."
+    },
+    {
+     "id": "step_5",
+     "component": "Text",
+     "text": "6. Web app connects to Token endpoint for code."
+    },
+    {
+     "id": "step_6",
+     "component": "Text",
+     "text": "7. Token endpoint connects to Web app for token."
+    },
+    {
+     "id": "step_7",
+     "component": "Text",
+     "text": "8. Web app connects to Resource API for token."
+    },
+    {
+     "id": "ledger_hd",
+     "component": "Text",
+     "text": "LATENCY LEDGER"
+    },
+    {
+     "id": "ledger",
+     "component": "Text",
+     "text": "Stored example, no model. Model call 0 ms. Parse 0 ms. Layout 1120 ms. Draw 405 ms. Total in our agent 2077 ms. Picture 9,386 bytes."
+    },
+    {
+     "id": "note",
+     "component": "Text",
+     "text": "These are our agent's times only: they leave out the network, Gemini Enterprise's own handling and the time it takes to paint the card.",
+     "variant": "caption"
+    }
+   ]
+  }
+ }
+]
