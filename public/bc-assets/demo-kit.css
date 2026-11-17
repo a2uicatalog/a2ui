@@ -570,3 +570,7 @@ body.live-body{margin:0;overflow:hidden;background:color-mix(in srgb,var(--bg) 8
 #live-ledger-body.ledger-saved .row-timed,#live-ledger-body.ledger-saved .live-lnote,#live-ledger-body.ledger-saved thead th:nth-child(3),#live-ledger-body.ledger-saved .live-ledger-sentence,#live-ledger-body.ledger-saved #live-notes-h,#live-ledger-body.ledger-saved #live-notes{display:none}
 .app-pill[hidden]{display:none}
 .kit .app-bar .bar-hint{grid-column:1/-1;margin:2px 0 0;font-size:.78rem}   /* the line under the question bar */
+
+/* the bot check sits under the bar, in view (it was inside the closed Settings sheet, where an interactive check could not be seen) */
+.kit .app-bar #live-ts-wrap{grid-column:1/-1;margin:4px 0 0;min-height:0}
+.kit .app-bar #live-ts-note{margin:4px 0 0}

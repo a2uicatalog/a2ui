@@ -137,20 +137,22 @@
     var note = $('live-ts-note');
     if (!onApex()) { tsState = 'off'; note.hidden = false; note.textContent = cfg.msgs.turnstile_preview; return; }
     tsState = 'loading';
+    function blocked() { if (tsState === 'ready' && token) return; tsState = 'failed'; note.hidden = false; note.textContent = cfg.msgs.turnstile_blocked; }   // the check could not run: say so and send nothing (the drawing service would refuse a request without a token)
     function render() {
       try {
         tsWidget = window.turnstile.render($('live-turnstile'), {
           sitekey: cfg.site_key,
-          callback: function (t) { token = t; tsState = 'ready'; },
+          callback: function (t) { token = t; tsState = 'ready'; note.hidden = true; },
           'expired-callback': function () { token = ''; tsState = 'loading'; },
-          'error-callback': function () { token = ''; tsState = 'loading'; }
+          'error-callback': function () { token = ''; blocked(); }
         });
-      } catch (e) { tsState = 'off'; }
+      } catch (e) { blocked(); }
     }
+    setTimeout(function () { if (tsState === 'loading' && !token) blocked(); }, 15000);   // a blocked script or frame says nothing: after 15 seconds the visitor is told
     if (window.turnstile) { render(); return; }
     var s = document.createElement('script');
     s.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
-    s.async = true; s.onload = render; s.onerror = function () { tsState = 'off'; };
+    s.async = true; s.onload = render; s.onerror = blocked;
     document.head.appendChild(s);
   }
   function resetTurnstile() {
@@ -263,6 +265,7 @@
     hideError(); stage = '';
     if (!key && !P.local) { $('live-result').hidden = true; setGim('confused'); setStatus(m.status_need_key); $('live-error-text').textContent = fmt(m.err_no_key, { provider: P.short }); $('live-error').hidden = false; openSettings(true); return; }   // no key: the settings open with focus in the key field, nothing is sent
     if (!q) { $('live-result').hidden = true; setGim('confused'); setStatus(m.status_error); $('live-error-text').textContent = m.err_no_question; $('live-error').hidden = false; $('live-error').focus(); return; }
+    if (tsState === 'failed') { fail(m.err_turnstile_blocked); return; }
     if (tsState === 'loading' || (tsState === 'ready' && !token)) { fail(m.err_turnstile_wait); return; }
     store();
     $('live-settings').open = false;   // the settings fold away once the question is on its way
@@ -351,6 +354,7 @@
   function redraw() {   // Try again after a failed drawing request: redo the drawing from the SAME model text, no new Google call
     if (busy) return;
     var m = cfg.msgs; hideError(); stage = 'draw';
+    if (tsState === 'failed') { fail(m.err_turnstile_blocked, { retry: true, modelText: pending.text }); return; }
     if (tsState === 'loading' || (tsState === 'ready' && !token)) { fail(m.err_turnstile_wait, { retry: true, modelText: pending.text }); return; }
     busy = true; $('live-go').setAttribute('aria-disabled', 'true'); $('live-form').setAttribute('aria-busy', 'true'); $('live-result').hidden = true;
     setGim('thinking'); setStatus(m.status_draw); showPending(m.status_draw);
