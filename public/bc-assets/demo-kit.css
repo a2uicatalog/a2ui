@@ -236,7 +236,7 @@
 .kit .live-chip:hover{border-color:var(--la-acc)}
 .kit .live-q-bubble{width:fit-content;max-width:85%;margin:6px 0 10px auto;padding:10px 14px;border-radius:16px 16px 4px 16px;background:var(--la-user);overflow-wrap:anywhere}
 .kit .live-q-bubble[hidden],.kit .live-pending[hidden],.kit .hello[hidden]{display:none}
-.kit .live-pending,.kit .live-result{margin:0 0 8px;padding:14px;border:1px solid var(--la-line);border-radius:16px;background:var(--la-card);min-width:0}
+.kit .live-pending,.kit .live-result{margin:0 0 8px;padding:14px;border:1px solid var(--la-line);border-radius:16px;background:var(--la-bg);min-width:0}
 .kit .live-pending{color:var(--text-muted)}
 .kit .live-result[hidden]{display:none}
 .kit .live-result-head{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;margin-bottom:6px}
