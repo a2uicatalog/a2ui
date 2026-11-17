@@ -31,6 +31,7 @@
   function showPending(text) { var p = $('live-pending'); p.textContent = text; p.hidden = false; }
   function begin(q) {   // a question is on its way: the old result is gone, the view returns to the top, the empty state gives way to the question bubble and a working line
     $('live-result').hidden = true; hasResult = false; syncForm(); var th = $('live-thread'); if (th) th.scrollTop = 0;
+    var ch = $('live-chips'), hint = $('live-hint'); if (ch && hint && !ch.classList.contains('chips-bar')) { ch.classList.add('chips-bar'); hint.parentNode.insertBefore(ch, hint.nextSibling); }   // the saved examples stay one tap away: the chip row leaves the empty state (which gives way to the conversation) and sits under the bar
     $('live-hello').hidden = true; var b = $('live-qbubble'); b.textContent = q; b.hidden = false; $('live-pending').hidden = true;
   }
   function syncFallback() {   // the fallback button never offers the model that is already selected
@@ -223,8 +224,12 @@
       }
     },
     anthropic: {
-      thinking: false, temp: false,   // Anthropic is sent no temperature at all: some models reject it as deprecated
-      build: function (p, model, key, q) { return { url: p.base + '/messages', headers: withJson(anthropicHeaders(key)), body: { model: model, max_tokens: 2048, system: cfg.sys, messages: [{ role: 'user', content: q }] } }; },
+      thinking: true, temp: false,   // no temperature at all (some models reject it as deprecated); thinking is sent OFF: measured 17 Nov 2026 (Haiku, 320 calls): thinking left on was about 70 percent of the output tokens and about 60 percent of the model time, and truncated replies failed; one retry without the field if a model rejects it
+      build: function (p, model, key, q, o) {
+        var b = { model: model, max_tokens: 2048, system: cfg.sys, messages: [{ role: 'user', content: q }] };
+        if (o.think) b.thinking = { type: 'disabled' };
+        return { url: p.base + '/messages', headers: withJson(anthropicHeaders(key)), body: b };
+      },
       parse: function (j) {   // only the text blocks; thinking and other blocks are ignored
         var blocks = j && Array.isArray(j.content) ? j.content : [], u = j && j.usage && typeof j.usage === 'object' ? j.usage : null;
         var text = blocks.filter(function (b) { return b && b.type === 'text' && typeof b.text === 'string'; }).map(function (b) { return b.text; }).join('');
