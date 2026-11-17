@@ -578,3 +578,9 @@ body.live-body{margin:0;overflow:hidden;background:color-mix(in srgb,var(--bg) 8
 /* the saved examples stay available after the first result: the chip row moves under the question bar and goes compact */
 .kit .app-bar .chips-bar{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 0;justify-content:flex-start}
 .kit .app-bar .chips-bar .live-chip{padding:0 12px;font-size:.82rem}
+
+/* the thinking toggle: always visible, directly under the Settings bar */
+.kit .app-bar .live-think{grid-column:1/-1;display:flex;flex-wrap:nowrap;gap:0 14px;align-items:center;margin:6px 0 0;padding:0;border:0;min-width:0}
+.kit .live-think legend{float:left;padding:0 12px 0 0;font-weight:600;font-size:.9rem}
+.kit .live-think .live-check{min-height:44px;display:inline-flex;align-items:center;gap:6px}
+.kit .live-think.is-off{opacity:.55}

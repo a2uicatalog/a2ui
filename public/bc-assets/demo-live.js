@@ -124,10 +124,14 @@
     suggest = null; $('live-find-note').hidden = true; $('live-find-note').textContent = '';
     setModel(P.default_model); renderPrivacy(); syncFind();
   }
+  function syncThink() {   // the toggle only means something for adapters that have a thinking setting; for the rest it is disabled
+    var has = !!(P && ADAPTERS[P.adapter] && ADAPTERS[P.adapter].thinking), f = $('live-think'); if (!f) return;
+    f.disabled = !has; f.classList.toggle('is-off', !has);
+  }
   function onProviderChange() {   // key safety: a new provider never receives the old key
     epoch++; mem = {}; $('live-fallback').hidden = true;
     $('live-key').value = ''; $('live-remember').checked = false; wipeKeys();
-    P = current(); renderProvider();
+    P = current(); renderProvider(); syncThink();
     setStatus(fmt(cfg.msgs.status_provider_changed, { provider: P.label }));   // focus stays on the select that was changed
   }
 
@@ -277,9 +281,10 @@
     busy = true; $('live-go').setAttribute('aria-disabled', 'true'); $('live-form').setAttribute('aria-busy', 'true'); $('live-result').hidden = true;
     begin(q); stage = 'model'; setGim('thinking'); setStatus(m.status_model); showPending(m.status_model);
     var t0 = performance.now(), t1 = 0; pending = null;
-    var mk = P.id + '|' + P.svc + '|' + model, rej = Object.assign({}, mem[mk]), o = { think: !rej.think, temp: !rej.temp, mct: !!rej.mct }, retried = false;   // a setting this provider and model rejected earlier in this tab is left out from the start
+    var thinkOn = !!($('live-think-on') && $('live-think-on').checked);   // the visible toggle: On leaves the provider's default thinking alone
+    var mk = P.id + '|' + P.svc + '|' + model, rej = Object.assign({}, mem[mk]), o = { think: !rej.think && !thinkOn, temp: !rej.temp, mct: !!rej.mct }, retried = false;   // a setting this provider and model rejected earlier in this tab is left out from the start
     callModel = model; callDefault = P.default_model; modelNotes = [];
-    ['think', 'temp', 'mct'].forEach(function (k) { if (rej[k]) modelNotes.push(NOTE_KEY[k]); });
+    ['think', 'temp', 'mct'].forEach(function (k) { if (rej[k] && !(k === 'think' && thinkOn)) modelNotes.push(NOTE_KEY[k]); });
     function nextRetry(status, msg) {   // one automatic retry per ask, only for a 400 that names a setting; a key error never retries
       if (retried || status !== 400 || /api[ _-]?key/i.test(msg)) return null;
       if (ad.thinking && o.think && /thinking/i.test(msg)) return 'think';
@@ -292,7 +297,7 @@
       return timed(req.url, { method: 'POST', credentials: 'omit', referrerPolicy: 'no-referrer', headers: req.headers, body: JSON.stringify(req.body) }, MODEL_MS)
         .then(readJson)
         .then(function (x) {
-          if (x.r.ok) { if (retried) mem[mk] = rej; return x; }
+          if (x.r.ok) { if (retried) mem[mk] = rej; if (ad.thinking && thinkOn) modelNotes.push('note_think_on'); return x; }
           var k = nextRetry(x.r.status, errMsg(x.j));
           if (!k) return x;
           retried = true; rej[k] = true; if (k === 'mct') o.mct = true; else o[k] = false;
@@ -591,7 +596,7 @@
     LP = opts && opts.page ? { ledger: opts.page.ledger || '', portrait: !!opts.page.portrait } : null;   // the standalone live page's options; the dialog passes none
     syncForm();
     setGim('idle');
-    P = current(); renderProvider();
+    P = current(); renderProvider(); syncThink();
     try { var k = sessionStorage.getItem(keySlot()); if (k) { $('live-key').value = k; $('live-remember').checked = true; syncFind(); } } catch (e) {}
     $('live-provider').addEventListener('change', onProviderChange);
     $('live-service').addEventListener('change', onProviderChange);
