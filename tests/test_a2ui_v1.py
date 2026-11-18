@@ -347,6 +347,27 @@ def test_all_declared_children_atoms_are_flattened():
     assert checked >= 6, f"expected to cover at least the 6 originally-uncovered atoms, covered {checked}"
 
 
+def test_wrapper_entries_get_uax31_component_types():
+    """Untyped wrapper entries (chat_thread messages, playbook slides, ...) were typed `<parent>.<field>`; a dot is not
+    a UAX #31 identifier, so strict v1.0 consumers (Dart a2ui_core) rejected the surface (Flutter finding 4)."""
+    import re
+    ident = re.compile(r"^[^\W\d]\w*$")
+    block = {"type": "chat_thread", "messages": [{"role": "user", "text": "hi"}]}
+    _, by_id = _assert_valid_surface(emit_surface({"title": "t", "blocks": [block]}))
+    assert by_id["block_1"]["component"] == "chat_thread_messages"
+    from renderers.a2ui_v1 import _atom_children_schema
+    for atom_type, decl in _atom_children_schema().items():
+        for field, spec in decl.items():
+            if spec["shape"] not in ("wrapper_list", "wrapper_single"):
+                continue
+            inner = spec["inner_path"].split(".")[0]
+            entry = {"id": "w1", inner: [{"type": "body", "text": "x"}]}
+            blk = {"type": atom_type, field: [entry] if spec["shape"] == "wrapper_list" else entry}
+            _, ids_ = _assert_valid_surface(emit_surface({"title": "t", "blocks": [blk]}))
+            bad = [c["component"] for c in ids_.values() if not ident.match(c["component"])]
+            assert not bad, f"{atom_type}.{field}: component types not identifiers: {bad}"
+
+
 def test_real_payload_smoke():
     """Any real blocks-dialect payload must emit a structurally valid surface."""
     checked = 0

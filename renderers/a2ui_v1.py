@@ -423,6 +423,13 @@ def _atom_children_schema() -> Dict[str, Dict[str, Any]]:
     return _ATOM_CHILDREN_CACHE
 
 
+def _wrapper_type(parent: str, field: str) -> str:
+    """Component type of an untyped wrapper entry (chat_thread messages, playbook slides, ...): `<parent>_<field>`.
+    It used to be `<parent>.<field>`, which is not a UAX #31 identifier, so strict v1.0 consumers (Dart a2ui_core)
+    rejected the whole surface."""
+    return f"{parent}_{field}"
+
+
 def _emit_wrapper_item(item: Any, inner_key: str, components: List[Dict[str, Any]], ids: _IdGen,
                         default_type: str = "_wrapper_item") -> str:
     """Promote a wrapper object (its own properties alongside nested atom
@@ -489,12 +496,12 @@ def _emit_declared_children(b: Dict[str, Any], cid: str, components: List[Dict[s
         elif shape == "wrapper_list":
             if isinstance(value, list):
                 inner_key = spec["inner_path"].split(".")[0]
-                item_type = f"{b['type']}.{field}"
+                item_type = _wrapper_type(b["type"], field)
                 node[field] = [_emit_wrapper_item(item, inner_key, components, ids, item_type) for item in value]
         elif shape == "wrapper_single":
             if isinstance(value, dict):
                 inner_key = spec["inner_path"].split(".")[0]
-                item_type = f"{b['type']}.{field}"
+                item_type = _wrapper_type(b["type"], field)
                 node[field] = _emit_wrapper_item(value, inner_key, components, ids, item_type)
 
     components.append(node)
@@ -735,6 +742,24 @@ def _fallback_text(c: Dict[str, Any]) -> str:
     return ""
 
 
+def _key_value_text(c: Dict[str, Any]) -> str:
+    """Readable text for a degraded key_value. The atom has two contracts: the schema's items:[{key, description}]
+    and the example block's pairs:[{key, value}]; both are read (items wins), one `key: value` line each, after the
+    title when there is one. Empty when neither yields a pair, so _fallback_text decides."""
+    lines: List[str] = []
+    entries = c.get("items") if isinstance(c.get("items"), list) and c.get("items") else c.get("pairs")
+    for e in entries if isinstance(entries, list) else []:
+        if not isinstance(e, dict) or e.get("key") in (None, ""):
+            continue
+        val = next((e[k] for k in ("description", "value") if e.get(k) not in (None, "")), "")
+        lines.append(f"{e['key']}: {val}" if val != "" else str(e["key"]))
+    if not lines:
+        return ""
+    if isinstance(c.get("title"), str) and c["title"].strip():
+        lines.insert(0, c["title"].strip())
+    return "\n".join(lines)[:1000]
+
+
 def _refs(c: Dict[str, Any]) -> List[str]:
     """Component ids this Basic Catalog component points at."""
     out: List[str] = []
@@ -906,7 +931,7 @@ def _degrade_to_basic(components: List[Dict[str, Any]], data_model: Optional[Dic
             extra += more
             report.append({"id": cid, "type": ctype, "as": by_id[cid]["component"]})
             continue
-        text = _fallback_text(c)
+        text = (_key_value_text(c) if ctype == "key_value" else "") or _fallback_text(c)
         if text or cid in single_refs:
             by_id[cid] = {"id": cid, "component": "Text", "text": text}
             report.append({"id": cid, "type": ctype, "as": "Text"})

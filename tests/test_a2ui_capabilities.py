@@ -148,6 +148,39 @@ def test_degraded_v10_surface_conforms_to_the_real_schema():
     assert_conforms(msg, AGENT_TO_RENDERER)
 
 
+# ── key_value keeps its values in the degraded form (Flutter finding 3: two contracts) ──
+KV_ITEMS = {"type": "key_value", "title": "Env", "items": [{"key": "API_KEY", "description": "set"}, {"key": "BASE_URL", "description": "https://x.test"}]}
+KV_PAIRS = {"type": "key_value", "pairs": [{"key": "A", "value": "1"}, {"key": "B", "value": "2"}]}
+
+
+@pytest.mark.parametrize("block,expected", [
+    (KV_ITEMS, "Env\nAPI_KEY: set\nBASE_URL: https://x.test"),
+    (KV_PAIRS, "A: 1\nB: 2"),
+])
+@pytest.mark.parametrize("version,basic_id", [("v0.9", V09_BASIC), ("1.0", V10_BASIC)])
+def test_degraded_key_value_carries_keys_and_values(block, expected, version, basic_id):
+    msgs = emit_messages({"blocks": [copy.deepcopy(block)]}, _caps(basic_id, version=version))
+    texts = [c["text"] for c in _components(msgs) if c["component"] == "Text"]
+    assert texts == [expected]
+
+
+def test_degraded_key_value_with_no_pairs_falls_back_to_the_title():
+    comps = _components(emit_messages({"blocks": [{"type": "key_value", "title": "Only a title"}]}, _caps(V10_BASIC, version="1.0")))
+    assert [c["text"] for c in comps if c["component"] == "Text"] == ["Only a title"]
+
+
+def test_v10_basic_fallback_is_one_v10_create_surface_a_v10_basic_host_accepts():
+    """Flutter's v1.0 basicCatalog() has id V10_BASIC and rejects v0.9 wire (CATALOG_NOT_FOUND): a renderer that
+    offers the v1.0 Basic Catalog under "1.0" gets one version-"1.0" createSurface on that id, Basic components only."""
+    msgs = emit_messages({"blocks": [copy.deepcopy(KV_PAIRS), {"type": "callout", "kind": "info", "text": "hi"}]},
+                         _caps(V10_BASIC, key="a2uiRendererCapabilities", version="1.0"))
+    assert len(msgs) == 1 and msgs[0]["version"] == "1.0"
+    cs = msgs[0]["createSurface"]
+    assert cs["catalogId"] == V10_BASIC
+    assert all(c["component"] in BASIC_COMPONENTS and "@catalogId" not in c for c in cs["components"])
+    assert_conforms(msgs[0], AGENT_TO_RENDERER)
+
+
 # ── legacy early-draft "v1.0" key is never negotiated (review F4) ─────────────
 def _legacy_meta(*versions):
     return {"a2uiClientCapabilities": {v: {"supportedCatalogIds": [V10_BASIC if v == "v1.0" else V09_BASIC]} for v in versions}}
