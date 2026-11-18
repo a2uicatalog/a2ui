@@ -124,6 +124,10 @@
     suggest = null; $('live-find-note').hidden = true; $('live-find-note').textContent = '';
     setModel(P.default_model); renderPrivacy(); syncFind();
   }
+  var AIM = { base: 'aim for 12 nodes', 9: 'aim for 9 nodes or fewer', 6: 'aim for 6 nodes' };   // Detailed is the agent's own prompt; the others swap this one phrase
+  function detail() { var r = document.querySelector('input[name="live-detail"]:checked'); return r ? parseInt(r.value, 10) : 12; }
+  function sysNow() { var d = detail(); return d === 12 || cfg.sys.indexOf(AIM.base) < 0 ? cfg.sys : cfg.sys.replace(AIM.base, AIM[d]); }
+  function boxCount(t) { var m = {}, re = /\b([A-Za-z0-9_]+)\[/g, x; while ((x = re.exec(t))) m[x[1]] = 1; return Object.keys(m).length; }
   function syncThink() {   // the toggle only means something for adapters that have a thinking setting; for the rest it is disabled
     var has = !!(P && ADAPTERS[P.adapter] && ADAPTERS[P.adapter].thinking), f = $('live-think'); if (!f) return;
     f.disabled = !has; f.classList.toggle('is-off', !has);
@@ -185,7 +189,7 @@
     if (o.temp) g.temperature = 0.2;
     g.maxOutputTokens = 2048;
     if (o.think) g.thinkingConfig = { thinkingLevel: 'low' };
-    return { systemInstruction: { parts: [{ text: cfg.sys }] }, contents: [{ role: 'user', parts: [{ text: q }] }], generationConfig: g };
+    return { systemInstruction: { parts: [{ text: sysNow() }] }, contents: [{ role: 'user', parts: [{ text: q }] }], generationConfig: g };
   }
   function parseGemini(j) {
     var c = j && j.candidates && j.candidates[0], parts = c && c.content && c.content.parts, u = j && j.usageMetadata && typeof j.usageMetadata === 'object' ? j.usageMetadata : null;
@@ -211,7 +215,7 @@
     openai: {
       thinking: false, temp: true,
       build: function (p, model, key, q, o) {
-        var b = { model: model, messages: [{ role: 'system', content: cfg.sys }, { role: 'user', content: q }] };
+        var b = { model: model, messages: [{ role: 'system', content: sysNow() }, { role: 'user', content: q }] };
         if (o.temp) b.temperature = 0.2;
         b[o.mct ? 'max_completion_tokens' : 'max_tokens'] = 2048;   // a few models take only max_completion_tokens: used after the provider says so
         return { url: p.base + '/chat/completions', headers: withJson(bearer(key)), body: b };
@@ -230,7 +234,7 @@
     anthropic: {
       thinking: true, temp: false,   // no temperature at all (some models reject it as deprecated); thinking is sent OFF: measured 17 Nov 2026 (Haiku, 320 calls): thinking left on was about 70 percent of the output tokens and about 60 percent of the model time, and truncated replies failed; one retry without the field if a model rejects it
       build: function (p, model, key, q, o) {
-        var b = { model: model, max_tokens: 2048, system: cfg.sys, messages: [{ role: 'user', content: q }] };
+        var b = { model: model, max_tokens: 2048, system: sysNow(), messages: [{ role: 'user', content: q }] };
         if (o.think) b.thinking = { type: 'disabled' };
         return { url: p.base + '/messages', headers: withJson(anthropicHeaders(key)), body: b };
       },
@@ -314,6 +318,7 @@
           return;
         }
         var got = ad.parse(x.j), text = got.text.trim();
+    var dsel = document.querySelector('input[name="live-detail"]:checked'); if (dsel && detail() !== 12) modelNotes.push({ key: 'note_detail', vars: { stop: dsel.parentNode.textContent.trim(), asked: String(detail()), boxes: String(boxCount(text)) } });   // only when the default is changed
         if (!text) { fail(m.err_no_reply); return; }
         t1 = performance.now(); stage = 'draw';
         pending = { text: text, model: t1 - t0, usage: got.usage };   // kept so that Try again after a failed drawing request does not ask the provider again
@@ -394,7 +399,7 @@
   function fillNotes(m, reps) {
     var ul = $('live-notes'); ul.textContent = '';
     $('live-notes-intro').hidden = !reps.length; var mn = $('live-notes-model'); mn.textContent = ''; mn.hidden = !modelNotes.length;
-    modelNotes.forEach(function (k) { var li = document.createElement('li'); li.textContent = m[k]; mn.appendChild(li); });
+    modelNotes.forEach(function (k) { var li = document.createElement('li'); li.textContent = typeof k === 'string' ? m[k] : fmt(m[k.key], k.vars); mn.appendChild(li); });
     if (!reps.length && modelNotes.length) return;
     if (!reps.length) { var li0 = document.createElement('li'); li0.textContent = m.notes_none; ul.appendChild(li0); return; }
     reps.forEach(function (s) { var li = document.createElement('li'); li.textContent = s.slice(0, 300); ul.appendChild(li); });

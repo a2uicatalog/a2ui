@@ -584,3 +584,7 @@ body.live-body{margin:0;overflow:hidden;background:color-mix(in srgb,var(--bg) 8
 .kit .live-think legend{float:left;padding:0 12px 0 0;font-weight:600;font-size:.9rem}
 .kit .live-think .live-check{min-height:44px;display:inline-flex;align-items:center;gap:6px}
 .kit .live-think.is-off{opacity:.55}
+
+/* the Thinking and Detail controls share one row; the fieldsets sit side by side and wrap on a narrow screen */
+.kit .app-bar .live-opts{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:0 22px;margin:6px 0 0}
+.kit .app-bar .live-opts .live-think{grid-column:auto;margin:0;flex:0 1 auto}
