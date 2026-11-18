@@ -65,3 +65,9 @@
 # The Basic Catalog demo page was first published as /anatomy/; its demos now live under /demos/ (14 Nov 2026).
 /what-is-a2ui/basic-catalog/anatomy /what-is-a2ui/basic-catalog/demos/ 301
 /what-is-a2ui/basic-catalog/anatomy/ /what-is-a2ui/basic-catalog/demos/ 301
+
+# Explain Me Anything moved from Basic Catalog Demos to Custom Catalog (18 Nov 2026): it runs on our macro pack and the custom catalogue.
+# The old address, its Run page and its Live page all keep working.
+/what-is-a2ui/basic-catalog/demos/explain-me-anything /what-is-a2ui/custom-catalog/explain-me-anything/ 301
+/what-is-a2ui/basic-catalog/demos/explain-me-anything/ /what-is-a2ui/custom-catalog/explain-me-anything/ 301
+/what-is-a2ui/basic-catalog/demos/explain-me-anything/* /what-is-a2ui/custom-catalog/explain-me-anything/:splat 301
