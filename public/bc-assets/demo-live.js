@@ -194,7 +194,7 @@
   function parseGemini(j) {
     var c = j && j.candidates && j.candidates[0], parts = c && c.content && c.content.parts, u = j && j.usageMetadata && typeof j.usageMetadata === 'object' ? j.usageMetadata : null;
     var text = Array.isArray(parts) ? parts.filter(function (p) { return p && typeof p.text === 'string' && !p.thought; }).map(function (p) { return p.text; }).join('') : '';
-    return { text: text, usage: u ? usageOf(u.promptTokenCount, u.candidatesTokenCount, u.thoughtsTokenCount) : null };
+    return { text: text, cut: !!(c && c.finishReason === 'MAX_TOKENS'), usage: u ? usageOf(u.promptTokenCount, u.candidatesTokenCount, u.thoughtsTokenCount) : null };
   }
   var ADAPTERS = {
     gemini: {
@@ -224,7 +224,7 @@
         var c = j && Array.isArray(j.choices) ? j.choices[0] : null, mc = c && c.message ? c.message.content : '', u = j && j.usage && typeof j.usage === 'object' ? j.usage : null;
         var text = typeof mc === 'string' ? mc : (Array.isArray(mc) ? mc.filter(function (b) { return b && typeof b.text === 'string'; }).map(function (b) { return b.text; }).join('') : '');
         var d = u && u.completion_tokens_details && typeof u.completion_tokens_details === 'object' ? u.completion_tokens_details.reasoning_tokens : null;
-        return { text: text, usage: u ? usageOf(u.prompt_tokens, u.completion_tokens, d) : null };
+        return { text: text, cut: !!(c && c.finish_reason === 'length'), usage: u ? usageOf(u.prompt_tokens, u.completion_tokens, d) : null };
       },
       list: {
         build: function (p, key) { return { url: p.base + '/models', headers: bearer(key) }; },
@@ -235,13 +235,13 @@
       thinking: true, temp: false,   // no temperature at all (some models reject it as deprecated); thinking is sent OFF: measured 17 Nov 2026 (Haiku, 320 calls): thinking left on was about 70 percent of the output tokens and about 60 percent of the model time, and truncated replies failed; one retry without the field if a model rejects it
       build: function (p, model, key, q, o) {
         var b = { model: model, max_tokens: 2048, system: sysNow(), messages: [{ role: 'user', content: q }] };
-        if (o.think) b.thinking = { type: 'disabled' };
+        if (o.think) b.thinking = { type: o.thinkType || 'disabled' };   // some models name their own way to turn thinking off in the 400; that value is used and remembered
         return { url: p.base + '/messages', headers: withJson(anthropicHeaders(key)), body: b };
       },
       parse: function (j) {   // only the text blocks; thinking and other blocks are ignored
         var blocks = j && Array.isArray(j.content) ? j.content : [], u = j && j.usage && typeof j.usage === 'object' ? j.usage : null;
         var text = blocks.filter(function (b) { return b && b.type === 'text' && typeof b.text === 'string'; }).map(function (b) { return b.text; }).join('');
-        return { text: text, usage: u ? usageOf(u.input_tokens, u.output_tokens, null) : null };
+        return { text: text, cut: !!(j && j.stop_reason === 'max_tokens'), usage: u ? usageOf(u.input_tokens, u.output_tokens, null) : null };
       },
       list: {
         build: function (p, key) { return { url: p.base + '/models', headers: anthropicHeaders(key) }; },
@@ -286,11 +286,14 @@
     begin(q); stage = 'model'; setGim('thinking'); setStatus(m.status_model); showPending(m.status_model);
     var t0 = performance.now(), t1 = 0; pending = null;
     var thinkOn = !!($('live-think-on') && $('live-think-on').checked);   // the visible toggle: On leaves the provider's default thinking alone
-    var mk = P.id + '|' + P.svc + '|' + model, rej = Object.assign({}, mem[mk]), o = { think: !rej.think && !thinkOn, temp: !rej.temp, mct: !!rej.mct }, retried = false;   // a setting this provider and model rejected earlier in this tab is left out from the start
+    var mk = P.id + '|' + P.svc + '|' + model, rej = Object.assign({}, mem[mk]), o = { thinkType: rej.thinkType || '', think: !rej.think && !thinkOn, temp: !rej.temp, mct: !!rej.mct }, retried = false;   // a setting this provider and model rejected earlier in this tab is left out from the start
     callModel = model; callDefault = P.default_model; modelNotes = [];
     ['think', 'temp', 'mct'].forEach(function (k) { if (rej[k] && !(k === 'think' && thinkOn)) modelNotes.push(NOTE_KEY[k]); });
+    if (rej.thinkType && !thinkOn) modelNotes.push('note_think_alt');
     function nextRetry(status, msg) {   // one automatic retry per ask, only for a 400 that names a setting; a key error never retries
       if (retried || status !== 400 || /api[ _-]?key/i.test(msg)) return null;
+      var alt = /"thinking"\s*:\s*\{\s*"type"\s*:\s*"([a-z_]+)"\s*\}\s*instead/i.exec(msg);   // e.g. send "thinking": {"type": "between_tools"} instead of {"type": "disabled"}
+      if (P.adapter === 'anthropic' && o.think && alt && !o.thinkType && alt[1] !== 'disabled') { o.thinkType = alt[1]; rej.thinkType = alt[1]; return 'thinkalt'; }
       if (ad.thinking && o.think && /thinking/i.test(msg)) return 'think';
       if (ad.temp && o.temp && /temperature/i.test(msg)) return 'temp';
       if (P.adapter === 'openai' && !o.mct && /max_tokens/i.test(msg) && /max_completion_tokens/i.test(msg)) return 'mct';
@@ -304,7 +307,8 @@
           if (x.r.ok) { if (retried) mem[mk] = rej; if (ad.thinking && thinkOn) modelNotes.push('note_think_on'); return x; }
           var k = nextRetry(x.r.status, errMsg(x.j));
           if (!k) return x;
-          retried = true; rej[k] = true; if (k === 'mct') o.mct = true; else o[k] = false;
+          retried = true; if (k === 'thinkalt') { modelNotes.push('note_think_alt'); return send(); }
+          rej[k] = true; if (k === 'mct') o.mct = true; else o[k] = false;
           modelNotes.push(NOTE_KEY[k]);
           return send();
         });
@@ -321,7 +325,7 @@
     var dsel = document.querySelector('input[name="live-detail"]:checked'); if (dsel && detail() !== 12) modelNotes.push({ key: 'note_detail', vars: { stop: dsel.parentNode.textContent.trim(), asked: String(detail()), boxes: String(boxCount(text)) } });   // only when the default is changed
         if (!text) { fail(m.err_no_reply); return; }
         t1 = performance.now(); stage = 'draw';
-        pending = { text: text, model: t1 - t0, usage: got.usage };   // kept so that Try again after a failed drawing request does not ask the provider again
+        pending = { text: text, model: t1 - t0, usage: got.usage, cut: !!got.cut };   // kept so that Try again after a failed drawing request does not ask the provider again
         setGim('thinking'); setStatus(m.status_draw); showPending(m.status_draw);
         return sendDraw(text, t0, t1, got.usage);
       })
@@ -551,7 +555,7 @@
     if (!r.ok || !j || j.ok === false) {
       var reason = j && typeof j.error === 'string' ? j.error.slice(0, 300) : '';
       switch (code) {
-        case 'diagram': case 'bad_json': return fail(m.err_unparseable, { modelText: text, reason: reason ? fmt(m.err_unparseable_reason, { reason: reason }) : '' });
+        case 'diagram': case 'bad_json': return fail(pending && pending.cut ? m.err_cut_off : m.err_unparseable, { modelText: text, reason: reason ? fmt(m.err_unparseable_reason, { reason: reason }) : '' });
         case 'empty_reply': return fail(m.err_no_reply);
         case 'guard': return fail(m.err_guard, { modelText: text });
         case 'too_large': return fail(m.err_too_large, { modelText: text });
