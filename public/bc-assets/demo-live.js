@@ -440,6 +440,7 @@
   function syncForm() {
     var f = lform(), s = $('live-strip'); $('live-app').setAttribute('data-lform', f);
     if (s) s.hidden = !(f === 'strip' && LP.ledger !== 'off' && hasResult);
+    var hh = $('live-hint'); if (hh) hh.hidden = hasResult;   // once a result is showing the line under the bar has done its job; the diagram gets the height back
   }
   function stripTime(v) { return v < 1000 ? fmt(cfg.msgs.value_ms, { value: Math.round(v).toLocaleString('en-GB') }) : secs(v); }   // seconds with one decimal, milliseconds under one second
   function renderStrip() {

@@ -192,7 +192,13 @@
       window.scrollTo({ top: savedY, left: 0, behavior: 'instant' });
     }
     function focusables() {
+      var seenRadio = {};
       return [].filter.call(ov.querySelectorAll('a[href],button,input,select,textarea,summary,[tabindex]'), function (x) {
+        if (x.type === 'radio' && x.name) {   // a radio group is ONE tab stop (the checked one, else the first): listing every radio would make the trap's last stop one the browser never reaches
+          var chk = ov.querySelector('input[type=radio][name="' + x.name + '"]:checked');
+          if (chk ? x !== chk : seenRadio[x.name]) return false;
+          seenRadio[x.name] = 1;
+        }
         if (x.disabled || x.getAttribute('tabindex') === '-1' || !x.getClientRects().length || getComputedStyle(x).visibility === 'hidden') return false;
         for (var d = x.parentNode; d && d !== ov; d = d.parentNode) if (d.tagName === 'DETAILS' && !d.open && !(x.tagName === 'SUMMARY' && x.parentNode === d)) return false;   // the inside of a closed disclosure is not a tab stop
         return true;
