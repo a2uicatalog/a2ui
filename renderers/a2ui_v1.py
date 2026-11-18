@@ -745,19 +745,35 @@ def _fallback_text(c: Dict[str, Any]) -> str:
 def _key_value_text(c: Dict[str, Any]) -> str:
     """Readable text for a degraded key_value. The atom has two contracts: the schema's items:[{key, description}]
     and the example block's pairs:[{key, value}]; both are read (items wins), one `key: value` line each, after the
-    title when there is one. Empty when neither yields a pair, so _fallback_text decides."""
+    title when there is one. Empty when neither yields a pair, so _fallback_text decides. A bound value ({path}) shows
+    the key alone; the text stops on a line boundary near 1000 characters with a count of what was left out."""
+    def show(v: Any) -> str:
+        if isinstance(v, bool):
+            return "true" if v else "false"
+        if isinstance(v, list):
+            return ", ".join(show(x) for x in v if not isinstance(x, dict))
+        return "" if isinstance(v, dict) or v is None else str(v)
+
     lines: List[str] = []
-    entries = c.get("items") if isinstance(c.get("items"), list) and c.get("items") else c.get("pairs")
-    for e in entries if isinstance(entries, list) else []:
-        if not isinstance(e, dict) or e.get("key") in (None, ""):
-            continue
-        val = next((e[k] for k in ("description", "value") if e.get(k) not in (None, "")), "")
-        lines.append(f"{e['key']}: {val}" if val != "" else str(e["key"]))
+    for field in ("items", "pairs"):
+        entries = c.get(field)
+        for e in entries if isinstance(entries, list) else []:
+            if not isinstance(e, dict) or e.get("key") in (None, ""):
+                continue
+            val = next((show(e[k]) for k in ("description", "value") if show(e.get(k))), "")
+            lines.append(f"{e['key']}: {val}" if val else str(e["key"]))
+        if lines:
+            break
     if not lines:
         return ""
     if isinstance(c.get("title"), str) and c["title"].strip():
         lines.insert(0, c["title"].strip())
-    return "\n".join(lines)[:1000]
+    out: List[str] = []
+    for i, line in enumerate(lines):
+        if len("\n".join(out + [line])) > 1000:
+            return "\n".join(out + [f"… ({len(lines) - i} more)"])
+        out.append(line)
+    return "\n".join(out)
 
 
 def _refs(c: Dict[str, Any]) -> List[str]:

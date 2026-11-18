@@ -202,3 +202,12 @@ def test_final_1_0_key_still_wins_over_v09():
                                                                   "1.0": {"supportedCatalogIds": [V10_BASIC]},
                                                                   "v0.9": {"supportedCatalogIds": [V09_BASIC]}}})
     assert both.version == "1.0"
+
+
+def test_key_value_text_bindings_lists_fallback_to_pairs_and_line_cut():
+    from renderers.a2ui_v1 import _key_value_text
+    assert _key_value_text({"pairs": [{"key": "A", "value": {"path": "/x"}}, {"key": "B", "value": ["x", 1]},
+                                      {"key": "C", "value": False}]}) == "A\nB: x, 1\nC: false"
+    assert _key_value_text({"title": "T", "items": ["a", "b"], "pairs": [{"key": "K", "value": "v"}]}) == "T\nK: v"
+    long = _key_value_text({"items": [{"key": f"k{i}", "description": "v" * 20} for i in range(100)]})
+    assert len(long) <= 1000 + 20 and long.endswith("more)") and all(l.startswith("k") or l.startswith("…") for l in long.split("\n"))
