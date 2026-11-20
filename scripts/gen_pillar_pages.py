@@ -296,6 +296,12 @@ def build(slug):
         body_html = body_html.replace("<!-- FILM -->", f'<figure class="pillar-film">{film_html}{cap}</figure>', 1)
     elif os.path.exists(os.path.join(CONTENT, f"{slug}.film.json")):
         raise SystemExit(f"content/{slug}.film.json exists but content/{slug}.md has no <!-- FILM --> marker")
+    if "<!-- FILM-INTRO -->" in body_html:
+        # the 33 s introduction film that used to open the front page: small, below the explainer film, the poster is its cover and it plays on a click
+        total = len(json.load(open(os.path.join(PUBLIC, "catalogue", "a2ui-atoms-v1.json"), encoding="utf-8"))["components"])   # the same source of truth as tests/test_site_count_consistency.py
+        intro = (_site.LANDING_FILM_STYLE + '<figure class="pillar-film-intro">' + _site.render_landing_film(total, compact=True)
+                 + "<figcaption>The 33-second introduction to the catalog. It starts when you press Play.</figcaption></figure>" + _site.LANDING_FILM_INTRO_JS)
+        body_html = body_html.replace("<!-- FILM-INTRO -->", intro, 1)
 
     head, _, tail = title.partition("?")
     h1 = html.escape(head + "?").replace("A2UI", '<span class="grad">A2UI</span>', 1) if tail else html.escape(title)

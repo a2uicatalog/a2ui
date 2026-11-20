@@ -56,6 +56,8 @@ the catalog's emitter, for example, sends v0.9 to Google's Android renderer and 
 
 <!-- FILM -->
 
+<!-- FILM-INTRO -->
+
 Google maintains official renderers for React, Lit, Angular, Flutter (the GenUI SDK) and
 Jetpack Compose, with SwiftUI planned; a2ui.org also
 [lists community renderers](https://a2ui.org/reference/renderers/).

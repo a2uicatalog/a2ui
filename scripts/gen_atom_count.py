@@ -39,11 +39,11 @@ CLAIMS = [
     # The landing page and llms.txt were the places that said "550+" / "474" while 573 were published (outside review,
     # 2026-11-15). Both are generated (generate_atom_pages.py, gen_openapi.py); holding them here means a generator that
     # regresses to a rounded or typed figure fails --check. tests/test_site_count_consistency.py sweeps every other page.
-    ("public/index.html", r"<b>(\d+\+?)</b>atoms"),
-    ("public/index.html", r"(\d+\+?) typed atoms for web"),
+    ("public/index.html", r'<span class="stat-num">(\d+\+?)</span><span class="stat-lbl">Typed atoms'),   # home redesign 2026-11-20: the stat strip
+    ("public/index.html", r"(\d+\+?) typed UI atoms for web"),   # the JSON-LD description
     ("public/index.html", r"Search and preview (\d+\+?) atoms"),
-    ("public/index.html", r"of (\d+\+?) atoms rendering live"),
-    ("public/index.html", r'id="count">(\d+\+?) atoms'),
+    ("public/index.html", r"Explore (\d+\+?) atoms"),
+    ("public/index.html", r"Search all (\d+\+?) atoms"),
     ("public/llms.txt", r"vocabulary \((\d+) atoms\)"),
     ("public/what-is-a2ui.md", r"catalog of (\d+) published components"),
 ]

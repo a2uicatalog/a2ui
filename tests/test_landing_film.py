@@ -35,16 +35,31 @@ def test_films_use_only_stable_atoms():
             assert spec[t].get("stage") != "preview", (f.name, t)
 
 
-def test_homepage_carries_the_film_once():
+def test_homepage_does_not_open_on_the_film():
+    """2026-11-19 (owner): the front page no longer opens with the film, it opens on the catalog. The film lives on the What is A2UI? page (next test)."""
     html = (ROOT / "public" / "index.html").read_text()
-    assert html.count('class="film-hero"') == 1 and html.count('id="film-hero-js"') == 1
-    assert "ignored" not in html[html.index('class="film-hero"'):html.index('<main class="wrap">')]
+    for needle in ('class="film-hero', 'id="film-hero-js"', 'id="film-hero-css"', 'data-film=', 'class="mf mf-', "film-poster-"):
+        assert needle not in html, needle
+
+
+def test_what_is_page_carries_the_small_film_once():
+    """The same four films, below the explainer film, small (640 px, tall 360 px), no autoplay, one Play button, labelled for a screen reader, reduced motion respected, scripts inert until Play."""
+    import re
+    html = (ROOT / "public" / "what-is-a2ui" / "index.html").read_text()
+    assert html.count('class="film-hero film-hero-sm"') == 1 and html.count('id="film-intro-js"') == 1 and html.count('id="film-hero-css"') == 1
+    assert 'id="film-hero-js"' not in html, "the front-page script (it starts the film on idle) must not be on this page"
+    sm = html[html.index('class="film-hero film-hero-sm"'):html.index("</section>", html.index('class="film-hero film-hero-sm"'))]
     for a in ("wide", "tall"):
         for t in ("light", "dark"):
-            assert f'class="mf mf-{a} mf-{t}"' in html
-    assert 'aria-label="A2UI Catalog introduction"' in html
-    assert 'data-film="replay"' in html and 'data-film="skip"' in html
-    assert "prefers-reduced-motion" in html
+            assert f'class="mf mf-{a} mf-{t}"' in sm
+    assert html.index('class="pillar-film"') < html.index('class="film-hero film-hero-sm"'), "the introduction film goes below the explainer film"
+    assert 'aria-label="A2UI Catalog introduction film"' in html
+    assert html.count('data-film="play">Play the film<') == 1 and 'data-film="skip"' not in html and 'data-film="more"' not in html
+    assert len(re.findall(r'auto\s*:\s*false', sm)) >= 4 and not re.findall(r'auto\s*:\s*true', sm), "the small film must not autoplay"
+    assert "<script>" not in sm and sm.count('<script type="text/plain" data-film-js>') >= 4, "scripts stay inert until Play"
+    assert "prefers-reduced-motion" in html and "preload" not in sm
+    assert ".film-hero-sm{max-width:640px" in html and ".film-hero-sm .mf-tall{max-width:360px}" in html
+    assert "/brand/film-poster-wide-light.webp" in html, "the poster is the cover"
 
 
 def test_homepage_size_budget():
@@ -59,8 +74,11 @@ def test_film_scripts_are_inert_until_their_variant_is_on_screen_and_posters_exi
     spec = importlib.util.spec_from_file_location("gap", ROOT / "scripts" / "generate_atom_pages.py")
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
-    html = mod.render_landing_film()
+    html = mod.render_landing_film(100)   # the function takes the published atom total (the signature changed; this test still called it with no argument and failed before 2026-11-19)
+    small = mod.render_landing_film(100, compact=True)
     assert "<script>" not in html and html.count('<script type="text/plain" data-film-js>') >= 4
+    assert "<script>" not in small and small.count('<script type="text/plain" data-film-js>') >= 4 and 'class="film-hero film-hero-sm"' in small
+    assert "film-intro-js" in mod.LANDING_FILM_INTRO_JS and 'script[data-film-js]' in mod.LANDING_FILM_INTRO_JS and 'film-live' in mod.LANDING_FILM_INTRO_JS
     assert "script[data-film-js]" in mod.LANDING_FILM_JS and "film-live" in mod.LANDING_FILM_JS
     for aspect in ("wide", "tall"):
         for theme in ("light", "dark"):
@@ -97,6 +115,6 @@ def test_design_pass_header_menu_atoms_current_and_treemap_example():
     spec.loader.exec_module(mod)
     h = mod.site_header("atoms")
     assert 'class="menu-btn"' in h and 'aria-expanded="false"' in h and 'aria-controls="site-menu"' in h and 'id="site-menu"' in h
-    assert '<a href="/atoms/" aria-current="page">Atoms</a>' in h and mod.site_header("").count("aria-current") == 0
+    assert '<a href="/atoms/" aria-current="page">A2UICatalog Explorer</a>' in h and mod.site_header("").count("aria-current") == 0
     ex = json.loads(mod.example_payload({"type": "treemap", "fields": {"items": "list of items (4-12 objects)"}}))
     assert ex["type"] == "treemap" and isinstance(ex["items"], list) and 4 <= len(ex["items"]) <= 12

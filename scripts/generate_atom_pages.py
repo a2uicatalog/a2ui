@@ -842,14 +842,43 @@ FORM_TOOLS_JS = """<script>
 </script>"""
 
 
-def site_header(active=""):
+# The brand lockup line (home redesign, 2026-11-20): shown under the wordmark on the home page only. site_header(lockup=...) takes it as a
+# parameter, so turning it on site-wide later is one call-site change (or setting SITE_LOCKUP_EVERYWHERE to True).
+BRAND_LOCKUP = "Where user and agent experience converge"
+SITE_LOCKUP_EVERYWHERE = False
+_BRAND_WORDMARK_SPAN = '<span><span class="grad">A2UI</span> Catalog</span>'
+
+
+# Emitted with the header only when the lockup is on, so a page without the line carries none of this CSS.
+LOCKUP_CSS_RULES = """.wordmark.has-lockup{white-space:normal;min-width:0}
+.brand-text{display:flex;flex-direction:column;line-height:1.2;min-width:0}
+.brand-sub{font-size:12px;font-weight:500;letter-spacing:0;color:var(--text-muted);line-height:1.25}
+.has-lockup .brand-name{white-space:nowrap}
+@media(max-width:860px){.has-lockup .brand-sub{max-width:23ch}}
+@media(max-width:440px){.hdr-in{position:relative;padding-bottom:26px}.has-lockup .brand-sub{position:absolute;left:16px;bottom:10px;max-width:none;white-space:nowrap}}
+"""
+
+
+def brand_lockup_html():
+    """BRAND_LOGO_HTML with the lockup line stacked under the wordmark text (the mark and the wordmark are unchanged)."""
+    if not BRAND_LOGO_HTML.endswith(_BRAND_WORDMARK_SPAN):
+        raise SystemExit("brand_lockup_html: BRAND_LOGO_HTML no longer ends with the wordmark span; update _BRAND_WORDMARK_SPAN")
+    return (BRAND_LOGO_HTML[:-len(_BRAND_WORDMARK_SPAN)]
+            + '<span class="brand-text"><span class="brand-name"><span class="grad">A2UI</span> Catalog</span>'
+            + f'<span class="brand-sub">{BRAND_LOCKUP}</span></span>')
+
+
+def site_header(active="", lockup=False):
     """Shared sticky glass header -- identical on every surface (the v0.3 nav fix). Design pass (1 Nov): under 860 px the nav folds behind a Menu button
-    (aria-expanded/aria-controls); without JS the nav stays a wrapping row. Search is an icon link on phones. 'Atoms' is current only on /atoms/ pages."""
+    (aria-expanded/aria-controls); without JS the nav stays a wrapping row. Search is an icon link on phones. 'Atoms' is current only on /atoms/ pages.
+    lockup=True stacks the brand line under the wordmark (the home page only, for now)."""
     def cur(k):
         return ' aria-current="page"' if k == active else ""
     full = os.environ.get("A2UI_CATALOG_FULL") == "1"
-    return f"""<header class="site-header"><div class="hdr-in">
-    <a class="wordmark" href="/" aria-label="A2UI Catalog home">{BRAND_LOGO_HTML}</a>
+    lockup = lockup or SITE_LOCKUP_EVERYWHERE
+    wm_cls = "wordmark has-lockup" if lockup else "wordmark"
+    return f"""{'<style>' + LOCKUP_CSS_RULES + '</style>' if lockup else ''}<header class="site-header"><div class="hdr-in">
+    <a class="{wm_cls}" href="/" aria-label="A2UI Catalog home">{brand_lockup_html() if lockup else BRAND_LOGO_HTML}</a>
     <nav class="site-nav" id="site-menu" aria-label="Main">
       <a href="{'/blog/drafts' if full else '/blog'}"{cur('blog')}>Blog</a>
       <a href="/what-is-a2ui/"{cur('guide')}>What is A2UI?</a>
@@ -2855,110 +2884,98 @@ _ROBOT_PAINTING_STROKES = [  # real cached agent_sketchpad run, fetched from
 ]
 
 
-def _a2ui_catalog_explainer_html():
-    """Answers the generic query head-on. "A2UI catalog" is a term from the
-    A2UI protocol itself (the set of component types an agent may use,
-    identified by a catalogId URL), so the phrase is owned by the spec, not
-    by this site -- searchers typing it get the concept, not us. This section
-    connects the two in the searcher's own words: what an A2UI catalog is,
-    and that THIS site is one (the A2UI Atomic Catalog -- the phrase we
-    already rank for, kept deliberately). Every claim below is the real
-    discovery flow (list_catalogs -> get_catalog -> render_surface,
-    required_catalogs for the reverse lookup) and the real file layout
-    (atoms/atom-packs.yaml -> /catalogue/<slug>.json + /catalogue/index.json)."""
-    return '''<section class="catalog-explainer" id="what-is-an-a2ui-catalog" aria-labelledby="catalog-explainer-h">
-      <div class="catalog-explainer-kicker">A2UI Catalog &middot; The Concept, And This Site</div>
-      <h2 id="catalog-explainer-h">What is an A2UI catalog?</h2>
-      <p>In the A2UI protocol, a <strong>catalog</strong> is the set of component types an agent is allowed to
-      use, identified by a <code>catalogId</code> URL. An agent doesn't invent UI &mdash; it composes from the
-      catalog it has been given. This site is exactly that: the <strong>A2UI Atomic Catalog</strong> &mdash; an
-      independent, open A2UI catalog of typed atoms, published as plain JSON any agent can resolve.</p>
-      <div class="catalog-explainer-grid">
-        <div>
-          <h3>One base catalog, many extensions</h3>
-          <p><code>a2ui-atoms-v1</code> is always resolved &mdash; structure, text, inputs, actions, wired state.
-          Extension catalogs (charts, booking, effects, editorial, ops&hellip;) each carry a declared
-          <em>when-to-use</em>, so an agent picks by need, not by recall.</p>
+def _a2ui_catalog_explainer_html(n_renderers):
+    """'Under the hood' (home page): answers the generic query head-on. "A2UI catalog" is a term from the A2UI protocol itself (the set of component
+    types an agent may use, identified by a catalogId URL), so the phrase is owned by the spec, not by this site. This section connects the two in the
+    searcher's own words: what an A2UI catalog is, and that THIS site is one. Every claim below is the real discovery flow (list_catalogs ->
+    get_catalog -> render_surface, required_catalogs for the reverse lookup) and the real file layout (atoms/atom-packs.yaml -> /catalogue/<slug>.json
+    + /catalogue/index.json)."""
+    return '''<section class="band" id="what-is-an-a2ui-catalog" data-section="under-the-hood" aria-labelledby="catalog-explainer-h">
+      <div class="shell">
+        <span class="eyebrow">Under the hood</span>
+        <h2 id="catalog-explainer-h">What is an A2UI catalog?</h2>
+        <p>In the A2UI protocol, a <strong>catalog</strong> is the set of component types an agent is allowed to
+        use, identified by a <code>catalogId</code> URL. An agent doesn't invent UI: it composes from the
+        catalog it has been given. This site is exactly that, the <strong>A2UI Atomic Catalog</strong>, an
+        independent, open catalog of typed atoms published as plain JSON any agent can resolve.</p>
+        <div class="hood-grid">
+          <div>
+            <h3>One base catalog, many extensions</h3>
+            <p><code>a2ui-atoms-v1</code> is always resolved: structure, text, inputs, actions, wired state.
+            Extension catalogs (charts, booking, effects, editorial, ops&hellip;) each declare a
+            <em>when-to-use</em>, so an agent picks by need, not by recall.</p>
+          </div>
+          <div>
+            <h3>Discovered, not memorized</h3>
+            <p>Over MCP: <code>list_catalogs</code> &rarr; <code>get_catalog</code> &rarr; <code>render_surface</code>.
+            In the other direction, <code>required_catalogs</code> tells you which catalogs a payload depends on.
+            Atoms are never registered as individual tools.</p>
+          </div>
+          <div>
+            <h3>Plain files, real URLs</h3>
+            <p>Every catalog is a JSON file under <a href="/catalogue/index.json"><code>/catalogue/</code></a>,
+            and the index lists them all with their when-to-use text. The same catalog IDs work on the web,
+            in MCP Apps, in Google Chat and in Apps Script.</p>
+          </div>
         </div>
-        <div>
-          <h3>Discovered, not memorised</h3>
-          <p>Over MCP: <code>list_catalogs</code> &rarr; <code>get_catalog</code> &rarr; <code>render_surface</code>.
-          Going the other way, <code>required_catalogs</code> tells you which catalogs a payload depends on.
-          Atoms are never registered as individual tools.</p>
-        </div>
-        <div>
-          <h3>Plain files, real URLs</h3>
-          <p>Every catalog is a JSON file under <a href="/catalogue/index.json"><code>/catalogue/</code></a>,
-          and the index lists them all with their when-to-use text. The same catalog IDs work on the web,
-          in MCP Apps, in Google Chat and in Apps Script.</p>
-        </div>
+        <p class="hood-foot"><a class="text-link" href="/catalogue/index.json">Read the catalog index &rarr;</a>
+        <a class="text-link" href="/surfaces/mcp-apps">Use it over MCP &rarr;</a></p>
       </div>
-      <p class="catalog-explainer-foot"><a href="/catalogue/index.json">Read the catalog index &rarr;</a>
-      &nbsp;&middot;&nbsp; <a href="/surfaces/mcp-apps">Use it over MCP &rarr;</a></p>
     </section>'''
 
 
-def _atom_spotlight_html():
-    """Editorial callout between the showcase strip and the grid, introducing
-    agent_sketchpad by name rather than leaving it to be found by scrolling.
-    The guardrails copy is not marketing prose invented for this section --
-    every number and claim here is read directly off
-    _validate_sketchpad_element / _SKETCHPAD_ALLOWED_TAGS / _SKETCHPAD_ALLOWED_ATTRS
-    / _SKETCHPAD_SAFE_VALUE in renderers/web_article.py, so a change to that
-    validator that isn't reflected here would make this section wrong, not
-    just stale -- check it stayed true if those change."""
+def _atom_spotlight_html(n_atoms):
+    """The live atom spotlight, restyled for the home redesign (2026-11-20): the real cached agent_sketchpad run and the 'describe something to draw'
+    form keep their behaviour and script; the long explanation of the safety rules sits in a closed <details>.
+    The safety copy is not marketing prose invented for this section -- every number and claim here is read directly off
+    _validate_sketchpad_element / _SKETCHPAD_ALLOWED_TAGS / _SKETCHPAD_ALLOWED_ATTRS / _SKETCHPAD_SAFE_VALUE in renderers/web_article.py, so a change
+    to that validator that isn't reflected here would make this section wrong, not just stale -- check it stayed true if those change.
+    The dark ground is plain CSS (the old page ran a live flow_field canvas behind the strokes; dropped: it never stopped moving)."""
     visual = _agent_sketchpad_sequence_html(
         _ROBOT_PAINTING_STROKES, "0 0 400 300", "", delay_ms=550)
-    # The dark ground behind the sketch is the real flow_field atom, not a
-    # mock: same renderer the catalogue ships, dialled down (low density,
-    # slow, broad swirls, converging behind the drawing) and dimmed in CSS so
-    # the strokes stay the subject. The sketch SVG has no background fill, so
-    # it shows through. The layer is a SIBLING of the stage below because the
-    # try-it script below rewrites the stage's innerHTML.
-    flow = _web_renderer._render_flow_field({
-        "focus": "center", "density": "normal", "speed": "slow", "scale": "broad",
-        "trail": "long", "interactive": False, "background": "#0b0f1a", "height": 300,
-    })
-    # The atom sizes its canvas when its script first runs, and only re-measures
-    # on a window resize. Here that first run happens before the (much taller)
-    # text column has laid out, so the canvas would be measured short and then
-    # stretched. Nudge it once the page has laid out.
-    flow += '<script>window.addEventListener("load",function(){window.dispatchEvent(new Event("resize"));});</script>'
-    return f'''<div class="spotlight">
-      <div class="spotlight-visual"><div class="spotlight-flow" aria-hidden="true">{flow}</div><div class="spotlight-stage" id="spotlight-stage">{visual}</div></div>
-      <div class="spotlight-body">
-        <div class="spotlight-kicker"><span class="dot"></span>ATOM SPOTLIGHT &middot; LATEST</div>
-        <h2>Give your agent a paintbrush.</h2>
-        <p><code>agent_sketchpad</code> lets a tool-calling agent draw for real: an ordered list of SVG strokes,
-        one real update per shape, only the newest stroke animating in as it lands. What's drawing on the left
-        isn't a mockup &mdash; it's a real, cached run from a live sketch agent, free-drawn (no reference image,
-        no human-placed points) from the prompt <em>"a robot painting a watercolour of a robot painting on a
-        canvas"</em>, all 13 of its strokes replayed here exactly as the agent sent them.</p>
-        <p><strong>Creative freedom inside a fence it can't climb.</strong> Every stroke is parsed with a real XML
-        parser and re-validated server-side before it's ever embedded &mdash; never trusted as a string just
-        because the agent already checked its own output. A fixed allowlist: 8 SVG element types, 24 attributes,
-        no others accepted &mdash; so no <code>onclick</code>, no event handlers of any kind. Attribute values are
-        restricted to a safe character class with no colon, which rules out <code>javascript:</code> and every
-        other URI-scheme trick in one move. Malformed or disallowed elements are skipped with a warning, not a
-        crash. Capped at 250 elements per canvas so nothing pathological gets embedded either.</p>
-        <div class="spotlight-guardrails">
-          <span>Real XML parser, not regex</span>
-          <span>8-tag, 24-attribute allowlist</span>
-          <span>No colon in values &rarr; no javascript:</span>
-          <span>250-element cap</span>
-          <span>Fails safe, not loud</span>
-        </div>
-        <a class="spotlight-cta" href="/atoms/agent_sketchpad/">See the atom &rarr;</a>
-        <div class="spotlight-try">
-          <label for="sketch-demo-prompt" class="spotlight-try-label">Or try it yourself &mdash; describe something to draw</label>
-          <div class="spotlight-try-row">
-            <input type="text" id="sketch-demo-prompt" maxlength="150" placeholder="a cat wearing sunglasses" autocomplete="off">
-            <button type="button" id="sketch-demo-submit">Draw it</button>
+    n_strokes = len(_ROBOT_PAINTING_STROKES)
+    return f'''<section class="band" data-section="spotlight" aria-labelledby="spot-h2">
+      <div class="shell">
+        <div class="card spot-card">
+          <div class="spot-text">
+            <span class="eyebrow"><span class="teal-dot" aria-hidden="true"></span>Atom spotlight</span>
+            <h2 id="spot-h2">Give your agent a paintbrush</h2>
+            <p><code>agent_sketchpad</code> lets a tool-calling agent draw with an ordered list of SVG strokes, one
+            update per shape. The drawing next to this text is a real, cached run of a live sketch agent: all
+            {n_strokes} strokes, replayed as the agent sent them, from the prompt <em>&ldquo;a robot painting a
+            watercolour of a robot painting on a canvas&rdquo;</em>.</p>
+            <details class="spot-details">
+              <summary>How the drawing stays safe</summary>
+              <p><strong>Creative freedom inside a fence it can't climb.</strong> Every stroke is parsed with a real XML
+              parser and re-validated server-side before it's embedded, never trusted as a string just
+              because the agent already checked its own output. A fixed allowlist: 8 SVG element types and 24 attributes,
+              no others accepted, so no <code>onclick</code> and no event handlers of any kind. Attribute values are
+              restricted to a safe character class with no colon, which rules out <code>javascript:</code> and every
+              other URI-scheme trick in one move. Malformed or disallowed elements are skipped with a warning, not a
+              crash. A canvas holds at most 250 elements, so nothing pathological gets embedded either.</p>
+              <ul class="spot-pills">
+                <li>Real XML parser, not regex</li>
+                <li>8-tag, 24-attribute allowlist</li>
+                <li>No colon in values, so no javascript:</li>
+                <li>250-element cap</li>
+                <li>Fails safe, not loud</li>
+              </ul>
+            </details>
+            <div class="spotlight-try">
+              <label for="sketch-demo-prompt" class="spotlight-try-label">Or try it yourself: describe something to draw</label>
+              <div class="spotlight-try-row">
+                <input type="text" id="sketch-demo-prompt" maxlength="150" placeholder="a cat wearing sunglasses" autocomplete="off">
+                <button type="button" id="sketch-demo-submit">Draw it</button>
+              </div>
+              <div class="spotlight-try-status" id="sketch-demo-status" aria-live="polite"></div>
+            </div>
+            <p class="spot-links"><a class="text-link" href="/atoms/agent_sketchpad/">See the atom &rarr;</a>
+            <a class="text-link" href="/atoms/">Search all {n_atoms} atoms &rarr;</a></p>
           </div>
-          <div class="spotlight-try-status" id="sketch-demo-status" aria-live="polite"></div>
+          <div class="spot-visual"><div class="spotlight-stage" id="spotlight-stage">{visual}</div></div>
         </div>
       </div>
-    </div>
+    </section>
     <script>(function(){{
       var btn = document.getElementById('sketch-demo-submit');
       var input = document.getElementById('sketch-demo-prompt');
@@ -3056,6 +3073,22 @@ h.addEventListener("click",function(e){var b=e.target.closest("[data-film]");if(
 if(k==="more"){var m=document.querySelector("main");if(m)m.scrollIntoView({behavior:"smooth"});return;}
 var f=cur();if(!f)return;if(k==="skip"){f.pause();f.seek(f.dur);}else{f.seek(0);f.play();}});})();</script>'''
 
+# The small version for the What is A2UI? page (2026-11-19, owner: smaller, below the other explainer film, no autoplay): the same four films and
+# posters, capped at 640 px (360 px for the tall one), no preload hints, and the scripts stay inert until Play is pressed (the poster is the cover).
+LANDING_FILM_STYLE = LANDING_FILM_CSS[LANDING_FILM_CSS.index('<style id="film-hero-css">'):].replace('</style>', """.film-hero-sm{max-width:640px;margin:0 auto;border:1px solid var(--border,#d9dfe8);border-radius:12px}
+.film-hero-sm .mf-wide{max-width:640px}
+.film-hero-sm .mf-tall{max-width:360px}
+.film-hero-sm .film-ui{top:auto;bottom:12px;right:12px}
+.pillar-film-intro{margin:2rem 0}
+.pillar-film-intro figcaption{margin:10px 0 0;font-size:.86rem;color:var(--text-muted,#515963);text-align:center}
+</style>""")
+LANDING_FILM_INTRO_JS = r'''<script id="film-intro-js">(function(){var h=document.querySelector(".film-hero-sm");if(!h)return;
+function arm(){var v=h.querySelectorAll(".mf");for(var i=0;i<v.length;i++){if(!v[i].offsetParent)continue;var s=v[i].querySelectorAll("script[data-film-js]");
+for(var j=0;j<s.length;j++){var n=document.createElement("script");n.text=s[j].textContent;s[j].parentNode.replaceChild(n,s[j]);}}}
+function cur(){var v=h.querySelectorAll(".mf");for(var i=0;i<v.length;i++){if(v[i].offsetParent){var r=v[i].querySelector(".mt-root");return r&&window.__a2uiMotion&&window.__a2uiMotion[r.id.slice(3)];}}}
+h.addEventListener("click",function(e){var b=e.target.closest("[data-film]");if(!b)return;arm();h.classList.add("film-live");var f=cur();if(f){f.seek(0);f.play();}b.textContent="Replay";});
+window.addEventListener("resize",function(){if(h.classList.contains("film-live"))arm();});})();</script>'''
+
 
 def _film_exact_total(node, total):
     """The landing film is built in the private repo with a typed "500+" in its stat card and the code lines above it.
@@ -3070,137 +3103,337 @@ def _film_exact_total(node, total):
     return node
 
 
-def render_landing_film(total):
+def render_landing_film(total, compact=False):
+    """compact=True is the small What is A2UI? version: autoplay is false in a copy of each block, there is one Play button, no front-page cue."""
     def film(aspect, theme):
         d = json.loads((ROOT / "landing" / f"film-{aspect}-{theme}.json").read_text())
         d = _film_exact_total(d, total)
-        html = _web_renderer._RENDERERS["motion_timeline"](dict(d["blocks"][0])).replace("<script>", '<script type="text/plain" data-film-js>')
+        block = dict(d["blocks"][0])
+        if compact: block["autoplay"] = False
+        html = _web_renderer._RENDERERS["motion_timeline"](block).replace("<script>", '<script type="text/plain" data-film-js>')
         return f'<div class="mf mf-{aspect} mf-{theme}">' + html + "</div>"
+    if compact:
+        return ('<section class="film-hero film-hero-sm" aria-label="A2UI Catalog introduction film">'
+                + "".join(film(a, t) for a in ("wide", "tall") for t in ("light", "dark"))
+                + '<div class="film-ui"><button type="button" data-film="play">Play the film</button></div></section>')
     return ('<section class="film-hero" aria-label="A2UI Catalog introduction">'
             + "".join(film(a, t) for a in ("wide", "tall") for t in ("light", "dark"))
             + '<div class="film-ui"><button type="button" data-film="replay">Replay</button><button type="button" data-film="skip">Skip</button></div>'
             + '<div class="film-cue"><button type="button" data-film="more">Explore the catalog &darr;</button></div></section>')
 
 
+# ─── home page redesign (2026-11-20, round-2 design 2, solid title) ───────────────────────────────────────────────────────────────────────
+# The numbers on the page (atoms, surfaces, renderers, spec version) come from data, never typed. The specimen tiles and the hero payload use
+# only atoms the catalog has and fields those atoms declare; _home_check() fails the build, with a message, if either stops being true.
+A2UI_SPEC_VERSION = "v1.0.0"        # the A2UI spec version the catalog targets (the catalogue document carries protocolVersion "1.0"); one constant, not per page
+HOME_LATEST_POST = ROOT / "data" / "latest-post.json"   # optional: {"title", "slug", "date": "YYYY-MM-DD", "pin_label"?}
+
+# The hero payload: a real gauge_sla block. The drawing next to it is computed from these values.
+HOME_HERO_PAYLOAD = {"type": "gauge_sla", "title": "Coverage", "value": 87, "max_value": 100, "unit": "%", "label": "Last 30 days"}
+
+# The specimen sheet, in order: (atom type, the fields the drawing is made from). Illustrations of what an agent composes, not live renders.
+HOME_TILES = [
+    ("stat_card", {"value": "1,234", "label": "Active agents", "delta": "+4.2%", "is_up": True}),
+    ("gauge_sla", {"title": "Coverage", "value": 87, "max_value": 100, "unit": "%"}),
+    ("segmented_control", {"options": [{"label": "List", "value": "list"}, {"label": "Grid", "value": "grid"}, {"label": "Diff", "value": "diff"}], "selected_value": "list"}),
+    ("sparkline", {"data": [10, 16, 13, 24, 30]}),
+    ("progress_ring", {"value": 74}),
+    ("timeline", {"events": [{"date": "1", "label": "Query"}, {"date": "2", "label": "Compose"}, {"date": "3", "label": "Render"}]}),
+    ("stepper", {"steps": ["Query", "Compose", "Render"], "active_index": 2}),
+    ("alert_banner", {"text": "Check schema fields", "variant": "warning"}),
+]
+
+
+def _home_check(atoms, tiles=None, payload=None):
+    """Fail the build, with a clear message, when the home page names an atom that does not exist or a field that atom does not declare."""
+    tiles = HOME_TILES if tiles is None else tiles
+    payload = HOME_HERO_PAYLOAD if payload is None else payload
+    declared = {a.get("type"): set((a.get("fields") or {}).keys()) for a in atoms}
+    uses = [(t, set(f)) for t, f in tiles] + [(payload.get("type"), set(payload) - {"type"})]
+    missing = sorted({t for t, _ in uses if t not in declared})
+    if missing:
+        raise SystemExit("home page: these atoms are named in the specimen sheet or the hero payload but are not in the catalog: "
+                         + ", ".join(map(str, missing)) + ". Change HOME_TILES / HOME_HERO_PAYLOAD in scripts/generate_atom_pages.py.")
+    bad = [f"{t}.{x}" for t, fs in uses for x in sorted(fs - declared[t])]
+    if bad:
+        raise SystemExit("home page: these fields are not declared by their atom: " + ", ".join(bad)
+                         + ". Change HOME_TILES / HOME_HERO_PAYLOAD in scripts/generate_atom_pages.py.")
+
+
+def _home_renderers():
+    """[(id, name)] of the renderers the site shows on /renderers/, in the matrix's order."""
+    if not RENDERER_MATRIX or not RENDERER_MATRIX.get("renderers"):
+        raise SystemExit("home page: public/catalogue/renderer-matrix-v1.json is missing; the renderer chips and count come from it")
+    return [(rid, r["name"]) for rid, r in RENDERER_MATRIX["renderers"].items()]
+
+
+def _home_surface_count(atoms):
+    """Distinct surface ids in public/spec.json (the helper gen_atom_count.py uses, so the README, the badges and this page agree). Falls back to the
+    atoms of this build when spec.json is not there yet (a first build)."""
+    if (ROOT / "public" / "spec.json").exists():
+        spec_ = _ilu.spec_from_file_location("gen_atom_count", Path(__file__).parent / "gen_atom_count.py")
+        mod = _ilu.module_from_spec(spec_)
+        spec_.loader.exec_module(mod)
+        return mod.surface_count()
+    return len({s for a in atoms for s in ((a.get("surfaces") or {}).get("works_on") or [])})
+
+
+def _home_latest_pill(path=None):
+    """The pill above the hero eyebrow. With data/latest-post.json (title, slug, date, optional pin_label): '<title> · <date>' linking to
+    /blog/<slug>, the tag showing pin_label (default LATEST). Without it: the standing pill for the What is A2UI? guide."""
+    path = HOME_LATEST_POST if path is None else Path(path)
+    tag, text, href = "NEW", "What is A2UI? A plain-English guide, with an introduction film", "/what-is-a2ui/"
+    if path.exists():
+        d = json.loads(path.read_text(encoding="utf-8"))
+        title, slug, date = d.get("title"), d.get("slug"), d.get("date")
+        if not (isinstance(title, str) and title.strip() and isinstance(slug, str) and re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]*", slug)
+                and isinstance(date, str) and re.fullmatch(r"\d{4}-\d{2}-\d{2}", date)):
+            raise SystemExit(f"home page: {path} needs title, slug (letters, digits, . _ -) and date (YYYY-MM-DD)")
+        tag = str(d.get("pin_label") or "LATEST")
+        text, href = f"{title.strip()} · {date}", f"/blog/{slug}"
+    return (f'<a class="announce" href="{html.escape(href, quote=True)}"><span class="announce-tag">{html.escape(tag)}</span>'
+            f'<span class="announce-text">{html.escape(text)}</span><span class="announce-go" aria-hidden="true">&rarr;</span></a>')
+
+
+def _gauge_arc(value, max_value, cx, cy, r):
+    """The end point of a half-circle gauge arc (left to right over the top) filled to value/max_value."""
+    import math
+    f = max(0.0, min(1.0, float(value) / float(max_value)))
+    return cx - r * math.cos(math.pi * f), cy - r * math.sin(math.pi * f)
+
+
+def _gauge_svg(f, w, h, cx, cy, r, sw, fs, ty, cls=""):
+    x, y = _gauge_arc(f["value"], f["max_value"], cx, cy, r)
+    shown = f"{f['value']:g}{f.get('unit') or ''}"
+    return (f'<svg{cls} width="{w}" height="{h}" viewBox="0 0 {w} {h}" role="img"><title>Illustration of a gauge_sla atom showing {html.escape(shown)}</title>'
+            f'<path d="M {cx - r} {cy} A {r} {r} 0 0 1 {cx + r} {cy}" fill="none" stroke="var(--border-strong)" stroke-width="{sw}" stroke-linecap="round"/>'
+            f'<path d="M {cx - r} {cy} A {r} {r} 0 0 1 {x:.1f} {y:.1f}" fill="none" stroke="var(--accent)" stroke-width="{sw}" stroke-linecap="round"/>'
+            f'<text x="{cx}" y="{ty}" text-anchor="middle" fill="var(--text)" font-size="{fs}" font-weight="800" font-family="ui-monospace, monospace">{html.escape(shown)}</text></svg>')
+
+
+def _tile_stage(atom, f):
+    E = html.escape
+    if atom == "stat_card":
+        dot = "dot-pos" if f.get("is_up") else "dot-neg"
+        return (f'<span class="kpi-num">{E(f["value"])}</span><span class="kpi-sub">{E(f["label"])}</span>'
+                f'<span class="kpi-pill"><span class="{dot}" aria-hidden="true"></span>{E(f["delta"])}</span>'), ""
+    if atom == "gauge_sla":
+        return _gauge_svg(f, 130, 74, 65, 62, 50, 10, 17, 58, ' class="ui-svg"'), ""
+    if atom == "segmented_control":
+        items = "".join(f'<span class="seg-item{" seg-active" if o["value"] == f["selected_value"] else ""}">{E(o["label"])}</span>' for o in f["options"])
+        sel = next(o["label"] for o in f["options"] if o["value"] == f["selected_value"])
+        return (f'<div class="seg-bar" role="img" aria-label="Segmented control with {E(sel)} selected" style="grid-template-columns:repeat({len(f["options"])},1fr)">{items}</div>'), ""
+    if atom == "sparkline":
+        d = f["data"]
+        lo, hi = min(d), max(d)
+        xs = [10 + i * (108 / (len(d) - 1)) for i in range(len(d))]
+        ys = [50 - 38 * ((v - lo) / ((hi - lo) or 1)) for v in d]
+        pts = " ".join(f"{x:.0f},{y:.0f}" for x, y in zip(xs, ys))
+        return ('<svg class="ui-svg" viewBox="0 0 130 68" role="img"><title>Illustration of sparkline showing rising values</title>'
+                '<line x1="8" y1="58" x2="122" y2="58" stroke="var(--border)" stroke-width="1.5"/>'
+                f'<polyline fill="none" stroke="var(--accent-2)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" points="{pts}"/>'
+                f'<circle cx="{xs[-1]:.0f}" cy="{ys[-1]:.0f}" r="4.5" fill="var(--accent-2)"/></svg>'), ""
+    if atom == "progress_ring":
+        c = 2 * 3.14159265 * 30
+        return ('<svg width="78" height="78" viewBox="0 0 78 78" role="img">'
+                f'<title>Illustration of progress_ring at {f["value"]:g} percent</title>'
+                '<circle cx="39" cy="39" r="30" fill="none" stroke="var(--border)" stroke-width="8"/>'
+                f'<circle cx="39" cy="39" r="30" fill="none" stroke="var(--accent)" stroke-width="8" stroke-dasharray="{c * f["value"] / 100:.0f} {c:.0f}" stroke-linecap="round" transform="rotate(-90 39 39)"/>'
+                f'<text x="39" y="44" text-anchor="middle" fill="var(--text)" font-size="15" font-weight="800" font-family="ui-monospace, monospace">{f["value"]:g}%</text></svg>'), ""
+    if atom == "timeline":
+        return '<div class="mini-timeline">' + "".join(f'<div>{E(e["date"])}. {E(e["label"])}</div>' for e in f["events"]) + "</div>", " tile-stage--left"
+    if atom == "stepper":
+        n, act = len(f["steps"]), f["active_index"]
+        parts = []
+        for i, name in enumerate(f["steps"]):
+            if i:
+                parts.append(f'<span class="step-line{" step-line-done" if i <= act else ""}" aria-hidden="true"></span>')
+            parts.append(f'<span class="step-dot{" step-done" if i < act else ""}">{i + 1}</span>')
+        return (f'<div class="step-list" role="img" aria-label="Step {act + 1} of {n}: {E(f["steps"][act])}; the steps before it are done">' + "".join(parts) + "</div>"), ""
+    if atom == "alert_banner":
+        word = {"info": "Info", "success": "Success", "warning": "Warning", "critical": "Critical"}[f["variant"]]
+        return f'<div class="mini-alert mini-alert-{f["variant"]}"><strong>{word}:</strong> {E(f["text"])}</div>', " tile-stage--left"
+    raise SystemExit(f"home page: no drawing for the specimen atom {atom!r}")
+
+
+def _home_tiles_html():
+    out = []
+    for i, (atom, f) in enumerate(HOME_TILES, 1):
+        body, extra = _tile_stage(atom, f)
+        name = atom.replace("_", "_<wbr>")
+        out.append(f'<article class="card tile" data-atom="{atom}"><div class="tile-stage{extra}">{body}</div>'
+                   f'<div class="tile-foot"><span class="tile-name">{name}</span><span class="tile-num">{i:02d}</span></div></article>')
+    return "\n          ".join(out)
+
+
+HOME_CSS = """
+.home{--font-mono:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;overflow-x:clip}
+.skip-link{position:absolute;left:.75rem;top:-100px;z-index:200;background:var(--accent);color:var(--accent-contrast);padding:.75rem 1rem;min-height:44px;min-width:44px;border-radius:var(--radius);font-weight:700;text-decoration:none}
+.skip-link:focus{top:.75rem}
+.home a{color:var(--accent-text);text-underline-offset:.2em}
+.home .shell{width:100%;max-width:1140px;margin:0 auto;padding:0 1rem}
+.home h1,.home h2,.home h3{margin:0 0 .7rem;line-height:1.15;color:var(--text)}
+.home h1{font-size:clamp(2.1rem,5.2vw,3.35rem);font-weight:800;letter-spacing:-.03em;max-width:17ch}
+.home .h1-accent{color:var(--accent-text)}
+.home h2{font-size:clamp(1.375rem,2.8vw,1.85rem);font-weight:700;letter-spacing:-.02em;max-width:28ch}
+.home h3{font-size:1.125rem;font-weight:700}
+.home p{margin:0 0 1rem;font-size:1rem;max-width:64ch;color:var(--text-2)}
+.home code{font-family:var(--font-mono);font-size:.9em;background:var(--code-bg);border-radius:4px;padding:1px 5px;color:var(--text)}
+.home .eyebrow{font-family:var(--font-mono);font-size:.8125rem;text-transform:uppercase;letter-spacing:.06em;color:var(--accent-text);font-weight:700;display:inline-flex;align-items:center;gap:.45rem;margin-bottom:.6rem}
+.home .teal-dot{width:9px;height:9px;border-radius:999px;background:var(--accent-2);display:inline-block;flex-shrink:0}
+.home .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow)}
+.home .announce{min-height:44px;margin:0 0 1rem;font-size:.875rem}
+.home .announce-tag{color:var(--accent-contrast);font-size:.75rem}
+.home .announce-text{color:var(--text)}
+.home .announce-go{color:var(--accent-text)}
+.hero-wrap{padding:2rem 0 1.75rem}
+.hero-grid{display:grid;grid-template-columns:1fr;gap:1.75rem;align-items:center}
+@media(min-width:920px){.hero-grid{grid-template-columns:1.08fr .92fr;gap:2.5rem}}
+.hero-grid>*{min-width:0}
+.home .tagline{font-size:1.125rem;font-weight:600;color:var(--text);margin-bottom:.85rem;background:none;-webkit-background-clip:border-box;background-clip:border-box;width:auto;letter-spacing:0}
+.home .renderers{margin:0 0 .6rem}
+.home .renderers-label{display:block;font-family:var(--font-mono);font-size:.8125rem;text-transform:uppercase;letter-spacing:.06em;font-weight:700;color:var(--text-muted);margin-bottom:.4rem}
+.home .renderers-label a{color:var(--text-muted);display:inline-flex;align-items:center;min-height:44px}
+.home .chips{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:.4rem}
+.home .chips li{font-family:var(--font-mono);font-size:.8125rem;font-weight:600;padding:.2rem .5rem;border-radius:999px;background:var(--surface);border:1px solid var(--border-strong);color:var(--text)}
+.home .plus{display:flex;align-items:flex-start;gap:.5rem;margin:0 0 .25rem;color:var(--text-2)}
+.home .plus .teal-dot{margin-top:.5rem}
+.home .plus strong{color:var(--accent-2-text)}
+.home .btn-group{display:flex;flex-wrap:wrap;gap:.75rem;margin-top:1.25rem}
+.home .btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;min-width:44px;padding:.7rem 1.25rem;border-radius:var(--radius);font-size:1rem;font-weight:600;text-decoration:none;border:1px solid transparent;transition:background-color .14s ease,border-color .14s ease,color .14s ease}
+.home .btn-fill,.home .btn-fill:visited{background:var(--accent);color:var(--accent-contrast)}
+.home .btn-fill:hover{opacity:.92}
+.home .btn-line,.home .btn-line:visited{background:var(--surface);color:var(--text);border-color:var(--border-strong)}
+.home .btn-line:hover{border-color:var(--accent);background:var(--accent-soft-bg);color:var(--accent-text)}
+.home .flow-box{padding:1.25rem;display:grid;gap:.9rem;min-width:0}
+.home .flow-top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.5rem}
+.home .flow-top h2{font-size:1.125rem;margin:0}
+.home .pill{font-family:var(--font-mono);font-size:.75rem;font-weight:700;padding:.22rem .6rem;border-radius:999px;background:var(--accent-soft-bg);color:var(--accent-text)}
+.home .flow-code{margin:0;padding:.9rem;background:var(--code-bg);border:1px solid var(--border);border-radius:8px;font-family:var(--font-mono);font-size:.8125rem;line-height:1.5;color:var(--text);overflow-x:auto}
+.home .flow-code code{background:none;padding:0;font-size:inherit}
+.home .flow-divider{display:flex;align-items:center;gap:.6rem;font-family:var(--font-mono);font-size:.8125rem;font-weight:700;color:var(--accent-2-text)}
+.home .flow-divider::before,.home .flow-divider::after{content:"";flex:1;height:1px;background:var(--border)}
+.home .flow-preview{background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.1rem;display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.home .flow-meta strong{display:block;font-size:1.0625rem;color:var(--text)}
+.home .flow-meta span{display:block;font-size:.875rem;color:var(--text-muted)}
+.home .flow-note{margin:0;color:var(--text-muted)}
+.home .stat-section{padding:0 0 2rem}
+.home .stat-strip{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));padding:.5rem;text-align:center}
+.home .stat-col{padding:.75rem .5rem;border-right:1px solid var(--border)}
+.home .stat-col:nth-child(2n){border-right:0}
+.home .stat-col:nth-child(-n+2){border-bottom:1px solid var(--border)}
+@media(min-width:640px){.home .stat-strip{grid-template-columns:repeat(4,minmax(0,1fr))}.home .stat-col:nth-child(2n){border-right:1px solid var(--border)}.home .stat-col:last-child{border-right:0}.home .stat-col:nth-child(-n+2){border-bottom:0}}
+.home .stat-num{display:block;font-family:var(--font-mono);font-size:clamp(1.35rem,3.2vw,2.15rem);font-weight:800;color:var(--accent-text);line-height:1.15}
+.home .stat-lbl{display:block;font-size:.875rem;color:var(--text-muted);margin-top:.2rem}
+.home .stat-note{margin:.6rem 0 0;color:var(--text-muted)}
+.home .stat-section h2{margin-bottom:.5rem;font-family:var(--font-mono);font-size:.8125rem;text-transform:uppercase;letter-spacing:.06em;color:var(--accent-text);font-weight:700}
+.home .band{padding:2.25rem 0;border-top:1px solid var(--border)}
+.home .band-head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:.75rem 1.5rem;margin-bottom:1.25rem}
+.home .text-link{display:inline-flex;align-items:center;min-height:44px;min-width:44px;font-weight:700;color:var(--accent-2-text)}
+.home .wall-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.875rem}
+@media(min-width:768px){.home .wall-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:1.1rem}}
+.home .tile{padding:1rem;display:flex;flex-direction:column;justify-content:space-between;gap:.85rem;min-width:0}
+.home .tile-stage{flex:1;min-height:112px;background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:.85rem;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.4rem;min-width:0}
+.home .tile-stage--left{align-items:stretch}
+.home .tile-foot{display:flex;align-items:center;justify-content:space-between;gap:.5rem;font-family:var(--font-mono)}
+.home .tile-name{font-size:.8125rem;font-weight:700;color:var(--text);overflow-wrap:normal}
+.home .tile-num{font-size:.75rem;color:var(--text-muted);flex-shrink:0}
+.home .ui-svg{width:100%;height:auto;display:block}
+.home .kpi-num{font-size:1.75rem;font-weight:800;line-height:1;color:var(--text)}
+.home .kpi-sub{font-size:.8125rem;color:var(--text-muted)}
+.home .kpi-pill{display:inline-flex;align-items:center;gap:.3rem;font-size:.75rem;font-weight:700;padding:.15rem .5rem;border-radius:999px;background:var(--surface);border:1px solid var(--border-strong);color:var(--text)}
+.home .dot-pos,.home .dot-neg{width:7px;height:7px;border-radius:999px;display:inline-block}
+.home .dot-pos{background:var(--positive)}
+.home .dot-neg{background:var(--negative)}
+.home .seg-bar{display:grid;width:100%;background:var(--surface);border:1px solid var(--border-strong);border-radius:8px;padding:3px;gap:2px;font-size:.75rem;font-weight:700}
+.home .seg-item{padding:.4rem .2rem;border-radius:6px;text-align:center;color:var(--text-muted)}
+.home .seg-active{background:var(--accent);color:var(--accent-contrast)}
+.home .mini-timeline{border-left:2.5px solid var(--accent);padding-left:.7rem;display:grid;gap:.4rem;font-size:.8125rem;font-weight:600;color:var(--text)}
+.home .step-list{display:flex;align-items:center;justify-content:center;gap:.3rem;width:100%;font-family:var(--font-mono);font-size:.8125rem;font-weight:700}
+.home .step-dot{width:30px;height:30px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;border:1.5px solid var(--border-strong);background:var(--surface);color:var(--text)}
+.home .step-done{background:var(--accent);border-color:var(--accent);color:var(--accent-contrast)}
+.home .step-line{flex:1;max-width:26px;height:2px;background:var(--border-strong)}
+.home .step-line-done{background:var(--accent)}
+.home .mini-alert{width:100%;background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--warn);border-radius:6px;padding:.6rem .7rem;font-size:.8125rem;color:var(--text)}
+.home .mini-alert-info{border-left-color:var(--accent)}.home .mini-alert-success{border-left-color:var(--positive)}.home .mini-alert-critical{border-left-color:var(--negative)}
+.home .action-grid{display:grid;grid-template-columns:1fr;gap:1.15rem;margin-top:1.25rem}
+@media(min-width:768px){.home .action-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.home .action-card{padding:1.4rem;display:flex;flex-direction:column;justify-content:space-between;gap:1rem}
+.home .step-badge{display:inline-block;font-family:var(--font-mono);font-size:.75rem;font-weight:700;padding:.2rem .55rem;border-radius:999px;background:var(--accent-soft-bg);color:var(--accent-text);margin-bottom:.75rem}
+.home .spot-card{padding:1.5rem;display:grid;grid-template-columns:1fr;gap:1.5rem;align-items:center}
+@media(min-width:768px){.home .spot-card{grid-template-columns:1.05fr .95fr;padding:1.75rem}}
+.home .spot-text,.home .spot-visual{min-width:0}
+.home .spot-visual{background:#0b0f1a;border-radius:10px;padding:1rem;display:flex;align-items:center;justify-content:center;min-height:240px}
+.home .spotlight-stage{width:100%;display:flex;align-items:center;justify-content:center}
+.home .spotlight-stage svg{max-width:100%;height:auto}
+.home .spot-details{margin:0 0 1rem;border:1px solid var(--border);border-radius:10px;background:var(--surface-2)}
+.home .spot-details summary{display:flex;align-items:center;min-height:44px;padding:.5rem .9rem;font-weight:700;color:var(--accent-text);cursor:pointer}
+.home .spot-details[open] summary{border-bottom:1px solid var(--border)}
+.home .spot-details>p,.home .spot-details>ul{margin:.9rem}
+.home .spot-pills{list-style:none;padding:0;display:flex;flex-wrap:wrap;gap:.5rem}
+.home .spot-pills li{font-size:.875rem;font-weight:600;color:var(--text-muted);background:var(--surface);border:1px solid var(--border);border-radius:999px;padding:.3rem .7rem}
+.home .spotlight-try{margin:0 0 .5rem;padding-top:1rem;border-top:1px solid var(--border)}
+.home .spotlight-try-label{display:block;font-size:1rem;font-weight:600;color:var(--text-2);margin-bottom:.5rem}
+.home .spotlight-try-row{display:flex;gap:.5rem;flex-wrap:wrap}
+.home .spotlight-try-row input{flex:1;min-width:160px;min-height:44px;background:var(--surface);border:1px solid var(--border-strong);border-radius:8px;padding:.5rem .75rem;font-size:1rem;color:var(--text)}
+.home .spotlight-try-row input:focus{border-color:var(--accent);box-shadow:var(--glow)}
+.home .spotlight-try-row button{min-height:44px;min-width:44px;padding:.5rem 1.1rem;background:var(--text);color:var(--surface);border:0;border-radius:8px;font-size:1rem;font-weight:700;cursor:pointer;white-space:nowrap}
+.home .spotlight-try-row button:disabled{opacity:.5;cursor:default}
+.home .spotlight-try-status{min-height:1.4em;margin-top:.5rem;font-size:1rem;color:var(--text-muted)}
+.home .spot-links{display:flex;flex-wrap:wrap;gap:.25rem 1.5rem;margin:0}
+.home .exp-grid{display:grid;grid-template-columns:1fr;gap:1.25rem}
+@media(min-width:768px){.home .exp-grid{grid-template-columns:.72fr 1.28fr}}
+.home .exp-grid>*{min-width:0}
+.home .hood-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.25rem;margin:1.25rem 0 .5rem}
+.home .hood-grid p{margin:0}
+.home .hood-foot{display:flex;flex-wrap:wrap;gap:.25rem 1.5rem;margin:0}
+footer.site-foot{margin-top:0;padding:2rem 0 2.5rem;background:var(--surface);border-top:1px solid var(--border);display:block;font-size:1rem;color:var(--text-muted)}
+.site-foot .shell{width:100%;max-width:1140px;margin:0 auto;padding:0 1rem}
+.site-foot .foot-links{list-style:none;margin:0 0 1rem;padding:0;display:flex;flex-wrap:wrap;gap:.25rem .875rem}
+.site-foot .foot-links a{display:inline-flex;align-items:center;min-height:44px;min-width:44px;padding:.5rem .25rem;font-weight:500;color:var(--accent-text)}
+.site-foot p{margin:0 0 .75rem;font-size:1rem;max-width:75ch;color:var(--text-muted)}
+@media(max-width:560px){.site-foot .foot-links{display:grid;grid-template-columns:1fr 1fr;gap:0 .75rem}}
+@media(max-width:440px){.home .eyebrow{font-size:.75rem;letter-spacing:.03em}.home .tile-stage{padding:.5rem}.home .tile-num{display:none}.home .tile-name{font-size:.72rem}.home .seg-bar{font-size:.6875rem;padding:2px;gap:1px}.home .seg-item{padding:.35rem .1rem}.home .flow-divider{font-size:.75rem;text-wrap:balance}}
+"""
+
+
+def _home_footer_html():
+    return '''<footer class="site-foot" data-section="footer">
+    <div class="shell">
+      <ul class="foot-links">
+        <li><a href="/blog">Blog</a></li>
+        <li><a href="/what-is-a2ui/">What is A2UI?</a></li>
+        <li><a href="/atoms/">A2UICatalog Explorer</a></li>
+        <li><a href="/what-is-a2ui/basic-catalog/explore/">Demo Gallery</a></li>
+        <li><a href="/docs/">Docs</a></li>
+        <li><a href="/mcp">MCP</a></li>
+        <li><a href="/renderers/">Renderers</a></li>
+        <li><a href="/developers/">Developers</a></li>
+        <li><a href="/.well-known/ard.json">ARD catalog</a></li>
+        <li><a href="https://github.com/a2uicatalog/a2ui">GitHub</a></li>
+        <li><a href="/fr/" hreflang="fr" lang="fr">Catalogue A2UI en français</a></li>
+      </ul>
+      <p><strong>A2UI is an open protocol (a2ui.org). a2uicatalog.ai is an independent catalogue of components built on it.</strong> Independent, unofficial catalog, not affiliated with, endorsed by, or sponsored by Google, Anthropic or OpenAI. A2UI is Google's protocol; the official spec is at <a href="https://a2ui.org">a2ui.org</a>. MCP is Anthropic's protocol; Claude, the Claude logo and Anthropic are trademarks of Anthropic PBC. ChatGPT and OpenAI are trademarks of OpenAI, L.L.C. All other marks belong to their respective owners.</p>
+      <p>Maintained by <a href="https://www.linkedin.com/in/curtiskrygier" rel="me author">Curtis Krygier</a>. MIT License.</p>
+    </div>
+  </footer>'''
+
+
 def generate_index(atoms):
     # Every catalog-size claim on the landing page is the exact published count (owner 2026-11-15: no "550+",
     # no "500+", one number everywhere). It is computed from the live catalogue, never typed, and
     # tests/test_site_count_consistency.py fails the build if any public page says a different total.
-    # A per-surface figure (the MCP Apps banner) is always printed as "X of N" with this N.
+    # The same rule holds for the surfaces, the renderers and the spec version (tests/test_home_design.py).
     atom_count_rounded = str(len(atoms))
-    _landing_film = render_landing_film(len(atoms))
-    all_surfaces = []
-    for atom in atoms:
-        for s in (atom.get("surfaces") or {}).get("works_on") or []:
-            if s not in all_surfaces:
-                all_surfaces.append(s)
-
-    filter_pills = '<button class="filter active" data-surface="all">All</button>'
-    for s in sorted(all_surfaces):
-        if s not in HIDDEN_SURFACES:
-            label = SURFACE_NAMES.get(s, s)
-            filter_pills += f'<a class="filter" href="/surfaces/{s}" data-surface="{s}">{label}</a>'
-
-    cards_html = ""
-    for atom in atoms:
-        atom_type = atom.get("type", "")
-        desc      = atom.get("compact_description") or atom.get("description", "")
-        surfaces  = (atom.get("surfaces") or {}).get("works_on") or []
-        degraded  = {d["surface"] for d in ((atom.get("surfaces") or {}).get("degraded_on") or [])}
-        display   = atom_type.replace("_", " ").title()
-        source     = (atom.get("source") or {}).get("name", "a2ui").lower()
-        origin_label = "a2uicatalog" if source == "a2ui" else source
-        origin_cls = {"a2ui": "origin-a2ui", "uiverse": "origin-uiverse", "openui": "origin-openui"}.get(source, "origin-other")
-        origin_html = f'<span class="origin {origin_cls}">{origin_label}</span>'
-        visible_surfaces = [s for s in surfaces if s not in HIDDEN_SURFACES]
-        # Chip inversion: chips only for notable/degraded surfaces; the common
-        # bulk collapses to a count (data-surfaces keeps the full list, so the
-        # filter row is unaffected). Small surface lists just show everything.
-        if len(visible_surfaces) <= 3:
-            shown = visible_surfaces
-        else:
-            shown = [s for s in visible_surfaces
-                     if s in NOTABLE_SURFACES or s in degraded]
-        rest = [s for s in visible_surfaces if s not in shown]
-
-        def _chip_cls(s):
-            if s in degraded:
-                return "bd"
-            return "bnew" if s in NOTABLE_SURFACES else "bs"
-
-        badges = "".join(
-            f'<span class="badge {_chip_cls(s)}">{SURFACE_NAMES.get(s, s)}</span>'
-            for s in shown
-        )
-        if rest:
-            more_label = f"+{len(rest)} surfaces" if shown else f"{len(rest)} surfaces"
-            badges += f'<span class="badge-more">{more_label}</span>'
-        surfaces_str = " ".join(visible_surfaces)
-        cards_html += (
-            f'<a class="atom-card" href="/atoms/{atom_type}/" '
-            f'data-name="{atom_type}" data-desc="{desc.lower()}" data-surfaces="{surfaces_str}">'
-            f'{card_stage(atom)}'
-            f'<div class="card-meta"><h3>{display}</h3><p>{desc}</p>'
-            f'<div class="card-footer"><div class="badges">{badges}</div>{origin_html}</div></div></a>\n'
-        )
-
-    # The concept, performed rather than described: a real payload rendered by
-    # the real web renderer at generate time. This is the one artifact on the
-    # page that shows what an "atom" IS — JSON in, UI out.
-    demo_blocks = [
-        {"type": "gradient_heading", "text": "One schema. Any surface."},
-    ]
-    demo_json = json.dumps({"blocks": demo_blocks}, indent=2)
-    demo_json = demo_json.replace("&", "&amp;").replace("<", "&lt;")
-    demo_render = _web_renderer.render(demo_blocks)
-
-    # Showcase strip — a curated set of visually striking atoms, cross-fading
-    # in a small browser mockup right in the hero (above the fold on load).
-    # First-page impression matters: if something looks cool immediately,
-    # visitors stick around before scrolling. Hand-picked, not random — and
-    # deliberately excludes viewport-following effects (cursor_glow/cursor_trail/
-    # spotlight_cursor) that attach to document/window and would either fight
-    # the page's own live cursor_glow or leak outside a clipped preview box.
-    _SHOWCASE_BLOCKS = [
-        # The catalog's own orbit mark, sketched stroke by stroke via
-        # agent_sketchpad -- an atom drawing an atom. Geometry lifted directly
-        # from the header wordmark's inline SVG (.logo-atom, scaled x10 from
-        # its 24x24 viewBox), so this is the same brand mark, not a lookalike.
-        # Only the LAST stroke animates (this atom's stateless draw rule) --
-        # ordered so the faint third orbit sweeps in last, over an
-        # already-complete nucleus+electron+two-orbit base. Shared with the
-        # Atom Spotlight section below (_ATOM_LOGO_SKETCH_STROKES) so both
-        # uses draw the exact same mark from one source, not two copies that
-        # could drift apart. Leads the showcase (freshly promoted out of
-        # preview) rather than closing it, since dot 0 is the slide shown by
-        # default before the carousel ever advances.
-        ("agent_sketchpad", {
-            "type": "agent_sketchpad",
-            "viewBox": "0 0 240 240",
-            "label": "An agent draws this, one real stroke at a time",
-            "strokes": _ATOM_LOGO_SKETCH_STROKES,
-        }),
-        ("glowing_stat", {"type": "glowing_stat", "value": "99.98%", "label": "Uptime", "colour": "#22d3ee"}),
-        ("kinetic_headline", {"type": "kinetic_headline", "text": "Declarative for agents, useful for humans.", "style": "up", "size": "clamp(1.2rem,2.6vw,1.7rem)"}),
-        ("terminal_boot", {"type": "terminal_boot", "title": "deploy.sh", "lines": ["$ a2ui deploy", "✓ schema validated", "✓ renderer live"]}),
-        ("mesh_gradient", {"type": "mesh_gradient", "title": "One vocabulary", "text": f"{atom_count_rounded} atoms, every surface"}),
-        ("github_activity_grid", {"type": "github_activity_grid", "title": "Shipping daily"}),
-        ("animated_counter", {"type": "animated_counter", "counters": [{"value": len(atoms), "label": "atoms", "color": "#f4f4f5"}]}),
-    ]
-    showcase_slides = []
-    for name, block in _SHOWCASE_BLOCKS:
-        try:
-            if name == "agent_sketchpad":
-                html = _agent_sketchpad_sequence_html(
-                    block["strokes"], block["viewBox"], block["label"])
-            else:
-                html = _web_renderer.render([block])
-            if html.strip():
-                showcase_slides.append((name, html))
-        except Exception as e:
-            print(f"WARNING: showcase atom '{name}' failed to render ({e}) — skipped", file=sys.stderr)
-    if not showcase_slides:
-        print("WARNING: all showcase atoms failed to render — showcase strip omitted", file=sys.stderr)
+    _home_check(atoms)
+    renderers = _home_renderers()
+    n_renderers = len(renderers)
+    n_surfaces = _home_surface_count(atoms)
+    chips_html = "".join(f'<li data-renderer="{html.escape(rid)}">{html.escape(name)}</li>' for rid, name in renderers)
+    hero_json = html.escape(json.dumps(HOME_HERO_PAYLOAD, indent=2), quote=False)
+    hero_gauge = _gauge_svg(HOME_HERO_PAYLOAD, 112, 64, 56, 54, 44, 9, 15, 53)
+    _hp = HOME_HERO_PAYLOAD
+    hero_shown = f"{_hp['value']:g}{_hp.get('unit') or ''}"
 
     return f"""<!DOCTYPE html>
 <html lang="en">
@@ -3374,90 +3607,135 @@ def generate_index(atoms):
   }}
   </script>
   {SITE_HEAD_JS}
-  {INDEX_CSS}
-  {LANDING_FILM_CSS}
+  <style>{SITE_BASE_CSS}{HOME_CSS}</style>
 </head>
 <body>
-  {site_header("")}
-  {_landing_film}
-  <main class="wrap">
-  <header class="hero">
-    <div class="halo"></div>
-    <a class="announce" href="/what-is-a2ui/">
-      <span class="announce-tag">NEW</span>
-      <span class="announce-text">What is A2UI? A plain-English guide, with a 26-second film</span>
-      <span class="announce-go" aria-hidden="true">&rarr;</span>
-    </a>
-    <h1><span class="grad">A2UI</span> Atomic Catalog</h1>
-    <p class="tagline">Useful for Humans. Declarative for AI Agents.</p>
-    <p class="sub">A growing catalog of typed UI atoms — and the patterns you compose from them — that AI agents build real interfaces with, instead of generating raw HTML. Renders on the web, inside MCP hosts, in Google Workspace and on Android, and builds Google Slides and PowerPoint decks.</p>
-    <p class="sub">{atom_count_rounded} typed atoms for web, Meet, Apps Script, MCP Apps, Chat &middot; <a href="/.well-known/ai-catalog.json">ARD catalog</a> &middot; <a href="https://github.com/a2uicatalog/a2ui">GitHub</a></p>
-    <div class="hero-stats">
-      <div><b>{atom_count_rounded}</b>atoms</div>
-      <div><b>{len([s for s in all_surfaces if s not in HIDDEN_SURFACES])}</b>surfaces</div>
-      <div><b>v1.0.0</b>spec</div>
-    </div>
-    <div class="entry-paths">
-      <a class="entry-path" href="#grid">
-        <span class="entry-kicker">Browse</span>
-        <h2>Explore the catalog</h2>
-        <p>Search and preview {atom_count_rounded} atoms live, right on this page.</p>
-      </a>
-      <a class="entry-path" href="/surfaces/mcp-apps">
-        <span class="entry-kicker">Integrate</span>
-        <h2>Connect an agent</h2>
-        <p>MCP server at <code>a2uicatalog.ai/mcp</code> — an agent composes real UI from this vocabulary.</p>
-      </a>
-      <a class="entry-path" href="/renderer">
-        <span class="entry-kicker">Self-host</span>
-        <h2>Deploy your own renderer</h2>
-        <p>Apps Script web app, 4 commands — you own the URL.</p>
-      </a>
-    </div>
-    {_atom_spotlight_html()}
-    {_a2ui_catalog_explainer_html()}
-    <!-- Paired with the .announce pill above the headline, deliberately NOT a
-         second announcement of the same thing: the pill carries the news and
-         links to the write-up, this one is the do-it path into the surface
-         itself. Keep the destinations distinct if either is reworded. -->
-    <a class="launch-banner" href="/surfaces/mcp-apps">
-      <span class="launch-badge">Try it</span>
-      <span class="launch-text">Open the MCP Apps playground — {len([a for a in atoms if 'mcp-apps' in (a.get('surfaces') or {{}}).get('works_on', [])])} of {atom_count_rounded} atoms rendering live inside a sandboxed MCP host</span>
-      <span class="launch-arrow">Open the playground →</span>
-    </a>
-    <div class="hero-demo">
-      <div class="hero-demo-col">
-        <div class="hero-demo-label">An agent emits JSON</div>
-        <pre class="hero-demo-json">{demo_json}</pre>
-      </div>
-      <div class="hero-demo-arrow">→</div>
-      <div class="hero-demo-col">
-        <div class="hero-demo-label">A surface renders it</div>
-        <div class="hero-demo-render">{demo_render}</div>
+  <a class="skip-link" href="#main">Skip to content</a>
+  {site_header("", lockup=True)}
+  <main class="home" id="main">
+    <div class="hero-wrap">
+      <div class="shell hero-grid">
+        <section data-section="hero" aria-labelledby="hero-h1">
+          {_home_latest_pill()}
+          <span class="eyebrow">Independent &middot; Unofficial &middot; Open Catalog</span>
+          <h1 id="hero-h1"><span class="h1-accent">A2UI</span> Atomic Catalog</h1>
+          <p class="tagline">Typed UI components your AI agent sends as JSON; the client draws them.</p>
+          <p class="sub">A growing catalog of typed UI atoms, and the patterns you compose from them. Agents use them to build real interfaces instead of generating raw HTML.</p>
+          <div class="renderers">
+            <span class="renderers-label"><a href="/renderers/">Draws with {n_renderers} renderers</a></span>
+            <ul class="chips">{chips_html}</ul>
+          </div>
+          <p class="plus"><span class="teal-dot" aria-hidden="true"></span><span><strong>Plus</strong> Google Workspace (Meet, Chat, Apps Script), and it builds Google Slides and PowerPoint decks.</span></p>
+          <div class="btn-group">
+            <a class="btn btn-fill" href="/atoms/">Explore {atom_count_rounded} atoms</a>
+            <a class="btn btn-line" href="/mcp">Connect via MCP</a>
+          </div>
+        </section>
+
+        <section data-section="payload-flow" class="card flow-box" aria-labelledby="flow-h2">
+          <div class="flow-top">
+            <h2 id="flow-h2">A2UI payload in, UI out</h2>
+            <span class="pill">Illustrative payload</span>
+          </div>
+          <pre class="flow-code" tabindex="0"><code>{hero_json}</code></pre>
+          <div class="flow-divider">Drawn by the {_hp["type"]} atom</div>
+          <div class="flow-preview">
+            <div class="flow-meta">
+              <strong>{html.escape(_hp["title"])}</strong>
+              <span>{html.escape(_hp["label"])} &middot; {_hp["type"]}</span>
+            </div>
+            {hero_gauge}
+          </div>
+          <p class="flow-note">Same data, two readers: the agent reads the JSON, a person sees the interface.</p>
+        </section>
       </div>
     </div>
-    {_showcase_html(showcase_slides)}
-    <div class="controls">
-      <input id="search" type="search" placeholder="Search atoms…" autocomplete="off" aria-label="Search atoms">
-      <div class="filters">{filter_pills}</div>
-      <button type="button" class="pause-btn" id="pause-all" aria-pressed="false"><span aria-hidden="true">\u23f8</span> Pause all motion</button>
-      <span class="count" id="count">{atom_count_rounded} atoms</span>
-    </div>
-  </header>
-  <!-- Heading hierarchy: cards are <h3>, so they need an <h2> parent (a card
-       grid straight under the <h1> skipped a level; tests/test_homepage_headings.py). -->
-  <h2 class="sr-only" id="atoms-h">All atoms</h2>
-  <div class="grid" id="grid">
-{cards_html}  </div>
-  <footer>
-    <span>A2UI Atomic Catalog · <a href="/atoms/">All atoms A–Z</a> · <a href="/renderers/">Renderers</a> · <a href="/docs/">API Documentation</a> · <a href="/developers/">Developers</a> · <a href="https://github.com/a2uicatalog/a2ui">GitHub</a> · <a href="/fr/" hreflang="fr" lang="fr">Catalogue A2UI en français</a> · Maintained by <a href="https://www.linkedin.com/in/curtiskrygier" rel="me author">Curtis Krygier</a></span>
-    <span><strong>A2UI is an open protocol (a2ui.org). a2uicatalog.ai is an independent catalogue of components built on it.</strong> Independent, unofficial catalog — not affiliated with, endorsed by, or sponsored by Google, Anthropic or OpenAI. A2UI is Google's protocol; official spec at <a href="https://a2ui.org">a2ui.org</a>. MCP is Anthropic's protocol; Claude, the Claude logo and Anthropic are trademarks of Anthropic PBC. ChatGPT and OpenAI are trademarks of OpenAI, L.L.C. All other marks belong to their respective owners.</span>
-    <span><a href="/.well-known/ard.json">ARD discovery catalog (JSON)</a></span>
-  </footer>
+
+    <section data-section="stats" class="stat-section" aria-labelledby="stats-h2">
+      <div class="shell">
+        <h2 id="stats-h2">Catalog specification</h2>
+        <div class="card stat-strip">
+          <div class="stat-col"><span class="stat-num">{atom_count_rounded}</span><span class="stat-lbl">Typed atoms</span></div>
+          <div class="stat-col"><span class="stat-num">{n_renderers}</span><span class="stat-lbl">Renderers</span></div>
+          <div class="stat-col"><span class="stat-num">{n_surfaces}</span><span class="stat-lbl">Surfaces</span></div>
+          <div class="stat-col"><span class="stat-num">{A2UI_SPEC_VERSION}</span><span class="stat-lbl">A2UI spec</span></div>
+        </div>
+        <p class="stat-note">Renderers are the software that draws an atom. Surfaces are the places you see it: the web, MCP hosts, Android, Google Workspace, Slides and more.</p>
+      </div>
+    </section>
+
+    <section data-section="specimens" class="band" aria-labelledby="wall-h2">
+      <div class="shell">
+        <div class="band-head">
+          <div>
+            <span class="eyebrow">Specimen sheet</span>
+            <h2 id="wall-h2" style="margin-bottom:.35rem">Illustrations of what an agent composes</h2>
+            <p style="margin-bottom:0">{len(HOME_TILES)} of the {atom_count_rounded} atoms, drawn as illustrations.</p>
+          </div>
+          <a class="text-link" href="/atoms/">Search all {atom_count_rounded} atoms &rarr;</a>
+        </div>
+        <div class="wall-grid">
+          {_home_tiles_html()}
+        </div>
+      </div>
+    </section>
+
+    <section data-section="routes" class="band" aria-labelledby="paths-h2">
+      <div class="shell">
+        <span class="eyebrow">Next steps</span>
+        <h2 id="paths-h2">Choose your route into the catalog</h2>
+        <div class="action-grid">
+          <article class="card action-card">
+            <div>
+              <span class="step-badge">01 &middot; Browse</span>
+              <h3>Explore the catalog</h3>
+              <p>Search and preview {atom_count_rounded} atoms live.</p>
+            </div>
+            <a class="text-link" href="/atoms/">Open A2UICatalog Explorer &rarr;</a>
+          </article>
+          <article class="card action-card">
+            <div>
+              <span class="step-badge">02 &middot; Integrate</span>
+              <h3>Connect an agent</h3>
+              <p>An MCP server at <code>a2uicatalog.ai/mcp</code>. An agent composes real UI from this vocabulary.</p>
+            </div>
+            <a class="text-link" href="/mcp">Connect via the MCP server &rarr;</a>
+          </article>
+          <article class="card action-card">
+            <div>
+              <span class="step-badge">03 &middot; Self-host</span>
+              <h3>Deploy your own renderer</h3>
+              <p>An Apps Script web app, 4 commands, you own the URL.</p>
+            </div>
+            <a class="text-link" href="/renderer">Read the self-hosting guide &rarr;</a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    {_atom_spotlight_html(atom_count_rounded)}
+
+    <section data-section="explainer" class="band" aria-labelledby="exp-h2">
+      <div class="shell exp-grid">
+        <div>
+          <span class="eyebrow">Background</span>
+          <h2 id="exp-h2">What a catalog does</h2>
+        </div>
+        <div>
+          <p>A2UI is an open protocol from Google for AI agents to describe a user interface as data, a list of typed components, that a client then draws.</p>
+          <p>A catalog defines the component types an agent may use, so the {n_renderers} renderers draw consistent interfaces on the web, in MCP hosts and on Android. The same atoms also reach Google Workspace, Google Slides and PowerPoint.</p>
+          <p>We maintain A2UI Atomic Catalog as an independent, unofficial open catalog. Watch the introduction film on our guide page or inspect examples in the demo gallery.</p>
+          <div class="btn-group">
+            <a class="btn btn-line" href="/what-is-a2ui/">Read What is A2UI?</a>
+            <a class="btn btn-line" href="/what-is-a2ui/basic-catalog/explore/">Browse Demo Gallery</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    {_a2ui_catalog_explainer_html(n_renderers)}
   </main>
-  {INDEX_JS}
-  {PAUSE_ALL_JS}
-  {LANDING_FILM_JS}
+  {_home_footer_html()}
   {SITE_FOOT_JS}
 {_cursor_glow_html()}
 </body>
