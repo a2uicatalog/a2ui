@@ -134,6 +134,16 @@ The catalog's "Try it live" button uses a shared demo instance of the same rende
 
 ---
 
+## Demo: how the request travels
+
+<p><img src="public/bc-assets/arch-trip-wide-motion.svg" alt="An animated architecture diagram: a trip planner request travels from the user through the agent and the renderer and back to the screen" width="100%"></p>
+
+That is the trip planner demo's architecture animation, drawn by the `arch_motion` macro in [`macro-packs/archpack/`](macro-packs/archpack/). The macro turns a
+list of nodes, edges and messages (or a Mermaid or D2 diagram) into a wide and a narrow SVG with finite SMIL motion. It uses only the Python standard library,
+with no network and no model, so the same input gives the same bytes. [See it in the trip planner demo](https://a2uicatalog.ai/what-is-a2ui/basic-catalog/demos/trip-planner/).
+
+---
+
 ## What's in this repo
 
 | Directory | Contents |
@@ -148,6 +158,7 @@ The catalog's "Try it live" button uses a shared demo instance of the same rende
 | `spec/` | Internal state/action contracts (gdm-v0.2, a2ui-state-v1) — the A2UI v1.0 candidate spec itself lives at [a2ui.org](https://a2ui.org/specification/v1.0-a2ui/), not vendored here |
 | `examples/` | Playbook YAML examples |
 | `knowledge-catalogue/` | Curriculum-to-atom pipeline — schema-validated curriculum markdown (Brevet 2026, NIST AI RMF) compiled into A2UI payloads. Separate concern from the atom vocabulary itself. |
+| `macro-packs/` | Python macros that draw a picture as SVG. Today: `archpack` (architecture animation from Mermaid, D2 or JSON) and the two shared helpers it imports from the D3 pack |
 
 ---
 
