@@ -8,9 +8,9 @@ a2ui-vue draws our atoms inside ITS wrapper and theme, so the custom-lane number
 - Platform: web (Vue 3, stock a2ui-vue, Chromium)
 - Measured: 2026-11-13
 
-## Coverage of the 573 public atoms
+## Coverage of the 576 public atoms
 
-- Drawn: 482
+- Drawn: 485
 - Drawn with differences: 35
 - Not verified: 34
 - Not supported: 0

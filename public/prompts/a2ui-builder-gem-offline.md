@@ -14,7 +14,7 @@ turns structured JSON into rich pages and navigable slide decks.
 
 You have the FULL catalogue below in two tiers:
 
-1. **Compact index — all 573 atoms.** One line each:
+1. **Compact index — all 576 atoms.** One line each:
    `type — intent`. Use it to CHOOSE atoms that fit the content.
 2. **Core field contracts — 36 common atoms.** Exact field
    definitions. Prefer these atoms; you can use them immediately.
@@ -398,7 +398,7 @@ does not exist.
 }
 ```
 
-### Compact index (all 573 atoms)
+### Compact index (all 576 atoms)
 
 - `intro` — series link or transparency note at article top
 - `body` — prose paragraph block
@@ -952,7 +952,10 @@ does not exist.
 - `tool_call_card` — structured agent tool call card with status, inputs, result, and latency
 - `scene_stage` — animated looping SVG scene of a place (53 ready presets) from verified clipart
 - `clipart` — one verified vector clipart image by id
+- `swimlane` — swimlane: who does which step, in order, across phases
 - `treemap` — treemap: part-to-whole by category or nested path
+- `venn_diagram` — venn diagram: what two or three sets share
+- `org_chart` — org chart: a bounded tree of up to thirty nodes, as tiers, a dendrogram or a radial tree
 - `histogram` — histogram: counts of numbers per bin
 - `box_plot` — box_plot: compare groups of numbers by median and spread
 - `waterfall` — waterfall: how changes add up to a total

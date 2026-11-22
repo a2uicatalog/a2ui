@@ -1,13 +1,13 @@
 ---
-title: A2UI on Apps Script Side Panel: 39 of 573 components — A2UI Atomic Catalog
-description: 39 of the 573 A2UI Atomic Catalog components render on Apps Script Side Panel, each with a live preview, so an AI agent can show real UI there instead of generating HTML.
+title: A2UI on Apps Script Side Panel: 39 of 576 components — A2UI Atomic Catalog
+description: 39 of the 576 A2UI Atomic Catalog components render on Apps Script Side Panel, each with a live preview, so an AI agent can show real UI there instead of generating HTML.
 canonical: https://a2uicatalog.ai/surfaces/google-apps-script-side-panel/
 generated_by: gen_page_twins.py
 ---
 
 # Apps Script Side Panel
 
-39 of 573 atoms available on this surface
+39 of 576 atoms available on this surface
 
 [Stepper](https://a2uicatalog.ai/atoms/stepper/)
 
@@ -19,7 +19,7 @@ CSS animated vertical step sequence with checkmark draw and active pulse
 
 server-side unified diff view with green additions and red removals
 
-[Try it live →](https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA6tWKsksyUlVslJQcs5PSVVwyUxLU9JRUCrJSM0Fi6YkFmWDBJJy8pOzi4Ei0dVKJZUFYLlkoI74FKiO_JyUeJAASMI_J0UBzAaK56WWw8X9Ussh4rWxtQBOuBG5egAAAA)
+[Try it live →](https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA22QzUoDMRDHX2XIyUoR1FvBQ1FfoBQvXQnZ7GwTmp0s6Wx3S-m7m0lXUXCOv_8XzEWx54BqBeo1Nghvvm3VEhQ77AptTDoIqEO0h2Mmu4vic180mxO6mRPB1BiEbpBMh2DAYegx3TTaD2ZfQv2ZXSShMTRaKsoMtmBNsHfTYlUR5EvIQyKY4B4eH54qqogjmwAvN1-fvMWF1BCOPzUf663erLfv2TWHpLh49ejZ6ZPhOfp3prA89V3we-_fuCwfXRx18ISahq7GJO_hNOBSXkOMExdV8PP18_oF5uh1z2wBAAA)
 
 [Toast Notification](https://a2uicatalog.ai/atoms/toast_notification/)
 
@@ -73,7 +73,7 @@ Three-dot bouncing chat typing indicator bubble
 
 self-contained QR code, optionally with a live URL input
 
-[Try it live →](https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA6tWKsksyUlVslJQCk7OSM1NVAgsUtJRUCoBssGiKYlF2SCBpJz85OxioEh0tVJJZQFYrhisI76wSKk2thYAIfmzf0oAAAA)
+[Try it live →](https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACAyWNTQ6CMBCFrzKZtRHCklsYl8aYoUxkwtjWdjBBwt2ldffyvb8NTUwZe8Crm_hFcEl4ArRDVzpSmgsYNLg5H-S2oa2xerk2Hu_aWJIWNpnF3DcNdYs4MtLwPJOUgNLA-j8iDxYgRPYQPJBfYeSPOC6xLN8y3rXtft9_vdtQ6J8AAAA)
 
 [Palette](https://a2uicatalog.ai/atoms/palette/)
 
@@ -109,7 +109,7 @@ form submitting rows to a Google Sheet tab
 
 entrance animation wrapper for child blocks
 
-[Try it live →](https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA6tWKsksyUlVslJQCkotS03MUdJRUCrJSM0FC6UkFmWDBJJy8pOzi4Ei0dVKJZUFYLkiuHJsskn5KZVgo1IrSkB814rE3IKcVIXk_LyS1LwSPaXaWCAEAEUny_N-AAAA)
+[Try it live →](https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA42MsQ6CQAyGX-XSmUGIk5uji4OrMaRcKxKOO3LXwxDCu8sRY8JgNF3a7__7TSCNGIaDggsPjAYyBfLgbkWEvk2gMk63YSHXCWTs18x_6mibDqVxNuEgWNfsE3-vJbHBccnyYvfFtTSl1OgpvQ1o4kr36TJYsUnXyd49BvFRS_SsHs71AeZM_bLkG8uxQkvOMilicdH_Yyg2hrN7KnI6dmyFCebbMi97sj8RRgEAAA)
 
 [Skeleton](https://a2uicatalog.ai/atoms/skeleton/)
 
@@ -139,7 +139,7 @@ three-dot pulsing loader
 
 animated circular progress gauge
 
-[Try it live →](https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA6tWKsksyUlVslJQCijKTy9KLS5WCMrMS1fSUVAqyUjNBcukJBZlgwSScvKTs4uBItHVSiWVBWC5Aqiu-CKorrLEnFKwjKGOkbGJUm1sLQCODrWTZAAAAA)
+[Try it live →](https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACAzWNTQ6CQAyFrzKpcedCDWriKZStMWSAChMqQzodCRLuLiW46_veT0cQJ4RwNXBjXzGGYFLXVrAzIDW-F6e03CjIyRdNmMljBBm6xevWVsZr62MpqnM5ziK4r96HZK9C2DeY9a6UWqEGCk-edWeTvJIznnSBbI6k7B4tCzINpvKW1Aq177P_B-GIM4utE01vYXpOPxdd9YrQAAAA)
 
 [Confetti Burst](https://a2uicatalog.ai/atoms/confetti_burst/)
 
@@ -175,19 +175,19 @@ headline text with shimmer gloss sweep
 
 slot-machine digit reveal counter
 
-[Try it live →](https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA6tWKsksyUlVslJQ8ivNTUotUnDLySxQ0lFQKslIzQWLpyQWZYMEknLyk7OLgSLR1UollQVguTywnvg0qJ6yxJxSkLghkF1QlJqWWQHlFJemITg5iUmpOeg21sbWAgC4mT17jAAAAA)
+[Try it live →](https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACAy3NzQ6CMAzA8VdZ5pUDIhrjA3j04tEYM1gnC4Ut3eYX4d2lC8f_r2k7yWgjgjwJeUlDAyTOaL0shIwdDNm1op6hQdf2YZHbJOPX59mYdx5m3XkpTNmroj6WLJ7A2A8TV0hmLeFIAwVGVA0g27Wz3oMWsbNBvAHy12B_-eKOYOBuHTpi2NSmPsCeTSdS0bpx4W1VlosotE9O2cIYgeR8n_9QytHX6gAAAA)
 
 [Spotlight Card](https://a2uicatalog.ai/atoms/spotlight_card/)
 
 card with cursor-following spotlight
 
-[Try it live →](https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA22OMQrDMAxFryI0lx6gWyk9QcdSimMriYhjGVtDQsjda5sUOnT8__0ntKGyesIL4COKeh5GhZtJDk-AOtLckDNpqkXnxU65NM8NdY2N5a_2tof2b9WJW9tJWrTm-2Lm6AmsBKWgZ9xfhR6pDq4VWc4EjrJNHJUlgPRQnvq19g9iXwXAwgAAAA)
+[Try it live →](https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA3WOMU5DMRBEr7IybQQNUNAhoKCFpEKIrO3N_-b7e631WhCiSByCE3ISHAsEDdpmNKM3szujQSOZCzD3mTWGYVS4QvFmAUZHmnvkUaaDYSO7qTTnYWd0m3tWfrAn942hc5T0kB1dn12en978h46EPqShT9FrJ5YjAYmwwEyl4EDwggXaI-DZ1bn1ogZOZr-A3x7Lfvu3ZH2CVUeW8EbrztsaooIyZAlJwaKbAEHomZySb8IHaRJWd7fACXKVzIXg8_2jT28wxCoEQQvFDVhyOFNPSiZ3bPaP7b4AgB0OgkoBAAA)
 
 [Animated Border](https://a2uicatalog.ai/atoms/animated_border/)
 
 card with rotating gradient border
 
-[Try it live →](https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA22OQQoCMQxFrxKyFg_gTsFTiEjbRCzTNqXNYoZh7j5tGcSFy_9fXvgrqtfAeAG8Jh-NMsFNCnHBE6B-OA5Gpky9sEHcVFvzWFGXPJg5vJf9ev_OrNAyfvKsPd9nE3NgcJKUk55xezZ6pLGnI-crA3F1xWf1kkDe0Fb9WtsOTSzoscQAAAA)
+[Try it live →](https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA3WOTQrCQAxGrxLGbRXEtoo7fxduXYrItBPrYDspaRRFBA_hCT2J01HcSRaB9_GS76bESolqDGribKUFDUyJDbKKQMkBq5AZzccWZCXlx8aTzU3JtQ6Z_nq77Oftmao26oxmybSftuhsdSDzZJLGi3CcAoiHaTxYtqCpEY1n8Z9HGZlrEPEioTAwiRbrCsjJ2bxbsDYWncCnCbweT6hPjDBbryNwBCu_5MCIXijpxNAI1U1P3bd-3mrNSEkLAQAA)
 
 [Countdown Ring](https://a2uicatalog.ai/atoms/countdown_ring/)
 

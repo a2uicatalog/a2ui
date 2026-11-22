@@ -1,43 +1,43 @@
 ---
-title: A2UI on Google Chat: 26 of 573 components — A2UI Atomic Catalog
-description: 26 of the 573 A2UI Atomic Catalog components render on Google Chat, each with a live preview, so an AI agent can show real UI there instead of generating HTML.
+title: A2UI on Google Chat: 26 of 576 components — A2UI Atomic Catalog
+description: 26 of the 576 A2UI Atomic Catalog components render on Google Chat, each with a live preview, so an AI agent can show real UI there instead of generating HTML.
 canonical: https://a2uicatalog.ai/surfaces/google-chat/
 generated_by: gen_page_twins.py
 ---
 
 # Google Chat
 
-26 of 573 atoms available on this surface
+26 of 576 atoms available on this surface
 
 [Intro](https://a2uicatalog.ai/atoms/intro/)
 
 series link or transparency note at article top
 
-[Try it live →](https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA0XKQQqAIBCF4avIrCP33aB1y4iwGlAaU3SCIrx7aUTL93_vAjZMCI2AduPgoBLAGm0piwprDhO5eY1P6S_g0xcz3ztiMBhHUhNShq5s8e7f91BUM_vYSImHsp6wnp2FNKQbgLJ0y4cAAAA)
+[Try it live →](https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA1WPPU_EMAyG_4qVmWvhBoaOMDHBwIYQclOXWpfGkeMK0On-O0kKEox-Px69PjtjC-QGcA_RVNwVOFtobcqEeqrCGMSfclFezs6-UvP4N51JmfJbwJFCNZ5QDWSGQoHdG-Bu4zBxfAcfCBVKl3RGT_kPYNNWX8xSHvqePnFNgTova78n-vGHcmiUw3-Kl2gcNzSWWDn3-00ZZpUVUl1109VkFGsfPC-cochccPCBGbY0odFU5sGjNxlJ4Xh9vO3c5fXyDe2IsYEoAQAA)
 
 [Body](https://a2uicatalog.ai/atoms/body/)
 
 prose paragraph block
 
-[Try it live →](https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACAzWMMQqAMBAEv3JcLT7ATr8hFpqcGNScJFsoIX83ESx3ZtjEcDiEO-JB7cMNMTY5P2DnsFewHGr2WMiYGM_1ueWP5UbdPRn1xkUhK9EEd8GpJ12pvFUF8Wg5T_kFxfvG8HEAAAA)
+[Try it live →](https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACAzWOMQrDMAxFr_LxaEIO0LFb926lUCU2sYhjG1ttGkLuXjtQEB_99zRoV8LirbpAXaPZVAclzi4nMJTnBgYfx7lU8tiVbOl0w__YfqX1u-OCOoRmkCjTlCm5HjdBeacUsxRoPURvtO6gWcjzWDcKBi8OnoPFGI194cMEz5OT1bbEUv8wcQ29Op7HD_IqoDWxAAAA)
 
 [Heading](https://a2uicatalog.ai/atoms/heading/)
 
 H2 section title
 
-[Try it live →](https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA03MMQ6AIAyF4as0nY0HcHPzDsZBoUoDAoEOGsLdFSfX7395BYXFEQ6AE62a_YEdoBg6P9Nrsg02F5TNr8wF5Y5fM789XdJoBBW84kygKavEUTh4CDu8hy0JeemxLvUB3SWPTHcAAAA)
+[Try it live →](https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA6tWKsksyUlVslJQ8khNTMnMS1fSUVAqyUjNBYulJBZlgwSScvKTs4uBItHVSiWVBWC5DCT1qRUlIKHg1OSSzPw8BZhRtbG1ANVhuAhhAAAA)
 
 [Subheading](https://a2uicatalog.ai/atoms/subheading/)
 
 H3 subsection title
 
-[Try it live →](https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA1XMOwqAMBBF0a0MU4sLsHMNlmKRz2gGNZFkBEWyd00623N570Fh2Qg7wOHUjpRlv2ADKI72ylbFtYDeglnTJ-ODch-1pf-ELinagwnecCKwlEzkQzh4CDN8nyUJeWkxT_kF5RYol30AAAA)
+[Try it live →](https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA6tWKsksyUlVslJQCi5NykhNTMnMS1fSUVAqyUjNBQunJBZlgwSScvKTs4uBItHVSiWVBWC5YlQtqRUlqAYpgIVqY2sBWQerV2cAAAA)
 
 [Bullet List](https://a2uicatalog.ai/atoms/bullet_list/)
 
 unordered list with optional bold label per item
 
-[Try it live →](https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA6tWKsksyUlVslJQcirNyUktUfDJLC5R0lFQKslIzQWLpyQWZYMEknLyk7OLgSLR1UollQVguSSwnvgckJ7a2FoAXLwkRE4AAAA)
+[Try it live →](https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACAzWNuwrDMAxFf0Vozhd07NApY7dSSh6iFlEcYyu0weTfG6sOWsS950gZlVUIL4DXVYQUWk6KDaA6mi0fuziVoJdlmNKRPDLqFqzrzXlJdVhpPgn6aiFuHJNCKYA9HEfB4L2BjNL1JAVqyyI0GmfPq_1hdZDWEJao7N8wUhoiB-XF_0-c4N1xrPr-POYHwZxwjNgAAAA)
 
 [Closing](https://a2uicatalog.ai/atoms/closing/)
 
@@ -49,7 +49,7 @@ article closing paragraph with hashtags
 
 big number metric with directional change indicator or percentage
 
-[Try it live →](https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA22NXQpAUBBGt3KbZyvwyqsVSBrXlJvx0xhKsneMpOT1nDnfbKBBmSB2kJFK8C4lVoTIgTbUmahR2gtUPPh2Okm-ga6juc6isn4ixor4b83PItRruSDPViY3cDc4L2zj9VZ-7fM29F4IJ4K92A-waQyhwwAAAA)
+[Try it live →](https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA0WOPQvDIBBA_4oc2RoK-ejSOWuXlk6liDEHkRgNegol5L-3CmnGe493dyuQIo1wZXBDckqyDjUJKBnQiHMWg3BTAr22cvI_8lqBPkt2c474sEda9KiTuGNEEzAxGZxDQzwKHXJUVHXZtJfkcniYU1GVddMeZr-jjHQofN4XjKLEno8ujYvDqGzwfEGn7MD_L0R_Zlp4YrM1NML23r66KrSt7gAAAA)
 
 [Trend Indicator](https://a2uicatalog.ai/atoms/trend_indicator/)
 
@@ -67,13 +67,13 @@ definition term with explanation
 
 numbered footnote reference at the bottom of a section or page.
 
-[Try it live →](https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA02MsQ7CMAxEf8XyTJFY2Vj6E4ihTVxhNbGjxEhFVf-duBPjvbt3OxpbIrwDjqomaoQXQHtTPmGc6upgThrW1slzR_uWs1v-BPnkmWqnN7dpMx88IKgEbgSRWqhcjFVAF-j3XhmJXd3m6HPaplwSDT0dr-MHDrkp-5oAAAA)
+[Try it live →](https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA02NQQoCMRRDr_L5axGrrjyAC8ETiIvWZrB0-iudX1SGubudrlyFvJBkZg06gk_E55xVsoI3xPpE6tDbElfgxvyIUyO3mfX76tnwV5CaHEqjppngeyymT-Gjq73CByuUB9qbIyXYqZZ2IjqR2gghB32jqSErng47ulTBlpf78gPhnXYzpQAAAA)
 
 [Pull Stat](https://a2uicatalog.ai/atoms/pull_stat/)
 
 large display number pulled from prose for emphasis descriptive label.
 
-[Try it live →](https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA6tWKsksyUlVslJQCijNyVEILkksUdJRUCrJSM0Fi6YkFmWDBJJy8pOzi4Ei0dVKJZUFYLkCoI74YqiOssScUpCoIZCdk5iUmoNqZm1sLQDgxixZbAAAAA)
+[Try it live →](https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACAy2N3QrCMAxGXyVEvPNy_uBTCF6KSNalrCyuo00FGXt3m-Jdzsn3JStqUGG8At6KCNyVFA-AOvK72YHSZKKX6KZczWNF_S5tt9TGK_8bH5LS7OW8NxbqWYyjh8Q0cMrgwxzyCPU4UNLg6uOaLHNQC9rsosRksOt8d-Ijbs_tB4BS0LikAAAA)
 
 [Audio Link](https://a2uicatalog.ai/atoms/audio_link/)
 
@@ -97,13 +97,13 @@ image with styled caption below
 
 prominent card prompting a required user action or approval
 
-[Try it live →](https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4WOwQ6CMAyGX6Xp2cCdm_ENvBpDRlfDwsbmVhIM4d1lEyM3j_2_fn-7oBixjA3gmcT4Ea78nExkDRcVNZ4ApWdXFrSKQw4662lIW3JbUF6hMFXkNu5yS1_5X7vmRNGEDMsakB_JJIYDAP-A7YuMhEepsrcftKpje-j_zD8-xUJ7kZCauuZZuWC5Iu9wva9vGzMkJP4AAAA)
+[Try it live →](https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA12OMY4CMQxFr2KlRkxPh7jBdgghlHG8YJFJZh0HgRBnoKfiGJyHC-wVNhkGCW1rv___Oxtl9WRmYOaoHAN80U9mIQcLK85MwOiOugFwVvb10PqI-1Quq7PRUz_87BDeyBje4Dv8bl_E8M3SwSlmgZa957AF65xQShV0lFC4ry0VX1aMwyEyEqANISq0BJxSLmo5KHsoYv-bCgD4WiI3rb2jmLct-U-Pj-kRyTIAO9U-zZqGjrbrPU0xdo1FjGWzGddqiPEl-rzdfx9Xc1lf_gA-3Rl2SwEAAA)
 
 [Pricing Tier Card](https://a2uicatalog.ai/atoms/pricing_tier_card/)
 
 single pricing plan card with features list
 
-[Try it live →](https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA2XOPU_EMAwG4L9iRYwnKrFxGyoLWyVgQqfI55prdPkojouoTvffSdJjYsjgx-8r52LUqWezBzOIIxdP8OZYoEcZzQ6MThzadkQ5Vzj6ROdc5ONidJ3bbt6aVkvT0q05e4w24tYeygBt2G3xpncPj11IlWgR4Uhr1ffX50qfwl_Ln4UUdfJrc0ZdhNsXTJ-E4SZ1-TR-YyQeASP6VR3lpsMLIBHnbA71GHpvNVkkdSlaj0f29UhfHDTB5rD5__wiLT2pznnfdfyDYfZ8TynUsMt2cqfJl6c8lqDKwtfD9RcI_uNWaQEAAA)
+[Try it live →](https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA2WOTUtDMRBF_0oILsWCO7tVuy5YV1LCvLzxvaGTD-dNakvpfzdJdeUikJx7LrkXq6SMdm3sVshTnMyOUMwzyGjvjdUZQ09HkEMDAyd_WCr5uFg9557lW9NpbTr_28wM0UW4tXcIocNqdvD41J6-iGD050buGvgU_Cp_JKSoc6cIWgT7r_Y9MgVSHE0uA5M3GaYaVW1DRzT1hyMomu8khyWDv0WvAYjNUnJOoh2c2s1oMtuXjd23LcDsNDnwSik6hgG5rXhTqGIdhkaFgO1_t0g3Z9W8rFcrPEHIjA8-hdVCUyy5dWhxM00z11PHV1-l4HV__QFm5GXLggEAAA)
 
 [Pros Cons List](https://a2uicatalog.ai/atoms/pros_cons_list/)
 
@@ -139,7 +139,7 @@ user prompt and AI response as chat bubbles
 
 keyboard shortcut cheat-sheet grid with key combos and labels
 
-[Try it live →](https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA6tWKsksyUlVslJQCs7ILypJLi1R8ElNT81LUdJRUCrJSM0Fy6UkFmWDBJJy8pOzi4Ei0dVKJZUFYLliqL74HLi-zJLUXKiqnMSk1ByQMk-gmIKhUq2OArqgkVJtLBACAM_xebWLAAAA)
+[Try it live →](https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA22LzQrCMBCEX2XZc5_Aq0cFDzlKkZgsNuSXdBRK8d1NQ_EgsjAs8823MhyC8IFYTbnCPEFneUiyPBBjktiZ1dVvxT1k4-fWXFfGUjqbd-8Wvp6DxH3lZekfH1HDxk48ttQGLqdNvxRJZHKMOlkqOggg_B7oj6p-VKVfbTq2-wCP3NmKxwAAAA)
 
 [Rating Summary Bar](https://a2uicatalog.ai/atoms/rating_summary_bar/)
 

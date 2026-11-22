@@ -32,7 +32,24 @@ What draws the atom, measured per renderer: https://a2uicatalog.ai/renderers/
 
 ```json
 {
-  "type": "timeline"
+  "type": "timeline",
+  "events": [
+    {
+      "date": "2024",
+      "title": "A2UI v1",
+      "body": "First atoms defined."
+    },
+    {
+      "date": "2025",
+      "title": "576 atoms",
+      "body": "Full schema published."
+    },
+    {
+      "date": "2026",
+      "title": "ARD catalog",
+      "body": "Live on a2uicatalog.ai."
+    }
+  ]
 }
 ```
 

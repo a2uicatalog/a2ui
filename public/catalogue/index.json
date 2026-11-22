@@ -611,7 +611,7 @@
       "title": "Data visualisation",
       "alwaysResolved": false,
       "whenToUse": "Use when the surface needs charts — bar/line/pie, sankey, heatmap, sparklines, gauges, funnels, trend viz.",
-      "atomCount": 42,
+      "atomCount": 45,
       "atoms": [
         {
           "type": "arc_diagram",
@@ -709,6 +709,10 @@
           "description": "compact grid of multiple labeled sparklines"
         },
         {
+          "type": "org_chart",
+          "description": "org chart: a bounded tree of up to thirty nodes, as tiers, a dendrogram or a radial tree"
+        },
+        {
           "type": "parallel_coords",
           "description": "parallel_coords: compare many numeric measures per row"
         },
@@ -757,6 +761,10 @@
           "description": "sunburst: share of a total in nested rings"
         },
         {
+          "type": "swimlane",
+          "description": "swimlane: who does which step, in order, across phases"
+        },
+        {
           "type": "ternary_plot",
           "description": "ternary_plot: three-part mixes as points on a triangle"
         },
@@ -771,6 +779,10 @@
         {
           "type": "uptime_timeline",
           "description": "30-day uptime timeline with per-day status blocks"
+        },
+        {
+          "type": "venn_diagram",
+          "description": "venn diagram: what two or three sets share"
         },
         {
           "type": "voronoi",

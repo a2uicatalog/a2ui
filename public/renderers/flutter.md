@@ -8,11 +8,11 @@ Partial coverage: only a part of the atoms are ported to native Flutter widgets.
 - Platform: Flutter widget-test engine (headless); no device
 - Measured: 2026-11-13
 
-## Coverage of the 573 public atoms
+## Coverage of the 576 public atoms
 
 - Native: 501
 - Degraded: 30
-- Not supported: 37
+- Not supported: 40
 - Not measured: 5
 
 ## Degraded (30)
@@ -48,7 +48,7 @@ Partial coverage: only a part of the atoms are ported to native Flutter widgets.
 - `video_card`: lowered to Basic components
 - `youtube`: lowered to Basic components
 
-## Not supported (37)
+## Not supported (40)
 
 - `agent_sketchpad`: component type unknown to the renderer
 - `brick_build_3d`: component type unknown to the renderer
@@ -79,12 +79,15 @@ Partial coverage: only a part of the atoms are ported to native Flutter widgets.
 - `media_stream_card`: component type unknown to the renderer
 - `motion_bricks`: component type unknown to the renderer
 - `motion_shader`: component type unknown to the renderer
+- `org_chart`: component type unknown to the renderer
 - `particle_burst`: component type unknown to the renderer
 - `preview_frame`: component type unknown to the renderer
 - `progress_store`: component type unknown to the renderer
 - `scroll_trigger`: component type unknown to the renderer
 - `spotlight_cursor`: component type unknown to the renderer
 - `spring_nodes`: component type unknown to the renderer
+- `swimlane`: component type unknown to the renderer
+- `venn_diagram`: component type unknown to the renderer
 - `video_checkpoint`: component type unknown to the renderer
 - `video_pair`: component type unknown to the renderer
 

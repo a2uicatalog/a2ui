@@ -9,7 +9,7 @@
 The model names an atom. The renderer compiles the HTML, CSS, SVG, and animation.
 
 <!-- readme-badges:start -->
-[![Atoms](https://img.shields.io/badge/atoms-573-7c9cff?style=flat-square&labelColor=0a0e17)](https://a2uicatalog.ai/)
+[![Atoms](https://img.shields.io/badge/atoms-576-7c9cff?style=flat-square&labelColor=0a0e17)](https://a2uicatalog.ai/)
 [![Surfaces](https://img.shields.io/badge/surfaces-13-38bdf8?style=flat-square&labelColor=0a0e17)](https://a2uicatalog.ai/spec.json)
 [![MCP](https://img.shields.io/badge/MCP_server-a2uicatalog.ai%2Fmcp-7c9cff?style=flat-square&labelColor=0a0e17)](https://a2uicatalog.ai/mcp)
 [![ARD](https://img.shields.io/badge/ARD-ard.json-38bdf8?style=flat-square&labelColor=0a0e17)](https://a2uicatalog.ai/.well-known/ard.json)
@@ -66,7 +66,7 @@ A few atoms, live on the site — click through to a full spec + fields table fo
 </tr>
 </table>
 
-[Browse all 573 atoms →](https://a2uicatalog.ai/)
+[Browse all 576 atoms →](https://a2uicatalog.ai/)
 
 ---
 
@@ -162,7 +162,7 @@ with no network and no model, so the same input gives the same bytes. [See it in
 
 ---
 
-## 573 atoms across 13 surfaces
+## 576 atoms across 13 surfaces
 
 Atoms declare which surfaces they support at the schema level. An agent picks an atom by name, supplies parameters, and the renderer handles the rest.
 
@@ -187,7 +187,7 @@ Every atom declares, at the schema level, which of the **13 surfaces** it works 
 <summary><strong>View full compatibility matrix (all atoms × 13 surfaces)</strong></summary>
 
 <!-- compat-matrix:start -->
-573 atoms · generated from `public/spec.json` by `scripts/gen_compat_matrix.py` — do not edit by hand.
+576 atoms · generated from `public/spec.json` by `scripts/gen_compat_matrix.py` — do not edit by hand.
 
 | Atom | web | gas-web | gas-panel | meet | chat | chat-chromium | mcp-apps | claude-code | android | email | pdf | slides | pptx | Source · license |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
@@ -551,6 +551,7 @@ Every atom declares, at the schema level, which of the **13 surfaces** it works 
 | `orbit_mark` | ✅ | ✅ | — | ✅ | ⚠️ | — | ✅ | — | ✅ | — | ⚠️ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `orbit_rings` | ✅ | ✅ | — | ✅ | ⚠️ | — | ✅ | — | ✅ | — | ⚠️ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `order_status_card` | ✅ | ✅ | — | ✅ | ⚠️ | — | ✅ | — | ✅ | ✅ | ✅ | ✅ | ✅ | [Shopify Polaris](https://github.com/Shopify/polaris) · MIT |
+| `org_chart` | ✅ | ✅ | — | — | — | — | ✅ | — | ✅ | — | ⚠️ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `otp_input` | ✅ | ✅ | — | ⚠️ | — | — | ✅ | — | ✅ | — | — | — | — | [shadcn/ui](https://github.com/shadcn-ui/ui) · MIT |
 | `page_header` | ✅ | ✅ | — | — | — | — | ✅ | — | ✅ | — | ✅ | ✅ | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `pagination` | ✅ | ✅ | — | ✅ | ⚠️ | — | ✅ | — | ✅ | ⚠️ | ⚠️ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
@@ -696,6 +697,7 @@ Every atom declares, at the schema level, which of the **13 surfaces** it works 
 | `surface_map` | ✅ | ✅ | — | — | — | — | ✅ | — | ✅ | — | — | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `surface_unlocked` | ✅ | ✅ | — | — | — | — | ✅ | — | ✅ | — | — | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `svg_path_draw` | ✅ | ✅ | — | ✅ | ⚠️ | — | ✅ | — | ✅ | — | ⚠️ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
+| `swimlane` | ✅ | ✅ | — | — | — | — | ✅ | — | ✅ | — | ⚠️ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `tab_bar` | ✅ | ✅ | — | ✅ | ⚠️ | — | ✅ | — | ✅ | ⚠️ | ⚠️ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `tab_group` | ✅ | ✅ | — | — | — | — | ✅ | — | ✅ | ⚠️ | — | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `tabbed_code` | ✅ | ✅ | — | ⚠️ | ⚠️ | — | ✅ | — | ✅ | ⚠️ | — | — | — | [shadcn/ui](https://github.com/a2uicatalog/a2ui) · MIT |
@@ -740,6 +742,7 @@ Every atom declares, at the schema level, which of the **13 surfaces** it works 
 | `user_greeting` | — | ✅ | — | — | — | — | ✅ | — | ✅ | — | — | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `user_profile_card` | — | ✅ | — | ✅ | — | — | ✅ | — | ✅ | — | — | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `variant_selector` | ✅ | ✅ | — | ✅ | — | — | ✅ | — | ✅ | — | — | — | — | [OpenUI / Thesys](https://github.com/thesysdev/openui) · MIT |
+| `venn_diagram` | ✅ | ✅ | — | — | — | — | ✅ | — | ✅ | — | ⚠️ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `version_badge` | ✅ | ✅ | — | — | ⚠️ | — | ✅ | — | ✅ | ⚠️ | — | — | — | [Flowbite](https://github.com/a2uicatalog/a2ui) · MIT |
 | `versus_block` | ✅ | ✅ | — | ✅ | ⚠️ | — | ✅ | — | ✅ | ⚠️ | — | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `video_card` | ✅ | ✅ | — | ✅ | ⚠️ | — | ✅ | — | ✅ | ⚠️ | — | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
@@ -771,7 +774,7 @@ Every atom declares, at the schema level, which of the **13 surfaces** it works 
 ### Renderer support
 
 <!-- renderer-matrix:start -->
-573 atoms · what draws each atom, per renderer, measured against React · generated from `public/spec.json` (`x-renderers`) by `scripts/gen_compat_matrix.py` — do not edit by hand. Per atom and per check: [a2uicatalog.ai/renderers/](https://a2uicatalog.ai/renderers/).
+576 atoms · what draws each atom, per renderer, measured against React · generated from `public/spec.json` (`x-renderers`) by `scripts/gen_compat_matrix.py` — do not edit by hand. Per atom and per check: [a2uicatalog.ai/renderers/](https://a2uicatalog.ai/renderers/).
 
 | Renderer | Version measured | Measured | Drawn | Native | With differences | Degraded | Not verified | Not supported | Not measured |
 |---|---|---|---|---|---|---|---|---|---|

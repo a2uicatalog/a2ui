@@ -1,6 +1,6 @@
 ---
 title: Catalogue A2UI — composants A2UI pour agents IA · A2UI Atomic Catalog
-description: Catalogue A2UI open source : 573 composants A2UI typés pour agents IA. Serveur MCP gratuit, sans clé ni inscription. Rendu web, Google Meet, Apps Script, Chat, Android, Slides.
+description: Catalogue A2UI open source : 576 composants A2UI typés pour agents IA. Serveur MCP gratuit, sans clé ni inscription. Rendu web, Google Meet, Apps Script, Chat, Android, Slides.
 canonical: https://a2uicatalog.ai/fr/
 generated_by: gen_page_twins.py
 ---
@@ -9,7 +9,7 @@ generated_by: gen_page_twins.py
 
 A2UI Atomic Catalog, en français
 
-L’**A2UI Atomic Catalog** (a2uicatalog) est un catalogue open source de 573 composants A2UI typés, les « atomes », avec lesquels un agent IA construit de vraies interfaces au lieu de générer du HTML. Le nom du projet reste en anglais ; le reste du site aussi.
+L’**A2UI Atomic Catalog** (a2uicatalog) est un catalogue open source de 576 composants A2UI typés, les « atomes », avec lesquels un agent IA construit de vraies interfaces au lieu de générer du HTML. Le nom du projet reste en anglais ; le reste du site aussi.
 
 ## Qu’est-ce qu’A2UI ?
 
@@ -17,7 +17,7 @@ A2UI (Agent-to-User Interface) est un protocole ouvert de Google. L’agent déc
 
 ## Ce que contient le catalogue
 
-- 573 atomes typés (cartes, tableaux, graphiques, formulaires…), chacun avec son schéma de champs dans [`/spec.json`](https://a2uicatalog.ai/spec.json).
+- 576 atomes typés (cartes, tableaux, graphiques, formulaires…), chacun avec son schéma de champs dans [`/spec.json`](https://a2uicatalog.ai/spec.json).
 - Un serveur MCP gratuit à l’adresse `https://a2uicatalog.ai/mcp`, sans clé d’API ni inscription, inscrit au registre officiel MCP sous `ai.a2uicatalog/catalog`.
 - Une API REST décrite en OpenAPI 3.1 : `POST /api/render` renvoie une page HTML complète, et un bac à sable (`/api/sandbox`) permet de tester sans entamer le quota.
 - Des moteurs de rendu pour le web, Google Meet, Google Apps Script, Google Chat, les hôtes MCP Apps et Android, ainsi que la génération de présentations Google Slides et PowerPoint.

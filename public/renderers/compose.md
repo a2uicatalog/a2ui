@@ -8,11 +8,11 @@ Compose atoms are our own native Compose components (about 500 registered custom
 - Platform: Compose Desktop on the JVM (Jetpack Compose family); not Android
 - Measured: 2026-11-13
 
-## Coverage of the 573 public atoms
+## Coverage of the 576 public atoms
 
 - Native: 533
 - Not supported: 37
-- Not measured: 3
+- Not measured: 6
 
 ## Not supported (37)
 
@@ -54,9 +54,9 @@ Compose atoms are our own native Compose components (about 500 registered custom
 - `video_checkpoint`: component type unknown to the renderer
 - `video_pair`: component type unknown to the renderer
 
-## Not measured (3)
+## Not measured (6)
 
-`choropleth_map`, `geo_map`, `motion_map3d`
+`choropleth_map`, `geo_map`, `motion_map3d`, `org_chart`, `swimlane`, `venn_diagram`
 
 Overview: https://a2uicatalog.ai/renderers/
 

@@ -42,7 +42,12 @@ def test_all_twelve_are_preview_atoms_in_the_schema_and_a_pack():
     d = {a["type"]: a for a in yaml.safe_load((root / "atoms/schema.yaml").read_text())["blocks"]}
     packs = (root / "atoms/atom-packs.yaml").read_text()
     for t in ATOMS:
-        assert d[t].get("stage") == ("stable" if t == "treemap" else "preview"), t  # promoted to stable 2026-10-27 (owner: D3 set, I-d3-stable)
+        # treemap was promoted 2026-10-27 (owner: D3 set); swimlane, org_chart and venn_diagram on 2026-11-22 (owner: "promote
+        # org_chart, swimlane, venn_diagram"). A promoted atom has no stage line (stable is the default) or an explicit stable.
+        if t in ("treemap", "swimlane", "org_chart", "venn_diagram"):
+            assert d[t].get("stage") in (None, "stable"), t
+        else:
+            assert d[t].get("stage") == "preview", t
         assert re.search(rf"^- {t}$", packs, re.M), t
 
 

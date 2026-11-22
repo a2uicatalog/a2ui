@@ -20974,7 +20974,6 @@ blocks:
   notes: The actual bar grows with p. Status is stated in words so colour is never the only signal.
   source: *ifg002
 - type: swimlane
-  stage: preview
   description: 'Rows are roles, columns are phases. Each task is a card with a number that gives the order, placed in its role and phase.
     At most two tasks share a cell. Motion-ready: every moving value reads --p (build progress 0 to 1, default 1) through a per-item
     --k, so a motion_timeline track on p builds it item by item and the standalone render is the finished picture; reduced motion shows
@@ -21130,7 +21129,6 @@ blocks:
     after four top-level groups.
   source: *ifg002
 - type: venn_diagram
-  stage: preview
   description: 'Two circles with the first set, the shared items and the second set, up to four items each; or, when set_c_name is given, three fixed circles with items in all seven regions (each set alone, each pair, all three). Motion-ready: every moving
     value reads --p (build progress 0 to 1, default 1) through a per-item --k, so a motion_timeline track on p builds it item by item
     and the standalone render is the finished picture; reduced motion shows the end state.'
@@ -21182,7 +21180,6 @@ blocks:
   notes: Not for flows or sequences. Notes appear in number order with p.
   source: *ifg002
 - type: org_chart
-  stage: preview
   description: 'A hierarchy built from a list of nodes with parents, drawn as boxes in tiers joined by connector lines (layout "tree", the
     default), as a dendrogram with every leaf on the last tier (layout "cluster"), or as a radial tree with the root at the centre and
     rotated labels (layout "radial"). It is a real nested list in every layout, so it reads in order to a screen reader. Motion-ready: every moving value reads --p (build progress 0 to 1, default 1) through a per-item --k,

@@ -8,9 +8,9 @@ No v1.0 export exists for Lit, so v1.0 was not measured. Dark 360 px is not a ga
 - Platform: web (Lit web components, Chromium)
 - Measured: 2026-11-13
 
-## Coverage of the 573 public atoms
+## Coverage of the 576 public atoms
 
-- Drawn: 518
+- Drawn: 521
 - Drawn with differences: 2
 - Not verified: 31
 - Not supported: 0

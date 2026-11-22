@@ -8,9 +8,9 @@ CopilotKit draws our atoms inside ITS wrapper and theme, so the custom-lane numb
 - Platform: web (React, stock CopilotKit renderer, Chromium)
 - Measured: 2026-11-13
 
-## Coverage of the 573 public atoms
+## Coverage of the 576 public atoms
 
-- Drawn: 482
+- Drawn: 485
 - Drawn with differences: 35
 - Not verified: 34
 - Not supported: 0

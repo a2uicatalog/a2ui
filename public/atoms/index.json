@@ -1,6 +1,6 @@
 {
  "catalogId": "a2ui-atoms-v1",
- "atomCount": 573,
+ "atomCount": 576,
  "fullSpec": "https://a2uicatalog.ai/spec.json",
  "atoms": [
   {
@@ -6121,8 +6121,38 @@
    ]
   },
   {
+   "type": "swimlane",
+   "compact": "swimlane: who does which step, in order, across phases",
+   "surfaces": [
+    "web",
+    "google-apps-script-web",
+    "mcp-apps",
+    "android"
+   ]
+  },
+  {
    "type": "treemap",
    "compact": "treemap: part-to-whole by category or nested path",
+   "surfaces": [
+    "web",
+    "google-apps-script-web",
+    "mcp-apps",
+    "android"
+   ]
+  },
+  {
+   "type": "venn_diagram",
+   "compact": "venn diagram: what two or three sets share",
+   "surfaces": [
+    "web",
+    "google-apps-script-web",
+    "mcp-apps",
+    "android"
+   ]
+  },
+  {
+   "type": "org_chart",
+   "compact": "org chart: a bounded tree of up to thirty nodes, as tiers, a dendrogram or a radial tree",
    "surfaces": [
     "web",
     "google-apps-script-web",

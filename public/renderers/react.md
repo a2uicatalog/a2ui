@@ -8,9 +8,9 @@ The reference renderer: the other web renderers are compared with it pixel for p
 - Platform: web (React, Chromium)
 - Measured: 2026-11-13
 
-## Coverage of the 573 public atoms
+## Coverage of the 576 public atoms
 
-- Drawn: 517
+- Drawn: 520
 - Drawn with differences: 0
 - Not verified: 34
 - Not supported: 0

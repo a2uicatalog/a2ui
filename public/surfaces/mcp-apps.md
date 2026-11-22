@@ -1,6 +1,6 @@
 ---
-title: A2UI on MCP Apps: 563 of 573 components — A2UI Atomic Catalog
-description: 563 of the 573 A2UI Atomic Catalog components render on MCP Apps, each with a live preview, so an AI agent can show real UI there instead of generating HTML.
+title: A2UI on MCP Apps: 566 of 576 components — A2UI Atomic Catalog
+description: 566 of the 576 A2UI Atomic Catalog components render on MCP Apps, each with a live preview, so an AI agent can show real UI there instead of generating HTML.
 canonical: https://a2uicatalog.ai/surfaces/mcp-apps/
 generated_by: gen_page_twins.py
 ---
@@ -21,7 +21,7 @@ Playground — edit the payload, re-render the view · [Open full-screen →](./
 
  Handshake: the iframe (the **View**) posts `ui/initialize` to this page (the **Host**) on load. This page replies with a `McpUiInitializeResult`, the View acknowledges with `ui/notifications/initialized`, and this page then delivers the payload via `ui/notifications/tool-result` — the exact message sequence defined in the MCP Apps spec ([apps.mdx](https://github.com/modelcontextprotocol/ext-apps/blob/main/specification/2026-01-26/apps.mdx)). No `allow-same-origin` on the iframe — the View genuinely cannot reach this page's DOM.
 
-563 of 573 catalog atoms also render on this surface
+566 of 576 catalog atoms also render on this surface
 
 [Intro](https://a2uicatalog.ai/atoms/intro/)
 
@@ -2191,9 +2191,21 @@ animated looping SVG scene of a place (53 ready presets) from verified clipart
 
 one verified vector clipart image by id
 
+[Swimlane](https://a2uicatalog.ai/atoms/swimlane/)
+
+swimlane: who does which step, in order, across phases
+
 [Treemap](https://a2uicatalog.ai/atoms/treemap/)
 
 treemap: part-to-whole by category or nested path
+
+[Venn Diagram](https://a2uicatalog.ai/atoms/venn_diagram/)
+
+venn diagram: what two or three sets share
+
+[Org Chart](https://a2uicatalog.ai/atoms/org_chart/)
+
+org chart: a bounded tree of up to thirty nodes, as tiers, a dendrogram or a radial tree
 
 [Histogram](https://a2uicatalog.ai/atoms/histogram/)
 

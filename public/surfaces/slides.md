@@ -1,6 +1,6 @@
 ---
-title: A2UI on Google Slides: 79 of 573 components — A2UI Atomic Catalog
-description: 79 of the 573 A2UI Atomic Catalog components render on Google Slides, each with a live preview, so an AI agent can show real UI there instead of generating HTML.
+title: A2UI on Google Slides: 79 of 576 components — A2UI Atomic Catalog
+description: 79 of the 576 A2UI Atomic Catalog components render on Google Slides, each with a live preview, so an AI agent can show real UI there instead of generating HTML.
 canonical: https://a2uicatalog.ai/surfaces/slides/
 generated_by: gen_page_twins.py
 ---
@@ -9,7 +9,7 @@ generated_by: gen_page_twins.py
 
  **Slides, from a payload.** `tools/deck/payload_to_deck.py` turns an A2UI payload into a PPTX that opens in Google Slides: one recipe per atom, a text-fit check with real font metrics, and a report of any atom it could not convert. The previews below are the web rendering; the slide layout is the deck's own, not a pixel copy. Files are checked by converting them in Google Slides and reading back the result. Four sample decks also opened in desktop PowerPoint without problems; that is one person on one machine, so treat PowerPoint as lightly checked, not guaranteed.
 
-79 of 573 catalog atoms also render on this surface
+79 of 576 catalog atoms also render on this surface
 
 [Intro](https://a2uicatalog.ai/atoms/intro/)
 
@@ -83,7 +83,6 @@ large display number pulled from prose for emphasis descriptive label.
 [Feature Matrix](https://a2uicatalog.ai/atoms/feature_matrix/)
 
 features versus plans comparison matrix
-
 [Pricing Tier Card](https://a2uicatalog.ai/atoms/pricing_tier_card/)
 
 single pricing plan card with features list
@@ -243,7 +242,6 @@ asymmetric bento-box feature tile grid — MagicUI/shadcn pattern
 [Cta Section](https://a2uicatalog.ai/atoms/cta_section/)
 
 full-width CTA banner with headline and buttons — Tailwind UI pattern
-
 [Score Summary](https://a2uicatalog.ai/atoms/score_summary/)
 
 end-of-exercise score card with correct/total, percentage, grade, and CTA

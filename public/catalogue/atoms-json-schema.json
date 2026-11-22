@@ -6553,6 +6553,12 @@
           "page_param": {
             "type": "number"
           },
+          "current": {
+            "type": "integer"
+          },
+          "total": {
+            "type": "integer"
+          },
           "enter": {
             "description": "Optional entrance motion for this block: an effect name, or {effect, ease, duration, delay, on}.",
             "oneOf": [
@@ -6990,6 +6996,10 @@
                 "for in-document navigation on web/pdf)"
               ]
             }
+          },
+          "items": {
+            "type": "string",
+            "format": "uri"
           },
           "enter": {
             "description": "Optional entrance motion for this block: an effect name, or {effect, ease, duration, delay, on}.",
@@ -8013,6 +8023,9 @@
           "card_image_url": {
             "type": "string"
           },
+          "content": {
+            "type": "string"
+          },
           "enter": {
             "description": "Optional entrance motion for this block: an effect name, or {effect, ease, duration, delay, on}.",
             "oneOf": [
@@ -8120,7 +8133,8 @@
           "type",
           "trigger_element",
           "card_title",
-          "card_content"
+          "card_content",
+          "content"
         ],
         "additionalProperties": false
       },
@@ -8143,6 +8157,9 @@
               "string The main content to be shown",
               "hidden."
             ]
+          },
+          "title": {
+            "type": "string"
           },
           "enter": {
             "description": "Optional entrance motion for this block: an effect name, or {effect, ease, duration, delay, on}.",
@@ -8250,7 +8267,8 @@
         "required": [
           "type",
           "toggle_label",
-          "content"
+          "content",
+          "title"
         ],
         "additionalProperties": false
       },
@@ -9321,6 +9339,9 @@
             "type": "string"
           },
           "right_label": {
+            "type": "string"
+          },
+          "snippets": {
             "type": "string"
           },
           "enter": {
@@ -10633,6 +10654,9 @@
           },
           "is_interactive": {
             "type": "boolean"
+          },
+          "label": {
+            "type": "string"
           },
           "enter": {
             "description": "Optional entrance motion for this block: an effect name, or {effect, ease, duration, delay, on}.",
@@ -12249,6 +12273,13 @@
               "array"
             ]
           },
+          "title": {
+            "type": "string",
+            "enum": [
+              "string. Bold heading shown above the capability table",
+              "list."
+            ]
+          },
           "enter": {
             "description": "Optional entrance motion for this block: an effect name, or {effect, ease, duration, delay, on}.",
             "oneOf": [
@@ -12353,7 +12384,8 @@
           }
         },
         "required": [
-          "type"
+          "type",
+          "title"
         ],
         "additionalProperties": false
       },
@@ -13003,6 +13035,9 @@
             "type": "integer"
           },
           "name": {
+            "type": "string"
+          },
+          "label": {
             "type": "string"
           },
           "enter": {
@@ -14963,6 +14998,9 @@
               "cmd. The console design theme."
             ]
           },
+          "lines": {
+            "type": "string"
+          },
           "enter": {
             "description": "Optional entrance motion for this block: an effect name, or {effect, ease, duration, delay, on}.",
             "oneOf": [
@@ -15070,7 +15108,8 @@
           "type",
           "command",
           "output",
-          "shell"
+          "shell",
+          "lines"
         ],
         "additionalProperties": false
       },
@@ -16956,6 +16995,9 @@
             "const": "summary_box"
           },
           "text": {
+            "type": "string"
+          },
+          "title": {
             "type": "string"
           },
           "enter": {
@@ -21753,6 +21795,10 @@
           "user_handle": {
             "type": "string"
           },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
           "enter": {
             "description": "Optional entrance motion for this block: an effect name, or {effect, ease, duration, delay, on}.",
             "oneOf": [
@@ -21859,7 +21905,8 @@
         "required": [
           "type",
           "pen_id",
-          "user_handle"
+          "user_handle",
+          "url"
         ],
         "additionalProperties": false
       },
@@ -21873,6 +21920,10 @@
           "project_id": {
             "type": "string"
           },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
           "enter": {
             "description": "Optional entrance motion for this block: an effect name, or {effect, ease, duration, delay, on}.",
             "oneOf": [
@@ -21978,7 +22029,8 @@
         },
         "required": [
           "type",
-          "project_id"
+          "project_id",
+          "url"
         ],
         "additionalProperties": false
       },
@@ -21992,6 +22044,10 @@
           "gist_id": {
             "type": "string"
           },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
           "enter": {
             "description": "Optional entrance motion for this block: an effect name, or {effect, ease, duration, delay, on}.",
             "oneOf": [
@@ -22097,7 +22153,8 @@
         },
         "required": [
           "type",
-          "gist_id"
+          "gist_id",
+          "url"
         ],
         "additionalProperties": false
       },
@@ -22111,6 +22168,10 @@
           "tweet_id": {
             "type": "string"
           },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
           "enter": {
             "description": "Optional entrance motion for this block: an effect name, or {effect, ease, duration, delay, on}.",
             "oneOf": [
@@ -22216,7 +22277,8 @@
         },
         "required": [
           "type",
-          "tweet_id"
+          "tweet_id",
+          "url"
         ],
         "additionalProperties": false
       },
@@ -22229,6 +22291,10 @@
           },
           "presentation_id": {
             "type": "string"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
           },
           "enter": {
             "description": "Optional entrance motion for this block: an effect name, or {effect, ease, duration, delay, on}.",
@@ -22352,6 +22418,10 @@
           "loop": {
             "type": "boolean"
           },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
           "enter": {
             "description": "Optional entrance motion for this block: an effect name, or {effect, ease, duration, delay, on}.",
             "oneOf": [
@@ -22458,7 +22528,8 @@
         "required": [
           "type",
           "src_url",
-          "loop"
+          "loop",
+          "url"
         ],
         "additionalProperties": false
       },
@@ -22471,6 +22542,9 @@
           },
           "embed_url": {
             "type": "string"
+          },
+          "url": {
+            "type": "integer"
           },
           "enter": {
             "description": "Optional entrance motion for this block: an effect name, or {effect, ease, duration, delay, on}.",
@@ -22577,7 +22651,8 @@
         },
         "required": [
           "type",
-          "embed_url"
+          "embed_url",
+          "url"
         ],
         "additionalProperties": false
       },
@@ -23958,6 +24033,24 @@
           },
           "uptime": {
             "type": "number"
+          },
+          "days": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                },
+                "date": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "status"
+              ]
+            }
           },
           "enter": {
             "description": "Optional entrance motion for this block: an effect name, or {effect, ease, duration, delay, on}.",
@@ -27189,6 +27282,9 @@
           "rules": {
             "type": "string"
           },
+          "options": {
+            "type": "string"
+          },
           "enter": {
             "description": "Optional entrance motion for this block: an effect name, or {effect, ease, duration, delay, on}.",
             "oneOf": [
@@ -27468,6 +27564,9 @@
           },
           "rules": {
             "type": "string"
+          },
+          "value": {
+            "type": "integer"
           },
           "enter": {
             "description": "Optional entrance motion for this block: an effect name, or {effect, ease, duration, delay, on}.",
@@ -78863,6 +78962,156 @@
         "properties": {
           "type": {
             "type": "string",
+            "const": "swimlane"
+          },
+          "title": {
+            "type": "string"
+          },
+          "roles": {
+            "type": "string"
+          },
+          "phases": {
+            "type": "string"
+          },
+          "tasks": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "role": {
+                  "type": "string"
+                },
+                "phase": {
+                  "type": "string"
+                },
+                "task": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "role",
+                "phase",
+                "task"
+              ]
+            }
+          },
+          "enter": {
+            "description": "Optional entrance motion for this block: an effect name, or {effect, ease, duration, delay, on}.",
+            "oneOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "fade",
+                  "rise",
+                  "drop",
+                  "slide-left",
+                  "slide-right",
+                  "scale",
+                  "blur",
+                  "wipe",
+                  "pop"
+                ]
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "effect": {
+                    "type": "string",
+                    "enum": [
+                      "fade",
+                      "rise",
+                      "drop",
+                      "slide-left",
+                      "slide-right",
+                      "scale",
+                      "blur",
+                      "wipe",
+                      "pop"
+                    ]
+                  },
+                  "ease": {
+                    "oneOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "linear",
+                          "ease",
+                          "ease-in",
+                          "ease-out",
+                          "ease-in-out",
+                          "overshoot",
+                          "anticipate",
+                          "standard",
+                          "emphasized",
+                          "decelerate",
+                          "accelerate",
+                          "expo-out",
+                          "quint-out",
+                          "quart-in-out",
+                          "expo-in-out"
+                        ]
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "number"
+                        },
+                        "minItems": 4,
+                        "maxItems": 4
+                      }
+                    ]
+                  },
+                  "duration": {
+                    "oneOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "instant",
+                          "quick",
+                          "base",
+                          "slow",
+                          "cinematic"
+                        ]
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 8000
+                      }
+                    ]
+                  },
+                  "delay": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  },
+                  "on": {
+                    "type": "string",
+                    "enum": [
+                      "load",
+                      "view"
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "required": [
+          "type",
+          "roles",
+          "phases",
+          "tasks"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
             "const": "treemap"
           },
           "title": {
@@ -79014,6 +79263,314 @@
         },
         "required": [
           "type"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "venn_diagram"
+          },
+          "title": {
+            "type": "string"
+          },
+          "set_a_name": {
+            "type": "string"
+          },
+          "set_b_name": {
+            "type": "string"
+          },
+          "set_a_exclusive": {
+            "type": "string"
+          },
+          "set_b_exclusive": {
+            "type": "string"
+          },
+          "intersection": {
+            "type": "string"
+          },
+          "set_c_name": {
+            "type": "string"
+          },
+          "set_c_exclusive": {
+            "type": "string"
+          },
+          "intersection_ac": {
+            "type": "string"
+          },
+          "intersection_bc": {
+            "type": "string"
+          },
+          "intersection_abc": {
+            "type": "string"
+          },
+          "version": {
+            "type": "integer"
+          },
+          "enter": {
+            "description": "Optional entrance motion for this block: an effect name, or {effect, ease, duration, delay, on}.",
+            "oneOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "fade",
+                  "rise",
+                  "drop",
+                  "slide-left",
+                  "slide-right",
+                  "scale",
+                  "blur",
+                  "wipe",
+                  "pop"
+                ]
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "effect": {
+                    "type": "string",
+                    "enum": [
+                      "fade",
+                      "rise",
+                      "drop",
+                      "slide-left",
+                      "slide-right",
+                      "scale",
+                      "blur",
+                      "wipe",
+                      "pop"
+                    ]
+                  },
+                  "ease": {
+                    "oneOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "linear",
+                          "ease",
+                          "ease-in",
+                          "ease-out",
+                          "ease-in-out",
+                          "overshoot",
+                          "anticipate",
+                          "standard",
+                          "emphasized",
+                          "decelerate",
+                          "accelerate",
+                          "expo-out",
+                          "quint-out",
+                          "quart-in-out",
+                          "expo-in-out"
+                        ]
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "number"
+                        },
+                        "minItems": 4,
+                        "maxItems": 4
+                      }
+                    ]
+                  },
+                  "duration": {
+                    "oneOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "instant",
+                          "quick",
+                          "base",
+                          "slow",
+                          "cinematic"
+                        ]
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 8000
+                      }
+                    ]
+                  },
+                  "delay": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  },
+                  "on": {
+                    "type": "string",
+                    "enum": [
+                      "load",
+                      "view"
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "required": [
+          "type",
+          "set_a_name",
+          "set_b_name",
+          "set_a_exclusive",
+          "set_b_exclusive",
+          "intersection"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "org_chart"
+          },
+          "title": {
+            "type": "string"
+          },
+          "nodes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                },
+                "parent_id (max 24": {
+                  "type": "string"
+                },
+                "empty for the root)": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "label",
+                "parent_id (max 24",
+                "empty for the root)"
+              ]
+            }
+          },
+          "layout": {
+            "type": "string"
+          },
+          "version": {
+            "type": "integer"
+          },
+          "enter": {
+            "description": "Optional entrance motion for this block: an effect name, or {effect, ease, duration, delay, on}.",
+            "oneOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "fade",
+                  "rise",
+                  "drop",
+                  "slide-left",
+                  "slide-right",
+                  "scale",
+                  "blur",
+                  "wipe",
+                  "pop"
+                ]
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "effect": {
+                    "type": "string",
+                    "enum": [
+                      "fade",
+                      "rise",
+                      "drop",
+                      "slide-left",
+                      "slide-right",
+                      "scale",
+                      "blur",
+                      "wipe",
+                      "pop"
+                    ]
+                  },
+                  "ease": {
+                    "oneOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "linear",
+                          "ease",
+                          "ease-in",
+                          "ease-out",
+                          "ease-in-out",
+                          "overshoot",
+                          "anticipate",
+                          "standard",
+                          "emphasized",
+                          "decelerate",
+                          "accelerate",
+                          "expo-out",
+                          "quint-out",
+                          "quart-in-out",
+                          "expo-in-out"
+                        ]
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "number"
+                        },
+                        "minItems": 4,
+                        "maxItems": 4
+                      }
+                    ]
+                  },
+                  "duration": {
+                    "oneOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "instant",
+                          "quick",
+                          "base",
+                          "slow",
+                          "cinematic"
+                        ]
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 8000
+                      }
+                    ]
+                  },
+                  "delay": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  },
+                  "on": {
+                    "type": "string",
+                    "enum": [
+                      "load",
+                      "view"
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "required": [
+          "type",
+          "nodes"
         ],
         "additionalProperties": false
       },

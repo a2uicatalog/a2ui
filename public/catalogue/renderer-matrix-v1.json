@@ -62,7 +62,7 @@
   "not_supported": "draws nothing or errors",
   "not_measured": "no per-atom data (no example, or the example is invalid)"
  },
- "atom_count": 573,
+ "atom_count": 576,
  "trademark_note": "React, Angular, Lit, CopilotKit, Vue and their logos are trademarks or registered trademarks of their respective owners. They are used here only to identify the renderers this catalog has been tested with, and do not imply affiliation with or endorsement by those owners. Logo artwork: simple-icons (CC0) for React, Lit, Angular and Vue, and CopilotKit's public repository for its mark; the marks remain their owners'.",
  "trademark_note_extra": "Flutter and Compose are likewise trademarks of their respective owners; no logo is shown for them.",
  "independence_note": "Independent and unofficial; not affiliated with Google, CopilotKit or the Vue project.",
@@ -95,7 +95,7 @@
     "core_sha256": "0143667f9e044144b428fd7459a7a652acb268d467edc028a81fbf3505a27fa5",
     "css_sha256": "150035c39f2c53826ab52c8c3f66b1dee46fac1bcbc4539299c8da39c9c50412",
     "renderer_bundle_sha256": "2af466d6ea815d4383bd2e58843e708374ab6af7a93acae4d535e37002a4ca73",
-    "results_file_sha256": "98c863092401793a9066e6db996eff55eca1812f0eff0408371e4a959fe042f3",
+    "results_file_sha256": "99786bacbd64a57d2eae098df1fd8697e53b94c5dfeef8d63397ca4dbbada84c",
     "facts": {
      "determinism": {
       "mode": "det-ab",
@@ -114,12 +114,12 @@
     }
    },
    "coverage": {
-    "drawn": 517,
+    "drawn": 520,
     "drawn_with_differences": 0,
     "not_verified": 34,
     "not_supported": 0,
     "not_measured": 22,
-    "total": 573
+    "total": 576
    }
   },
   "lit": {
@@ -150,7 +150,7 @@
     "core_sha256": "0143667f9e044144b428fd7459a7a652acb268d467edc028a81fbf3505a27fa5",
     "css_sha256": "150035c39f2c53826ab52c8c3f66b1dee46fac1bcbc4539299c8da39c9c50412",
     "renderer_bundle_sha256": "2af466d6ea815d4383bd2e58843e708374ab6af7a93acae4d535e37002a4ca73",
-    "results_file_sha256": "2624b52fe9c1dbae911dde13adf079e3767b2444ba69d2ef9ccb9b4eecf0f33f",
+    "results_file_sha256": "9af5b7c3bb2de62212d0d422be913495b7467b10f5f5b4f5f1a1c502e5983ec9",
     "facts": {
      "determinism": {
       "mode": "det-ab",
@@ -169,12 +169,12 @@
     }
    },
    "coverage": {
-    "drawn": 518,
+    "drawn": 521,
     "drawn_with_differences": 2,
     "not_verified": 31,
     "not_supported": 0,
     "not_measured": 22,
-    "total": 573
+    "total": 576
    }
   },
   "angular": {
@@ -205,7 +205,7 @@
     "core_sha256": "0143667f9e044144b428fd7459a7a652acb268d467edc028a81fbf3505a27fa5",
     "css_sha256": "150035c39f2c53826ab52c8c3f66b1dee46fac1bcbc4539299c8da39c9c50412",
     "renderer_bundle_sha256": "2af466d6ea815d4383bd2e58843e708374ab6af7a93acae4d535e37002a4ca73",
-    "results_file_sha256": "2e77afdafda3cdba4937676b522107dab09080da6c16e8f0e55f7abffb588067",
+    "results_file_sha256": "b9416af53de05d85d6f8865d611178fa0ced296f153581493e0cd4fdbc52ea66",
     "facts": {
      "determinism": {
       "mode": "det-ab",
@@ -224,12 +224,12 @@
     }
    },
    "coverage": {
-    "drawn": 517,
+    "drawn": 520,
     "drawn_with_differences": 3,
     "not_verified": 31,
     "not_supported": 0,
     "not_measured": 22,
-    "total": 573
+    "total": 576
    }
   },
   "copilotkit": {
@@ -268,7 +268,7 @@
     "core_sha256": "0143667f9e044144b428fd7459a7a652acb268d467edc028a81fbf3505a27fa5",
     "css_sha256": "150035c39f2c53826ab52c8c3f66b1dee46fac1bcbc4539299c8da39c9c50412",
     "renderer_bundle_sha256": "2af466d6ea815d4383bd2e58843e708374ab6af7a93acae4d535e37002a4ca73",
-    "results_file_sha256": "82038497edd31f190a28e5563ce9655828583805a02e2b56e4d14375a3090061",
+    "results_file_sha256": "bf2f50bcceed4489d2eb5fccd66624ffa08c95d560f5c42dee86f00be08914c9",
     "facts": {
      "determinism": {
       "mode": "det-ab",
@@ -287,12 +287,12 @@
     }
    },
    "coverage": {
-    "drawn": 482,
+    "drawn": 485,
     "drawn_with_differences": 35,
     "not_verified": 34,
     "not_supported": 0,
     "not_measured": 22,
-    "total": 573
+    "total": 576
    }
   },
   "a2ui-vue": {
@@ -323,7 +323,7 @@
     "core_sha256": "0143667f9e044144b428fd7459a7a652acb268d467edc028a81fbf3505a27fa5",
     "css_sha256": "150035c39f2c53826ab52c8c3f66b1dee46fac1bcbc4539299c8da39c9c50412",
     "renderer_bundle_sha256": "2af466d6ea815d4383bd2e58843e708374ab6af7a93acae4d535e37002a4ca73",
-    "results_file_sha256": "85383b44cb081cca021ad32b4f9c8f7ea2a3128be433b65e051ac57b78524568",
+    "results_file_sha256": "41a139d06965051789668e4967855f4c8519dc2f73223f66d546eeb21aaf1a84",
     "facts": {
      "determinism": {
       "mode": "det-ab",
@@ -342,12 +342,12 @@
     }
    },
    "coverage": {
-    "drawn": 482,
+    "drawn": 485,
     "drawn_with_differences": 35,
     "not_verified": 34,
     "not_supported": 0,
     "not_measured": 22,
-    "total": 573
+    "total": 576
    }
   },
   "flutter": {
@@ -377,14 +377,14 @@
     "core_sha256": null,
     "css_sha256": null,
     "renderer_bundle_sha256": null,
-    "results_file_sha256": "e12268b3b2c04e97e1f0f83a8a7c22d5e31a0933f209909c033bd910e23840fa"
+    "results_file_sha256": "d09bc930d2613f2f00fb4fc5409e9c1bb53427a2da0d268df747e32fe7a72266"
    },
    "coverage": {
     "native": 501,
     "degraded": 30,
-    "not_supported": 37,
+    "not_supported": 40,
     "not_measured": 5,
-    "total": 573
+    "total": 576
    }
   },
   "compose": {
@@ -417,7 +417,7 @@
     "core_sha256": null,
     "css_sha256": null,
     "renderer_bundle_sha256": null,
-    "results_file_sha256": "30e78d9cfeea1ac2e98952c3d7d4035a8e2f9c105fabe4dbacf15cd47d6d2468",
+    "results_file_sha256": "de6a12f6b05ae295437b2297b6aa5944d93248bab80c95ac75c6367a2eafab83",
     "facts": {
      "basic_lane": {
       "cases": 670,
@@ -444,8 +444,8 @@
    "coverage": {
     "native": 533,
     "not_supported": 37,
-    "not_measured": 3,
-    "total": 573
+    "not_measured": 6,
+    "total": 576
    }
   }
  },
@@ -99017,6 +99017,268 @@
     "core_sha256": null
    }
   },
+  "org_chart": {
+   "react": {
+    "status": "drawn",
+    "reasons": [],
+    "cases": 1,
+    "worst_case": "org_chart",
+    "dialect": "v1.0",
+    "checks": {
+     "painted": "pass",
+     "text_visible": "pass",
+     "pixel": {
+      "light480": "reference",
+      "dark480": "reference",
+      "light360": "reference",
+      "dark360": "reference"
+     },
+     "overflow_360": "pass",
+     "contrast": {
+      "light480": "n/a",
+      "dark480": "pass",
+      "light360": "pass",
+      "dark360": "pass"
+     },
+     "behaviour": "n/a (no probe)",
+     "stability": "stable",
+     "text_parity": "n/a",
+     "notes": [],
+     "sources": {
+      "behaviour": "f111",
+      "contrast": "f111",
+      "overflow_360": "f111",
+      "painted": "f111",
+      "pixel": "f111",
+      "stability": "det-ab",
+      "text_parity": "n/a",
+      "text_visible": "f111"
+     }
+    },
+    "notes": [],
+    "run_id": "react-det-ab-20261113",
+    "measured": "2026-11-13",
+    "renderer_version": "@a2ui/react 0.15.0 (web_core 0.15.0)",
+    "measured_on": "shipped",
+    "core_sha256": "0143667f9e044144b428fd7459a7a652acb268d467edc028a81fbf3505a27fa5"
+   },
+   "lit": {
+    "status": "drawn",
+    "reasons": [],
+    "cases": 1,
+    "worst_case": "org_chart",
+    "dialect": "v0.9",
+    "checks": {
+     "painted": "pass",
+     "text_visible": "pass",
+     "pixel": {
+      "light480": "pass",
+      "dark480": "pass",
+      "light360": "pass",
+      "dark360": "pass"
+     },
+     "overflow_360": "pass",
+     "contrast": {
+      "light480": "pass",
+      "dark480": "pass",
+      "light360": "pass",
+      "dark360": "pass"
+     },
+     "behaviour": "n/a (no probe)",
+     "stability": "stable",
+     "text_parity": "pass",
+     "notes": [],
+     "sources": {
+      "behaviour": "f111",
+      "contrast": "det-ab",
+      "overflow_360": "det-ab",
+      "painted": "f111",
+      "pixel": "det-ab",
+      "stability": "det-ab",
+      "text_parity": "det-ab",
+      "text_visible": "f111"
+     }
+    },
+    "notes": [],
+    "run_id": "lit-det-ab-20261113",
+    "measured": "2026-11-13",
+    "renderer_version": "@a2ui/lit 0.15.0 (web_core 0.15.0)",
+    "measured_on": "shipped",
+    "core_sha256": "0143667f9e044144b428fd7459a7a652acb268d467edc028a81fbf3505a27fa5"
+   },
+   "angular": {
+    "status": "drawn",
+    "reasons": [],
+    "cases": 1,
+    "worst_case": "org_chart",
+    "dialect": "v0.9",
+    "checks": {
+     "painted": "pass",
+     "text_visible": "pass",
+     "pixel": {
+      "light480": "pass",
+      "dark480": "pass",
+      "light360": "pass",
+      "dark360": "pass"
+     },
+     "overflow_360": "pass",
+     "contrast": {
+      "light480": "pass",
+      "dark480": "pass",
+      "light360": "pass",
+      "dark360": "pass"
+     },
+     "behaviour": "n/a (no probe)",
+     "stability": "stable",
+     "text_parity": "pass",
+     "notes": [],
+     "sources": {
+      "behaviour": "f111",
+      "contrast": "det-ab",
+      "overflow_360": "det-ab",
+      "painted": "f111",
+      "pixel": "det-ab",
+      "stability": "det-ab",
+      "text_parity": "det-ab",
+      "text_visible": "f111"
+     }
+    },
+    "notes": [],
+    "run_id": "angular-det-ab-20261113",
+    "measured": "2026-11-13",
+    "renderer_version": "@a2ui/angular 0.14.0 (web_core 0.15.0)",
+    "measured_on": "shipped",
+    "core_sha256": "0143667f9e044144b428fd7459a7a652acb268d467edc028a81fbf3505a27fa5"
+   },
+   "copilotkit": {
+    "status": "drawn",
+    "reasons": [],
+    "cases": 1,
+    "worst_case": "org_chart",
+    "dialect": "v1.0",
+    "checks": {
+     "painted": "pass",
+     "text_visible": "pass",
+     "pixel": {
+      "light480": "pass",
+      "dark480": "pass",
+      "light360": "pass",
+      "dark360": "pass"
+     },
+     "overflow_360": "pass",
+     "contrast": {
+      "light480": "pass",
+      "dark480": "pass",
+      "light360": "pass",
+      "dark360": "pass"
+     },
+     "behaviour": "not_run",
+     "stability": "stable",
+     "text_parity": "pass",
+     "notes": [],
+     "sources": {
+      "behaviour": "ck187",
+      "contrast": "det-ab",
+      "overflow_360": "det-ab",
+      "painted": "ck187",
+      "pixel": "det-ab",
+      "stability": "det-ab",
+      "text_parity": "det-ab",
+      "text_visible": "ck187"
+     }
+    },
+    "notes": [],
+    "run_id": "copilotkit-1.87.0-det-ab-20261113",
+    "measured": "2026-11-13",
+    "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)",
+    "measured_on": "shipped",
+    "core_sha256": "0143667f9e044144b428fd7459a7a652acb268d467edc028a81fbf3505a27fa5"
+   },
+   "a2ui-vue": {
+    "status": "drawn",
+    "reasons": [],
+    "cases": 1,
+    "worst_case": "org_chart",
+    "dialect": "v0.9",
+    "checks": {
+     "painted": "pass",
+     "text_visible": "pass",
+     "pixel": {
+      "light480": "pass",
+      "dark480": "pass",
+      "light360": "pass",
+      "dark360": "pass"
+     },
+     "overflow_360": "pass",
+     "contrast": {
+      "light480": "pass",
+      "dark480": "pass",
+      "light360": "pass",
+      "dark360": "pass"
+     },
+     "behaviour": "n/a (no probe)",
+     "stability": "stable",
+     "text_parity": "pass",
+     "notes": [],
+     "sources": {
+      "behaviour": "f111",
+      "contrast": "det-ab",
+      "overflow_360": "det-ab",
+      "painted": "f111",
+      "pixel": "det-ab",
+      "stability": "det-ab",
+      "text_parity": "det-ab",
+      "text_visible": "f111"
+     }
+    },
+    "notes": [],
+    "run_id": "a2ui-vue-det-ab-20261113",
+    "measured": "2026-11-13",
+    "renderer_version": "a2ui-vue 0.9.5 (Vue 3.5.13, web_core 0.9.1)",
+    "measured_on": "shipped",
+    "core_sha256": "0143667f9e044144b428fd7459a7a652acb268d467edc028a81fbf3505a27fa5"
+   },
+   "flutter": {
+    "status": "not_supported",
+    "reasons": [
+     "unknown_component_type"
+    ],
+    "cases": 1,
+    "worst_case": "org_chart",
+    "dialect": "v1.0",
+    "checks": {
+     "painted": "unsupported",
+     "own_type_present": true,
+     "text_chars": 0,
+     "error_codes": [
+      "UNKNOWN_COMPONENT_TYPE"
+     ],
+     "parity_text": null
+    },
+    "notes": [],
+    "run_id": "flutter-20261113-144211",
+    "measured": "2026-11-13",
+    "renderer_version": "a2ui_flutter 0.3.0 (a2ui_core 0.7.0), private build",
+    "measured_on": "private-build",
+    "core_sha256": null
+   },
+   "compose": {
+    "status": "not_measured",
+    "reasons": [
+     "no_example"
+    ],
+    "cases": 0,
+    "worst_case": null,
+    "dialect": "v0.9",
+    "checks": null,
+    "notes": [],
+    "run_id": "compose-desktop-merged-20261113",
+    "measured": "2026-11-13",
+    "renderer_version": "a2ui-kmp 1.0.0-alpha02 (third-party Kotlin Multiplatform rebuild of androidx.a2ui 1.0.0-alpha02; spec v0.9.1 only)",
+    "measured_on": "private-build",
+    "core_sha256": null
+   }
+  },
   "otp_input": {
    "react": {
     "status": "drawn",
@@ -138789,6 +139051,268 @@
     "core_sha256": null
    }
   },
+  "swimlane": {
+   "react": {
+    "status": "drawn",
+    "reasons": [],
+    "cases": 1,
+    "worst_case": "swimlane",
+    "dialect": "v1.0",
+    "checks": {
+     "painted": "pass",
+     "text_visible": "pass",
+     "pixel": {
+      "light480": "reference",
+      "dark480": "reference",
+      "light360": "reference",
+      "dark360": "reference"
+     },
+     "overflow_360": "pass",
+     "contrast": {
+      "light480": "n/a",
+      "dark480": "pass",
+      "light360": "pass",
+      "dark360": "pass"
+     },
+     "behaviour": "n/a (no probe)",
+     "stability": "stable",
+     "text_parity": "n/a",
+     "notes": [],
+     "sources": {
+      "behaviour": "f111",
+      "contrast": "f111",
+      "overflow_360": "f111",
+      "painted": "f111",
+      "pixel": "f111",
+      "stability": "det-ab",
+      "text_parity": "n/a",
+      "text_visible": "f111"
+     }
+    },
+    "notes": [],
+    "run_id": "react-det-ab-20261113",
+    "measured": "2026-11-13",
+    "renderer_version": "@a2ui/react 0.15.0 (web_core 0.15.0)",
+    "measured_on": "shipped",
+    "core_sha256": "0143667f9e044144b428fd7459a7a652acb268d467edc028a81fbf3505a27fa5"
+   },
+   "lit": {
+    "status": "drawn",
+    "reasons": [],
+    "cases": 1,
+    "worst_case": "swimlane",
+    "dialect": "v0.9",
+    "checks": {
+     "painted": "pass",
+     "text_visible": "pass",
+     "pixel": {
+      "light480": "pass",
+      "dark480": "pass",
+      "light360": "pass",
+      "dark360": "pass"
+     },
+     "overflow_360": "pass",
+     "contrast": {
+      "light480": "pass",
+      "dark480": "pass",
+      "light360": "pass",
+      "dark360": "pass"
+     },
+     "behaviour": "n/a (no probe)",
+     "stability": "stable",
+     "text_parity": "pass",
+     "notes": [],
+     "sources": {
+      "behaviour": "f111",
+      "contrast": "det-ab",
+      "overflow_360": "det-ab",
+      "painted": "f111",
+      "pixel": "det-ab",
+      "stability": "det-ab",
+      "text_parity": "det-ab",
+      "text_visible": "f111"
+     }
+    },
+    "notes": [],
+    "run_id": "lit-det-ab-20261113",
+    "measured": "2026-11-13",
+    "renderer_version": "@a2ui/lit 0.15.0 (web_core 0.15.0)",
+    "measured_on": "shipped",
+    "core_sha256": "0143667f9e044144b428fd7459a7a652acb268d467edc028a81fbf3505a27fa5"
+   },
+   "angular": {
+    "status": "drawn",
+    "reasons": [],
+    "cases": 1,
+    "worst_case": "swimlane",
+    "dialect": "v0.9",
+    "checks": {
+     "painted": "pass",
+     "text_visible": "pass",
+     "pixel": {
+      "light480": "pass",
+      "dark480": "pass",
+      "light360": "pass",
+      "dark360": "pass"
+     },
+     "overflow_360": "pass",
+     "contrast": {
+      "light480": "pass",
+      "dark480": "pass",
+      "light360": "pass",
+      "dark360": "pass"
+     },
+     "behaviour": "n/a (no probe)",
+     "stability": "stable",
+     "text_parity": "pass",
+     "notes": [],
+     "sources": {
+      "behaviour": "f111",
+      "contrast": "det-ab",
+      "overflow_360": "det-ab",
+      "painted": "f111",
+      "pixel": "det-ab",
+      "stability": "det-ab",
+      "text_parity": "det-ab",
+      "text_visible": "f111"
+     }
+    },
+    "notes": [],
+    "run_id": "angular-det-ab-20261113",
+    "measured": "2026-11-13",
+    "renderer_version": "@a2ui/angular 0.14.0 (web_core 0.15.0)",
+    "measured_on": "shipped",
+    "core_sha256": "0143667f9e044144b428fd7459a7a652acb268d467edc028a81fbf3505a27fa5"
+   },
+   "copilotkit": {
+    "status": "drawn",
+    "reasons": [],
+    "cases": 1,
+    "worst_case": "swimlane",
+    "dialect": "v1.0",
+    "checks": {
+     "painted": "pass",
+     "text_visible": "pass",
+     "pixel": {
+      "light480": "pass",
+      "dark480": "pass",
+      "light360": "pass",
+      "dark360": "pass"
+     },
+     "overflow_360": "pass",
+     "contrast": {
+      "light480": "pass",
+      "dark480": "pass",
+      "light360": "pass",
+      "dark360": "pass"
+     },
+     "behaviour": "not_run",
+     "stability": "stable",
+     "text_parity": "pass",
+     "notes": [],
+     "sources": {
+      "behaviour": "ck187",
+      "contrast": "det-ab",
+      "overflow_360": "det-ab",
+      "painted": "ck187",
+      "pixel": "det-ab",
+      "stability": "det-ab",
+      "text_parity": "det-ab",
+      "text_visible": "ck187"
+     }
+    },
+    "notes": [],
+    "run_id": "copilotkit-1.87.0-det-ab-20261113",
+    "measured": "2026-11-13",
+    "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)",
+    "measured_on": "shipped",
+    "core_sha256": "0143667f9e044144b428fd7459a7a652acb268d467edc028a81fbf3505a27fa5"
+   },
+   "a2ui-vue": {
+    "status": "drawn",
+    "reasons": [],
+    "cases": 1,
+    "worst_case": "swimlane",
+    "dialect": "v0.9",
+    "checks": {
+     "painted": "pass",
+     "text_visible": "pass",
+     "pixel": {
+      "light480": "pass",
+      "dark480": "pass",
+      "light360": "pass",
+      "dark360": "pass"
+     },
+     "overflow_360": "pass",
+     "contrast": {
+      "light480": "pass",
+      "dark480": "pass",
+      "light360": "pass",
+      "dark360": "pass"
+     },
+     "behaviour": "n/a (no probe)",
+     "stability": "stable",
+     "text_parity": "pass",
+     "notes": [],
+     "sources": {
+      "behaviour": "f111",
+      "contrast": "det-ab",
+      "overflow_360": "det-ab",
+      "painted": "f111",
+      "pixel": "det-ab",
+      "stability": "det-ab",
+      "text_parity": "det-ab",
+      "text_visible": "f111"
+     }
+    },
+    "notes": [],
+    "run_id": "a2ui-vue-det-ab-20261113",
+    "measured": "2026-11-13",
+    "renderer_version": "a2ui-vue 0.9.5 (Vue 3.5.13, web_core 0.9.1)",
+    "measured_on": "shipped",
+    "core_sha256": "0143667f9e044144b428fd7459a7a652acb268d467edc028a81fbf3505a27fa5"
+   },
+   "flutter": {
+    "status": "not_supported",
+    "reasons": [
+     "unknown_component_type"
+    ],
+    "cases": 1,
+    "worst_case": "swimlane",
+    "dialect": "v1.0",
+    "checks": {
+     "painted": "unsupported",
+     "own_type_present": true,
+     "text_chars": 0,
+     "error_codes": [
+      "UNKNOWN_COMPONENT_TYPE"
+     ],
+     "parity_text": null
+    },
+    "notes": [],
+    "run_id": "flutter-20261113-144211",
+    "measured": "2026-11-13",
+    "renderer_version": "a2ui_flutter 0.3.0 (a2ui_core 0.7.0), private build",
+    "measured_on": "private-build",
+    "core_sha256": null
+   },
+   "compose": {
+    "status": "not_measured",
+    "reasons": [
+     "no_example"
+    ],
+    "cases": 0,
+    "worst_case": null,
+    "dialect": "v0.9",
+    "checks": null,
+    "notes": [],
+    "run_id": "compose-desktop-merged-20261113",
+    "measured": "2026-11-13",
+    "renderer_version": "a2ui-kmp 1.0.0-alpha02 (third-party Kotlin Multiplatform rebuild of androidx.a2ui 1.0.0-alpha02; spec v0.9.1 only)",
+    "measured_on": "private-build",
+    "core_sha256": null
+   }
+  },
   "tab_bar": {
    "react": {
     "status": "drawn",
@@ -150877,6 +151401,268 @@
       "text_sha_equal": false
      }
     },
+    "notes": [],
+    "run_id": "compose-desktop-merged-20261113",
+    "measured": "2026-11-13",
+    "renderer_version": "a2ui-kmp 1.0.0-alpha02 (third-party Kotlin Multiplatform rebuild of androidx.a2ui 1.0.0-alpha02; spec v0.9.1 only)",
+    "measured_on": "private-build",
+    "core_sha256": null
+   }
+  },
+  "venn_diagram": {
+   "react": {
+    "status": "drawn",
+    "reasons": [],
+    "cases": 1,
+    "worst_case": "venn_diagram",
+    "dialect": "v1.0",
+    "checks": {
+     "painted": "pass",
+     "text_visible": "pass",
+     "pixel": {
+      "light480": "reference",
+      "dark480": "reference",
+      "light360": "reference",
+      "dark360": "reference"
+     },
+     "overflow_360": "pass",
+     "contrast": {
+      "light480": "n/a",
+      "dark480": "pass",
+      "light360": "pass",
+      "dark360": "pass"
+     },
+     "behaviour": "n/a (no probe)",
+     "stability": "stable",
+     "text_parity": "n/a",
+     "notes": [],
+     "sources": {
+      "behaviour": "f111",
+      "contrast": "f111",
+      "overflow_360": "f111",
+      "painted": "f111",
+      "pixel": "f111",
+      "stability": "det-ab",
+      "text_parity": "n/a",
+      "text_visible": "f111"
+     }
+    },
+    "notes": [],
+    "run_id": "react-det-ab-20261113",
+    "measured": "2026-11-13",
+    "renderer_version": "@a2ui/react 0.15.0 (web_core 0.15.0)",
+    "measured_on": "shipped",
+    "core_sha256": "0143667f9e044144b428fd7459a7a652acb268d467edc028a81fbf3505a27fa5"
+   },
+   "lit": {
+    "status": "drawn",
+    "reasons": [],
+    "cases": 1,
+    "worst_case": "venn_diagram",
+    "dialect": "v0.9",
+    "checks": {
+     "painted": "pass",
+     "text_visible": "pass",
+     "pixel": {
+      "light480": "pass",
+      "dark480": "pass",
+      "light360": "pass",
+      "dark360": "pass"
+     },
+     "overflow_360": "pass",
+     "contrast": {
+      "light480": "pass",
+      "dark480": "pass",
+      "light360": "pass",
+      "dark360": "pass"
+     },
+     "behaviour": "n/a (no probe)",
+     "stability": "stable",
+     "text_parity": "pass",
+     "notes": [],
+     "sources": {
+      "behaviour": "f111",
+      "contrast": "det-ab",
+      "overflow_360": "det-ab",
+      "painted": "f111",
+      "pixel": "det-ab",
+      "stability": "det-ab",
+      "text_parity": "det-ab",
+      "text_visible": "f111"
+     }
+    },
+    "notes": [],
+    "run_id": "lit-det-ab-20261113",
+    "measured": "2026-11-13",
+    "renderer_version": "@a2ui/lit 0.15.0 (web_core 0.15.0)",
+    "measured_on": "shipped",
+    "core_sha256": "0143667f9e044144b428fd7459a7a652acb268d467edc028a81fbf3505a27fa5"
+   },
+   "angular": {
+    "status": "drawn",
+    "reasons": [],
+    "cases": 1,
+    "worst_case": "venn_diagram",
+    "dialect": "v0.9",
+    "checks": {
+     "painted": "pass",
+     "text_visible": "pass",
+     "pixel": {
+      "light480": "pass",
+      "dark480": "pass",
+      "light360": "pass",
+      "dark360": "pass"
+     },
+     "overflow_360": "pass",
+     "contrast": {
+      "light480": "pass",
+      "dark480": "pass",
+      "light360": "pass",
+      "dark360": "pass"
+     },
+     "behaviour": "n/a (no probe)",
+     "stability": "stable",
+     "text_parity": "pass",
+     "notes": [],
+     "sources": {
+      "behaviour": "f111",
+      "contrast": "det-ab",
+      "overflow_360": "det-ab",
+      "painted": "f111",
+      "pixel": "det-ab",
+      "stability": "det-ab",
+      "text_parity": "det-ab",
+      "text_visible": "f111"
+     }
+    },
+    "notes": [],
+    "run_id": "angular-det-ab-20261113",
+    "measured": "2026-11-13",
+    "renderer_version": "@a2ui/angular 0.14.0 (web_core 0.15.0)",
+    "measured_on": "shipped",
+    "core_sha256": "0143667f9e044144b428fd7459a7a652acb268d467edc028a81fbf3505a27fa5"
+   },
+   "copilotkit": {
+    "status": "drawn",
+    "reasons": [],
+    "cases": 1,
+    "worst_case": "venn_diagram",
+    "dialect": "v1.0",
+    "checks": {
+     "painted": "pass",
+     "text_visible": "pass",
+     "pixel": {
+      "light480": "pass",
+      "dark480": "pass",
+      "light360": "pass",
+      "dark360": "pass"
+     },
+     "overflow_360": "pass",
+     "contrast": {
+      "light480": "pass",
+      "dark480": "pass",
+      "light360": "pass",
+      "dark360": "pass"
+     },
+     "behaviour": "not_run",
+     "stability": "stable",
+     "text_parity": "pass",
+     "notes": [],
+     "sources": {
+      "behaviour": "ck187",
+      "contrast": "det-ab",
+      "overflow_360": "det-ab",
+      "painted": "ck187",
+      "pixel": "det-ab",
+      "stability": "det-ab",
+      "text_parity": "det-ab",
+      "text_visible": "ck187"
+     }
+    },
+    "notes": [],
+    "run_id": "copilotkit-1.87.0-det-ab-20261113",
+    "measured": "2026-11-13",
+    "renderer_version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)",
+    "measured_on": "shipped",
+    "core_sha256": "0143667f9e044144b428fd7459a7a652acb268d467edc028a81fbf3505a27fa5"
+   },
+   "a2ui-vue": {
+    "status": "drawn",
+    "reasons": [],
+    "cases": 1,
+    "worst_case": "venn_diagram",
+    "dialect": "v0.9",
+    "checks": {
+     "painted": "pass",
+     "text_visible": "pass",
+     "pixel": {
+      "light480": "pass",
+      "dark480": "pass",
+      "light360": "pass",
+      "dark360": "pass"
+     },
+     "overflow_360": "pass",
+     "contrast": {
+      "light480": "pass",
+      "dark480": "pass",
+      "light360": "pass",
+      "dark360": "pass"
+     },
+     "behaviour": "n/a (no probe)",
+     "stability": "stable",
+     "text_parity": "pass",
+     "notes": [],
+     "sources": {
+      "behaviour": "f111",
+      "contrast": "det-ab",
+      "overflow_360": "det-ab",
+      "painted": "f111",
+      "pixel": "det-ab",
+      "stability": "det-ab",
+      "text_parity": "det-ab",
+      "text_visible": "f111"
+     }
+    },
+    "notes": [],
+    "run_id": "a2ui-vue-det-ab-20261113",
+    "measured": "2026-11-13",
+    "renderer_version": "a2ui-vue 0.9.5 (Vue 3.5.13, web_core 0.9.1)",
+    "measured_on": "shipped",
+    "core_sha256": "0143667f9e044144b428fd7459a7a652acb268d467edc028a81fbf3505a27fa5"
+   },
+   "flutter": {
+    "status": "not_supported",
+    "reasons": [
+     "unknown_component_type"
+    ],
+    "cases": 1,
+    "worst_case": "venn_diagram",
+    "dialect": "v1.0",
+    "checks": {
+     "painted": "unsupported",
+     "own_type_present": true,
+     "text_chars": 0,
+     "error_codes": [
+      "UNKNOWN_COMPONENT_TYPE"
+     ],
+     "parity_text": null
+    },
+    "notes": [],
+    "run_id": "flutter-20261113-144211",
+    "measured": "2026-11-13",
+    "renderer_version": "a2ui_flutter 0.3.0 (a2ui_core 0.7.0), private build",
+    "measured_on": "private-build",
+    "core_sha256": null
+   },
+   "compose": {
+    "status": "not_measured",
+    "reasons": [
+     "no_example"
+    ],
+    "cases": 0,
+    "worst_case": null,
+    "dialect": "v0.9",
+    "checks": null,
     "notes": [],
     "run_id": "compose-desktop-merged-20261113",
     "measured": "2026-11-13",

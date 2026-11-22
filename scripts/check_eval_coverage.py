@@ -51,6 +51,11 @@ EVAL_PATH = os.path.join(PRIVATE, "mcp-worker", "test", "compose-routing-eval.js
 # (real pre-existing debt) but silently no-opped on agent_sketchpad itself
 # ("0 to generate for") because the live site didn't know about it yet.
 KNOWN_UNCOVERED_BASELINE = frozenset({
+    # Added 2026-11-22 promoting org_chart, swimlane and venn_diagram from preview to stable (Curtis: "promote org_chart,
+    # swimlane, venn_diagram") in this same commit. They are absent from the LIVE spec.json until this deploys, so the eval
+    # generator cannot cover them yet -- remove after this push deploys and atom-multirep-onboard is rerun
+    # (node test/generate-eval-prompts.mjs --only org_chart,swimlane,venn_diagram).
+    "org_chart", "swimlane", "venn_diagram",
     # Added 2026-10-29 promoting motion_bricks and brick_build_3d from preview to stable (Curtis: "release them
     # now") in this same commit -- remove after this push deploys and atom-multirep-onboard is rerun.
     "block_robot", "block_rocket", "brick_build_3d", "motion_bricks",

@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "a2uicatalog"
 version = "0.1.0"
-description = "Official Python client for the A2UI Atomic Catalog: 573-atom vocabulary, compose, render and validate."
+description = "Official Python client for the A2UI Atomic Catalog: 576-atom vocabulary, compose, render and validate."
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"

@@ -4,7 +4,7 @@
  "x-renderers-matrix": "https://a2uicatalog.ai/catalogue/renderer-matrix-v1.json",
  "x-renderers-rules-version": 5,
  "type": "application/vnd.a2ui.renderer+json",
- "atomCount": 573,
+ "atomCount": 576,
  "compactIndex": "https://a2uicatalog.ai/atoms/index.json",
  "runbooks": "https://a2uicatalog.ai/runbooks/index.json",
  "trainingPrompt": "https://a2uicatalog.ai/prompts/training-md-gem.md",
@@ -22779,6 +22779,53 @@
    ]
   },
   {
+   "type": "swimlane",
+   "description": "Rows are roles, columns are phases. Each task is a card with a number that gives the order, placed in its role and phase. At most two tasks share a cell. Motion-ready: every moving value reads --p (build progress 0 to 1, default 1) through a per-item --k, so a motion_timeline track on p builds it item by item and the standalone render is the finished picture; reduced motion shows the end state.",
+   "compact_description": "swimlane: who does which step, in order, across phases",
+   "surfaces": {
+    "works_on": [
+     "web",
+     "google-apps-script-web",
+     "mcp-apps",
+     "android"
+    ],
+    "degraded_on": [
+     {
+      "surface": "pdf",
+      "note": "Prints the finished picture; no motion"
+     }
+    ],
+    "incompatible_on": [
+     {
+      "surface": "google-chat",
+      "reason": "Inline CSS custom properties, clamp() and calc() are not supported"
+     },
+     {
+      "surface": "email",
+      "reason": "CSS custom properties, clamp() and calc() are not supported in email clients"
+     }
+    ]
+   },
+   "fields": {
+    "title": "string (optional, max 80).",
+    "roles": "array (required, 2 to 4 strings, max 24 each).",
+    "phases": "array (required, 2 to 5 strings, max 24 each).",
+    "tasks": "array (required, up to 12) of {role, phase, task (max 60)}. role and phase must be listed in roles and phases. The list order is the order of the steps and gives the numbers."
+   },
+   "source": {
+    "name": "a2uicatalog",
+    "url": "https://github.com/a2uicatalog/a2ui",
+    "license": "MIT"
+   },
+   "x-renderers": {"react": "drawn", "lit": "drawn", "angular": "drawn", "copilotkit": "drawn", "a2ui-vue": "drawn", "flutter": "not_supported", "compose": "not_measured"},
+   "routing_text": "A grid of roles (lanes) by phases (columns) with the numbered tasks placed where a role does a step. Shows hand-offs and order. Not a message-passing sequence diagram and not a flowchart with branches.",
+   "intent_phrases": [
+    "Show who does what in the review process.",
+    "I need a swimlane of security, engineering and QA across triage, fix and verify.",
+    "Map the hand-offs between teams."
+   ]
+  },
+  {
    "type": "treemap",
    "description": "Part-to-whole as nested rectangles whose areas show share of the total, laid out by the squarified treemap algorithm (d3-hierarchy treemapSquarify). By default up to four categories: each category is one block and its items are rectangles inside it, with the category name and total in a pill. With an optional per-item path (1 to 3 group names, top down) the chart nests by that path instead, up to three levels of group boxes with a header showing the group name and total, so a folder tree or a cost breakdown reads like a disk-usage map. Each rectangle carries its name and value where the drawn width and height can hold them; in a narrower container or a thin cell the label is hidden (the hover title and the hidden table keep it). A hidden table gives item, category (or path), value and share. Motion-ready: every moving value reads --p (build progress 0 to 1, default 1) through a per-item --k, so a motion_timeline track on p builds it item by item and the standalone render is the finished picture; reduced motion shows the end state.",
    "compact_description": "treemap: part-to-whole by category or nested path",
@@ -22824,6 +22871,110 @@
     "I need a treemap of storage by team.",
     "Visualise the share of each item within its group.",
     "Show what is using my disk space, folder by folder."
+   ]
+  },
+  {
+   "type": "venn_diagram",
+   "description": "Two circles with the first set, the shared items and the second set, up to four items each; or, when set_c_name is given, three fixed circles with items in all seven regions (each set alone, each pair, all three). Motion-ready: every moving value reads --p (build progress 0 to 1, default 1) through a per-item --k, so a motion_timeline track on p builds it item by item and the standalone render is the finished picture; reduced motion shows the end state.",
+   "compact_description": "venn diagram: what two or three sets share",
+   "surfaces": {
+    "works_on": [
+     "web",
+     "google-apps-script-web",
+     "mcp-apps",
+     "android"
+    ],
+    "degraded_on": [
+     {
+      "surface": "pdf",
+      "note": "Prints the finished picture; no motion"
+     }
+    ],
+    "incompatible_on": [
+     {
+      "surface": "google-chat",
+      "reason": "Inline CSS custom properties, clamp() and calc() are not supported"
+     },
+     {
+      "surface": "email",
+      "reason": "CSS custom properties, clamp() and calc() are not supported in email clients"
+     }
+    ]
+   },
+   "fields": {
+    "title": "string (optional, max 80).",
+    "set_a_name": "string (required, max 28).",
+    "set_b_name": "string (required, max 28).",
+    "set_a_exclusive": "array (up to 4 strings, max 28) only in A.",
+    "set_b_exclusive": "array (up to 4 strings, max 28) only in B.",
+    "intersection": "array (up to 4 strings, max 28) in A and B. With a third set it means A and B only, not C.",
+    "set_c_name": "string (optional, max 28). Giving it switches to the three-set drawing; without it the two-set drawing is unchanged.",
+    "set_c_exclusive": "array (optional, three-set only) of strings, only in C.",
+    "intersection_ac": "array (optional, three-set only) of strings, in A and C but not B.",
+    "intersection_bc": "array (optional, three-set only) of strings, in B and C but not A.",
+    "intersection_abc": "array (optional, three-set only) of strings, in all three.",
+    "version": "integer (optional, default 1). Only version 1 exists; a higher whole number is drawn as version 1 with a note."
+   },
+   "source": {
+    "name": "a2uicatalog",
+    "url": "https://github.com/a2uicatalog/a2ui",
+    "license": "MIT"
+   },
+   "x-renderers": {"react": "drawn", "lit": "drawn", "angular": "drawn", "copilotkit": "drawn", "a2ui-vue": "drawn", "flutter": "not_supported", "compose": "not_measured"},
+   "routing_text": "Two or three overlapping circles showing what belongs to each set and what the sets share. Conceptual overlap only; the circles are not proportional to size, so it is not for sizes or counts (use a chart) and not for more than three sets.",
+   "intent_phrases": [
+    "Show what product managers and tech leads have in common.",
+    "I need a Venn diagram of two skill sets.",
+    "Draw the overlap between two responsibilities."
+   ]
+  },
+  {
+   "type": "org_chart",
+   "description": "A hierarchy built from a list of nodes with parents, drawn as boxes in tiers joined by connector lines (layout \"tree\", the default), as a dendrogram with every leaf on the last tier (layout \"cluster\"), or as a radial tree with the root at the centre and rotated labels (layout \"radial\"). It is a real nested list in every layout, so it reads in order to a screen reader. Motion-ready: every moving value reads --p (build progress 0 to 1, default 1) through a per-item --k, so a motion_timeline track on p builds it item by item and the standalone render is the finished picture; reduced motion shows the end state.",
+   "compact_description": "org chart: a bounded tree of up to thirty nodes, as tiers, a dendrogram or a radial tree",
+   "surfaces": {
+    "works_on": [
+     "web",
+     "google-apps-script-web",
+     "mcp-apps",
+     "android"
+    ],
+    "degraded_on": [
+     {
+      "surface": "pdf",
+      "note": "Prints the finished picture; no motion"
+     }
+    ],
+    "incompatible_on": [
+     {
+      "surface": "google-chat",
+      "reason": "Inline CSS custom properties, clamp() and calc() are not supported"
+     },
+     {
+      "surface": "email",
+      "reason": "CSS custom properties, clamp() and calc() are not supported in email clients"
+     }
+    ]
+   },
+   "fields": {
+    "title": "string (optional, max 80).",
+    "nodes": "array (required, 3 to 30) of {id (max 24), label (max 28), parent_id (max 24, empty for the root)}. One root; at most four tiers and six children per node. Several top-level nodes are drawn under an undrawn root.",
+    "layout": "string (optional, \"tree\", \"cluster\" or \"radial\", default \"tree\"). \"tree\" is the tidy tree (d3 tree). \"cluster\" is a dendrogram (d3 cluster) with the same boxes, labels and caps; every leaf sits on the last tier whatever its depth and a parent is centred over its children; there is no distance or height field, so tier spacing carries no meaning. \"radial\" is d3's radial tidy tree with the root at the centre, small dots for nodes and the label outside each dot, turned along its branch and never upside down. Any other value draws the tree.",
+    "version": "integer (optional, default 1). The org_chart contract the payload was written for. Only version 1 exists; a higher whole number is drawn as version 1 with a note."
+   },
+   "source": {
+    "name": "a2uicatalog",
+    "url": "https://github.com/a2uicatalog/a2ui",
+    "license": "MIT"
+   },
+   "x-renderers": {"react": "drawn", "lit": "drawn", "angular": "drawn", "copilotkit": "drawn", "a2ui-vue": "drawn", "flutter": "not_supported", "compose": "not_measured"},
+   "routing_text": "A hierarchy drawn as boxes joined by lines, for a reporting line or a breakdown of up to thirty nodes and four tiers; as a dendrogram when the leaves should line up, or radially when the shape of the branching matters more than reading order. Not for deep taxonomies (use tree_view) and not for branch lengths or distances (no height field).",
+   "intent_phrases": [
+    "Draw the engineering leadership structure.",
+    "I need an org chart of these roles.",
+    "Show the work breakdown as a tree.",
+    "Draw this hierarchy as a dendrogram with the leaves lined up.",
+    "Show the structure as a radial tree."
    ]
   },
   {

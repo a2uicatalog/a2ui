@@ -37,7 +37,7 @@
         "email",
         "pdf"
       ],
-      "description": "Open-source renderer with 573 typed atoms for generating rich UI across Google Meet stages, Chat Cards, Apps Script web apps, and web surfaces from a single JSON schema payload.",
+      "description": "Open-source renderer with 576 typed atoms for generating rich UI across Google Meet stages, Chat Cards, Apps Script web apps, and web surfaces from a single JSON schema payload.",
       "representativeQueries": [
         "render a rich UI from structured JSON data",
         "generate Google Meet stage content from a schema",
@@ -10588,6 +10588,24 @@
       ]
     },
     {
+      "identifier": "urn:air:a2uicatalog.ai:atom:swimlane",
+      "displayName": "Swimlane",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/swimlane/",
+      "capabilities": [
+        "web",
+        "google-apps-script-web",
+        "mcp-apps",
+        "android"
+      ],
+      "description": "Rows are roles, columns are phases. Each task is a card with a number that gives the order, placed in its role and phase. At most two tasks share a cell. Motion-ready: every moving value reads --p (build progress 0 to 1, default 1) through a per-item --k, so a motion_timeline track on p builds it item by item and the standalone render is the finished picture; reduced motion shows the end state.",
+      "representativeQueries": [
+        "show a swimlane: who does which step, in order, across phases",
+        "rows are roles, columns are phases. each task is a card with a number that gives the order, placed in its role and",
+        "render a swimlane"
+      ]
+    },
+    {
       "identifier": "urn:air:a2uicatalog.ai:atom:treemap",
       "displayName": "Treemap",
       "type": "application/vnd.a2ui.atom+json",
@@ -10603,6 +10621,42 @@
         "show a treemap: part-to-whole by category or nested path",
         "part-to-whole as nested rectangles whose areas show share of the total, laid out by the squarified treemap algorithm",
         "render a treemap"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:venn_diagram",
+      "displayName": "Venn Diagram",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/venn_diagram/",
+      "capabilities": [
+        "web",
+        "google-apps-script-web",
+        "mcp-apps",
+        "android"
+      ],
+      "description": "Two circles with the first set, the shared items and the second set, up to four items each; or, when set_c_name is given, three fixed circles with items in all seven regions (each set alone, each pair, all three). Motion-ready: every moving value reads --p (build progress 0 to 1, default 1) through a per-item --k, so a motion_timeline track on p builds it item by item and the standalone render is the finished picture; reduced motion shows the end state.",
+      "representativeQueries": [
+        "show a venn diagram: what two or three sets share",
+        "two circles with the first set, the shared items and the second set, up to four items each; or, when set_c_name is",
+        "render a venn diagram"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:org_chart",
+      "displayName": "Org Chart",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/org_chart/",
+      "capabilities": [
+        "web",
+        "google-apps-script-web",
+        "mcp-apps",
+        "android"
+      ],
+      "description": "A hierarchy built from a list of nodes with parents, drawn as boxes in tiers joined by connector lines (layout \"tree\", the default), as a dendrogram with every leaf on the last tier (layout \"cluster\"), or as a radial tree with the root at the centre and rotated labels (layout \"radial\"). It is a real nested list in every layout, so it reads in order to a screen reader. Motion-ready: every moving value reads --p (build progress 0 to 1, default 1) through a per-item --k, so a motion_timeline track on p builds it item by item and the standalone render is the finished picture; reduced motion shows the end state.",
+      "representativeQueries": [
+        "show a org chart: a bounded tree of up to thirty nodes, as tiers, a dendrogram or a radial tree",
+        "a hierarchy built from a list of nodes with parents, drawn as boxes in tiers joined by connector lines (layout \"tree\",",
+        "render a org chart"
       ]
     },
     {

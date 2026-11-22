@@ -1,6 +1,6 @@
 ---
 title: A2UI on Android: Jetpack Compose components for androidx.a2ui — A2UI Atomic Catalog
-description: Show agent UIs in Android apps: the atomic-catalog library adds 563 of the 573 A2UI components to Google's androidx.a2ui Jetpack Compose renderer, on top of the 18 Basic Catalog components Google draws in Material 3.
+description: Show agent UIs in Android apps: the atomic-catalog library adds 566 of the 576 A2UI components to Google's androidx.a2ui Jetpack Compose renderer, on top of the 18 Basic Catalog components Google draws in Material 3.
 canonical: https://a2uicatalog.ai/surfaces/android/
 generated_by: gen_page_twins.py
 ---
@@ -13,7 +13,7 @@ generated_by: gen_page_twins.py
 
 Build it from source for now; a published package is coming. [Source and README](https://github.com/a2uicatalog/a2ui/tree/main/android) · tested on a Pixel 7 Pro with `androidx.a2ui` 1.0.0-alpha01.
 
-563 of 573 catalog atoms also render on this surface
+566 of 576 catalog atoms also render on this surface
 
 [Intro](https://a2uicatalog.ai/atoms/intro/)
 
@@ -51,7 +51,6 @@ single image with optional caption
 [Image Pair](https://a2uicatalog.ai/atoms/image_pair/)
 
 two images side by side with captions
-
 [Diagram](https://a2uicatalog.ai/atoms/diagram/)
 
 D2 or SVG architecture diagram
@@ -223,7 +222,6 @@ server-side unified diff view with green additions and red removals
 [Code Snippet Pair](https://a2uicatalog.ai/atoms/code_snippet_pair/)
 
 two code blocks side by side without diff highlighting diff highlighting.
-
 [Framed Screenshot](https://a2uicatalog.ai/atoms/framed_screenshot/)
 
 device-framed screenshot with optional caption
@@ -263,7 +261,6 @@ prominent card prompting a required user action or approval
 [Feature Matrix](https://a2uicatalog.ai/atoms/feature_matrix/)
 
 features versus plans comparison matrix
-
 [Pricing Tier Card](https://a2uicatalog.ai/atoms/pricing_tier_card/)
 
 single pricing plan card with features list
@@ -363,7 +360,6 @@ organize multiple programming language snippets inside an interactive tab contai
 [Http Request Block](https://a2uicatalog.ai/atoms/http_request_block/)
 
 document REST API endpoints with HTTP methods, headers, and payloads
-
 [Env Var List](https://a2uicatalog.ai/atoms/env_var_list/)
 
 list configuration environment variables with descriptions and default values
@@ -529,6 +525,7 @@ render lightweight high-performance vector Lottie animations
 [Figma Embed](https://a2uicatalog.ai/atoms/figma_embed/)
 
 embed collaborative live Figma design file prototype previews
+
 [Color Swatch Grid](https://a2uicatalog.ai/atoms/color_swatch_grid/)
 
 grid of named color swatches with hex values
@@ -601,14 +598,12 @@ stacked area chart of series layers over an ordered axis (zero baseline, optiona
 [Scatter Trend](https://a2uicatalog.ai/atoms/scatter_trend/)
 
 coordinate scatter plot with regression trend line
-
 [Call Mood Board](https://a2uicatalog.ai/atoms/call_mood_board/)
 
 visual summary board of call sentiments moods and active themes
 [Github Activity Grid](https://a2uicatalog.ai/atoms/github_activity_grid/)
 
 SVG GitHub-style contribution grid and activity tracker
-
 [Form](https://a2uicatalog.ai/atoms/form/)
 
 labelled form with fields and submit button
@@ -813,7 +808,6 @@ asymmetric bento-box feature tile grid — MagicUI/shadcn pattern
 [Cta Section](https://a2uicatalog.ai/atoms/cta_section/)
 
 full-width CTA banner with headline and buttons — Tailwind UI pattern
-
 [Animated Counter](https://a2uicatalog.ai/atoms/animated_counter/)
 
 CSS-only animated counter that counts up to target values
@@ -880,6 +874,8 @@ tilted orbit rings, each a tier of labelled satellites around a centre node
 [Motion Timeline](https://a2uicatalog.ai/atoms/motion_timeline/)
 
 timeline-driven stage that choreographs child atoms with tokenised easing, a camera, captions and a scrubber
+motion_timeline
+
 [Motion Group](https://a2uicatalog.ai/atoms/motion_group/)
 
 staggered entrance for a list of blocks, with tokenised easing
@@ -943,6 +939,8 @@ film grain, vignette, light leaks and glass sheen over the frame
 [Motion Arch](https://a2uicatalog.ai/atoms/motion_arch/)
 
 architecture diagram that draws itself, with payloads moving along its edges
+motion_arch
+
 [Motion Video](https://a2uicatalog.ai/atoms/motion_video/)
 
 muted video whose frame follows the film clock
@@ -952,12 +950,18 @@ seekable WebGL liquid or aurora background with a CSS gradient fallback
 [Motion Bricks](https://a2uicatalog.ai/atoms/motion_bricks/)
 
 toy-brick sculpture or brick lettering that builds, flies in and turns on the film clock
+motion_bricks
+
 [Block Robot](https://a2uicatalog.ai/atoms/block_robot/)
 
 a ready-made 10-brick toy robot that builds itself and turns on the film clock
+block_robot
+
 [Block Rocket](https://a2uicatalog.ai/atoms/block_rocket/)
 
 a ready-made 9-brick toy rocket that builds itself and turns on the film clock
+block_rocket
+
 [Dot Grid Background](https://a2uicatalog.ai/atoms/dot_grid_background/)
 
 CSS repeating dot or grid pattern panel background
@@ -1075,7 +1079,6 @@ aggregate stats from a sheet range displayed as stat badges
 [Gmail Unread Count](https://a2uicatalog.ai/atoms/gmail_unread_count/)
 
 unread count badges for Gmail labels
-
 [User Profile Card](https://a2uicatalog.ai/atoms/user_profile_card/)
 
 user avatar, display name, email and domain — live on GAS, static fields elsewhere
@@ -1085,7 +1088,6 @@ Drive storage quota progress bar — live on GAS, or pass used_gb/total_gb for s
 [Sheet Form Submit](https://a2uicatalog.ai/atoms/sheet_form_submit/)
 
 inline form that appends a row to a Google Sheet on submit
-
 [Tasks Today](https://a2uicatalog.ai/atoms/tasks_today/)
 
 task checklist — live via Tasks API on GAS, items[] array on other surfaces
@@ -1227,7 +1229,6 @@ neon-glow coloured text
 [Dark Feature Grid](https://a2uicatalog.ai/atoms/dark_feature_grid/)
 
 dark-theme feature grid with icons
-
 [Dark Divider](https://a2uicatalog.ai/atoms/dark_divider/)
 
 dark-theme horizontal divider
@@ -1267,7 +1268,6 @@ magnetic cursor-following button
 [Confetti Trigger](https://a2uicatalog.ai/atoms/confetti_trigger/)
 
 click-to-trigger confetti button
-
 [Floating Particles](https://a2uicatalog.ai/atoms/floating_particles/)
 
 soft glowing bokeh particles drifting upward on canvas, optional centred copy
@@ -1532,7 +1532,6 @@ three-dot pulsing loader
 [Progress Ring](https://a2uicatalog.ai/atoms/progress_ring/)
 
 animated circular progress gauge
-
 [Confetti Burst](https://a2uicatalog.ai/atoms/confetti_burst/)
 
 confetti celebration burst effect
@@ -1606,7 +1605,7 @@ dated vertical revision timeline
 
 current user identity chip
 
-[Try it live →](https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA6tWKsksyUlVslJQ8k1V0lFQKslIzQVzUxKLskECSTn5ydnFQJHoaqWSygKwHFBFbWwtAFclVYA8AAAA)
+[Try it live →](https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA6tWKsksyUlVslJQ8k1V0lFQKslIzQVzUxKLskECSTn5ydnFQJHoaqWSygKwXC5YaUF-cWZJZn4eSCQzLyczDyxanJFfHp-XCDakpKg0tTa2FgDWKFYnZQAAAA)
 
 [Theme Toggle](https://a2uicatalog.ai/atoms/theme_toggle/)
 
@@ -1656,9 +1655,18 @@ animated looping SVG scene of a place (53 ready presets) from verified clipart
 [Clipart](https://a2uicatalog.ai/atoms/clipart/)
 
 one verified vector clipart image by id
+[Swimlane](https://a2uicatalog.ai/atoms/swimlane/)
+
+swimlane: who does which step, in order, across phases
 [Treemap](https://a2uicatalog.ai/atoms/treemap/)
 
 treemap: part-to-whole by category or nested path
+[Venn Diagram](https://a2uicatalog.ai/atoms/venn_diagram/)
+
+venn diagram: what two or three sets share
+[Org Chart](https://a2uicatalog.ai/atoms/org_chart/)
+
+org chart: a bounded tree of up to thirty nodes, as tiers, a dendrogram or a radial tree
 [Histogram](https://a2uicatalog.ai/atoms/histogram/)
 
 histogram: counts of numbers per bin
@@ -1719,5 +1727,4 @@ a key-joined morph from one atom to another on the film's p dial
 [Motion Map3D](https://a2uicatalog.ai/atoms/motion_map3d/)
 
 a tilted 3D city map where legs draw station to station (out and back, straight or curved), chips travel, stations end done, warn or error and a clock counts; for request traces, agent tool calls, pipelines and delivery routes
-
-Live preview
+motion_map3d

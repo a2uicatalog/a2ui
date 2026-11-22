@@ -8,9 +8,9 @@ Measured against the React lane on the same code.
 - Platform: web (Angular, Chromium)
 - Measured: 2026-11-13
 
-## Coverage of the 573 public atoms
+## Coverage of the 576 public atoms
 
-- Drawn: 517
+- Drawn: 520
 - Drawn with differences: 3
 - Not verified: 31
 - Not supported: 0

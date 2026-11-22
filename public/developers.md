@@ -1,6 +1,6 @@
 ---
 title: Developer Portal — A2UI Atomic Catalog
-description: A2UI Atomic Catalog Developer Portal: integrate 573 typed atoms over MCP or REST. No API key, no signup. OpenAPI spec, live server descriptor, rate limits.
+description: A2UI Atomic Catalog Developer Portal: integrate 576 typed atoms over MCP or REST. No API key, no signup. OpenAPI spec, live server descriptor, rate limits.
 canonical: https://a2uicatalog.ai/developers/
 generated_by: gen_page_twins.py
 ---
@@ -31,7 +31,7 @@ curl -H "Accept: application/json" https://a2uicatalog.ai/mcp
 ## 2. Or use the REST surfaces directly
 
  ``
-| GET /spec.json | Full atom vocabulary — 573 atoms, every field contract |
+| GET /spec.json | Full atom vocabulary — 576 atoms, every field contract |
 |---|---| ``
 | GET /catalogue/index.json | Compact catalog selection menu | ``
 | GET /catalogue/atoms-json-schema.json | Strict per-atom JSON Schema for constrained decoding | ``

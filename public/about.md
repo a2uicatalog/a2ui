@@ -9,7 +9,7 @@ generated_by: gen_page_twins.py
 
 ## Developer & Agent Documentation
 
-The A2UI Atomic Catalog is an open-source, typed UI vocabulary — **573 atoms** — that AI agents use to produce real rendered interfaces instead of generating HTML. An agent names a component (`stat_card`, `gauge_sla`, `stepper`) and passes data; a renderer that already knows that component draws it. New to the protocol itself? Start with [What is A2UI?](https://a2uicatalog.ai/what-is-a2ui/)
+The A2UI Atomic Catalog is an open-source, typed UI vocabulary — **576 atoms** — that AI agents use to produce real rendered interfaces instead of generating HTML. An agent names a component (`stat_card`, `gauge_sla`, `stepper`) and passes data; a renderer that already knows that component draws it. New to the protocol itself? Start with [What is A2UI?](https://a2uicatalog.ai/what-is-a2ui/)
 
 ## Why a vocabulary instead of generated markup
 

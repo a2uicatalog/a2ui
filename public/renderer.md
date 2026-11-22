@@ -61,7 +61,7 @@ Prerequisites: **Node.js 20+** (for `npm`, used to install clasp in step 2) and 
 
 ### Clone the repo
 
-The renderer lives in `apps-script-surface/gas-wired-renderer/` — 550 of the catalog's 573 atoms render on Apps Script, no CDN, no external dependencies.
+The renderer lives in `apps-script-surface/gas-wired-renderer/` — 553 of the catalog's 576 atoms render on Apps Script, no CDN, no external dependencies.
 
 ```
 # Clone and navigate to the renderer directory
@@ -116,7 +116,7 @@ Runs in your Google account. No dependency on the catalog's demo URL. Survives a
 
 ⚡
 
-#### 550 of 573 atoms, ready to go
+#### 553 of 576 atoms, ready to go
 
 Stat cards, charts, globes, animations, tables, forms — all render immediately. A handful of data-source atoms want their own API key (see below) and degrade gracefully without one.
 

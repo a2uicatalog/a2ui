@@ -1,13 +1,13 @@
 ---
-title: A2UI on Email: 45 of 573 components — A2UI Atomic Catalog
-description: 45 of the 573 A2UI Atomic Catalog components render on Email, each with a live preview, so an AI agent can show real UI there instead of generating HTML.
+title: A2UI on Email: 45 of 576 components — A2UI Atomic Catalog
+description: 45 of the 576 A2UI Atomic Catalog components render on Email, each with a live preview, so an AI agent can show real UI there instead of generating HTML.
 canonical: https://a2uicatalog.ai/surfaces/email/
 generated_by: gen_page_twins.py
 ---
 
 # Email
 
-45 of 573 atoms available on this surface
+45 of 576 atoms available on this surface
 
 [Intro](https://a2uicatalog.ai/atoms/intro/)
 
@@ -138,7 +138,6 @@ recursive hierarchical tree with expand/collapse per node
 [Cta Section](https://a2uicatalog.ai/atoms/cta_section/)
 
 full-width CTA banner with headline and buttons — Tailwind UI pattern
-
 [Achievement Badge](https://a2uicatalog.ai/atoms/achievement_badge/)
 
 unlockable achievement badge with locked/unlocked state and optional date

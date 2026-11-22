@@ -1,13 +1,13 @@
 ---
-title: A2UI on Web: 507 of 573 components — A2UI Atomic Catalog
-description: 507 of the 573 A2UI Atomic Catalog components render on Web, each with a live preview, so an AI agent can show real UI there instead of generating HTML.
+title: A2UI on Web: 510 of 576 components — A2UI Atomic Catalog
+description: 510 of the 576 A2UI Atomic Catalog components render on Web, each with a live preview, so an AI agent can show real UI there instead of generating HTML.
 canonical: https://a2uicatalog.ai/surfaces/web/
 generated_by: gen_page_twins.py
 ---
 
 # Web
 
-507 of 573 atoms available on this surface
+510 of 576 atoms available on this surface
 
 [Intro](https://a2uicatalog.ai/atoms/intro/)
 
@@ -45,7 +45,6 @@ single image with optional caption
 [Image Pair](https://a2uicatalog.ai/atoms/image_pair/)
 
 two images side by side with captions
-
 [Diagram](https://a2uicatalog.ai/atoms/diagram/)
 
 D2 or SVG architecture diagram
@@ -217,7 +216,6 @@ server-side unified diff view with green additions and red removals
 [Code Snippet Pair](https://a2uicatalog.ai/atoms/code_snippet_pair/)
 
 two code blocks side by side without diff highlighting diff highlighting.
-
 [Framed Screenshot](https://a2uicatalog.ai/atoms/framed_screenshot/)
 
 device-framed screenshot with optional caption
@@ -257,7 +255,6 @@ prominent card prompting a required user action or approval
 [Feature Matrix](https://a2uicatalog.ai/atoms/feature_matrix/)
 
 features versus plans comparison matrix
-
 [Pricing Tier Card](https://a2uicatalog.ai/atoms/pricing_tier_card/)
 
 single pricing plan card with features list
@@ -357,7 +354,6 @@ organize multiple programming language snippets inside an interactive tab contai
 [Http Request Block](https://a2uicatalog.ai/atoms/http_request_block/)
 
 document REST API endpoints with HTTP methods, headers, and payloads
-
 [Env Var List](https://a2uicatalog.ai/atoms/env_var_list/)
 
 list configuration environment variables with descriptions and default values
@@ -523,6 +519,7 @@ render lightweight high-performance vector Lottie animations
 [Figma Embed](https://a2uicatalog.ai/atoms/figma_embed/)
 
 embed collaborative live Figma design file prototype previews
+
 [Color Swatch Grid](https://a2uicatalog.ai/atoms/color_swatch_grid/)
 
 grid of named color swatches with hex values
@@ -595,18 +592,15 @@ stacked area chart of series layers over an ordered axis (zero baseline, optiona
 [Calibration Plot](https://a2uicatalog.ai/atoms/calibration_plot/)
 
 predicted-vs-observed probability calibration chart with confidence intervals
-
 [Scatter Trend](https://a2uicatalog.ai/atoms/scatter_trend/)
 
 coordinate scatter plot with regression trend line
-
 [Call Mood Board](https://a2uicatalog.ai/atoms/call_mood_board/)
 
 visual summary board of call sentiments moods and active themes
 [Github Activity Grid](https://a2uicatalog.ai/atoms/github_activity_grid/)
 
 SVG GitHub-style contribution grid and activity tracker
-
 [Form](https://a2uicatalog.ai/atoms/form/)
 
 labelled form with fields and submit button
@@ -811,7 +805,6 @@ asymmetric bento-box feature tile grid — MagicUI/shadcn pattern
 [Cta Section](https://a2uicatalog.ai/atoms/cta_section/)
 
 full-width CTA banner with headline and buttons — Tailwind UI pattern
-
 [Animated Counter](https://a2uicatalog.ai/atoms/animated_counter/)
 
 CSS-only animated counter that counts up to target values
@@ -878,6 +871,8 @@ tilted orbit rings, each a tier of labelled satellites around a centre node
 [Motion Timeline](https://a2uicatalog.ai/atoms/motion_timeline/)
 
 timeline-driven stage that choreographs child atoms with tokenised easing, a camera, captions and a scrubber
+motion_timeline
+
 [Motion Group](https://a2uicatalog.ai/atoms/motion_group/)
 
 staggered entrance for a list of blocks, with tokenised easing
@@ -941,6 +936,8 @@ film grain, vignette, light leaks and glass sheen over the frame
 [Motion Arch](https://a2uicatalog.ai/atoms/motion_arch/)
 
 architecture diagram that draws itself, with payloads moving along its edges
+motion_arch
+
 [Motion Video](https://a2uicatalog.ai/atoms/motion_video/)
 
 muted video whose frame follows the film clock
@@ -950,12 +947,18 @@ seekable WebGL liquid or aurora background with a CSS gradient fallback
 [Motion Bricks](https://a2uicatalog.ai/atoms/motion_bricks/)
 
 toy-brick sculpture or brick lettering that builds, flies in and turns on the film clock
+motion_bricks
+
 [Block Robot](https://a2uicatalog.ai/atoms/block_robot/)
 
 a ready-made 10-brick toy robot that builds itself and turns on the film clock
+block_robot
+
 [Block Rocket](https://a2uicatalog.ai/atoms/block_rocket/)
 
 a ready-made 9-brick toy rocket that builds itself and turns on the film clock
+block_rocket
+
 [Dot Grid Background](https://a2uicatalog.ai/atoms/dot_grid_background/)
 
 CSS repeating dot or grid pattern panel background
@@ -1154,7 +1157,6 @@ decorative blurred colour orbs background
 [Dark Feature Grid](https://a2uicatalog.ai/atoms/dark_feature_grid/)
 
 dark-theme feature grid with icons
-
 [Dark Divider](https://a2uicatalog.ai/atoms/dark_divider/)
 
 dark-theme horizontal divider
@@ -1368,7 +1370,6 @@ three-dot pulsing loader
 [Progress Ring](https://a2uicatalog.ai/atoms/progress_ring/)
 
 animated circular progress gauge
-
 [Confetti Burst](https://a2uicatalog.ai/atoms/confetti_burst/)
 
 confetti celebration burst effect
@@ -1477,9 +1478,18 @@ one layer band (badge, name, field/note or per-column cells) — normally used i
 [Tool Call Card](https://a2uicatalog.ai/atoms/tool_call_card/)
 
 structured agent tool call card with status, inputs, result, and latency
+[Swimlane](https://a2uicatalog.ai/atoms/swimlane/)
+
+swimlane: who does which step, in order, across phases
 [Treemap](https://a2uicatalog.ai/atoms/treemap/)
 
 treemap: part-to-whole by category or nested path
+[Venn Diagram](https://a2uicatalog.ai/atoms/venn_diagram/)
+
+venn diagram: what two or three sets share
+[Org Chart](https://a2uicatalog.ai/atoms/org_chart/)
+
+org chart: a bounded tree of up to thirty nodes, as tiers, a dendrogram or a radial tree
 [Histogram](https://a2uicatalog.ai/atoms/histogram/)
 
 histogram: counts of numbers per bin
@@ -1540,5 +1550,4 @@ a key-joined morph from one atom to another on the film's p dial
 [Motion Map3D](https://a2uicatalog.ai/atoms/motion_map3d/)
 
 a tilted 3D city map where legs draw station to station (out and back, straight or curved), chips travel, stations end done, warn or error and a clock counts; for request traces, agent tool calls, pipelines and delivery routes
-
-Live preview
+motion_map3d

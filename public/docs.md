@@ -27,7 +27,7 @@ Production is also safe to test against: the REST endpoints hold no production d
 | POST /api/compose | Natural language prompt → typed atom blocks (20 req/day) | ``
 | GET /ask?q=... | Natural-language search over the atom catalog (60 req/day) | ``
 | GET /api/data/{source} | Declared data source proxy (data-sources.yaml) | ``
-| GET /spec.json | Full atom vocabulary (573 atoms) with all field contracts | ``
+| GET /spec.json | Full atom vocabulary (576 atoms) with all field contracts | ``
 | GET /catalogue/atoms-json-schema.json | Strict JSON Schema for constrained agent decoding | ``
 | GET /catalogue/index.json | Compact catalog selection menu |
 

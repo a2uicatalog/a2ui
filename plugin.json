@@ -2,7 +2,7 @@
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "a2ui-atomic-catalog",
   "version": "1.0.0",
-  "description": "A2UI Atomic Catalog for agents: 573 typed A2UI components (atoms) an agent composes as declarative JSON and renders as real UI. Bundles three skills (pick atoms, compose and render, connect over MCP) and the public MCP server.",
+  "description": "A2UI Atomic Catalog for agents: 576 typed A2UI components (atoms) an agent composes as declarative JSON and renders as real UI. Bundles three skills (pick atoms, compose and render, connect over MCP) and the public MCP server.",
   "author": { "name": "A2UI Atomic Catalog", "url": "https://a2uicatalog.ai" },
   "homepage": "https://a2uicatalog.ai",
   "repository": "https://github.com/a2uicatalog/a2ui",

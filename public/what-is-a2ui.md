@@ -212,7 +212,7 @@ a2uicatalog.aia2uicatalog.ai
 
 The components a letter can name, and the renderers that draw them on each surface.The components a letter can name, and the renderersthat draw them on each surface.
 
-573 components◆573 components
+576 components◆576 components
 
 Web · MCP Apps · Google Workspace · Android▣Web · MCP Apps · Google Workspace · Android
 
@@ -221,6 +221,576 @@ Write the letter once. Every surface can draw it.Write the letter once. Every su
 0:00
 
 How agent UI protocols nest
+
+A2UI CatalogA2UI Catalog
+
+YOUR ONE STOP FOR THE MODERN A2UI CATALOG.YOUR ONE STOP FOR THEMODERN A2UI CATALOG.
+
+Useful for humans.Useful forhumans.
+
+statSearch atoms…stat
+
+AllWebMCP AppsGoogle ChatApps Script WebPDF51 atoms
+
+Stat card
+
+1,234
+
+Stat Card
+
+single KPI value with label delta and accent colour indicator
+
+MCP AppsUIverse.io community
+
+Done
+
+Donut Stat
+
+CSS ring chart with centre value and percentage its proportion or progress.
+
+MCP AppsUIverse.io community
+
+73%
+
+of teams
+
+Pull Stat
+
+large display number pulled from prose for emphasis descriptive label.
+
+MCP Appsa2uicatalog
+
+1200+
+
+Atoms
+
+Count Up Stat
+
+animated count-up number stat with cubic ease, auto-plays on load
+
+MCP Appsa2uicatalog
+
+68%
+
+Done
+
+Progress Ring
+
+animated circular progress gauge
+
+MCP Appsa2uicatalog
+
+Live
+
+Status Pill
+
+coloured status pill badge an item.
+
+MCP AppsUIverse.io community
+
+Declarative for AI agents.Declarativefor AI agents.
+
+agent-output.json
+
+{ "type": "stat_card", "label": "Typed atoms", "value": "576" }
+
+{
+
+ "type": "stat_card",
+
+ "label": "Typed atoms",
+
+ "value": "576"
+
+}
+
+Typed atoms
+
+576
+
+Agents compose.Agentscompose.
+
+THE CATALOG RENDERS.THE CATALOG RENDERS.
+
+render_surface✓ success
+
+Arguments
+
+```
+{ "blocks": 3 }
+```
+
+Result
+
+```
+3 atoms rendered
+```
+
+Agent run
+
+Plan the surface
+
+Compose typed JSON
+
+Render on any surface
+
+One catalog, every surface.One catalog,every surface.
+
+WEB · MEET · CHAT · MCP APPS · APPS SCRIPT ANDROID · GOOGLE SLIDES · PPTXWEB · MEET · CHAT · MCP APPS · APPS SCRIPT
+
+ANDROID · GOOGLE SLIDES · PPTX
+
+Web
+
+Meet
+
+Chat
+
+MCP
+
+Script
+
+Android
+
+Slides
+
+PPTX
+
+Try it today.Try ittoday.
+
+[Browse the atoms→Browse the atoms]
+
+[Add the MCP connector+Add the MCP connector](https://a2uicatalog.ai/surfaces/mcp-apps)
+
+ARTICLES · DOCS · RUNBOOKS · GALLERYARTICLES · DOCS · RUNBOOKS · GALLERY
+
+A2UI CatalogA2UI Catalog
+
+YOUR ONE STOP FOR THE MODERN A2UI CATALOG.YOUR ONE STOP FOR THEMODERN A2UI CATALOG.
+
+Useful for humans.Useful forhumans.
+
+statSearch atoms…stat
+
+AllWebMCP AppsGoogle ChatApps Script WebPDF51 atoms
+
+Stat card
+
+1,234
+
+Stat Card
+
+single KPI value with label delta and accent colour indicator
+
+MCP AppsUIverse.io community
+
+Done
+
+Donut Stat
+
+CSS ring chart with centre value and percentage its proportion or progress.
+
+MCP AppsUIverse.io community
+
+73%
+
+of teams
+
+Pull Stat
+
+large display number pulled from prose for emphasis descriptive label.
+
+MCP Appsa2uicatalog
+
+1200+
+
+Atoms
+
+Count Up Stat
+
+animated count-up number stat with cubic ease, auto-plays on load
+
+MCP Appsa2uicatalog
+
+68%
+
+Done
+
+Progress Ring
+
+animated circular progress gauge
+
+MCP Appsa2uicatalog
+
+Live
+
+Status Pill
+
+coloured status pill badge an item.
+
+MCP AppsUIverse.io community
+
+Declarative for AI agents.Declarativefor AI agents.
+
+agent-output.json
+
+{ "type": "stat_card", "label": "Typed atoms", "value": "576" }
+
+{
+
+ "type": "stat_card",
+
+ "label": "Typed atoms",
+
+ "value": "576"
+
+}
+
+Typed atoms
+
+576
+
+Agents compose.Agentscompose.
+
+THE CATALOG RENDERS.THE CATALOG RENDERS.
+
+render_surface✓ success
+
+Arguments
+
+```
+{ "blocks": 3 }
+```
+
+Result
+
+```
+3 atoms rendered
+```
+
+Agent run
+
+Plan the surface
+
+Compose typed JSON
+
+Render on any surface
+
+One catalog, every surface.One catalog,every surface.
+
+WEB · MEET · CHAT · MCP APPS · APPS SCRIPT ANDROID · GOOGLE SLIDES · PPTXWEB · MEET · CHAT · MCP APPS · APPS SCRIPT
+
+ANDROID · GOOGLE SLIDES · PPTX
+
+Web
+
+Meet
+
+Chat
+
+MCP
+
+Script
+
+Android
+
+Slides
+
+PPTX
+
+Try it today.Try ittoday.
+
+[Browse the atoms→Browse the atoms]
+
+[Add the MCP connector+Add the MCP connector](https://a2uicatalog.ai/surfaces/mcp-apps)
+
+ARTICLES · DOCS · RUNBOOKS · GALLERYARTICLES · DOCS · RUNBOOKS · GALLERY
+
+A2UI CatalogA2UI Catalog
+
+YOUR ONE STOP FOR THE MODERN A2UI CATALOG.YOUR ONE STOP FORTHE MODERNA2UI CATALOG.
+
+Useful for humans.Useful forhumans.
+
+statSearch atoms…stat
+
+AllWebMCP AppsGoogle ChatApps Script WebPDF51 atoms
+
+Stat card
+
+1,234
+
+Stat Card
+
+single KPI value with label delta and accent colour indicator
+
+MCP AppsUIverse.io community
+
+Done
+
+Donut Stat
+
+CSS ring chart with centre value and percentage its proportion or progress.
+
+MCP AppsUIverse.io community
+
+73%
+
+of teams
+
+Pull Stat
+
+large display number pulled from prose for emphasis descriptive label.
+
+MCP Appsa2uicatalog
+
+1200+
+
+Atoms
+
+Count Up Stat
+
+animated count-up number stat with cubic ease, auto-plays on load
+
+MCP Appsa2uicatalog
+
+68%
+
+Done
+
+Progress Ring
+
+animated circular progress gauge
+
+MCP Appsa2uicatalog
+
+Live
+
+Status Pill
+
+coloured status pill badge an item.
+
+MCP AppsUIverse.io community
+
+Declarative for AI agents.Declarativefor AI agents.
+
+agent-output.json
+
+{ "type": "stat_card", "label": "Typed atoms", "value": "576" }
+
+{
+
+ "type": "stat_card",
+
+ "label": "Typed atoms",
+
+ "value": "576"
+
+}
+
+Typed atoms
+
+576
+
+Agents compose.Agentscompose.
+
+THE CATALOG RENDERS.THE CATALOG RENDERS.
+
+render_surface✓ success
+
+Arguments
+
+```
+{ "blocks": 3 }
+```
+
+Result
+
+```
+3 atoms rendered
+```
+
+Agent run
+
+Plan the surface
+
+Compose typed JSON
+
+Render on any surface
+
+One catalog, every surface.One catalog,every surface.
+
+WEB · MEET · CHAT · MCP APPS · APPS SCRIPT ANDROID · GOOGLE SLIDES · PPTXWEB · MEET · CHAT · MCP APPS · APPS SCRIPT
+
+ANDROID · GOOGLE SLIDES · PPTX
+
+Web
+
+Meet
+
+Chat
+
+MCP
+
+Script
+
+Android
+
+Slides
+
+PPTX
+
+Try it today.Try ittoday.
+
+[Browse the atoms→Browse the atoms]
+
+[Add the MCP connector+Add the MCP connector](https://a2uicatalog.ai/surfaces/mcp-apps)
+
+ARTICLES · DOCS · RUNBOOKS · GALLERYARTICLES · DOCS · RUNBOOKS · GALLERY
+
+A2UI CatalogA2UI Catalog
+
+YOUR ONE STOP FOR THE MODERN A2UI CATALOG.YOUR ONE STOP FORTHE MODERNA2UI CATALOG.
+
+Useful for humans.Useful forhumans.
+
+statSearch atoms…stat
+
+AllWebMCP AppsGoogle ChatApps Script WebPDF51 atoms
+
+Stat card
+
+1,234
+
+Stat Card
+
+single KPI value with label delta and accent colour indicator
+
+MCP AppsUIverse.io community
+
+Done
+
+Donut Stat
+
+CSS ring chart with centre value and percentage its proportion or progress.
+
+MCP AppsUIverse.io community
+
+73%
+
+of teams
+
+Pull Stat
+
+large display number pulled from prose for emphasis descriptive label.
+
+MCP Appsa2uicatalog
+
+1200+
+
+Atoms
+
+Count Up Stat
+
+animated count-up number stat with cubic ease, auto-plays on load
+
+MCP Appsa2uicatalog
+
+68%
+
+Done
+
+Progress Ring
+
+animated circular progress gauge
+
+MCP Appsa2uicatalog
+
+Live
+
+Status Pill
+
+coloured status pill badge an item.
+
+MCP AppsUIverse.io community
+
+Declarative for AI agents.Declarativefor AI agents.
+
+agent-output.json
+
+{ "type": "stat_card", "label": "Typed atoms", "value": "576" }
+
+{
+
+ "type": "stat_card",
+
+ "label": "Typed atoms",
+
+ "value": "576"
+
+}
+
+Typed atoms
+
+576
+
+Agents compose.Agentscompose.
+
+THE CATALOG RENDERS.THE CATALOG RENDERS.
+
+render_surface✓ success
+
+Arguments
+
+```
+{ "blocks": 3 }
+```
+
+Result
+
+```
+3 atoms rendered
+```
+
+Agent run
+
+Plan the surface
+
+Compose typed JSON
+
+Render on any surface
+
+One catalog, every surface.One catalog,every surface.
+
+WEB · MEET · CHAT · MCP APPS · APPS SCRIPT ANDROID · GOOGLE SLIDES · PPTXWEB · MEET · CHAT · MCP APPS · APPS SCRIPT
+
+ANDROID · GOOGLE SLIDES · PPTX
+
+Web
+
+Meet
+
+Chat
+
+MCP
+
+Script
+
+Android
+
+Slides
+
+PPTX
+
+Try it today.Try ittoday.
+
+[Browse the atoms→Browse the atoms]
+
+[Add the MCP connector+Add the MCP connector](https://a2uicatalog.ai/surfaces/mcp-apps)
+
+ARTICLES · DOCS · RUNBOOKS · GALLERYARTICLES · DOCS · RUNBOOKS · GALLERY
+
+The 33-second introduction to the catalog. It starts when you press Play.
 
 Google maintains official renderers for React, Lit, Angular, Flutter (the GenUI SDK) and Jetpack Compose, with SwiftUI planned; a2ui.org also [lists community renderers](https://a2ui.org/reference/renderers/).
 
@@ -240,6 +810,127 @@ A2UI ships a **Basic Catalog** of 18 components and 14 functions in version 1.0,
 
 A **custom catalog** adds components of your own, such as a chart, a timeline or a comparison table. The app registers it with its renderer first, so an agent can use a custom component only where the host has done that. The [A2UI Atomic Catalog](https://a2uicatalog.ai/) below is a custom catalog. To build your own, read [How to make an A2UI custom catalog](https://a2uicatalog.ai/what-is-a2ui/custom-catalog/how-to/).
 
+## The SDKs
+
+A2UI has three layers of SDK code. The **Core SDK** is the shared foundation: it reads and writes A2UI messages across protocol versions, applies them to a surface and its data model, and validates. The **Agent SDK** sits on your server and builds on it. From a catalog, its skill generator produces the prompt instructions and grammar rules. Its compiler parses what comes back, validates it against the catalog and emits the messages. The **Renderer SDK** sits in the client, builds on the same core and paints the messages with that platform's toolkit. The Agent SDK does not paint anything, and a renderer does not talk to the model.
+
+Your own agent code sits outside the SDK. a2ui.org's overview puts it this way: your agent code and LLM runtime take the generated skill alongside your domain tools, call the model, and pass its UI output to the SDK's compiler. The model is optional. Your code can build the output itself, or send content authored in advance as a static payload.
+
+### How the pieces fit together
+
+The picture follows the stages on a2ui.org's overview page, as we read it on 15 November 2026. Read the arrows in the order of the steps table below the picture. The model is optional, because your own code can build the output, or send content authored in advance.
+
+ It plays once, in about four seconds, and then stays as the finished picture.
+
+Text version of the diagram
+
+1. The user types a request in the client app, or presses a button. The trigger goes to your agent code. (dashed arrow)
+2. The renderer tells your agent which catalogs it can draw. It is sent along with the trigger. (dashed arrow)
+3. In advance, the Agent SDK has generated a skill from the catalog: prompt instructions and grammar rules. Your agent loads it.
+4. Your agent calls its domain tools, then prompts the model with the data and the skill. With no model, your code builds the output itself, or sends a static payload.
+5. The model streams its answer in an inference format, Express or JSON, back to your agent. (dashed arrow)
+6. Your agent passes the UI output to the Agent SDK's compiler.
+7. The compiler pulls the catalog and validates each component and its properties against it. Invalid output is reported, repaired or retried.
+8. Where a macro is used, the compiler hands the call to the Macros, which expand it into a tree of components, and takes the tree back (Python only).
+9. The compiler emits the A2UI messages: createSurface, updateComponents and updateDataModel, and deleteSurface when a surface is removed.
+10. The messages are sent over a transport: AG-UI, A2A, MCP, WebSockets or your own.
+11. At the app, the Core SDK applies the messages.
+12. The Core SDK keeps the surface and its data model and passes them to the Renderer.
+13. The Renderer draws the Native UI. The next trigger starts again at step 1.
+
+Not on the route: the protocol version, carried inside the messages (steps 9 to 11).
+
+#### The route, step by step
+
+| Step | Arrow | Label on the arrow | What happens |
+|---|---|---|---|
+| 1 | Native UI to Your agent code | trigger: request or action | The user types a request in the client app, or presses a button. The trigger goes to your agent code. |
+| 2 | Renderer to Your agent code | capabilities | The renderer tells your agent which catalogs it can draw. It is sent along with the trigger. |
+| 3 | Agent SDK to Your agent code | skill | In advance, the Agent SDK has generated a skill from the catalog: prompt instructions and grammar rules. Your agent loads it. |
+| 4 | Your agent code to Model | prompt | Your agent calls its domain tools, then prompts the model with the data and the skill. With no model, your code builds the output itself, or sends a static payload. |
+| 5 | Model to Your agent code | Express or JSON | The model streams its answer in an inference format, Express or JSON, back to your agent. |
+| 6 | Your agent code to Agent SDK | UI output | Your agent passes the UI output to the Agent SDK's compiler. |
+| 7 | Agent SDK to Catalog | pull and validate | The compiler pulls the catalog and validates each component and its properties against it. Invalid output is reported, repaired or retried. |
+| 8 | Agent SDK to Macros | expand | Where a macro is used, the compiler hands the call to the Macros, which expand it into a tree of components, and takes the tree back (Python only). |
+| 9 | Agent SDK to A2UI messages | messages | The compiler emits the A2UI messages: createSurface, updateComponents and updateDataModel, and deleteSurface when a surface is removed. |
+| 10 | A2UI messages to Transport | sent over | The messages are sent over a transport: AG-UI, A2A, MCP, WebSockets or your own. |
+| 11 | Transport to Core SDK | apply | At the app, the Core SDK applies the messages. |
+| 12 | Core SDK to Renderer | surface, data model | The Core SDK keeps the surface and its data model and passes them to the Renderer. |
+| 13 | Renderer to Native UI | draws | The Renderer draws the Native UI. The next trigger starts again at step 1. |
+
+#### The key concepts
+
+The protocol version is the one concept with no step of its own: every message carries it.
+
+| Concept | What it is | Lives in | On the route |
+|---|---|---|---|
+| Trigger | What starts a turn: the user's request typed in the client app, or an action, an event with a name and context that a component sends back when the user presses it. It goes to your agent. | client to agent | 1 |
+| Capability negotiation | The renderer lists the catalogs it can draw, sent along with its messages (with every message in v0.9.1; scoped to a turn or a session in v1.0). The agent picks a match when it creates a surface. An agent can also advertise the catalogs it can generate, for example in an A2A Agent Card. | both sides | 2 |
+| Skill | The prompt instructions and grammar rules the SDK's skill generator produces from the catalog, in advance. Your agent loads it to prompt the model. (a2ui.org: "the SDK's skill generator produces an A2UI skill".) | your server | 3 |
+| Your agent code | Your code and LLM runtime, outside the SDK. It takes the trigger, calls its domain tools (for example a flight search), loads the skill, prompts the model and passes the UI output to the SDK. With no model it can build the output itself, or send content authored in advance as a static payload. | your server | 1 to 6 (receives 1, 2, 3, 5; sends 4, 6) |
+| Model (optional) | Writes the screen in an inference format when one is used. A scripted agent, or a static payload, needs no model. | agent side | 4, 5 |  []
+| Inference format | How the model writes a screen: Direct JSON, Express (compact, the Python processor default) and the experimental Atom and Elemental formats (Python only). The same catalogs and examples work with each. The SDK's "Atom" format is not one of our catalogue atoms. See What is A2UI Express?. | agent side | 5 |
+| Agent SDK | A library, not the agent. Its skill generator makes the skill from the catalog; its compiler parses the UI output as it streams in, validates it against the catalog (repairing and retrying invalid output) and emits the wire messages. It builds on the Core SDK and imports no agent framework; integrations such as a2ui-a2a and a2ui-adk are separate packages. | your server | 3, 6, 7, 8, 9 |  
+| Catalog | The set of components and functions an agent may use: the Basic Catalog, or a custom one, described as JSON Schema (a catalog.json). Named by a catalogId. The SDK pulls from it to generate the skill and to validate the output. See Basic Catalog and Custom catalog: how to. | both sides | 7 (and 3, in advance) |  []
+| Macro | A Python function that appears to the model as a component in its catalog and expands into standard components on the server before the message is sent. A resolver can inject data on the server. Python only today. See Macros. | agent side | 8 |
+| A2UI messages | createSurface, updateComponents, updateDataModel and deleteSurface. Each is a JSON object with a version and exactly one message-type key. | the wire | 9 (carried through 10 and 11) |
+| Protocol version | Which set of message rules both sides follow: v0.8, v0.9, v0.9.1 or v1.0. It is in every message and, for A2A, in the extension URI. Catalogs name the version they target. It is not the package version: a2ui-agent-sdk 0.11.0 does not speak protocol 0.11. | both sides | No step of its own: carried inside every message (steps 9 to 11) |
+| Transport | How the messages travel. A2UI is transport-agnostic: any channel that carries JSON in order, with framing and metadata, and a return path for actions. a2ui.org names AG-UI, A2A, MCP and WebSockets. ADK is an agent framework: its package converts to A2A parts. An agent and a renderer can even share one process, so no network is needed. | the wire | 10, 11 |
+| Core SDK | The shared foundation under both sides: reads and writes messages across protocol versions, applies them to surface, component and data models, resolves pointers and validates. The Agent SDK and the renderer both build on it, one per language. | both sides | 11, 12 |
+| Surface | One UI an agent builds: a component tree plus a data model, tied to a catalog when it is created. Many surfaces can exist at once. | client side | 12 |
+| Data model | The values components bind to by path (JSON Pointer). updateDataModel changes them without resending the tree; a local edit updates the bound controls and sends nothing to the agent. | client side | 12 |
+| Renderer | Paints a surface with the platform's toolkit and binds reactive values: React, Lit, Angular, Flutter, SwiftUI, Jetpack Compose. | client side | 2, 12, 13 |
+
+### Package versions, installs and painting
+
+Package version numbers are not protocol versions. `a2ui-agent-sdk` 0.11.0 does not speak protocol 0.11, and `@a2ui/react` 0.15.0 does not speak protocol 0.15. A common start is two installs, `pip install a2ui-agent-sdk` for the agent and a web renderer such as `npm install @a2ui/react`. It is not the only pairing: a TypeScript or Dart app can use the agent and the renderer in one language.
+
+A renderer does not necessarily paint everything you send. On 15 November 2026 we ran each of three web renderers once. We took the published atoms that have a Basic example, 551 in all, and reduced each to Basic components. 538 painted on all three. By renderer, 539 painted on `@a2ui/react` 0.15.0, 541 on `@a2ui/lit` 0.15.0 and 540 on `@a2ui/angular` 0.14.0. The other 22 published atoms have no Basic example and were left out. "Painted" here means the example did not crash and drew some text, image, input or element. It is not a check that the result is correct, and it says nothing about what an arbitrary message will do, so test your own messages on each renderer you target.
+
+### What the model writes
+
+`a2ui-agent-sdk` 0.11.0 ships four formats. Direct JSON is the full A2UI messages. Express is a compact format that the SDK compiles into messages, and it is the processor's default, so the upstream documentation starts from Express. The package description says Direct JSON and Express both stream. The other two are marked experimental in the code: the Atom format, which uses parenthesised expressions, and Elemental, which looks like HTML. We have used the package, and we have not run the Atom or Elemental formats. The known-gaps file of the TypeScript `@a2ui/agent` package says "Express does not stream", and we have not run that. The Atom format is an experimental notation. It is not a component in our catalogue.
+
+### After the model writes
+
+A macro expands one short call into a full tree of components on the server, so the renderer never sees the macro. Macros are in the Python SDK only. The A2UI project's macros guide says macros are in the Python agent SDK, with other languages coming next.
+
+### Published packages, as of 15 November 2026
+
+|  | Python | TypeScript | Dart |
+|---|---|---|---|
+| Agent package | a2ui-agent-sdk 0.11.0 (core: a2ui-core 0.6.0) | @a2ui/agent 0.1.0 (core: @a2ui/web_core 0.15.0) | a2ui_agent 0.3.0 (core: a2ui_core 0.7.0) |
+| Direct JSON | yes | yes | yes |
+| Express | yes | yes | yes |
+| Atom format, Elemental | experimental | no | no |
+| Macros | yes | no | no |
+| Catalog load, system prompt, output validation | yes | yes | yes |  ````
+| A2A, ADK | no in this package; separate packages a2ui-a2a 0.3.0 and a2ui-adk 0.3.0 (pip install "a2ui-adk[a2a]" adds the A2A converters; plain a2ui-adk is the tools) | no | no |
+| Protocol versions named by the upstream docs | v0.8, v0.9.1, v1.0 | v0.9.1, v1.0 | v0.9.1, v1.0 |
+| Renderers | none | @a2ui/react 0.15.0, @a2ui/lit 0.15.0, @a2ui/angular 0.14.0 | a2ui_flutter 0.3.0 (Flutter) |
+
+The SDK page says every v0.9.1 package accepts v0.9 wire envelopes and catalog IDs. The Python extension package versions come from PyPI's index and the files `a2ui_a2a-0.3.0-py3-none-any.whl` and `a2ui_adk-0.3.0-py3-none-any.whl`, both listed by PyPI's index as uploaded on 10 November 2026. The a2ui-a2a project page we saw still showed 0.1.0 only, so if your install resolves 0.1.0, pin `a2ui-a2a==0.3.0`. The TypeScript and Dart "no" cells come from file lists and searches of the packages, not a full read. TypeScript's known-gaps file says the Elemental and Atom formats "remain unimplemented". "Experimental" is upstream's own word in the code.
+
+The upstream docs list React, Lit and Angular as v0.8, v0.9.1 and v1.0. None of the published packages exports `./v1_0`. React and Angular export `./v0_8` and `./v0_9`, and Lit also exports `./0.8` and `./ui`. React 0.13.0 moved the package root to a version-agnostic runtime. The "(v1_0)" lines are under "## 0.14.0" in the React 0.15.0 and Lit 0.15.0 changelogs, and under "## 0.13.0" in the Angular 0.14.0 changelog. Check which import your version expects.
+
+### Not on a package registry
+
+- Swift: SwiftUI renderer and a core, installed with Swift Package Manager from the A2UI repository (we saw the tag `v0.10.0+swift`, and have not tested whether Swift Package Manager resolves it). It has no agent SDK. The repo has a client-side `PayloadValidator` for messages it receives. We found no model-output check, and we did not run it.
+- Android: two separate things. The renderer is Google's AndroidX Compose library. Its package number is 1.0.0-alpha02, which is a Maven version, not a protocol version. Upstream's SDK page lists the Compose renderer as protocol v0.9.1. We have not looked inside it. The agent side is `kotlin/agent_sdk_legacy` in the A2UI repository: Kotlin, still being edited, unpublished. Its tree has `A2aHandler.kt` and `SendA2uiToClientToolset.kt`, which we did not run. Its docs name v0.8 and v0.9, and we did not verify v1.0.
+- Go, Rust, C# and Java: no official SDK on upstream's SDK page. That page points to community Go libraries, which we have not checked.
+
+### Our reading
+
+Python is the furthest ahead on the agent side. TypeScript and Dart have Direct JSON and Express. Swift and Kotlin are mostly renderer or legacy. We have not measured whether server-side macros make output more predictable.
+
+### SDKs can lag the spec
+
+In v1.0 a component from a different catalog than the surface's default carries the key `@catalogId`. The `createSurface` message still uses `catalogId`. The component-level key used to be spelled `catalogId`. Upstream changed it on 11 November 2026 (pull request #4044), after Python SDK 0.11.0 was released on 10 November 2026.
+
+On 15 November 2026 we validated one surface with the Python SDK's validator, once with each spelling on a component from a second catalog. With `a2ui-agent-sdk` 0.11.0 and `a2ui-core` 0.6.0, `catalogId` passed and `@catalogId` failed with "Unrecognized component type 'Badge'" and "Unrecognized reserved protocol directive '@catalogId'". The message processor in `a2ui-core` 0.6.0 raised no error, but it put the component in the Basic catalog and kept `@catalogId` as an ordinary property. On a checkout of upstream's main branch (commit 6ac77a0610, 11 November 2026) both spellings passed. None of the published packages we checked contains the change.
+
+The `a2ui_flutter` 0.3.0 README still tells the agent to name a custom component's catalog in `catalogId`, and we have not checked which spelling that package accepts. The macros guide on a2ui.org also still prints `catalogId` in its examples. Pin the SDK version you test with, and check its date. The [custom catalog how-to](https://a2uicatalog.ai/what-is-a2ui/custom-catalog/how-to/) shows the case in detail.
+
 ## Macros: the model writes one call, the server writes the tree
 
 We ❤️ macros at a2uicatalog.ai
@@ -251,7 +942,7 @@ A macro is a function on the application server. The model writes one short call
 - "Look up data from server-side databases and APIs, accepting an identifier from the model and populating the components on the server."
 - "Ship new domain components with a server deployment alone, using catalog components the client already renders."
 
-One measured example from this catalog's own tests (not yet published): asked to draw the latest run of five workflows of a public repository, the model wrote this (the first two stages are shown, the rest is elided):
+One measured example from this catalog's own tests (the data and method follow it): asked to draw the latest run of five workflows of a public repository, the model wrote this in Express (the first two stages are shown, the rest is elided):
 
 ```
 root = IsoPipeline("Latest run of five a2uicatalog/a2ui workflows",
@@ -260,7 +951,22 @@ root = IsoPipeline("Latest run of five a2uicatalog/a2ui workflows",
 
 ```
 
-The model's whole reply, the call inside its `<a2ui>` tags, was 365 bytes (173 output tokens), identical in all ten runs on Claude Sonnet 5.5. The server expanded it into 37,728 bytes of A2UI: five stock Basic Catalog components (a Card, a Column, a title Text, an Image and a caption Text), with the picture carried in the Image. The saving is in output, not input: the system prompt that carries the macro was about 5,100 input tokens, against about 1,300 for a prompt that had the model draw the picture itself. This was one scene, one prompt and one machine.
+The model's whole reply, the one Express call inside its `<a2ui>` tags, was 365 bytes (173 output tokens), identical in all ten runs on Claude Sonnet 5.5. The server expanded it into 37,728 bytes of A2UI: five stock Basic Catalog components (a Card, a Column, a title Text, an Image and a caption Text), with the picture carried in the Image. The saving is in output, not input: the system prompt that carries the macro was about 5,100 input tokens, against about 1,300 for a prompt that had the model draw the picture itself. This was one scene, one prompt and one machine.
+
+#### How we measured the macro example
+
+We asked Claude Sonnet 5.5 to draw the latest run of five GitHub workflows of the public repository a2uicatalog/a2ui as an isometric factory scene, four ways, 10 runs each, on 9 November 2026. The [raw per-run results](https://a2uicatalog.ai/what-is-a2ui/macro-example/results.json) are public, as JSON. Every figure below is a median of those runs. The same file holds the runs of a second model, Claude Haiku 5.5.
+
+| How the model was asked | Input tokens | Output tokens | Bytes the model wrote | Bytes of A2UI sent | Runs with correct content |
+|---|---|---|---|---|---|
+| Macro (one Express call) | 5,149 | 173 | 365 | 37,728 | 10 of 10 |
+| Strict control | 1,289 | 2,590 | 5,207 | 5,427 | 9 of 10 |
+| Lean control | 1,233 | 1,471 | 3,027 | 3,247 | 9 of 10 |
+| Text-only list | 644 | 287 | 677 | 897 | 10 of 10 |
+
+The strict control has the model write the whole components JSON, SVG included. The lean control is the same, asked for a simpler scene. The text-only list has no picture. The macro lane has the most input tokens because its prompt is the SDK's Express prompt with the macro inside it, and it has the fewest output tokens.
+
+Read the table with three limits in mind. The pictures are not equal: the macro draws a 27.8 KB shaded, animated scene that follows light and dark mode, and the controls are static and simpler, about 4.4 KB and 2.3 KB of SVG. The macro lane's correct-content result is partly by construction, because code draws the ids, the lamp colours, the state words and the crate. And it is one scene, one prompt and one machine, with 10 runs per lane.
 
 Limits: per the guide, "Macros are currently available in the Python agent SDK (`a2ui-agent-sdk`), with support for other languages coming next." By default, a macro that raises an argument or runtime exception during expansion is logged and left unexpanded so its sibling components still expand, and client renderers do not implement unexpanded macro components; the server can instead be set to raise so an agent can retry. Structural errors, such as recursion, catalog errors and protocol-version mismatches, always raise. In the Image approach, each patch reloads the whole image, and reduced-motion preferences are not honoured inside an Image's SVG (tested in Chromium).
 
@@ -280,7 +986,7 @@ The Basic Catalog has few components; three techniques build more on top of them
 
 A2UI defines a small Basic Catalog: text, rows, columns, cards, buttons, images and a few inputs. Real answers need more: stat cards, charts, timelines, comparison tables, status boards, animated explainers.
 
-The [A2UI Atomic Catalog](https://a2uicatalog.ai/) is an open-source (MIT) catalog of 573 published components, each with typed fields, a JSON Schema and a live preview. Browse them in the [A2UICatalog Explorer](https://a2uicatalog.ai/atoms/). Agents reach it through an MCP server at `a2uicatalog.ai/mcp`, or read its machine-readable vocabulary at [`/spec.json`](https://a2uicatalog.ai/spec.json). How it is built as an A2UI custom catalog, with the real files: [A2UI custom catalog: a worked example](https://a2uicatalog.ai/what-is-a2ui/custom-catalog/). To make your own, see [How to make an A2UI custom catalog](https://a2uicatalog.ai/what-is-a2ui/custom-catalog/how-to/), and for what A2UI ships with, the [A2UI Basic Catalog](https://a2uicatalog.ai/what-is-a2ui/basic-catalog/).
+The [A2UI Atomic Catalog](https://a2uicatalog.ai/) is an open-source (MIT) catalog of 576 published components, each with typed fields, a JSON Schema and a live preview. Browse them in the [A2UICatalog Explorer](https://a2uicatalog.ai/atoms/). Agents reach it through an MCP server at `a2uicatalog.ai/mcp`, or read its machine-readable vocabulary at [`/spec.json`](https://a2uicatalog.ai/spec.json). How it is built as an A2UI custom catalog, with the real files: [A2UI custom catalog: a worked example](https://a2uicatalog.ai/what-is-a2ui/custom-catalog/). To make your own, see [How to make an A2UI custom catalog](https://a2uicatalog.ai/what-is-a2ui/custom-catalog/how-to/), and for what A2UI ships with, the [A2UI Basic Catalog](https://a2uicatalog.ai/what-is-a2ui/basic-catalog/).
 
 ## Where it runs
 
@@ -350,7 +1056,15 @@ The Basic Catalog is the set of components and functions A2UI ships with, and a 
 
 ### What is A2UI Express?
 
-A compact format Google proposed on 27 October 2026 for a model to write a screen, instead of the full A2UI JSON. In our small test on this catalog it used fewer output tokens on every model we tried, and Google's 80 times claim was not confirmed.
+A compact format Google proposed on 27 October 2026 for a model to write a screen, instead of the full A2UI JSON. It is now in the published SDKs: `a2ui-agent-sdk` 0.11.0 for Python, `@a2ui/agent` 0.1.0 for TypeScript and `a2ui_agent` 0.3.0 for Dart. In our small test on this catalog it used fewer output tokens on every model we tried, and Google's 80 times claim was not confirmed.
+
+### What does an A2UI SDK do?
+
+It sits between a model and a renderer. On the agent side it builds the system prompt from a catalog, reads what the model writes, checks it against the catalog and turns it into A2UI messages. On the renderer side it processes those messages. The Python SDK also expands macros.
+
+### Does the Python SDK accept @catalogId?
+
+Not in the latest published release. The v1.0 spec writes a component's own catalog as `@catalogId`. With `a2ui-agent-sdk` 0.11.0 (10 November 2026) the validator rejects it, and the message processor in `a2ui-core` 0.6.0 raises no error but puts the component in the Basic catalog and keeps `@catalogId` as an ordinary property. Upstream's main branch reads both spellings since 11 November 2026, and no release has it yet. The paragraph under "SDKs can lag the spec" has the details.
 
 ### Where does macro expansion happen?
 

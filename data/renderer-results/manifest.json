@@ -1,13 +1,13 @@
 {
  "renderers": {
   "a2ui-vue": {
-   "atoms_total": 573,
-   "atoms_with_cases": 551,
+   "atoms_total": 576,
+   "atoms_with_cases": 554,
    "commit": "f111cde17643744f1e4145297b79c6fa84df38c5",
    "core_sha256": "0143667f9e044144b428fd7459a7a652acb268d467edc028a81fbf3505a27fa5",
    "css_sha256": "150035c39f2c53826ab52c8c3f66b1dee46fac1bcbc4539299c8da39c9c50412",
    "file": "a2ui-vue.json",
-   "file_sha256": "85383b44cb081cca021ad32b4f9c8f7ea2a3128be433b65e051ac57b78524568",
+   "file_sha256": "41a139d06965051789668e4967855f4c8519dc2f73223f66d546eeb21aaf1a84",
    "measured_date": "2026-11-13",
    "measured_on": "shipped",
    "renderer_bundle_sha256": "2af466d6ea815d4383bd2e58843e708374ab6af7a93acae4d535e37002a4ca73",
@@ -15,13 +15,13 @@
    "run_id": "a2ui-vue-det-ab-20261113"
   },
   "angular": {
-   "atoms_total": 573,
-   "atoms_with_cases": 551,
+   "atoms_total": 576,
+   "atoms_with_cases": 554,
    "commit": "f111cde17643744f1e4145297b79c6fa84df38c5",
    "core_sha256": "0143667f9e044144b428fd7459a7a652acb268d467edc028a81fbf3505a27fa5",
    "css_sha256": "150035c39f2c53826ab52c8c3f66b1dee46fac1bcbc4539299c8da39c9c50412",
    "file": "angular.json",
-   "file_sha256": "2e77afdafda3cdba4937676b522107dab09080da6c16e8f0e55f7abffb588067",
+   "file_sha256": "b9416af53de05d85d6f8865d611178fa0ced296f153581493e0cd4fdbc52ea66",
    "measured_date": "2026-11-13",
    "measured_on": "shipped",
    "renderer_bundle_sha256": "2af466d6ea815d4383bd2e58843e708374ab6af7a93acae4d535e37002a4ca73",
@@ -29,13 +29,13 @@
    "run_id": "angular-det-ab-20261113"
   },
   "compose": {
-   "atoms_total": 573,
+   "atoms_total": 576,
    "atoms_with_cases": 570,
    "commit": null,
    "core_sha256": null,
    "css_sha256": null,
    "file": "compose.json",
-   "file_sha256": "30e78d9cfeea1ac2e98952c3d7d4035a8e2f9c105fabe4dbacf15cd47d6d2468",
+   "file_sha256": "de6a12f6b05ae295437b2297b6aa5944d93248bab80c95ac75c6367a2eafab83",
    "measured_date": "2026-11-13",
    "measured_on": "private-build",
    "renderer_bundle_sha256": null,
@@ -43,13 +43,13 @@
    "run_id": "compose-desktop-merged-20261113"
   },
   "copilotkit": {
-   "atoms_total": 573,
-   "atoms_with_cases": 551,
+   "atoms_total": 576,
+   "atoms_with_cases": 554,
    "commit": "f111cde17643744f1e4145297b79c6fa84df38c5",
    "core_sha256": "0143667f9e044144b428fd7459a7a652acb268d467edc028a81fbf3505a27fa5",
    "css_sha256": "150035c39f2c53826ab52c8c3f66b1dee46fac1bcbc4539299c8da39c9c50412",
    "file": "copilotkit.json",
-   "file_sha256": "82038497edd31f190a28e5563ce9655828583805a02e2b56e4d14375a3090061",
+   "file_sha256": "bf2f50bcceed4489d2eb5fccd66624ffa08c95d560f5c42dee86f00be08914c9",
    "measured_date": "2026-11-13",
    "measured_on": "shipped",
    "renderer_bundle_sha256": "2af466d6ea815d4383bd2e58843e708374ab6af7a93acae4d535e37002a4ca73",
@@ -57,13 +57,13 @@
    "run_id": "copilotkit-1.87.0-det-ab-20261113"
   },
   "flutter": {
-   "atoms_total": 573,
-   "atoms_with_cases": 570,
+   "atoms_total": 576,
+   "atoms_with_cases": 573,
    "commit": null,
    "core_sha256": null,
    "css_sha256": null,
    "file": "flutter.json",
-   "file_sha256": "e12268b3b2c04e97e1f0f83a8a7c22d5e31a0933f209909c033bd910e23840fa",
+   "file_sha256": "d09bc930d2613f2f00fb4fc5409e9c1bb53427a2da0d268df747e32fe7a72266",
    "measured_date": "2026-11-13",
    "measured_on": "private-build",
    "renderer_bundle_sha256": null,
@@ -71,13 +71,13 @@
    "run_id": "flutter-20261113-144211"
   },
   "lit": {
-   "atoms_total": 573,
-   "atoms_with_cases": 551,
+   "atoms_total": 576,
+   "atoms_with_cases": 554,
    "commit": "f111cde17643744f1e4145297b79c6fa84df38c5",
    "core_sha256": "0143667f9e044144b428fd7459a7a652acb268d467edc028a81fbf3505a27fa5",
    "css_sha256": "150035c39f2c53826ab52c8c3f66b1dee46fac1bcbc4539299c8da39c9c50412",
    "file": "lit.json",
-   "file_sha256": "2624b52fe9c1dbae911dde13adf079e3767b2444ba69d2ef9ccb9b4eecf0f33f",
+   "file_sha256": "9af5b7c3bb2de62212d0d422be913495b7467b10f5f5b4f5f1a1c502e5983ec9",
    "measured_date": "2026-11-13",
    "measured_on": "shipped",
    "renderer_bundle_sha256": "2af466d6ea815d4383bd2e58843e708374ab6af7a93acae4d535e37002a4ca73",
@@ -85,13 +85,13 @@
    "run_id": "lit-det-ab-20261113"
   },
   "react": {
-   "atoms_total": 573,
-   "atoms_with_cases": 551,
+   "atoms_total": 576,
+   "atoms_with_cases": 554,
    "commit": "f111cde17643744f1e4145297b79c6fa84df38c5",
    "core_sha256": "0143667f9e044144b428fd7459a7a652acb268d467edc028a81fbf3505a27fa5",
    "css_sha256": "150035c39f2c53826ab52c8c3f66b1dee46fac1bcbc4539299c8da39c9c50412",
    "file": "react.json",
-   "file_sha256": "98c863092401793a9066e6db996eff55eca1812f0eff0408371e4a959fe042f3",
+   "file_sha256": "99786bacbd64a57d2eae098df1fd8697e53b94c5dfeef8d63397ca4dbbada84c",
    "measured_date": "2026-11-13",
    "measured_on": "shipped",
    "renderer_bundle_sha256": "2af466d6ea815d4383bd2e58843e708374ab6af7a93acae4d535e37002a4ca73",
@@ -100,5 +100,5 @@
   }
  },
  "schema": "a2ui-renderer-results-manifest/1",
- "stable_atom_count": 573
+ "stable_atom_count": 576
 }

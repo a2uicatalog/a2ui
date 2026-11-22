@@ -1,4 +1,4 @@
-# All 573 A2UI components
+# All 576 A2UI components
 
 The A2UI Atomic Catalog, A to Z. Each atom is a typed A2UI component an AI agent sends as declarative JSON.
 
@@ -406,6 +406,7 @@ The A2UI Atomic Catalog, A to Z. Each atom is a typed A2UI component an AI agent
 - [Orbit Mark](https://a2uicatalog.ai/atoms/orbit_mark/) `orbit_mark`: the a2ui orbit-mark logo with flow-field streams captured into its orbits
 - [Orbit Rings](https://a2uicatalog.ai/atoms/orbit_rings/) `orbit_rings`: tilted orbit rings, each a tier of labelled satellites around a centre node
 - [Order Status Card](https://a2uicatalog.ai/atoms/order_status_card/) `order_status_card`: e-commerce order card with status badge and line item list
+- [Org Chart](https://a2uicatalog.ai/atoms/org_chart/) `org_chart`: org chart: a bounded tree of up to thirty nodes, as tiers, a dendrogram or a radial tree
 - [Otp Input](https://a2uicatalog.ai/atoms/otp_input/) `otp_input`: N-box one-time password digit input — shadcn OTP pattern
 
 ## P
@@ -563,6 +564,7 @@ The A2UI Atomic Catalog, A to Z. Each atom is a typed A2UI component an AI agent
 - [Surface Map](https://a2uicatalog.ai/atoms/surface_map/) `surface_map`: A2UI surface diagram (schema → surfaces)
 - [Surface Unlocked](https://a2uicatalog.ai/atoms/surface_unlocked/) `surface_unlocked`: achievement-style surface unlocked notification
 - [Svg Path Draw](https://a2uicatalog.ai/atoms/svg_path_draw/) `svg_path_draw`: SVG stroke-dashoffset self-drawing path animation
+- [Swimlane](https://a2uicatalog.ai/atoms/swimlane/) `swimlane`: swimlane: who does which step, in order, across phases
 
 ## T
 
@@ -616,6 +618,7 @@ The A2UI Atomic Catalog, A to Z. Each atom is a typed A2UI component an AI agent
 ## V
 
 - [Variant Selector](https://a2uicatalog.ai/atoms/variant_selector/) `variant_selector`: CSS radio card group for variant or option picking
+- [Venn Diagram](https://a2uicatalog.ai/atoms/venn_diagram/) `venn_diagram`: venn diagram: what two or three sets share
 - [Version Badge](https://a2uicatalog.ai/atoms/version_badge/) `version_badge`: software release or dependency version number tag
 - [Versus Block](https://a2uicatalog.ai/atoms/versus_block/) `versus_block`: head-to-head two-option versus card &quot;VS&quot; separator.
 - [Video Card](https://a2uicatalog.ai/atoms/video_card/) `video_card`: video with title description and metadata to the video source.

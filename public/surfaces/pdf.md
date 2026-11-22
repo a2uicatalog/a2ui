@@ -1,13 +1,13 @@
 ---
-title: A2UI on PDF: 106 of 573 components — A2UI Atomic Catalog
-description: 106 of the 573 A2UI Atomic Catalog components render on PDF, each with a live preview, so an AI agent can show real UI there instead of generating HTML.
+title: A2UI on PDF: 106 of 576 components — A2UI Atomic Catalog
+description: 106 of the 576 A2UI Atomic Catalog components render on PDF, each with a live preview, so an AI agent can show real UI there instead of generating HTML.
 canonical: https://a2uicatalog.ai/surfaces/pdf/
 generated_by: gen_page_twins.py
 ---
 
 # PDF
 
-106 of 573 atoms available on this surface
+106 of 576 atoms available on this surface
 
 [Intro](https://a2uicatalog.ai/atoms/intro/)
 
@@ -42,7 +42,6 @@ single image with optional caption
 [Image Pair](https://a2uicatalog.ai/atoms/image_pair/)
 
 two images side by side with captions
-
 [Diagram](https://a2uicatalog.ai/atoms/diagram/)
 
 D2 or SVG architecture diagram
@@ -106,7 +105,6 @@ image with styled caption below
 [Feature Matrix](https://a2uicatalog.ai/atoms/feature_matrix/)
 
 features versus plans comparison matrix
-
 [Pricing Tier Card](https://a2uicatalog.ai/atoms/pricing_tier_card/)
 
 single pricing plan card with features list
@@ -311,7 +309,6 @@ asymmetric bento-box feature tile grid — MagicUI/shadcn pattern
 [Cta Section](https://a2uicatalog.ai/atoms/cta_section/)
 
 full-width CTA banner with headline and buttons — Tailwind UI pattern
-
 [Dot Grid Background](https://a2uicatalog.ai/atoms/dot_grid_background/)
 
 CSS repeating dot or grid pattern panel background

@@ -3,10 +3,10 @@
   "skills": [
     {
       "name": "a2ui-catalog",
-      "description": "Pick the right A2UI atoms and read their real field contracts before composing a UI payload. Use when deciding WHAT to render — searching the A2UI Atomic Catalog's 573 typed UI atoms (charts, gauges, ",
+      "description": "Pick the right A2UI atoms and read their real field contracts before composing a UI payload. Use when deciding WHAT to render — searching the A2UI Atomic Catalog's 576 typed UI atoms (charts, gauges, ",
       "type": "skill-md",
       "url": "https://raw.githubusercontent.com/a2uicatalog/a2ui/main/skills/a2ui-catalog/SKILL.md",
-      "digest": "sha256:65a0f86392fe4d22e502d574749d2195bb209d068f2b0da10f806a2847b21f36"
+      "digest": "sha256:2d8f99e081ba48baecdda888c27f1477b121e2a5ea5740220db1e6283d40870e"
     },
     {
       "name": "a2ui-compose",

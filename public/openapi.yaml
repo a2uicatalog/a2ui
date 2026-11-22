@@ -3,7 +3,7 @@ info:
   title: A2UI Atomic Catalog
   version: 1.0.0
   summary: Typed UI vocabulary and rendering API for AI agents
-  description: '573 typed UI atoms an agent composes into real rendered interfaces
+  description: '576 typed UI atoms an agent composes into real rendered interfaces
     — charts, gauges, steppers, dashboards — across 13 surfaces including web, Google
     Meet, Apps Script, Google Chat and MCP Apps hosts. The agent names a component
     from a fixed vocabulary; a renderer that already knows that component draws it,
@@ -245,7 +245,7 @@ paths:
       summary: A2UI payload to HTML
       description: 'POST a payload, get a complete self-contained HTML page back.
         The protocol-free path: no MCP, no connector, no deployment — compose against
-        spec.json and render here. Serves the 573 published atoms; preview-stage atoms
+        spec.json and render here. Serves the 576 published atoms; preview-stage atoms
         are reported in X-A2UI-Unpublished and rendered as a comment rather than markup.
         Atoms that perform a render-time server fetch (data_source, firestore_read,
         doc_ai_summary, multi_doc_ai_brief, gemini_handoff) are refused with 400 —
