@@ -156,6 +156,30 @@ FIELD_OVERRIDES = {
 }
 
 
+def _split_top_level(text: str) -> list:
+    """Split an item shape such as `id (max 24), parent_id (max 24, empty for the root)` on the commas that
+    are not inside (), [] or "". A plain re.split on every comma cut hints like `(max 24, empty for the root)`
+    in two, and the strict schema then required keys called `parent_id (max 24` and `empty for the root)`
+    (28 atoms were affected; the live org_chart could not carry a parent_id at all)."""
+    parts, depth, quote, cur = [], 0, "", []
+    for ch in text:
+        if quote:
+            if ch == quote:
+                quote = ""
+        elif ch in "\"'" and not (ch == "'" and cur and cur[-1].isalnum()):
+            quote = ch
+        elif ch in "([":
+            depth += 1
+        elif ch in ")]":
+            depth = max(0, depth - 1)
+        elif ch == "," and depth == 0:
+            parts.append("".join(cur)); cur = []
+            continue
+        cur.append(ch)
+    parts.append("".join(cur))
+    return [x.strip() for x in parts]
+
+
 def advanced_parse_field(raw_string: str):
     s = raw_string.strip()
     s_lower = s.lower()
@@ -198,7 +222,7 @@ def advanced_parse_field(raw_string: str):
 
     array_obj_match = re.search(r"(?:array of\s*|list of\s*)?\{\s*([^}]+)\s*\}", s, re.IGNORECASE)
     if array_obj_match:
-        tokens = re.split(r",\s*", array_obj_match.group(1))
+        tokens = _split_top_level(array_obj_match.group(1))
         properties, required = {}, []
         for token in tokens:
             token = token.strip()

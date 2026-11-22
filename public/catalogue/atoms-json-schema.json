@@ -5546,17 +5546,13 @@
                 },
                 "'retention_rates'": {
                   "type": "string"
-                },
-                "93.4]": {
-                  "type": "string"
                 }
               },
               "additionalProperties": false,
               "required": [
                 "'cohort_name'",
                 "'original_size'",
-                "'retention_rates'",
-                "93.4]"
+                "'retention_rates'"
               ]
             }
           },
@@ -5987,9 +5983,6 @@
                 },
                 "'assignee'": {
                   "type": "string"
-                },
-                "initials e.g. 'CK')": {
-                  "type": "string"
                 }
               },
               "additionalProperties": false,
@@ -5997,8 +5990,7 @@
                 "'id'",
                 "'text'",
                 "'completed'",
-                "'priority'",
-                "initials e.g. 'CK')"
+                "'priority'"
               ]
             }
           },
@@ -6838,21 +6830,13 @@
                 },
                 "icon": {
                   "type": "string"
-                },
-                "e.g.": {
-                  "type": "string"
-                },
-                "'home')": {
-                  "type": "string"
                 }
               },
               "additionalProperties": false,
               "required": [
                 "label",
                 "url",
-                "is_active",
-                "e.g.",
-                "'home')"
+                "is_active"
               ]
             }
           },
@@ -6984,16 +6968,12 @@
                 },
                 "target_id": {
                   "type": "string"
-                },
-                "for in-document navigation on web/pdf)": {
-                  "type": "string"
                 }
               },
               "additionalProperties": false,
               "required": [
                 "label",
-                "url",
-                "for in-document navigation on web/pdf)"
+                "url"
               ]
             }
           },
@@ -25825,15 +25805,6 @@
                 "'data'": {
                   "type": "string"
                 },
-                "25": {
-                  "type": "string"
-                },
-                "45": {
-                  "type": "string"
-                },
-                "60]": {
-                  "type": "string"
-                },
                 "'color'": {
                   "type": "string"
                 }
@@ -25842,9 +25813,6 @@
               "required": [
                 "'label'",
                 "'data'",
-                "25",
-                "45",
-                "60]",
                 "'color'"
               ]
             }
@@ -25995,9 +25963,6 @@
                 "color": {
                   "type": "string"
                 },
-                "auto-assigned otherwise)": {
-                  "type": "string"
-                },
                 "points": {
                   "type": "string"
                 },
@@ -26005,9 +25970,6 @@
                   "type": "string"
                 },
                 "n": {
-                  "type": "string"
-                },
-                "grows point radius)": {
                   "type": "string"
                 },
                 "ci_low": {
@@ -26020,10 +25982,8 @@
               "additionalProperties": false,
               "required": [
                 "label",
-                "auto-assigned otherwise)",
                 "points",
-                "observed",
-                "grows point radius)"
+                "observed"
               ]
             }
           },
@@ -32976,10 +32936,7 @@
                 "label": {
                   "type": "string"
                 },
-                "value (0\u2013100": {
-                  "type": "string"
-                },
-                "alias percent)": {
+                "value": {
                   "type": "string"
                 },
                 "color": {
@@ -32992,8 +32949,7 @@
               "additionalProperties": false,
               "required": [
                 "label",
-                "value (0\u2013100",
-                "alias percent)"
+                "value"
               ]
             }
           },
@@ -33704,10 +33660,7 @@
             "items": {
               "type": "object",
               "properties": {
-                "bg (css color": {
-                  "type": "string"
-                },
-                "default \"#f8fafc\")": {
+                "bg": {
                   "type": "string"
                 },
                 "blocks": {
@@ -33716,8 +33669,7 @@
               },
               "additionalProperties": false,
               "required": [
-                "bg (css color",
-                "default \"#f8fafc\")",
+                "bg",
                 "blocks"
               ]
             }
@@ -33727,10 +33679,7 @@
             "items": {
               "type": "object",
               "properties": {
-                "bg (css color": {
-                  "type": "string"
-                },
-                "default \"#fff\")": {
+                "bg": {
                   "type": "string"
                 },
                 "blocks": {
@@ -33739,8 +33688,7 @@
               },
               "additionalProperties": false,
               "required": [
-                "bg (css color",
-                "default \"#fff\")",
+                "bg",
                 "blocks"
               ]
             }
@@ -40106,36 +40054,9 @@
               "properties": {
                 "keys": {
                   "type": "string"
-                },
-                "ease": {
-                  "type": "string"
-                },
-                "x": {
-                  "type": "string"
-                },
-                "y": {
-                  "type": "string"
-                },
-                "zoom": {
-                  "type": "string"
-                },
-                "rx": {
-                  "type": "string"
-                },
-                "ry": {
-                  "type": "string"
-                },
-                "rz": {
-                  "type": "string"
-                },
-                "z": {
-                  "type": "string"
                 }
               },
-              "additionalProperties": false,
-              "required": [
-                "keys"
-              ]
+              "additionalProperties": false
             }
           },
           "enter": {
@@ -42163,19 +42084,14 @@
                 "source": {
                   "type": "string"
                 },
-                "preview? (an atom block": {
-                  "type": "string"
-                },
-                "rendered live)": {
+                "preview": {
                   "type": "string"
                 }
               },
               "additionalProperties": false,
               "required": [
                 "title",
-                "text",
-                "preview? (an atom block",
-                "rendered live)"
+                "text"
               ]
             }
           },
@@ -59759,7 +59675,6 @@
               "additionalProperties": false,
               "required": [
                 "text",
-                "children",
                 "children"
               ]
             }
@@ -63121,9 +63036,6 @@
                 "from": {
                   "type": "string"
                 },
-                "lon]": {
-                  "type": "string"
-                },
                 "to": {
                   "type": "string"
                 },
@@ -63134,9 +63046,7 @@
               "additionalProperties": false,
               "required": [
                 "from",
-                "lon]",
-                "to",
-                "lon]"
+                "to"
               ]
             }
           },
@@ -63578,10 +63488,7 @@
                 "value": {
                   "type": "string"
                 },
-                "intensity (0\u2013100": {
-                  "type": "string"
-                },
-                "optional)": {
+                "intensity": {
                   "type": "string"
                 },
                 "coords": {
@@ -63596,7 +63503,6 @@
                 "id",
                 "type",
                 "label",
-                "intensity (0\u2013100",
                 "coords",
                 "y"
               ]
@@ -63734,9 +63640,6 @@
                 "from": {
                   "type": "string"
                 },
-                "lon]": {
-                  "type": "string"
-                },
                 "to": {
                   "type": "string"
                 }
@@ -63745,9 +63648,7 @@
               "required": [
                 "callsign",
                 "from",
-                "lon]",
-                "to",
-                "lon]"
+                "to"
               ]
             }
           },
@@ -64783,10 +64684,7 @@
                 "label": {
                   "type": "string"
                 },
-                "detail (optional": {
-                  "type": "string"
-                },
-                "alias": {
+                "detail": {
                   "type": "string"
                 },
                 "url": {
@@ -64795,8 +64693,7 @@
               },
               "additionalProperties": false,
               "required": [
-                "label",
-                "alias"
+                "label"
               ]
             }
           },
@@ -74469,9 +74366,6 @@
                 },
                 "slides": {
                   "type": "string"
-                },
-                "blocks": {
-                  "type": "string"
                 }
               },
               "additionalProperties": false,
@@ -74479,9 +74373,7 @@
                 "id",
                 "label",
                 "color",
-                "slides",
-                "label",
-                "blocks"
+                "slides"
               ]
             }
           },
@@ -79131,13 +79023,7 @@
                 "value": {
                   "type": "string"
                 },
-                "path? (array of 1 to 3 strings": {
-                  "type": "string"
-                },
-                "max 20 each": {
-                  "type": "string"
-                },
-                "the item's ancestor groups from the top down)": {
+                "path": {
                   "type": "string"
                 }
               },
@@ -79145,10 +79031,7 @@
               "required": [
                 "category",
                 "name",
-                "value",
-                "path? (array of 1 to 3 strings",
-                "max 20 each",
-                "the item's ancestor groups from the top down)"
+                "value"
               ]
             }
           },
@@ -79443,10 +79326,7 @@
                 "label": {
                   "type": "string"
                 },
-                "parent_id (max 24": {
-                  "type": "string"
-                },
-                "empty for the root)": {
+                "parent_id": {
                   "type": "string"
                 }
               },
@@ -79454,8 +79334,7 @@
               "required": [
                 "id",
                 "label",
-                "parent_id (max 24",
-                "empty for the root)"
+                "parent_id"
               ]
             }
           },
@@ -79625,37 +79504,17 @@
             "items": {
               "type": "object",
               "properties": {
-                "label (string": {
+                "label": {
                   "type": "string"
                 },
-                "max 30": {
-                  "type": "string"
-                },
-                "default \"Series n\")": {
-                  "type": "string"
-                },
-                "values (array": {
-                  "type": "string"
-                },
-                "5 to 2000": {
-                  "type": "string"
-                },
-                "of numbers": {
-                  "type": "string"
-                },
-                "filtered like `values`)": {
+                "values": {
                   "type": "string"
                 }
               },
               "additionalProperties": false,
               "required": [
-                "label (string",
-                "max 30",
-                "default \"Series n\")",
-                "values (array",
-                "5 to 2000",
-                "of numbers",
-                "filtered like `values`)"
+                "label",
+                "values"
               ]
             }
           },
@@ -79786,63 +79645,20 @@
             "items": {
               "type": "object",
               "properties": {
-                "label (string": {
+                "label": {
                   "type": "string"
                 },
-                "max 30": {
+                "values": {
                   "type": "string"
                 },
-                "default \"Group n\")": {
-                  "type": "string"
-                },
-                "values (array": {
-                  "type": "string"
-                },
-                "5 to 2000": {
-                  "type": "string"
-                },
-                "of numbers)": {
-                  "type": "string"
-                },
-                "stats? (object {q1": {
-                  "type": "string"
-                },
-                "median": {
-                  "type": "string"
-                },
-                "q3": {
-                  "type": "string"
-                },
-                "lo": {
-                  "type": "string"
-                },
-                "hi": {
-                  "type": "string"
-                },
-                "min": {
-                  "type": "string"
-                },
-                "max": {
-                  "type": "string"
-                },
-                "mean": {
-                  "type": "string"
-                },
-                "n": {
+                "stats? (object {q1, median, q3, lo?, hi?, min?, max?, mean?, n": {
                   "type": "string"
                 }
               },
               "additionalProperties": false,
               "required": [
-                "label (string",
-                "max 30",
-                "default \"Group n\")",
-                "values (array",
-                "5 to 2000",
-                "of numbers)",
-                "stats? (object {q1",
-                "median",
-                "q3"
+                "label",
+                "values"
               ]
             }
           },
@@ -79999,36 +79815,20 @@
             "items": {
               "type": "object",
               "properties": {
-                "label (string": {
-                  "type": "string"
-                },
-                "max 30": {
-                  "type": "string"
-                },
-                "default \"Step n\")": {
+                "label": {
                   "type": "string"
                 },
                 "value": {
                   "type": "string"
                 },
-                "kind (optional": {
-                  "type": "string"
-                },
-                "\"total\" or \"delta\"": {
-                  "type": "string"
-                },
-                "default \"delta\")": {
+                "kind": {
                   "type": "string"
                 }
               },
               "additionalProperties": false,
               "required": [
-                "label (string",
-                "max 30",
-                "default \"Step n\")",
-                "value",
-                "\"total\" or \"delta\"",
-                "default \"delta\")"
+                "label",
+                "value"
               ]
             }
           },
@@ -80164,19 +79964,10 @@
             "items": {
               "type": "object",
               "properties": {
-                "path (optional": {
+                "path": {
                   "type": "string"
                 },
-                "array of 0 to 3 strings": {
-                  "type": "string"
-                },
-                "max 20 each": {
-                  "type": "string"
-                },
-                "name (max 24": {
-                  "type": "string"
-                },
-                "default \"Item n\")": {
+                "name": {
                   "type": "string"
                 },
                 "value": {
@@ -80185,10 +79976,7 @@
               },
               "additionalProperties": false,
               "required": [
-                "array of 0 to 3 strings",
-                "max 20 each",
-                "name (max 24",
-                "default \"Item n\")",
+                "name",
                 "value"
               ]
             }
@@ -80466,19 +80254,10 @@
             "items": {
               "type": "object",
               "properties": {
-                "path (optional": {
+                "path": {
                   "type": "string"
                 },
-                "array of 0 to 3 strings": {
-                  "type": "string"
-                },
-                "max 20 each": {
-                  "type": "string"
-                },
-                "name (max 24": {
-                  "type": "string"
-                },
-                "default \"Item n\")": {
+                "name": {
                   "type": "string"
                 },
                 "value": {
@@ -80487,10 +80266,7 @@
               },
               "additionalProperties": false,
               "required": [
-                "array of 0 to 3 strings",
-                "max 20 each",
-                "name (max 24",
-                "default \"Item n\")",
+                "name",
                 "value"
               ]
             }
@@ -80624,36 +80400,20 @@
             "items": {
               "type": "object",
               "properties": {
-                "id (string": {
+                "id": {
                   "type": "string"
                 },
-                "max 40": {
+                "label": {
                   "type": "string"
                 },
-                "label (string": {
-                  "type": "string"
-                },
-                "max 24": {
-                  "type": "string"
-                },
-                "default the id)": {
-                  "type": "string"
-                },
-                "group (optional string": {
-                  "type": "string"
-                },
-                "max 20)": {
+                "group": {
                   "type": "string"
                 }
               },
               "additionalProperties": false,
               "required": [
-                "id (string",
-                "max 40",
-                "label (string",
-                "max 24",
-                "default the id)",
-                "max 20)"
+                "id",
+                "label"
               ]
             }
           },
@@ -80668,18 +80428,14 @@
                 "target": {
                   "type": "string"
                 },
-                "value (optional number above 0": {
-                  "type": "string"
-                },
-                "default 1)": {
+                "value": {
                   "type": "string"
                 }
               },
               "additionalProperties": false,
               "required": [
                 "source",
-                "target",
-                "default 1)"
+                "target"
               ]
             }
           },
@@ -80815,30 +80571,21 @@
             "items": {
               "type": "object",
               "properties": {
-                "width (whole number": {
+                "width": {
                   "type": "string"
                 },
-                "2 to 100)": {
+                "height": {
                   "type": "string"
                 },
-                "height (whole number": {
-                  "type": "string"
-                },
-                "values (array of width times height numbers": {
-                  "type": "string"
-                },
-                "row-major": {
+                "values": {
                   "type": "string"
                 }
               },
               "additionalProperties": false,
               "required": [
-                "width (whole number",
-                "2 to 100)",
-                "height (whole number",
-                "2 to 100)",
-                "values (array of width times height numbers",
-                "row-major"
+                "width",
+                "height",
+                "values"
               ]
             }
           },
@@ -81010,22 +80757,13 @@
                 "x": {
                   "type": "string"
                 },
-                "y (numbers": {
+                "y": {
                   "type": "string"
                 },
-                "required)": {
+                "label": {
                   "type": "string"
                 },
-                "label (optional": {
-                  "type": "string"
-                },
-                "max 24)": {
-                  "type": "string"
-                },
-                "group (optional": {
-                  "type": "string"
-                },
-                "max 20)": {
+                "group": {
                   "type": "string"
                 },
                 "value": {
@@ -81035,10 +80773,7 @@
               "additionalProperties": false,
               "required": [
                 "x",
-                "y (numbers",
-                "required)",
-                "max 24)",
-                "max 20)"
+                "y"
               ]
             }
           },
@@ -81330,40 +81065,26 @@
             "items": {
               "type": "object",
               "properties": {
-                "label (string": {
-                  "type": "string"
-                },
-                "max 24": {
-                  "type": "string"
-                },
-                "default \"Dimension n\")": {
+                "label": {
                   "type": "string"
                 },
                 "values": {
                   "type": "string"
                 },
-                "min (number": {
+                "min": {
                   "type": "string"
                 },
-                "optional)": {
+                "max": {
                   "type": "string"
                 },
-                "max (number": {
-                  "type": "string"
-                },
-                "reverse (boolean": {
+                "reverse": {
                   "type": "string"
                 }
               },
               "additionalProperties": false,
               "required": [
-                "label (string",
-                "max 24",
-                "default \"Dimension n\")",
-                "values",
-                "min (number",
-                "max (number",
-                "reverse (boolean"
+                "label",
+                "values"
               ]
             }
           },
@@ -81508,13 +81229,7 @@
             "items": {
               "type": "object",
               "properties": {
-                "label (string or number": {
-                  "type": "string"
-                },
-                "max 30": {
-                  "type": "string"
-                },
-                "default \"Point n\")": {
+                "label": {
                   "type": "string"
                 },
                 "a": {
@@ -81523,22 +81238,16 @@
                 "b": {
                   "type": "string"
                 },
-                "c (non-negative numbers up to 1e12 in size": {
-                  "type": "string"
-                },
-                "not all zero)": {
+                "c": {
                   "type": "string"
                 }
               },
               "additionalProperties": false,
               "required": [
-                "label (string or number",
-                "max 30",
-                "default \"Point n\")",
+                "label",
                 "a",
                 "b",
-                "c (non-negative numbers up to 1e12 in size",
-                "not all zero)"
+                "c"
               ]
             }
           },
@@ -81692,13 +81401,7 @@
                 "v": {
                   "type": "string"
                 },
-                "label (string or number": {
-                  "type": "string"
-                },
-                "max 30": {
-                  "type": "string"
-                },
-                "default \"Arrow n\")": {
+                "label": {
                   "type": "string"
                 }
               },
@@ -81708,9 +81411,7 @@
                 "y",
                 "u",
                 "v",
-                "label (string or number",
-                "max 30",
-                "default \"Arrow n\")"
+                "label"
               ]
             }
           },
@@ -82115,15 +81816,11 @@
                 },
                 "path": {
                   "type": "string"
-                },
-                "lon": {
-                  "type": "string"
                 }
               },
               "additionalProperties": false,
               "required": [
-                "path",
-                "lon"
+                "path"
               ]
             }
           },
@@ -82314,59 +82011,27 @@
             "items": {
               "type": "object",
               "properties": {
-                "label (string": {
+                "label": {
                   "type": "string"
                 },
-                "max 30": {
+                "r": {
                   "type": "string"
                 },
-                "default \"Series n\")": {
+                "theta": {
                   "type": "string"
                 },
-                "r (array of numbers": {
+                "mode": {
                   "type": "string"
                 },
-                "radius of each point)": {
-                  "type": "string"
-                },
-                "theta (array of numbers in degrees": {
-                  "type": "string"
-                },
-                "or strings for categories; same length as r)": {
-                  "type": "string"
-                },
-                "mode (optional": {
-                  "type": "string"
-                },
-                "\"lines\"": {
-                  "type": "string"
-                },
-                "\"markers\" or \"lines+markers\"; default \"lines+markers\" up to 20 points": {
-                  "type": "string"
-                },
-                "otherwise \"lines\")": {
-                  "type": "string"
-                },
-                "fill (optional": {
-                  "type": "string"
-                },
-                "\"toself\" shades the shape closed from the last point to the first)": {
+                "fill": {
                   "type": "string"
                 }
               },
               "additionalProperties": false,
               "required": [
-                "label (string",
-                "max 30",
-                "default \"Series n\")",
-                "r (array of numbers",
-                "radius of each point)",
-                "theta (array of numbers in degrees",
-                "or strings for categories; same length as r)",
-                "\"lines\"",
-                "\"markers\" or \"lines+markers\"; default \"lines+markers\" up to 20 points",
-                "otherwise \"lines\")",
-                "\"toself\" shades the shape closed from the last point to the first)"
+                "label",
+                "r",
+                "theta"
               ]
             }
           },
@@ -82671,13 +82336,7 @@
             "items": {
               "type": "object",
               "properties": {
-                "label (string": {
-                  "type": "string"
-                },
-                "max 24": {
-                  "type": "string"
-                },
-                "default \"Dimension n\")": {
+                "label": {
                   "type": "string"
                 },
                 "values": {
@@ -82686,9 +82345,7 @@
               },
               "additionalProperties": false,
               "required": [
-                "label (string",
-                "max 24",
-                "default \"Dimension n\")",
+                "label",
                 "values"
               ]
             }
