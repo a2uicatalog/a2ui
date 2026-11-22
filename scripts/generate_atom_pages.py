@@ -4178,7 +4178,7 @@ MCP_APPS_HOST_JS = r"""
   // array of blocks, or a single block object all render. Copy-paste from a
   // post should just work.
   function normalize(payload) {
-    if (Array.isArray(payload)) return { theme: 'dark', blocks: payload };
+    if (Array.isArray(payload)) return { theme: __BARE_THEME__, blocks: payload };
     // Envelopes pass through UNTOUCHED — the view decodes/boots them itself.
     // Without this, a wired surface (type, no blocks) got wrapped as a single
     // unknown ATOM (the black-page incident, 2026-07-11).
@@ -4199,7 +4199,7 @@ MCP_APPS_HOST_JS = r"""
       return payload;
     }
     if (payload && !payload.blocks && (payload.type || payload.component)) {
-      return { theme: 'dark', blocks: [payload] };
+      return { theme: __BARE_THEME__, blocks: [payload] };
     }
     return payload || {};
   }
@@ -4326,7 +4326,7 @@ MCP_APPS_HOST_JS = r"""
         id: msg.id,
         result: {
           protocolVersion: '2026-01-26',
-          hostContext: { theme: 'dark', displayMode: 'inline' },
+          hostContext: { theme: __BARE_THEME__, displayMode: 'inline' },
           capabilities: { serverTools: {}, logging: {} }
         }
       }, '*');
@@ -4482,10 +4482,12 @@ __MCP_GLOW__
 """
 
 
-def _mcp_apps_host_js():
-    """Host JS with the CI-tested demo presets injected."""
+def _mcp_apps_host_js(bare_theme="'dark'"):
+    """Host JS with the CI-tested demo presets injected. bare_theme is a JS expression: the theme given to a pasted bare
+    block or array and reported in hostContext. The hero embeds keep 'dark' (some atoms are tuned for a dark ground); the
+    full-screen play page passes the page's own theme, so a tiny payload from /try does not sit on a black stage."""
     return MCP_APPS_HOST_JS.replace(
-        "__MCP_APPS_PRESETS__", json.dumps(PLAYGROUND_PRESETS, ensure_ascii=False))
+        "__MCP_APPS_PRESETS__", json.dumps(PLAYGROUND_PRESETS, ensure_ascii=False)).replace("__BARE_THEME__", bare_theme)
 
 
 _CURSOR_GLOW_CACHE = None
@@ -5901,7 +5903,7 @@ def main():
             .replace("__SITE_BASE_CSS__", SITE_BASE_CSS)
             .replace("__SITE_HEADER__", site_header("playground"))
             .replace("__SITE_FOOT_JS__", SITE_FOOT_JS)
-            .replace("__MCP_APPS_HOST_JS__", _mcp_apps_host_js())
+            .replace("__MCP_APPS_HOST_JS__", _mcp_apps_host_js("(document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light')"))
             .replace("__MCP_GLOW__", _cursor_glow_html()))
         print(f"✓ full-screen playground → {play_dir}/index.html")
         export_dir = surfaces_dir / "mcp-apps" / "export"
