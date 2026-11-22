@@ -54,10 +54,6 @@ KNOWN_UNCOVERED_BASELINE = frozenset({
     # Added 2026-10-29 promoting motion_bricks and brick_build_3d from preview to stable (Curtis: "release them
     # now") in this same commit -- remove after this push deploys and atom-multirep-onboard is rerun.
     "block_robot", "block_rocket", "brick_build_3d", "motion_bricks",
-    # Added 2026-10-21 promoting the nine D3 atoms from preview to stable (Curtis: "go stable") in this same
-    # commit -- remove after this push deploys and atom-multirep-onboard is rerun to cover them.
-    "arc_diagram", "box_plot", "chord_diagram", "circle_pack", "contour_plot", "histogram", "sunburst",
-    "voronoi", "waterfall",
     # Added 2026-10-05 promoting motion_envelope (new atom, stable on Curtis's go-ahead for the What-is-A2UI
     # pillar film) in this same commit -- remove after this push deploys and atom-multirep-onboard is rerun.
     "motion_envelope",
