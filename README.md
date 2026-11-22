@@ -158,7 +158,7 @@ with no network and no model, so the same input gives the same bytes. [See it in
 | `spec/` | Internal state/action contracts (gdm-v0.2, a2ui-state-v1) — the A2UI v1.0 candidate spec itself lives at [a2ui.org](https://a2ui.org/specification/v1.0-a2ui/), not vendored here |
 | `examples/` | Playbook YAML examples |
 | `knowledge-catalogue/` | Curriculum-to-atom pipeline — schema-validated curriculum markdown (Brevet 2026, NIST AI RMF) compiled into A2UI payloads. Separate concern from the atom vocabulary itself. |
-| `macro-packs/` | Python macros that draw a picture as SVG. Today: `archpack` (architecture animation from Mermaid, D2 or JSON) and the two shared helpers it imports from the D3 pack |
+| `macro-packs/` | Python macros that draw a picture as SVG. Today: `archpack` (architecture animation from Mermaid, D2 or JSON) and `d3pack` (28 macros that draw d3-style charts, 18 of them twins of the catalogue's d3 atoms) |
 
 ---
 
