@@ -445,19 +445,24 @@ document.addEventListener('click',function(e){
 })();
 </script>
   <script>
-// WebMCP (W3C draft, Chrome 157+): register any [toolname]-tagged form on
-// this page as an in-page tool. Feature-guarded (navigator.modelContext is
-// the deprecated pre-Chrome-150 alias, checked as a fallback) so this is
-// fully inert on every browser that doesn't implement the API yet -- no
-// behaviour change, no error, just an early no-op. execute() triggers the
-// SAME submit path a real click already uses (dispatches a real submit
-// event) rather than re-implementing each form's handler a second time --
-// this can only ever do what the visible form already does.
+// WebMCP (W3C draft, behind an origin trial or flag in Chrome): register any
+// [toolname]-tagged form on this page as an in-page tool, EXCEPT forms marked
+// data-webmcp="declarative": those are tools through their own toolname /
+// toolparamdescription attributes and answer the agent with respondWith (see
+// /try/), so registering them here too would duplicate the tool and give it no
+// input schema. Feature-guarded (navigator.modelContext is only a fallback
+// alias) so this is fully inert on every browser that doesn't implement the
+// API yet -- no behaviour change, no error, just an early no-op. For the
+// forms it does register, execute() triggers the SAME submit path a real
+// click already uses (dispatches a real submit event) rather than
+// re-implementing each form's handler a second time -- this can only ever do
+// what the visible form already does. KNOWN LIMIT: that tool has no input
+// schema and returns only {status:'submitted'} (the /frugal-ai-ops/ form).
 (function(){
   var mc = (typeof document!=='undefined' && document.modelContext) ||
            (typeof navigator!=='undefined' && navigator.modelContext);
   if(!mc || typeof mc.registerTool!=='function') return;
-  document.querySelectorAll('form[toolname]').forEach(function(form){
+  document.querySelectorAll('form[toolname]:not([data-webmcp="declarative"])').forEach(function(form){
     try{
       mc.registerTool({
         name: form.getAttribute('toolname'),

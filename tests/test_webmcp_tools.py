@@ -38,6 +38,31 @@ def test_form_loop_only_on_pages_with_toolname_forms():
     assert _registrations(atom) == list(TOOLS)
 
 
+def test_try_form_is_a_declarative_tool_with_a_schema_and_an_answer():
+    """/try/ used to get a second, imperative registration from the generic form loop: no inputSchema, execute() ignored its
+    arguments (an agent could not pass a prompt) and returned only {status:'submitted'} (it never saw the routing result).
+    Found in the 2026-11-24 WebMCP review. The form is now a declarative tool and answers through SubmitEvent.respondWith."""
+    html = (PUBLIC / "try" / "index.html").read_text()
+    form = re.search(r'<form[^>]*id="try-form"[^>]*>', html).group(0)
+    assert 'toolname="route_ui_request"' in form and "toolautosubmit" in form and 'data-webmcp="declarative"' in form
+    area = re.search(r'<textarea[^>]*id="try-prompt"[^>]*>', html).group(0)
+    assert 'name="prompt"' in area and "toolparamdescription=" in area, "the control needs a name and a description for the schema"
+    handler = html[html.index("form.addEventListener('submit'"):]
+    handler = handler[:handler.index("}});" if "}});" in handler else "});")]
+    assert "e.agentInvoked" in handler and "e.respondWith(" in handler
+    assert handler.index("e.preventDefault()") < handler.index("e.respondWith("), "preventDefault must come before respondWith"
+    assert handler.count("submitPrompt(") == 1, "one request per submit: the agent path must reuse it, not fetch again"
+
+
+def test_generic_form_loop_skips_declarative_forms():
+    for page in ("try", "frugal-ai-ops"):
+        html = (PUBLIC / page / "index.html").read_text()
+        assert """form[toolname]:not([data-webmcp="declarative"])""" in html
+    # /frugal-ai-ops/ still uses the generic loop (known limit: no input schema), so its form must NOT carry the opt-out
+    frugal = (PUBLIC / "frugal-ai-ops" / "index.html").read_text()
+    assert 'data-webmcp="declarative"' not in re.search(r'<form[^>]*id="frugal-form"[^>]*>', frugal).group(0)
+
+
 def test_every_sitemap_page_has_a_markdown_twin():
     xml = (PUBLIC / "sitemap-pages.xml").read_text()
     missing = []

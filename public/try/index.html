@@ -279,9 +279,14 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   (embedding-based, no chat call) routes it against this catalog's 576 atoms
   and shows you which ones matched — live, against the real deployed catalog.</p>
 
-  <form class="try-form" id="try-form" toolname="route_ui_request"
+  <!-- Declarative WebMCP tool (W3C draft): toolname/tooldescription make this form a tool, the control's name and
+       toolparamdescription become its input schema, and toolautosubmit lets an agent submit it (routing is read-only;
+       it only spends the visitor's own free-tier allowance). The script below answers an agent-invoked submit with the
+       routing result through SubmitEvent.respondWith. data-webmcp="declarative" keeps the generic form loop from
+       registering it a second time, without a schema, as the old loop did. -->
+  <form class="try-form" id="try-form" toolname="route_ui_request" toolautosubmit data-webmcp="declarative"
         tooldescription="Given a plain-English description of a UI need, return the A2UI atoms from this 576-atom catalog that best match it — embedding-based routing against the real deployed catalog, free tier 20 requests/day per IP.">
-    <textarea id="try-prompt" placeholder="e.g. a status indicator badge" maxlength="500"></textarea>
+    <textarea id="try-prompt" name="prompt" required toolparamdescription="What the UI should show or do, in plain English, up to 500 characters." placeholder="e.g. a status indicator badge" maxlength="500"></textarea>
     <div class="try-row">
       <button id="try-submit" type="submit">Route it →</button>
       <span class="try-hint">Free tier — 20 requests/day per IP</span>
@@ -489,19 +494,24 @@ document.addEventListener('keydown',function(e){
 })();
 </script>
   <script>
-// WebMCP (W3C draft, Chrome 157+): register any [toolname]-tagged form on
-// this page as an in-page tool. Feature-guarded (navigator.modelContext is
-// the deprecated pre-Chrome-150 alias, checked as a fallback) so this is
-// fully inert on every browser that doesn't implement the API yet -- no
-// behaviour change, no error, just an early no-op. execute() triggers the
-// SAME submit path a real click already uses (dispatches a real submit
-// event) rather than re-implementing each form's handler a second time --
-// this can only ever do what the visible form already does.
+// WebMCP (W3C draft, behind an origin trial or flag in Chrome): register any
+// [toolname]-tagged form on this page as an in-page tool, EXCEPT forms marked
+// data-webmcp="declarative": those are tools through their own toolname /
+// toolparamdescription attributes and answer the agent with respondWith (see
+// /try/), so registering them here too would duplicate the tool and give it no
+// input schema. Feature-guarded (navigator.modelContext is only a fallback
+// alias) so this is fully inert on every browser that doesn't implement the
+// API yet -- no behaviour change, no error, just an early no-op. For the
+// forms it does register, execute() triggers the SAME submit path a real
+// click already uses (dispatches a real submit event) rather than
+// re-implementing each form's handler a second time -- this can only ever do
+// what the visible form already does. KNOWN LIMIT: that tool has no input
+// schema and returns only {status:'submitted'} (the /frugal-ai-ops/ form).
 (function(){
   var mc = (typeof document!=='undefined' && document.modelContext) ||
            (typeof navigator!=='undefined' && navigator.modelContext);
   if(!mc || typeof mc.registerTool!=='function') return;
-  document.querySelectorAll('form[toolname]').forEach(function(form){
+  document.querySelectorAll('form[toolname]:not([data-webmcp="declarative"])').forEach(function(form){
     try{
       mc.registerTool({
         name: form.getAttribute('toolname'),
@@ -586,30 +596,42 @@ document.addEventListener('keydown',function(e){
     result.innerHTML = parts.join('\n');
   }
 
+  // Routes one prompt, draws the answer, and resolves {status, data} so a caller (the agent path below) can
+  // reuse the SAME request instead of making a second one against the 20/day allowance.
   function submitPrompt(prompt){
     prompt = prompt.trim();
-    if (!prompt) return;
+    if (!prompt) return Promise.resolve({ status: 0, data: { ok: false, error: 'missing prompt' } });
     submit.disabled = true;
     submit.textContent = 'Routing…';
     result.innerHTML = '<p class="try-empty">Routing…</p>';
-    fetch('https://a2uicatalog.ai/api/compose', {
+    return fetch('https://a2uicatalog.ai/api/compose', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ prompt: prompt })
     }).then(function(res){
       var status = res.status;
-      return res.json().catch(function(){ return null; }).then(function(data){ render(data, status); });
+      return res.json().catch(function(){ return null; }).then(function(data){ render(data, status); return { status: status, data: data }; });
     }).catch(function(e){
       result.innerHTML = '<p class="try-status err">network error: ' + esc(e.message || e) + '</p>';
+      return { status: 0, data: { ok: false, error: 'network error: ' + (e.message || e) } };
     }).finally(function(){
       submit.disabled = false;
       submit.textContent = 'Route it →';
     });
   }
 
+  // What an agent gets back from route_ui_request: the routing result itself, or a plain error it can act on.
+  function agentAnswer(r){
+    var d = r && r.data;
+    if (r && r.status === 429) return { ok: false, error: 'daily free-tier limit reached (20 requests/day per IP): try again tomorrow' };
+    if (!d || d.ok === false) return { ok: false, error: (d && d.error) || 'request failed' };
+    return d;
+  }
+
   form.addEventListener('submit', function(e){
-    e.preventDefault();
-    submitPrompt(input.value);
+    e.preventDefault();   // must come before respondWith
+    var done = submitPrompt(input.value);
+    if (e.agentInvoked && typeof e.respondWith === 'function') e.respondWith(done.then(agentAnswer));
   });
   examples.addEventListener('click', function(e){
     var b = e.target.closest('.try-example');
