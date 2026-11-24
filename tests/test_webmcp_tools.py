@@ -54,6 +54,24 @@ def test_try_form_is_a_declarative_tool_with_a_schema_and_an_answer():
     assert handler.count("submitPrompt(") == 1, "one request per submit: the agent path must reuse it, not fetch again"
 
 
+def test_try_renders_inline_in_a_sandboxed_cross_origin_frame():
+    """Phase 2 step 1 (2026-11-24): the routed blocks render on the page in the MCP Apps renderer, hosted the way the payload editor hosts it:
+    a frame on play.a2uicatalog.ai (no cookies or storage of this site), messages accepted only from that frame and origin in a fixed shape,
+    every request from the frame refused. The new-tab button stays as the second way."""
+    html = (PUBLIC / "try" / "index.html").read_text()
+    assert 'id="try-render"' in html and 'id="try-newtab"' in html and 'id="try-stage"' in html
+    host = html[html.index("var STAGE_ORIGIN"):html.index("function renderInline")]
+    assert "STAGE_ORIGIN = 'https://play.a2uicatalog.ai'" in host
+    assert "ev.source !== stageFrame.contentWindow || ev.origin !== STAGE_ORIGIN" in host
+    assert "postMessage(m, STAGE_ORIGIN)" in host, "never post to '*'"
+    assert "code: -32601" in host, "requests from the frame (tools/call, open-link) must be refused"
+    assert "innerHTML" not in host, "nothing the frame sends may be put into the page as markup"
+    frame = html[html.index("function renderInline"):html.index("result.addEventListener('click'")]
+    assert "sandbox', 'allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox'" in frame
+    assert "referrerpolicy" in frame and "no-referrer" in frame
+    assert "renderer-bundle?v=" in host
+
+
 def test_generic_form_loop_skips_declarative_forms():
     for page in ("try", "frugal-ai-ops"):
         html = (PUBLIC / page / "index.html").read_text()

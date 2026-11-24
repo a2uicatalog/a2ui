@@ -4832,6 +4832,11 @@ TRY_PAGE_CSS = """
 .try-chip{font-size:13px;font-weight:650;padding:5px 13px;border-radius:8px;background:var(--accent-soft-bg);color:var(--accent);text-decoration:none}
 .try-chip:hover{filter:brightness(1.05)}
 .try-empty{color:var(--muted);font-size:14px;padding:20px 0}
+.try-actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:14px}
+.try-actions .try-render-btn{margin-bottom:0}
+.try-render-btn.alt{background:transparent;border:1px solid var(--border);color:var(--muted)}
+#try-stage{margin:0 0 16px}
+#try-stage iframe{display:block;width:100%;height:min(460px,70vh);border:1px solid var(--border);border-radius:12px;background:#fff}
 </style>"""
 
 
@@ -5039,7 +5044,9 @@ def render_try_page(atom_count):
         return '<a class="try-chip" href="/atoms/' + encodeURIComponent(t) + '/" target="_blank" rel="noopener">' + esc(t) + '</a>';
       }}).join('') + '</div>');
       if (lastBlocks) {{
-        parts.push('<button class="try-render-btn" id="try-render" type="button">Render it →</button>');
+        parts.push('<div class="try-actions"><button class="try-render-btn" id="try-render" type="button">Render it here →</button>' +
+          '<button class="try-render-btn alt" id="try-newtab" type="button">Open in a new tab</button></div>' +
+          '<div id="try-stage" hidden><p class="try-status" id="try-stage-status" role="status"></p></div>');
       }}
       parts.push('<pre><code>' + esc(JSON.stringify(data.blocks || [], null, 2)) + '</code></pre>');
     }}
@@ -5089,10 +5096,55 @@ def render_try_page(atom_count):
     input.value = b.textContent;
     submitPrompt(b.textContent);
   }});
+  // Inline render: the site's own MCP Apps renderer in a sandboxed frame on a SEPARATE origin (play.a2uicatalog.ai: none of this site's cookies or
+  // storage), the same host handshake the payload editor uses. Messages are accepted only from that frame and origin, in a fixed shape; nothing the
+  // frame sends is put into this page as markup; every request the frame makes (tools/call, open-link, anything with an id) is refused.
+  var STAGE_ORIGIN = 'https://play.a2uicatalog.ai', STAGE_BUNDLE = STAGE_ORIGIN + '/renderer-bundle?v={_bundle_hash()}';
+  var stageFrame = null, stageReady = false, stageBlocks = null, stageTimer = null;
+  function stageSay(msg, err){{
+    var s = document.getElementById('try-stage-status');
+    if (s) {{ s.textContent = msg; s.className = 'try-status' + (err ? ' err' : ''); }}
+  }}
+  function stagePost(m){{ if (stageFrame && stageFrame.contentWindow) stageFrame.contentWindow.postMessage(m, STAGE_ORIGIN); }}
+  function stageDeliver(){{
+    if (!stageFrame || !stageReady || !stageBlocks) return;
+    stagePost({{ jsonrpc: '2.0', method: 'ui/notifications/tool-result', params: {{ content: [{{ type: 'text', text: 'Rendered A2UI atoms.' }}], structuredContent: {{ theme: 'light', blocks: stageBlocks }} }} }});
+    clearTimeout(stageTimer);
+    stageSay('Rendered ' + stageBlocks.length + (stageBlocks.length === 1 ? ' block' : ' blocks') + ' in a sandboxed frame from play.a2uicatalog.ai.');
+  }}
+  window.addEventListener('message', function(ev){{
+    if (!stageFrame || ev.source !== stageFrame.contentWindow || ev.origin !== STAGE_ORIGIN) return;
+    var m = ev.data;
+    if (!m || typeof m !== 'object' || m.jsonrpc !== '2.0' || typeof m.method !== 'string') return;
+    var hasId = typeof m.id === 'number' || (typeof m.id === 'string' && m.id.length < 64);
+    if (m.method === 'ui/initialize' && hasId) {{
+      stagePost({{ jsonrpc: '2.0', id: m.id, result: {{ protocolVersion: '2026-01-26', hostContext: {{ theme: 'light', displayMode: 'inline' }}, capabilities: {{ logging: {{}} }} }} }});
+    }} else if (m.method === 'ui/notifications/initialized') {{
+      stageReady = true; stageDeliver();
+    }} else if (hasId) {{
+      stagePost({{ jsonrpc: '2.0', id: m.id, error: {{ code: -32601, message: 'not available from this page' }} }});
+    }}
+  }});
+  function renderInline(blocks){{
+    var stage = document.getElementById('try-stage');
+    if (!stage) return;
+    stageBlocks = blocks; stage.hidden = false;
+    if (stageFrame && stage.contains(stageFrame)) {{ stageDeliver(); return; }}
+    stageReady = false;
+    stageFrame = document.createElement('iframe');
+    stageFrame.title = 'Rendered preview of the routed blocks (scrolls if the content is taller)';
+    stageFrame.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox');
+    stageFrame.setAttribute('referrerpolicy', 'no-referrer');
+    stageFrame.src = STAGE_BUNDLE;
+    stage.appendChild(stageFrame);
+    stageSay('Rendering…');
+    clearTimeout(stageTimer);
+    stageTimer = setTimeout(function(){{ if (!stageReady) stageSay('The renderer did not answer. Check your connection, or use Open in a new tab.', true); }}, 10000);
+  }}
   result.addEventListener('click', function(e){{
-    var b = e.target.closest('#try-render');
-    if (!b || !lastBlocks) return;
-    openInPlayground(lastBlocks);
+    if (!lastBlocks) return;
+    if (e.target.closest('#try-render')) renderInline(lastBlocks);
+    else if (e.target.closest('#try-newtab')) openInPlayground(lastBlocks);
   }});
 }})();
   </script>
