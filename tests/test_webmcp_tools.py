@@ -93,3 +93,23 @@ def test_every_sitemap_page_has_a_markdown_twin():
         if path and not path.startswith(("atoms", "blog")) and not (PUBLIC / (path + ".md")).is_file():
             missing.append(path)
     assert not missing, missing
+
+
+DEMO_PAGES = ("trip-planner", "weather-live", "weather-recorded", "settings-form")
+
+
+def test_demo_gallery_trip_form_is_a_declarative_tool_that_answers_honestly():
+    """The Demo Gallery's trip planner form is a declarative WebMCP tool (plan_trip). The pages come from the private demogallery generator;
+    this guards the committed output. Every exit of plan() must answer an agent-invoked submit, and a recorded example (busy or unreachable
+    service) must be reported as recorded, never as live."""
+    for name in DEMO_PAGES:
+        html = (PUBLIC / "what-is-a2ui" / "basic-catalog" / "demos" / name / "index.html").read_text()
+        form = re.search(r'<form[^>]*id="ana-trip"[^>]*>', html).group(0)
+        assert 'toolname="plan_trip"' in form and "toolautosubmit" in form and 'data-webmcp="declarative"' in form, name
+        for field in ("dest", "origin", "from", "to"):
+            assert re.search(r'<input[^>]*name="%s"[^>]*toolparamdescription=' % field, html), (name, field)
+        assert "e.agentInvoked" in html and "e.respondWith(" in html
+        assert html.count("agentReply({") == 7, "every exit answers the agent: success, busy or unavailable, unreachable, error, choose, bad input, timeout"
+        assert html.count("recorded:true,reason:") == 2 and "It is not a live result." in html   # busy-or-unavailable (one call) and unreachable
+        # the page's own animation helper is settle(msg,cb); a second function of that name would silently replace it
+        assert html.count("function settle(") == 1 and "function agentReply(" in html
