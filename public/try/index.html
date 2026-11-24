@@ -594,13 +594,16 @@ document.addEventListener('keydown',function(e){
         return '<a class="try-chip" href="/atoms/' + encodeURIComponent(t) + '/" target="_blank" rel="noopener">' + esc(t) + '</a>';
       }).join('') + '</div>');
       if (lastBlocks) {
-        parts.push('<div class="try-actions"><button class="try-render-btn" id="try-render" type="button">Render it here →</button>' +
+        parts.push('<div class="try-actions"><button class="try-render-btn" id="try-render" type="button">Render again</button>' +
           '<button class="try-render-btn alt" id="try-newtab" type="button">Open in a new tab</button></div>' +
           '<div id="try-stage" hidden><p class="try-status" id="try-stage-status" role="status"></p></div>');
       }
       parts.push('<pre><code>' + esc(JSON.stringify(data.blocks || [], null, 2)) + '</code></pre>');
     }
     result.innerHTML = parts.join('\n');
+    // Draw the routed blocks straight away (a person and an agent both get the result on the page, no extra click).
+    // "Render again" and "Open in a new tab" stay as buttons.
+    if (lastBlocks) renderInline(lastBlocks);
   }
 
   // Routes one prompt, draws the answer, and resolves {status, data} so a caller (the agent path below) can

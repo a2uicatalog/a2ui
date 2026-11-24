@@ -70,6 +70,10 @@ def test_try_renders_inline_in_a_sandboxed_cross_origin_frame():
     assert "sandbox', 'allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox'" in frame
     assert "referrerpolicy" in frame and "no-referrer" in frame
     assert "renderer-bundle?v=" in host
+    # a successful route draws straight away (no extra click); the buttons are only for drawing again or opening a tab
+    draw = html[html.index("function render(data, status)"):html.index("function submitPrompt")]
+    assert "if (lastBlocks) renderInline(lastBlocks);" in draw
+    assert "Render again" in html and "Render it here" not in html
 
 
 def test_generic_form_loop_skips_declarative_forms():
