@@ -31,7 +31,7 @@ Scan: all tracked public/**, content/, README, SKILL files, mcp/, sdk/, skills/,
 | prompts/a2ui-builder-gem*.md | "all 573 atoms" | TOTAL | added to SWEEP_GLOBS |
 | payloads/learn-a2ui-modules/*.json | `"version": "v1.0"` in spec quotes | version | now "1.0" |
 | tests/test_basic_catalog_coverage.py:361 | `{"version": "v1.0", ...}` | fixture of OUR renderer input; the GAS decoder accepts both | changed to "1.0" (our emitter's form) |
-| scripts/check_registry_listings.py | forbids exact counts in the Smithery listing and says use "500+" | EXTERNAL hand-typed listing | NOT changed: conflicts with the new rule; owner decision |
+| scripts/check_registry_listings.py | forbade exact counts in the Smithery listing | EXTERNAL hand-typed listing | RETIRED 2026-11-24 (owner: "retire the smithery"): the listing is no longer maintained and is stale (shows 15 tools, the server serves 40); the owner removes it in the Smithery dashboard; the check failed weekly; script, test and workflow removed |
 | scripts/build_web_preview.py, catalogue_stage_deck.py | "220 atoms", "100 atoms" | NOT-CATALOGUE (sample deck copy) | left |
 | atoms/atom-packs.yaml "499", atoms/schema.yaml "468 typed atoms", gen_atom_embeddings.py "468", gen_pack_map.py "497", check_eval_coverage.py "468", renderers/googlechat.py "498", docs/accessibility.md "650 atoms audited", docs/renderer-matrix.md "670 atoms x 4 environments", docs/proposals "~550", spec/roadmap-md-v0.1.md "467", articles/* | historical comments or measurements, not public site output | DATED or internal | left; not public |
 | blog posts, public/gallery | various | DATED records | skipped by design |
