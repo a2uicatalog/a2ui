@@ -51,6 +51,12 @@ EVAL_PATH = os.path.join(PRIVATE, "mcp-worker", "test", "compose-routing-eval.js
 # (real pre-existing debt) but silently no-opped on agent_sketchpad itself
 # ("0 to generate for") because the live site didn't know about it yet.
 KNOWN_UNCOVERED_BASELINE = frozenset({
+    # Added 2026-11-24 (owner: "baseline for now") so the /try WebMCP publish could go through repo-publish. These 12 were
+    # already published on main with no eval-set entries (the gate had not been running against current main: the harness
+    # read a stale private checkout). Not new in this commit. Remove after generate-eval-prompts / atom-multirep-onboard
+    # is run for them (needs the local ai-proxy-scratch wrangler dev; spends Workers AI free-tier calls).
+    "arc_diagram", "box_plot", "chord_diagram", "circle_pack", "contour_plot", "histogram",
+    "org_chart", "sunburst", "swimlane", "venn_diagram", "voronoi", "waterfall",
     # Added 2026-10-29 promoting motion_bricks and brick_build_3d from preview to stable (Curtis: "release them
     # now") in this same commit -- remove after this push deploys and atom-multirep-onboard is rerun.
     "block_robot", "block_rocket", "brick_build_3d", "motion_bricks",
