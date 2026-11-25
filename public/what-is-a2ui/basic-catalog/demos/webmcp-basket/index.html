@@ -88,6 +88,7 @@ label:has(input[type=radio]:focus-visible),label:has(input[type=checkbox]:focus-
 :root{--logo-size:32px}
 .logo-atom{width:var(--logo-size);height:var(--logo-size);flex-shrink:0}
 @media(min-width:861px){.wordmark{font-size:clamp(15px,calc(var(--logo-size) * .42 + 3px),21px)}.brand-text{line-height:1.15}}
+@media(max-width:380px){:root{--logo-size:24px}}
 .logo-atom .nuc{fill:var(--accent)}
 .logo-atom .o1{stroke:var(--accent);fill:none;stroke-width:1.5}
 .logo-atom .o2{stroke:oklch(70% 0.14 202);fill:none;stroke-width:1.5}
@@ -331,15 +332,20 @@ function point(steps){
     return window.__agentPoint(steps,{log:function(t){log('agent',t);say(t)}}).then(function(){},function(){})}catch(x){return Promise.resolve()}
 }
 /* ---- the actions. source is 'agent' (a WebMCP tool call) or 'you' (the buttons on the page). Both go through the same code. ---- */
-function addItem(source,args){
+function addProblem(args){   // the refusal text for an add_to_basket call, or null. Pure check: the tool asks it first so a refused call returns at once, with no pointer flight
   args=(args&&typeof args==='object')?args:{};
   var sku=args.sku,q=args.quantity;
-  if(typeof sku!=='string'||!Object.prototype.hasOwnProperty.call(byId,sku)){return {ok:false,error:'That is not a sku in this shop. The skus are: '+CATALOGUE.map(function(c){return c.sku}).join(', ')+'.'}}
+  if(typeof sku!=='string'||!Object.prototype.hasOwnProperty.call(byId,sku)){return 'That is not a sku in this shop. The skus are: '+CATALOGUE.map(function(c){return c.sku}).join(', ')+'.'}
   if(q===undefined||q===null)q=1;
-  if(typeof q!=='number'||!Number.isInteger(q)||q<1||q>MAXQ){return {ok:false,error:'The quantity must be a whole number (an integer, not text) from 1 to '+MAXQ+'.'}}
-  if(pending){return {ok:false,error:'A checkout is waiting for the person to answer. Try again after they have.'}}
+  if(typeof q!=='number'||!Number.isInteger(q)||q<1||q>MAXQ){return 'The quantity must be a whole number (an integer, not text) from 1 to '+MAXQ+'.'}
+  if(pending){return 'A checkout is waiting for the person to answer. Try again after they have.'}
   var have=basket[sku]||0,item=byId[sku];
-  if(have+q>MAXQ){return {ok:false,error:'The basket holds at most '+MAXQ+' of one item. It already has '+have+' of '+item.name+' (sku '+sku+').'}}
+  if(have+q>MAXQ){return 'The basket holds at most '+MAXQ+' of one item. It already has '+have+' of '+item.name+' (sku '+sku+').'}
+  return null}
+function addItem(source,args){
+  var bad=addProblem(args);if(bad)return {ok:false,error:bad};
+  args=(args&&typeof args==='object')?args:{};
+  var sku=args.sku,q=(args.quantity===undefined||args.quantity===null)?1:args.quantity,have=basket[sku]||0,item=byId[sku];
   basket[sku]=have+q;
   log(source,(source==='agent'?'add_to_basket: ':'Added ')+q+' × '+item.name+'.');
   say((source==='agent'?'The agent':'You')+' added '+q+' '+item.name+'. '+summary());
@@ -388,12 +394,24 @@ function checkout(source,opts){
     if(wait>0){log('agent','checkout: refused, the person said no a moment ago.');return Promise.resolve({ok:false,status:'refused',note:'The person did not confirm the last request, so checkout is paused for '+wait+' more seconds. Nothing was ordered.'})}
     asks++;
   }
+  /* From here the checkout is PENDING: the flag is set when the tool is called, before the pointer flight, so a second checkout, add_to_basket, the Check out button and the re-open cap all see it at once. The dialog (its 700 ms ignore window and 120 s timeout) starts only when it really opens, after the flight. */
   pending=true;render();
-  log(source,source==='agent'?'checkout: asked to place the demo order. Waiting for you to confirm or decline.':'Asked to check out. Waiting for your confirmation.');
-  say((source==='agent'?'The agent asked to check out. ':'')+'Please confirm or decline in the box that opened.');
-  var gp=gate(opts);
-  if(source==='agent')point([{el:$('bk-dlg'),label:'Waiting for you',line:'Agent pointer: the confirmation box is open. Only you can confirm it.'}]);
-  return gp.then(function(v){
+  var ag=source==='agent',sig=ag&&opts&&opts.signal;
+  if(ag){log('agent','checkout: asked to place the demo order. Showing where it is going.');say('The agent is about to ask to check out.')}
+  return (ag?prelude(sig):Promise.resolve(true)).then(function(go){
+    if(!go){asks--;return settle('cancelled',null)}                  // aborted during the flight: no dialog was opened, so it does not count as a request shown
+    var s=snapshot();                                               // the basket as it is now, not as it was when the tool was called
+    if(s.item_count===0){pending=false;render();return {ok:false,status:'empty',error:'The basket is empty. Add something first.'}}
+    log(source,ag?'checkout: asked to place the demo order. Waiting for you to confirm or decline.':'Asked to check out. Waiting for your confirmation.');
+    say((ag?'The agent asked to check out. ':'')+'Please confirm or decline in the box that opened.');
+    var gp=gate(opts);
+    if(ag)point([{el:$('bk-dlg'),label:'Waiting for you',line:'Agent pointer: the confirmation box is open. Only you can confirm it.'}]);
+    return gp.then(function(v){return settle(v,s)},function(err){
+      pending=false;render();log('you','Checkout could not ask for confirmation. Basket kept.');
+      return {ok:false,status:'declined',note:'Confirmation could not be shown, so nothing was ordered.'};
+    });
+  });
+  function settle(v,s){
     pending=false;
     if(v==='confirmed'){
       orders++;var ref='DEMO-'+(orders<10?'000':orders<100?'00':'0')+orders;
@@ -404,9 +422,16 @@ function checkout(source,opts){
     if(source==='agent')blockedUntil=performance.now()+BLOCK_MS;
     log('you',v==='timed_out'?'No answer in time. Checkout cancelled, basket kept.':'Declined. Basket kept.');say('Checkout '+(v==='timed_out'?'timed out':'declined')+'. The basket is unchanged.');render();
     return {ok:false,status:v,note:v==='timed_out'?'The person did not answer in time. Nothing was ordered and the basket is unchanged. Agent checkout is paused for 30 seconds.':'The person declined. Nothing was ordered and the basket is unchanged. Agent checkout is paused for 30 seconds.'};
-  },function(err){
-    pending=false;render();log('you','Checkout could not ask for confirmation. Basket kept.');
-    return {ok:false,status:'declined',note:'Confirmation could not be shown, so nothing was ordered.'};
+  }
+}
+/* The pointer flight to the Check out button, before the dialog. Resolves true to go on, false if the caller aborted (the flight is cut short and no dialog opens). Never longer than the pointer's own hard cap. */
+function prelude(sig){
+  return new Promise(function(res){
+    var done=false;
+    function fin(v){if(done)return;done=true;if(sig)sig.removeEventListener('abort',ab);res(v)}
+    function ab(){try{if(typeof window.__agentPoint==='function')window.__agentPoint([],{})}catch(x){}fin(false)}   // an empty flight supersedes and cleans up the running one
+    if(sig){if(sig.aborted)return fin(false);sig.addEventListener('abort',ab,{once:true})}
+    point([{el:$('bk-checkout'),label:'Check out',line:'Agent pointer: moving to the Check out button.'}]).then(function(){fin(!(sig&&sig.aborted))});
   });
 }
 
@@ -420,6 +445,7 @@ var TOOLS=[
   annotations:{readOnlyHint:false},
   execute:function(input){
     var sku=input&&typeof input==='object'&&typeof input.sku==='string'&&Object.prototype.hasOwnProperty.call(byId,input.sku)?input.sku:null;
+    if(addProblem(input))return Promise.resolve(J(addItem('agent',input)));   // refused: answer at once, no flight (checked again after the flight, the page may have changed)
     var steps=sku?[{el:$('add-'+sku),label:'Add '+byId[sku].name,line:'Agent pointer: moving to the Add to basket button for '+byId[sku].name+'.'}]:[];
     return point(steps).then(function(){return addItem('agent',input)}).then(J)}},
  {name:'view_basket',
@@ -431,7 +457,7 @@ var TOOLS=[
   description:'Ask to place the demo order for the basket. This does not complete by itself: the person must click Place demo order in a box on the page. The result is JSON text whose status is confirmed, declined, timed_out, cancelled, refused, pending or empty. After a decline or a timeout the page refuses further agent checkout requests for 30 seconds, and it allows 3 requests per page load. No payment is taken because the shop is fake.',
   inputSchema:{type:'object',properties:{},additionalProperties:false},
   annotations:{readOnlyHint:false,consequentialHint:true},
-  execute:function(input,opts){return point([{el:$('bk-checkout'),label:'Check out',line:'Agent pointer: moving to the Check out button.'}]).then(function(){return checkout('agent',opts)}).then(J)}}
+  execute:function(input,opts){return checkout('agent',opts).then(J)}}
 ];
 
 /* ---- the human path: plain buttons, no WebMCP needed ---- */

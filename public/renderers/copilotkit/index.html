@@ -61,6 +61,7 @@ label:has(input[type=radio]:focus-visible),label:has(input[type=checkbox]:focus-
 :root{--logo-size:32px}
 .logo-atom{width:var(--logo-size);height:var(--logo-size);flex-shrink:0}
 @media(min-width:861px){.wordmark{font-size:clamp(15px,calc(var(--logo-size) * .42 + 3px),21px)}.brand-text{line-height:1.15}}
+@media(max-width:380px){:root{--logo-size:24px}}
 .logo-atom .nuc{fill:var(--accent)}
 .logo-atom .o1{stroke:var(--accent);fill:none;stroke-width:1.5}
 .logo-atom .o2{stroke:oklch(70% 0.14 202);fill:none;stroke-width:1.5}
