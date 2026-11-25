@@ -503,6 +503,98 @@ import sys as _sys_brand, os as _os_brand
 _sys_brand.path.insert(0, _os_brand.path.dirname(_os_brand.path.abspath(__file__)))
 from _brand_generated import BRAND_TOKEN_CSS, BRAND_LOGO_HTML, BRAND_HASH  # noqa: E402  GENERATED from atoms/brand-tokens.yaml
 
+# ---------------------------------------------------------------------------------------------------------------------------------------------
+# SITE MOTION (2026-11-25). One block, three motions; swap tokens in MOTION_TOKENS_CSS if the motion language changes.
+#   1. logo cursor   -- static CSS cursor image (the atom; tighter orbits on links/buttons), fine pointers only, switchable (html.cur-off).
+#   2. view transitions -- cross-document, header persists, content cross-fades, off under reduced motion.
+#   3. logo loader   -- LOADER_CSS, inlined ONLY on pages that show a loading state (not in SITE_BASE_CSS). LOADER_HTML is its markup.
+# Rules (MOTION.md): opacity/transform only, never animate layout, never delay content, reduced motion gets a still equivalent.
+# ---------------------------------------------------------------------------------------------------------------------------------------------
+def _cursor_svg(a, b, link):
+    """The logo atom as a 32px cursor image. Link variant: orbits tightened, electron larger and lit. Colours are literal (a cursor image cannot read CSS vars)."""
+    rx, ry, er, nr = (8, 3, 1.9, 3.1) if link else (10, 4.4, 1.25, 2.7)
+    def o(r, c, w, op=1):
+        return f"<ellipse rx='{rx}' ry='{ry}' transform='translate(12 12) rotate({r})' stroke='{c}' stroke-width='{w}'{'' if op == 1 else f' opacity=%27{op}%27'}/>"
+    ex, ey = (19, 7) if link else (3.2, 16)
+    svg = (f"<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24'><g fill='none'>{o(-32, a, 1.6)}{o(32, b, 1.6)}{o(90, a, 1.2, .45)}</g>"
+           f"<circle cx='12' cy='12' r='{nr}' fill='{a}'/><circle cx='{ex}' cy='{ey}' r='{er}' fill='{a if link else b}'"
+           + (" stroke='%23fff' stroke-width='.6'" if link else "") + "/></svg>")
+    return svg.replace("<", "%3C").replace(">", "%3E").replace("#", "%23").replace("%27", "'")
+
+
+def _cursor_vars(a, b):
+    return f'--cur-def:url("data:image/svg+xml,{_cursor_svg(a, b, False)}") 16 16,auto;--cur-link:url("data:image/svg+xml,{_cursor_svg(a, b, True)}") 16 16,pointer;'
+
+
+def _site_motion_css():
+    import yaml
+    d = yaml.safe_load((Path(__file__).resolve().parent.parent / "atoms" / "brand-tokens.yaml").read_text())
+    lt, dk = d["light"], d["dark"]
+    # light: --accent / --accent-2 ; dark: the dark overrides. The teal in the cursor uses the graphics teal (accent-2), same as the logo.
+    cur_light = _cursor_vars(lt["accent"], lt["accent-2"])
+    cur_dark = _cursor_vars(dk["accent"], dk["accent-2"])
+    return ("""/* MOTION_TOKENS_CSS -- from /mnt/hdd2/work/motion-language/motion.css (Fable). Only the tokens this block uses. */
+:root{--motion-quick:150ms;--motion-base:300ms;--motion-ease-enter:cubic-bezier(0,0,.2,1);--motion-ease-exit:cubic-bezier(.4,0,1,1)}
+/* 2. Cross-document view transitions: only when the visitor has not asked for less motion. Header holds still (same object on every page); the rest cross-fades, opacity only. */
+@media(prefers-reduced-motion:no-preference){@view-transition{navigation:auto}}
+.site-header{view-transition-name:site-header}
+::view-transition-group(site-header){animation:none}
+::view-transition-old(site-header){display:none}
+::view-transition-new(site-header){animation:none}
+::view-transition-old(root){animation:motion-fade-out var(--motion-quick) var(--motion-ease-exit) both}
+::view-transition-new(root){animation:motion-fade-in var(--motion-base) var(--motion-ease-enter) both}
+@keyframes motion-fade-out{to{opacity:0}}
+@keyframes motion-fade-in{from{opacity:0}}
+@media(prefers-reduced-motion:reduce){::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation:none!important}}
+/* 1. Logo cursor: fine pointers only, off when html.cur-off (the header button). Text, form fields and disabled controls keep their own cursor. A still image: nothing animates. */
+.cur-btn,.cur-btn .cur-slash{display:none}
+@media(pointer:fine){
+:root{""" + cur_light + """}
+:root[data-theme=dark]{""" + cur_dark + """}
+html.cur-off:root[data-theme]{--cur-def:auto;--cur-link:pointer}
+html,body{cursor:var(--cur-def)}
+:root :is(a,button,summary,label,select,[role=button],input[type=checkbox],input[type=radio],input[type=range]){cursor:var(--cur-link)}
+:root :disabled{cursor:not-allowed}
+:root :is(p,h1,h2,h3,h4,li,td,th,dd,blockquote,pre,code,textarea,[contenteditable],input:not([type=checkbox],[type=radio],[type=range],[type=button],[type=submit])){cursor:text}
+.cur-btn{display:flex;align-items:center;justify-content:center;min-width:36px;min-height:36px;padding:0;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);cursor:pointer}
+.cur-btn:hover{border-color:var(--border-strong)}
+.cur-btn svg{display:block}
+html.cur-off .cur-btn{color:var(--text-muted)}
+html.cur-off .cur-btn .cur-slash{display:block}
+}
+""")
+
+
+SITE_MOTION_CSS = re.sub(r"/\*.*?\*/\n?", "", _site_motion_css(), flags=re.S)  # comments live in this source, not in every page
+
+# 3. The logo loader. Inline this in <head> of a page that has a 'Loading...' state; put LOADER_HTML where the state shows.
+# Indeterminate only (the determinate --p variant of the prototype is not shipped). Pure CSS, no JS. The cover that holds it
+# must be position-absolute/fixed or fixed-size so nothing shifts when it leaves; fade the cover out with --motion-base, no delay.
+LOADER_CSS = """/* LOADER (2026-11-25): atom loader, electron on three orbits, nucleus breathes. Pure CSS, transform/opacity/offset-distance only. */
+.ld{width:96px;height:96px;flex:none}
+.ld svg{display:block;width:100%;height:100%;overflow:visible}
+.ld ellipse{fill:none;stroke-width:1.5;stroke:var(--accent,#5051cf)}
+.ld .o2{stroke:var(--accent-2,#009ca7)}
+.ld .o3{stroke-width:1.1;opacity:.4}
+.ld .nuc{fill:var(--accent,#5051cf);transform-box:fill-box;transform-origin:center;animation:ld-br 2400ms ease-in-out infinite}
+.ld .e{fill:var(--accent-2,#009ca7);offset-rotate:0deg;opacity:0;animation:ld-tr 3600ms ease-in-out infinite}
+.ld .e1{offset-path:path("M20.48 6.7A10 4.4 -32 0 1 3.52 17.3A10 4.4 -32 0 1 20.48 6.7")}
+.ld .e2{offset-path:path("M20.48 17.3A10 4.4 32 0 1 3.52 6.7A10 4.4 32 0 1 20.48 17.3");animation-delay:-2400ms}
+.ld .e3{offset-path:path("M12 22A10 4.4 90 0 1 12 2A10 4.4 90 0 1 12 22");animation-delay:-1200ms}
+@keyframes ld-tr{0%{offset-distance:0%;opacity:1}30%{offset-distance:100%;opacity:1}33%,100%{offset-distance:100%;opacity:0}}
+@keyframes ld-br{50%{transform:scale(1.18)}}
+/* reduced motion: the still logo (orbits + nucleus), nothing moves; the site-wide reduce rule already stops the animations */
+@media(prefers-reduced-motion:reduce){.ld .nuc{animation:none}.ld .e{animation:none;opacity:0}}
+"""
+LOADER_HTML = ('<span class="ld" role="img" aria-label="Loading"><svg viewBox="0 0 24 24" aria-hidden="true">'
+               '<ellipse class="o1" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(-32 12 12)"/>'
+               '<ellipse class="o2" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(32 12 12)"/>'
+               '<ellipse class="o3" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(90 12 12)"/>'
+               '<circle class="nuc" cx="12" cy="12" r="2.7"/>'
+               '<circle class="e e1" r="1.25"/><circle class="e e2" r="1.25"/><circle class="e e3" r="1.25"/></svg></span>')
+
+
+
 def _stage_light_css():
     """The atom preview stage and the preview box on the surface pages are always white, so atoms drawn inside it must see the LIGHT tokens even when the site is dark.
     Without this their text (var(--text), var(--muted), the accent) flips to the dark theme's pale colours on a white stage: 1.15:1, near invisible.
@@ -613,24 +705,29 @@ footer a{color:var(--accent-2-text);text-decoration:underline;text-underline-off
    in the light default, re-blend the orb — it is the only direct body child
    carrying the atom's z-index:9000. */
 :root:not([data-theme="dark"]) body>div[style*="z-index:9000"]{mix-blend-mode:multiply!important;opacity:.22!important}
-"""
+""" + SITE_MOTION_CSS   # one named block: see "SITE MOTION" above
 
 # Theme init — MUST run before first paint (inline in <head>) or dark-toggle
 # users get a light flash. Storage is try/catch-wrapped: localStorage THROWS in
 # the MCP Apps view (opaque origin — gap G4); it degrades to session-only.
 SITE_HEAD_JS = """<script>
 (function(){var t='light';try{var s=localStorage.getItem('a2ui-theme');if(s==='dark'||s==='light')t=s}catch(e){}
-document.documentElement.setAttribute('data-theme',t);document.documentElement.classList.add('js')})();
+document.documentElement.setAttribute('data-theme',t);document.documentElement.classList.add('js');try{if(localStorage.getItem('a2ui-cursor')==='off')document.documentElement.classList.add('cur-off')}catch(e){}})();
 </script>"""
 
 SITE_FOOT_JS = """<script>
 function themeLabel(){var d=document.documentElement.getAttribute('data-theme')==='dark';
   document.querySelectorAll('.theme-btn').forEach(function(b){b.setAttribute('aria-label',d?'Switch to light theme':'Switch to dark theme')})}
+function cursorLabel(){var off=document.documentElement.classList.contains('cur-off');
+  document.querySelectorAll('.cur-btn').forEach(function(b){b.setAttribute('aria-pressed',String(!off));b.setAttribute('aria-label',off?'Logo cursor: off (press to switch on)':'Logo cursor: on (press to switch off)')})}
+cursorLabel();
 themeLabel();
 document.addEventListener('click',function(e){
   var m=e.target.closest('.menu-btn');
   if(m){var n=document.getElementById(m.getAttribute('aria-controls')),o=m.getAttribute('aria-expanded')!=='true';
     m.setAttribute('aria-expanded',String(o));if(n)n.classList.toggle('open',o);return}
+  var c=e.target.closest('.cur-btn');
+  if(c){var h=document.documentElement,off=h.classList.toggle('cur-off');cursorLabel();try{localStorage.setItem('a2ui-cursor',off?'off':'on')}catch(err){}return}
   var b=e.target.closest('.theme-btn');if(!b)return;
   var r=document.documentElement,t=r.getAttribute('data-theme')==='dark'?'light':'dark';
   r.setAttribute('data-theme',t);themeLabel();
@@ -897,6 +994,7 @@ def site_header(active="", lockup=False):
       {'<a href="/authoring"' + cur('authoring') + '>Authoring</a>' if full else ''}
     </nav>
     <a class="hdr-search" href="/atoms/#hub-q" aria-label="Search atoms"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg></a>
+    <button class="cur-btn" type="button" aria-pressed="true" aria-label="Logo cursor: on (press to switch off)" title="Logo cursor"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><ellipse cx="12" cy="12" rx="10" ry="4.4" transform="rotate(-32 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4.4" transform="rotate(32 12 12)"/><circle cx="12" cy="12" r="2.7" fill="currentColor" stroke="none"/><path class="cur-slash" d="M4 20L20 4"/></svg></button>
     <button class="theme-btn" type="button" aria-label="Switch to dark theme"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 4v16a8 8 0 0 0 0-16z" fill="currentColor"/></svg></button>
     <a class="gh-pill" href="https://github.com/a2uicatalog/a2ui">GitHub ↗</a>
     <button class="menu-btn" type="button" aria-expanded="false" aria-controls="site-menu"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>Menu</button>
@@ -4706,6 +4804,11 @@ MCP_APPS_EXPORT_HTML = """<!DOCTYPE html>
   h1 { font-size: 1.1rem; margin: 4px 0 2px; } h1 span { color: #8d98ff; }
   #cap { margin: 0 0 12px; } #cap button { font: inherit; background: #1a1f2b; color: #eef1f7; border: 1px solid #3b4358; border-radius: 999px; padding: 4px 14px; cursor: pointer; } #cap .hint { color: #97a0b2; font-size: .8rem; }
   #st { color: #97a0b2; min-height: 1.5em; margin: 0 0 12px; } #st.err { color: #ff6b81; }
+__LOADER_CSS__
+  .ldw { height: 56px; margin: 0 0 4px; opacity: 1; transition: opacity var(--motion-base) var(--motion-ease-exit); } .ldw.done { opacity: 0; visibility: hidden; }
+  .ldw .ld { width: 48px; height: 48px; --accent: #8d98ff; --accent-2: #2ac4ce; }
+  :root { --motion-base: 300ms; --motion-ease-exit: cubic-bezier(.4,0,1,1); }
+  @media (prefers-reduced-motion: reduce) { .ldw { transition: none; } }
   iframe { width: 100%; height: 80vh; border: 0; display: block; background: transparent; }
   footer { color: #97a0b2; font-size: .8rem; margin-top: 10px; } a { color: #8d98ff; }
 </style>
@@ -4713,6 +4816,7 @@ MCP_APPS_EXPORT_HTML = """<!DOCTYPE html>
 <body>
 <main>
   <h1>A2UI <span>film export</span></h1>
+  <div class="ldw" id="ldw">__LOADER_HTML__</div>
   <p id="st">Loading the film…</p>
   <p id="cap" hidden><button id="capb" type="button">Captions (.vtt)</button> <span class="hint">Same words and timing as the film, for the MP4 you save.</span></p>
   <iframe id="view" src="/surfaces/mcp-apps/renderer-bundle.html" title="Film"></iframe>
@@ -4721,7 +4825,8 @@ MCP_APPS_EXPORT_HTML = """<!DOCTYPE html>
 <script>
 (function () {
   var st = document.getElementById('st'), fr = document.getElementById('view');
-  function say(t, err) { st.textContent = t; st.className = err ? 'err' : ''; }
+  var ldw = document.getElementById('ldw');
+  function say(t, err) { st.textContent = t; st.className = err ? 'err' : ''; ldw.classList.add('done'); }
   var h = location.hash.slice(1), p = (h.match(/(?:^|&)p=([^&]+)/) || [])[1], k = (h.match(/(?:^|&)k=(mp4|gif)(?:&|$)/) || [])[1];
   if (!p) { say('There is no film in this link.', 1); return; }
   function unb64u(s) {
@@ -5992,7 +6097,7 @@ def main():
         print(f"✓ full-screen playground → {play_dir}/index.html")
         export_dir = surfaces_dir / "mcp-apps" / "export"
         export_dir.mkdir(parents=True, exist_ok=True)
-        (export_dir / "index.html").write_text(MCP_APPS_EXPORT_HTML)
+        (export_dir / "index.html").write_text(MCP_APPS_EXPORT_HTML.replace("__LOADER_CSS__", LOADER_CSS).replace("__LOADER_HTML__", LOADER_HTML))
         print(f"✓ film export page → {export_dir}/index.html")
 
     print(f"✓ {count} atom pages → {OUTPUT_DIR}")
