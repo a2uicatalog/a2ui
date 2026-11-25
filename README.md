@@ -18,6 +18,8 @@ The model names an atom. The renderer compiles the HTML, CSS, SVG, and animation
 [![A2UI](https://img.shields.io/badge/spec-v1.0_candidate-a78bfa?style=flat-square&labelColor=0a0e17)](renderers/a2ui_v1.py)
 <!-- readme-badges:end -->
 
+**Docs:** [A2UI Atomic Catalog API docs](https://a2uicatalog.ai/docs/) (REST endpoints, OpenAPI 3.1, sandbox) · [MCP server](https://a2uicatalog.ai/mcp) · [llms.txt](https://a2uicatalog.ai/llms.txt)
+
 *Independent, unofficial catalog — not affiliated with or endorsed by Google. A2UI is Google's protocol; the official spec lives at [a2ui.org](https://a2ui.org).*
 
 </div>
