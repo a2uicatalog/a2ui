@@ -43,9 +43,10 @@ envelope (templates + dataModel bindings) is also accepted wherever a payload is
 
 ## Failure modes worth knowing before they surprise you
 
-- **Preview-stage or unpublished atoms** aren't an error — they render as a visible
-  "not published here" notice rather than being silently dropped, and are named in the
-  `X-A2UI-Unpublished` response header.
+- **Preview-stage or unpublished atoms** aren't an error — the response is still `200`,
+  but only an HTML comment (`<!-- a2ui: unknown or unsupported atom "unpublished:<type>" -->`)
+  is left where the atom should be, so the page has a gap. The type is named in the
+  `X-A2UI-Unpublished` response header; check it, because nothing visible tells you.
 - **Atoms that need a render-time server fetch** (`data_source`, `firestore_read`,
   `doc_ai_summary`, `multi_doc_ai_brief`, `gemini_handoff`) are refused with 400 on the
   public renderer — deploy your own renderer for those (see below).

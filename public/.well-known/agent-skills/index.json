@@ -13,7 +13,7 @@
       "description": "Compose an A2UI payload (typed atom blocks) and render it into real HTML — a chart, dashboard, status board, decision tree, or any structured UI, once the right atoms are already known (see the a2ui-c",
       "type": "skill-md",
       "url": "https://raw.githubusercontent.com/a2uicatalog/a2ui/main/skills/a2ui-compose/SKILL.md",
-      "digest": "sha256:d6750d93bb78ee31b8488eb16bfd9bd0f79ececdfb580780af19f20c16183de0"
+      "digest": "sha256:92074016c7fc22da2136022b651a87ca7f720b2c65c61e825cd98cc53778ba97"
     },
     {
       "name": "a2ui-mcp",
@@ -27,7 +27,7 @@
       "description": "Call the A2UI Atomic Catalog over plain HTTP, with no MCP client — from a script, a CI job or code an agent writes. Covers finding atoms (/ask, /spec.json), turning a request into blocks (/api/compose",
       "type": "skill-md",
       "url": "https://raw.githubusercontent.com/a2uicatalog/a2ui/main/skills/a2ui-rest/SKILL.md",
-      "digest": "sha256:442a0e016c11cad53c37a4e40ad379e07f3128e43aa9b73167b06039f6c4348c"
+      "digest": "sha256:26e716c6429dc2e992e61682e316e0d261e8551100ca5e06ff15be7f538b5d24"
     },
     {
       "name": "a2ui-verify",

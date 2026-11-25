@@ -90,7 +90,7 @@ def build_openapi(n_atoms, n_surfaces):
                 "a pure function of the payload, and data sources are read-only), so a "
                 "test call against production cannot change anything. Its only cost is "
                 "quota, reported in the RateLimit headers. To try payloads by hand, use "
-                "the playground at https://play.a2uicatalog.ai. On the MCP server, every "
+                "the MCP Apps playground at https://a2uicatalog.ai/surfaces/mcp-apps. On the MCP server, every "
                 "tool that stores, sends or deletes something is annotated "
                 "`readOnlyHint: false`; the read-only tools are safe to call freely "
                 "while building an integration."
@@ -690,7 +690,7 @@ LLMS_TXT = """# A2UI Catalog (the A2UI Atomic Catalog)
 - [Developer portal]({base}/developers/): Human and agent developer portal, integration guide, REST surfaces, code samples, and self-hosting runbooks.
 - [SDKs & client libraries]({base}/sdks/): Official SDK documentation, npm CLI package, Agent Skills, and client code generators.
 - [API docs]({base}/docs/): API documentation for REST endpoints (/api/render, /api/compose, /ask), request/response schemas, and error shapes.
-- [Sandbox and test mode]({base}/docs/#sandbox): Sandbox server https://a2uicatalog.ai/api/sandbox serves /api/render, /batch and /jobs (e.g. POST https://a2uicatalog.ai/api/sandbox/api/render) with the same code on its own 20/day allowance, so tests never spend the production one. Production is also safe to test against: the REST endpoints hold no production data: /api/render, /api/render/batch, /api/render/jobs, /api/compose and /api/data are side-effect free, so a test call against production cannot change anything; its only cost is quota. To try payloads by hand, use the playground at https://play.a2uicatalog.ai. MCP tools that store, send or delete are annotated `readOnlyHint: false`; the rest are safe to call while building.
+- [Sandbox and test mode]({base}/docs/#sandbox): Sandbox server https://a2uicatalog.ai/api/sandbox serves /api/render, /batch and /jobs (e.g. POST https://a2uicatalog.ai/api/sandbox/api/render) with the same code on its own 20/day allowance, so tests never spend the production one. Production is also safe to test against: the REST endpoints hold no production data: /api/render, /api/render/batch, /api/render/jobs, /api/compose and /api/data are side-effect free, so a test call against production cannot change anything; its only cost is quota. To try payloads by hand, use the MCP Apps playground at https://a2uicatalog.ai/surfaces/mcp-apps. MCP tools that store, send or delete are annotated `readOnlyHint: false`; the rest are safe to call while building.
 - [OpenAPI spec]({base}/openapi.json): Full OpenAPI 3.1 specification for all endpoints and schemas.
 - [Auth docs]({base}/auth/): Authentication documentation, enterprise OAuth discovery metadata, and public unauthenticated access policies.
 - [Auth & rate limits]({base}/.well-known/agent-auth.md): No API key or signup — the actual per-tool call limits.

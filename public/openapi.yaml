@@ -44,10 +44,10 @@ info:
     /api/render, /api/render/batch, /api/compose and /api/data/{source} are side-effect
     free (rendering is a pure function of the payload, and data sources are read-only),
     so a test call against production cannot change anything. Its only cost is quota,
-    reported in the RateLimit headers. To try payloads by hand, use the playground
-    at https://play.a2uicatalog.ai. On the MCP server, every tool that stores, sends
-    or deletes something is annotated `readOnlyHint: false`; the read-only tools are
-    safe to call freely while building an integration.'
+    reported in the RateLimit headers. To try payloads by hand, use the MCP Apps playground
+    at https://a2uicatalog.ai/surfaces/mcp-apps. On the MCP server, every tool that
+    stores, sends or deletes something is annotated `readOnlyHint: false`; the read-only
+    tools are safe to call freely while building an integration.'
   license:
     name: MIT
     identifier: MIT

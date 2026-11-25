@@ -61,11 +61,12 @@ allowance (20 requests per IP per day), so building an integration never spends 
 production one: `POST https://a2uicatalog.ai/api/sandbox/api/render`, `.../api/render/batch`,
 `.../api/render/jobs`. Replies carry `X-A2UI-Sandbox: true`. Production is also safe to test
 against: these endpoints hold no production data and change nothing; the only cost is quota. To try payloads
-by hand, use the playground at https://play.a2uicatalog.ai.
+by hand, use the MCP Apps playground at https://a2uicatalog.ai/surfaces/mcp-apps.
 
 ## Failure modes
 
-- `400` with a JSON `error` names the limit hit: 256 KB body, 300 blocks, 12 levels of nesting.
+- `413` when the body is over 256 KB: `{"ok":false,"error":"payload larger than 262144 bytes","bytes":300058}` (measured
+  with a 300 KB body). `400` with a JSON `error` names the other limits hit: 300 blocks, 12 levels of nesting.
 - Atoms that need a render-time server fetch (`data_source`, `firestore_read`,
   `doc_ai_summary`, `multi_doc_ai_brief`, `gemini_handoff`) are refused on the public
   renderer; deploy your own (`/renderer`) for those.

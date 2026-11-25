@@ -31,7 +31,7 @@ Content-Type: application/json
 {"jsonrpc": "2.0", "id": 1, "method": "tools/list"}
 ```
 
-Pour tester manuellement un document A2UI : le [bac à sable interactif](https://play.a2uicatalog.ai). Pour parcourir les composants : [tous les atomes de A à Z](https://a2uicatalog.ai/atoms/). Documentation d’intégration : [/docs/](https://a2uicatalog.ai/docs/) (en anglais).
+Pour tester manuellement un document A2UI : le [bac à sable interactif](https://a2uicatalog.ai/surfaces/mcp-apps/). Pour parcourir les composants : [tous les atomes de A à Z](https://a2uicatalog.ai/atoms/). Documentation d’intégration : [/docs/](https://a2uicatalog.ai/docs/) (en anglais).
 
 ## Licence et statut
 
