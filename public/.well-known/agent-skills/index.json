@@ -28,6 +28,13 @@
       "type": "skill-md",
       "url": "https://raw.githubusercontent.com/a2uicatalog/a2ui/main/skills/a2ui-rest/SKILL.md",
       "digest": "sha256:442a0e016c11cad53c37a4e40ad379e07f3128e43aa9b73167b06039f6c4348c"
+    },
+    {
+      "name": "a2ui-verify",
+      "description": "Check that an A2UI payload rendered what was intended, before showing it to anyone. Use after composing a payload and before handing over the HTML or link, when a render \"succeeded\" but something look",
+      "type": "skill-md",
+      "url": "https://raw.githubusercontent.com/a2uicatalog/a2ui/main/skills/a2ui-verify/SKILL.md",
+      "digest": "sha256:fdc8382f2f2e120aacc410a1a6e0f2cb7de1d431307991f75a9e4ae68c0a4c9f"
     }
   ]
 }

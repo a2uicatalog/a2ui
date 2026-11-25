@@ -8,7 +8,9 @@
       "skills": [
         "a2ui-catalog",
         "a2ui-compose",
-        "a2ui-mcp"
+        "a2ui-mcp",
+        "a2ui-rest",
+        "a2ui-verify"
       ]
     }
   ]
