@@ -4167,6 +4167,10 @@ _RENDERERS['sequence_diagram'] = function(b) {
   // Google-A2A convention; theme:"site" follows the host page.
   var accent = b.accent || '#4f46e5';
   var theme = b.theme;
+  // No block theme + a dark host page (MCP view following the host theme):
+  // follow the page, exactly like theme:"site", instead of a white card.
+  if (!theme && typeof document !== 'undefined' && document.body &&
+      document.body.classList.contains('asw-dark-theme')) theme = 'site';
   var t = _themeTokens(theme);
   // Participant aliases: actor is a string OR {id,label}; messages/notes may
   // reference the short id, the box shows the label. Mirrors Python.

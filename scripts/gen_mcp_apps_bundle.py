@@ -90,6 +90,35 @@ var Utilities = {
     return b64.replace(/\\+/g, '-').replace(/\\//g, '_');
   }
 };
+// 2026-11-25: one place decides the theme. An explicit payload.theme always
+// wins (light|dark|terminal); with none, follow the host's hostContext.theme
+// ('dark'|'light', MCP Apps ui/initialize + host-context-changed); with
+// neither, light -- exactly the old behaviour.
+function _a2uiEffectiveTheme(payload, hostCtx) {
+  var t = payload && payload.theme;
+  if (t === 'light' || t === 'dark' || t === 'terminal') return t;
+  var h = hostCtx && hostCtx.theme;
+  return (h === 'dark' || h === 'light') ? h : 'light';
+}
+function _a2uiApplyTheme(payload, hostCtx) {
+  var theme = _a2uiEffectiveTheme(payload, hostCtx);
+  // theme:"terminal" is the brand skin (AtomStyles.html) and is DARK PLUS a
+  // token repaint -- it sets both classes, so anything keying off the dark
+  // class in JS keeps working and never has to know a third theme exists.
+  var terminal = theme === 'terminal';
+  var dark = theme === 'dark' || terminal;
+  document.body.classList.toggle('asw-dark-theme', dark);
+  document.body.classList.toggle('asw-terminal-theme', terminal);
+  // Native controls and scrollbars follow the effective theme, not the OS.
+  document.documentElement.style.colorScheme = dark ? 'dark' : 'light';
+  // --bg is overridden on body only and never reaches its ancestor html, so a
+  // dark body beside the 860px page column left white gutters (Antigravity,
+  // 2026-11-25). Read the resolved custom property (not the transitioning
+  // background-color) and paint html with it; light clears it (unchanged).
+  document.documentElement.style.backgroundColor = dark
+    ? (getComputedStyle(document.body).getPropertyValue('--bg').trim() || '') : '';
+  return theme;
+}
 """.strip()
 
 
@@ -333,14 +362,7 @@ HANDSHAKE = """
     var _v1 = _a2uiAcceptV1(payload);
     if (_v1) payload = _v1;
     var root = document.getElementById('a2ui-root');
-    // theme:"terminal" is the brand skin (AtomStyles.html) and is DARK PLUS a
-    // token repaint -- it sets both classes, so anything keying off the dark
-    // class in JS keeps working and never has to know a third theme exists.
-    var _terminal = payload.theme === 'terminal';
-    document.body.classList.toggle('asw-dark-theme', payload.theme === 'dark' || _terminal);
-    document.body.classList.toggle('asw-terminal-theme', _terminal);
-    // Native controls and scrollbars follow the payload theme, not the OS.
-    document.documentElement.style.colorScheme = (payload.theme === 'dark' || _terminal) ? 'dark' : 'light';
+    _a2uiApplyTheme(payload, _hostContext);
     // Wired dialect (spec/wired-transport-v0.1.md): expand templates, render the
     // layout with the SAME extracted loop GAS uses, then boot the state engine —
     // actions route through _a2uiActionTransport (host tools/call on this surface).
@@ -409,6 +431,11 @@ HANDSHAKE = """
       var patch = msg.params || {};
       for (var k in patch) { if (patch.hasOwnProperty(k)) _hostContext[k] = patch[k]; }
       _syncDisplayModeClass();
+      // Host theme changed live: re-theme (repaint, since some atoms read the
+      // dark class at render time). A payload with its own theme is unaffected.
+      if (patch.hasOwnProperty('theme') && _lastPayload) {
+        try { paint(_lastPayload); reportSize(); } catch (e) {}
+      }
       return;
     }
 
@@ -865,11 +892,7 @@ HTTP_BOOT = """
     var _v1 = _a2uiAcceptV1(payload);
     if (_v1) payload = _v1;
     var root = document.getElementById('a2ui-root');
-    var _terminal = payload.theme === 'terminal';
-    document.body.classList.toggle('asw-dark-theme', payload.theme === 'dark' || _terminal);
-    document.body.classList.toggle('asw-terminal-theme', _terminal);
-    // Native controls and scrollbars follow the payload theme, not the OS.
-    document.documentElement.style.colorScheme = (payload.theme === 'dark' || _terminal) ? 'dark' : 'light';
+    _a2uiApplyTheme(payload, null);
     if (payload.type === 'a2ui_wired_surface') {
       if (payload.variants || payload.wired_templates) {
         payload = _expandWiredSurface(payload, '', '');
