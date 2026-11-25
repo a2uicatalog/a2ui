@@ -69,7 +69,8 @@ label:has(input[type=radio]:focus-visible),label:has(input[type=checkbox]:focus-
 .site-header{position:sticky;top:0;z-index:100;background:var(--header-glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
 .hdr-in{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:10px;padding:11px 24px}
 .wordmark{display:flex;align-items:center;gap:9px;font-size:15px;font-weight:800;letter-spacing:-.2px;color:var(--text);text-decoration:none;white-space:nowrap}
-.logo-atom{width:22px;height:22px;flex-shrink:0}
+.logo-atom{width:var(--logo-size,36px);height:var(--logo-size,36px);flex-shrink:0}
+@media(max-width:860px){:root{--logo-size:28px}}
 .logo-atom .nuc{fill:var(--accent)}
 .logo-atom .o1{stroke:var(--accent);fill:none;stroke-width:1.5}
 .logo-atom .o2{stroke:oklch(70% 0.14 202);fill:none;stroke-width:1.5}
@@ -921,7 +922,7 @@ document.addEventListener('keydown',function(e){
   var bRender = document.getElementById('render-payload'), bReset = document.getElementById('reset-payload'), note = document.getElementById('payload-note');
   var status = document.getElementById('payload-status'), count = document.getElementById('payload-count');
   if (!code || !wrap || !ta || !target || !window.postMessage || !bRender || !bReset) return;
-  var MAX = 60000, ORIGIN = 'https://play.a2uicatalog.ai', BUNDLE = ORIGIN + '/renderer-bundle?v=c570916a20';
+  var MAX = 60000, ORIGIN = 'https://play.a2uicatalog.ai', BUNDLE = ORIGIN + '/renderer-bundle?v=27b9c0572f';
   var orig = code.textContent, pre = code.closest('pre'), kept = null, badge = null, frame = null, ready = false, pending = null, waitTimer = null, veil = null, veilTimer = null, sizeReports = 0, paused = false, note2 = null;
   ta.value = orig; pre.hidden = true; wrap.hidden = false; bRender.hidden = false; bReset.hidden = false; note.hidden = false;
   var pause = document.getElementById('pause-preview'), staticMoves = !!(pause && !pause.hidden);

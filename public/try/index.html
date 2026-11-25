@@ -45,7 +45,8 @@ label:has(input[type=radio]:focus-visible),label:has(input[type=checkbox]:focus-
 .site-header{position:sticky;top:0;z-index:100;background:var(--header-glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
 .hdr-in{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:10px;padding:11px 24px}
 .wordmark{display:flex;align-items:center;gap:9px;font-size:15px;font-weight:800;letter-spacing:-.2px;color:var(--text);text-decoration:none;white-space:nowrap}
-.logo-atom{width:22px;height:22px;flex-shrink:0}
+.logo-atom{width:var(--logo-size,36px);height:var(--logo-size,36px);flex-shrink:0}
+@media(max-width:860px){:root{--logo-size:28px}}
 .logo-atom .nuc{fill:var(--accent)}
 .logo-atom .o1{stroke:var(--accent);fill:none;stroke-width:1.5}
 .logo-atom .o2{stroke:oklch(70% 0.14 202);fill:none;stroke-width:1.5}
@@ -687,7 +688,7 @@ document.addEventListener('keydown',function(e){
   // Inline render: the site's own MCP Apps renderer in a sandboxed frame on a SEPARATE origin (play.a2uicatalog.ai: none of this site's cookies or
   // storage), the same host handshake the payload editor uses. Messages are accepted only from that frame and origin, in a fixed shape; nothing the
   // frame sends is put into this page as markup; every request the frame makes (tools/call, open-link, anything with an id) is refused.
-  var STAGE_ORIGIN = 'https://play.a2uicatalog.ai', STAGE_BUNDLE = STAGE_ORIGIN + '/renderer-bundle?v=c570916a20';
+  var STAGE_ORIGIN = 'https://play.a2uicatalog.ai', STAGE_BUNDLE = STAGE_ORIGIN + '/renderer-bundle?v=27b9c0572f';
   var stageFrame = null, stageReady = false, stageBlocks = null, stageTimer = null;
   function stageSay(msg, err){
     var s = document.getElementById('try-stage-status');
