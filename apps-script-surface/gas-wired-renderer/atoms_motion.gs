@@ -3297,6 +3297,107 @@ _RENDERERS['motion_arch'] = function(b) {
   return '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + _esc(label) + '" style="display:block;width:100%;height:auto;overflow:visible;">' + out + late + '</svg>';
 };
 
+// motion_trace (2026-11-25, preview): a request trace, a latency waterfall of spans on one time axis that draws itself on the film clock.
+// The agent supplies raw spans only; the total, every width, the axis ticks and the slowest span are computed here (a supplied total_ms is
+// ignored). The slowest span is the longest one with no child spans (a parent always spans its children). Twin of renderers/web_article.py.
+var _MO_TRACE_KIND = {server: '#7fb0ff', network: '#f0b45a', client: '#81c995'};
+var _MO_TRACE_MAX = 600000;
+function _moTraceLen(s) { return Array.from(s).length; }
+function _moTraceSpans(raw) {
+  var out = [], seen = {}, list = Array.isArray(raw) ? raw.slice(0, 14) : [], i, s, sid, st, du, sp;
+  for (i = 0; i < list.length; i++) {
+    s = (list[i] && typeof list[i] === 'object' && !Array.isArray(list[i])) ? list[i] : {};
+    sid = _moId(s.id);
+    if (!sid || Object.prototype.hasOwnProperty.call(seen, sid) || !_moArchOk(s.start_ms) || !_moArchOk(s.duration_ms)) continue;
+    st = parseFloat(_ffNum(s.start_ms, 0, 0, _MO_TRACE_MAX, 1)); du = parseFloat(_ffNum(s.duration_ms, 0, 0, _MO_TRACE_MAX, 1));
+    if (s.start_ms < 0 || s.duration_ms <= 0 || s.start_ms + s.duration_ms > _MO_TRACE_MAX || du <= 0) continue;
+    sp = {id: sid, i: i, name: _moStr(s.name, 26) || sid, st: st, du: du, parent: _moId(s.parent), kind: _moOwn(_MO_TRACE_KIND, s.kind, ''), depth: 0};
+    seen[sid] = sp; out.push(sp);
+  }
+  out.forEach(function(q) {
+    var d = 0, cur = q, chain = {}; chain[q.id] = true;
+    while (Object.prototype.hasOwnProperty.call(seen, cur.parent) && !chain[cur.parent] && d < 2) { cur = seen[cur.parent]; chain[cur.id] = true; d++; }
+    if (chain[cur.parent]) d = 0;
+    q.depth = d;
+  });
+  out.sort(function(a, c) { return (a.st - c.st) || (a.depth - c.depth) || (a.i - c.i); });
+  return out;
+}
+_RENDERERS['motion_trace'] = function(b) {
+  var spans = _moTraceSpans(b.spans), W = _ffInt(b.w, 600, 300, 2000), size = _ffInt(b.size, 15, 8, 32), title = _moStr(b.title, 60);
+  var ink = 'var(--mt-ink,currentColor)', mute = 'color-mix(in srgb,var(--mt-ink,currentColor) 62%,transparent)', grid = 'color-mix(in srgb,var(--mt-ink,currentColor) 20%,transparent)';
+  var n = spans.length, total = 0, parents = {}, slow = null, kinds = [], other = false, i, k;
+  spans.forEach(function(s) { total = Math.max(total, s.st + s.du); parents[s.parent] = true; });
+  spans.forEach(function(s) { if (!parents[s.id] && (slow === null || s.du > slow.du)) slow = s; });
+  ['server', 'network', 'client'].forEach(function(kk) { if (spans.some(function(s) { return s.kind === kk; })) kinds.push(kk); });
+  other = spans.some(function(s) { return s.kind === ''; }) && kinds.length > 0;
+  function fm(x) { return _ffNum(x, 0, 0, 10000000, 1) + ' ms'; }
+  function f1(x, lo) { return _ffNum(x, 0, lo === undefined ? -100000 : lo, 100000, 1); }
+  var fs = size - 2, y0 = size * 2.6, axis = size * 2.4, legend = kinds.length ? size * 2.0 : 0;
+  var hh = _ffInt(b.h, 0, 0, 2000);
+  var rowh = parseFloat(_ffNum((hh && n) ? Math.max(size * 1.6, Math.min(size * 3.5, (hh - y0 - axis - legend) / n)) : size * 2.3, 0, 0, 1000, 1)), H = y0 + Math.max(n, 1) * rowh + axis + legend;
+  var colw = parseFloat(_ffNum(W * 0.38, 0, 0, 2000, 1)), barl = colw, barw = W - 14 - colw;
+  var label = _moStr(b.label, 80) || ('Request trace' + (title ? ': ' + title : ''));
+  label += n ? ', total ' + fm(total) + ', slowest ' + slow.name + ' ' + fm(slow.du) : ', no spans';
+  function win(at, dur) { return '--u:clamp(0,calc((var(--p,1) - ' + at + ')/' + dur + '),1);'; }
+  function X(t) { return barl + t / total * barw; }
+  var out = '', avail, tl, tx, raw_step, mag, step, ms = [1, 2, 5, 10];
+  if (title) {
+    avail = W - 24 - _moTraceLen('Total ' + fm(total)) * size * 0.62;
+    tl = _moTraceLen(title) * size * 0.58 > avail ? ' textLength="' + _ffNum(avail, 0, 0, 5000, 1) + '" lengthAdjust="spacingAndGlyphs"' : '';
+    out += '<text x="8" y="' + _ffNum(size * 1.4, 0, 0, 1000, 1) + '"' + tl + ' style="font-family:' + _MO_SANS + ';font-size:' + size + 'px;font-weight:700;fill:' + ink + ';">' + _esc(title) + '</text>';
+  }
+  if (n) {
+    raw_step = total / 4; mag = 1;
+    while (mag * 10 <= raw_step) mag *= 10;
+    while (mag > raw_step) mag /= 10;
+    step = mag;
+    for (i = 0; i < ms.length; i++) { step = ms[i] * mag; if (step >= raw_step) break; }
+    k = 0;
+    while (k * step <= total + 1e-9 && k < 12) {
+      tx = parseFloat(f1(X(k * step)));
+      out += '<line x1="' + f1(tx) + '" x2="' + f1(tx) + '" y1="' + f1(y0 - 4, 0) + '" y2="' + f1(y0 + n * rowh, 0)
+        + '" style="stroke:' + grid + ';stroke-width:1;"/>'
+        + '<text x="' + f1(tx) + '" y="' + f1(y0 + n * rowh + size * 1.3, 0) + '" text-anchor="' + (k === 0 ? 'start' : 'middle') + '" style="font-family:' + _JOURNEY_MONO + ';font-size:' + fs + 'px;fill:' + mute + ';">' + (k ? fm(k * step) : '0') + '</text>';
+      k++;
+    }
+  }
+  spans.forEach(function(s, r) {
+    var cy = y0 + r * rowh + rowh / 2, bh = rowh * 0.56, bx = X(s.st), bw = Math.max(2, s.du / total * barw);
+    var at = parseFloat(_ffNum(0.04 + 0.78 * s.st / total, 0, 0, 1, 3)), dur = parseFloat(_ffNum(Math.max(0.05, 0.78 * s.du / total), 0, 0, 1, 3));
+    var col = Object.prototype.hasOwnProperty.call(_MO_TRACE_KIND, s.kind) ? _MO_TRACE_KIND[s.kind] : '#b4a4f5', ind = 8 + s.depth * 14, av = colw - ind - 8;
+    var tl2 = _moTraceLen(s.name) * size * 0.58 > av ? ' textLength="' + _ffNum(av, 0, 0, 5000, 1) + '" lengthAdjust="spacingAndGlyphs"' : '';
+    var dl = fm(s.du) + (s === slow ? ' · slowest' : ''), est = _moTraceLen(dl) * fs * 0.62, lx, anc, lc;
+    if (bw >= est + 12) { lx = bx + 6; anc = 'start'; lc = '#0b0f19'; }
+    else if (bx + bw + 6 + est <= W - 6) { lx = bx + bw + 6; anc = 'start'; lc = ink; }
+    else if (bx - 6 - est >= barl) { lx = bx - 6; anc = 'end'; lc = ink; }
+    else { lx = bx + bw + 6; anc = 'start'; lc = ink; }
+    out += '<g style="' + win(_ffNum(at, 0, 0, 1, 3), _ffNum(dur, 0, 0, 1, 3)) + 'opacity:clamp(0,calc(var(--u)*6),1);">'
+      + '<text x="' + _ffNum(ind, 0, 0, 5000, 1) + '" y="' + f1(cy + size * 0.35, 0) + '"' + tl2 + ' style="font-family:' + _MO_SANS + ';font-size:' + size + 'px;fill:' + ink + ';">' + _esc(s.name) + '</text>'
+      + '<rect x="' + f1(bx) + '" y="' + f1(cy - bh / 2, 0) + '" width="' + f1(bw, 0) + '" height="' + f1(bh, 0)
+      + '" rx="3" style="fill:' + col + ';transform-box:fill-box;transform-origin:left center;transform:scaleX(var(--u));"/>'
+      + '<text x="' + f1(lx) + '" y="' + f1(cy + fs * 0.35, 0) + '" text-anchor="' + anc + '" style="font-family:' + _JOURNEY_MONO + ';font-size:' + fs + 'px;font-weight:' + (s === slow ? '700' : '400') + ';fill:' + lc + ';opacity:clamp(0,calc(var(--u)*4 - 3),1);">' + _esc(dl) + '</text></g>';
+  });
+  if (n) {
+    var sbx = X(slow.st), sbw = Math.max(2, slow.du / total * barw), scy = y0 + spans.indexOf(slow) * rowh + rowh / 2, sbh = rowh * 0.56, lyy, lxx, items;
+    out += '<g style="' + win('0.88', '0.1') + 'opacity:var(--u);">'
+      + '<rect x="' + f1(sbx - 2) + '" y="' + f1(scy - sbh / 2 - 2, 0) + '" width="' + f1(sbw + 4, 0) + '" height="' + f1(sbh + 4, 0)
+      + '" rx="5" style="fill:none;stroke:' + ink + ';stroke-width:2.5;"/>'
+      + '<text x="' + f1(W - 8, 0) + '" y="' + _ffNum(size * 1.4, 0, 0, 1000, 1) + '" text-anchor="end" style="font-family:' + _JOURNEY_MONO + ';font-size:' + size + 'px;font-weight:700;fill:' + ink + ';">Total ' + fm(total) + '</text></g>';
+    lyy = y0 + n * rowh + axis; lxx = 8;
+    items = kinds.map(function(kk) { return [kk, _MO_TRACE_KIND[kk]]; });
+    if (other) items.push(['other', '#b4a4f5']);
+    items.forEach(function(p) {
+      out += '<rect x="' + f1(lxx, 0) + '" y="' + f1(lyy - fs * 0.8, 0) + '" width="' + _ffNum(fs, 0, 0, 1000, 1) + '" height="' + _ffNum(fs * 0.8, 0, 0, 1000, 1) + '" rx="2" style="fill:' + p[1] + ';"/>'
+        + '<text x="' + f1(lxx + fs + 6, 0) + '" y="' + f1(lyy - 1, 0) + '" style="font-family:' + _MO_SANS + ';font-size:' + fs + 'px;fill:' + mute + ';">' + p[0] + '</text>';
+      lxx += fs + 6 + p[0].length * fs * 0.58 + 18;
+    });
+  } else {
+    out += '<text x="8" y="' + f1(y0 + rowh / 2, 0) + '" style="font-family:' + _MO_SANS + ';font-size:' + size + 'px;fill:' + mute + ';">No spans</text>';
+  }
+  return '<svg viewBox="0 0 ' + W + ' ' + f1(H, 0) + '" role="img" aria-label="' + _esc(label) + '" style="display:block;width:100%;height:auto;overflow:visible;"><title>' + _esc(label) + '</title>' + out + '</svg>';
+};
+
 // A video on the film clock (2026-10-05, for a screen recording inside motion_device): inside a motion_timeline a track drives
 // its progress p 0..1 and the video SEEKS to from + p*(to - from), so scrubbing and frame export are exact (encode with short
 // keyframe intervals for smooth seeking); with no p set (standalone) it plays muted and loops. Muted always, no controls, no

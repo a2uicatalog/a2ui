@@ -11977,6 +11977,40 @@ blocks:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
+- type: motion_trace
+  stage: preview
+  description: A request trace, a latency waterfall that draws itself. Each span is a bar on one shared time axis (name, start
+    offset and duration in ms), nested spans are indented under their parent, and the bars grow in from left to right in start order.
+    The agent supplies only the raw spans; the total time, every bar width, the axis ticks and the slowest span (the longest span with
+    no child spans, outlined and labelled) are computed by code, so a supplied total is ignored. Short bars put their duration outside
+    the bar so labels never overlap. Each span has a kind (server, network or client) shown by colour and a legend. Standalone it is
+    the finished trace; inside a motion_timeline its progress p drives the build. Pure SVG and CSS, no script.
+  compact_description: animated request trace, a latency waterfall of spans with the slowest one highlighted
+  routing_text: "An animated request trace: spans on a time axis, each with a start offset and a duration in milliseconds, nested under a parent span, coloured as server, network or client work, growing in left to right in start order, with the total time and the slowest span called out. Use it to show where the time went in a request, a page load, a tool call or an agent run: a latency waterfall, a distributed trace, a performance breakdown. Not a chart of values (use waterfall for running totals), not a schedule (use gantt), not an architecture diagram (use motion_arch)."
+  surfaces:
+    works_on: [web, google-meet-stage, google-apps-script-web, mcp-apps, android]
+    degraded_on:
+    - surface: pdf
+      note: Prints the finished trace
+    incompatible_on:
+    - surface: email
+      reason: CSS custom properties, calc() and inline SVG styling are not supported in email clients
+  fields:
+    spans: 'array (max 14) of {id, name, start_ms, duration_ms, parent, kind}. id ^[a-z][a-z0-9_-]{0,31}$ and unique. name (max 26)
+      is the label. start_ms is the offset from the start of the request in ms (0 or more, finite). duration_ms is greater than 0,
+      and start_ms + duration_ms is at most 600000. parent, which may be left out, is the id of another span that encloses this one;
+      nesting is at most 3 levels, and a missing or circular parent makes the span a root. kind, which may be left out, is "server"
+      | "network" | "client". Plain text only: no markup and no URLs. A span that breaks these rules is dropped. The total is never
+      supplied: it is the latest end of any span.'
+    title: string (optional, max 60). Heading on the left, with the computed total on the right.
+    w: integer (optional). ViewBox width, 300-2000. Default 600.
+    h: integer (optional). Target ViewBox height, 0-2000. The rows share what is left under the header; each row stays between 1.6 and 3.5 lines tall. Default 0, rows 2.3 lines tall.
+    size: integer (optional). Label px, 8-32. Default 15.
+    label: string (optional, max 80). Accessible name. The total and the slowest span are always appended. Default "Request trace".
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
 - type: motion_video
   description: A muted video on the film clock. Inside a motion_timeline a track
     drives its progress p from 0 to 1 and the video seeks to from + p * (to -

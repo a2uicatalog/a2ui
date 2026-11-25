@@ -127,6 +127,9 @@ def _obj(props: dict, required: list) -> dict:
     return {"type": "object", "properties": props, "required": required, "additionalProperties": False}
 
 
+# plain text: no markup characters and no URL
+_PLAIN = r"^(?!.*(?:https?:|www\.|//))[^<>]*$"
+
 FIELD_OVERRIDES = {
     "sequence_diagram": {
         "animate": {"type": "boolean"},
@@ -165,6 +168,18 @@ FIELD_OVERRIDES = {
         "radius": _num(0, 60, integer=True),
         "accent": _HEX, "accent2": _HEX, "color": _HEX, "mute": _HEX, "fill": _HEX, "background": _HEX,
         "label": {"type": "string", "maxLength": 80},
+    },
+    # motion_trace (2026-11-25, preview): raw spans only, the total and the slowest span are computed by the renderer.
+    "motion_trace": {
+        "spans": {"type": "array", "maxItems": 14, "items": _obj({
+            "id": {"type": "string", "pattern": "^[a-z][a-z0-9_-]{0,31}$"},
+            "name": {"type": "string", "minLength": 1, "maxLength": 26, "pattern": _PLAIN},
+            "start_ms": _num(0, 600000), "duration_ms": {"type": "number", "exclusiveMinimum": 0, "maximum": 600000},
+            "parent": {"type": "string", "pattern": "^[a-z][a-z0-9_-]{0,31}$"},
+            "kind": {"type": "string", "enum": ["server", "network", "client"]}}, ["id", "name", "start_ms", "duration_ms"])},
+        "title": {"type": "string", "maxLength": 60, "pattern": _PLAIN},
+        "w": _num(300, 2000, integer=True), "h": _num(0, 2000, integer=True), "size": _num(8, 32, integer=True),
+        "label": {"type": "string", "maxLength": 80, "pattern": _PLAIN},
     },
 }
 

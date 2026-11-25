@@ -45,10 +45,11 @@ REEL7 = ["motion_goo", "motion_finish", "motion_assemble", "motion_iso"]  # batc
 REEL8 = ["motion_particles", "motion_morph", "motion_shader"]  # batch 8, 2026-10-02
 STUDIO = ["motion_object3d", "motion_bricks"]  # studio pack (atoms_studio.gs), 2026-10-03
 INPUT = ["motion_input"]  # a text field that types itself, 2026-10-09
+TRACE = ["motion_trace"]  # request trace (latency waterfall), preview, 2026-11-25
 VIDEO = ["motion_video", "motion_arch"]  # a video on the film clock, for screen recordings in motion_device, 2026-10-05
 DRUM = ["motion_kinetic_drum"]  # ported 2026-10-19 (pure CSS 3D kinetic type)
 GLASS = ["motion_liquid_glass"]  # ported 2026-10-19 (pure CSS lens over its children)
-MOTION_ATOMS = ["motion_group", "motion_tokens", "motion_timeline"] + PRIMITIVES + REEL + REEL3 + REEL4 + REEL5 + REEL6 + REEL7 + REEL8 + STUDIO + VIDEO + INPUT + DEMO_ATOMS + DRUM + GLASS
+MOTION_ATOMS = ["motion_group", "motion_tokens", "motion_timeline"] + PRIMITIVES + REEL + REEL3 + REEL4 + REEL5 + REEL6 + REEL7 + REEL8 + STUDIO + VIDEO + TRACE + INPUT + DEMO_ATOMS + DRUM + GLASS
 
 UID_RE = re.compile(r'id="(?:mt|mo)-([a-z0-9]{6})"')
 
@@ -292,6 +293,15 @@ PAYLOADS = {
                     {"nodes": [{"id": "A b", "kind": "constructor", "x": "1e9", "y": None, "label": "</text><script>alert(1)</script>", "sub": ["x"]},
                                {"id": "b", "kind": "toString", "x": -5, "w": 0}], "edges": [{"from": "n0", "to": "b", "label": [], "curve": "x", "at": 7, "dur": 0}],
                      "messages": [{"edge": 0, "text": "<img onerror=x>", "back": "yes"}], "groups": [5, {"label": {"a": 1}}]}],
+    "motion_trace": [{}, {"title": "Trip planner <b>", "w": 520, "h": 420, "size": 13, "label": "Plan a trip",
+                          "spans": [{"id": "req", "name": "Request", "start_ms": 0, "duration_ms": 1480}, {"id": "net", "name": "Network", "start_ms": 0, "duration_ms": 120, "parent": "req", "kind": "network"},
+                                    {"id": "srv", "name": "Server render", "start_ms": 120, "duration_ms": 900, "parent": "req", "kind": "server"}, {"id": "db", "name": "Database query", "start_ms": 200, "duration_ms": 610, "parent": "srv", "kind": "server"},
+                                    {"id": "paint", "name": "Paint", "start_ms": 1020, "duration_ms": 460, "parent": "req", "kind": "client"}, {"id": "tiny", "name": "A very long span name that has to be squeezed in", "start_ms": 1470, "duration_ms": 0.5}]},
+                      {"spans": [{"id": "a", "name": "A", "start_ms": 0, "duration_ms": 10, "parent": "b"}, {"id": "b", "name": "B", "start_ms": 0, "duration_ms": 10, "parent": "a"}, {"id": "a", "name": "dup", "start_ms": 1, "duration_ms": 1},
+                                 {"id": "c", "name": "C", "start_ms": -1, "duration_ms": 5}, {"id": "d", "name": "D", "start_ms": 5, "duration_ms": 0}, {"id": "e", "name": "E", "start_ms": 599999, "duration_ms": 5},
+                                 {"id": "f", "name": "F", "start_ms": 0, "duration_ms": 3, "parent": "nope", "kind": "toString"}, "junk", {"id": 5}, {"id": "g", "name": 12, "start_ms": "1", "duration_ms": 2}]},
+                      {"spans": "x", "w": 99999, "h": -5, "size": 999, "title": "</text><script>alert(1)</script>", "total_ms": 5},
+                      {"spans": [{"id": "x1", "name": "q", "start_ms": 0, "duration_ms": 600000, "kind": "client"}, {"id": "x2", "name": "<img onerror=x>", "start_ms": 1e9, "duration_ms": 1}], "title": "Long \u00e9\u00e8 title that goes on and on and on and on and on"}],
     "motion_video": [{}, {"url": "/media/run.mp4", "poster": "https://example.com/p.jpg", "from": 2.5, "to": 61, "ratio": "9:19.5", "fit": "contain", "radius": 30, "still": True, "label": "Run <b>"},
                      {"url": "javascript:alert(1)", "poster": "data:image/png;base64,AAAA", "from": "x", "to": -5, "ratio": "toString", "fit": "constructor", "radius": 9999},
                      {"url": "https://x.y/a.mp4\" onerror=\"alert(1)", "from": 1e9}, {"url": "//evil.example/a.mp4"}, {"url": 5, "label": "</script><script>alert(1)</script>"}],

@@ -1,0 +1,8 @@
+{"type":"motion_trace","title":"Plan a trip: where the time went","label":"Trip planner request","spans":[
+{"id":"req","name":"Request","start_ms":0,"duration_ms":1480},
+{"id":"dns","name":"Connect","start_ms":0,"duration_ms":90,"parent":"req","kind":"network"},
+{"id":"srv","name":"Server render","start_ms":90,"duration_ms":930,"parent":"req","kind":"server"},
+{"id":"llm","name":"Model call","start_ms":160,"duration_ms":640,"parent":"srv","kind":"server"},
+{"id":"maps","name":"Routes lookup","start_ms":170,"duration_ms":210,"parent":"srv","kind":"server"},
+{"id":"xfer","name":"Transfer","start_ms":1020,"duration_ms":150,"parent":"req","kind":"network"},
+{"id":"paint","name":"Paint","start_ms":1170,"duration_ms":310,"parent":"req","kind":"client"}]}

@@ -35010,6 +35010,147 @@ def _render_motion_arch(b: dict) -> str:
     return '<svg viewBox="0 0 ' + str(W) + ' ' + str(H) + '" role="img" aria-label="' + _cv_esc(label) + '" style="display:block;width:100%;height:auto;overflow:visible;">' + out + late + '</svg>'
 
 
+# motion_trace (2026-11-25, preview). Twin of atoms_motion.gs motion_trace: a request trace, a latency waterfall of spans on one time axis that
+# draws itself on the film clock. The agent supplies raw spans only; the total, every width, the axis ticks and the slowest span are computed
+# here (a supplied total_ms is ignored). The slowest span is the longest one that has no child spans (a parent always spans its children).
+_MO_TRACE_KIND = {'server': '#7fb0ff', 'network': '#f0b45a', 'client': '#81c995'}
+_MO_TRACE_MAX = 600000
+
+
+def _mo_trace_spans(raw):
+    # up to 14 valid spans, in start order (a parent before its children when they start together); invalid ones are dropped
+    out, seen = [], {}
+    for i, s in enumerate(raw[:14] if isinstance(raw, list) else []):
+        s = s if isinstance(s, dict) else {}
+        sid = _mo_id(s.get('id'))
+        if not sid or sid in seen or not _mo_arch_ok(s.get('start_ms')) or not _mo_arch_ok(s.get('duration_ms')):
+            continue
+        st, du = float(_ff_num(s.get('start_ms'), 0, 0, _MO_TRACE_MAX, 1)), float(_ff_num(s.get('duration_ms'), 0, 0, _MO_TRACE_MAX, 1))
+        if s['start_ms'] < 0 or s['duration_ms'] <= 0 or s['start_ms'] + s['duration_ms'] > _MO_TRACE_MAX or du <= 0:
+            continue
+        sp = {'id': sid, 'i': i, 'name': _cv_str(s.get('name'), 26) or sid, 'st': st, 'du': du, 'parent': _mo_id(s.get('parent')), 'kind': _mo_own(_MO_TRACE_KIND, s.get('kind'), ''), 'depth': 0}
+        seen[sid] = sp
+        out.append(sp)
+    for sp in out:
+        d, cur, chain = 0, sp, {sp['id']}
+        while cur['parent'] in seen and cur['parent'] not in chain and d < 2:
+            cur = seen[cur['parent']]
+            chain.add(cur['id'])
+            d += 1
+        if cur['parent'] in chain:       # a cycle: no parent
+            d = 0
+        sp['depth'] = d
+    out.sort(key=lambda q: (q['st'], q['depth'], q['i']))
+    return out
+
+
+def _render_motion_trace(b: dict) -> str:
+    spans = _mo_trace_spans(b.get('spans'))
+    W, size, title = _ff_int(b.get('w'), 600, 300, 2000), _ff_int(b.get('size'), 15, 8, 32), _cv_str(b.get('title'), 60)
+    ink, mute = 'var(--mt-ink,currentColor)', 'color-mix(in srgb,var(--mt-ink,currentColor) 62%,transparent)'
+    grid = 'color-mix(in srgb,var(--mt-ink,currentColor) 20%,transparent)'
+    n = len(spans)
+    total = max([q['st'] + q['du'] for q in spans]) if n else 0.0
+    parents = {q['parent'] for q in spans}
+    leaves = [q for q in spans if q['id'] not in parents]
+    slow = None
+    for q in leaves:
+        if slow is None or q['du'] > slow['du']:
+            slow = q
+    kinds = [k for k in ('server', 'network', 'client') if any(q['kind'] == k for q in spans)]
+    other = any(q['kind'] == '' for q in spans) and len(kinds) > 0
+
+    def fm(x):
+        return _ff_num(x, 0, 0, 10000000, 1) + ' ms'
+    fs = size - 2
+    y0, axis = size * 2.6, size * 2.4
+    legend = size * 2.0 if kinds else 0
+    hh = _ff_int(b.get('h'), 0, 0, 2000)       # a target height: the rows share what is left, between 1.6 and 3.5 lines each
+    rowh = float(_ff_num(max(size * 1.6, min(size * 3.5, (hh - y0 - axis - legend) / n)) if hh and n else size * 2.3, 0, 0, 1000, 1))
+    H = y0 + max(n, 1) * rowh + axis + legend
+    colw = float(_ff_num(W * 0.38, 0, 0, 2000, 1))
+    barl, barw = colw, W - 14 - colw
+    label = _cv_str(b.get('label'), 80) or ('Request trace' + (': ' + title if title else ''))
+    if n:
+        label += ', total ' + fm(total) + ', slowest ' + slow['name'] + ' ' + fm(slow['du'])
+    else:
+        label += ', no spans'
+
+    def win(at, dur):
+        return '--u:clamp(0,calc((var(--p,1) - ' + at + ')/' + dur + '),1);'
+
+    def X(t):
+        return barl + t / total * barw
+    out = ''
+    if title:
+        avail = W - 24 - len('Total ' + fm(total)) * size * 0.62
+        tl = ' textLength="' + _ff_num(avail, 0, 0, 5000, 1) + '" lengthAdjust="spacingAndGlyphs"' if len(title) * size * 0.58 > avail else ''
+        out += '<text x="8" y="' + _ff_num(size * 1.4, 0, 0, 1000, 1) + '"' + tl + ' style="font-family:' + _MO_SANS + ';font-size:' + str(size) + 'px;font-weight:700;fill:' + ink + ';">' + _cv_esc(title) + '</text>'
+    if n:
+        raw_step = total / 4
+        mag = 1.0
+        while mag * 10 <= raw_step:
+            mag *= 10
+        while mag > raw_step:
+            mag /= 10
+        step = mag
+        for m in (1, 2, 5, 10):
+            step = m * mag
+            if step >= raw_step:
+                break
+        k = 0
+        while k * step <= total + 1e-9 and k < 12:
+            tx = float(_ff_num(X(k * step), 0, -100000, 100000, 1))
+            out += ('<line x1="' + _ff_num(tx, 0, -100000, 100000, 1) + '" x2="' + _ff_num(tx, 0, -100000, 100000, 1) + '" y1="' + _ff_num(y0 - 4, 0, 0, 100000, 1) + '" y2="' + _ff_num(y0 + n * rowh, 0, 0, 100000, 1)
+                    + '" style="stroke:' + grid + ';stroke-width:1;"/>'
+                    + '<text x="' + _ff_num(tx, 0, -100000, 100000, 1) + '" y="' + _ff_num(y0 + n * rowh + size * 1.3, 0, 0, 100000, 1) + '" text-anchor="' + ('start' if k == 0 else 'middle') + '" style="font-family:' + _JOURNEY_MONO + ';font-size:' + str(fs) + 'px;fill:' + mute + ';">' + (fm(k * step) if k else '0') + '</text>')
+            k += 1
+    for r, q in enumerate(spans):
+        cy = y0 + r * rowh + rowh / 2
+        bh = rowh * 0.56
+        bx, bw = X(q['st']), max(2.0, q['du'] / total * barw)
+        at = float(_ff_num(0.04 + 0.78 * q['st'] / total, 0, 0, 1, 3))
+        dur = float(_ff_num(max(0.05, 0.78 * q['du'] / total), 0, 0, 1, 3))
+        col = _MO_TRACE_KIND.get(q['kind'], '#b4a4f5')
+        ind = 8 + q['depth'] * 14
+        avail = colw - ind - 8
+        tl = ' textLength="' + _ff_num(avail, 0, 0, 5000, 1) + '" lengthAdjust="spacingAndGlyphs"' if len(q['name']) * size * 0.58 > avail else ''
+        dl = fm(q['du']) + (' · slowest' if q is slow else '')
+        est = len(dl) * fs * 0.62
+        if bw >= est + 12:
+            lx, anc, lc = bx + 6, 'start', '#0b0f19'
+        elif bx + bw + 6 + est <= W - 6:
+            lx, anc, lc = bx + bw + 6, 'start', ink
+        elif bx - 6 - est >= barl:
+            lx, anc, lc = bx - 6, 'end', ink
+        else:
+            lx, anc, lc = bx + bw + 6, 'start', ink
+        out += ('<g style="' + win(_ff_num(at, 0, 0, 1, 3), _ff_num(dur, 0, 0, 1, 3)) + 'opacity:clamp(0,calc(var(--u)*6),1);">'
+                + '<text x="' + _ff_num(ind, 0, 0, 5000, 1) + '" y="' + _ff_num(cy + size * 0.35, 0, 0, 100000, 1) + '"' + tl + ' style="font-family:' + _MO_SANS + ';font-size:' + str(size) + 'px;fill:' + ink + ';">' + _cv_esc(q['name']) + '</text>'
+                + '<rect x="' + _ff_num(bx, 0, -100000, 100000, 1) + '" y="' + _ff_num(cy - bh / 2, 0, 0, 100000, 1) + '" width="' + _ff_num(bw, 0, 0, 100000, 1) + '" height="' + _ff_num(bh, 0, 0, 100000, 1)
+                + '" rx="3" style="fill:' + col + ';transform-box:fill-box;transform-origin:left center;transform:scaleX(var(--u));"/>'
+                + '<text x="' + _ff_num(lx, 0, -100000, 100000, 1) + '" y="' + _ff_num(cy + fs * 0.35, 0, 0, 100000, 1) + '" text-anchor="' + anc + '" style="font-family:' + _JOURNEY_MONO + ';font-size:' + str(fs) + 'px;font-weight:' + ('700' if q is slow else '400') + ';fill:' + lc + ';opacity:clamp(0,calc(var(--u)*4 - 3),1);">' + _cv_esc(dl) + '</text></g>')
+    if n:
+        bx, bw = X(slow['st']), max(2.0, slow['du'] / total * barw)
+        cy = y0 + spans.index(slow) * rowh + rowh / 2
+        bh = rowh * 0.56
+        out += ('<g style="' + win('0.88', '0.1') + 'opacity:var(--u);">'
+                + '<rect x="' + _ff_num(bx - 2, 0, -100000, 100000, 1) + '" y="' + _ff_num(cy - bh / 2 - 2, 0, 0, 100000, 1) + '" width="' + _ff_num(bw + 4, 0, 0, 100000, 1) + '" height="' + _ff_num(bh + 4, 0, 0, 100000, 1)
+                + '" rx="5" style="fill:none;stroke:' + ink + ';stroke-width:2.5;"/>'
+                + '<text x="' + _ff_num(W - 8, 0, 0, 100000, 1) + '" y="' + _ff_num(size * 1.4, 0, 0, 1000, 1) + '" text-anchor="end" style="font-family:' + _JOURNEY_MONO + ';font-size:' + str(size) + 'px;font-weight:700;fill:' + ink + ';">Total ' + fm(total) + '</text></g>')
+        lyy = y0 + n * rowh + axis
+        lxx = 8.0
+        items = [(k, _MO_TRACE_KIND[k]) for k in kinds] + ([('other', '#b4a4f5')] if other else [])
+        for name, col in items:
+            out += ('<rect x="' + _ff_num(lxx, 0, 0, 100000, 1) + '" y="' + _ff_num(lyy - fs * 0.8, 0, 0, 100000, 1) + '" width="' + _ff_num(fs, 0, 0, 1000, 1) + '" height="' + _ff_num(fs * 0.8, 0, 0, 1000, 1) + '" rx="2" style="fill:' + col + ';"/>'
+                    + '<text x="' + _ff_num(lxx + fs + 6, 0, 0, 100000, 1) + '" y="' + _ff_num(lyy - 1, 0, 0, 100000, 1) + '" style="font-family:' + _MO_SANS + ';font-size:' + str(fs) + 'px;fill:' + mute + ';">' + name + '</text>')
+            lxx += fs + 6 + len(name) * fs * 0.58 + 18
+    else:
+        out += '<text x="8" y="' + _ff_num(y0 + rowh / 2, 0, 0, 100000, 1) + '" style="font-family:' + _MO_SANS + ';font-size:' + str(size) + 'px;fill:' + mute + ';">No spans</text>'
+    return ('<svg viewBox="0 0 ' + str(W) + ' ' + _ff_num(H, 0, 0, 100000, 1) + '" role="img" aria-label="' + _cv_esc(label) + '" style="display:block;width:100%;height:auto;overflow:visible;"><title>' + _cv_esc(label) + '</title>'
+            + out + '</svg>')
+
+
 # Twin of atoms_motion.gs motion_video (2026-10-05): a video on the film clock; the JS template is byte-shared.
 _MO_VIDEO_OK = re.compile(r'^(https://[^\s"\'<>\\`]{1,500}|/(?!/)[^\s"\'<>\\`]{1,500})$')
 _MO_VIDEO_RATIO = {'16:9': '16/9', '4:3': '4/3', '1:1': '1/1', '3:4': '3/4', '9:16': '9/16', '9:19.5': '9/19.5'}
@@ -35262,7 +35403,7 @@ for _mo_name, _mo_fn in (('motion_pill', _render_motion_pill), ('motion_checklis
                          ('motion_media', _render_motion_media), ('motion_chat', _render_motion_chat), ('motion_wiggle', _render_motion_wiggle), ('motion_textpath', _render_motion_textpath),
                          ('motion_goo', _render_motion_goo), ('motion_finish', _render_motion_finish), ('motion_assemble', _render_motion_assemble), ('motion_iso', _render_motion_iso),
                          ('motion_particles', _render_motion_particles), ('motion_morph', _render_motion_morph),
-                         ('motion_shader', _render_motion_shader), ('motion_video', _render_motion_video), ('motion_arch', _render_motion_arch), ('motion_object3d', _render_motion_object3d), ('motion_bricks', _render_motion_bricks), ('motion_input', _render_motion_input)):
+                         ('motion_shader', _render_motion_shader), ('motion_video', _render_motion_video), ('motion_arch', _render_motion_arch), ('motion_trace', _render_motion_trace), ('motion_object3d', _render_motion_object3d), ('motion_bricks', _render_motion_bricks), ('motion_input', _render_motion_input)):
     _RENDERERS[_mo_name] = _mo_fn
 
 
