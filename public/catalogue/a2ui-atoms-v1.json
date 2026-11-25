@@ -18611,6 +18611,14 @@
      "$ref": "common_types.json#/$defs/DynamicBoolean",
      "description": "boolean (optional, default false) — prefix each message with a sequential number badge (mermaid's autonumber)."
     },
+    "animate": {
+     "$ref": "common_types.json#/$defs/DynamicBoolean",
+     "description": "boolean (optional, default false) — draw the messages in one by one, in order, as a CSS-only opacity reveal with no JS. Omitted or false renders exactly as before. Actor boxes, lifelines and frame borders and labels are visible from the start; each message (arrow, label and autonumber badge) and each note fades in at its turn, so nothing shifts. The content is in the DOM from the start, so assistive tech reads the whole diagram. Honours prefers-reduced-motion by showing the finished diagram at once. Animates on web and mcp-apps; the android lane cannot animate and ignores the flag, drawing the finished diagram."
+    },
+    "animate_step_ms": {
+     "$ref": "common_types.json#/$defs/DynamicNumber",
+     "description": "integer (optional, default 600) — delay in milliseconds between successive reveals when animate is true. Allowed range 100 to 2000; out-of-range falls back to 600. The step is shortened if needed so the last item starts within 20 s, so the longest possible animation is about 20.5 s."
+    },
     "actors": {
      "$ref": "common_types.json#/$defs/DynamicValue",
      "description": "required array of participants, left→right. Each is a plain string (used as both id and label) OR an object {id, label} for a mermaid-style alias (messages/notes may reference the short id while the box shows the friendly label)."

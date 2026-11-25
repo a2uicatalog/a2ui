@@ -1,0 +1,57 @@
+[
+ {
+  "type": "sequence_diagram",
+  "animate": true,
+  "animate_step_ms": 700,
+  "autonumber": true,
+  "actors": [
+   {
+    "id": "u",
+    "label": "User"
+   },
+   {
+    "id": "app",
+    "label": "App"
+   },
+   {
+    "id": "auth",
+    "label": "Auth server"
+   }
+  ],
+  "messages": [
+   {
+    "from": "u",
+    "to": "app",
+    "text": "Open sign-in page"
+   },
+   {
+    "from": "app",
+    "to": "u",
+    "text": "Show login form",
+    "kind": "return"
+   },
+   {
+    "from": "u",
+    "to": "app",
+    "text": "Submit email and password"
+   },
+   {
+    "from": "app",
+    "to": "auth",
+    "text": "POST /token"
+   },
+   {
+    "from": "auth",
+    "to": "app",
+    "text": "Access token",
+    "kind": "return"
+   },
+   {
+    "from": "app",
+    "to": "u",
+    "text": "Signed in, show dashboard",
+    "kind": "return"
+   }
+  ]
+ }
+]

@@ -1699,9 +1699,16 @@ var noteAttr = b.annotation ? ' data-note="' + _esc(b.annotation) + '"' : '';
 return '<mark data-cb="node" data-key="' + _ckey(b.text, 'highlighted_text') + '" class="asw-highlight" style="background:' + color + '"' + noteAttr + '>' + _esc(b.text) + '</mark>';
 };
 _RENDERERS['table'] = function(b) {
-var colWidths = b.col_widths || [];
-var tableStyle = colWidths.length ? ' style="table-layout:fixed;width:100%;"' : '';
-function w(i) { return (i < colWidths.length) ? (' style="width:' + colWidths[i] + ';"') : ''; }
+var colWidths = [];
+if (Array.isArray(b.col_widths)) {
+for (var cw = 0; cw < b.col_widths.length; cw++) {
+var cwv = (typeof b.col_widths[cw] === 'string') ? b.col_widths[cw].trim() : '';
+colWidths.push(/^[0-9]{1,4}(\.[0-9]{1,3})?(%|px|rem)$/.test(cwv) ? cwv : '');
+}
+}
+var anyWidth = colWidths.some(function(x) { return !!x; });
+var tableStyle = anyWidth ? ' style="table-layout:fixed;width:100%;"' : '';
+function w(i) { return (i < colWidths.length && colWidths[i]) ? (' style="width:' + colWidths[i] + ';"') : ''; }
 var html = '<table' + tableStyle + '>';
 if (b.caption) html += '<caption style="padding:8px;font-size:0.8rem;color:var(--a2ui-faint,#757575);text-align:left;">' + _esc(b.caption) + '</caption>';
 if (b.headers && b.headers.length) {
@@ -19292,6 +19299,26 @@ return '<div style="position:absolute;left:' + c.toFixed(3) + '%;top:0;bottom:0;
 var noteBg = (theme === 'dark' || theme === 'site') ? (accent + '1c') : (accent + '10');
 var autonumber = !!b.autonumber;
 var counter = 0;
+var animate = b.animate === true;
+var stepMs = b.animate_step_ms;
+if (typeof stepMs !== 'number' || Math.floor(stepMs) !== stepMs || stepMs < 100 || stepMs > 2000) stepMs = 600;
+var animN = 0;
+function countItems(items) {
+var c = 0;
+(items || []).forEach(function(it) {
+if (it.frame) {
+c += countItems(it.messages);
+(it['else'] || []).forEach(function(br) { c += countItems(br.messages); });
+} else c++;
+});
+return c;
+}
+if (animate) stepMs = Math.min(stepMs, Math.max(1, Math.floor(20000 / Math.max(1, countItems(messages)))));
+function anim() {
+if (!animate) return ['', ''];
+var d = animN * stepMs; animN++;
+return [' class="a2ui-seq-row"', 'animation:a2ui-seq-in .45s ease ' + d + 'ms both;'];
+}
 function renderNote(m) {
 if (m.over) {
 var tgt = (m.over instanceof Array) ? m.over : [m.over];
@@ -19305,10 +19332,12 @@ width = Math.max(Math.min(laneW, 100 - left), Math.min(laneW * 1.3, 100 - left))
 left = Math.max(0, lo - laneW * 0.28);
 width = Math.min((hi - lo) + laneW * 0.56, 100 - left);
 }
-return '<div style="position:relative;z-index:1;margin:14px 0;">'
+var an1 = anim();
+return '<div' + an1[0] + ' style="' + an1[1] + 'position:relative;z-index:1;margin:14px 0;">'
 + '<div style="margin-left:' + left.toFixed(2) + '%;width:' + width.toFixed(2) + '%;background:' + surfaceC + ';border:1px solid ' + accent + '55;border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);padding:8px 12px;font-size:12px;line-height:1.45;color:' + dimC + ';text-align:center;box-sizing:border-box;">' + _markdownToHtml(m.text || '') + '</div></div>';
 }
-return '<div style="position:relative;z-index:1;margin:14px 0;padding:11px 16px;background:' + noteBg + ';border-left:3px solid ' + accent + ';border-radius:0 6px 6px 0;font-size:13px;line-height:1.5;color:' + dimC + ';">' + _markdownToHtml(m.text || '') + '</div>';
+var an2 = anim();
+return '<div' + an2[0] + ' style="' + an2[1] + 'position:relative;z-index:1;margin:14px 0;padding:11px 16px;background:' + noteBg + ';border-left:3px solid ' + accent + ';border-radius:0 6px 6px 0;font-size:13px;line-height:1.5;color:' + dimC + ';">' + _markdownToHtml(m.text || '') + '</div>';
 }
 function renderMessage(m) {
 var iFrom = idx(m.from || '');
@@ -19333,7 +19362,8 @@ var labelHtml = numHtml + '<span style="font-weight:700;color:' + textC + ';">' 
 + '<span style="color:' + accent + ';padding:0 5px;">' + dirGlyph + '</span>'
 + '<span style="font-weight:700;color:' + textC + ';">' + _esc(label(m.to || '')) + '</span>'
 + '<span style="color:' + dimC + ';">&nbsp;&nbsp;' + _esc(m.text || '') + '</span>';
-return '<div style="position:relative;z-index:1;padding:11px 0 2px;">'
+var an3 = anim();
+return '<div' + an3[0] + ' style="' + an3[1] + 'position:relative;z-index:1;padding:11px 0 2px;">'
 + '<div style="font-size:13px;line-height:1.5;">' + labelHtml + '</div>'
 + '<div style="position:relative;height:0;margin-top:11px;">'
 + '<div style="position:absolute;left:' + left.toFixed(3) + '%;width:' + width.toFixed(3) + '%;border-top:1.5px ' + lineStyle + ' ' + accent + ';top:0;">' + arrowHtml + '</div>'
@@ -19360,7 +19390,10 @@ var branches = frameBranch(m.label || '', m.messages || [], kind, true);
 return '<div style="position:relative;z-index:1;border:1px solid ' + accent + '55;border-radius:8px;padding:10px 14px 4px;margin:16px 0;">' + branches + '</div>';
 }
 var rows = renderItems(messages);
-return '<div style="background:' + bg + ';border:1px solid ' + border + ';border-radius:10px;padding:18px 22px 22px;margin:1.5rem 0;overflow-x:auto;">'
+var animCss = animate
+? '<style>@keyframes a2ui-seq-in{from{opacity:0}to{opacity:1}}@media (prefers-reduced-motion:reduce){.a2ui-seq-row{animation:none!important}}</style>'
+: '';
+return animCss + '<div style="background:' + bg + ';border:1px solid ' + border + ';border-radius:10px;padding:18px 22px 22px;margin:1.5rem 0;overflow-x:auto;">'
 + '<div style="position:relative;min-width:320px;">'
 + '<div style="display:flex;">' + header + '</div>'
 + '<div style="position:relative;padding-top:8px;">' + lifelines + rows + '</div>'

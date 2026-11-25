@@ -4209,6 +4209,28 @@ _RENDERERS['sequence_diagram'] = function(b) {
   var noteBg = (theme === 'dark' || theme === 'site') ? (accent + '1c') : (accent + '10');
   var autonumber = !!b.autonumber;
   var counter = 0;
+  // Optional CSS-only reveal (animate:true) — mirrors web_article.py: rows fade in
+  // in order, frames/actor boxes/lifelines visible from the start, opacity only.
+  var animate = b.animate === true;
+  var stepMs = b.animate_step_ms;
+  if (typeof stepMs !== 'number' || Math.floor(stepMs) !== stepMs || stepMs < 100 || stepMs > 2000) stepMs = 600;
+  var animN = 0;
+  function countItems(items) {
+    var c = 0;
+    (items || []).forEach(function(it) {
+      if (it.frame) {
+        c += countItems(it.messages);
+        (it['else'] || []).forEach(function(br) { c += countItems(br.messages); });
+      } else c++;
+    });
+    return c;
+  }
+  if (animate) stepMs = Math.min(stepMs, Math.max(1, Math.floor(20000 / Math.max(1, countItems(messages)))));
+  function anim() {
+    if (!animate) return ['', ''];
+    var d = animN * stepMs; animN++;
+    return [' class="a2ui-seq-row"', 'animation:a2ui-seq-in .45s ease ' + d + 'ms both;'];
+  }
 
   function renderNote(m) {
     if (m.over) {
@@ -4224,10 +4246,12 @@ _RENDERERS['sequence_diagram'] = function(b) {
         left = Math.max(0, lo - laneW * 0.28);
         width = Math.min((hi - lo) + laneW * 0.56, 100 - left);
       }
-      return '<div style="position:relative;z-index:1;margin:14px 0;">'
+      var an1 = anim();
+      return '<div' + an1[0] + ' style="' + an1[1] + 'position:relative;z-index:1;margin:14px 0;">'
         + '<div style="margin-left:' + left.toFixed(2) + '%;width:' + width.toFixed(2) + '%;background:' + surfaceC + ';border:1px solid ' + accent + '55;border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);padding:8px 12px;font-size:12px;line-height:1.45;color:' + dimC + ';text-align:center;box-sizing:border-box;">' + _markdownToHtml(m.text || '') + '</div></div>';
     }
-    return '<div style="position:relative;z-index:1;margin:14px 0;padding:11px 16px;background:' + noteBg + ';border-left:3px solid ' + accent + ';border-radius:0 6px 6px 0;font-size:13px;line-height:1.5;color:' + dimC + ';">' + _markdownToHtml(m.text || '') + '</div>';
+    var an2 = anim();
+    return '<div' + an2[0] + ' style="' + an2[1] + 'position:relative;z-index:1;margin:14px 0;padding:11px 16px;background:' + noteBg + ';border-left:3px solid ' + accent + ';border-radius:0 6px 6px 0;font-size:13px;line-height:1.5;color:' + dimC + ';">' + _markdownToHtml(m.text || '') + '</div>';
   }
   function renderMessage(m) {
     var iFrom = idx(m.from || '');
@@ -4252,7 +4276,8 @@ _RENDERERS['sequence_diagram'] = function(b) {
       + '<span style="color:' + accent + ';padding:0 5px;">' + dirGlyph + '</span>'
       + '<span style="font-weight:700;color:' + textC + ';">' + _esc(label(m.to || '')) + '</span>'
       + '<span style="color:' + dimC + ';">&nbsp;&nbsp;' + _esc(m.text || '') + '</span>';
-    return '<div style="position:relative;z-index:1;padding:11px 0 2px;">'
+    var an3 = anim();
+    return '<div' + an3[0] + ' style="' + an3[1] + 'position:relative;z-index:1;padding:11px 0 2px;">'
       + '<div style="font-size:13px;line-height:1.5;">' + labelHtml + '</div>'
       + '<div style="position:relative;height:0;margin-top:11px;">'
       + '<div style="position:absolute;left:' + left.toFixed(3) + '%;width:' + width.toFixed(3) + '%;border-top:1.5px ' + lineStyle + ' ' + accent + ';top:0;">' + arrowHtml + '</div>'
@@ -4280,8 +4305,11 @@ _RENDERERS['sequence_diagram'] = function(b) {
   }
 
   var rows = renderItems(messages);
+  var animCss = animate
+    ? '<style>@keyframes a2ui-seq-in{from{opacity:0}to{opacity:1}}@media (prefers-reduced-motion:reduce){.a2ui-seq-row{animation:none!important}}</style>'
+    : '';
 
-  return '<div style="background:' + bg + ';border:1px solid ' + border + ';border-radius:10px;padding:18px 22px 22px;margin:1.5rem 0;overflow-x:auto;">'
+  return animCss + '<div style="background:' + bg + ';border:1px solid ' + border + ';border-radius:10px;padding:18px 22px 22px;margin:1.5rem 0;overflow-x:auto;">'
     + '<div style="position:relative;min-width:320px;">'
     + '<div style="display:flex;">' + header + '</div>'
     + '<div style="position:relative;padding-top:8px;">' + lifelines + rows + '</div>'

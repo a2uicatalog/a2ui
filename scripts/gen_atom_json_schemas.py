@@ -128,6 +128,19 @@ def _obj(props: dict, required: list) -> dict:
 
 
 FIELD_OVERRIDES = {
+    "sequence_diagram": {
+        "animate": {"type": "boolean"},
+        "animate_step_ms": _num(100, 2000, integer=True),
+        # Messages, notes and nested frames (alt/opt/loop/par/group, optional else branches); the prose-derived
+        # schema rejected frames outright. Nested items stay loosely typed (renderers tolerate omissions).
+        "messages": {"type": "array", "items": {"type": "object", "properties": {
+            "from": {"type": "string"}, "to": {"type": "string"}, "text": {"type": "string"},
+            "kind": {"type": "string", "enum": ["call", "return"]}, "reply": {"type": "boolean"}, "dashed": {"type": "boolean"},
+            "note": {"type": "boolean"}, "over": {"anyOf": [{"type": "string"}, {"type": "array", "items": {"type": "string"}}]},
+            "frame": {"type": "string", "enum": ["alt", "opt", "loop", "par", "group"]}, "label": {"type": "string"},
+            "messages": {"type": "array", "items": {"type": "object"}},
+            "else": {"type": "array", "items": {"type": "object"}}}}},
+    },
     "motion_arch": {
         "nodes": {"type": "array", "maxItems": 12, "items": _obj({
             "id": {"type": "string", "pattern": "^[a-z][a-z0-9_-]{0,31}$"},

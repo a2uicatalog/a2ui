@@ -1,0 +1,45 @@
+[
+ {
+  "type": "sequence_diagram",
+  "animate": true,
+  "actors": [
+   {
+    "id": "c",
+    "label": "Client"
+   },
+   {
+    "id": "s",
+    "label": "Server"
+   }
+  ],
+  "messages": [
+   {
+    "from": "c",
+    "to": "s",
+    "text": "Open stream"
+   },
+   {
+    "frame": "loop",
+    "label": "every 5 seconds",
+    "messages": [
+     {
+      "from": "c",
+      "to": "s",
+      "text": "Ping"
+     },
+     {
+      "from": "s",
+      "to": "c",
+      "text": "Pong",
+      "kind": "return"
+     }
+    ]
+   },
+   {
+    "from": "c",
+    "to": "s",
+    "text": "Close stream"
+   }
+  ]
+ }
+]

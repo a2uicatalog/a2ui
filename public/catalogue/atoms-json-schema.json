@@ -59953,6 +59953,14 @@
           "autonumber": {
             "type": "boolean"
           },
+          "animate": {
+            "type": "boolean"
+          },
+          "animate_step_ms": {
+            "type": "integer",
+            "minimum": 100,
+            "maximum": 2000
+          },
           "actors": {
             "type": "array",
             "items": {
@@ -59987,15 +59995,60 @@
                   "type": "string"
                 },
                 "kind": {
+                  "type": "string",
+                  "enum": [
+                    "call",
+                    "return"
+                  ]
+                },
+                "reply": {
+                  "type": "boolean"
+                },
+                "dashed": {
+                  "type": "boolean"
+                },
+                "note": {
+                  "type": "boolean"
+                },
+                "over": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  ]
+                },
+                "frame": {
+                  "type": "string",
+                  "enum": [
+                    "alt",
+                    "opt",
+                    "loop",
+                    "par",
+                    "group"
+                  ]
+                },
+                "label": {
                   "type": "string"
+                },
+                "messages": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                },
+                "else": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
                 }
-              },
-              "additionalProperties": false,
-              "required": [
-                "from",
-                "to",
-                "text"
-              ]
+              }
             }
           },
           "enter": {

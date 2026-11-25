@@ -24592,7 +24592,39 @@ def _render_sequence_diagram(b: dict) -> str:
 
     note_bg = f'{_cv_esc(accent)}10' if theme in (None, 'light') else f'{_cv_esc(accent)}1c'
     autonumber = bool(b.get('autonumber'))
-    counter = [0]  # mutable so nested frames share the running count
+    counter = [0]
+    # Optional CSS-only reveal (animate:true): each message/note fades in
+    # in order via a per-row animation-delay; frames, actor boxes and
+    # lifelines are visible from the start. Opacity only, so nothing moves
+    # and the content is in the DOM / accessible name from the first frame.
+    animate = b.get('animate') is True
+    step_ms = b.get('animate_step_ms')
+    if isinstance(step_ms, bool) or not isinstance(step_ms, int) or not 100 <= step_ms <= 2000:
+        step_ms = 600
+    anim_n = [0]
+
+    def _count(items):
+        c = 0
+        for it in items:
+            if it.get('frame'):
+                c += _count(it.get('messages', []))
+                for br in (it.get('else') or []):
+                    c += _count(br.get('messages', []))
+            else:
+                c += 1
+        return c
+
+    if animate:
+        # Total reveal is bounded: the step shrinks so the last row starts by 20 s.
+        step_ms = min(step_ms, max(1, 20000 // max(1, _count(messages))))
+
+    def _anim():
+        """(class attr, style prefix) for the next revealable row."""
+        if not animate:
+            return '', ''
+        d = anim_n[0] * step_ms
+        anim_n[0] += 1
+        return ' class="a2ui-seq-row"', f'animation:a2ui-seq-in .45s ease {d}ms both;'
 
     def _render_note(m):
         over = m.get('over')
@@ -24611,15 +24643,17 @@ def _render_sequence_diagram(b: dict) -> str:
             else:
                 left = max(0.0, lo - lane_w * 0.28)
                 width = min((hi - lo) + lane_w * 0.56, 100.0 - left)
+            _c, _s = _anim()
             return (
-                f'<div style="position:relative;z-index:1;margin:14px 0;">'
+                f'<div{_c} style="{_s}position:relative;z-index:1;margin:14px 0;">'
                 f'<div style="margin-left:{left:.2f}%;width:{width:.2f}%;background:{surface_c};'
                 f'border:1px solid {accent}55;border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);padding:8px 12px;'
                 f'font-size:12px;line-height:1.45;color:{dim_c};text-align:center;'
                 f'box-sizing:border-box;">{_md_inline(m.get("text",""))}</div></div>'
             )
+        _c, _s = _anim()
         return (
-            f'<div style="position:relative;z-index:1;margin:14px 0;padding:11px 16px;background:{note_bg};'
+            f'<div{_c} style="{_s}position:relative;z-index:1;margin:14px 0;padding:11px 16px;background:{note_bg};'
             f'border-left:3px solid {accent};border-radius:0 6px 6px 0;'
             f'font-size:13px;line-height:1.5;color:{dim_c};">{_md_inline(m.get("text",""))}</div>'
         )
@@ -24661,8 +24695,9 @@ def _render_sequence_diagram(b: dict) -> str:
             f'<span style="font-weight:700;color:{text_c};">{_esc(_label(m.get("to","")))}</span>'
             f'<span style="color:{dim_c};">&nbsp;&nbsp;{_esc(m.get("text",""))}</span>'
         )
+        _c, _s = _anim()
         return (
-            f'<div style="position:relative;z-index:1;padding:11px 0 2px;">'
+            f'<div{_c} style="{_s}position:relative;z-index:1;padding:11px 0 2px;">'
             f'<div style="font-size:13px;line-height:1.5;">{label}</div>'
             f'<div style="position:relative;height:0;margin-top:11px;">'
             f'<div style="position:absolute;left:{left:.3f}%;width:{width:.3f}%;border-top:1.5px {line_style} {accent};top:0;">{arrow_html}</div>'
@@ -24715,9 +24750,13 @@ def _render_sequence_diagram(b: dict) -> str:
         )
 
     rows = _render_items(messages)
+    anim_css = ''
+    if animate:
+        anim_css = ('<style>@keyframes a2ui-seq-in{from{opacity:0}to{opacity:1}}'
+                    '@media (prefers-reduced-motion:reduce){.a2ui-seq-row{animation:none!important}}</style>')
 
     return (
-        f'<div style="background:{bg};border:1px solid {border};border-radius:10px;'
+        f'{anim_css}<div style="background:{bg};border:1px solid {border};border-radius:10px;'
         f'padding:18px 22px 22px;margin:1.5rem 0;overflow-x:auto;">'
         f'<div style="position:relative;min-width:320px;">'
         f'<div style="display:flex;">{header}</div>'
