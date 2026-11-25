@@ -187,3 +187,10 @@ def test_latest_post_slot_with_and_without_a_data_file():
         f.write_text(json.dumps({"title": "T", "slug": "../x", "date": "20 Nov"}))
         with pytest.raises(SystemExit):
             gap._home_latest_pill(f)
+
+
+def test_home_has_ora_brand_terms_and_json_ld_below_main():
+    # Ora (2026-11-18 scan): brand search needs JSON-LD keywords/knowsAbout or a meta keywords tag, and it counts the
+    # JSON-LD text as text before the main content (limit 5,000 characters), so the block sits after </main>.
+    assert 'name="keywords"' in HOME and '"knowsAbout"' in HOME and '"keywords"' in HOME
+    assert HOME.index("application/ld+json") > HOME.index("</main>")

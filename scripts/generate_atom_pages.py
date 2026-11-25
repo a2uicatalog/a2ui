@@ -3479,138 +3479,11 @@ def generate_index(atoms):
   <meta property="og:image" content="https://a2uicatalog.ai/brand/og-card.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
+  <meta name="keywords" content="A2UI catalog, A2UI components, generative UI, agent UI components, MCP Apps, server-driven UI, A2UI renderer">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="A2UI Catalog — The A2UI Atomic Catalog">
   <meta name="twitter:description" content="{atom_count_rounded} typed UI atoms an AI agent composes into real interfaces.">
   <meta name="twitter:image" content="https://a2uicatalog.ai/brand/og-card.png">
-  <script type="application/ld+json">
-  {{
-    "@context": "https://schema.org",
-    "@graph": [
-      {{
-        "@type": "SoftwareApplication",
-        "@id": "https://a2uicatalog.ai/#software",
-        "name": "A2UI Catalog",
-        "alternateName": ["A2UI Atomic Catalog", "a2uicatalog", "A2UI Catalogue", "Catalogue A2UI"],
-        "url": "https://a2uicatalog.ai",
-        "description": "{atom_count_rounded} typed UI atoms for web, Google Meet, Apps Script, MCP Apps, and Chat. ARD-compliant catalog.",
-        "applicationCategory": "DeveloperApplication",
-        "operatingSystem": "Any",
-        "license": "https://opensource.org/licenses/MIT",
-        "image": "https://a2uicatalog.ai/brand/og-card.png",
-        "sameAs": ["https://github.com/a2uicatalog/a2ui"],
-        "author": {{ "@id": "https://a2uicatalog.ai/#person" }},
-        "publisher": {{ "@id": "https://a2uicatalog.ai/#org" }},
-        "offers": {{ "@type": "Offer", "price": "0", "priceCurrency": "USD" }}
-      }},
-      {{
-        "@type": "Organization",
-        "@id": "https://a2uicatalog.ai/#org",
-        "name": "A2UI Atomic Catalog",
-        "url": "https://a2uicatalog.ai",
-        "logo": "https://a2uicatalog.ai/brand/og-card.png",
-        "description": "Independent, unofficial open-source catalog of typed UI atoms for AI agents.",
-        "address": {{ "@type": "PostalAddress", "addressCountry": "FR" }},
-        "sameAs": [
-          "https://github.com/a2uicatalog/a2ui",
-          "https://www.linkedin.com/in/curtiskrygier"
-        ],
-        "contactPoint": {{ "@type": "ContactPoint", "contactType": "technical support",
-          "url": "https://a2uicatalog.ai/contact/" }},
-        "founder": {{ "@id": "https://a2uicatalog.ai/#person" }}
-      }},
-      {{
-        "@type": "Person",
-        "@id": "https://a2uicatalog.ai/#person",
-        "name": "Curtis Krygier",
-        "url": "https://www.linkedin.com/in/curtiskrygier",
-        "sameAs": [
-          "https://www.linkedin.com/in/curtiskrygier",
-          "https://github.com/a2uicatalog"
-        ]
-      }},
-      {{
-        "@type": "WebSite",
-        "@id": "https://a2uicatalog.ai/#website",
-        "url": "https://a2uicatalog.ai/",
-        "name": "A2UI Atomic Catalog",
-        "alternateName": ["A2UI Catalog", "a2uicatalog"],
-        "publisher": {{ "@id": "https://a2uicatalog.ai/#org" }},
-        "inLanguage": "en",
-        "potentialAction": {{
-          "@type": "SearchAction",
-          "target": {{ "@type": "EntryPoint", "urlTemplate": "https://a2uicatalog.ai/?q={{search_term_string}}" }},
-          "query-input": "required name=search_term_string"
-        }}
-      }},
-      {{
-        "@type": "WebPage",
-        "@id": "https://a2uicatalog.ai/#webpage",
-        "url": "https://a2uicatalog.ai/",
-        "name": "A2UI Atomic Catalog",
-        "isPartOf": {{ "@id": "https://a2uicatalog.ai/#website" }},
-        "speakable": {{
-          "@type": "SpeakableSpecification",
-          "cssSelector": [".tagline", ".sub"]
-        }}
-      }},
-      {{
-        "@type": "ItemList",
-        "@id": "https://a2uicatalog.ai/#atom-catalog",
-        "name": "A2UI atom vocabulary",
-        "description": "The full set of typed UI atoms an agent composes into rendered interfaces.",
-        "numberOfItems": {len(atoms)},
-        "itemListOrder": "https://schema.org/ItemListUnordered"
-      }},
-      {{
-        "@type": "Service",
-        "@id": "https://a2uicatalog.ai/#mcp-service",
-        "name": "A2UI Atomic Catalog MCP Server",
-        "serviceType": "Model Context Protocol server",
-        "provider": {{ "@id": "https://a2uicatalog.ai/#org" }},
-        "url": "https://a2uicatalog.ai/mcp",
-        "description": "Free MCP server exposing the A2UI atom vocabulary and rendering tools to AI agents — no signup, no API key required.",
-        "offers": {{ "@type": "Offer", "price": "0", "priceCurrency": "USD" }}
-      }},
-      {{
-        "@type": "FAQPage",
-        "@id": "https://a2uicatalog.ai/#faq",
-        "mainEntity": [
-          {{
-            "@type": "Question",
-            "name": "Is the A2UI Atomic Catalog free to use?",
-            "acceptedAnswer": {{ "@type": "Answer",
-              "text": "Yes. The MCP server, REST endpoints and catalogue documents are free with no signup, no API key and no card — see https://a2uicatalog.ai/pricing.md for the exact per-endpoint rate limits." }}
-          }},
-          {{
-            "@type": "Question",
-            "name": "Do I need an API key or OAuth to connect?",
-            "acceptedAnswer": {{ "@type": "Answer",
-              "text": "No. The primary MCP server at https://a2uicatalog.ai/mcp is public and unauthenticated — connect and call the tools directly. An optional OAuth/API-key/Basic-Auth path exists only for enterprise platforms whose connector model requires a credential; see https://a2uicatalog.ai/auth.md." }}
-          }},
-          {{
-            "@type": "Question",
-            "name": "Is there a sandbox or test environment?",
-            "acceptedAnswer": {{ "@type": "Answer",
-              "text": "Yes. The sandbox server https://a2uicatalog.ai/api/sandbox runs the render routes (POST /api/sandbox/api/render, /batch, /jobs) on their own daily allowance, so tests never spend the production one. Production is also safe to test against: the REST endpoints hold no production data and are side-effect free, and the playground at https://play.a2uicatalog.ai lets you try payloads by hand. See https://a2uicatalog.ai/docs/#sandbox." }}
-          }},
-          {{
-            "@type": "Question",
-            "name": "Is there a paid tier or enterprise plan?",
-            "acceptedAnswer": {{ "@type": "Answer",
-              "text": "No. The vocabulary is MIT licensed and the renderers are in the public repository, so anything you hit a rate limit on, you can self-host and run without limits instead of upgrading." }}
-          }},
-          {{
-            "@type": "Question",
-            "name": "Can I self-host the renderer?",
-            "acceptedAnswer": {{ "@type": "Answer",
-              "text": "Yes — deploy your own Google Apps Script renderer in four commands (git clone, clasp login, clasp create, clasp push && clasp deploy), at no cost beyond a Google account, for unlimited unmetered rendering." }}
-          }}
-        ]
-      }}
-    ]
-  }}
-  </script>
   {SITE_HEAD_JS}
   <style>{SITE_BASE_CSS}{HOME_CSS}</style>
 </head>
@@ -3743,6 +3616,137 @@ def generate_index(atoms):
   {_home_footer_html()}
   {SITE_FOOT_JS}
 {_cursor_glow_html()}
+<script type="application/ld+json">
+  {{
+    "@context": "https://schema.org",
+    "@graph": [
+      {{
+        "@type": "SoftwareApplication",
+        "@id": "https://a2uicatalog.ai/#software",
+        "name": "A2UI Catalog",
+        "alternateName": ["A2UI Atomic Catalog", "a2uicatalog", "A2UI Catalogue", "Catalogue A2UI"],
+        "url": "https://a2uicatalog.ai",
+        "description": "{atom_count_rounded} typed UI atoms for web, Google Meet, Apps Script, MCP Apps, and Chat. ARD-compliant catalog.",
+        "keywords": ["A2UI catalog", "A2UI components", "generative UI", "agent UI components", "MCP Apps", "server-driven UI", "A2UI renderer"],
+        "knowsAbout": ["A2UI", "generative UI", "agent-to-UI protocols", "MCP Apps", "typed UI components", "Model Context Protocol"],
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Any",
+        "license": "https://opensource.org/licenses/MIT",
+        "image": "https://a2uicatalog.ai/brand/og-card.png",
+        "sameAs": ["https://github.com/a2uicatalog/a2ui"],
+        "author": {{ "@id": "https://a2uicatalog.ai/#person" }},
+        "publisher": {{ "@id": "https://a2uicatalog.ai/#org" }},
+        "offers": {{ "@type": "Offer", "price": "0", "priceCurrency": "USD" }}
+      }},
+      {{
+        "@type": "Organization",
+        "@id": "https://a2uicatalog.ai/#org",
+        "name": "A2UI Atomic Catalog",
+        "url": "https://a2uicatalog.ai",
+        "logo": "https://a2uicatalog.ai/brand/og-card.png",
+        "description": "Independent, unofficial open-source catalog of typed UI atoms for AI agents.",
+        "knowsAbout": ["A2UI", "generative UI", "agent-to-UI protocols", "MCP Apps", "typed UI components"],
+        "address": {{ "@type": "PostalAddress", "addressCountry": "FR" }},
+        "sameAs": [
+          "https://github.com/a2uicatalog/a2ui",
+          "https://www.linkedin.com/in/curtiskrygier"
+        ],
+        "contactPoint": {{ "@type": "ContactPoint", "contactType": "technical support",
+          "url": "https://a2uicatalog.ai/contact/" }},
+        "founder": {{ "@id": "https://a2uicatalog.ai/#person" }}
+      }},
+      {{
+        "@type": "Person",
+        "@id": "https://a2uicatalog.ai/#person",
+        "name": "Curtis Krygier",
+        "url": "https://www.linkedin.com/in/curtiskrygier",
+        "sameAs": [
+          "https://www.linkedin.com/in/curtiskrygier",
+          "https://github.com/a2uicatalog"
+        ]
+      }},
+      {{
+        "@type": "WebSite",
+        "@id": "https://a2uicatalog.ai/#website",
+        "url": "https://a2uicatalog.ai/",
+        "name": "A2UI Atomic Catalog",
+        "alternateName": ["A2UI Catalog", "a2uicatalog"],
+        "publisher": {{ "@id": "https://a2uicatalog.ai/#org" }},
+        "inLanguage": "en",
+        "potentialAction": {{
+          "@type": "SearchAction",
+          "target": {{ "@type": "EntryPoint", "urlTemplate": "https://a2uicatalog.ai/?q={{search_term_string}}" }},
+          "query-input": "required name=search_term_string"
+        }}
+      }},
+      {{
+        "@type": "WebPage",
+        "@id": "https://a2uicatalog.ai/#webpage",
+        "url": "https://a2uicatalog.ai/",
+        "name": "A2UI Atomic Catalog",
+        "isPartOf": {{ "@id": "https://a2uicatalog.ai/#website" }},
+        "speakable": {{
+          "@type": "SpeakableSpecification",
+          "cssSelector": [".tagline", ".sub"]
+        }}
+      }},
+      {{
+        "@type": "ItemList",
+        "@id": "https://a2uicatalog.ai/#atom-catalog",
+        "name": "A2UI atom vocabulary",
+        "description": "The full set of typed UI atoms an agent composes into rendered interfaces.",
+        "numberOfItems": {len(atoms)},
+        "itemListOrder": "https://schema.org/ItemListUnordered"
+      }},
+      {{
+        "@type": "Service",
+        "@id": "https://a2uicatalog.ai/#mcp-service",
+        "name": "A2UI Atomic Catalog MCP Server",
+        "serviceType": "Model Context Protocol server",
+        "provider": {{ "@id": "https://a2uicatalog.ai/#org" }},
+        "url": "https://a2uicatalog.ai/mcp",
+        "description": "Free MCP server exposing the A2UI atom vocabulary and rendering tools to AI agents — no signup, no API key required.",
+        "offers": {{ "@type": "Offer", "price": "0", "priceCurrency": "USD" }}
+      }},
+      {{
+        "@type": "FAQPage",
+        "@id": "https://a2uicatalog.ai/#faq",
+        "mainEntity": [
+          {{
+            "@type": "Question",
+            "name": "Is the A2UI Atomic Catalog free to use?",
+            "acceptedAnswer": {{ "@type": "Answer",
+              "text": "Yes. The MCP server, REST endpoints and catalogue documents are free with no signup, no API key and no card — see https://a2uicatalog.ai/pricing.md for the exact per-endpoint rate limits." }}
+          }},
+          {{
+            "@type": "Question",
+            "name": "Do I need an API key or OAuth to connect?",
+            "acceptedAnswer": {{ "@type": "Answer",
+              "text": "No. The primary MCP server at https://a2uicatalog.ai/mcp is public and unauthenticated — connect and call the tools directly. An optional OAuth/API-key/Basic-Auth path exists only for enterprise platforms whose connector model requires a credential; see https://a2uicatalog.ai/auth.md." }}
+          }},
+          {{
+            "@type": "Question",
+            "name": "Is there a sandbox or test environment?",
+            "acceptedAnswer": {{ "@type": "Answer",
+              "text": "Yes. The sandbox server https://a2uicatalog.ai/api/sandbox runs the render routes (POST /api/sandbox/api/render, /batch, /jobs) on their own daily allowance, so tests never spend the production one. Production is also safe to test against: the REST endpoints hold no production data and are side-effect free, and the playground at https://play.a2uicatalog.ai lets you try payloads by hand. See https://a2uicatalog.ai/docs/#sandbox." }}
+          }},
+          {{
+            "@type": "Question",
+            "name": "Is there a paid tier or enterprise plan?",
+            "acceptedAnswer": {{ "@type": "Answer",
+              "text": "No. The vocabulary is MIT licensed and the renderers are in the public repository, so anything you hit a rate limit on, you can self-host and run without limits instead of upgrading." }}
+          }},
+          {{
+            "@type": "Question",
+            "name": "Can I self-host the renderer?",
+            "acceptedAnswer": {{ "@type": "Answer",
+              "text": "Yes — deploy your own Google Apps Script renderer in four commands (git clone, clasp login, clasp create, clasp push && clasp deploy), at no cost beyond a Google account, for unlimited unmetered rendering." }}
+          }}
+        ]
+      }}
+    ]
+  }}
+  </script>
 </body>
 </html>"""
 
