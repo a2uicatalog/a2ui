@@ -8,19 +8,35 @@ from pathlib import Path
 PUBLIC = Path(__file__).resolve().parent.parent / "public"
 TOOLS = ("search_atoms", "get_atom", "create_share_link", "delete_share_link")
 READ_ONLY = 2
+READ_TOOLS = list(TOOLS[:READ_ONLY])
+GUARD = "if(['/try/','/try'].indexOf(location.pathname)>=0){"
 
 
 def _registrations(html: str):
     return re.findall(r"registerTool\(\{\s*name: '([a-z_]+)'", html)
 
 
-def test_homepage_registers_literal_tools_with_honest_hints():
+def test_homepage_registers_only_the_read_tools_with_honest_hints():
+    """Owner decision 2026-11-25 (review item B3): the two write tools exist on /try/ only."""
     html = (PUBLIC / "index.html").read_text()
-    assert _registrations(html) == list(TOOLS)
+    assert _registrations(html) == list(TOOLS)   # all four are written out literally; the guard decides at run time
     assert html.count("annotations: {readOnlyHint: true}") == READ_ONLY
     assert html.count("consequentialHint: true") == len(TOOLS) - READ_ONLY
     assert html.count("inputSchema: {") == len(TOOLS)
     assert "form[toolname]" not in html
+
+
+def test_write_tools_sit_inside_an_exact_try_path_guard():
+    for rel in ("index.html", "atoms/gallery/index.html", "try/index.html", "frugal-ai-ops/index.html"):
+        html = (PUBLIC / rel).read_text()
+        assert html.count(GUARD) == 1, rel
+        guard = html.index(GUARD)
+        end = html.index("})();", guard)
+        assert html.index("registerTool({\n      name: 'get_atom'") < guard
+        assert html.index("name: 'search_atoms'") < guard
+        for write in ("function callMcp", "name: 'create_share_link'", "name: 'delete_share_link'"):
+            assert guard < html.index(write) < end, (rel, write)
+        assert "startsWith" not in html[guard - 5:guard + 80] and "indexOf(location.pathname)>=0" in GUARD
 
 
 def test_document_model_context_comes_before_the_navigator_alias():
@@ -33,6 +49,7 @@ def test_form_loop_only_on_pages_with_toolname_forms():
         html = (PUBLIC / page / "index.html").read_text()
         assert "form[toolname]" in html
         assert _registrations(html) == list(TOOLS)
+        assert html.count(GUARD) == 1
     atom = (PUBLIC / "atoms" / "gallery" / "index.html").read_text()
     assert "form[toolname]" not in atom
     assert _registrations(atom) == list(TOOLS)
@@ -109,7 +126,7 @@ def test_demo_gallery_trip_form_is_a_declarative_tool_that_answers_honestly():
         for field in ("dest", "origin", "from", "to"):
             assert re.search(r'<input[^>]*name="%s"[^>]*toolparamdescription=' % field, html), (name, field)
         assert "e.agentInvoked" in html and "e.respondWith(" in html
-        assert html.count("agentReply({") == 7, "every exit answers the agent: success, busy or unavailable, unreachable, error, choose, bad input, timeout"
+        assert html.count("agentReply({") == 6 and html.count("agentReply(okReply(p,x.j))") == 1, "every exit answers the agent: success (built by okReply, with the surface and recipe), busy or unavailable, unreachable, error, choose, bad input, timeout"
         assert html.count("recorded:true,reason:") == 2 and "It is not a live result." in html   # busy-or-unavailable (one call) and unreachable
         # the page's own animation helper is settle(msg,cb); a second function of that name would silently replace it
         assert html.count("function settle(") == 1 and "function agentReply(" in html
