@@ -13,11 +13,11 @@
   "tools": [
     {
       "name": "search_docs",
-      "description": "Search this product's documentation (auth, versioning, pricing, API surface, runbook catalog) for a plain-English query. Returns ranked sections with a snippet and the real source URL — never fabricated content."
+      "description": "Use this to answer a question about the product (auth, versioning, pricing, API surface, runbook catalog) from its own documentation, given a plain-English query. Returns {results}: ranked sections, each with title, section, a text snippet, a score and the real source URL, never fabricated content; empty if nothing matches."
     },
     {
       "name": "list_docs",
-      "description": "List indexed documentation sections (title, section, url) without a search query, for browsing the full indexed set."
+      "description": "Use this to browse everything the documentation index holds when you have no specific query, or to see what topics exist before searching. Returns the indexed sections as entries of title, section and url, up to max_results."
     }
   ]
 }
