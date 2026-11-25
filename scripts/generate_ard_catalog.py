@@ -100,9 +100,8 @@ def main(argv=None):
     entries = []
 
     # Publisher identity, reused as both the host-level and the renderer
-    # entry's Trust Manifest `identity` (per ai-catalog.io's own example:
-    # trustManifest.identity is normally the SAME URI as the entry it's
-    # attached to). GitHub-org attestation only -- no signature (that needs
+    # entry's Trust Manifest `identity`. It is a did:web URI on our own domain: Ora's ard-trust-manifest check
+    # accepts only did:web, https or spiffe identities (the urn:air entry id failed it, 2026-11-18 scan). GitHub-org attestation only -- no signature (that needs
     # real JWS key management, a separate follow-on) -- so this sits at the
     # "publisher identity + provenance" trust layer, not the top "signed"
     # one. Scoped to the host object and the one renderer entry that
@@ -141,8 +140,8 @@ def main(argv=None):
             "create multi-surface UI from a single atom schema",
         ],
         "trustManifest": {
-            "identity": f"urn:air:{domain}:renderer:a2ui",
-            "identityType": "dns",
+            "identity": f"did:web:{domain}",
+            "identityType": "did",
             "attestations": [publisher_attestation],
             "provenance": publisher_provenance,
             "privacyPolicyUrl": f"{base}/privacy/",

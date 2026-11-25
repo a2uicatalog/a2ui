@@ -46,8 +46,8 @@
         "create multi-surface UI from a single atom schema"
       ],
       "trustManifest": {
-        "identity": "urn:air:a2uicatalog.ai:renderer:a2ui",
-        "identityType": "dns",
+        "identity": "did:web:a2uicatalog.ai",
+        "identityType": "did",
         "attestations": [
           {
             "type": "publisher-identity",
