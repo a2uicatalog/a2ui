@@ -2482,6 +2482,8 @@ document.addEventListener('click',function(e){
       }
     });
   }catch(err){/* draft API shape may still be moving -- never break the page over it */}
+  // The two write tools are registered on /try/ only (exact path), never on other pages.
+  if(['/try/','/try'].indexOf(location.pathname)>=0){
   // The two write tools call the site's own MCP server (same-origin /mcp),
   // so they can only do what an agent connected to that server can already
   // do. consequentialHint asks the agent to confirm with the person first.
@@ -2551,6 +2553,7 @@ document.addEventListener('click',function(e){
       }
     });
   }catch(err){/* draft API shape may still be moving -- never break the page over it */}
+  }
 })();
 </script>
   <script>

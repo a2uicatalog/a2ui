@@ -250,6 +250,8 @@ document.addEventListener('keydown',function(e){
       }
     });
   }catch(err){/* draft API shape may still be moving -- never break the page over it */}
+  // The two write tools are registered on /try/ only (exact path), never on other pages.
+  if(['/try/','/try'].indexOf(location.pathname)>=0){
   // The two write tools call the site's own MCP server (same-origin /mcp),
   // so they can only do what an agent connected to that server can already
   // do. consequentialHint asks the agent to confirm with the person first.
@@ -319,5 +321,6 @@ document.addEventListener('keydown',function(e){
       }
     });
   }catch(err){/* draft API shape may still be moving -- never break the page over it */}
+  }
 })();
 </script><script>(function(){function m(){var x=document.getElementById('main-content');if(x)document.documentElement.style.setProperty('--chrome-h',Math.round(x.getBoundingClientRect().top+window.scrollY)+'px')}m();addEventListener('resize',m);addEventListener('load',m)})()</script><script>(function(){var d=document,r=d.documentElement,h=d.querySelector('.site-header'),g=d.querySelector('.guide-nav');function s(){if(h)r.style.setProperty('--site-header-h',h.offsetHeight+'px');if(g)r.style.setProperty('--guide-nav-h',(g.closest('.gnav-lock')||g).offsetHeight+'px')}s();addEventListener('resize',s);addEventListener('load',s);if(window.ResizeObserver){var o=new ResizeObserver(s);if(h)o.observe(h);if(g)o.observe(g.closest('.gnav-lock')||g)}var c=d.querySelector('.guide-nav a[aria-current]'),u=c&&c.closest('ul');if(u)u.scrollLeft=Math.max(0,c.offsetLeft-u.clientWidth/3)})();</script></body></html>
