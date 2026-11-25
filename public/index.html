@@ -76,8 +76,9 @@ label:has(input[type=radio]:focus-visible),label:has(input[type=checkbox]:focus-
 .site-header{position:sticky;top:0;z-index:100;background:var(--header-glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
 .hdr-in{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:10px;padding:11px 24px}
 .wordmark{display:flex;align-items:center;gap:9px;font-size:15px;font-weight:800;letter-spacing:-.2px;color:var(--text);text-decoration:none;white-space:nowrap}
-.logo-atom{width:var(--logo-size,32px);height:var(--logo-size,32px);flex-shrink:0}
-@media(max-width:860px){:root{--logo-size:26px}}
+:root{--logo-size:32px}
+.logo-atom{width:var(--logo-size);height:var(--logo-size);flex-shrink:0}
+@media(min-width:861px){.wordmark{font-size:clamp(15px,calc(var(--logo-size) * .42 + 3px),21px)}.brand-text{line-height:1.15}}
 .logo-atom .nuc{fill:var(--accent)}
 .logo-atom .o1{stroke:var(--accent);fill:none;stroke-width:1.5}
 .logo-atom .o2{stroke:oklch(70% 0.14 202);fill:none;stroke-width:1.5}
@@ -330,7 +331,7 @@ footer.site-foot{margin-top:0;padding:2rem 0 2.5rem;background:var(--surface);bo
 .brand-sub{font-size:12px;font-weight:500;letter-spacing:0;color:var(--text-muted);line-height:1.25}
 .has-lockup .brand-name{white-space:nowrap}
 @media(max-width:860px){.has-lockup .brand-sub{max-width:23ch}}
-@media(max-width:440px){.hdr-in{position:relative;padding-bottom:26px}.has-lockup .brand-sub{position:absolute;left:16px;bottom:10px;max-width:none;white-space:nowrap}}
+@media(max-width:440px){.hdr-in{position:relative;padding-bottom:26px}.has-lockup .brand-sub{position:absolute;left:calc(16px + var(--logo-size) + 9px);bottom:10px;max-width:none;white-space:nowrap;font-size:11.5px}.has-lockup .logo-atom{transform:translateY(13px)}}
 </style><header class="site-header"><div class="hdr-in">
     <a class="wordmark has-lockup" href="/" aria-label="A2UI Catalog home"><svg class="logo-atom" viewBox="0 0 24 24" aria-hidden="true"><ellipse class="o1" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(-32 12 12)"/><ellipse class="o2" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(32 12 12)"/><ellipse class="o3" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(90 12 12)"/><circle class="nuc" cx="12" cy="12" r="2.7"/><circle class="el" cx="3.21" cy="15.98" r="1.25"/></svg><span class="brand-text"><span class="brand-name"><span class="grad">A2UI</span> Catalog</span><span class="brand-sub">Where user and agent experience converge</span></span></a>
     <nav class="site-nav" id="site-menu" aria-label="Main">

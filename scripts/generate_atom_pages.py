@@ -615,8 +615,9 @@ label:has(input[type=radio]:focus-visible),label:has(input[type=checkbox]:focus-
 .site-header{position:sticky;top:0;z-index:100;background:var(--header-glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
 .hdr-in{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:10px;padding:11px 24px}
 .wordmark{display:flex;align-items:center;gap:9px;font-size:15px;font-weight:800;letter-spacing:-.2px;color:var(--text);text-decoration:none;white-space:nowrap}
-.logo-atom{width:var(--logo-size,32px);height:var(--logo-size,32px);flex-shrink:0}
-@media(max-width:860px){:root{--logo-size:26px}}
+:root{--logo-size:32px}
+.logo-atom{width:var(--logo-size);height:var(--logo-size);flex-shrink:0}
+@media(min-width:861px){.wordmark{font-size:clamp(15px,calc(var(--logo-size) * .42 + 3px),21px)}.brand-text{line-height:1.15}}
 .logo-atom .nuc{fill:var(--accent)}
 .logo-atom .o1{stroke:var(--accent);fill:none;stroke-width:1.5}
 .logo-atom .o2{stroke:oklch(70% 0.14 202);fill:none;stroke-width:1.5}
@@ -961,7 +962,7 @@ LOCKUP_CSS_RULES = """.wordmark.has-lockup{white-space:normal;min-width:0}
 .brand-sub{font-size:12px;font-weight:500;letter-spacing:0;color:var(--text-muted);line-height:1.25}
 .has-lockup .brand-name{white-space:nowrap}
 @media(max-width:860px){.has-lockup .brand-sub{max-width:23ch}}
-@media(max-width:440px){.hdr-in{position:relative;padding-bottom:26px}.has-lockup .brand-sub{position:absolute;left:16px;bottom:10px;max-width:none;white-space:nowrap}}
+@media(max-width:440px){.hdr-in{position:relative;padding-bottom:26px}.has-lockup .brand-sub{position:absolute;left:calc(16px + var(--logo-size) + 9px);bottom:10px;max-width:none;white-space:nowrap;font-size:11.5px}.has-lockup .logo-atom{transform:translateY(13px)}}
 """
 
 
