@@ -76,3 +76,12 @@ def test_sequence_diagram_follows_dark_host_page_when_block_has_no_theme():
     i = src.index("_RENDERERS['sequence_diagram']")
     assert "if (!theme && typeof document !== 'undefined'" in src[i:i + 1500]
     assert "theme = 'site'" in src[i:i + 1500]
+
+
+def test_first_theme_apply_has_no_transition_and_runs_at_init_ack():
+    prelude = bundle.PRELUDE
+    assert "a2ui-theme-first" in prelude and "_a2uiThemeApplied" in prelude
+    page = bundle.build_bundle()
+    assert "html.a2ui-theme-first, html.a2ui-theme-first body { transition: none !important; }" in page
+    # host theme is applied as soon as the init ack carries it, before any payload paints
+    assert "if (!_lastPayload && (_hostContext.theme === 'dark'" in bundle.HANDSHAKE

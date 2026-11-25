@@ -100,8 +100,24 @@ function _a2uiEffectiveTheme(payload, hostCtx) {
   var h = hostCtx && hostCtx.theme;
   return (h === 'dark' || h === 'light') ? h : 'light';
 }
+var _a2uiThemeApplied = false;
 function _a2uiApplyTheme(payload, hostCtx) {
   var theme = _a2uiEffectiveTheme(payload, hostCtx);
+  // FIRST apply happens with transitions off (html.a2ui-theme-first, see the
+  // page <style>): body fades background-color over 0.3s, so a dark host saw
+  // a white flash fading to dark. Dropped after two frames; later live theme
+  // changes keep the fade.
+  if (!_a2uiThemeApplied) {
+    _a2uiThemeApplied = true;
+    var de = document.documentElement;
+    if (de.classList && typeof requestAnimationFrame === 'function') {
+      de.classList.add('a2ui-theme-first');
+      requestAnimationFrame(function () { requestAnimationFrame(function () {
+        de.classList.remove('a2ui-theme-first');
+        if (!de.getAttribute('class')) de.removeAttribute('class');
+      }); });
+    }
+  }
   // theme:"terminal" is the brand skin (AtomStyles.html) and is DARK PLUS a
   // token repaint -- it sets both classes, so anything keying off the dark
   // class in JS keeps working and never has to know a third theme exists.
@@ -420,6 +436,9 @@ HANDSHAKE = """
         _hostContext.displayMode = msg.result.mode;
       }
       _syncDisplayModeClass();
+      // Host theme is known before any payload paints: theme the page now so
+      // the first painted frame is already dark in a dark host.
+      if (!_lastPayload && (_hostContext.theme === 'dark' || _hostContext.theme === 'light')) _a2uiApplyTheme({}, _hostContext);
       sendInitialized();
       return;
     }
@@ -802,6 +821,7 @@ def build_bundle(boot_block=None, title="A2UI Catalog renderer — MCP Apps View
 <title>{title}</title>
 {atom_styles}
 <style>
+html.a2ui-theme-first, html.a2ui-theme-first body {{ transition: none !important; }}
 body {{ padding: 24px; }}
 label:has(input[type=radio]:focus-visible), label:has(input[type=checkbox]:focus-visible), input[type=radio]:focus-visible + label, input[type=checkbox]:focus-visible + label {{ outline: 2px solid #4f46e5; outline-offset: 2px; }}
 /* Applied by paint() ONLY when the payload contains a declared half-viewport
