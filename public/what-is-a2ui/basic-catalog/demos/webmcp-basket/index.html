@@ -1,0 +1,510 @@
+<!doctype html><html lang="en" data-theme="light"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>WebMCP basket demo: an agent works a fake shop basket you can watch</title><meta name="description" content="A fake shop basket that shows WebMCP at work: an agent calls add_to_basket, view_basket and a checkout you must confirm, and the basket on the page updates live. No payment, no data, no network calls."><meta name="robots" content="noindex"><link rel="canonical" href="https://a2uicatalog.ai/what-is-a2ui/basic-catalog/demos/webmcp-basket/"><meta property="og:type" content="website"><meta property="og:title" content="WebMCP basket demo: an agent works a fake shop basket you can watch"><meta property="og:description" content="A fake shop basket that shows WebMCP at work: an agent calls add_to_basket, view_basket and a checkout you must confirm, and the basket on the page updates live. No payment, no data, no network calls."><meta property="og:url" content="https://a2uicatalog.ai/what-is-a2ui/basic-catalog/demos/webmcp-basket/"><meta property="og:image" content="https://a2uicatalog.ai/brand/og-card.png"><meta name="twitter:card" content="summary_large_image"><style>
+.bk{max-width:1100px;margin:0 auto;padding:16px 24px 40px;line-height:1.6;color:var(--text)}
+.bk h1{font-size:1.7rem;line-height:1.2;margin:.2rem 0 .5rem}.bk h2{font-size:1.2rem;margin:0 0 .6rem}
+.bk .kind{margin:0;font:700 .8rem/1.4 system-ui;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted)}
+.bk .lead{max-width:70ch}
+.bk .fake{margin:14px 0;padding:12px 14px;border:2px solid var(--warn,#b45309);border-radius:var(--radius,10px);background:var(--surface-2)}
+.bk .fake strong{display:block}
+.bk .status{margin:14px 0;padding:10px 14px;border:1px solid var(--border-strong);border-radius:var(--radius,10px);background:var(--surface)}
+.bk .status[data-on="yes"]{border-color:var(--positive)}.bk .status[data-on="no"]{border-color:var(--warn,#b45309)}
+.bk .grid{display:grid;gap:24px;margin-top:18px}
+@media (min-width:900px){.bk .grid{grid-template-columns:minmax(0,7fr) minmax(0,5fr);align-items:start}}
+.bk .panel{padding:16px;border:1px solid var(--border);border-radius:var(--radius,10px);background:var(--surface)}
+.bk ul.shop{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.bk ul.shop li{display:grid;grid-template-columns:1fr auto;gap:4px 12px;padding:10px 0;border-bottom:1px solid var(--border)}
+.bk ul.shop li:last-child{border-bottom:0}
+.bk .nm{font-weight:700}.bk .sub{color:var(--text-muted);font-size:.9rem}.bk .pr{font-weight:700;text-align:right}
+.bk .row{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.bk label{font-size:.9rem;color:var(--text-muted)}
+.bk select{min-height:44px;padding:0 8px;font:inherit;border:1px solid var(--border-strong);border-radius:8px;background:var(--surface);color:var(--text)}
+.bk button{min-height:44px;padding:0 16px;font:700 .95rem system-ui;border:1px solid var(--accent);border-radius:8px;background:var(--accent);color:var(--accent-contrast);cursor:pointer}
+.bk button.alt{background:var(--surface);color:var(--text);border-color:var(--border-strong)}
+.bk button[disabled]{background:var(--surface-2);border-color:var(--border-strong);color:var(--text-muted);cursor:not-allowed}
+.bk :focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.bk table{border-collapse:collapse;width:100%;font-size:.95rem}
+.bk caption{text-align:left;font-size:.85rem;color:var(--text-muted);padding-bottom:6px}
+.bk th,.bk td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--border);vertical-align:middle}
+.bk td.n,.bk th.n{text-align:right;white-space:nowrap}
+.bk tr[data-new="agent"]{animation:bkflash 1.6s ease-out}
+@keyframes bkflash{from{background:var(--accent-soft)}to{background:transparent}}
+@media (prefers-reduced-motion:reduce){.bk tr[data-new="agent"]{animation:none;background:var(--accent-soft)}}
+.bk .empty{color:var(--text-muted)}
+.bk .total{display:flex;justify-content:space-between;font-weight:700;font-size:1.1rem;margin:12px 0}
+.bk .acts{display:flex;flex-wrap:wrap;gap:8px}
+.bk ol.log{list-style:none;margin:8px 0 0;padding:0;max-height:260px;overflow:auto;font-size:.9rem}
+.bk ol.log li{padding:6px 0;border-bottom:1px solid var(--border)}
+.bk .who{display:inline-block;min-width:3.6em;margin-right:8px;padding:0 8px;border:1px solid var(--border-strong);border-radius:999px;font:700 .75rem/1.6 system-ui;text-transform:uppercase;text-align:center}
+.bk .who[data-w="agent"]{border-color:var(--accent);background:var(--accent-soft)}
+.bk pre{margin:8px 0;padding:12px;overflow:auto;background:var(--code-bg);color:var(--text);border:1px solid var(--border);border-radius:8px;font:13px/1.5 ui-monospace,Menlo,monospace}
+.bk table.tools td:first-child{white-space:nowrap}
+.bk .vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.bk dialog{max-width:min(92vw,28rem);padding:20px;border:2px solid var(--accent);border-radius:12px;background:var(--surface);color:var(--text)}
+.bk dialog::backdrop{background:rgba(0,0,0,.55)}
+.bk dialog .acts{margin-top:14px}
+</style><script>(function(){var d=document.documentElement;d.classList.add("js");if(/[?&]embed=1/.test(location.search))d.classList.add("embed");try{var s=localStorage.getItem("a2ui-theme");d.setAttribute("data-theme",s==="dark"?"dark":"light")}catch(x){d.setAttribute("data-theme","light")}})()</script><script>
+(function(){var t='light';try{var s=localStorage.getItem('a2ui-theme');if(s==='dark'||s==='light')t=s}catch(e){}
+document.documentElement.setAttribute('data-theme',t);document.documentElement.classList.add('js')})();
+</script><style>/*brand-tokens:c646187a*/
+:root{
+  color-scheme:light;
+  --bg:#f6f9fd;--surface:#ffffff;--surface-2:#eef2f8;--border:#dadee5;
+  --border-strong:#c3c9d3;--text:#141b24;--text-2:#2c343f;--text-muted:#515963;
+  --accent:#5051cf;--accent-text:#3a3bb0;--accent-contrast:#ffffff;--accent-soft-bg:#e6eaff;
+  --accent-2:#009ca7;--accent-2-text:#007581;--focus:#5051cf;--positive:#2f913e;
+  --negative:#c53637;--warn:#c69600;--code-bg:#f1f4f9;--radius:12px;
+  --shadow:0 1px 2px rgba(20,27,36,.05),0 10px 30px rgba(20,27,36,.07);--glow:0 4px 24px rgba(80,81,207,.16);--header-glass:rgba(255,255,255,.78);--grad:linear-gradient(120deg,#6267e7,#00b7c3);
+  --card:var(--surface);--muted:var(--text-muted);--cyan:var(--accent-2);--green:var(--positive);--accent-soft:var(--accent-soft-bg);
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#1e2733;--surface:#2d3642;--surface-2:#1a222d;--border:#4a5361;
+  --border-strong:#6b7684;--text:#eaeff5;--text-2:#d5dbe3;--text-muted:#a9b2be;
+  --accent:#8d98ff;--accent-text:#c7cdff;--accent-contrast:#141b24;--accent-soft-bg:#2f3463;
+  --accent-2:#2ac4ce;--accent-2-text:#2ac4ce;--focus:#8d98ff;--positive:#5cc46c;
+  --negative:#ff7d7e;--warn:#e6b800;--code-bg:#1a222d;--shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.28);
+  --glow:0 4px 28px rgba(141,152,255,.24);--header-glass:rgba(45,54,66,.78);--grad:linear-gradient(120deg,#8d98ff,#2ac4ce);
+}
+:root[data-theme="dark"] .stage,:root[data-theme="dark"] .preview-box{color-scheme:light;--bg:#f6f9fd;--surface:#ffffff;--surface-2:#eef2f8;--border:#dadee5;--border-strong:#c3c9d3;--text:#141b24;--text-2:#2c343f;--text-muted:#515963;--accent:#5051cf;--accent-text:#3a3bb0;--accent-contrast:#ffffff;--accent-soft-bg:#e6eaff;--accent-2:#009ca7;--accent-2-text:#007581;--focus:#5051cf;--positive:#2f913e;--negative:#c53637;--warn:#c69600;--code-bg:#f1f4f9;--radius:12px;--shadow:0 1px 2px rgba(20,27,36,.05),0 10px 30px rgba(20,27,36,.07);--glow:0 4px 24px rgba(80,81,207,.16);--header-glass:rgba(255,255,255,.78);--grad:linear-gradient(120deg,#6267e7,#00b7c3);--card:var(--surface);--muted:var(--text-muted);--cyan:var(--accent-2);--green:var(--positive);--accent-soft:var(--accent-soft-bg);}
+.stage,.preview-box{--mt-ink:#14181f}
+
+.site-header,.site-header *,.gnav-wrap,.gnav-wrap *,.demo-foot,.demo-foot *{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:16px;line-height:1.6}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+label:has(input[type=radio]:focus-visible),label:has(input[type=checkbox]:focus-visible),input[type=radio]:focus-visible+label,input[type=checkbox]:focus-visible+label{outline:2px solid var(--accent);outline-offset:2px}
+.site-header{position:sticky;top:0;z-index:100;background:var(--header-glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
+.hdr-in{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:10px;padding:11px 24px}
+.wordmark{display:flex;align-items:center;gap:9px;font-size:15px;font-weight:800;letter-spacing:-.2px;color:var(--text);text-decoration:none;white-space:nowrap}
+.logo-atom{width:22px;height:22px;flex-shrink:0}
+.logo-atom .nuc{fill:var(--accent)}
+.logo-atom .o1{stroke:var(--accent);fill:none;stroke-width:1.5}
+.logo-atom .o2{stroke:oklch(70% 0.14 202);fill:none;stroke-width:1.5}
+.logo-atom .o3{stroke:var(--accent);fill:none;stroke-width:1.1;opacity:.35}
+.logo-atom .el{fill:oklch(70% 0.14 202)}
+.grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.site-nav{display:flex;gap:4px;margin-right:auto;margin-left:12px}
+.site-nav a{font-size:13px;font-weight:600;text-decoration:none;color:var(--muted);padding:5px 11px;border-radius:7px;transition:color .15s,background .15s}
+.site-nav a:hover{color:var(--text);background:var(--surface-2)}
+.site-nav a[aria-current="page"]{color:var(--accent-text);background:var(--accent-soft-bg)}
+.theme-btn{font:inherit;font-size:14px;line-height:1;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 9px;cursor:pointer;color:var(--text)}
+.theme-btn:hover{border-color:var(--border-strong)}
+.gh-pill{font-size:12px;font-weight:650;color:var(--text);text-decoration:none;border:1px solid var(--border);border-radius:8px;padding:6px 12px;background:var(--surface);white-space:nowrap}
+.gh-pill:hover{border-color:var(--border-strong)}
+.wrap{max-width:1100px;margin:0 auto;padding:36px 24px 96px}
+footer{margin-top:64px;padding-top:24px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+footer a{color:var(--accent-2-text);text-decoration:underline;text-underline-offset:2px}
+/* links inside running text must not rely on colour alone (WCAG 1.4.1): underline them */
+.wrap p a:not([class]),.wrap li a:not([class]),.wrap td a:not([class]),.wrap dd a:not([class]),footer p a:not([class]){text-decoration:underline;text-underline-offset:2px}
+/* Announcement pill above the hero headline. Sits in normal flow (not fixed or
+   sticky) so it never covers content, and wraps rather than truncating on
+   narrow screens — the arrow is the only thing dropped on mobile. */
+.announce{display:inline-flex;align-items:center;gap:10px;max-width:100%;
+ margin:0 auto 22px;padding:7px 8px 7px 8px;border:1px solid var(--border);
+ border-radius:999px;background:var(--surface);text-decoration:none;
+ font-size:13px;line-height:1.35;color:var(--text);
+ transition:border-color .15s,background .15s}
+.announce:hover{border-color:var(--accent);background:var(--accent-soft-bg)}
+.announce-tag{flex:none;font-size:10.5px;font-weight:800;letter-spacing:.08em;
+ text-transform:uppercase;color:#fff;background:var(--accent);
+ border-radius:999px;padding:4px 9px}
+.announce-text{text-align:left}
+.announce-text code{font-size:12px;background:var(--surface-2);
+ padding:1px 5px;border-radius:5px}
+.announce-go{flex:none;color:var(--accent);font-weight:700;padding-right:8px}
+@media(max-width:560px){.announce{font-size:12.5px;align-items:flex-start;
+ border-radius:14px;padding:9px 12px}.announce-go{display:none}}
+
+/* Design pass (1 Nov 2026, direction C). Header: the full nav row from 861 px; below it, with JS, the nav folds behind a Menu button and
+   Search becomes an icon link; without JS the nav stays a wrapping row, so no destination is ever lost. Touch targets are 44 px on phones. */
+.hdr-search,.menu-btn{display:none}
+.hdr-search,.menu-btn,.theme-btn{align-items:center;justify-content:center;color:var(--text)}
+.menu-btn{gap:6px;font:700 14px/1 inherit;border:1px solid var(--border-strong);border-radius:10px;background:var(--surface);cursor:pointer;padding:0 14px}
+.theme-btn svg{display:block}
+@media(max-width:860px){
+ .hdr-in{flex-wrap:wrap;padding:8px 16px;row-gap:0}
+ .wordmark{margin-right:auto}
+ .gh-pill{display:none}
+ .hdr-search{display:flex;min-width:44px;min-height:44px;border-radius:10px}
+ .theme-btn{display:flex;min-width:44px;min-height:44px;border-radius:10px}
+ .site-nav{order:3;width:100%;margin:6px 0 2px;gap:2px;flex-wrap:wrap}
+ .site-nav a{white-space:nowrap;font-size:14px;padding:11px 12px;min-height:44px;display:flex;align-items:center}
+ .js .menu-btn{display:flex;min-height:44px}
+ .js .site-nav{display:none;flex-direction:column;align-items:stretch;border-top:1px solid var(--border);padding-top:6px}
+ .js .site-nav.open{display:flex}
+}
+@media(min-width:861px){.theme-btn{display:flex;min-width:36px;min-height:36px;border-radius:8px}}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+/* "Pause all motion" / per-preview Pause (WCAG 2.2.2): stops CSS animation; film clocks are paused by the page script */
+.motion-paused .stage-inner *,.preview-box.paused *{animation-play-state:paused!important}
+.pause-btn{display:inline-flex;align-items:center;gap:6px;min-width:44px;min-height:44px;padding:0 14px;border:1px solid var(--border-strong);border-radius:10px;background:var(--surface);color:var(--text);font:600 14px/1 inherit;cursor:pointer}
+.pause-btn[hidden]{display:none}
+.preview-tools{gap:8px;flex-wrap:wrap}
+.focus-btn{display:inline-flex;align-items:center;gap:6px;min-width:44px;min-height:44px;padding:0 16px;border:1px solid var(--border-strong);border-radius:10px;background:var(--surface);color:var(--text);font:600 14px/1 inherit;cursor:pointer}
+.focus-btn[hidden]{display:none}
+.focus-btn:focus-visible,.focus-close:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.focus-dialog{border:0;padding:0;background:rgba(8,10,16,.9);max-width:100vw;max-height:100vh;width:100vw;height:100vh;color:var(--text);overflow:hidden}
+.focus-dialog::backdrop{background:rgba(8,10,16,.82)}
+.focus-dialog:not([open]){display:none}
+.focus-dialog[open]{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:12px 16px}
+.focus-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;width:var(--focus-w,100%);max-width:100%;color:#f1f5f9}
+.focus-title{font:600 15px/1.3 inherit;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.focus-actions{display:flex;gap:8px;flex:none}
+.focus-close{min-width:44px;min-height:44px;padding:0 16px;border:1px solid var(--border-strong);border-radius:10px;background:var(--surface);color:var(--text);font:600 14px/1 inherit;cursor:pointer}
+.focus-stage{width:var(--focus-w,100%);max-width:100%;max-height:var(--focus-h,none);overflow:auto;border-radius:16px;background:#0b0d12}
+.focus-stage:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.focus-stage .mt-root{margin:0!important;max-width:none!important;width:calc(var(--focus-w,100%) * var(--focus-zoom,1))}
+.focus-zoom{min-width:44px;min-height:44px;padding:0 14px;border:1px solid var(--border-strong);border-radius:10px;background:var(--surface);color:var(--text);font:600 14px/1 inherit;cursor:pointer}
+.focus-zoom[aria-pressed="true"]{background:var(--accent-soft-bg);border-color:var(--accent);color:var(--accent-text)}
+.focus-zoom:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+/* A portrait film (9:16) would be taller than the screen in the preview column: cap it at 78vh and centre it */
+.preview-box .mt-root:has(> .mt-vp[style*="aspect-ratio:720/1280"]){max-width:calc(78vh*0.5625);margin-left:auto!important;margin-right:auto!important}   /* !important: the film root carries an inline margin:1rem 0 */
+.pause-btn[aria-pressed="true"]{background:var(--accent-soft-bg);border-color:var(--accent);color:var(--accent-text)}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+/* cursor_glow ships dark-tuned (screen blend ≈ invisible over a white ground);
+   in the light default, re-blend the orb — it is the only direct body child
+   carrying the atom's z-index:9000. */
+:root:not([data-theme="dark"]) body>div[style*="z-index:9000"]{mix-blend-mode:multiply!important;opacity:.22!important}
+.guide-nav{position:sticky;top:var(--site-header-h,60px);z-index:50;display:flex;flex-wrap:nowrap;align-items:center;gap:6px 14px;margin:0 0 22px;padding:10px 14px;border:1px solid var(--border);border-radius:10px;background:var(--surface-2,var(--code-bg))}.guide-nav-h{flex:none;font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted)}.guide-nav ul{position:relative;display:flex;flex-wrap:nowrap;gap:4px 6px;list-style:none;margin:0;padding:3px;overflow-x:auto;white-space:nowrap;-webkit-overflow-scrolling:touch;scrollbar-width:none}.guide-nav ul::-webkit-scrollbar{display:none}.guide-nav a,.guide-topics a{display:inline-block;min-height:24px;padding:4px 11px;border-radius:7px;font-size:.88rem;font-weight:600;text-decoration:none;color:var(--text-muted)}.guide-nav a:hover,.guide-topics a:hover{color:var(--text);background:var(--surface)}.guide-nav a[aria-current="page"]{color:var(--accent);background:var(--surface);box-shadow:inset 0 0 0 1px var(--accent)}.guide-nav a[aria-current="true"]{color:var(--accent);background:var(--surface);box-shadow:inset 0 0 0 1px var(--accent)}.guide-nav a:focus-visible,.guide-topics a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}.guide-topics{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;margin:0 0 22px;padding:8px 14px;border:1px solid var(--border);border-radius:10px;background:var(--surface-2,var(--code-bg))}.guide-topics ul{display:flex;flex-wrap:wrap;gap:4px 6px;list-style:none;margin:0;padding:0}.guide-topics a{border:1px solid var(--border);font-weight:500}html{scroll-padding-top:calc(var(--site-header-h,60px) + var(--guide-nav-h,56px) + 12px)}@media(max-width:640px){.guide-nav{gap:6px;margin-bottom:12px;padding:6px 10px}.guide-nav-h{display:none}.guide-topics{padding:6px 10px}}@media(max-height:500px){.guide-nav,.gnav-lock{position:static}html{scroll-padding-top:calc(var(--site-header-h,60px) + 12px)}}</style><link rel="stylesheet" href="/bc-assets/page.css"></head><body><a class="skip-link" href="#main-content">Skip to content</a><header class="site-header"><div class="hdr-in">
+    <a class="wordmark" href="/" aria-label="A2UI Catalog home"><svg class="logo-atom" viewBox="0 0 24 24" aria-hidden="true"><ellipse class="o1" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(-32 12 12)"/><ellipse class="o2" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(32 12 12)"/><ellipse class="o3" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(90 12 12)"/><circle class="nuc" cx="12" cy="12" r="2.7"/><circle class="el" cx="3.21" cy="15.98" r="1.25"/></svg><span><span class="grad">A2UI</span> Catalog</span></a>
+    <nav class="site-nav" id="site-menu" aria-label="Main">
+      <a href="/blog">Blog</a>
+      <a href="/what-is-a2ui/">What is A2UI?</a>
+      <a href="/atoms/">A2UICatalog Explorer</a>
+      <a href="/what-is-a2ui/basic-catalog/explore/" aria-current="page">Demo Gallery</a>
+      
+      <a href="/docs">Docs</a>
+      
+    </nav>
+    <a class="hdr-search" href="/atoms/#hub-q" aria-label="Search atoms"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg></a>
+    <button class="theme-btn" type="button" aria-label="Switch to dark theme"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 4v16a8 8 0 0 0 0-16z" fill="currentColor"/></svg></button>
+    <a class="gh-pill" href="https://github.com/a2uicatalog/a2ui">GitHub ↗</a>
+    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="site-menu"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>Menu</button>
+  </div></header><div class="gnav-wrap"><nav class="gal-nav" aria-label="Demo Gallery"><div class="gal-group" role="group" aria-labelledby="gal-g1"><p class="gal-label" id="gal-g1"><a href="/what-is-a2ui/basic-catalog/">A2UI Basic Catalog</a></p><ul><li><a href="/what-is-a2ui/basic-catalog/explore/">Basic Catalog Explorer</a></li><li><a href="/what-is-a2ui/basic-catalog/demos/" aria-current="true">Basic Catalog Demos</a></li></ul></div><div class="gal-group" role="group" aria-labelledby="gal-g2"><p class="gal-label" id="gal-g2"><a href="/what-is-a2ui/custom-catalog/">A2UICatalog Custom Catalog</a></p><ul><li><a href="/what-is-a2ui/macro-packs/">Macro Packs</a></li></ul></div></nav></div><main id="main-content" class="bk"><div class="atom-topbar"><nav class="atom-breadcrumb" aria-label="Breadcrumb"><ol role="list"><li><a href="/">A2UI Catalog</a></li><li><a href="/what-is-a2ui/">What is A2UI</a></li><li><a href="/what-is-a2ui/basic-catalog/">Basic Catalog</a></li><li><a href="/what-is-a2ui/basic-catalog/demos/">Basic Catalog Demos</a></li><li><span aria-current="page">WebMCP basket</span></li></ol></nav></div><p class="kind">WebMCP demo</p><h1>A fake shop basket, driven by WebMCP</h1><p class="lead">Watch a web page&#x27;s own state change while an agent works. The page offers three tools (add_to_basket, view_basket and a gated checkout) through the browser&#x27;s WebMCP API, and you can do everything by hand too.</p><div class="fake" role="note"><strong>This shop is fake.</strong>It is a demo with six made-up items. No payment is taken, nothing is ordered, no personal details are asked for, this page makes no network requests, and the basket lives only in this page: reload it and it is empty.</div><div class="status" id="bk-wm" data-on="no" role="status">Checking for WebMCP&hellip;</div><noscript><p>This page needs JavaScript to run the shop.</p></noscript><div class="grid"><section class="panel" aria-labelledby="bk-shop-h"><h2 id="bk-shop-h">The shop</h2><ul class="shop"><li><span class="nm">Tea sampler</span><span class="pr">&pound;6.50</span><span class="sub">Six teabags, one of each. <span class="vh">sku tea</span><span aria-hidden="true">(sku tea)</span></span><span></span><span class="row"><label for="q-tea">Quantity<span class="vh"> of Tea sampler</span></label><select id="q-tea"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option></select><button type="button" id="add-tea" aria-label="Add Tea sampler to the basket">Add to basket</button></span></li><li><span class="nm">Enamel mug</span><span class="pr">&pound;12.00</span><span class="sub">Holds a very ordinary cup. <span class="vh">sku mug</span><span aria-hidden="true">(sku mug)</span></span><span></span><span class="row"><label for="q-mug">Quantity<span class="vh"> of Enamel mug</span></label><select id="q-mug"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option></select><button type="button" id="add-mug" aria-label="Add Enamel mug to the basket">Add to basket</button></span></li><li><span class="nm">Pocket notebook</span><span class="pr">&pound;4.50</span><span class="sub">Plain pages, 48 of them. <span class="vh">sku notebook</span><span aria-hidden="true">(sku notebook)</span></span><span></span><span class="row"><label for="q-notebook">Quantity<span class="vh"> of Pocket notebook</span></label><select id="q-notebook"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option></select><button type="button" id="add-notebook" aria-label="Add Pocket notebook to the basket">Add to basket</button></span></li><li><span class="nm">Ink pen</span><span class="pr">&pound;2.75</span><span class="sub">Blue, refillable. <span class="vh">sku pen</span><span aria-hidden="true">(sku pen)</span></span><span></span><span class="row"><label for="q-pen">Quantity<span class="vh"> of Ink pen</span></label><select id="q-pen"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option></select><button type="button" id="add-pen" aria-label="Add Ink pen to the basket">Add to basket</button></span></li><li><span class="nm">Canvas tote</span><span class="pr">&pound;15.00</span><span class="sub">Fits the notebook, mug and tea. <span class="vh">sku tote</span><span aria-hidden="true">(sku tote)</span></span><span></span><span class="row"><label for="q-tote">Quantity<span class="vh"> of Canvas tote</span></label><select id="q-tote"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option></select><button type="button" id="add-tote" aria-label="Add Canvas tote to the basket">Add to basket</button></span></li><li><span class="nm">Sticker sheet</span><span class="pr">&pound;1.99</span><span class="sub">Twelve small stickers. <span class="vh">sku stickers</span><span aria-hidden="true">(sku stickers)</span></span><span></span><span class="row"><label for="q-stickers">Quantity<span class="vh"> of Sticker sheet</span></label><select id="q-stickers"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option></select><button type="button" id="add-stickers" aria-label="Add Sticker sheet to the basket">Add to basket</button></span></li></ul></section><section class="panel" aria-labelledby="bk-bk-h"><h2 id="bk-bk-h">Your basket</h2><p id="bk-empty" class="empty">The basket is empty.</p><table id="bk-table" hidden><caption>Items in the basket</caption><thead><tr><th scope="col">Item</th><th scope="col" class="n">Qty</th><th scope="col" class="n">Price</th><th scope="col"><span class="vh">Remove</span></th></tr></thead><tbody id="bk-body"></tbody></table><p class="total"><span>Total <span id="bk-count">0 items</span></span><span id="bk-total">&pound;0.00</span></p><div class="acts"><button type="button" id="bk-checkout" disabled>Check out (demo)</button><button type="button" id="bk-clear" class="alt" disabled>Empty basket</button></div><h3 style="margin:18px 0 0;font-size:1rem" id="bk-log-h">What happened</h3><p class="sub" style="margin:0">Lines marked Agent came from a WebMCP tool call (an agent, or you in the console). Lines marked You came from the buttons.</p><ol class="log" id="bk-log" aria-labelledby="bk-log-h" tabindex="0"></ol><p id="bk-status" class="vh" role="status" aria-live="polite"></p></section></div><dialog id="bk-dlg" aria-labelledby="bk-dlg-h" aria-describedby="bk-dlg-sum"><h2 id="bk-dlg-h">Place this demo order?</h2><p id="bk-dlg-sum"></p><div class="acts"><button type="button" id="bk-yes">Place demo order</button><button type="button" id="bk-no" class="alt">Cancel</button></div></dialog><section class="panel" style="margin-top:24px" aria-labelledby="bk-what-h"><h2 id="bk-what-h">What WebMCP is doing here</h2><p>WebMCP is a proposed browser API that lets a web page offer tools to an agent. The page registers them with <code>document.modelContext.registerTool</code>, and an agent in or alongside the browser can call them, in the same tab you are looking at. Here the three tools below act on the very basket on this page, so you watch the state change as the agent works, instead of reading about it afterwards.</p><p>The tools return small facts as JSON: items, quantities and the total in whole pence. The one tool that matters, <code>checkout</code>, is gated: it only completes when you click in the box that opens. An agent cannot place the demo order by itself, and the buttons above work the same with no agent at all.</p><table class="tools"><caption>The three tools this page registers</caption><thead><tr><th scope="col">Tool</th><th scope="col">What it does</th><th scope="col">Input</th></tr></thead><tbody><tr><td><code>add_to_basket</code></td><td>Adds an item to the basket.</td><td><code>sku</code> (one of the six), <code>quantity</code> 1 to 9</td></tr><tr><td><code>view_basket</code></td><td>Reads the basket. Marked read only. Changes nothing.</td><td>none</td></tr><tr><td><code>checkout</code></td><td>Asks to place the demo order. Only completes if you click Place demo order.</td><td>none</td></tr></tbody></table></section><section class="panel" style="margin-top:24px" aria-labelledby="bk-try-h"><h2 id="bk-try-h">Try it</h2><p>In Chrome with <code>chrome://flags/#enable-webmcp-testing</code> turned on, open the developer tools console on this page and paste this. It lists the tools and calls them.</p><pre id="bk-snippet" tabindex="0" aria-label="Console snippet">// In the console of this tab (Chrome with the WebMCP flag on):
+const mc = document.modelContext;
+const tools = Array.from(await mc.getTools());
+console.log(tools.map(t =&gt; t.name));            // add_to_basket, view_basket, checkout
+const call = (name, args = {}) =&gt; mc.executeTool(tools.find(t =&gt; t.name === name), args);
+// If your build wants the input as a JSON string, use JSON.stringify(args) instead of args.
+console.log(await call(&#x27;add_to_basket&#x27;, { sku: &#x27;tea&#x27;, quantity: 2 }));
+console.log(await call(&#x27;view_basket&#x27;));
+console.log(await call(&#x27;checkout&#x27;));            // waits until you click Place demo order or Cancel</pre><button type="button" id="bk-copy" class="alt">Copy snippet</button><p class="sub">The exact shape of <code>executeTool</code> and of tool results has changed between Chrome builds, so treat this as a starting point. Unofficial demo, not affiliated with Google or the Chrome team.</p></section><script>
+(function(){
+'use strict';
+var CATALOGUE=[{"sku":"tea","name":"Tea sampler","pence":650,"blurb":"Six teabags, one of each."},{"sku":"mug","name":"Enamel mug","pence":1200,"blurb":"Holds a very ordinary cup."},{"sku":"notebook","name":"Pocket notebook","pence":450,"blurb":"Plain pages, 48 of them."},{"sku":"pen","name":"Ink pen","pence":275,"blurb":"Blue, refillable."},{"sku":"tote","name":"Canvas tote","pence":1500,"blurb":"Fits the notebook, mug and tea."},{"sku":"stickers","name":"Sticker sheet","pence":199,"blurb":"Twelve small stickers."}];
+var MAXQ=9, WAIT_MS=120000;
+var byId={};CATALOGUE.forEach(function(c){byId[c.sku]=c});
+var basket=Object.create(null);      // sku -> quantity (whole numbers)
+var orders=0, pending=false, logN=0;
+var $=function(i){return document.getElementById(i)};
+function el(t,p,kids){var n=document.createElement(t);if(p)for(var k in p){if(k==='text')n.textContent=p[k];else if(k==='cls')n.className=p[k];else n.setAttribute(k,p[k])}(kids||[]).forEach(function(c){n.appendChild(c)});return n}
+function money(p){var neg=p<0;p=Math.abs(p);var pounds=Math.floor(p/100),pence=p%100;return (neg?'-':'')+'£'+pounds+'.'+(pence<10?'0':'')+pence}
+function lines(){return CATALOGUE.filter(function(c){return basket[c.sku]}).map(function(c){return {sku:c.sku,name:c.name,quantity:basket[c.sku],unit_pence:c.pence,line_pence:c.pence*basket[c.sku]}})}
+function totals(){var l=lines(),n=0,t=0;l.forEach(function(x){n+=x.quantity;t+=x.line_pence});return {lines:l,count:n,pence:t}}
+function say(m){$('bk-status').textContent=m}
+function log(who,msg){var li=el('li',null,[el('span',{cls:'who','data-w':who,text:who==='agent'?'Agent':'You'}),document.createTextNode(msg)]);var o=$('bk-log');o.insertBefore(li,o.firstChild);while(o.children.length>40)o.removeChild(o.lastChild);logN++}
+function render(flash){
+  var T=totals(),b=$('bk-body');while(b.firstChild)b.removeChild(b.firstChild);
+  T.lines.forEach(function(x){
+    var tr=el('tr',x.sku===flash?{'data-new':'agent'}:null,[el('th',{scope:'row',text:x.name}),el('td',{cls:'n',text:String(x.quantity)}),el('td',{cls:'n',text:money(x.line_pence)}),
+      el('td',null,[(function(){var r=el('button',{type:'button',cls:'alt','aria-label':'Remove '+x.name+' from the basket',text:'Remove'});r.addEventListener('click',function(){delete basket[x.sku];log('you','Removed '+x.name+'.');say('Removed '+x.name+'. '+summary());render()});return r})()])]);
+    b.appendChild(tr)});
+  $('bk-empty').hidden=T.count>0;$('bk-table').hidden=T.count===0;
+  $('bk-total').textContent=money(T.pence);$('bk-count').textContent=T.count+(T.count===1?' item':' items');
+  $('bk-checkout').disabled=T.count===0||pending;$('bk-clear').disabled=T.count===0||pending;
+}
+function summary(){var T=totals();return 'Basket: '+T.count+(T.count===1?' item, ':' items, ')+money(T.pence)+'.'}
+function snapshot(){var T=totals();return {items:T.lines,item_count:T.count,total_pence:T.pence,total:money(T.pence)}}
+
+/* ---- the actions. source is 'agent' (a WebMCP tool call) or 'you' (the buttons on the page). Both go through the same code. ---- */
+function addItem(source,args){
+  args=(args&&typeof args==='object')?args:{};
+  var sku=args.sku,q=args.quantity;
+  if(typeof sku!=='string'||!Object.prototype.hasOwnProperty.call(byId,sku)){return {ok:false,error:'There is no item with sku '+JSON.stringify(typeof sku==='string'?sku.slice(0,40):String(typeof sku))+'. The skus are: '+CATALOGUE.map(function(c){return c.sku}).join(', ')+'.'}}
+  if(q===undefined||q===null)q=1;
+  if(typeof q==='string'&&/^[0-9]{1,3}$/.test(q))q=Number(q);
+  if(typeof q!=='number'||!Number.isInteger(q)||q<1||q>MAXQ){return {ok:false,error:'The quantity must be a whole number from 1 to '+MAXQ+'.'+(typeof q==='number'||typeof q==='string'?' You sent '+String(q).slice(0,12)+'.':'')}}
+  if(pending){return {ok:false,error:'A checkout is waiting for the person to answer. Try again after they have.'}}
+  var have=basket[sku]||0,item=byId[sku];
+  if(have+q>MAXQ){return {ok:false,error:'The basket holds at most '+MAXQ+' of one item. It already has '+have+' of '+item.name+' (sku '+sku+').'}}
+  basket[sku]=have+q;
+  log(source,(source==='agent'?'add_to_basket: ':'Added ')+q+' × '+item.name+'.');
+  say((source==='agent'?'The agent':'You')+' added '+q+' '+item.name+'. '+summary());
+  render(source==='agent'?sku:null);
+  var T=totals();
+  return {ok:true,sku:sku,name:item.name,added:q,in_basket:basket[sku],basket_count:T.count,total_pence:T.pence,total:money(T.pence)};
+}
+function viewBasket(source){
+  var s=snapshot();
+  if(source==='agent'){log('agent','view_basket: read the basket ('+s.item_count+(s.item_count===1?' item':' items')+').');say('The agent looked at the basket.')}
+  return s;
+}
+function askHuman(signal){
+  return new Promise(function(resolve){
+    var d=$('bk-dlg'),done=false,s=snapshot();
+    $('bk-dlg-sum').textContent=s.item_count+(s.item_count===1?' item':' items')+', '+s.total+'. No payment is taken and nothing is ordered: this shop is fake.';
+    function finish(v){if(done)return;done=true;clearTimeout(tm);d.removeEventListener('cancel',onCancel);$('bk-yes').onclick=null;$('bk-no').onclick=null;if(d.open)d.close();resolve(v)}
+    function onCancel(ev){ev.preventDefault();finish('declined')}
+    var tm=setTimeout(function(){finish('timed_out')},WAIT_MS);
+    if(signal){if(signal.aborted){finish('declined');return}signal.addEventListener('abort',function(){finish('declined')})}
+    d.addEventListener('cancel',onCancel);
+    $('bk-yes').onclick=function(){finish('confirmed')};$('bk-no').onclick=function(){finish('declined')};
+    d.showModal();$('bk-no').focus();
+  });
+}
+/* The spec text read so far has no confirmation API for a tool (no requestUserInteraction found), so the gate is this page's own dialog. opts.signal is the cancel signal the spec gives execute. */
+function gate(opts){return askHuman(opts&&opts.signal)}
+function checkout(source,opts){
+  var s=snapshot();
+  if(s.item_count===0)return Promise.resolve({ok:false,status:'empty',error:'The basket is empty. Add something first.'});
+  if(pending)return Promise.resolve({ok:false,status:'pending',note:'A confirmation is already waiting for the person. Nothing has been ordered.'});
+  pending=true;render();
+  log(source,source==='agent'?'checkout: asked to place the demo order. Waiting for you to confirm or decline.':'Asked to check out. Waiting for your confirmation.');
+  say((source==='agent'?'The agent asked to check out. ':'')+'Please confirm or decline in the box that opened.');
+  return gate(opts).then(function(v){
+    pending=false;
+    if(v==='confirmed'){
+      orders++;var ref='DEMO-'+(orders<10?'000':orders<100?'00':'0')+orders;
+      var r={ok:true,status:'confirmed',order_ref:ref,items:s.items,item_count:s.item_count,total_pence:s.total_pence,total:s.total,note:'Demo only: no payment was taken and nothing was ordered.'};
+      basket=Object.create(null);log('you','Confirmed. Demo order '+ref+' placed ('+s.total+'). Nothing was charged.');say('Demo order '+ref+' placed. The basket is empty.');render();return r}
+    log('you',v==='timed_out'?'No answer in time. Checkout cancelled, basket kept.':'Declined. Basket kept.');say('Checkout '+(v==='timed_out'?'timed out':'declined')+'. The basket is unchanged.');render();
+    return {ok:false,status:v,note:v==='timed_out'?'The person did not answer in time. Nothing was ordered and the basket is unchanged.':'The person declined. Nothing was ordered and the basket is unchanged.'};
+  },function(err){
+    pending=false;render();log('you','Checkout could not ask for confirmation. Basket kept.');
+    return {ok:false,status:'declined',note:'Confirmation could not be shown, so nothing was ordered.'};
+  });
+}
+
+/* ---- the tools ---- */
+/* the spec's executeTool returns a string, so every result is JSON text */
+function J(r){return JSON.stringify(r)}
+var TOOLS=[
+ {name:'add_to_basket',
+  description:'Add an item from the demo shop to the basket by its sku. This is a fake shop: nothing is bought. The basket on the page updates where the person can see it.',
+  inputSchema:{type:'object',properties:{sku:{type:'string',enum:CATALOGUE.map(function(c){return c.sku}),description:'The item code: '+CATALOGUE.map(function(c){return c.sku+' ('+c.name+', '+money(c.pence)+')'}).join('; ')+'.'},quantity:{type:'integer',minimum:1,maximum:MAXQ,default:1,description:'How many to add, 1 to '+MAXQ+'. The basket holds at most '+MAXQ+' of one item.'}},required:['sku'],additionalProperties:false},
+  annotations:{readOnlyHint:false},
+  execute:function(input){return Promise.resolve(addItem('agent',input)).then(J)}},
+ {name:'view_basket',
+  description:'Read what is in the basket: each line with quantity and price, the item count and the total. Prices are integer pence (total_pence) with a formatted total. Changes nothing.',
+  inputSchema:{type:'object',properties:{},additionalProperties:false},
+  annotations:{readOnlyHint:true},
+  execute:function(){return Promise.resolve(viewBasket('agent')).then(J)}},
+ {name:'checkout',
+  description:'Ask to place the demo order for the basket. This does not complete by itself: the person must click Place demo order in a box on the page. The result is JSON text whose status is confirmed, declined, timed_out, pending or empty. No payment is taken because the shop is fake.',
+  inputSchema:{type:'object',properties:{},additionalProperties:false},
+  annotations:{readOnlyHint:false,consequentialHint:true},
+  execute:function(input,opts){return checkout('agent',opts).then(J)}}
+];
+
+/* ---- the human path: plain buttons, no WebMCP needed ---- */
+CATALOGUE.forEach(function(c){
+  var sel=$('q-'+c.sku),btn=$('add-'+c.sku);
+  btn.addEventListener('click',function(){var r=addItem('you',{sku:c.sku,quantity:Number(sel.value)});if(!r.ok)say(r.error)});
+});
+$('bk-checkout').addEventListener('click',function(){checkout('you',null)});
+$('bk-clear').addEventListener('click',function(){basket=Object.create(null);log('you','Emptied the basket.');say('Basket emptied.');render()});
+render();
+
+/* ---- WebMCP: feature-detect, register, report ---- */
+var st=$('bk-wm'),mc=document.modelContext;
+if(mc&&typeof mc.registerTool==='function'){
+  var ac=new AbortController(),n=0,errs=[];
+  TOOLS.forEach(function(t){try{mc.registerTool(t,{signal:ac.signal});n++}catch(x){errs.push(t.name+': '+String(x&&x.message||x).slice(0,80))}});
+  addEventListener('pagehide',function(){ac.abort()});
+  st.setAttribute('data-on',n===TOOLS.length?'yes':'no');
+  st.textContent=n===TOOLS.length?'WebMCP is on in this browser. '+n+' tools are registered: add_to_basket, view_basket and checkout. An agent connected to this tab can call them and you will see the basket change below.':'WebMCP is present but only '+n+' of '+TOOLS.length+' tools registered ('+errs.join('; ')+'). The buttons still work.';
+}else{
+  st.setAttribute('data-on','no');
+  st.textContent='WebMCP is not available in this browser, so no tools are registered. The shop below still works with the buttons. To try the agent side, use a Chrome build with WebMCP and turn on chrome://flags/#enable-webmcp-testing, then reload this page.';
+}
+/* the try-it snippet's copy button */
+var cb=$('bk-copy');
+if(cb)cb.addEventListener('click',function(){var t=$('bk-snippet').textContent;
+  function ok(){say('The snippet is copied.')}
+  function sel(){var r=document.createRange();r.selectNodeContents($('bk-snippet'));var s=getSelection();s.removeAllRanges();s.addRange(r);say('The snippet is selected. Press Ctrl+C to copy it.')}
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(ok,sel)}else sel()});
+})();
+</script></main><footer class="demo-foot"><p>Independent and unofficial, not affiliated with Google.</p></footer><script>
+function themeLabel(){var d=document.documentElement.getAttribute('data-theme')==='dark';
+  document.querySelectorAll('.theme-btn').forEach(function(b){b.setAttribute('aria-label',d?'Switch to light theme':'Switch to dark theme')})}
+themeLabel();
+document.addEventListener('click',function(e){
+  var m=e.target.closest('.menu-btn');
+  if(m){var n=document.getElementById(m.getAttribute('aria-controls')),o=m.getAttribute('aria-expanded')!=='true';
+    m.setAttribute('aria-expanded',String(o));if(n)n.classList.toggle('open',o);return}
+  var b=e.target.closest('.theme-btn');if(!b)return;
+  var r=document.documentElement,t=r.getAttribute('data-theme')==='dark'?'light':'dark';
+  r.setAttribute('data-theme',t);themeLabel();
+  try{localStorage.setItem('a2ui-theme',t)}catch(err){}
+});
+document.addEventListener('keydown',function(e){
+  if(e.key!=='Escape')return;var m=document.querySelector('.menu-btn[aria-expanded="true"]');if(!m)return;
+  m.setAttribute('aria-expanded','false');var n=document.getElementById(m.getAttribute('aria-controls'));if(n)n.classList.remove('open');m.focus()
+});
+// WebMCP (W3C Web Machine Learning CG draft; Chrome origin trial 149-156,
+// shipping targeted for 157): register the catalogue's read-only tools on
+// document.modelContext, falling back to the deprecated navigator.modelContext
+// alias only when it is missing. The definitions are written out literally,
+// not built from the DOM, so tools that read them from the page source can
+// grade them. Fully inert on browsers without the API. Both tools only read
+// the public catalogue spec (same-origin /spec.json), fetched once on first call.
+(function(){
+  var mc = (typeof document!=='undefined' && document.modelContext) ||
+           (typeof navigator!=='undefined' && navigator.modelContext);
+  if(!mc || typeof mc.registerTool!=='function') return;
+  var SITE = 'https://a2uicatalog.ai';
+  var specP = null;
+  function spec(){
+    if(!specP) specP = fetch('/spec.json').then(function(r){
+      if(!r.ok) throw new Error('spec.json returned HTTP '+r.status);
+      return r.json();
+    }).catch(function(e){ specP = null; throw e; });
+    return specP;
+  }
+  function list(v){ return Array.isArray(v) ? v : []; }
+  function worksOn(a){ return list(a.surfaces && a.surfaces.works_on); }
+  function findAtom(s, t){
+    for(var i=0;i<s.atoms.length;i++){
+      var a = s.atoms[i];
+      if(a.type===t || list(a.aliases).indexOf(t)>=0) return a;
+    }
+    return null;
+  }
+  try{
+    mc.registerTool({
+      name: 'search_atoms',
+      description: 'Search the A2UI Atomic Catalog for UI atoms that fit a plain-language need, such as "image gallery" or "status timeline". Returns the best matches first, each with its type name, a one-line summary, the surfaces it works on and its page URL.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          query: {type: 'string', minLength: 1, maxLength: 200, description: 'What the UI should show or do, in plain words.'},
+          surface: {type: 'string', description: 'Only return atoms that work on this surface, such as web, email, google-chat, slides or android.'},
+          limit: {type: 'integer', minimum: 1, maximum: 25, description: 'Maximum number of matches to return (default 10).'}
+        },
+        required: ['query'],
+        additionalProperties: false
+      },
+      annotations: {readOnlyHint: true},
+      execute: function(input){
+        input = input || {};
+        var words = String(input.query||'').toLowerCase().split(/[^a-z0-9]+/).filter(function(w){ return w.length>1; });
+        var limit = Math.max(1, Math.min(25, parseInt(input.limit,10) || 10));
+        return spec().then(function(s){
+          var hits = [];
+          s.atoms.forEach(function(a){
+            if(input.surface && worksOn(a).indexOf(input.surface)<0) return;
+            var name = a.type.replace(/_/g,' ');
+            var text = [a.compact_description, a.description, a.routing_text,
+                        list(a.intent_phrases).join(' '), list(a.aliases).join(' ')].join(' ').toLowerCase();
+            var score = 0;
+            words.forEach(function(w){ if(name.indexOf(w)>=0) score += 3; else if(text.indexOf(w)>=0) score += 1; });
+            if(score) hits.push({score: score, atom: a});
+          });
+          hits.sort(function(x,y){ return y.score-x.score || (x.atom.type<y.atom.type ? -1 : 1); });
+          return {
+            query: input.query,
+            matches: hits.length,
+            atoms: hits.slice(0, limit).map(function(h){
+              var a = h.atom;
+              return {type: a.type, summary: a.compact_description || a.description,
+                      surfaces: worksOn(a), url: SITE+'/atoms/'+a.type+'/'};
+            })
+          };
+        });
+      }
+    });
+  }catch(err){/* draft API shape may still be moving -- never break the page over it */}
+  try{
+    mc.registerTool({
+      name: 'get_atom',
+      description: 'Get one A2UI Atomic Catalog atom by its type name, as returned by search_atoms. Returns its description, the payload fields it takes, where it works or degrades, its source credit and its page URL.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          type: {type: 'string', pattern: '^[a-z0-9_]+$', maxLength: 80, description: 'Atom type name, such as gallery or status_timeline.'}
+        },
+        required: ['type'],
+        additionalProperties: false
+      },
+      annotations: {readOnlyHint: true},
+      execute: function(input){
+        var t = String((input||{}).type || '');
+        return spec().then(function(s){
+          var a = findAtom(s, t);
+          if(!a) return {error: 'No atom named "'+t+'". Call search_atoms to find one.'};
+          return {type: a.type, description: a.description, fields: a.fields,
+                  surfaces: a.surfaces, source: a.source, url: SITE+'/atoms/'+a.type+'/'};
+        });
+      }
+    });
+  }catch(err){/* draft API shape may still be moving -- never break the page over it */}
+  // The two write tools call the site's own MCP server (same-origin /mcp),
+  // so they can only do what an agent connected to that server can already
+  // do. consequentialHint asks the agent to confirm with the person first.
+  function callMcp(name, args){
+    return fetch('/mcp', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json', 'Accept': 'application/json, text/event-stream'},
+      body: JSON.stringify({jsonrpc: '2.0', id: 1, method: 'tools/call', params: {name: name, arguments: args}})
+    }).then(function(r){ return r.text(); }).then(function(t){
+      t = t.trim();
+      if(t.charAt(0) !== '{'){
+        var data = t.split('\n').filter(function(l){ return l.indexOf('data:')===0; }).pop() || '';
+        t = data.slice(5);
+      }
+      var msg = JSON.parse(t);
+      if(msg.error) throw new Error(msg.error.message || 'MCP error');
+      var res = msg.result || {};
+      if(res.structuredContent) return res.structuredContent;
+      var text = (res.content || []).map(function(c){ return c.text || ''; }).join('');
+      try{ return JSON.parse(text); }catch(e){ return {result: text}; }
+    });
+  }
+  try{
+    mc.registerTool({
+      name: 'create_share_link',
+      description: 'Create a short shareable link that renders an A2UI payload in the a2uicatalog.ai playground. Stores the payload on a2uicatalog.ai for one week; anyone with the link can view it. Returns the link, the expiry date and a delete token.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          payload: {
+            type: 'object',
+            description: 'The A2UI payload to publish: blocks built from catalogue atoms (see search_atoms and get_atom).',
+            properties: {
+              title: {type: 'string', maxLength: 200, description: 'Page title shown above the blocks.'},
+              theme: {type: 'string', enum: ['light', 'dark', 'terminal'], description: 'Colour theme for the rendered page.'},
+              blocks: {type: 'array', minItems: 1, items: {type: 'object'}, description: 'Atoms in order, each an object with a type and that atom\'s fields.'}
+            },
+            required: ['blocks']
+          }
+        },
+        required: ['payload'],
+        additionalProperties: false
+      },
+      annotations: {readOnlyHint: false, consequentialHint: true},
+      execute: function(input){
+        return callMcp('publish_url', {payload: (input||{}).payload, acknowledge_storage: true, target: 'play'});
+      }
+    });
+  }catch(err){/* draft API shape may still be moving -- never break the page over it */}
+  try{
+    mc.registerTool({
+      name: 'delete_share_link',
+      description: 'Delete a share link made by create_share_link before it expires, using the delete token that create_share_link returned. The link stops working straight away.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          id: {type: 'string', maxLength: 200, description: 'The short link, or the id at its end.'},
+          delete_token: {type: 'string', maxLength: 64, description: 'The delete token create_share_link returned.'}
+        },
+        required: ['id', 'delete_token'],
+        additionalProperties: false
+      },
+      annotations: {readOnlyHint: false, destructiveHint: true, consequentialHint: true},
+      execute: function(input){
+        input = input || {};
+        return callMcp('unpublish_url', {id: input.id, delete_token: input.delete_token});
+      }
+    });
+  }catch(err){/* draft API shape may still be moving -- never break the page over it */}
+})();
+</script><script>(function(){function m(){var x=document.getElementById('main-content');if(x)document.documentElement.style.setProperty('--chrome-h',Math.round(x.getBoundingClientRect().top+window.scrollY)+'px')}m();addEventListener('resize',m);addEventListener('load',m)})()</script><script>(function(){var d=document,r=d.documentElement,h=d.querySelector('.site-header'),g=d.querySelector('.guide-nav');function s(){if(h)r.style.setProperty('--site-header-h',h.offsetHeight+'px');if(g)r.style.setProperty('--guide-nav-h',(g.closest('.gnav-lock')||g).offsetHeight+'px')}s();addEventListener('resize',s);addEventListener('load',s);if(window.ResizeObserver){var o=new ResizeObserver(s);if(h)o.observe(h);if(g)o.observe(g.closest('.gnav-lock')||g)}var c=d.querySelector('.guide-nav a[aria-current]'),u=c&&c.closest('ul');if(u)u.scrollLeft=Math.max(0,c.offsetLeft-u.clientWidth/3)})();</script></body></html>
