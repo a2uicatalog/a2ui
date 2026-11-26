@@ -71,8 +71,8 @@ WEB = {
                  {"a2ui-vue": "0.9.5", "vue": "3.5.13", "@a2ui/web_core": "0.9.1"}),
 }
 # CopilotKit 1.87.0 on A2UI 1.0: custom + four pixel lanes only (no behaviour lane was run).
-CK187 = {"dir": "m5-ck187", "unstable": "m5-ck-gate/unstable/ck.json", "date": "2026-11-12",
-         "version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)", "run_id": "copilotkit-1.87.0-20261112"}
+CK187 = {"dir": "m5-ck187", "unstable": "m5-ck-gate/unstable/ck.json", "date": "2026-11-26",
+         "version": "@copilotkit/a2ui-renderer 1.87.0 (A2UI 1.0, web_core 0.15.0)", "run_id": "copilotkit-1.87.0-20261126"}
 CK187_LANES = [("light480", "pixel", "raw_pixel.json", 480), ("dark480", "pixel_dark", "raw_pixel_dark.json", 480),
                ("light360", "pixel_360", "raw_pixel_360.json", 360), ("dark360", "pixel_dark360", "raw_pixel_dark360.json", 360)]
 STRICT_PAINTED_DIR = "a2ui-react-all/review4"  # harness module that defines loose/strict/broken (read-only import)
@@ -81,7 +81,7 @@ COMPOSE_VERSION = "a2ui-kmp 1.0.0-alpha02 (third-party Kotlin Multiplatform rebu
 # Deterministic (det) mode inputs. det key per renderer id; React is the reference and has no parity entry.
 DET_KEY = {"lit": "lit", "angular": "ang", "a2ui-vue": "vue"}
 DET_LANES = {"light480": "pixel", "dark480": "pixel_dark", "light360": "pixel_360", "dark360": "pixel_dark360"}
-DET_DATE = "2026-11-13"
+DET_DATE = "2026-11-26"
 # the two atoms whose Math.random draws are consumed per renderer by the page-global seeded sequence: pixel and text
 # parity vs React are excluded (recorded with a note code, never as a failure). Open item: reseed per case in the slicer.
 RANDOM_ATOMS = {"gmail_unread_count", "match_exercise"}
